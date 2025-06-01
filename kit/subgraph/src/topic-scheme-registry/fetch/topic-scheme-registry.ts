@@ -1,11 +1,11 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { TopicSchemeRegistry } from "../../../../generated/schema";
-import { TopicSchemeRegistry as TopicSchemeRegistryTemplate } from "../../../../generated/templates";
+import { TopicSchemeRegistry } from "../../../generated/schema";
+import { TopicSchemeRegistry as TopicSchemeRegistryTemplate } from "../../../generated/templates";
 import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../../account/fetch/account";
 
 export function fetchTopicSchemeRegistry(
-  address: Address,
+  address: Address
 ): TopicSchemeRegistry {
   let topicSchemeRegistry = TopicSchemeRegistry.load(address);
 

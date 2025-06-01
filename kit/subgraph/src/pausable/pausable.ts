@@ -1,7 +1,4 @@
-import {
-  Paused,
-  Unpaused,
-} from "../../../generated/templates/Pausable/Pausable";
+import { Paused, Unpaused } from "../../generated/templates/Pausable/Pausable";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchPausable } from "./fetch/pausable";
 

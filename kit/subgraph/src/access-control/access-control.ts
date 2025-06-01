@@ -3,7 +3,7 @@ import {
   RoleAdminChanged,
   RoleGranted,
   RoleRevoked,
-} from "../../../generated/templates/AccessControl/AccessControl";
+} from "../../generated/templates/AccessControl/AccessControl";
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchAccessControl } from "./fetch/accesscontrol";
@@ -37,7 +37,7 @@ export function handleRoleGranted(event: RoleGranted): void {
   if (!found) {
     accessControl.set(
       roleConfig.fieldName,
-      Value.fromBytesArray(newValue.concat([roleHolder.id])),
+      Value.fromBytesArray(newValue.concat([roleHolder.id]))
     );
   }
   accessControl.save();

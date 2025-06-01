@@ -3,15 +3,15 @@ import {
   RecoverySuccess,
   TokensFrozen,
   TokensUnfrozen,
-} from "../../../generated/templates/Custodian/Custodian";
+} from "../../generated/templates/Custodian/Custodian";
 import { fetchEvent } from "../event/fetch/event";
-import { fetchToken } from "../token/fetch/token";
 import {
   decreaseTokenBalanceFrozen,
-  increaseTokenBalanceFrozen,
   freezeOrUnfreezeTokenBalance,
+  increaseTokenBalanceFrozen,
   moveTokenBalanceToNewAccount,
 } from "../token-balance/utils/token-balance-utils";
+import { fetchToken } from "../token/fetch/token";
 
 export function handleAddressFrozen(event: AddressFrozen): void {
   fetchEvent(event, "AddressFrozen");
@@ -19,7 +19,7 @@ export function handleAddressFrozen(event: AddressFrozen): void {
   freezeOrUnfreezeTokenBalance(
     token,
     event.params.userAddress,
-    event.params.isFrozen,
+    event.params.isFrozen
   );
 }
 
@@ -29,7 +29,7 @@ export function handleRecoverySuccess(event: RecoverySuccess): void {
   moveTokenBalanceToNewAccount(
     token,
     event.params.lostWallet,
-    event.params.newWallet,
+    event.params.newWallet
   );
 }
 

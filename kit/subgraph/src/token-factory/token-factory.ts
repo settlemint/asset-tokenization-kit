@@ -1,7 +1,7 @@
 import {
   TokenAssetCreated,
   TokenImplementationUpdated,
-} from "../../../generated/templates/TokenFactory/TokenFactory";
+} from "../../generated/templates/TokenFactory/TokenFactory";
 import { fetchAccessControl } from "../access-control/fetch/accesscontrol";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
@@ -20,7 +20,7 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
 }
 
 export function handleTokenImplementationUpdated(
-  event: TokenImplementationUpdated,
+  event: TokenImplementationUpdated
 ): void {
   fetchEvent(event, "TokenImplementationUpdated");
 }

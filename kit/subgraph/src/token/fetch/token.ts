@@ -1,15 +1,15 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { Token } from "../../../../generated/schema";
+import { Token } from "../../../generated/schema";
 import {
   Burnable as BurnableTemplate,
   Token as TokenTemplate,
-} from "../../../../generated/templates";
-import { Token as TokenContract } from "../../../../generated/templates/Token/Token";
+} from "../../../generated/templates";
+import { Token as TokenContract } from "../../../generated/templates/Token/Token";
 import { fetchAccount } from "../../account/fetch/account";
-import { setBigNumber } from "../../utils/bignumber";
+import { fetchCustodian } from "../../custodian/fetch/custodian";
 import { InterfaceIds } from "../../erc165/utils/interfaceids";
 import { fetchPausable } from "../../pausable/fetch/pausable";
-import { fetchCustodian } from "../../custodian/fetch/custodian";
+import { setBigNumber } from "../../utils/bignumber";
 
 export function fetchToken(address: Address): Token {
   let token = Token.load(address);
@@ -27,7 +27,7 @@ export function fetchToken(address: Address): Token {
       token,
       "totalSupply",
       tokenContract.totalSupply(),
-      token.decimals,
+      token.decimals
     );
 
     token.save();

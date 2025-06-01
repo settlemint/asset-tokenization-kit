@@ -1,5 +1,5 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { Compliance } from "../../../../generated/schema";
+import { Compliance } from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
 
 export function fetchCompliance(address: Address): Compliance {

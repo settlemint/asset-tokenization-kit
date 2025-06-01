@@ -10,7 +10,7 @@ import {
   TokenIdentityImplementationUpdated,
   TopicSchemeRegistryImplementationUpdated,
   TrustedIssuersRegistryImplementationUpdated,
-} from "../../../generated/templates/System/System";
+} from "../../generated/templates/System/System";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
@@ -26,55 +26,55 @@ export function handleBootstrapped(event: Bootstrapped): void {
   const system = fetchSystem(event.address);
   system.compliance = fetchCompliance(event.params.complianceProxy).id;
   system.identityRegistry = fetchIdentityRegistry(
-    event.params.identityRegistryProxy,
+    event.params.identityRegistryProxy
   ).id;
   system.identityRegistryStorage = fetchIdentityRegistryStorage(
-    event.params.identityRegistryStorageProxy,
+    event.params.identityRegistryStorageProxy
   ).id;
   system.trustedIssuersRegistry = fetchTrustedIssuersRegistry(
-    event.params.trustedIssuersRegistryProxy,
+    event.params.trustedIssuersRegistryProxy
   ).id;
   system.identityFactory = fetchIdentityFactory(
-    event.params.identityFactoryProxy,
+    event.params.identityFactoryProxy
   ).id;
   system.topicSchemeRegistry = fetchTopicSchemeRegistry(
-    event.params.topicSchemeRegistryProxy,
+    event.params.topicSchemeRegistryProxy
   ).id;
   system.save();
 }
 
 export function handleComplianceImplementationUpdated(
-  event: ComplianceImplementationUpdated,
+  event: ComplianceImplementationUpdated
 ): void {
   fetchEvent(event, "ComplianceImplementationUpdated");
 }
 
 export function handleIdentityFactoryImplementationUpdated(
-  event: IdentityFactoryImplementationUpdated,
+  event: IdentityFactoryImplementationUpdated
 ): void {
   fetchEvent(event, "IdentityFactoryImplementationUpdated");
 }
 
 export function handleIdentityImplementationUpdated(
-  event: IdentityImplementationUpdated,
+  event: IdentityImplementationUpdated
 ): void {
   fetchEvent(event, "IdentityImplementationUpdated");
 }
 
 export function handleIdentityRegistryImplementationUpdated(
-  event: IdentityRegistryImplementationUpdated,
+  event: IdentityRegistryImplementationUpdated
 ): void {
   fetchEvent(event, "IdentityRegistryImplementationUpdated");
 }
 
 export function handleIdentityRegistryStorageImplementationUpdated(
-  event: IdentityRegistryStorageImplementationUpdated,
+  event: IdentityRegistryStorageImplementationUpdated
 ): void {
   fetchEvent(event, "IdentityRegistryStorageImplementationUpdated");
 }
 
 export function handleTokenAccessManagerImplementationUpdated(
-  event: TokenAccessManagerImplementationUpdated,
+  event: TokenAccessManagerImplementationUpdated
 ): void {
   fetchEvent(event, "TokenAccessManagerImplementationUpdated");
 }
@@ -88,19 +88,19 @@ export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
 }
 
 export function handleTokenIdentityImplementationUpdated(
-  event: TokenIdentityImplementationUpdated,
+  event: TokenIdentityImplementationUpdated
 ): void {
   fetchEvent(event, "TokenIdentityImplementationUpdated");
 }
 
 export function handleTrustedIssuersRegistryImplementationUpdated(
-  event: TrustedIssuersRegistryImplementationUpdated,
+  event: TrustedIssuersRegistryImplementationUpdated
 ): void {
   fetchEvent(event, "TrustedIssuersRegistryImplementationUpdated");
 }
 
 export function handleTopicSchemeRegistryImplementationUpdated(
-  event: TopicSchemeRegistryImplementationUpdated,
+  event: TopicSchemeRegistryImplementationUpdated
 ): void {
   fetchEvent(event, "TopicSchemeRegistryImplementationUpdated");
 }

@@ -3,12 +3,12 @@ import {
   TopicSchemeRemoved,
   TopicSchemeUpdated,
   TopicSchemesBatchRegistered,
-} from "../../../generated/templates/TopicSchemeRegistry/TopicSchemeRegistry";
+} from "../../generated/templates/TopicSchemeRegistry/TopicSchemeRegistry";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchTopicScheme } from "./fetch/topic-scheme";
 
 export function handleTopicSchemeRegistered(
-  event: TopicSchemeRegistered,
+  event: TopicSchemeRegistered
 ): void {
   fetchEvent(event, "TopicSchemeRegistered");
   const topicScheme = fetchTopicScheme(event.params.topicId);
@@ -33,7 +33,7 @@ export function handleTopicSchemeUpdated(event: TopicSchemeUpdated): void {
 }
 
 export function handleTopicSchemesBatchRegistered(
-  event: TopicSchemesBatchRegistered,
+  event: TopicSchemesBatchRegistered
 ): void {
   fetchEvent(event, "TopicSchemesBatchRegistered");
 

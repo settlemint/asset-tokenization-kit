@@ -1,13 +1,13 @@
-import { Token, TokenBalance } from "../../../../generated/schema";
+import { Address, BigInt, store } from "@graphprotocol/graph-ts";
+import { Token, TokenBalance } from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchTokenBalance } from "../fetch/token-balance";
-import { Address, BigInt, Bytes, store } from "@graphprotocol/graph-ts";
 
 export function increaseTokenBalanceValue(
   token: Token,
   account: Address,
-  value: BigInt,
+  value: BigInt
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
@@ -15,7 +15,7 @@ export function increaseTokenBalanceValue(
     balance,
     "value",
     balance.valueExact.plus(value),
-    token.decimals,
+    token.decimals
   );
   updateAvailableAmount(balance, token.decimals);
 
@@ -25,7 +25,7 @@ export function increaseTokenBalanceValue(
 export function decreaseTokenBalanceValue(
   token: Token,
   account: Address,
-  value: BigInt,
+  value: BigInt
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
@@ -33,7 +33,7 @@ export function decreaseTokenBalanceValue(
     balance,
     "value",
     balance.valueExact.minus(value),
-    token.decimals,
+    token.decimals
   );
   updateAvailableAmount(balance, token.decimals);
 
@@ -43,7 +43,7 @@ export function decreaseTokenBalanceValue(
 export function increaseTokenBalanceFrozen(
   token: Token,
   account: Address,
-  amount: BigInt,
+  amount: BigInt
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
@@ -51,7 +51,7 @@ export function increaseTokenBalanceFrozen(
     balance,
     "frozen",
     balance.frozenExact.plus(amount),
-    token.decimals,
+    token.decimals
   );
   updateAvailableAmount(balance, token.decimals);
 
@@ -61,7 +61,7 @@ export function increaseTokenBalanceFrozen(
 export function decreaseTokenBalanceFrozen(
   token: Token,
   account: Address,
-  amount: BigInt,
+  amount: BigInt
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
@@ -69,7 +69,7 @@ export function decreaseTokenBalanceFrozen(
     balance,
     "frozen",
     balance.frozenExact.minus(amount),
-    token.decimals,
+    token.decimals
   );
   updateAvailableAmount(balance, token.decimals);
 
@@ -79,7 +79,7 @@ export function decreaseTokenBalanceFrozen(
 export function freezeOrUnfreezeTokenBalance(
   token: Token,
   account: Address,
-  isFrozen: boolean,
+  isFrozen: boolean
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
@@ -92,7 +92,7 @@ export function freezeOrUnfreezeTokenBalance(
 export function moveTokenBalanceToNewAccount(
   token: Token,
   oldAccount: Address,
-  newAccount: Address,
+  newAccount: Address
 ): void {
   const oldBalance = fetchTokenBalance(token, fetchAccount(oldAccount));
   const newBalance = fetchTokenBalance(token, fetchAccount(newAccount));
@@ -107,7 +107,7 @@ export function moveTokenBalanceToNewAccount(
 
 function updateAvailableAmount(
   tokenBalance: TokenBalance,
-  decimals: number,
+  decimals: number
 ): void {
   if (tokenBalance.isFrozen) {
     setBigNumber(tokenBalance, "available", BigInt.zero(), decimals);
@@ -116,7 +116,7 @@ function updateAvailableAmount(
       tokenBalance,
       "available",
       tokenBalance.valueExact.minus(tokenBalance.frozenExact),
-      decimals,
+      decimals
     );
   }
 }

@@ -1,4 +1,4 @@
-import { SMARTSystemCreated } from "../../../generated/SystemFactory/SystemFactory";
+import { SMARTSystemCreated } from "../../generated/SystemFactory/SystemFactory";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchSystem } from "../system/fetch/system";
 

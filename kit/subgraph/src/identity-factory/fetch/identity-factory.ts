@@ -1,6 +1,6 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { IdentityFactory } from "../../../../generated/schema";
-import { IdentityFactory as IdentityFactoryTemplate } from "../../../../generated/templates";
+import { IdentityFactory } from "../../../generated/schema";
+import { IdentityFactory as IdentityFactoryTemplate } from "../../../generated/templates";
 import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../../account/fetch/account";
 

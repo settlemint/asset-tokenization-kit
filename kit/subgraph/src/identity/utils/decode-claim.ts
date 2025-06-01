@@ -1,5 +1,5 @@
 import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { IdentityClaim } from "../../../../generated/schema";
+import { IdentityClaim } from "../../../generated/schema";
 import { convertEthereumValue } from "../../event/fetch/event";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
 import { fetchIdentityClaimValue } from "../fetch/identity-claim-value";
@@ -7,7 +7,7 @@ import { fetchIdentityClaimValue } from "../fetch/identity-claim-value";
 export function decodeClaimValues(
   claim: IdentityClaim,
   topicId: BigInt,
-  data: Bytes,
+  data: Bytes
 ): void {
   const topicScheme = fetchTopicScheme(topicId);
 

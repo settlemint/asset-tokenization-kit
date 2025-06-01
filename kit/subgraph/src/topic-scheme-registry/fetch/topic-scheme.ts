@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { TopicScheme } from "../../../../generated/schema";
+import { TopicScheme } from "../../../generated/schema";
 
 export function fetchTopicScheme(topicId: BigInt): TopicScheme {
   const id = Bytes.fromUTF8(topicId.toHexString());

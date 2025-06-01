@@ -1,7 +1,7 @@
 import {
   IdentityCreated,
   TokenIdentityCreated,
-} from "../../../generated/templates/IdentityFactory/IdentityFactory";
+} from "../../generated/templates/IdentityFactory/IdentityFactory";
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";

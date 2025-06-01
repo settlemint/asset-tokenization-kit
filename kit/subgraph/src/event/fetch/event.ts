@@ -1,5 +1,5 @@
 import { Bytes, ethereum, log } from "@graphprotocol/graph-ts";
-import { Event, EventValue } from "../../../../generated/schema";
+import { Event, EventValue } from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
 
 export function convertEthereumValue(value: ethereum.Value): string {
@@ -92,7 +92,7 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
     const entryValue = new EventValue(
       event.transaction.hash
         .concatI32(event.logIndex.toI32())
-        .concat(Bytes.fromUTF8(name)),
+        .concat(Bytes.fromUTF8(name))
     );
     entryValue.name = name;
     entryValue.value = value;

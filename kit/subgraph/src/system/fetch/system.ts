@@ -1,6 +1,6 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { System } from "../../../../generated/schema";
-import { System as SystemTemplate } from "../../../../generated/templates";
+import { System } from "../../../generated/schema";
+import { System as SystemTemplate } from "../../../generated/templates";
 import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../../account/fetch/account";
 

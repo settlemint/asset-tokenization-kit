@@ -112,16 +112,10 @@ main() {
     # Clean up .git directories
     remove_git_directories
 
-    # Copy smart-protocol files
-    copy_smart_protocol_files "${FORCE_COPY}"
-
     # Apply patches
     local patch_script="${SCRIPT_DIR}/patch-onchainid.sh"
     run_patch_script "${patch_script}" "${LOG_LEVEL}"
 
-    # Patch ABI paths in subgraph.yaml
-    local abi_patch_script="${SCRIPT_DIR}/patch-abi-path.sh"
-    run_patch_script "${abi_patch_script}" "${LOG_LEVEL}"
 
     log_success "All operations completed successfully!"
 }

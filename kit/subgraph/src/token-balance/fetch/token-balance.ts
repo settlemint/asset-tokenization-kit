@@ -1,10 +1,10 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { Account, Token, TokenBalance } from "../../../../generated/schema";
+import { Account, Token, TokenBalance } from "../../../generated/schema";
 import { setBigNumber } from "../../utils/bignumber";
 
 export function fetchTokenBalance(
   token: Token,
-  account: Account,
+  account: Account
 ): TokenBalance {
   const id = token.id.concat(account.id);
 

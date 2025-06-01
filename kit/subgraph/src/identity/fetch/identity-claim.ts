@@ -1,9 +1,9 @@
 import { Bytes } from "@graphprotocol/graph-ts";
-import { Identity, IdentityClaim } from "../../../../generated/schema";
+import { Identity, IdentityClaim } from "../../../generated/schema";
 
 export function fetchIdentityClaim(
   identity: Identity,
-  address: Bytes,
+  address: Bytes
 ): IdentityClaim {
   const id = identity.id.concat(address);
   let identityClaim = IdentityClaim.load(id);

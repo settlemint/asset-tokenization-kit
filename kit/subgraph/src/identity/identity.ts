@@ -8,7 +8,7 @@ import {
   ExecutionRequested,
   KeyAdded,
   KeyRemoved,
-} from "../../../generated/templates/Identity/Identity";
+} from "../../generated/templates/Identity/Identity";
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "./fetch/identity";
