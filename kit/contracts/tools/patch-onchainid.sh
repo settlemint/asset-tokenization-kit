@@ -105,7 +105,8 @@ backup_file() {
 
 update_pragma_statements() {
     local onchainid_dir="$1"
-    local os_type="$(get_os_type)"
+    local os_type
+    os_type="$(get_os_type)"
 
     log_info "Updating pragma statements for all .sol files in ${onchainid_dir}..."
 
@@ -186,7 +187,8 @@ update_pragma_statements() {
 
 update_import_statements() {
     local onchainid_dir="$1"
-    local os_type="$(get_os_type)"
+    local os_type
+    os_type="$(get_os_type)"
 
     log_info "Updating import statements for all .sol files in ${onchainid_dir}..."
 
@@ -252,7 +254,8 @@ update_import_statements() {
 
 patch_constructor_syntax() {
     local onchainid_dir="$1"
-    local os_type="$(get_os_type)"
+    local os_type
+    os_type="$(get_os_type)"
 
     log_info "Patching constructor syntax for all .sol files in ${onchainid_dir}..."
 

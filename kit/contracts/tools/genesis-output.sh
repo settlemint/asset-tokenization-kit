@@ -516,7 +516,8 @@ verify_all_contracts_processed() {
     done
     
     # Report results
-    local processed_count=$(echo "${genesis_addresses}" | wc -l | tr -d ' ')
+    local processed_count
+    processed_count=$(echo "${genesis_addresses}" | wc -l | tr -d ' ')
     log_info "Expected contracts: ${expected_total}"
     log_info "Processed contracts: ${processed_count}"
     

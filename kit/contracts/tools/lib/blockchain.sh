@@ -190,7 +190,8 @@ add_to_genesis() {
     log_debug "Adding ${contract_name} to genesis allocation..."
 
     # Use jq to add the contract allocation to the genesis file
-    local temp_file="$(dirname "${genesis_file}")/temp.json"
+    local temp_file
+    temp_file="$(dirname "${genesis_file}")/temp.json"
     if ! jq --arg address "${target_address}" \
        --arg bytecode "${bytecode}" \
        --argjson storage "${storage_json}" \

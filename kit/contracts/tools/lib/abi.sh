@@ -50,9 +50,6 @@ fi
 if [[ -z "${EXIT_SUCCESS:-}" ]]; then
     readonly EXIT_SUCCESS=0
     readonly EXIT_ERROR=1
-    readonly EXIT_INVALID_ARGS=2
-    readonly EXIT_MISSING_DEPS=3
-    readonly EXIT_CONFIG_ERROR=4
 fi
 
 # Base paths - these will be set properly when PROJECT_ROOT is available
@@ -258,7 +255,6 @@ process_abi_file() {
 # Generate all ABI typings
 generate_all_abi_typings() {
     local processed=0
-    local skipped=0
     local failed=0
 
     # Initialize ABI paths
