@@ -401,21 +401,35 @@ install_forge_dependencies() {
     fi
 
     # Install dependencies with optional timeout
-    local install_args=("soldeer" "install")
+    log_debug "Installing dependencies from ${PROJECT_ROOT}"
+    
+    # Change to project root for forge commands
+    if ! pushd "${PROJECT_ROOT}" > /dev/null 2>&1; then
+        log_error "Failed to change to project directory: ${PROJECT_ROOT}"
+        return 1
+    fi
+    
+    local success=false
     if command_exists "timeout"; then
-        if timeout 300 run_forge_command "${install_args[@]}" > /dev/null; then
-            log_success "Dependencies installed successfully"
-        else
-            log_error "Failed to install dependencies (timeout or error)"
-            return 1
+        # Run forge directly with timeout
+        if timeout 300 forge soldeer install > /dev/null 2>&1; then
+            success=true
         fi
     else
-        if run_forge_command "${install_args[@]}" > /dev/null; then
-            log_success "Dependencies installed successfully"
-        else
-            log_error "Failed to install dependencies"
-            return 1
+        # Run without timeout
+        if forge soldeer install > /dev/null 2>&1; then
+            success=true
         fi
+    fi
+    
+    popd > /dev/null
+    
+    if [[ "${success}" == "true" ]]; then
+        log_success "Dependencies installed successfully"
+        return 0
+    else
+        log_error "Failed to install dependencies"
+        return 1
     fi
 }
 
