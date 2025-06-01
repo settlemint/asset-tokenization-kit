@@ -72,7 +72,8 @@ init_script_metadata() {
     # Navigate up from subgraph/tools to find project root
     local current_dir="$SCRIPT_DIR"
     while [[ "$current_dir" != "/" ]]; do
-        if [[ -f "$current_dir/package.json" ]] && [[ -d "$current_dir/contracts" ]]; then
+        # Look for the kit directory that contains both contracts and subgraph
+        if [[ -d "$current_dir/contracts" ]] && [[ -d "$current_dir/subgraph" ]]; then
             PROJECT_ROOT="$current_dir"
             break
         fi
@@ -426,6 +427,151 @@ get_relative_path() {
 }
 
 # ============================================================================
+# FORGE/FOUNDRY FUNCTIONS
+# ============================================================================
+
+# Validate Forge/Foundry environment
+validate_forge_environment() {
+    log_debug "Validating Forge environment..."
+    
+    # Check for foundry config files in the parent kit directory
+    local kit_dir="${PROJECT_ROOT}"
+    local contracts_dir="${kit_dir}/contracts"
+    
+    if [[ ! -f "${contracts_dir}/foundry.toml" ]] && [[ ! -f "${contracts_dir}/forge.toml" ]]; then
+        log_error "No Foundry config file found (foundry.toml or forge.toml)"
+        log_error "Make sure you're in a Forge project with a foundry.toml file"
+        return "$EXIT_CONFIG_ERROR"
+    fi
+    
+    # Check if forge command is available
+    if ! command_exists "forge"; then
+        log_error "Forge command not found"
+        log_error "Please install Foundry: https://book.getfoundry.sh/getting-started/installation"
+        return "$EXIT_MISSING_DEPS"
+    fi
+    
+    log_debug "Forge environment validated successfully"
+    return "$EXIT_SUCCESS"
+}
+
+# Run forge command with error handling
+run_forge_command() {
+    local subcommand="$1"
+    shift
+    local args=("$@")
+    
+    log_debug "Running: forge ${subcommand} ${args[*]}"
+    
+    # Change to contracts directory for forge commands
+    local contracts_dir="${PROJECT_ROOT}/contracts"
+    
+    if cd "${contracts_dir}"; then
+        if forge "${subcommand}" "${args[@]}"; then
+            cd - > /dev/null || true
+            return "$EXIT_SUCCESS"
+        else
+            cd - > /dev/null || true
+            log_error "Forge command failed: forge ${subcommand} ${args[*]}"
+            return "$EXIT_ERROR"
+        fi
+    else
+        log_error "Could not change to contracts directory: ${contracts_dir}"
+        return "$EXIT_ERROR"
+    fi
+}
+
+# Validate required directories exist
+validate_directories() {
+    local dirs=("$@")
+    local missing_dirs=()
+    
+    for dir in "${dirs[@]}"; do
+        local full_path="${PROJECT_ROOT}/${dir}"
+        if [[ ! -d "${full_path}" ]]; then
+            missing_dirs+=("${dir}")
+        fi
+    done
+    
+    if [[ ${#missing_dirs[@]} -gt 0 ]]; then
+        log_error "Missing required directories: ${missing_dirs[*]}"
+        return "$EXIT_ERROR"
+    fi
+    
+    return "$EXIT_SUCCESS"
+}
+
+# ============================================================================
+# FORGE/CONTRACT COMPATIBILITY FUNCTIONS
+# ============================================================================
+
+# Validate forge project environment
+validate_forge_environment() {
+    log_info "Validating Forge environment..."
+
+    # Check if we're in the right directory structure
+    local contracts_dir="${PROJECT_ROOT}/contracts"
+    if [[ ! -f "${contracts_dir}/foundry.toml" ]] && [[ ! -f "${contracts_dir}/forge.toml" ]]; then
+        log_error "Not in a valid project structure. Expected foundry.toml or forge.toml in ${contracts_dir}"
+        log_error "Directory contents:"
+        find "${contracts_dir}" -maxdepth 1 -printf '%f\n' 2>/dev/null | head -10 >&2 || true
+        return "$EXIT_CONFIG_ERROR"
+    fi
+
+    log_success "Forge environment validation passed"
+    return "$EXIT_SUCCESS"
+}
+
+# Run forge command with error handling
+run_forge_command() {
+    local command="$1"
+    shift
+    local args=("$@")
+
+    log_debug "Running forge ${command} ${args[*]}"
+
+    # Change to contracts directory for forge commands
+    local contracts_dir="${PROJECT_ROOT}/contracts"
+    if ! pushd "${contracts_dir}" > /dev/null 2>&1; then
+        log_error "Failed to change to contracts directory: ${contracts_dir}"
+        return "$EXIT_ERROR"
+    fi
+
+    local output
+    if output=$(forge "${command}" "${args[@]}" 2>&1); then
+        log_debug "Forge ${command} completed successfully"
+        popd > /dev/null
+        echo "${output}"
+        return "$EXIT_SUCCESS"
+    else
+        log_error "Forge ${command} failed:"
+        echo "${output}" >&2
+        popd > /dev/null
+        return "$EXIT_ERROR"
+    fi
+}
+
+# Validate directory structure
+validate_directories() {
+    local required_dirs=("$@")
+    local missing_dirs=()
+
+    for dir in "${required_dirs[@]}"; do
+        local full_path="${PROJECT_ROOT}/${dir}"
+        if [[ ! -d "${full_path}" ]]; then
+            missing_dirs+=("${dir}")
+        fi
+    done
+
+    if [[ ${#missing_dirs[@]} -gt 0 ]]; then
+        log_error "Missing required directories: ${missing_dirs[*]}"
+        return "$EXIT_ERROR"
+    fi
+
+    return "$EXIT_SUCCESS"
+}
+
+# ============================================================================
 # EXPORT FUNCTIONS
 # ============================================================================
 
@@ -435,3 +581,4 @@ export -f print_header print_separator
 export -f command_exists validate_commands validate_file validate_directory validate_json
 export -f backup_file ensure_directory
 export -f confirm get_relative_path
+export -f validate_forge_environment run_forge_command validate_directories

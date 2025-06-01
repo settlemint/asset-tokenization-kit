@@ -10,9 +10,7 @@
 # shellcheck disable=SC2154  # PROJECT_ROOT and SCRIPT_NAME are set by init_common_lib
 
 # Get script directory and source libraries
-declare SCRIPT_DIR
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly SCRIPT_DIR
 source "${SCRIPT_DIR}/lib/all.sh"
 
 # =============================================================================
@@ -32,7 +30,7 @@ trap 'script_cleanup $?' EXIT
 
 FORCE_OVERWRITE="${FORCE_OVERWRITE:-false}"
 SKIP_BUILD="${SKIP_BUILD:-false}"
-OUTPUT_DIR="${OUTPUT_DIR:-src/erc165/utils}"
+OUTPUT_DIR="${OUTPUT_DIR:-subgraph/src/erc165/utils}"
 OUTPUT_FILE="${OUTPUT_FILE:-interfaceids.ts}"
 TEMP_CONTRACT="${TEMP_CONTRACT:-temp_interface_calc.sol}"
 
@@ -65,8 +63,9 @@ script_cleanup() {
 # Clean up temporary files
 cleanup_temp_files() {
     local temp_files=(
-        "${PROJECT_ROOT}/${TEMP_CONTRACT}"
-        "${PROJECT_ROOT}/temp_single_calc.sol"
+        "${PROJECT_ROOT}/contracts/${TEMP_CONTRACT}"
+        "${PROJECT_ROOT}/contracts/temp_single_calc.sol"
+        "${PROJECT_ROOT}/contracts/temp_script_output.txt"
     )
 
     for temp_file in "${temp_files[@]}"; do
@@ -223,6 +222,9 @@ extract_interface_metadata() {
     INTERFACE_NAMES=()
     INTERFACE_IMPORTS=()
 
+    # Use associative array to track interface names and prevent duplicates
+    declare -A seen_interfaces
+
     for file in "${INTERFACE_FILES[@]}"; do
         local interface_name
         interface_name=$(basename "${file}" .sol)
@@ -235,10 +237,19 @@ extract_interface_metadata() {
 
         # Check if the file actually contains an interface declaration
         if grep -E -q "^[[:space:]]*interface[[:space:]]+${interface_name}([[:space:]]+|$)" "${file}"; then
+            # Check if we've already seen this interface name
+            if [[ -n "${seen_interfaces[$interface_name]+x}" ]]; then
+                log_warn "  ⚠ ${interface_name}: Duplicate interface found, skipping (already using from ${seen_interfaces[$interface_name]})"
+                continue
+            fi
+
+            # Mark this interface as seen
+            local relative_path="${file#"${PROJECT_ROOT}/contracts/"}"
+            seen_interfaces[$interface_name]="${relative_path}"
+
             INTERFACE_NAMES+=("${interface_name}")
 
-            # Convert file path to import path (keep the full path from contracts/)
-            local relative_path="${file#"${PROJECT_ROOT}"/}"
+            # Convert file path to import path relative to contracts directory
             local import_path="./${relative_path}"
             INTERFACE_IMPORTS+=("import { ${interface_name} } from \"${import_path}\";")
 
@@ -255,14 +266,14 @@ extract_interface_metadata() {
     fi
 
     INTERFACES_PROCESSED=${#INTERFACE_NAMES[@]}
-    log_success "Found ${INTERFACES_PROCESSED} valid interfaces"
+    log_success "Found ${INTERFACES_PROCESSED} valid interfaces (${#seen_interfaces[@]} unique)"
 }
 
 # Create dynamic Solidity contract to calculate interface IDs
 create_calculator_contract() {
     log_info "Creating dynamic interface ID calculator..."
 
-    local temp_contract="${PROJECT_ROOT}/${TEMP_CONTRACT}"
+    local temp_contract="${PROJECT_ROOT}/contracts/${TEMP_CONTRACT}"
 
     # Create the contract header
     cat > "${temp_contract}" << 'EOF'
@@ -338,7 +349,7 @@ compile_contracts() {
 calculate_interface_ids() {
     log_info "Calculating interface IDs..."
 
-    local temp_contract="${PROJECT_ROOT}/${TEMP_CONTRACT}"
+    local temp_contract="${PROJECT_ROOT}/contracts/${TEMP_CONTRACT}"
 
     if [[ ! -f "${temp_contract}" ]]; then
         log_error "Temporary contract not found: ${temp_contract}"
@@ -365,7 +376,7 @@ calculate_interface_ids() {
     echo "${script_output}" | grep -A 1000 "=== SMART Protocol Interface IDs ===" | grep -B 1000 "=== TypeScript Format ===" | sed 's/0x\([0-9a-fA-F]\{8\}\)[0-9a-fA-F]*/0x\1/g'
 
     # Store script output for later processing
-    echo "${script_output}" > "${PROJECT_ROOT}/temp_script_output.txt"
+    echo "${script_output}" > "${PROJECT_ROOT}/contracts/temp_script_output.txt"
 }
 
 # Create output directory and file
@@ -415,9 +426,9 @@ create_output_file() {
 
     # Read script output
     local script_output
-    if [[ -f "${PROJECT_ROOT}/temp_script_output.txt" ]]; then
-        script_output=$(cat "${PROJECT_ROOT}/temp_script_output.txt")
-        rm -f "${PROJECT_ROOT}/temp_script_output.txt"
+    if [[ -f "${PROJECT_ROOT}/contracts/temp_script_output.txt" ]]; then
+        script_output=$(cat "${PROJECT_ROOT}/contracts/temp_script_output.txt")
+        rm -f "${PROJECT_ROOT}/contracts/temp_script_output.txt"
     else
         log_error "Script output file not found"
         return 1
