@@ -14,7 +14,8 @@
     "deploy:remote": "bash graph-deploy.sh --remote",
     "format": "prettier --write .",
     "subgraph:deploy": "settlemint scs subgraph deploy",
-    "lint": "eslint src/ --ext .ts"
+    "lint": "eslint src/ --ext .ts",
+    "interfaceid": "bash tools/interfaceid.sh"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",

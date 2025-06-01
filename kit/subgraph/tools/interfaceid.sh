@@ -32,7 +32,7 @@ trap 'script_cleanup $?' EXIT
 
 FORCE_OVERWRITE="${FORCE_OVERWRITE:-false}"
 SKIP_BUILD="${SKIP_BUILD:-false}"
-OUTPUT_DIR="${OUTPUT_DIR:-subgraph/src/erc165/utils}"
+OUTPUT_DIR="${OUTPUT_DIR:-src/erc165/utils}"
 OUTPUT_FILE="${OUTPUT_FILE:-interfaceids.ts}"
 TEMP_CONTRACT="${TEMP_CONTRACT:-temp_interface_calc.sol}"
 
