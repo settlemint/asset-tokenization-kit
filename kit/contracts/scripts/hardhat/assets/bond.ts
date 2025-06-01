@@ -59,7 +59,7 @@ export const createBond = async (depositToken: Address) => {
     await grantRole(
       accessManager,
       owner.address,
-      SMARTRoles.supplyManagementRole,
+      SMARTRoles.supplyManagementRole
     );
 
     await mint(tokenAddress, investorA, 10n, 6);

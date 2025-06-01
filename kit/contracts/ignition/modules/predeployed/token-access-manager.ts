@@ -8,11 +8,11 @@ const TokenAccessManagerModule = buildModule(
 
     const tokenAccessManager = m.contract(
       "SMARTTokenAccessManagerImplementation",
-      [forwarder],
+      [forwarder]
     );
 
     return { tokenAccessManager };
-  },
+  }
 );
 
 export default TokenAccessManagerModule;

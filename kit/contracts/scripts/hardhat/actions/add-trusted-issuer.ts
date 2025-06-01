@@ -9,7 +9,7 @@ export const addTrustedIssuer = async (
     topicManager.getTopicId(SMARTTopic.kyc),
     topicManager.getTopicId(SMARTTopic.aml),
     topicManager.getTopicId(SMARTTopic.collateral),
-  ],
+  ]
 ) => {
   // Set up the claim issuer as a trusted issuer
   const trustedIssuersRegistry =
@@ -23,6 +23,6 @@ export const addTrustedIssuer = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Add trusted issuer] ${trustedIssuerIdentity} added to registry`,
+    `[Add trusted issuer] ${trustedIssuerIdentity} added to registry`
   );
 };

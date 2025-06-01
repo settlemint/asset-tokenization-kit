@@ -18,20 +18,20 @@ const SMARTOnboardingStableCoinModule = buildModule(
       createStableCoinFactory,
       "TokenFactoryCreated",
       "proxyAddress",
-      { id: "stablecoinFactoryAddress" },
+      { id: "stablecoinFactoryAddress" }
     );
     const stablecoinFactoryProxy = m.contractAt(
       "SMARTStableCoinFactoryImplementation",
       stablecoinFactoryAddress,
       {
         id: "stablecoinFactory",
-      },
+      }
     );
 
     return {
       stablecoinFactory: stablecoinFactoryProxy,
     };
-  },
+  }
 );
 
 export default SMARTOnboardingStableCoinModule;

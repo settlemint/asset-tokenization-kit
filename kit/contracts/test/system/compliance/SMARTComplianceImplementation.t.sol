@@ -60,52 +60,17 @@ contract MockFailingModule is ISMARTComplianceModule {
         shouldFailValidation = _shouldFailValidation;
     }
 
-    function canTransfer(
-        address,
-        address,
-        address,
-        uint256,
-        bytes calldata
-    )
-        external
-        view
-        override
-    {
+    function canTransfer(address, address, address, uint256, bytes calldata) external view override {
         if (shouldFailTransfer) {
             revert ComplianceCheckFailed(failureReason);
         }
     }
 
-    function transferred(
-        address,
-        address,
-        address,
-        uint256,
-        bytes calldata
-    )
-        external
-        override
-    { }
+    function transferred(address, address, address, uint256, bytes calldata) external override { }
 
-    function created(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    )
-        external
-        override
-    { }
+    function created(address, address, uint256, bytes calldata) external override { }
 
-    function destroyed(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    )
-        external
-        override
-    { }
+    function destroyed(address, address, uint256, bytes calldata) external override { }
 
     function validateParameters(bytes calldata) external view override {
         if (shouldFailValidation) {
@@ -140,15 +105,14 @@ contract SMARTComplianceImplementationTest is Test {
     address public alice = address(0xa11ce);
     address public bob = address(0xb0b);
 
-
     function setUp() public {
         // Deploy implementation and use it directly for unit testing
         implementation = new SMARTComplianceImplementation(trustedForwarder);
-        
+
         // Deploy as proxy
         bytes memory initData = abi.encodeWithSelector(SMARTComplianceImplementation.initialize.selector);
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
-        
+
         // Access proxy as SMARTComplianceImplementation
         compliance = SMARTComplianceImplementation(address(proxy));
 
@@ -199,11 +163,11 @@ contract SMARTComplianceImplementationTest is Test {
 
     function testAreValidComplianceModulesWithMultipleValidModules() public {
         MockedComplianceModule module2 = new MockedComplianceModule();
-        
+
         SMARTComplianceModuleParamPair[] memory pairs = new SMARTComplianceModuleParamPair[](2);
         pairs[0] = SMARTComplianceModuleParamPair(address(validModule), abi.encode(uint256(100)));
         pairs[1] = SMARTComplianceModuleParamPair(address(module2), abi.encode(uint256(200)));
-        
+
         ISMARTCompliance(address(compliance)).areValidComplianceModules(pairs);
         // Should not revert
     }
@@ -212,7 +176,7 @@ contract SMARTComplianceImplementationTest is Test {
         SMARTComplianceModuleParamPair[] memory pairs = new SMARTComplianceModuleParamPair[](2);
         pairs[0] = SMARTComplianceModuleParamPair(address(validModule), abi.encode(uint256(100)));
         pairs[1] = SMARTComplianceModuleParamPair(address(0), abi.encode(uint256(200)));
-        
+
         vm.expectRevert(ZeroAddressNotAllowed.selector);
         ISMARTCompliance(address(compliance)).areValidComplianceModules(pairs);
     }
@@ -238,14 +202,14 @@ contract SMARTComplianceImplementationTest is Test {
         MockedComplianceModule module2 = new MockedComplianceModule();
         token.addModule(address(validModule), abi.encode(uint256(100)));
         token.addModule(address(module2), abi.encode(uint256(200)));
-        
+
         assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 50));
     }
 
     function testCanTransferWithMultipleModulesOneFails() public {
         token.addModule(address(validModule), abi.encode(uint256(100)));
         token.addModule(address(failingModule), abi.encode(uint256(200)));
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Transfer not allowed")
         );
@@ -266,10 +230,10 @@ contract SMARTComplianceImplementationTest is Test {
         MockedComplianceModule module2 = new MockedComplianceModule();
         token.addModule(address(validModule), abi.encode(uint256(100)));
         token.addModule(address(module2), abi.encode(uint256(200)));
-        
+
         vm.prank(address(token));
         ISMARTCompliance(address(compliance)).transferred(address(token), alice, bob, 100);
-        
+
         // Verify modules were called
         assertEq(validModule.transferredCallCount(), 1);
         assertEq(module2.transferredCallCount(), 1);
@@ -285,10 +249,10 @@ contract SMARTComplianceImplementationTest is Test {
         MockedComplianceModule module2 = new MockedComplianceModule();
         token.addModule(address(validModule), abi.encode(uint256(100)));
         token.addModule(address(module2), abi.encode(uint256(200)));
-        
+
         vm.prank(address(token));
         ISMARTCompliance(address(compliance)).created(address(token), alice, 1000);
-        
+
         // Verify modules were called
         assertEq(validModule.createdCallCount(), 1);
         assertEq(module2.createdCallCount(), 1);
@@ -304,10 +268,10 @@ contract SMARTComplianceImplementationTest is Test {
         MockedComplianceModule module2 = new MockedComplianceModule();
         token.addModule(address(validModule), abi.encode(uint256(100)));
         token.addModule(address(module2), abi.encode(uint256(200)));
-        
+
         vm.prank(address(token));
         ISMARTCompliance(address(compliance)).destroyed(address(token), alice, 500);
-        
+
         // Verify modules were called
         assertEq(validModule.destroyedCallCount(), 1);
         assertEq(module2.destroyedCallCount(), 1);
@@ -325,22 +289,22 @@ contract SMARTComplianceImplementationTest is Test {
             MockedComplianceModule module = new MockedComplianceModule();
             token.addModule(address(module), abi.encode(i * 100));
         }
-        
+
         uint256 gasBefore = gasleft();
         assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
         uint256 gasUsed = gasBefore - gasleft();
-        
+
         console2.log("Gas used for canTransfer with 10 modules:", gasUsed);
-        assertLt(gasUsed, 500000); // Ensure reasonable gas usage
+        assertLt(gasUsed, 500_000); // Ensure reasonable gas usage
     }
 
     function testModuleParameterPropagation() public {
         // Create a module that validates specific parameters
         MockedComplianceModule paramModule = new MockedComplianceModule();
-        bytes memory specificParams = abi.encode(uint256(12345), "test");
-        
+        bytes memory specificParams = abi.encode(uint256(12_345), "test");
+
         token.addModule(address(paramModule), specificParams);
-        
+
         // The module should receive the exact parameters
         assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
     }
@@ -359,7 +323,7 @@ contract SMARTComplianceImplementationTest is Test {
     function testFuzzModuleValidation(address moduleAddr, bytes memory params) public {
         vm.assume(moduleAddr != address(0));
         vm.assume(moduleAddr.code.length == 0); // Ensure it's not a contract
-        
+
         // Should revert for non-compliant modules (EOA addresses)
         vm.expectRevert();
         ISMARTCompliance(address(compliance)).isValidComplianceModule(moduleAddr, params);

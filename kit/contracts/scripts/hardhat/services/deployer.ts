@@ -91,7 +91,7 @@ export class SmartProtocolDeployer {
     const deploymentPath = join(
       hre.config.paths?.ignition || "ignition",
       "deployments",
-      deploymentId,
+      deploymentId
     );
 
     if (existsSync(deploymentPath)) {
@@ -126,7 +126,7 @@ export class SmartProtocolDeployer {
 
     if (this._deployedContractAddresses && !reset) {
       console.warn(
-        "SMARTOnboardingModule has already been deployed. Skipping setup. Use reset option to redeploy.",
+        "SMARTOnboardingModule has already been deployed. Skipping setup. Use reset option to redeploy."
       );
       return;
     }
@@ -141,23 +141,23 @@ export class SmartProtocolDeployer {
         {
           deploymentId: this._deploymentId,
           displayUi,
-        },
+        }
       )) as DeployedContractAddresses;
 
       // 2. Store deployed addresses
       this._deployedContractAddresses = deploymentAddresses;
 
       console.log(
-        "✅ SMARTOnboardingModule deployed successfully! Contract addresses and default signer initialized.",
+        "✅ SMARTOnboardingModule deployed successfully! Contract addresses and default signer initialized."
       );
       console.log(
-        `📂 Deployment artifacts stored in: ignition/deployments/${this._deploymentId}`,
+        `📂 Deployment artifacts stored in: ignition/deployments/${this._deploymentId}`
       );
 
       if (this._deployedContractAddresses) {
         console.log("📋 Deployed Contract Addresses:");
         for (const [name, contractInfo] of Object.entries(
-          this._deployedContractAddresses,
+          this._deployedContractAddresses
         )) {
           if (contractInfo && typeof contractInfo.address === "string") {
             console.log(`  ${name}: ${contractInfo.address}`);
@@ -194,14 +194,14 @@ export class SmartProtocolDeployer {
   private getContract<K extends ContractName>(
     // Use ContractName here
     contractName: K,
-    explicitWalletClient?: WalletClient<Transport, Chain, Account>,
+    explicitWalletClient?: WalletClient<Transport, Chain, Account>
   ): ViemContract<
     (typeof SMARTContracts)[K],
     { public: PublicClient; wallet: WalletClient<Transport, Chain, Account> }
   > {
     if (!this._deployedContractAddresses) {
       throw new Error(
-        "Contracts not deployed. Call setUp() before accessing contracts.",
+        "Contracts not deployed. Call setUp() before accessing contracts."
       );
     }
 
@@ -209,8 +209,8 @@ export class SmartProtocolDeployer {
     if (!contractInfo?.address) {
       throw new Error(
         `Contract "${String(
-          contractName,
-        )}" address not found in deployment results.`,
+          contractName
+        )}" address not found in deployment results.`
       );
     }
 
@@ -223,73 +223,73 @@ export class SmartProtocolDeployer {
   // --- Unified Contract Accessor Methods ---
 
   public getSystemContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["system"] {
     return this.getContract("system", walletClient);
   }
 
   public getComplianceContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["compliance"] {
     return this.getContract("compliance", walletClient);
   }
 
   public getIdentityRegistryContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["identityRegistry"] {
     return this.getContract("identityRegistry", walletClient);
   }
 
   public getIdentityRegistryStorageContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["identityRegistryStorage"] {
     return this.getContract("identityRegistryStorage", walletClient);
   }
 
   public getTrustedIssuersRegistryContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["trustedIssuersRegistry"] {
     return this.getContract("trustedIssuersRegistry", walletClient);
   }
 
   public getTopicSchemeRegistryContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["topicSchemeRegistry"] {
     return this.getContract("topicSchemeRegistry", walletClient);
   }
 
   public getIdentityFactoryContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["identityFactory"] {
     return this.getContract("identityFactory", walletClient);
   }
 
   public getBondFactoryContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["bondFactory"] {
     return this.getContract("bondFactory", walletClient);
   }
 
   public getDepositFactoryContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["depositFactory"] {
     return this.getContract("depositFactory", walletClient);
   }
 
   public getEquityFactoryContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["equityFactory"] {
     return this.getContract("equityFactory", walletClient);
   }
 
   public getFundFactoryContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["fundFactory"] {
     return this.getContract("fundFactory", walletClient);
   }
 
   public getStablecoinFactoryContract(
-    walletClient?: WalletClient<Transport, Chain, Account>,
+    walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["stablecoinFactory"] {
     return this.getContract("stablecoinFactory", walletClient);
   }

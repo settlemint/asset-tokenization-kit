@@ -10,7 +10,7 @@ export const transfer = async (
   from: AbstractActor,
   to: AbstractActor,
   amount: bigint,
-  decimals: number,
+  decimals: number
 ) => {
   const tokenContract = from.getContractInstance({
     address: tokenAddress,
@@ -27,6 +27,6 @@ export const transfer = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Transfer] ${formatDecimals(tokenAmount, decimals)} tokens from ${from.name} (${from.address}) to ${to.name} (${to.address})`,
+    `[Transfer] ${formatDecimals(tokenAmount, decimals)} tokens from ${from.name} (${from.address}) to ${to.name} (${to.address})`
   );
 };

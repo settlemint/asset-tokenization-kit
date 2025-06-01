@@ -10,18 +10,17 @@
   "scripts": {
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
+    "lint": "eslint src/ --ext .ts",
+    "format": "prettier --write .",
     "build": "graph build --ipfs=https://ipfs.console.settlemint.com subgraph.yaml | tee subgraph-output.txt",
     "deploy:local": "bash graph-deploy.sh --local",
     "deploy:remote": "bash graph-deploy.sh --remote",
-    "format": "prettier --write .",
-    "subgraph:deploy": "settlemint scs subgraph deploy",
-    "lint": "eslint src/ --ext .ts"
+    "subgraph:deploy": "settlemint scs subgraph deploy"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",
     "@graphprotocol/graph-ts": "0.38.1",
     "@typescript-eslint/parser": "8.33.0",
-    "contracts": "workspace:*",
     "eslint": "9.28.0",
     "eslint-plugin-import": "2.31.0"
   },

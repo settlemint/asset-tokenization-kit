@@ -14,7 +14,7 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
   const { compliance } = m.useModule(ComplianceModule);
   const { identityRegistry } = m.useModule(IdentityRegistryModule);
   const { identityRegistryStorage } = m.useModule(
-    IdentityRegistryStorageModule,
+    IdentityRegistryStorageModule
   );
   const { trustedIssuerRegistry } = m.useModule(TrustedIssuerRegistryModule);
   const { topicSchemeRegistry } = m.useModule(TopicSchemeRegistryModule);

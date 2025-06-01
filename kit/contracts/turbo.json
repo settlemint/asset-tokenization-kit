@@ -23,6 +23,11 @@
     },
     "codegen:genesis": {
       "outputs": ["tools/genesis-output.json"]
-    }
+    },
+    "format": {
+      "dependsOn": ["format:forge", "format:prettier"]
+    },
+    "format:forge": {},
+    "format:prettier": {}
   }
 }

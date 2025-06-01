@@ -170,7 +170,7 @@ export class TopicManager {
       }
 
       console.log(
-        `[TopicManager] Loaded ${this._topicCache.size} topics into cache`,
+        `[TopicManager] Loaded ${this._topicCache.size} topics into cache`
       );
       console.log("[TopicManager] Default Topic IDs:", {
         kyc: this.getTopicId(SMARTTopic.kyc).toString(),
@@ -178,7 +178,7 @@ export class TopicManager {
         collateral: this.getTopicId(SMARTTopic.collateral).toString(),
         isin: this.getTopicId(SMARTTopic.isin).toString(),
         assetClassification: this.getTopicId(
-          SMARTTopic.assetClassification,
+          SMARTTopic.assetClassification
         ).toString(),
       });
     } catch (error) {

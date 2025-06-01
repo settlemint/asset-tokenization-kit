@@ -11,7 +11,7 @@ export function setBigNumber(
   entity: Entity,
   fieldName: string,
   value: BigInt,
-  decimals: number,
+  decimals: number
 ): void {
   entity.setBigInt(fieldName.concat("Exact"), value);
   entity.setBigDecimal(fieldName, toDecimals(value, decimals));

@@ -186,9 +186,7 @@ class AnvilManager {
         await $`pkill -f "anvil.*--port ${this.config.anvilPort}"`.quiet();
         await new Promise((resolve) => setTimeout(resolve, 2000));
       } else {
-        log.info(
-          `Anvil already running on port ${this.config.anvilPort}`
-        );
+        log.info(`Anvil already running on port ${this.config.anvilPort}`);
         return;
       }
     }
@@ -296,9 +294,7 @@ class ContractDeployer {
     const bytecodeSize = (bytecode.length - 2) / 2; // Remove 0x and divide by 2
     const maxSize = 24576; // 24KB EIP-170 limit
 
-    log.debug(
-      `Contract ${contractName} bytecode size: ${bytecodeSize} bytes`
-    );
+    log.debug(`Contract ${contractName} bytecode size: ${bytecodeSize} bytes`);
 
     if (bytecodeSize > maxSize) {
       throw new Error(
@@ -544,9 +540,7 @@ class GenesisGenerator {
   ): Promise<void> {
     const targetAddress = CONTRACT_ADDRESSES[contractName];
     if (!targetAddress) {
-      log.debug(
-        `Skipping ${contractName}: Not in CONTRACT_ADDRESSES list`
-      );
+      log.debug(`Skipping ${contractName}: Not in CONTRACT_ADDRESSES list`);
       this.skippedCount++;
       return;
     }
@@ -646,9 +640,7 @@ class GenesisGenerator {
     log.info(`Processed contracts: ${genesisAddresses.length}`);
 
     if (missingContracts.length > 0) {
-      log.error(
-        "The following contracts are missing from the genesis file:"
-      );
+      log.error("The following contracts are missing from the genesis file:");
       for (const contract of missingContracts) {
         log.error(`  - ${contract}`);
       }
@@ -657,9 +649,7 @@ class GenesisGenerator {
       );
     }
 
-    log.success(
-      `All ${expectedTotal} contracts were successfully processed!`
-    );
+    log.success(`All ${expectedTotal} contracts were successfully processed!`);
   }
 
   async copyToSecondLocation(): Promise<void> {

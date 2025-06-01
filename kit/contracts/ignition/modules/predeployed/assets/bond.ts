@@ -6,7 +6,7 @@ const BondModule = buildModule("BondModule", (m) => {
 
   const bondFactoryImplementation = m.contract(
     "SMARTBondFactoryImplementation",
-    [forwarder],
+    [forwarder]
   );
   const bondImplementation = m.contract("SMARTBondImplementation", [forwarder]);
 

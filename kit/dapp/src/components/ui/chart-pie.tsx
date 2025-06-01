@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import type { Variants } from 'motion/react';
-import { motion, useAnimation } from 'motion/react';
-import type { HTMLAttributes } from 'react';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
-import { cn } from '@/lib/utils';
+import type { Variants } from "motion/react";
+import { motion, useAnimation } from "motion/react";
+import type { HTMLAttributes } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 export interface ChartPieIconHandle {
   startAnimation: () => void;
@@ -29,15 +29,15 @@ const ChartPieIcon = forwardRef<ChartPieIconHandle, ChartPieIconProps>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start('animate'),
-        stopAnimation: () => controls.start('normal'),
+        startAnimation: () => controls.start("animate"),
+        stopAnimation: () => controls.start("normal"),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('animate');
+          controls.start("animate");
         } else {
           onMouseEnter?.(e);
         }
@@ -48,7 +48,7 @@ const ChartPieIcon = forwardRef<ChartPieIconHandle, ChartPieIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('normal');
+          controls.start("normal");
         } else {
           onMouseLeave?.(e);
         }
@@ -77,7 +77,7 @@ const ChartPieIcon = forwardRef<ChartPieIconHandle, ChartPieIconProps>(
           <motion.path
             d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"
             transition={{
-              type: 'spring',
+              type: "spring",
               stiffness: 250,
               damping: 15,
               bounce: 0.6,
@@ -92,6 +92,6 @@ const ChartPieIcon = forwardRef<ChartPieIconHandle, ChartPieIconProps>(
   }
 );
 
-ChartPieIcon.displayName = 'ChartPieIcon';
+ChartPieIcon.displayName = "ChartPieIcon";
 
 export { ChartPieIcon };

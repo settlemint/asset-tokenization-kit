@@ -10,7 +10,7 @@ export const mint = async (
   tokenAddress: Address,
   to: AbstractActor,
   amount: bigint,
-  decimals: number,
+  decimals: number
 ) => {
   const tokenContract = owner.getContractInstance({
     address: tokenAddress,
@@ -27,6 +27,6 @@ export const mint = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Mint] ${formatDecimals(tokenAmount, decimals)} tokens to ${to.name} (${to.address})`,
+    `[Mint] ${formatDecimals(tokenAmount, decimals)} tokens to ${to.name} (${to.address})`
   );
 };

@@ -8,11 +8,11 @@ const IdentityRegistryStorageModule = buildModule(
 
     const identityRegistryStorage = m.contract(
       "SMARTIdentityRegistryStorageImplementation",
-      [forwarder],
+      [forwarder]
     );
 
     return { identityRegistryStorage };
-  },
+  }
 );
 
 export default IdentityRegistryStorageModule;

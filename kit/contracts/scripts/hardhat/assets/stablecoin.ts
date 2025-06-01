@@ -59,7 +59,7 @@ export const createStablecoin = async () => {
     const oneYearFromNow = new Date(
       now.getFullYear() + 1,
       now.getMonth(),
-      now.getDate(),
+      now.getDate()
     );
     await issueCollateralClaim(tokenIdentity, 1000n, 6, oneYearFromNow);
 
@@ -67,7 +67,7 @@ export const createStablecoin = async () => {
     await grantRole(
       accessManager,
       owner.address,
-      SMARTRoles.supplyManagementRole,
+      SMARTRoles.supplyManagementRole
     );
 
     await mint(tokenAddress, investorA, 1000n, 6);

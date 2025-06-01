@@ -60,7 +60,7 @@ export const createFund = async () => {
     await grantRole(
       accessManager,
       owner.address,
-      SMARTRoles.supplyManagementRole,
+      SMARTRoles.supplyManagementRole
     );
 
     await mint(tokenAddress, investorA, 10n, 8);

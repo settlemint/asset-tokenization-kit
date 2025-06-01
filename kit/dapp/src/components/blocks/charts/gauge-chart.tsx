@@ -8,10 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  type ChartConfig,
-  ChartContainer,
-} from "@/components/ui/chart";
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 import { Cell, Pie, PieChart } from "recharts";
@@ -48,12 +45,12 @@ export function GaugeChart({
   footer,
   thresholds = {
     medium: 100, // Yellow starts at 100%
-    high: 200,   // Green starts at 200%
+    high: 200, // Green starts at 200%
   },
   colors = {
-    low: "var(--destructive)",        // Red for low values
-    medium: "var(--warning)",         // Yellow for medium values
-    high: "var(--success)",           // Green for high values
+    low: "var(--destructive)", // Red for low values
+    medium: "var(--warning)", // Yellow for medium values
+    high: "var(--success)", // Green for high values
   },
 }: GaugeChartProps) {
   // Calculate percentage (cap at max threshold for display purposes)
@@ -88,7 +85,7 @@ export function GaugeChart({
     },
     background: {
       color: "var(--muted)", // Gray color for the background
-    }
+    },
   };
 
   // Background track (gray semi-circle)
@@ -149,7 +146,9 @@ export function GaugeChart({
 
             {/* Percentage Display - below the gauge */}
             <div className="mt-4 text-center">
-              <span className="text-2xl font-semibold">{displayPercentage}%</span>
+              <span className="text-2xl font-semibold">
+                {displayPercentage}%
+              </span>
             </div>
           </div>
         </div>

@@ -18,20 +18,20 @@ const SMARTOnboardingBondModule = buildModule(
       createBondFactory,
       "TokenFactoryCreated",
       "proxyAddress",
-      { id: "bondFactoryAddress" },
+      { id: "bondFactoryAddress" }
     );
     const bondFactoryProxy = m.contractAt(
       "SMARTBondFactoryImplementation",
       bondFactoryAddress,
       {
         id: "bondFactory",
-      },
+      }
     );
 
     return {
       bondFactory: bondFactoryProxy,
     };
-  },
+  }
 );
 
 export default SMARTOnboardingBondModule;

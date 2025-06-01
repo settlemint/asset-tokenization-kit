@@ -15,12 +15,12 @@ import { topicManager } from "../services/topic-manager";
  */
 export function decodeClaimData(
   claimTopic: bigint,
-  encodedData: Hex,
+  encodedData: Hex
 ): readonly unknown[] {
   // Ensure topic manager is initialized
   if (!topicManager.isInitialized()) {
     throw new Error(
-      "TopicManager is not initialized. Call topicManager.initialize() first.",
+      "TopicManager is not initialized. Call topicManager.initialize() first."
     );
   }
 
@@ -41,7 +41,7 @@ export function decodeClaimData(
  */
 export function encodeClaimData(
   claimTopic: SMARTTopic | bigint,
-  values: readonly unknown[],
+  values: readonly unknown[]
 ): Hex {
   let topicId: bigint;
 
@@ -51,7 +51,7 @@ export function encodeClaimData(
     // Ensure topic manager is initialized
     if (!topicManager.isInitialized()) {
       throw new Error(
-        "TopicManager is not initialized. Call topicManager.initialize() first.",
+        "TopicManager is not initialized. Call topicManager.initialize() first."
       );
     }
     topicId = topicManager.getTopicId(claimTopic);
@@ -60,7 +60,7 @@ export function encodeClaimData(
   // Ensure topic manager is initialized
   if (!topicManager.isInitialized()) {
     throw new Error(
-      "TopicManager is not initialized. Call topicManager.initialize() first.",
+      "TopicManager is not initialized. Call topicManager.initialize() first."
     );
   }
 

@@ -42,7 +42,10 @@ abstract contract SMARTYieldHelpers is Test {
         SMARTFixedYieldScheduleFactory yieldScheduleFactory,
         ISMARTYield token,
         address tokenIssuer
-    ) internal returns (address) {
+    )
+        internal
+        returns (address)
+    {
         return _createYieldSchedule(yieldScheduleFactory, token, tokenIssuer, block.timestamp + 1 days);
     }
 
@@ -57,7 +60,10 @@ abstract contract SMARTYieldHelpers is Test {
         ISMARTYield token,
         address tokenIssuer,
         uint256 startDate
-    ) internal returns (address) {
+    )
+        internal
+        returns (address)
+    {
         uint256 endDate = startDate + SCHEDULE_DURATION;
 
         vm.prank(tokenIssuer);
@@ -74,7 +80,9 @@ abstract contract SMARTYieldHelpers is Test {
         address yieldPaymentToken,
         address funder,
         uint256 amount
-    ) internal {
+    )
+        internal
+    {
         // Mint yield tokens to funder
         MockERC20(yieldPaymentToken).mint(funder, amount);
 

@@ -17,7 +17,7 @@ export async function addToRegistry(actor: AbstractActor) {
 
 export async function batchAddToRegistry(actors: AbstractActor[]) {
   const resolvedIdentities = await Promise.all(
-    actors.map((actor) => actor.getIdentity()),
+    actors.map((actor) => actor.getIdentity())
   );
   const transactionHash = await smartProtocolDeployer
     .getIdentityRegistryContract()
@@ -30,6 +30,6 @@ export async function batchAddToRegistry(actors: AbstractActor[]) {
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Batch add to registry] ${actors.map((actor) => actor.name).join(", ")} added to registry`,
+    `[Batch add to registry] ${actors.map((actor) => actor.name).join(", ")} added to registry`
   );
 }

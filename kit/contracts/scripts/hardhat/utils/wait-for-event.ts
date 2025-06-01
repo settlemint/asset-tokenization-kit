@@ -45,7 +45,7 @@ export async function waitForEvent<
   }
   console.warn(
     `Transaction was successful, but could not find the ${eventName} event from contract ${contractAddress} in the logs.`,
-    receipt.logs,
+    receipt.logs
   );
   return null;
 }

@@ -18,20 +18,20 @@ const SMARTOnboardingEquityModule = buildModule(
       createEquityFactory,
       "TokenFactoryCreated",
       "proxyAddress",
-      { id: "equityFactoryAddress" },
+      { id: "equityFactoryAddress" }
     );
     const equityFactoryProxy = m.contractAt(
       "SMARTEquityFactoryImplementation",
       equityFactoryAddress,
       {
         id: "equityFactory",
-      },
+      }
     );
 
     return {
       equityFactory: equityFactoryProxy,
     };
-  },
+  }
 );
 
 export default SMARTOnboardingEquityModule;

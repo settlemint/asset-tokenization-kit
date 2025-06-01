@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import type { Variants } from 'motion/react';
-import { motion, useAnimation } from 'motion/react';
-import type { HTMLAttributes } from 'react';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
-import { cn } from '@/lib/utils';
+import type { Variants } from "motion/react";
+import { motion, useAnimation } from "motion/react";
+import type { HTMLAttributes } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 export interface FingerprintIconHandle {
   startAnimation: () => void;
@@ -38,15 +38,15 @@ const FingerprintIcon = forwardRef<FingerprintIconHandle, FingerprintIconProps>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start('animate'),
-        stopAnimation: () => controls.start('normal'),
+        startAnimation: () => controls.start("animate"),
+        stopAnimation: () => controls.start("normal"),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('animate');
+          controls.start("animate");
         } else {
           onMouseEnter?.(e);
         }
@@ -57,7 +57,7 @@ const FingerprintIcon = forwardRef<FingerprintIconHandle, FingerprintIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('normal');
+          controls.start("normal");
         } else {
           onMouseLeave?.(e);
         }
@@ -191,6 +191,6 @@ const FingerprintIcon = forwardRef<FingerprintIconHandle, FingerprintIconProps>(
   }
 );
 
-FingerprintIcon.displayName = 'FingerprintIcon';
+FingerprintIcon.displayName = "FingerprintIcon";
 
 export { FingerprintIcon };

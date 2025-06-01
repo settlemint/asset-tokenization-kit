@@ -16,12 +16,12 @@ export async function waitForSuccess(transactionHash: Hex) {
     // and then decode the error if it's a custom error (requires ABI).
     // Tools like Tenderly or Hardhat's console.log in Solidity can also help.
     throw new Error(
-      `Transaction with hash ${transactionHash} reverted. Status: ${receipt.status}. Block Number: ${receipt.blockNumber}, Tx Index: ${receipt.transactionIndex}`,
+      `Transaction with hash ${transactionHash} reverted. Status: ${receipt.status}. Block Number: ${receipt.blockNumber}, Tx Index: ${receipt.transactionIndex}`
     );
   }
 
   // For any other non-success status, though 'reverted' is the primary failure mode.
   throw new Error(
-    `Transaction with hash ${transactionHash} failed with status: ${receipt.status}. Block Number: ${receipt.blockNumber}, Tx Index: ${receipt.transactionIndex}`,
+    `Transaction with hash ${transactionHash} failed with status: ${receipt.status}. Block Number: ${receipt.blockNumber}, Tx Index: ${receipt.transactionIndex}`
   );
 }

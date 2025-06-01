@@ -25,7 +25,7 @@ export function SelectedAdminsList({
   onRemove,
   onChangeRoles,
   onAddAnother,
-  userDetails
+  userDetails,
 }: SelectedAdminsListProps) {
   const t = useTranslations("private.assets.create.form.steps.asset-admins");
 
@@ -36,7 +36,7 @@ export function SelectedAdminsList({
         key={userDetails.wallet}
         admin={{
           wallet: userDetails.wallet,
-          roles: ["admin", "user-manager", "issuer"]
+          roles: ["admin", "user-manager", "issuer"],
         }}
       />
       {/* Show all other admins */}

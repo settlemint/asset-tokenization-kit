@@ -22,11 +22,11 @@ export const issueCollateralClaim = async (
   tokenIdentityAddress: Address,
   amount: bigint,
   decimals: number,
-  expiryTimestamp: Date,
+  expiryTimestamp: Date
 ) => {
   // Convert Date object to Unix timestamp (seconds) and then to bigint
   const expiryTimestampBigInt = BigInt(
-    Math.floor(expiryTimestamp.getTime() / 1000),
+    Math.floor(expiryTimestamp.getTime() / 1000)
   );
 
   const tokenAmount = toDecimals(amount, decimals);
@@ -47,7 +47,7 @@ export const issueCollateralClaim = async (
   } = await claimIssuer.createClaim(
     tokenIdentityAddress,
     SMARTTopic.collateral,
-    encodedCollateralData,
+    encodedCollateralData
   );
 
   // 3. Get an instance of the token's identity contract, interacted with by the 'owner' (assumed token owner)
@@ -74,6 +74,6 @@ export const issueCollateralClaim = async (
 
   // Log with the original Date object for better readability if desired, or the timestamp
   console.log(
-    `[Collateral claim] issued for token identity ${tokenIdentityAddress} with amount ${formatDecimals(tokenAmount, decimals)} and expiry ${expiryTimestamp.toISOString()} (Unix: ${expiryTimestampBigInt}).`,
+    `[Collateral claim] issued for token identity ${tokenIdentityAddress} with amount ${formatDecimals(tokenAmount, decimals)} and expiry ${expiryTimestamp.toISOString()} (Unix: ${expiryTimestampBigInt}).`
   );
 };

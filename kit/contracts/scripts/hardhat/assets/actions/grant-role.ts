@@ -9,7 +9,7 @@ import { waitForSuccess } from "../../utils/wait-for-success";
 export const grantRole = async (
   accessManagerAddress: Address,
   targetAddress: Address,
-  role: (typeof SMARTRoles)[keyof typeof SMARTRoles],
+  role: (typeof SMARTRoles)[keyof typeof SMARTRoles]
 ) => {
   const accessManagerContract = await owner.getContractInstance({
     address: accessManagerAddress,
@@ -25,10 +25,10 @@ export const grantRole = async (
 
   // Find the role name from the SMARTRoles object
   const roleName = Object.keys(SMARTRoles).find(
-    (key) => SMARTRoles[key as keyof typeof SMARTRoles] === role,
+    (key) => SMARTRoles[key as keyof typeof SMARTRoles] === role
   );
 
   console.log(
-    `[Role] ${roleName || role} granted to ${targetAddress} by ${accessManagerAddress}.`,
+    `[Role] ${roleName || role} granted to ${targetAddress} by ${accessManagerAddress}.`
   );
 };

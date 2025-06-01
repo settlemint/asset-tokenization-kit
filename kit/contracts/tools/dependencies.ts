@@ -31,12 +31,12 @@ function findContractsDirectory(): string {
   // Use root detection to find contracts
   try {
     const contractsPath = getKitProjectPath("contracts");
-    
+
     // Verify foundry.toml exists
     if (!existsSync(join(contractsPath, "foundry.toml"))) {
       throw new Error("foundry.toml not found in contracts directory");
     }
-    
+
     log.debug(`Found contracts directory: ${contractsPath}`);
     return contractsPath;
   } catch (error) {
@@ -69,14 +69,14 @@ async function hasDependencies(projectDir: string): Promise<boolean> {
  */
 async function checkForgeInstalled(): Promise<void> {
   log.debug("Checking for Forge installation...");
-  
+
   const forgePath = Bun.which("forge");
   if (!forgePath) {
     throw new Error(
       "forge command not found. Please install Foundry first: https://getfoundry.sh/"
     );
   }
-  
+
   log.debug(`Forge found at: ${forgePath}`);
 }
 
@@ -85,7 +85,7 @@ async function checkForgeInstalled(): Promise<void> {
  */
 async function installSoldeerDependencies(projectDir: string): Promise<void> {
   log.info("Installing Soldeer dependencies...");
-  
+
   try {
     await $`forge soldeer install`.cwd(projectDir).quiet();
     log.success("Soldeer dependencies installed");
@@ -236,9 +236,13 @@ async function main(): Promise<void> {
     // Patch OnChain ID contracts
     await patchOnChainIdContracts(projectDir);
 
-    log.success("All done installing soldeer dependencies and patching onchainid contracts!");
+    log.success(
+      "All done installing soldeer dependencies and patching onchainid contracts!"
+    );
   } catch (error) {
-    log.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    log.error(
+      `Error: ${error instanceof Error ? error.message : String(error)}`
+    );
     process.exit(1);
   }
 }

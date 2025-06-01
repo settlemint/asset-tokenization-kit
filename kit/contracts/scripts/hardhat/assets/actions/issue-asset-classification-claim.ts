@@ -18,11 +18,11 @@ import { waitForSuccess } from "../../utils/wait-for-success";
 export const issueAssetClassificationClaim = async (
   tokenIdentityAddress: Address,
   assetClass: string,
-  assetCategory: string,
+  assetCategory: string
 ) => {
   const encodedAssetClassificationData = encodeClaimData(
     SMARTTopic.assetClassification,
-    [assetClass, assetCategory],
+    [assetClass, assetCategory]
   );
 
   const {
@@ -32,7 +32,7 @@ export const issueAssetClassificationClaim = async (
   } = await claimIssuer.createClaim(
     tokenIdentityAddress,
     SMARTTopic.assetClassification,
-    encodedAssetClassificationData,
+    encodedAssetClassificationData
   );
 
   const tokenIdentityContract = owner.getContractInstance({
@@ -54,6 +54,6 @@ export const issueAssetClassificationClaim = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Asset classification claim] issued for token identity ${tokenIdentityAddress} with class "${assetClass}" and category "${assetCategory}".`,
+    `[Asset classification claim] issued for token identity ${tokenIdentityAddress} with class "${assetClass}" and category "${assetCategory}".`
   );
 };

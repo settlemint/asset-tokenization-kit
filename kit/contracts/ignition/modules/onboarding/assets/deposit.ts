@@ -18,20 +18,20 @@ const SMARTOnboardingDepositModule = buildModule(
       createDepositFactory,
       "TokenFactoryCreated",
       "proxyAddress",
-      { id: "depositFactoryAddress" },
+      { id: "depositFactoryAddress" }
     );
     const depositFactoryProxy = m.contractAt(
       "SMARTDepositFactoryImplementation",
       depositFactoryAddress,
       {
         id: "depositFactory",
-      },
+      }
     );
 
     return {
       depositFactory: depositFactoryProxy,
     };
-  },
+  }
 );
 
 export default SMARTOnboardingDepositModule;

@@ -6,7 +6,7 @@ const EquityModule = buildModule("EquityModule", (m) => {
 
   const equityFactoryImplementation = m.contract(
     "SMARTEquityFactoryImplementation",
-    [forwarder],
+    [forwarder]
   );
   const equityImplementation = m.contract("SMARTEquityImplementation", [
     forwarder,

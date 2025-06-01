@@ -17,13 +17,13 @@ export const issueVerificationClaims = async (actor: AbstractActor) => {
     actor,
     claimIssuerIdentity,
     SMARTTopic.kyc,
-    `KYC verified by ${claimIssuer.name} (${claimIssuerIdentity})`,
+    `KYC verified by ${claimIssuer.name} (${claimIssuerIdentity})`
   );
   await _issueClaim(
     actor,
     claimIssuerIdentity,
     SMARTTopic.aml,
-    `AML verified by ${claimIssuer.name} (${claimIssuerIdentity})`,
+    `AML verified by ${claimIssuer.name} (${claimIssuerIdentity})`
   );
 
   const isVerified = await smartProtocolDeployer
@@ -41,7 +41,7 @@ export const issueVerificationClaims = async (actor: AbstractActor) => {
   }
 
   console.log(
-    `[Verification claims] identity for ${actor.name} (${actor.address}) is verified.`,
+    `[Verification claims] identity for ${actor.name} (${actor.address}) is verified.`
   );
 };
 
@@ -49,7 +49,7 @@ async function _issueClaim(
   actor: AbstractActor,
   claimIssuerIdentity: Address,
   claimTopic: SMARTTopic,
-  claimData: string,
+  claimData: string
 ) {
   const encodedClaimData = encodeClaimData(claimTopic, [claimData]);
 
@@ -58,7 +58,7 @@ async function _issueClaim(
   const { signature: claimSignature, topicId } = await claimIssuer.createClaim(
     identityAddress,
     claimTopic,
-    encodedClaimData,
+    encodedClaimData
   );
 
   const identityContract = actor.getContractInstance({
@@ -78,6 +78,6 @@ async function _issueClaim(
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Verification claims] "${claimData}" issued for identity ${actor.name} (${identityAddress}).`,
+    `[Verification claims] "${claimData}" issued for identity ${actor.name} (${identityAddress}).`
   );
 }

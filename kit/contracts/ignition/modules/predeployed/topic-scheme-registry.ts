@@ -8,11 +8,11 @@ const TopicSchemeRegistryModule = buildModule(
 
     const topicSchemeRegistry = m.contract(
       "SMARTTopicSchemeRegistryImplementation",
-      [forwarder],
+      [forwarder]
     );
 
     return { topicSchemeRegistry };
-  },
+  }
 );
 
 export default TopicSchemeRegistryModule;

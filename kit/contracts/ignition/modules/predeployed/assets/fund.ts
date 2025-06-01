@@ -6,7 +6,7 @@ const FundModule = buildModule("FundModule", (m) => {
 
   const fundFactoryImplementation = m.contract(
     "SMARTFundFactoryImplementation",
-    [forwarder],
+    [forwarder]
   );
   const fundImplementation = m.contract("SMARTFundImplementation", [forwarder]);
 

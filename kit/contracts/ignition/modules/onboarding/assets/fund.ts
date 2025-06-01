@@ -18,20 +18,20 @@ const SMARTOnboardingFundModule = buildModule(
       createFundFactory,
       "TokenFactoryCreated",
       "proxyAddress",
-      { id: "fundFactoryAddress" },
+      { id: "fundFactoryAddress" }
     );
     const fundFactoryProxy = m.contractAt(
       "SMARTFundFactoryImplementation",
       fundFactoryAddress,
       {
         id: "fundFactory",
-      },
+      }
     );
 
     return {
       fundFactory: fundFactoryProxy,
     };
-  },
+  }
 );
 
 export default SMARTOnboardingFundModule;

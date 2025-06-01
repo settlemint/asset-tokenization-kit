@@ -57,7 +57,7 @@ export const createEquity = async () => {
     await grantRole(
       accessManager,
       owner.address,
-      SMARTRoles.supplyManagementRole,
+      SMARTRoles.supplyManagementRole
     );
 
     await mint(tokenAddress, investorA, 100n, 18);

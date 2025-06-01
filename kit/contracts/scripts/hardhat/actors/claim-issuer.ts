@@ -70,7 +70,7 @@ class ClaimIssuer extends AbstractActor {
   async createClaim(
     subjectIdentityAddress: `0x${string}`,
     claimTopic: SMARTTopic,
-    claimData: `0x${string}`,
+    claimData: `0x${string}`
   ): Promise<{
     data: `0x${string}`;
     signature: `0x${string}`;
@@ -80,7 +80,7 @@ class ClaimIssuer extends AbstractActor {
       this.signer,
       subjectIdentityAddress,
       topicManager.getTopicId(claimTopic),
-      claimData,
+      claimData
     );
   }
 }

@@ -18,7 +18,6 @@ import { SMARTYieldToken } from "../examples/SMARTYieldToken.sol";
 /// @title Unit tests for SMART Yield core functionality
 /// @notice Tests basic yield schedule management, configuration, and validation
 abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
-
     // --- Core Extension Tests ---
 
     function test_Yield_SupportsInterface() public {
@@ -85,10 +84,7 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
 
         // Try to set again with different parameters to avoid CREATE2 collision
         address anotherSchedule = _createYieldSchedule(
-            yieldScheduleFactory, 
-            ISMARTYield(address(token)), 
-            tokenIssuer,
-            block.timestamp + 2 days
+            yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, block.timestamp + 2 days
         );
         vm.expectRevert(YieldScheduleAlreadySet.selector);
         vm.prank(tokenIssuer);
@@ -119,12 +115,8 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
         _setUpYieldTest();
 
         uint256 futureStartDate = block.timestamp + 7 days;
-        address scheduleAddress = _createYieldSchedule(
-            yieldScheduleFactory,
-            ISMARTYield(address(token)),
-            tokenIssuer,
-            futureStartDate
-        );
+        address scheduleAddress =
+            _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, futureStartDate);
 
         // Set yield schedule
         vm.prank(tokenIssuer);
@@ -146,12 +138,8 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
 
         // Create a schedule that starts in the future
         uint256 futureStartDate = block.timestamp + 1 days;
-        address scheduleAddress = _createYieldSchedule(
-            yieldScheduleFactory,
-            ISMARTYield(address(token)),
-            tokenIssuer,
-            futureStartDate
-        );
+        address scheduleAddress =
+            _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, futureStartDate);
 
         // Set yield schedule
         vm.prank(tokenIssuer);
@@ -184,12 +172,8 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
 
         // Use a future start date, then warp to that time
         uint256 startDate = block.timestamp + 1 days;
-        address scheduleAddress = _createYieldSchedule(
-            yieldScheduleFactory,
-            ISMARTYield(address(token)),
-            tokenIssuer,
-            startDate
-        );
+        address scheduleAddress =
+            _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, startDate);
 
         // Set yield schedule
         vm.prank(tokenIssuer);

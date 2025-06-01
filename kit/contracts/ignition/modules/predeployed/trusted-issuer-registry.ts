@@ -8,11 +8,11 @@ const TrustedIssuerRegistryModule = buildModule(
 
     const trustedIssuerRegistry = m.contract(
       "SMARTTrustedIssuersRegistryImplementation",
-      [forwarder],
+      [forwarder]
     );
 
     return { trustedIssuerRegistry };
-  },
+  }
 );
 
 export default TrustedIssuerRegistryModule;

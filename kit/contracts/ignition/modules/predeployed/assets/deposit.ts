@@ -6,7 +6,7 @@ const DepositModule = buildModule("DepositModule", (m) => {
 
   const depositFactoryImplementation = m.contract(
     "SMARTDepositFactoryImplementation",
-    [forwarder],
+    [forwarder]
   );
   const depositImplementation = m.contract("SMARTDepositImplementation", [
     forwarder,

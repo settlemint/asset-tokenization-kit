@@ -56,7 +56,7 @@ contract SMARTYieldToken is SMARTToken, ISMARTYield {
         emit YieldScheduleSet(_msgSender(), schedule);
     }
 
-    function yieldBasisPerUnit(address /* holder */) external pure override returns (uint256) {
+    function yieldBasisPerUnit(address /* holder */ ) external pure override returns (uint256) {
         return DEFAULT_YIELD_BASIS;
     }
 
