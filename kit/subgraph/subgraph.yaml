@@ -67,7 +67,8 @@ templates:
         - name: System
           file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
       eventHandlers:
-        - event: Bootstrapped(indexed address,indexed address,indexed address,address,address,address,address)
+        - event: Bootstrapped(indexed address,indexed address,indexed
+            address,address,address,address,address)
           handler: handleBootstrapped
         - event: ComplianceImplementationUpdated(indexed address,indexed address)
           handler: handleComplianceImplementationUpdated
@@ -77,7 +78,8 @@ templates:
           handler: handleIdentityImplementationUpdated
         - event: IdentityRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityRegistryImplementationUpdated
-        - event: IdentityRegistryStorageImplementationUpdated(indexed address,indexed address)
+        - event: IdentityRegistryStorageImplementationUpdated(indexed address,indexed
+            address)
           handler: handleIdentityRegistryStorageImplementationUpdated
         - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
           handler: handleTokenAccessManagerImplementationUpdated
@@ -85,7 +87,8 @@ templates:
           handler: handleTokenFactoryCreated
         - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
           handler: handleTokenIdentityImplementationUpdated
-        - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed address)
+        - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
+            address)
           handler: handleTrustedIssuersRegistryImplementationUpdated
         - event: TopicSchemeRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleTopicSchemeRegistryImplementationUpdated
@@ -108,9 +111,11 @@ templates:
         - name: Token
           file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event: TokenAssetCreated(indexed address,indexed address,indexed address,address)
+        - event: TokenAssetCreated(indexed address,indexed address,indexed
+            address,address)
           handler: handleTokenAssetCreated
-        - event: TokenImplementationUpdated(indexed address,indexed address,indexed address)
+        - event: TokenImplementationUpdated(indexed address,indexed address,indexed
+            address)
           handler: handleTokenImplementationUpdated
       file: ./src/token-factory/token-factory.ts
   - kind: ethereum
@@ -145,7 +150,8 @@ templates:
           handler: handleModuleParametersUpdated
         - event: RequiredClaimTopicsUpdated(indexed address,uint256[])
           handler: handleRequiredClaimTopicsUpdated
-        - event: TransferCompleted(indexed address,indexed address,indexed address,uint256)
+        - event: TransferCompleted(indexed address,indexed address,indexed
+            address,uint256)
           handler: handleTransferCompleted
         - event: UpdatedTokenInformation(indexed address,uint8,indexed address)
           handler: handleUpdatedTokenInformation
@@ -208,11 +214,14 @@ templates:
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
-        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed address,bytes,bytes,string)
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
           handler: handleClaimAdded
-        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed address,bytes,bytes,string)
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
           handler: handleClaimChanged
-        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed address,bytes,bytes,string)
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
           handler: handleClaimRemoved
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
@@ -291,7 +300,8 @@ templates:
       eventHandlers:
         - event: CountryUpdated(indexed address,indexed address,indexed uint16)
           handler: handleCountryUpdated
-        - event: IdentityRegistered(indexed address,indexed address,indexed address,uint16)
+        - event: IdentityRegistered(indexed address,indexed address,indexed
+            address,uint16)
           handler: handleIdentityRegistered
         - event: IdentityRemoved(indexed address,indexed address,indexed address)
           handler: handleIdentityRemoved

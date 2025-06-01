@@ -9,6 +9,8 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
+    "codegen:settlemint": "settlemint codegen",
+    "codegen:gql-tada": "gql-tada turbo",
     "dev": "next dev --turbopack",
     "prod:local": "next build --turbopack && cp -r .next/static .next/standalone/kit/dapp/.next/static && cp -r public .next/standalone/public && node .next/standalone/kit/dapp/server.js",
     "build": "next build --turbopack",
@@ -17,8 +19,6 @@
     "format": "prettier --write .",
     "lint": "next lint",
     "addresses": "bash contract-addresses.sh",
-    "codegen:settlemint": "settlemint codegen",
-    "codegen:gql-tada": "gql-tada turbo",
     "db:pull": "drizzle-kit pull",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",

@@ -1,11 +1,15 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## Project Overview
 
-This is the SettleMint Asset Tokenization Kit - a full-stack solution for building digital asset platforms. It consists of:
-- Smart contracts for various tokenized assets (bonds, equity, stablecoins, funds, deposits)
+This is the SettleMint Asset Tokenization Kit - a full-stack solution for
+building digital asset platforms. It consists of:
+
+- Smart contracts for various tokenized assets (bonds, equity, stablecoins,
+  funds, deposits)
 - A Next.js dApp with TypeScript
 - TheGraph subgraph for blockchain indexing
 - Kubernetes deployment via Helm charts
@@ -14,6 +18,7 @@ This is the SettleMint Asset Tokenization Kit - a full-stack solution for buildi
 ## Key Commands
 
 ### Development Setup
+
 ```bash
 # Install dependencies (uses Bun)
 bun install
@@ -30,25 +35,14 @@ bun dev
 ```
 
 ### Testing & Quality Assurance
+
 ```bash
 # Run full QA suite from root
-bunx turbo dependencies lint build test genesis abi-output
-
-# Run specific tests
-bun test                    # Unit tests
-bun test:e2e:ui            # UI E2E tests
-bun test:e2e:api           # API E2E tests
-
-# Linting
-bun lint                    # Run all linters
-bun format                  # Format code
-
-# Contract tests
-cd kit/contracts
-bun test                    # Runs Foundry tests
+bun run clean && bun install && bun run ci
 ```
 
 ### Contract Development
+
 ```bash
 cd kit/contracts
 
@@ -66,6 +60,7 @@ bun abi-output            # Generate ABI files for portal
 ```
 
 ### Database Management
+
 ```bash
 cd kit/dapp
 
@@ -76,6 +71,7 @@ bun db:generate           # Generate migrations
 ```
 
 ### Subgraph Development
+
 ```bash
 cd kit/subgraph
 
@@ -91,15 +87,19 @@ bun deploy:local          # Deploy to local
 
 The contracts follow the SMART protocol (v8.0.15) and implement:
 
-1. **Factory Pattern**: Each asset type has a factory contract that deploys asset instances
+1. **Factory Pattern**: Each asset type has a factory contract that deploys
+   asset instances
+
    - `SMARTBondFactory`, `SMARTEquityFactory`, `SMARTStableCoinFactory`, etc.
    - Located in `/kit/contracts/contracts/assets/`
 
 2. **Proxy Pattern**: All assets use upgradeable proxies
+
    - Implementation contracts separate from proxy contracts
    - Enables upgradeability while maintaining state
 
 3. **Extension System**: Modular features via extensions
+
    - `SMARTBurnable`, `SMARTCapped`, `SMARTCollateral`, `SMARTPausable`, etc.
    - Located in `/kit/contracts/contracts/extensions/`
 
@@ -110,22 +110,26 @@ The contracts follow the SMART protocol (v8.0.15) and implement:
 ### Frontend Architecture
 
 1. **Next.js App Router**: Modern React with server components
+
    - Located in `/kit/dapp/src/app/`
    - Internationalization via `next-intl`
 
 2. **Database**: PostgreSQL with Drizzle ORM
+
    - Schema in `/kit/dapp/src/lib/db/`
    - Hasura GraphQL layer for querying
 
 3. **Authentication**: Better Auth library
+
    - Configuration in `/kit/dapp/src/lib/auth/`
 
-4. **Blockchain Integration**: 
+4. **Blockchain Integration**:
+
    - Viem for contract interactions
    - Contract addresses in `/kit/dapp/src/lib/contracts.ts`
    - Generated types from contracts
 
-5. **State Management**: 
+5. **State Management**:
    - SWR for data fetching
    - React Hook Form for forms
    - Server actions via `next-safe-action`
@@ -133,6 +137,7 @@ The contracts follow the SMART protocol (v8.0.15) and implement:
 ### Deployment Architecture
 
 1. **Kubernetes**: Helm charts for deployment
+
    - Main chart: `/kit/charts/atk/`
    - Includes Besu blockchain, Blockscout, Hasura, TheGraph
 
@@ -143,6 +148,7 @@ The contracts follow the SMART protocol (v8.0.15) and implement:
 ## Contract Addresses
 
 The system uses deterministic addresses for factory contracts:
+
 - Bond Factory: `0x5e771e1417100000000000000000000000000004`
 - Cryptocurrency Factory: `0x5e771e1417100000000000000000000000000001`
 - Equity Factory: `0x5e771e1417100000000000000000000000000003`
@@ -153,17 +159,20 @@ The system uses deterministic addresses for factory contracts:
 ## Development Workflow
 
 1. **Feature Development**:
+
    - Create feature branch from `main`
    - Run tests locally before pushing
    - PR triggers full CI pipeline
 
 2. **Contract Changes**:
+
    - Modify contracts in `/kit/contracts/contracts/`
    - Run `bun test` to verify
    - Update subgraph if events change
    - Regenerate types with `bun codegen`
 
 3. **Frontend Changes**:
+
    - Work in `/kit/dapp/`
    - Hot reload with `bun dev`
    - Test with E2E tests
@@ -177,11 +186,13 @@ The system uses deterministic addresses for factory contracts:
 ## CI/CD Pipeline
 
 GitHub Actions workflows:
+
 - **PR workflow** (`pr.yml`): Runs on all PRs
+
   - Linting, building, testing
   - Chart validation
   - Security scanning
-  
+
 - **Main workflow** (`main.yml`): Runs on main branch
   - Full test suite
   - Docker image building

@@ -47,4 +47,5 @@
   force = false
 
 [soldeer]
-remappings_version = false
+  remappings_version = false
+

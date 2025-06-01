@@ -1,0 +1,19 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "dependsOn": ["codegen:settlemint", "codegen:gql-tada"]
+    },
+    "codegen:settlemint": {
+      "outputs": [
+        "*-env-*.d.ts",
+        "*-schema.graphql",
+        "*-schema-*.graphql",
+        "src/lib/settlemint/**"
+      ]
+    },
+    "codegen:gql-tada": {
+      "outputs": ["*-cache.d.ts"]
+    }
+  }
+}

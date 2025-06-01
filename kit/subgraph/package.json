@@ -8,14 +8,14 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "codegen:graph": "settlemint scs subgraph codegen",
+    "codegen": "settlemint scs subgraph codegen",
+    "codegen:interfaceid": "bun run tools/interfaceid.ts",
     "build": "graph build --ipfs=https://ipfs.console.settlemint.com subgraph.yaml | tee subgraph-output.txt",
     "deploy:local": "bash graph-deploy.sh --local",
     "deploy:remote": "bash graph-deploy.sh --remote",
     "format": "prettier --write .",
     "subgraph:deploy": "settlemint scs subgraph deploy",
-    "lint": "eslint src/ --ext .ts",
-    "interfaceid": "bash tools/interfaceid.sh"
+    "lint": "eslint src/ --ext .ts"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",
