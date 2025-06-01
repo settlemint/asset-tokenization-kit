@@ -7,6 +7,8 @@
 # LIBRARY IMPORTS
 # =============================================================================
 
+# shellcheck disable=SC2154  # PROJECT_ROOT and SCRIPT_NAME are set by init_common_lib
+
 # Get script directory and source libraries
 declare SCRIPT_DIR
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -18,6 +20,7 @@ source "${SCRIPT_DIR}/lib/all.sh"
 # =============================================================================
 
 # Initialize the common library
+# shellcheck disable=SC2154
 init_common_lib "genesis-output.sh"
 
 # Validate required commands
@@ -438,7 +441,6 @@ process_all_contracts() {
 
     # Get total number of contracts to process
     local total_contracts=${#CONTRACT_ADDRESSES[@]}
-    local current_contract=0
     log_info "Found ${total_contracts} contract(s) to process"
 
     # Process contracts in deployment order
@@ -597,11 +599,11 @@ parse_arguments() {
                 exit 0
                 ;;
             -v|--verbose)
-                LOG_LEVEL="DEBUG"
+                export LOG_LEVEL="DEBUG"
                 log_info "Verbose mode enabled"
                 ;;
             -q|--quiet)
-                LOG_LEVEL="ERROR"
+                export LOG_LEVEL="ERROR"
                 ;;
             -p|--port)
                 if [[ -n "${2-}" ]] && [[ "${2}" =~ ^[0-9]+$ ]]; then

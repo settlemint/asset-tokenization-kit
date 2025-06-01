@@ -160,7 +160,7 @@ copy_directory_with_confirmation() {
         # Check for existing files that would be overwritten
         local conflicting_files=()
         while IFS= read -r -d '' file; do
-            local relative_path="${file#${source_dir}/}"
+            local relative_path="${file#"${source_dir}"/}"
             local dest_file="${dest_dir}/${relative_path}"
             if [[ -f "${dest_file}" ]]; then
                 conflicting_files+=("${relative_path}")

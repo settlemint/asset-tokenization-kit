@@ -7,6 +7,8 @@
 # LIBRARY IMPORTS
 # =============================================================================
 
+# shellcheck disable=SC2154  # PROJECT_ROOT and SCRIPT_NAME are set by init_common_lib
+
 # Get script directory and source libraries
 declare SCRIPT_DIR
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -18,6 +20,7 @@ source "${SCRIPT_DIR}/lib/all.sh"
 # =============================================================================
 
 # Initialize the common library
+# shellcheck disable=SC2154
 init_common_lib "dependencies.sh"
 
 # =============================================================================
@@ -72,11 +75,11 @@ parse_script_arguments() {
                 exit 0
                 ;;
             -v|--verbose)
-                LOG_LEVEL="DEBUG"
+                export LOG_LEVEL="DEBUG"
                 log_info "Verbose mode enabled"
                 ;;
             -q|--quiet)
-                LOG_LEVEL="ERROR"
+                export LOG_LEVEL="ERROR"
                 ;;
             -f|--force)
                 FORCE_COPY="true"

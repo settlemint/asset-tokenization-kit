@@ -7,6 +7,8 @@
 # LIBRARY IMPORTS
 # =============================================================================
 
+# shellcheck disable=SC2154  # PROJECT_ROOT and SCRIPT_NAME are set by init_common_lib
+
 # Get script directory and source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
@@ -17,6 +19,7 @@ source "${SCRIPT_DIR}/lib/all.sh"
 # =============================================================================
 
 # Initialize the common library
+# shellcheck disable=SC2154  # PROJECT_ROOT and SCRIPT_NAME are set by init_common_lib
 init_common_lib "abi-output.sh"
 
 # =============================================================================
@@ -75,6 +78,10 @@ process_contract() {
             ;;
         2)
             SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
+            ;;
+        *)
+            ERROR_COUNT=$((ERROR_COUNT + 1))
+            log_error "Unexpected return code from process_contract_metadata"
             ;;
     esac
 }
@@ -144,11 +151,11 @@ parse_script_arguments() {
                 exit 0
                 ;;
             -v|--verbose)
-                LOG_LEVEL="DEBUG"
+                export LOG_LEVEL="DEBUG"
                 log_info "Verbose mode enabled"
                 ;;
             -q|--quiet)
-                LOG_LEVEL="ERROR"
+                export LOG_LEVEL="ERROR"
                 ;;
             -f|--force)
                 FORCE_OVERWRITE="true"

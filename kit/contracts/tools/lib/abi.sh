@@ -119,7 +119,7 @@ validate_artifacts() {
     if [[ ! -d "$ARTIFACTS_BASE_PATH" ]]; then
         log_error "Artifacts directory not found: $ARTIFACTS_BASE_PATH"
         log_error "Please run 'npm run compile:hardhat' first."
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Check if at least one artifact exists
@@ -133,11 +133,11 @@ validate_artifacts() {
 
     if [[ "$found_any" != "true" ]]; then
         log_error "No artifacts found. Please run 'npm run compile:hardhat' first."
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     log_success "Artifacts validation passed"
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Validate a single artifact file
@@ -148,28 +148,28 @@ validate_artifact_file() {
     # Check if file exists
     if [[ ! -f "$path" ]]; then
         log_debug "$name artifact not found: $path"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Check if file is readable
     if [[ ! -r "$path" ]]; then
         log_error "$name artifact is not readable: $path"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Validate JSON
     if ! jq empty "$path" 2>/dev/null; then
         log_error "Invalid JSON in artifact: $name"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Check if ABI field exists
     if ! jq -e '.abi' "$path" >/dev/null 2>&1; then
         log_error "No ABI field found in artifact: $name"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # ============================================================================
@@ -184,17 +184,17 @@ extract_abi() {
     local abi_content
     if ! abi_content=$(jq '.abi' "$artifact_path" 2>/dev/null); then
         log_error "Failed to extract ABI from $artifact_path"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Validate it's not empty
     if [[ "$abi_content" == "null" ]] || [[ -z "$abi_content" ]]; then
         log_error "Empty ABI in $artifact_path"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     echo "$abi_content"
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Generate TypeScript constant from ABI
@@ -207,7 +207,7 @@ generate_typescript_constant() {
     local formatted_abi
     if ! formatted_abi=$(echo "$abi_content" | jq . 2>/dev/null); then
         log_error "Failed to format ABI for $name"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Create TypeScript content
@@ -215,7 +215,7 @@ generate_typescript_constant() {
 export const ${name}Abi = ${formatted_abi} as const;
 EOF
 
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Process a single ABI file
@@ -229,22 +229,22 @@ process_abi_file() {
     # Validate artifact
     if ! validate_artifact_file "$name" "$artifact_path"; then
         log_warn "Skipping $name - artifact not found or invalid"
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Extract ABI
     local abi_content
     if ! abi_content=$(extract_abi "$artifact_path"); then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Generate TypeScript file
     if ! generate_typescript_constant "$name" "$abi_content" "$output_file"; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     log_debug "Generated $output_file"
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # ============================================================================
@@ -263,12 +263,12 @@ generate_all_abi_typings() {
 
     # Initialize ABI paths
     if ! initialize_abi_paths; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Validate environment
     if ! validate_artifacts; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Create output directory
@@ -295,11 +295,11 @@ generate_all_abi_typings() {
 
     if [[ $failed -gt 0 ]]; then
         log_warn "Some ABIs failed to process. Please check the logs above."
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     log_success "ABI typings generated successfully!"
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # Generate specific ABI typings
@@ -310,12 +310,12 @@ generate_specific_abi_typings() {
 
     # Initialize ABI paths
     if ! initialize_abi_paths; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Validate environment
     if ! validate_artifacts; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     # Create output directory
@@ -345,18 +345,18 @@ generate_specific_abi_typings() {
     log_info "Processing summary: $processed processed, $failed failed"
 
     if [[ $failed -gt 0 ]]; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     log_success "ABI typings generated successfully!"
-    return $EXIT_SUCCESS
+    return "$EXIT_SUCCESS"
 }
 
 # List available ABI names
 list_abi_names() {
     # Initialize ABI paths
     if ! initialize_abi_paths; then
-        return $EXIT_ERROR
+        return "$EXIT_ERROR"
     fi
 
     log_info "Available ABI names:"

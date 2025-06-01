@@ -91,7 +91,7 @@ stop_anvil() {
 
 # Cleanup Anvil on script exit
 cleanup_anvil() {
-    stop_anvil
+    stop_anvil ""
 }
 
 # Register Anvil cleanup for script

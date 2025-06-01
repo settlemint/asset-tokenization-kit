@@ -192,7 +192,7 @@ clean_output_directory() {
     # Remove existing .json files
     local removed_count=0
     for file in "${existing_files[@]}"; do
-        local relative_path="${file#${output_path}/}"
+        local relative_path="${file#"${output_path}"/}"
         if rm -f "${file}"; then
             log_debug "Removed: ${relative_path}"
             removed_count=$((removed_count + 1))

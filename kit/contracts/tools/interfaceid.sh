@@ -7,6 +7,8 @@
 # LIBRARY IMPORTS
 # =============================================================================
 
+# shellcheck disable=SC2154  # PROJECT_ROOT and SCRIPT_NAME are set by init_common_lib
+
 # Get script directory and source libraries
 declare SCRIPT_DIR
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -18,6 +20,7 @@ source "${SCRIPT_DIR}/lib/all.sh"
 # =============================================================================
 
 # Initialize the common library
+# shellcheck disable=SC2154
 init_common_lib "interfaceid.sh"
 
 # Set up cleanup trap
@@ -125,11 +128,11 @@ parse_script_arguments() {
                 exit 0
                 ;;
             -v|--verbose)
-                LOG_LEVEL="DEBUG"
+                export LOG_LEVEL="DEBUG"
                 log_info "Verbose mode enabled"
                 ;;
             -q|--quiet)
-                LOG_LEVEL="ERROR"
+                export LOG_LEVEL="ERROR"
                 ;;
             -f|--force)
                 FORCE_OVERWRITE="true"
@@ -208,7 +211,7 @@ find_interface_files() {
     log_success "Found ${INTERFACES_FOUND} interface files:"
 
     for file in "${INTERFACE_FILES[@]}"; do
-        local relative_path="${file#${PROJECT_ROOT}/}"
+        local relative_path="${file#"${PROJECT_ROOT}"/}"
         log_info "  - ${relative_path}"
     done
 }
@@ -235,7 +238,7 @@ extract_interface_metadata() {
             INTERFACE_NAMES+=("${interface_name}")
 
             # Convert file path to import path (keep the full path from contracts/)
-            local relative_path="${file#${PROJECT_ROOT}/}"
+            local relative_path="${file#"${PROJECT_ROOT}"/}"
             local import_path="./${relative_path}"
             INTERFACE_IMPORTS+=("import { ${interface_name} } from \"${import_path}\";")
 
