@@ -17,7 +17,7 @@ import {
   statSync,
   writeFileSync,
 } from "node:fs";
-import { basename, dirname, join, relative } from "node:path";
+import { basename, join, relative } from "node:path";
 import { logger } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
@@ -43,7 +43,7 @@ interface InterfaceMetadata {
 // =============================================================================
 
 const log = logger;
-const DEFAULT_OUTPUT_DIR = "subgraph/src/erc165/utils";
+const DEFAULT_OUTPUT_DIR = "src/erc165/utils";
 const DEFAULT_OUTPUT_FILE = "interfaceids.ts";
 const DEFAULT_TEMP_CONTRACT = "temp_interface_calc.sol";
 
@@ -97,10 +97,10 @@ function parseArguments(): ScriptOptions {
   };
 
   const args = Bun.argv.slice(2);
-  
+
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     switch (arg) {
       case "-h":
       case "--help":
@@ -336,9 +336,7 @@ contract InterfaceIdCalculator is Script {
 `;
 
   writeFileSync(tempContractPath, contractContent);
-  log.success(
-    `Dynamic interface ID calculator created: ${tempContractPath}`
-  );
+  log.success(`Dynamic interface ID calculator created: ${tempContractPath}`);
 
   return tempContractPath;
 }
