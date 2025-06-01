@@ -7,12 +7,12 @@ const TrustedIssuerRegistryModule = buildModule(
     const { forwarder } = m.useModule(ForwarderModule);
 
     const trustedIssuerRegistry = m.contract(
-      "ATKTrustedIssuersRegistryImplementation",
-      [forwarder]
+      "SMARTTrustedIssuersRegistryImplementation",
+      [forwarder],
     );
 
     return { trustedIssuerRegistry };
-  }
+  },
 );
 
 export default TrustedIssuerRegistryModule;

@@ -9,14 +9,17 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "dependencies": "forge soldeer install && find dependencies -name .git -type d -exec rm -rf {} + && SMART_PROTOCOL_DIR=$(find ./dependencies -maxdepth 1 -type d -name 'smart-protocol-*' -print -quit) && chmod +x \"$SMART_PROTOCOL_DIR/scripts/patch-onchainid.sh\" && \"$SMART_PROTOCOL_DIR/scripts/patch-onchainid.sh\"",
+    "update-smart": "bash tools/update-smart.sh",
+    "dependencies": "bash tools/dependencies.sh",
+    "genesis": "bash tools/genesis-output.sh",
+    "abi-output": "bash tools/abi-output.sh",
+    "patch-onchainid": "bash tools/patch-onchainid.sh",
+    "interfaceid": "bash tools/interfaceid.sh",
     "lint": "solhint --config .solhint.json ./contracts/**/*.sol",
     "format": "settlemint scs foundry format && prettier --write .",
     "compile:forge": "settlemint scs foundry build --sizes",
     "compile:hardhat": "settlemint scs hardhat build",
     "test": "settlemint scs foundry test -vvv",
-    "genesis": "bash -ex genesis-output.sh",
-    "abi-output": "bash -ex abi-output.sh",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization",
     "deploy:local": "settlemint scs hardhat deploy local -m ignition/modules/main.ts --deployment-id asset-tokenization-local --reset",
     "deploy:local:onboarding": "settlemint scs hardhat deploy local -m ignition/modules/onboarding.ts --deployment-id asset-tokenization-local --reset"
