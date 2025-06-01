@@ -12,7 +12,7 @@
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
     "lint": "eslint src/ --ext .ts",
     "format": "prettier --write .",
-    "build": "graph build --ipfs=https://ipfs.console.settlemint.com subgraph.yaml | tee subgraph-output.txt",
+    "build": "settlemint scs subgraph build",
     "deploy:local": "bash graph-deploy.sh --local",
     "deploy:remote": "bash graph-deploy.sh --remote",
     "subgraph:deploy": "settlemint scs subgraph deploy"

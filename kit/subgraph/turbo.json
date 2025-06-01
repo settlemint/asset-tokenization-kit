@@ -11,6 +11,9 @@
     "codegen:interfaceid": {
       "dependsOn": ["contracts#compile"],
       "outputs": ["src/erc165/utils/interfaceids.ts"]
+    },
+    "build": {
+      "outputs": ["build/**"]
     }
   }
 }
