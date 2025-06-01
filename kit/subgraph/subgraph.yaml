@@ -20,9 +20,9 @@ dataSources:
         - Event
       abis:
         - name: SystemFactory
-          file: ../artifacts/contracts/system/ISMARTSystemFactory.sol/ISMARTSystemFactory.json
+          file: ../contracts/artifacts/contracts/system/ISMARTSystemFactory.sol/ISMARTSystemFactory.json
         - name: System
-          file: ../artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
+          file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
       eventHandlers:
         - event: SMARTSystemCreated(indexed address,indexed address)
           handler: handleSMARTSystemCreated
@@ -42,7 +42,7 @@ templates:
         - Event
       abis:
         - name: AccessControl
-          file: ../artifacts/@openzeppelin/contracts/access/AccessControl.sol/AccessControl.json
+          file: ../contracts/artifacts/@openzeppelin/contracts/access/AccessControl.sol/AccessControl.json
       eventHandlers:
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
@@ -65,9 +65,10 @@ templates:
         - Event
       abis:
         - name: System
-          file: ../artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
+          file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
       eventHandlers:
-        - event: Bootstrapped(indexed address,indexed address,indexed address,address,address,address,address)
+        - event: Bootstrapped(indexed address,indexed address,indexed
+            address,address,address,address,address)
           handler: handleBootstrapped
         - event: ComplianceImplementationUpdated(indexed address,indexed address)
           handler: handleComplianceImplementationUpdated
@@ -77,7 +78,8 @@ templates:
           handler: handleIdentityImplementationUpdated
         - event: IdentityRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityRegistryImplementationUpdated
-        - event: IdentityRegistryStorageImplementationUpdated(indexed address,indexed address)
+        - event: IdentityRegistryStorageImplementationUpdated(indexed address,indexed
+            address)
           handler: handleIdentityRegistryStorageImplementationUpdated
         - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
           handler: handleTokenAccessManagerImplementationUpdated
@@ -85,7 +87,8 @@ templates:
           handler: handleTokenFactoryCreated
         - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
           handler: handleTokenIdentityImplementationUpdated
-        - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed address)
+        - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
+            address)
           handler: handleTrustedIssuersRegistryImplementationUpdated
         - event: TopicSchemeRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleTopicSchemeRegistryImplementationUpdated
@@ -104,13 +107,15 @@ templates:
         - Event
       abis:
         - name: TokenFactory
-          file: ../artifacts/contracts/system/token-factory/ISMARTTokenFactory.sol/ISMARTTokenFactory.json
+          file: ../contracts/artifacts/contracts/system/token-factory/ISMARTTokenFactory.sol/ISMARTTokenFactory.json
         - name: Token
-          file: ../artifacts/contracts/interface/ISMART.sol/ISMART.json
+          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event: TokenAssetCreated(indexed address,indexed address,indexed address,address)
+        - event: TokenAssetCreated(indexed address,indexed address,indexed
+            address,address)
           handler: handleTokenAssetCreated
-        - event: TokenImplementationUpdated(indexed address,indexed address,indexed address)
+        - event: TokenImplementationUpdated(indexed address,indexed address,indexed
+            address)
           handler: handleTokenImplementationUpdated
       file: ./src/token-factory/token-factory.ts
   - kind: ethereum
@@ -127,7 +132,7 @@ templates:
         - Event
       abis:
         - name: Token
-          file: ../artifacts/contracts/interface/ISMART.sol/ISMART.json
+          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -145,7 +150,8 @@ templates:
           handler: handleModuleParametersUpdated
         - event: RequiredClaimTopicsUpdated(indexed address,uint256[])
           handler: handleRequiredClaimTopicsUpdated
-        - event: TransferCompleted(indexed address,indexed address,indexed address,uint256)
+        - event: TransferCompleted(indexed address,indexed address,indexed
+            address,uint256)
           handler: handleTransferCompleted
         - event: UpdatedTokenInformation(indexed address,uint8,indexed address)
           handler: handleUpdatedTokenInformation
@@ -164,7 +170,7 @@ templates:
         - Event
       abis:
         - name: Pausable
-          file: ../artifacts/contracts/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json
+          file: ../contracts/artifacts/contracts/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json
       eventHandlers:
         - event: Paused(indexed address)
           handler: handlePaused
@@ -185,7 +191,7 @@ templates:
         - Event
       abis:
         - name: Burnable
-          file: ../artifacts/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json
+          file: ../contracts/artifacts/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json
       eventHandlers:
         - event: BurnCompleted(indexed address,indexed address,uint256)
           handler: handleBurnCompleted
@@ -204,15 +210,18 @@ templates:
         - Event
       abis:
         - name: Identity
-          file: ../artifacts/@onchainid/contracts/interface/IIdentity.sol/IIdentity.json
+          file: ../contracts/artifacts/@onchainid/contracts/interface/IIdentity.sol/IIdentity.json
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
-        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed address,bytes,bytes,string)
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
           handler: handleClaimAdded
-        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed address,bytes,bytes,string)
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
           handler: handleClaimChanged
-        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed address,bytes,bytes,string)
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+            address,bytes,bytes,string)
           handler: handleClaimRemoved
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
@@ -239,9 +248,9 @@ templates:
         - Event
       abis:
         - name: IdentityFactory
-          file: ../artifacts/contracts/system/identity-factory/ISMARTIdentityFactory.sol/ISMARTIdentityFactory.json
+          file: ../contracts/artifacts/contracts/system/identity-factory/ISMARTIdentityFactory.sol/ISMARTIdentityFactory.json
         - name: Token
-          file: ../artifacts/contracts/interface/ISMART.sol/ISMART.json
+          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
       eventHandlers:
         - event: IdentityCreated(indexed address,indexed address,indexed address)
           handler: handleIdentityCreated
@@ -262,7 +271,7 @@ templates:
         - Event
       abis:
         - name: TopicSchemeRegistry
-          file: ../artifacts/contracts/system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol/ISMARTTopicSchemeRegistry.json
+          file: ../contracts/artifacts/contracts/system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol/ISMARTTopicSchemeRegistry.json
       eventHandlers:
         - event: TopicSchemeRegistered(indexed address,indexed uint256,string,string)
           handler: handleTopicSchemeRegistered
@@ -287,11 +296,12 @@ templates:
         - Event
       abis:
         - name: IdentityRegistry
-          file: ../artifacts/contracts/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json
+          file: ../contracts/artifacts/contracts/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json
       eventHandlers:
         - event: CountryUpdated(indexed address,indexed address,indexed uint16)
           handler: handleCountryUpdated
-        - event: IdentityRegistered(indexed address,indexed address,indexed address,uint16)
+        - event: IdentityRegistered(indexed address,indexed address,indexed
+            address,uint16)
           handler: handleIdentityRegistered
         - event: IdentityRemoved(indexed address,indexed address,indexed address)
           handler: handleIdentityRemoved
@@ -318,7 +328,7 @@ templates:
         - Event
       abis:
         - name: Custodian
-          file: ../artifacts/contracts/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json
+          file: ../contracts/artifacts/contracts/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json
       eventHandlers:
         - event: AddressFrozen(indexed address,indexed address,indexed bool)
           handler: handleAddressFrozen

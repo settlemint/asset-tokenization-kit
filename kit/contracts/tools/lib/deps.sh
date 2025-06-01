@@ -136,6 +136,39 @@ find_onchainid_directory() {
     echo "${onchainid_dir}"
 }
 
+# Check if file differences are only ABI path related
+files_differ_only_in_abi_paths() {
+    local dest_file="$1"
+    local source_file="$2"
+    local relative_path="$3"
+
+    # Only check for ABI path differences in subgraph.yaml
+    if [[ "${relative_path}" != "subgraph.yaml" ]]; then
+        return 1  # Not subgraph.yaml, so check normally
+    fi
+
+    # Create temporary files with normalized ABI paths
+    local temp_dest temp_source
+    temp_dest=$(mktemp)
+    temp_source=$(mktemp)
+
+    # Normalize ABI paths in both files to make them comparable
+    # Convert both ../artifacts and ../contracts/artifacts to a common pattern
+    sed 's|file: \.\./contracts/artifacts|file: ../artifacts|g' "${dest_file}" > "${temp_dest}"
+    sed 's|file: \.\./contracts/artifacts|file: ../artifacts|g' "${source_file}" > "${temp_source}"
+
+    # Check if files are identical after normalization
+    local result=0
+    if ! diff -q "${temp_dest}" "${temp_source}" >/dev/null 2>&1; then
+        result=1  # Still different after normalization
+    fi
+
+    # Clean up temporary files
+    rm -f "${temp_dest}" "${temp_source}"
+
+    return ${result}
+}
+
 # Copy directory with diff and confirmation
 copy_directory_with_confirmation() {
     local source_dir="$1"
@@ -169,10 +202,15 @@ copy_directory_with_confirmation() {
 
                 if command_exists "diff"; then
                     if ! diff -q "${dest_file}" "${source_file}" >/dev/null 2>&1; then
-                        files_with_differences+=("${file}")
-                        echo "=== Diff for ${dir_name}/${file} ===" >&2
-                        diff -u "${dest_file}" "${source_file}" 2>/dev/null || true
-                        echo "" >&2
+                        # Check if differences are only ABI path related
+                        if files_differ_only_in_abi_paths "${dest_file}" "${source_file}" "${file}"; then
+                            log_debug "Ignoring ABI path differences in ${file}"
+                        else
+                            files_with_differences+=("${file}")
+                            echo "=== Diff for ${dir_name}/${file} ===" >&2
+                            diff -u "${dest_file}" "${source_file}" 2>/dev/null || true
+                            echo "" >&2
+                        fi
                     fi
                 else
                     log_warn "diff command not available, cannot check for differences"
@@ -233,6 +271,8 @@ copy_smart_protocol_files() {
         "ignition/modules:ignition/modules"
         "scripts:scripts"
         "test:test"
+        "tools:tools"
+        "subgraph:../subgraph"
     )
 
     local dependencies_dir="${PROJECT_ROOT}/dependencies"

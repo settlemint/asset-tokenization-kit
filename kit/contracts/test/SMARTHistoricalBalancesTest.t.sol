@@ -28,7 +28,7 @@ contract TestHistoricalBalancesToken is ERC20, _SMARTHistoricalBalancesLogic {
         _burn(from, amount);
     }
 
-    function recoverTokens(address) external pure override {
+    function recoverTokens(address) external pure {
         revert("Not implemented");
     }
 
