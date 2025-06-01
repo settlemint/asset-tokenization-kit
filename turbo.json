@@ -25,7 +25,7 @@
       "outputs": ["*-cache.d.ts", "*-cache-*.d.ts"]
     },
     "codegen:graph": {
-      "dependsOn": ["contracts#compile:hardhat"],
+      "dependsOn": ["contracts#compile:hardhat", "interfaceid"],
       "outputs": ["generated/**"]
     },
     "dependencies": {
