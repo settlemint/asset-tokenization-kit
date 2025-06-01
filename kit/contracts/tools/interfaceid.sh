@@ -387,7 +387,7 @@ create_output_file() {
     # Check if output file exists and handle force overwrite
     if [[ -f "${output_file_path}" ]] && [[ "${FORCE_OVERWRITE}" != "true" ]]; then
         log_warn "Output file already exists: ${output_file_path}"
-        
+
         # Check if running in non-interactive environment (CI or non-TTY)
         if [[ -n "${CI:-}" ]] || [[ ! -t 0 ]]; then
             # Non-interactive mode: use default behavior

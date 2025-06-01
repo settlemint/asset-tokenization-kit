@@ -78,8 +78,17 @@
       "dependsOn": ["dependencies", "contracts#compile:forge", "test"],
       "outputs": ["portal/*.json"]
     },
+    "interfaceid": {
+      "dependsOn": ["dependencies"],
+      "cache": false
+    },
     "contracts#deploy:local": {
-      "dependsOn": ["genesis", "abi-output", "contracts#compile:hardhat"],
+      "dependsOn": [
+        "interfaceid",
+        "genesis",
+        "abi-output",
+        "contracts#compile:hardhat"
+      ],
       "outputs": ["ignition/deployments/**"]
     },
     "subgraph#deploy:local": {
