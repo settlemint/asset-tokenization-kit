@@ -1,9 +1,9 @@
-import type { Address } from "viem";
 import { claimIssuer } from "../../actors/claim-issuer";
 import { owner } from "../../actors/owner";
 import { SMARTContracts } from "../../constants/contracts";
 
 import { SMARTTopic } from "../../constants/topics";
+import { Asset } from "../../types/asset";
 import { encodeClaimData } from "../../utils/claim-scheme-utils";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
@@ -16,7 +16,7 @@ import { waitForSuccess } from "../../utils/wait-for-success";
  * @param assetCategory The category of the asset.
  */
 export const issueAssetClassificationClaim = async (
-  tokenIdentityAddress: Address,
+  asset: Asset,
   assetClass: string,
   assetCategory: string
 ) => {
@@ -30,13 +30,13 @@ export const issueAssetClassificationClaim = async (
     signature: assetClassificationClaimSignature,
     topicId,
   } = await claimIssuer.createClaim(
-    tokenIdentityAddress,
+    asset.identity,
     SMARTTopic.assetClassification,
     encodedAssetClassificationData
   );
 
   const tokenIdentityContract = owner.getContractInstance({
-    address: tokenIdentityAddress,
+    address: asset.identity,
     abi: SMARTContracts.tokenIdentity,
   });
 
@@ -54,6 +54,6 @@ export const issueAssetClassificationClaim = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Asset classification claim] issued for token identity ${tokenIdentityAddress} with class "${assetClass}" and category "${assetCategory}".`
+    `[Asset classification claim] issued for token identity ${asset.name} (${asset.identity}) with class "${assetClass}" and category "${assetCategory}".`
   );
 };

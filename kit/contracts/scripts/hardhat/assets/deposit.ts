@@ -6,6 +6,7 @@ import { SMARTRoles } from "../constants/roles";
 import { SMARTTopic } from "../constants/topics";
 import { smartProtocolDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
+import { Asset } from "../types/asset";
 import { waitForEvent } from "../utils/wait-for-event";
 import { burn } from "./actions/burn";
 import { grantRole } from "./actions/grant-role";
@@ -42,14 +43,18 @@ export const createDeposit = async () => {
   };
 
   if (tokenAddress && tokenIdentity && accessManager) {
-    console.log("[Deposit] address:", tokenAddress);
-    console.log("[Deposit] identity:", tokenIdentity);
-    console.log("[Deposit] access manager:", accessManager);
+    const deposit = new Asset(
+      "Euro Deposits",
+      "EURD",
+      tokenAddress,
+      tokenIdentity,
+      accessManager
+    );
 
     // needs to be done so that he can add the claims
-    await grantRole(accessManager, owner.address, SMARTRoles.claimManagerRole);
+    await grantRole(deposit, owner, SMARTRoles.claimManagerRole);
     // issue isin claim
-    await issueIsinClaim(tokenIdentity, "US1234567890");
+    await issueIsinClaim(deposit, "US1234567890");
 
     // Update collateral
     const now = new Date();
@@ -58,25 +63,21 @@ export const createDeposit = async () => {
       now.getMonth(),
       now.getDate()
     );
-    await issueCollateralClaim(tokenIdentity, 1000n, 6, oneYearFromNow);
+    await issueCollateralClaim(deposit, 1000n, 6, oneYearFromNow);
 
     // needs supply management role to mint
-    await grantRole(
-      accessManager,
-      owner.address,
-      SMARTRoles.supplyManagementRole
-    );
+    await grantRole(deposit, owner, SMARTRoles.supplyManagementRole);
 
-    await mint(tokenAddress, investorA, 1000n, 6);
-    await transfer(tokenAddress, investorA, investorB, 500n, 6);
-    await burn(tokenAddress, investorB, 250n, 6);
+    await mint(deposit, investorA, 1000n, 6);
+    await transfer(deposit, investorA, investorB, 500n, 6);
+    await burn(deposit, investorB, 250n, 6);
 
     // create some users with identity claims
     // burn
 
     // TODO: execute all other functions of the deposit
 
-    return tokenAddress;
+    return deposit;
   }
 
   throw new Error("Failed to create deposit");

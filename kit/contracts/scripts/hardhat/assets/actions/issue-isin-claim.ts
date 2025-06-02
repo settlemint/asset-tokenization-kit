@@ -1,15 +1,12 @@
-import type { Address } from "viem";
 import { claimIssuer } from "../../actors/claim-issuer";
 import { owner } from "../../actors/owner";
 import { SMARTContracts } from "../../constants/contracts";
 import { SMARTTopic } from "../../constants/topics";
+import type { Asset } from "../../types/asset";
 import { encodeClaimData } from "../../utils/claim-scheme-utils";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
-export const issueIsinClaim = async (
-  tokenIdentityAddress: Address,
-  isin: string
-) => {
+export const issueIsinClaim = async (asset: Asset, isin: string) => {
   const encodedIsinData = encodeClaimData(SMARTTopic.isin, [isin]);
 
   const {
@@ -17,13 +14,13 @@ export const issueIsinClaim = async (
     signature: isinClaimSignature,
     topicId,
   } = await claimIssuer.createClaim(
-    tokenIdentityAddress,
+    asset.identity,
     SMARTTopic.isin,
     encodedIsinData
   );
 
   const tokenIdentityContract = owner.getContractInstance({
-    address: tokenIdentityAddress,
+    address: asset.identity,
     abi: SMARTContracts.tokenIdentity,
   });
 
@@ -41,6 +38,6 @@ export const issueIsinClaim = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[ISIN claim] issued for token identity ${tokenIdentityAddress} with ISIN ${isin}.`
+    `[ISIN claim] issued for token identity ${asset.name} (${asset.identity}) with ISIN ${isin}.`
   );
 };

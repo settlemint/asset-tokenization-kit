@@ -6,6 +6,7 @@ import { SMARTRoles } from "../constants/roles";
 import { SMARTTopic } from "../constants/topics";
 import { smartProtocolDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
+import { Asset } from "../types/asset";
 import { waitForEvent } from "../utils/wait-for-event";
 import { burn } from "./actions/burn";
 import { grantRole } from "./actions/grant-role";
@@ -42,31 +43,31 @@ export const createEquity = async () => {
   };
 
   if (tokenAddress && tokenIdentity && accessManager) {
-    console.log("[Equity] address:", tokenAddress);
-    console.log("[Equity] identity:", tokenIdentity);
-    console.log("[Equity] access manager:", accessManager);
-
-    // needs to be done so that he can add the claims
-    await grantRole(accessManager, owner.address, SMARTRoles.claimManagerRole);
-    // issue isin claim
-    await issueIsinClaim(tokenIdentity, "DE000BAY0017");
-    // issue asset classification claim
-    await issueAssetClassificationClaim(tokenIdentity, "Class A", "Category A");
-
-    // needs supply management role to mint
-    await grantRole(
-      accessManager,
-      owner.address,
-      SMARTRoles.supplyManagementRole
+    const equity = new Asset(
+      "Apple",
+      "AAPL",
+      tokenAddress,
+      tokenIdentity,
+      accessManager
     );
 
-    await mint(tokenAddress, investorA, 100n, 18);
-    await transfer(tokenAddress, investorA, investorB, 50n, 18);
-    await burn(tokenAddress, investorB, 25n, 18);
+    // needs to be done so that he can add the claims
+    await grantRole(equity, owner, SMARTRoles.claimManagerRole);
+    // issue isin claim
+    await issueIsinClaim(equity, "DE000BAY0017");
+    // issue asset classification claim
+    await issueAssetClassificationClaim(equity, "Class A", "Category A");
+
+    // needs supply management role to mint
+    await grantRole(equity, owner, SMARTRoles.supplyManagementRole);
+
+    await mint(equity, investorA, 100n, 18);
+    await transfer(equity, investorA, investorB, 50n, 18);
+    await burn(equity, investorB, 25n, 18);
 
     // TODO: execute all other functions of the equity
 
-    return tokenAddress;
+    return equity;
   }
 
   throw new Error("Failed to create equity");

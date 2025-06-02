@@ -8,13 +8,14 @@ import { investorA, investorB } from "../actors/investors";
 import { SMARTRoles } from "../constants/roles";
 import { SMARTTopic } from "../constants/topics";
 import { topicManager } from "../services/topic-manager";
+import { Asset } from "../types/asset";
 import { burn } from "./actions/burn";
 import { grantRole } from "./actions/grant-role";
 import { issueIsinClaim } from "./actions/issue-isin-claim";
 import { mint } from "./actions/mint";
 import { transfer } from "./actions/transfer";
 
-export const createBond = async (depositToken: Address) => {
+export const createBond = async (depositToken: Asset) => {
   console.log("\n=== Creating bond... ===\n");
 
   const bondFactory = smartProtocolDeployer.getBondFactoryContract();
@@ -26,7 +27,7 @@ export const createBond = async (depositToken: Address) => {
     BigInt(1000000 * 10 ** 6),
     BigInt(Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60), // 1 year
     BigInt(123),
-    depositToken,
+    depositToken.address,
     [
       topicManager.getTopicId(SMARTTopic.kyc),
       topicManager.getTopicId(SMARTTopic.aml),
@@ -45,31 +46,31 @@ export const createBond = async (depositToken: Address) => {
   };
 
   if (tokenAddress && tokenIdentity && accessManager) {
-    console.log("[Bond] address:", tokenAddress);
-    console.log("[Bond] identity:", tokenIdentity);
-    console.log("[Bond] access manager:", accessManager);
-
-    // needs to be done so that he can add the claims
-    await grantRole(accessManager, owner.address, SMARTRoles.claimManagerRole);
-
-    // issue isin claim
-    await issueIsinClaim(tokenIdentity, "GB00B1XGHL29");
-
-    // needs supply management role to mint
-    await grantRole(
-      accessManager,
-      owner.address,
-      SMARTRoles.supplyManagementRole
+    const bond = new Asset(
+      "Euro Bonds",
+      "EURB",
+      tokenAddress,
+      tokenIdentity,
+      accessManager
     );
 
-    await mint(tokenAddress, investorA, 10n, 6);
-    await transfer(tokenAddress, investorA, investorB, 5n, 6);
-    await burn(tokenAddress, investorB, 2n, 6);
+    // needs to be done so that he can add the claims
+    await grantRole(bond, owner, SMARTRoles.claimManagerRole);
+
+    // issue isin claim
+    await issueIsinClaim(bond, "GB00B1XGHL29");
+
+    // needs supply management role to mint
+    await grantRole(bond, owner, SMARTRoles.supplyManagementRole);
+
+    await mint(bond, investorA, 10n, 6);
+    await transfer(bond, investorA, investorB, 5n, 6);
+    await burn(bond, investorB, 2n, 6);
 
     // TODO: add yield etc
     // TODO: execute all other functions of the bond
 
-    return tokenAddress;
+    return bond;
   }
 
   throw new Error("Failed to create bond");

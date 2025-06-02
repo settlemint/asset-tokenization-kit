@@ -1,9 +1,11 @@
 import { batchAddToRegistry } from "./actions/add-to-registry";
 import { addTrustedIssuer } from "./actions/add-trusted-issuer";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
+import { recoverIdentity } from "./actions/recover-identity";
 import { claimIssuer } from "./actors/claim-issuer";
-import { investorA, investorB } from "./actors/investors";
+import { investorA, investorANew, investorB } from "./actors/investors";
 import { owner } from "./actors/owner";
+import { recoverTokens } from "./assets/actions/recover-tokens";
 import { createBond } from "./assets/bond";
 import { createDeposit } from "./assets/deposit";
 import { createEquity } from "./assets/equity";
@@ -69,6 +71,20 @@ async function main() {
   const bond = await createBond(deposit);
   const fund = await createFund();
   const stablecoin = await createStablecoin();
+
+  // Recover identity & tokens
+  console.log("\n=== Recover identity & tokens... ===\n");
+
+  await investorANew.initialize();
+  await recoverIdentity(investorA, investorANew);
+  await recoverTokens(deposit, investorANew, investorA.address);
+  await recoverTokens(equity, investorANew, investorA.address);
+  await recoverTokens(bond, investorANew, investorA.address);
+  await recoverTokens(fund, investorANew, investorA.address);
+  await recoverTokens(stablecoin, investorANew, investorA.address);
+
+  // can be done upfront as well, put it here to show that this is a forced transfer
+  await issueVerificationClaims(investorANew);
 }
 
 // Execute the script

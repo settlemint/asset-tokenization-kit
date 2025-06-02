@@ -9,6 +9,7 @@ import { SMARTRoles } from "../constants/roles";
 
 import { SMARTTopic } from "../constants/topics";
 import { topicManager } from "../services/topic-manager";
+import { Asset } from "../types/asset";
 import { burn } from "./actions/burn";
 import { grantRole } from "./actions/grant-role";
 import { issueCollateralClaim } from "./actions/issue-collateral-claim";
@@ -45,14 +46,18 @@ export const createStablecoin = async () => {
   };
 
   if (tokenAddress && tokenIdentity && accessManager) {
-    console.log("[Stablecoin] address:", tokenAddress);
-    console.log("[Stablecoin] identity:", tokenIdentity);
-    console.log("[Stablecoin] access manager:", accessManager);
+    const stablecoin = new Asset(
+      "Tether",
+      "USDT",
+      tokenAddress,
+      tokenIdentity,
+      accessManager
+    );
 
     // needs to be done so that he can add the claims
-    await grantRole(accessManager, owner.address, SMARTRoles.claimManagerRole);
+    await grantRole(stablecoin, owner, SMARTRoles.claimManagerRole);
     // issue isin claim
-    await issueIsinClaim(tokenIdentity, "JP3902900004");
+    await issueIsinClaim(stablecoin, "JP3902900004");
 
     // Update collateral
     const now = new Date();
@@ -61,22 +66,18 @@ export const createStablecoin = async () => {
       now.getMonth(),
       now.getDate()
     );
-    await issueCollateralClaim(tokenIdentity, 1000n, 6, oneYearFromNow);
+    await issueCollateralClaim(stablecoin, 1000n, 6, oneYearFromNow);
 
     // needs supply management role to mint
-    await grantRole(
-      accessManager,
-      owner.address,
-      SMARTRoles.supplyManagementRole
-    );
+    await grantRole(stablecoin, owner, SMARTRoles.supplyManagementRole);
 
-    await mint(tokenAddress, investorA, 1000n, 6);
-    await transfer(tokenAddress, investorA, investorB, 500n, 6);
-    await burn(tokenAddress, investorB, 250n, 6);
+    await mint(stablecoin, investorA, 1000n, 6);
+    await transfer(stablecoin, investorA, investorB, 500n, 6);
+    await burn(stablecoin, investorB, 250n, 6);
 
     // TODO: execute all other functions of the stablecoin
 
-    return tokenAddress;
+    return stablecoin;
   }
 
   throw new Error("Failed to create deposit");

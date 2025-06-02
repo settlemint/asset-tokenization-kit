@@ -53,4 +53,6 @@ class Investor extends AbstractActor {
  */
 
 export const investorA = new Investor("Investor A", Countries.BE, 1);
-export const investorB = new Investor("Investor B", Countries.NL, 2);
+export const investorANew = new Investor("Investor A New", Countries.BE, 2);
+export const investorB = new Investor("Investor B", Countries.NL, 3);
+
