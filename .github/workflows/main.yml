@@ -123,7 +123,7 @@ jobs:
           yq eval ".appVersion = strenv(VERSION)" -i kit/charts/atk/Chart.yaml
 
       - name: Turbo!
-        run: bun run ci
+        run: bun run ci:gha
         env:
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
 

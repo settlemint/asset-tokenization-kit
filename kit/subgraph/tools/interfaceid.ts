@@ -190,7 +190,7 @@ async function findInterfaceFiles(): Promise<string[]> {
 
   // Use glob to find all interface files starting with I
   const glob = new Bun.Glob("**/I*.sol");
-  
+
   for await (const file of glob.scan({ cwd: contractsDir })) {
     const basename = file.split("/").pop() || "";
     // Only include files that start with I (not files with I in the middle)
@@ -542,7 +542,10 @@ async function main() {
 
     await compileContracts(options.skipBuild);
 
-    const tempContractPath = await createCalculatorContract(interfaces, tempContract);
+    const tempContractPath = await createCalculatorContract(
+      interfaces,
+      tempContract
+    );
     const scriptOutput = await calculateInterfaceIds(tempContractPath);
 
     await createOutputFile(

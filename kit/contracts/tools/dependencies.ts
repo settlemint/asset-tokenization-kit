@@ -118,11 +118,14 @@ async function findOnChainIdDirs(projectDir: string): Promise<string[]> {
   }
 
   const onchainidDirs: string[] = [];
-  
+
   // Use glob to find @onchainid-* directories
   const glob = new Bun.Glob("@onchainid-*");
-  
-  for await (const dir of glob.scan({ cwd: dependenciesDir, onlyFiles: false })) {
+
+  for await (const dir of glob.scan({
+    cwd: dependenciesDir,
+    onlyFiles: false,
+  })) {
     const fullPath = join(dependenciesDir, dir);
     onchainidDirs.push(fullPath);
     log.debug(`Found OnChain ID directory: ${dir}`);
@@ -136,10 +139,10 @@ async function findOnChainIdDirs(projectDir: string): Promise<string[]> {
  */
 async function findSolidityFiles(directory: string): Promise<string[]> {
   const solFiles: string[] = [];
-  
+
   // Use glob to find all .sol files recursively
   const glob = new Bun.Glob("**/*.sol");
-  
+
   for await (const file of glob.scan({ cwd: directory })) {
     solFiles.push(join(directory, file));
   }
