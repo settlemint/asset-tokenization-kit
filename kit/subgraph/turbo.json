@@ -17,7 +17,7 @@
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "contracts:publish"]
+      "dependsOn": ["package", "^publish"]
     }
   }
 }
