@@ -93,6 +93,9 @@ export function CreateVestingAirdropForm({
         loading: t("toasts.vesting.submitting"),
         success: t("toasts.vesting.success"),
       }}
+      currentStep={
+        stepIdToIndex[currentStepId as keyof typeof stepIdToIndex] ?? 0
+      }
       onStepChange={onStepChange}
       onAnyFieldChange={onAnyFieldChange}
       onOpenChange={onOpenChange}

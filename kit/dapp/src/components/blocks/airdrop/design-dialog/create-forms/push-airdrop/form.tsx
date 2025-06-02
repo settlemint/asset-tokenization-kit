@@ -89,6 +89,9 @@ export function CreatePushAirdropForm({
         loading: t("toasts.push.submitting"),
         success: t("toasts.push.success"),
       }}
+      currentStep={
+        stepIdToIndex[currentStepId as keyof typeof stepIdToIndex] ?? 0
+      }
       onStepChange={onStepChange}
       onAnyFieldChange={onAnyFieldChange}
       onOpenChange={onOpenChange}
