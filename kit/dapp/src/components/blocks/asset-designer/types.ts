@@ -51,13 +51,6 @@ export const assetForms: Record<
     })),
 };
 
-// Common step for asset type selection
-export const typeSelectionStep: AssetFormStep = {
-  id: "type",
-  title: "select-asset-type.title",
-  description: "select-asset-type.description",
-};
-
 // Document types
 export interface UploadedDocument {
   id: string;
