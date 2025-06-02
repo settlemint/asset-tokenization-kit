@@ -115,7 +115,7 @@ validate_artifacts() {
     # Check if directory exists
     if [[ ! -d "$ARTIFACTS_BASE_PATH" ]]; then
         log_error "Artifacts directory not found: $ARTIFACTS_BASE_PATH"
-        log_error "Please run 'npm run compile:hardhat' first."
+        log_error "Please run 'bun run compile:hardhat' first."
         return "$EXIT_ERROR"
     fi
 
@@ -129,7 +129,7 @@ validate_artifacts() {
     done
 
     if [[ "$found_any" != "true" ]]; then
-        log_error "No artifacts found. Please run 'npm run compile:hardhat' first."
+        log_error "No artifacts found. Please run 'bun run compile:hardhat' first."
         return "$EXIT_ERROR"
     fi
 

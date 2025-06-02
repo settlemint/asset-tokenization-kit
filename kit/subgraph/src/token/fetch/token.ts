@@ -45,7 +45,7 @@ export function fetchToken(address: Address): Token {
       fetchCustodian(address);
     }
     if (tokenContract.supportsInterface(InterfaceIds.ISMARTCollateral)) {
-      token.collateral = fetchCollateral(address, token.decimals).id;
+      token.collateral = fetchCollateral(address).id;
       token.save();
     }
   }

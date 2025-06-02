@@ -233,7 +233,7 @@ generate_subgraph_code() {
         return "$EXIT_ERROR"
     fi
 
-    if ! npm run codegen; then
+    if ! bunx turbo subgraph#codegen; then
         log_error "Failed to generate subgraph code"
         return "$EXIT_ERROR"
     fi
