@@ -15,6 +15,6 @@ export const recoverIdentity = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Recover identity] ${lostActor.name} recovered identity to ${newActor.name}`
+    `[Recover identity] ${lostActor.name} (${lostActor.address}) recovered identity to ${newActor.name} (${newActor.address})`
   );
 };
