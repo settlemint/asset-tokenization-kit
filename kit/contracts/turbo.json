@@ -28,6 +28,10 @@
       "dependsOn": ["format:forge", "format:prettier"]
     },
     "format:forge": {},
-    "format:prettier": {}
+    "format:prettier": {},
+    "publish": {
+      "cache": false,
+      "dependsOn": ["package", "codegen"]
+    }
   }
 }
