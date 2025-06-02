@@ -11,6 +11,7 @@ import { EditForm } from "./_components/edit-form";
 
 interface AuthorizationStatusLayoutProps {
   config?: MicaRegulationConfig | null;
+  canEdit: boolean;
 }
 
 function isAuthorized(config: MicaRegulationConfig): boolean {
@@ -23,6 +24,7 @@ function isAuthorized(config: MicaRegulationConfig): boolean {
 
 export function AuthorizationStatusLayout({
   config,
+  canEdit,
 }: AuthorizationStatusLayoutProps) {
   const t = useTranslations("regulations.mica.dashboard.authorization-status");
   const [open, setOpen] = useState(false);
@@ -67,9 +69,11 @@ export function AuthorizationStatusLayout({
               </Badge>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="default" onClick={() => setOpen(true)}>
-                {t("update")}
-              </Button>
+              {canEdit && (
+                <Button variant="default" onClick={() => setOpen(true)}>
+                  {t("update")}
+                </Button>
+              )}
             </div>
           </div>
         </CardHeader>

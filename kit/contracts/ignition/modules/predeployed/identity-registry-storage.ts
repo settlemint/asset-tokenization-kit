@@ -7,7 +7,7 @@ const IdentityRegistryStorageModule = buildModule(
     const { forwarder } = m.useModule(ForwarderModule);
 
     const identityRegistryStorage = m.contract(
-      "ATKIdentityRegistryStorageImplementation",
+      "SMARTIdentityRegistryStorageImplementation",
       [forwarder]
     );
 

@@ -15,7 +15,6 @@ import { useState } from "react";
 import type { Address } from "viem";
 import { AuditDetails } from "./steps/audit-details";
 import { Composition } from "./steps/composition";
-import { TokenType as TokenTypeStep } from "./steps/token-type";
 
 interface ReserveFormProps {
   address: Address;
@@ -27,7 +26,6 @@ export function ReserveForm({ address, config }: ReserveFormProps) {
   const [open, setOpen] = useState(false);
 
   const steps = [
-    <TokenTypeStep key="token-type" />,
     <Composition key="composition" />,
     <AuditDetails key="audit-details" config={config} />,
   ];

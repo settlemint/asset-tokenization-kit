@@ -24,6 +24,7 @@
  */
 
 import { Form } from "@/components/blocks/form/form";
+import { useFeatureEnabled } from "@/lib/hooks/use-feature-enabled";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
 import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
@@ -33,7 +34,6 @@ import type { User } from "@/lib/queries/user/user-schema";
 import type { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useEffect, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
@@ -81,12 +81,7 @@ export function CreateStablecoinForm({
   onOpenChange,
 }: CreateStablecoinFormProps) {
   const t = useTranslations("private.assets.create.form");
-  const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  // Always enable MiCA in development mode, regardless of PostHog configuration
-  const isMicaEnabled =
-    process.env.NODE_ENV === "development" || process.env.NODE_ENV === undefined
-      ? true
-      : !!micaFlagFromPostHog;
+  const isMicaEnabled = useFeatureEnabled("mica");
 
   // Create component instances for each step
   const BasicsComponent = basicsStep.component;

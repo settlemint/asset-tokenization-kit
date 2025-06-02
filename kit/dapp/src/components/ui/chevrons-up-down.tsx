@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import type { Transition } from 'motion/react';
-import { motion, useAnimation } from 'motion/react';
-import type { HTMLAttributes } from 'react';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
-import { cn } from '@/lib/utils';
+import type { Transition } from "motion/react";
+import { motion, useAnimation } from "motion/react";
+import type { HTMLAttributes } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 export interface ChevronsUpDownIconHandle {
   startAnimation: () => void;
@@ -16,7 +16,7 @@ interface ChevronsUpDownIconProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const defaultTransition: Transition = {
-  type: 'spring',
+  type: "spring",
   stiffness: 250,
   damping: 25,
 };
@@ -32,15 +32,15 @@ const ChevronsUpDownIcon = forwardRef<
     isControlledRef.current = true;
 
     return {
-      startAnimation: () => controls.start('animate'),
-      stopAnimation: () => controls.start('normal'),
+      startAnimation: () => controls.start("animate"),
+      stopAnimation: () => controls.start("normal"),
     };
   });
 
   const handleMouseEnter = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (!isControlledRef.current) {
-        controls.start('animate');
+        controls.start("animate");
       } else {
         onMouseEnter?.(e);
       }
@@ -51,7 +51,7 @@ const ChevronsUpDownIcon = forwardRef<
   const handleMouseLeave = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (!isControlledRef.current) {
-        controls.start('normal');
+        controls.start("normal");
       } else {
         onMouseLeave?.(e);
       }
@@ -79,8 +79,8 @@ const ChevronsUpDownIcon = forwardRef<
       >
         <motion.path
           variants={{
-            normal: { translateY: '0%' },
-            animate: { translateY: '2px' },
+            normal: { translateY: "0%" },
+            animate: { translateY: "2px" },
           }}
           transition={defaultTransition}
           animate={controls}
@@ -89,8 +89,8 @@ const ChevronsUpDownIcon = forwardRef<
         />
         <motion.path
           variants={{
-            normal: { translateY: '0%' },
-            animate: { translateY: '-2px' },
+            normal: { translateY: "0%" },
+            animate: { translateY: "-2px" },
           }}
           transition={defaultTransition}
           animate={controls}
@@ -102,6 +102,6 @@ const ChevronsUpDownIcon = forwardRef<
   );
 });
 
-ChevronsUpDownIcon.displayName = 'ChevronsUpDownIcon';
+ChevronsUpDownIcon.displayName = "ChevronsUpDownIcon";
 
 export { ChevronsUpDownIcon };
