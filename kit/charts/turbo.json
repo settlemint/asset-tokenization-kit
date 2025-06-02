@@ -10,7 +10,7 @@
     },
     "package": {
       "cache": false,
-      "dependsOn": ["package:push:ghcr", "package:push:harbor"]
+      "dependsOn": ["package:push:ghcr", "package:push:harbor", "//#version"]
     },
     "package:harbor": {
       "cache": false,
