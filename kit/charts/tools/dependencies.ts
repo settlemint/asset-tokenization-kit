@@ -1,8 +1,6 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun";
-import { existsSync } from "node:fs";
-import { readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { logger } from "../../../tools/logging";
 import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
@@ -19,14 +17,15 @@ const log = logger; // Use logger instance
 /**
  * Find the charts directory using intelligent root detection
  */
-function findChartsDirectory(): string {
+async function findChartsDirectory(): Promise<string> {
   log.debug("Finding charts directory...");
 
   // If we're already in kit/charts, use current directory
-  if (existsSync("package.json")) {
+  const packageJsonFile = Bun.file(join(process.cwd(), "package.json"));
+  if (await packageJsonFile.exists()) {
     try {
-      const packageJson = require(join(process.cwd(), "package.json"));
-      if (packageJson.name === "charts") {
+      const content = JSON.parse(await packageJsonFile.text());
+      if (content.name === "charts") {
         log.debug("Already in charts directory");
         return process.cwd();
       }
@@ -68,11 +67,11 @@ async function checkHelmInstalled(): Promise<void> {
  * Check if a Chart.yaml has dependencies
  */
 async function hasDependencies(chartYamlPath: string): Promise<boolean> {
-  if (!existsSync(chartYamlPath)) {
+  const file = Bun.file(chartYamlPath);
+  if (!(await file.exists())) {
     return false;
   }
 
-  const file = Bun.file(chartYamlPath);
   const content = await file.text();
 
   // Check for dependencies section in YAML
@@ -89,27 +88,23 @@ async function getChartsWithDependencies(projectDir: string): Promise<string[]> 
 
   // Check main atk chart
   const atkChartPath = join(projectDir, "atk", "Chart.yaml");
-  if (existsSync(atkChartPath) && await hasDependencies(atkChartPath)) {
+  const atkChartFile = Bun.file(atkChartPath);
+  if (await atkChartFile.exists() && await hasDependencies(atkChartPath)) {
     chartDirs.push(join(projectDir, "atk"));
     log.debug("Found dependencies in main atk chart");
   }
 
-  // Check charts in atk/charts/
-  const atkChartsDir = join(projectDir, "atk", "charts");
-  if (existsSync(atkChartsDir)) {
-    const entries = await readdir(atkChartsDir);
-
-    for (const entry of entries) {
-      const chartDir = join(atkChartsDir, entry);
-      const stats = await stat(chartDir);
-
-      if (stats.isDirectory()) {
-        const chartYamlPath = join(chartDir, "Chart.yaml");
-        if (existsSync(chartYamlPath) && await hasDependencies(chartYamlPath)) {
-          chartDirs.push(chartDir);
-          log.debug(`Found dependencies in ${entry} chart`);
-        }
-      }
+  // Use glob to find all Chart.yaml files in atk/charts/
+  const chartGlob = new Bun.Glob("atk/charts/*/Chart.yaml");
+  
+  for await (const chartYamlRelative of chartGlob.scan({ cwd: projectDir })) {
+    const chartYamlPath = join(projectDir, chartYamlRelative);
+    if (await hasDependencies(chartYamlPath)) {
+      // Get the chart directory (parent of Chart.yaml)
+      const chartDir = chartYamlPath.replace(/\/Chart\.yaml$/, "");
+      const chartName = chartDir.split("/").pop() || "unknown";
+      chartDirs.push(chartDir);
+      log.debug(`Found dependencies in ${chartName} chart`);
     }
   }
 
@@ -142,7 +137,7 @@ async function main(): Promise<void> {
 
   try {
     // Find the charts directory
-    const projectDir = findChartsDirectory();
+    const projectDir = await findChartsDirectory();
     log.info(`Using charts directory: ${projectDir}`);
 
     // Check if helm is installed
