@@ -116,8 +116,6 @@ jobs:
           name: predeployed-output
           path: |
             kit/contracts/tools/genesis-output.json
-            kit/subgraph/subgraph-output.txt
-            kit/contracts/portal/*.json
 
   secret-scanning:
     name: Secret Scanning
