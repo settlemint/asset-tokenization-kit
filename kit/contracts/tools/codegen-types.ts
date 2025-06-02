@@ -13,7 +13,7 @@
 
 import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { logger } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
@@ -39,9 +39,38 @@ interface ContractArtifact {
 // =============================================================================
 
 const log = logger;
-const CONTRACTS_ROOT = getKitProjectPath("contracts");
+const CONTRACTS_ROOT = await getKitProjectPath("contracts");
 const ARTIFACTS_DIR = join(CONTRACTS_ROOT, "artifacts");
 const OUTPUT_DIR = join(CONTRACTS_ROOT, "scripts/hardhat/abi");
+
+const ABI_PATHS = {
+  // onboarding
+  system: `${ARTIFACTS_DIR}/contracts/system/ISMARTSystem.sol/ISMARTSystem.json`,
+  compliance: `${ARTIFACTS_DIR}/contracts/interface/ISMARTCompliance.sol/ISMARTCompliance.json`,
+  identityRegistry: `${ARTIFACTS_DIR}/contracts/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json`,
+  identityRegistryStorage: `${ARTIFACTS_DIR}/contracts/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol/IERC3643IdentityRegistryStorage.json`,
+  trustedIssuersRegistry: `${ARTIFACTS_DIR}/contracts/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol/IERC3643TrustedIssuersRegistry.json`,
+  topicSchemeRegistry: `${ARTIFACTS_DIR}/contracts/system/topic-scheme-registry/SMARTTopicSchemeRegistryImplementation.sol/SMARTTopicSchemeRegistryImplementation.json`,
+  identityFactory: `${ARTIFACTS_DIR}/contracts/system/identity-factory/ISMARTIdentityFactory.sol/ISMARTIdentityFactory.json`,
+  bondFactory: `${ARTIFACTS_DIR}/contracts/assets/bond/ISMARTBondFactory.sol/ISMARTBondFactory.json`,
+  depositFactory: `${ARTIFACTS_DIR}/contracts/assets/deposit/SMARTDepositFactoryImplementation.sol/SMARTDepositFactoryImplementation.json`,
+  equityFactory: `${ARTIFACTS_DIR}/contracts/assets/equity/ISMARTEquityFactory.sol/ISMARTEquityFactory.json`,
+  fundFactory: `${ARTIFACTS_DIR}/contracts/assets/fund/ISMARTFundFactory.sol/ISMARTFundFactory.json`,
+  stablecoinFactory: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/ISMARTStableCoinFactory.sol/ISMARTStableCoinFactory.json`,
+  // token
+  accessManager: `${ARTIFACTS_DIR}/contracts/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
+  identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/SMARTIdentityImplementation.sol/SMARTIdentityImplementation.json`,
+  tokenIdentity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/SMARTTokenIdentityImplementation.sol/SMARTTokenIdentityImplementation.json`,
+  // tokens
+  deposit: `${ARTIFACTS_DIR}/contracts/assets/deposit/SMARTDepositImplementation.sol/SMARTDepositImplementation.json`,
+  equity: `${ARTIFACTS_DIR}/contracts/assets/equity/ISMARTEquity.sol/ISMARTEquity.json`,
+  fund: `${ARTIFACTS_DIR}/contracts/assets/fund/ISMARTFund.sol/ISMARTFund.json`,
+  stablecoin: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/ISMARTStableCoin.sol/ISMARTStableCoin.json`,
+  bond: `${ARTIFACTS_DIR}/contracts/assets/bond/ISMARTBond.sol/ISMARTBond.json`,
+  // smart
+  ismart: `${ARTIFACTS_DIR}/contracts/interface/ISMART.sol/ISMART.json`,
+  ismartBurnable: `${ARTIFACTS_DIR}/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json`,
+} as const;
 
 const AVAILABLE_ABIS = {
   onboarding: [
@@ -61,7 +90,7 @@ const AVAILABLE_ABIS = {
   tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
   coreSmart: ["ismart", "ismartBurnable"],
-} as const;
+} satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 
 // =============================================================================
 // SCRIPT STATE
@@ -159,14 +188,16 @@ function parseArguments(args: string[]): void {
         log.info("Skip build mode enabled");
         break;
       default:
-        if (arg.startsWith("-")) {
+        if (arg?.startsWith("-")) {
           log.error(`Unknown option: ${arg}`);
           showUsage();
           process.exit(1);
         } else {
           // Treat as ABI name
           options.operationMode = "generate-specific";
-          options.specificAbis.push(arg);
+          if (arg) {
+            options.specificAbis.push(arg);
+          }
         }
         break;
     }
@@ -222,84 +253,9 @@ function listAbiNames(): void {
 }
 
 function findArtifactFile(contractName: string): string | null {
-  // Common artifact paths in Hardhat
-  const possiblePaths = [
-    join(ARTIFACTS_DIR, `contracts/${contractName}.sol/${contractName}.json`),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/assets/${contractName}/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/assets/bond/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/assets/deposit/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/assets/equity/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/assets/fund/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/assets/stable-coin/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/system/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/system/access-manager/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/system/compliance/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/system/identity-factory/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/system/identity-registry/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/system/identity-registry-storage/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/system/token-factory/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/system/topic-scheme-registry/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/system/trusted-issuers-registry/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/extensions/${contractName}.sol/${contractName}.json`
-    ),
-    join(
-      ARTIFACTS_DIR,
-      `contracts/interface/${contractName}.sol/${contractName}.json`
-    ),
-  ];
-
-  for (const path of possiblePaths) {
-    if (existsSync(path)) {
-      log.debug(`Found artifact for ${contractName} at: ${path}`);
-      return path;
-    }
+  const artifactPath = ABI_PATHS[contractName as keyof typeof ABI_PATHS];
+  if (artifactPath && existsSync(artifactPath)) {
+    return artifactPath;
   }
 
   log.warn(`Artifact not found for contract: ${contractName}`);

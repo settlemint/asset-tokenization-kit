@@ -21,6 +21,10 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {},
+    localhost: {
+      url: process.env.LOCALHOST_RPC_URL || "http://127.0.0.1:8545",
+      gasPrice: 0,
+    },
     btp: {
       url: process.env.BTP_RPC_URL || "",
       gasPrice: process.env.BTP_GAS_PRICE

@@ -152,6 +152,7 @@ export async function getVersionInfoText(
 
 /**
  * Updates all package.json files in the workspace with the new version using glob pattern
+ * Also replaces "workspace:*" references with the actual version
  * @param startPath - Starting path for finding package.json files (defaults to current working directory)
  * @returns Promise that resolves when all updates are complete
  */
@@ -165,11 +166,15 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
 
     console.log(`Updating all package.json files to version: ${newVersion}`);
 
-    // Find all package.json files in the workspace
+    // Find all package.json files in the workspace, excluding node_modules
     const glob = new Glob("**/package.json");
     const packageFiles: string[] = [];
 
     for await (const file of glob.scan(startPath || ".")) {
+      // Skip files in node_modules directories
+      if (file.includes("node_modules/")) {
+        continue;
+      }
       packageFiles.push(file);
     }
 
@@ -201,18 +206,79 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
         }
 
         const oldVersion = packageJson.version;
+        let hasChanges = false;
 
-        // Update the version
+        // Update the main version
         packageJson.version = newVersion;
+        hasChanges = true;
 
-        // Write the updated package.json back to disk
-        await Bun.write(
-          packagePath,
-          JSON.stringify(packageJson, null, 2) + "\n"
+        // Helper function to update workspace dependencies
+        const updateWorkspaceDependencies = (
+          deps: Record<string, string> | undefined,
+          depType: string
+        ): number => {
+          if (!deps) return 0;
+
+          let workspaceCount = 0;
+          for (const [depName, depVersion] of Object.entries(deps)) {
+            if (depVersion === "workspace:*") {
+              deps[depName] = newVersion;
+              workspaceCount++;
+              hasChanges = true;
+            }
+          }
+
+          if (workspaceCount > 0) {
+            console.log(
+              `    Updated ${workspaceCount} workspace:* references in ${depType}`
+            );
+          }
+
+          return workspaceCount;
+        };
+
+        // Update workspace dependencies in all dependency types
+        const workspaceUpdates = [
+          updateWorkspaceDependencies(
+            packageJson.dependencies as Record<string, string>,
+            "dependencies"
+          ),
+          updateWorkspaceDependencies(
+            packageJson.devDependencies as Record<string, string>,
+            "devDependencies"
+          ),
+          updateWorkspaceDependencies(
+            packageJson.peerDependencies as Record<string, string>,
+            "peerDependencies"
+          ),
+          updateWorkspaceDependencies(
+            packageJson.optionalDependencies as Record<string, string>,
+            "optionalDependencies"
+          ),
+        ];
+
+        const totalWorkspaceUpdates = workspaceUpdates.reduce(
+          (sum, count) => sum + count,
+          0
         );
 
-        console.log(`    Updated: ${oldVersion} -> ${newVersion}`);
-        updatedCount++;
+        if (hasChanges) {
+          // Write the updated package.json back to disk
+          await Bun.write(
+            packagePath,
+            JSON.stringify(packageJson, null, 2) + "\n"
+          );
+
+          console.log(`    Updated version: ${oldVersion} -> ${newVersion}`);
+          if (totalWorkspaceUpdates > 0) {
+            console.log(
+              `    Updated ${totalWorkspaceUpdates} total workspace:* references`
+            );
+          }
+          updatedCount++;
+        } else {
+          console.log(`    No changes needed`);
+        }
       } catch (error) {
         console.error(`    Error processing ${packagePath}:`, error);
       }
