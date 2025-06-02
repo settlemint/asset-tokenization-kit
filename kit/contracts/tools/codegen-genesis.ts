@@ -10,7 +10,7 @@
 import { $ } from "bun";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { logger } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
@@ -37,7 +37,7 @@ const defaultConfig: Config = {
 const log = logger;
 
 // File paths
-const CONTRACTS_ROOT = getKitProjectPath("contracts");
+const CONTRACTS_ROOT = await getKitProjectPath("contracts");
 const ALL_ALLOCATIONS_FILE = join(CONTRACTS_ROOT, "tools/genesis-output.json");
 const SECOND_OUTPUT_DIR = join(
   CONTRACTS_ROOT,

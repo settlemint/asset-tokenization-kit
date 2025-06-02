@@ -24,3 +24,6 @@ genesis-output.json
 # Soldeer
 /dependencies
 portal
+
+# Scripts
+scripts/hardhat/abi
