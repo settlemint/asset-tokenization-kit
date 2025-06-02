@@ -46,16 +46,10 @@ contract AirdropFactory is ERC2771Context {
         external
         returns (address)
     {
-        // Note: Standard deployment using `new` which doesn't use CREATE2 directly here.
-        // Prediction function is provided separately.
-        StandardAirdrop airdrop = new StandardAirdrop(
-            tokenAddress,
-            merkleRoot,
-            owner,
-            startTime,
-            endTime,
-            trustedForwarder() // Use internal forwarder
-        );
+        bytes32 salt = _calculateStandardAirdropSalt(tokenAddress, merkleRoot, owner, startTime, endTime);
+
+        StandardAirdrop airdrop =
+            new StandardAirdrop{ salt: salt }(tokenAddress, merkleRoot, owner, startTime, endTime, trustedForwarder());
 
         emit StandardAirdropDeployed(address(airdrop), tokenAddress, owner);
         return address(airdrop);
@@ -83,8 +77,9 @@ contract AirdropFactory is ERC2771Context {
         external
         returns (address airdropAddress, address strategyAddress)
     {
-        // Deploy the linear vesting strategy first (standard deployment)
-        LinearVestingStrategy strategy = new LinearVestingStrategy(
+        bytes32 strategySalt = _calculateLinearVestingStrategySalt(vestingDuration, cliffDuration, owner);
+
+        LinearVestingStrategy strategy = new LinearVestingStrategy{ salt: strategySalt }(
             vestingDuration,
             cliffDuration,
             owner,
@@ -92,20 +87,15 @@ contract AirdropFactory is ERC2771Context {
         );
         strategyAddress = address(strategy);
 
-        // Deploy the vesting airdrop with the strategy (standard deployment)
-        VestingAirdrop airdrop = new VestingAirdrop(
-            tokenAddress,
-            merkleRoot,
-            owner,
-            strategyAddress,
-            claimPeriodEnd,
-            trustedForwarder() // Use internal forwarder
+        bytes32 airdropSalt =
+            _calculateVestingAirdropSalt(tokenAddress, merkleRoot, owner, strategyAddress, claimPeriodEnd);
+
+        VestingAirdrop airdrop = new VestingAirdrop{ salt: airdropSalt }(
+            tokenAddress, merkleRoot, owner, strategyAddress, claimPeriodEnd, trustedForwarder()
         );
         airdropAddress = address(airdrop);
 
         emit VestingAirdropDeployed(airdropAddress, tokenAddress, owner, strategyAddress);
-
-        // Returns are implicitly handled
     }
 
     /**
@@ -125,25 +115,18 @@ contract AirdropFactory is ERC2771Context {
         external
         returns (address)
     {
-        // Standard deployment
-        PushAirdrop airdrop = new PushAirdrop(
-            tokenAddress,
-            merkleRoot,
-            owner,
-            distributionCap,
-            trustedForwarder() // Use internal forwarder
-        );
+        bytes32 salt = _calculatePushAirdropSalt(tokenAddress, merkleRoot, owner, distributionCap);
+
+        PushAirdrop airdrop =
+            new PushAirdrop{ salt: salt }(tokenAddress, merkleRoot, owner, distributionCap, trustedForwarder());
 
         emit PushAirdropDeployed(address(airdrop), tokenAddress, owner);
         return address(airdrop);
     }
 
-    // --- Prediction Functions --- //
-
     /**
      * @notice Predicts the address where a StandardAirdrop would be deployed using CREATE2 logic.
      * @dev Requires the same parameters as deployStandardAirdrop.
-     * @param deployer The address deploying the factory (usually msg.sender of factory deployment).
      * @param tokenAddress The token to be distributed
      * @param merkleRoot The Merkle root for verifying claims
      * @param owner The owner of the airdrop contract
@@ -152,7 +135,6 @@ contract AirdropFactory is ERC2771Context {
      * @return predictedAddress The calculated CREATE2 address.
      */
     function predictStandardAirdropAddress(
-        address deployer, // Explicitly pass the deployer address for prediction
         address tokenAddress,
         bytes32 merkleRoot,
         address owner,
@@ -163,25 +145,20 @@ contract AirdropFactory is ERC2771Context {
         view
         returns (address predictedAddress)
     {
-        address _trustedForwarder = trustedForwarder(); // Read state variable
-        bytes32 salt =
-            keccak256(abi.encodePacked(tokenAddress, merkleRoot, owner, startTime, endTime, _trustedForwarder));
+        bytes32 salt = _calculateStandardAirdropSalt(tokenAddress, merkleRoot, owner, startTime, endTime);
         bytes32 bytecodeHash = keccak256(
             abi.encodePacked(
                 type(StandardAirdrop).creationCode,
-                abi.encode(tokenAddress, merkleRoot, owner, startTime, endTime, _trustedForwarder)
+                abi.encode(tokenAddress, merkleRoot, owner, startTime, endTime, trustedForwarder())
             )
         );
         predictedAddress =
-            address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), deployer, salt, bytecodeHash)))));
+            address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, bytecodeHash)))));
     }
 
     /**
      * @notice Predicts the address where a VestingAirdrop and its LinearVestingStrategy would be deployed.
      * @dev Requires the same parameters as deployLinearVestingAirdrop.
-     * Calculates addresses based on CREATE2 pattern, assuming sequential non-CREATE2 deployment isn't strictly
-     * necessary for prediction.
-     * @param deployer The address deploying the factory.
      * @param tokenAddress The token to be distributed
      * @param merkleRoot The Merkle root for verifying claims
      * @param owner The owner of the airdrop and strategy contract
@@ -191,13 +168,7 @@ contract AirdropFactory is ERC2771Context {
      * @return predictedAirdropAddress The calculated CREATE2 address for the VestingAirdrop.
      * @return predictedStrategyAddress The calculated CREATE2 address for the LinearVestingStrategy.
      */
-    // NOTE: This prediction assumes CREATE2 deployment for *both* contracts, which differs
-    // from the current `deployLinearVestingAirdrop` implementation using `new`.
-    // If the goal is *only* to predict the *actual* addresses from the `new` deployment,
-    // this function cannot do that deterministically without blockchain state access.
-    // This function provides the *CREATE2 equivalent* prediction.
     function predictLinearVestingAirdropAddress(
-        address deployer,
         address tokenAddress,
         bytes32 merkleRoot,
         address owner,
@@ -209,41 +180,37 @@ contract AirdropFactory is ERC2771Context {
         view
         returns (address predictedAirdropAddress, address predictedStrategyAddress)
     {
-        address _trustedForwarder = trustedForwarder(); // Read state variable
-
-        // Predict Strategy Address
-        bytes32 strategySalt = keccak256(abi.encodePacked(vestingDuration, cliffDuration, owner, _trustedForwarder));
+        bytes32 strategySalt = _calculateLinearVestingStrategySalt(vestingDuration, cliffDuration, owner);
         bytes32 strategyBytecodeHash = keccak256(
             abi.encodePacked(
                 type(LinearVestingStrategy).creationCode,
-                abi.encode(vestingDuration, cliffDuration, owner, _trustedForwarder)
+                abi.encode(vestingDuration, cliffDuration, owner, trustedForwarder())
             )
         );
         predictedStrategyAddress = address(
-            uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), deployer, strategySalt, strategyBytecodeHash))))
-        );
-
-        // Predict Airdrop Address (using the *predicted* strategy address in args)
-        bytes32 airdropSalt = keccak256(
-            abi.encodePacked(
-                tokenAddress, merkleRoot, owner, predictedStrategyAddress, claimPeriodEnd, _trustedForwarder
+            uint160(
+                uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), strategySalt, strategyBytecodeHash)))
             )
         );
+
+        bytes32 airdropSalt =
+            _calculateVestingAirdropSalt(tokenAddress, merkleRoot, owner, predictedStrategyAddress, claimPeriodEnd);
         bytes32 airdropBytecodeHash = keccak256(
             abi.encodePacked(
                 type(VestingAirdrop).creationCode,
-                abi.encode(tokenAddress, merkleRoot, owner, predictedStrategyAddress, claimPeriodEnd, _trustedForwarder)
+                abi.encode(
+                    tokenAddress, merkleRoot, owner, predictedStrategyAddress, claimPeriodEnd, trustedForwarder()
+                )
             )
         );
         predictedAirdropAddress = address(
-            uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), deployer, airdropSalt, airdropBytecodeHash))))
+            uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), airdropSalt, airdropBytecodeHash))))
         );
     }
 
     /**
      * @notice Predicts the address where a PushAirdrop would be deployed using CREATE2 logic.
      * @dev Requires the same parameters as deployPushAirdrop.
-     * @param deployer The address deploying the factory.
      * @param tokenAddress The token to be distributed
      * @param merkleRoot The Merkle root for verifying push distributions
      * @param owner The owner/admin who can push tokens
@@ -251,7 +218,6 @@ contract AirdropFactory is ERC2771Context {
      * @return predictedAddress The calculated CREATE2 address.
      */
     function predictPushAirdropAddress(
-        address deployer,
         address tokenAddress,
         bytes32 merkleRoot,
         address owner,
@@ -261,15 +227,100 @@ contract AirdropFactory is ERC2771Context {
         view
         returns (address predictedAddress)
     {
-        address _trustedForwarder = trustedForwarder(); // Read state variable
-        bytes32 salt = keccak256(abi.encodePacked(tokenAddress, merkleRoot, owner, distributionCap, _trustedForwarder));
+        bytes32 salt = _calculatePushAirdropSalt(tokenAddress, merkleRoot, owner, distributionCap);
         bytes32 bytecodeHash = keccak256(
             abi.encodePacked(
                 type(PushAirdrop).creationCode,
-                abi.encode(tokenAddress, merkleRoot, owner, distributionCap, _trustedForwarder)
+                abi.encode(tokenAddress, merkleRoot, owner, distributionCap, trustedForwarder())
             )
         );
         predictedAddress =
-            address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), deployer, salt, bytecodeHash)))));
+            address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, bytecodeHash)))));
+    }
+
+    /**
+     * @notice Calculates the salt for StandardAirdrop CREATE2 deployment
+     * @param tokenAddress The token to be distributed
+     * @param merkleRoot The Merkle root for verifying claims
+     * @param owner The owner of the airdrop contract
+     * @param startTime When claims can begin
+     * @param endTime When claims end
+     * @return The calculated salt for CREATE2 deployment
+     */
+    function _calculateStandardAirdropSalt(
+        address tokenAddress,
+        bytes32 merkleRoot,
+        address owner,
+        uint256 startTime,
+        uint256 endTime
+    )
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(tokenAddress, merkleRoot, owner, startTime, endTime));
+    }
+
+    /**
+     * @notice Calculates the salt for LinearVestingStrategy CREATE2 deployment
+     * @param vestingDuration Total vesting duration in seconds
+     * @param cliffDuration Initial cliff period before tokens unlock
+     * @param owner The owner of the strategy contract
+     * @return The calculated salt for CREATE2 deployment
+     */
+    function _calculateLinearVestingStrategySalt(
+        uint256 vestingDuration,
+        uint256 cliffDuration,
+        address owner
+    )
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(vestingDuration, cliffDuration, owner));
+    }
+
+    /**
+     * @notice Calculates the salt for VestingAirdrop CREATE2 deployment
+     * @param tokenAddress The token to be distributed
+     * @param merkleRoot The Merkle root for verifying claims
+     * @param owner The owner of the airdrop contract
+     * @param strategyAddress The address of the vesting strategy
+     * @param claimPeriodEnd When users can no longer initialize vesting
+     * @return The calculated salt for CREATE2 deployment
+     */
+    function _calculateVestingAirdropSalt(
+        address tokenAddress,
+        bytes32 merkleRoot,
+        address owner,
+        address strategyAddress,
+        uint256 claimPeriodEnd
+    )
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(tokenAddress, merkleRoot, owner, strategyAddress, claimPeriodEnd));
+    }
+
+    /**
+     * @notice Calculates the salt for PushAirdrop CREATE2 deployment
+     * @param tokenAddress The token to be distributed
+     * @param merkleRoot The Merkle root for verifying push distributions
+     * @param owner The owner/admin who can push tokens
+     * @param distributionCap Maximum tokens that can be distributed (0 for no cap)
+     * @return The calculated salt for CREATE2 deployment
+     */
+    function _calculatePushAirdropSalt(
+        address tokenAddress,
+        bytes32 merkleRoot,
+        address owner,
+        uint256 distributionCap
+    )
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(tokenAddress, merkleRoot, owner, distributionCap));
     }
 }
