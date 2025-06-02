@@ -70,7 +70,6 @@ const EXIT_CODES = {
 type ExitCode = (typeof EXIT_CODES)[keyof typeof EXIT_CODES];
 
 const LOCAL_GRAPH_NODE = "http://localhost:8020";
-const REMOTE_IPFS_NODE = "https://api.thegraph.com/ipfs/";
 const GRAPH_NAME = "smart-protocol";
 const GRAPH_VERSION_PREFIX = "v1.0.0";
 
@@ -435,13 +434,13 @@ async function deployLocal(): Promise<void> {
     logger.info(`  Name: ${graphName}`);
     logger.info(`  Version: ${versionLabel}`);
     logger.info(`  Graph Node: ${LOCAL_GRAPH_NODE}`);
-    logger.info(`  IPFS: ${REMOTE_IPFS_NODE}`);
+    logger.info(`  IPFS: https://ipfs.console.settlemint.com`);
 
     // Create subgraph first
     await createLocalSubgraph(graphName);
 
     // Deploy subgraph
-    await Bun.$`bunx graph deploy --version-label ${versionLabel} --node ${LOCAL_GRAPH_NODE} --ipfs ${REMOTE_IPFS_NODE} ${graphName} ${graphPaths!.subgraphYaml}`.cwd(
+    await Bun.$`bunx graph deploy --version-label ${versionLabel} --node ${LOCAL_GRAPH_NODE} --ipfs https://ipfs.console.settlemint.com ${graphName} ${graphPaths!.subgraphYaml}`.cwd(
       graphPaths!.subgraphRoot
     );
 

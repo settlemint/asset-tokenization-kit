@@ -11,7 +11,7 @@ import { $ } from "bun";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { logger } from "../../../tools/logging";
+import { logger, LogLevel } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -181,10 +181,13 @@ class ContractDeployer {
   async validateBytecode(solFile: string, contractName: string): Promise<void> {
     log.debug(`Validating bytecode for ${contractName}...`);
 
-    const result =
-      await $`forge inspect ${solFile}:${contractName} bytecode`.cwd(
-        CONTRACTS_ROOT
-      );
+    const result = log.isLevelEnabled(LogLevel.DEBUG)
+      ? await $`forge inspect ${solFile}:${contractName} bytecode`.cwd(
+          CONTRACTS_ROOT
+        )
+      : await $`forge inspect ${solFile}:${contractName} bytecode`
+          .cwd(CONTRACTS_ROOT)
+          .quiet();
 
     if (result.exitCode !== 0) {
       log.error(`Forge inspect failed for ${contractName}: ${result.stderr}`);
@@ -242,15 +245,21 @@ class ContractDeployer {
 
     let result;
     if (args.length > 0) {
-      result =
-        await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --constructor-args ${args}`.cwd(
-          CONTRACTS_ROOT
-        );
+      result = log.isLevelEnabled(LogLevel.DEBUG)
+        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --constructor-args ${args}`.cwd(
+            CONTRACTS_ROOT
+          )
+        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --constructor-args ${args}`
+            .cwd(CONTRACTS_ROOT)
+            .quiet();
     } else {
-      result =
-        await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200`.cwd(
-          CONTRACTS_ROOT
-        );
+      result = log.isLevelEnabled(LogLevel.DEBUG)
+        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200`.cwd(
+            CONTRACTS_ROOT
+          )
+        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200`
+            .cwd(CONTRACTS_ROOT)
+            .quiet();
     }
 
     const output = result.stdout.toString();
@@ -308,10 +317,13 @@ class ContractDeployer {
     log.debug(`Getting storage layout for ${contractName}...`);
 
     // Get storage layout from contract
-    const layoutResult =
-      await $`forge inspect ${solFile}:${contractName} storageLayout --force --json`.cwd(
-        CONTRACTS_ROOT
-      );
+    const layoutResult = log.isLevelEnabled(LogLevel.DEBUG)
+      ? await $`forge inspect ${solFile}:${contractName} storageLayout --force --json`.cwd(
+          CONTRACTS_ROOT
+        )
+      : await $`forge inspect ${solFile}:${contractName} storageLayout --force --json`
+          .cwd(CONTRACTS_ROOT)
+          .quiet();
 
     if (layoutResult.exitCode !== 0) {
       throw new Error(
@@ -330,8 +342,9 @@ class ContractDeployer {
     // Process storage slots
     for (const slot of storageLayout.storage) {
       try {
-        const slotResult =
-          await $`cast storage --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress} ${slot.slot}`;
+        const slotResult = log.isLevelEnabled(LogLevel.DEBUG)
+          ? await $`cast storage --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress} ${slot.slot}`
+          : await $`cast storage --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress} ${slot.slot}`.quiet();
 
         if (slotResult.exitCode === 0) {
           let slotValue = slotResult.stdout.toString().trim();
@@ -366,8 +379,9 @@ class ContractDeployer {
   ): Promise<string> {
     log.debug(`Getting deployed bytecode for ${contractName}...`);
 
-    const result =
-      await $`cast code --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress}`;
+    const result = log.isLevelEnabled(LogLevel.DEBUG)
+      ? await $`cast code --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress}`
+      : await $`cast code --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress}`.quiet();
 
     if (result.exitCode !== 0) {
       throw new Error(
@@ -795,7 +809,9 @@ async function main(): Promise<void> {
 
   // Check if forge is available
   try {
-    const forgeResult = await $`forge --version`.cwd(CONTRACTS_ROOT);
+    const forgeResult = log.isLevelEnabled(LogLevel.DEBUG)
+      ? await $`forge --version`.cwd(CONTRACTS_ROOT)
+      : await $`forge --version`.cwd(CONTRACTS_ROOT).quiet();
     log.debug(`Forge version: ${forgeResult.stdout}`);
   } catch (error) {
     throw new Error("Forge not found. Please install Foundry.");
@@ -803,7 +819,9 @@ async function main(): Promise<void> {
 
   // Check if anvil is available
   try {
-    const anvilResult = await $`anvil --version`;
+    const anvilResult = log.isLevelEnabled(LogLevel.DEBUG)
+      ? await $`anvil --version`
+      : await $`anvil --version`.quiet();
     log.debug(`Anvil version: ${anvilResult.stdout}`);
   } catch (error) {
     throw new Error("Anvil not found. Please install Foundry.");
