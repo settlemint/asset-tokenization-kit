@@ -72,7 +72,7 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
-      - name: Turbo!
+      - name: Turbo - CI
         run: bun run ci
 
       - name: Store predeployed output
@@ -83,9 +83,6 @@ jobs:
             kit/contracts/genesis-output.json
             kit/subgraph/subgraph-output.txt
             kit/contracts/portal/*.json
-
-      # - name: Turbo!
-      #   run: bunx turbo deploy:local
 
   security:
     name: Security

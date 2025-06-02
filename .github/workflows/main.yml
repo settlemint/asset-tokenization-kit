@@ -110,27 +110,7 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
-      - name: Version
-        id: version
-        shell: bash
-        run: |
-          if [[ $GITHUB_REF_SLUG =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]; then
-            VERSION=$GITHUB_REF_SLUG
-            SECONDARY_TAG="latest"
-          else
-            VERSION="1.0.0-${{ github.run_id }}"
-            SECONDARY_TAG="latest"
-          fi
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "SECONDARY_TAG=$SECONDARY_TAG" >> $GITHUB_ENV
-
-      - name: Set the versions
-        if: github.ref_name == 'main'
-        run: |
-          yq eval ".version = strenv(VERSION)" -i kit/charts/atk/Chart.yaml
-          yq eval ".appVersion = strenv(VERSION)" -i kit/charts/atk/Chart.yaml
-
-      - name: Turbo!
+      - name: Turbo - CI
         run: bun run ci
         env:
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
@@ -144,66 +124,69 @@ jobs:
             kit/subgraph/subgraph-output.txt
             kit/contracts/portal/*.json
 
+      - name: Turbo - CI Publish
+        run: bun run ci:publish
+
       # - name: Turbo!
       #   run: bunx turbo deploy:local
 
-      - name: Update package versions
-        id: package-version
-        run: bash .github/scripts/update-version.sh
+      # - name: Update package versions
+      #   id: package-version
+      #   run: bash .github/scripts/update-version.sh
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Login to GitHub Container Registry
+      #   uses: docker/login-action@v3
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.repository_owner }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker Metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ghcr.io/settlemint/asset-tokenization-kit
-          tags: |
-            type=raw,value=${{ env.VERSION }}
+      # - name: Docker Metadata
+      #   id: meta
+      #   uses: docker/metadata-action@v5
+      #   with:
+      #     images: |
+      #       ghcr.io/settlemint/asset-tokenization-kit
+      #     tags: |
+      #       type=raw,value=${{ env.VERSION }}
 
-      - name: Extract SHA tag
-        id: sha-tag
-        run: |
-          echo "sha_tag=$(echo "${{ steps.meta.outputs.tags }}" | grep "sha-" | head -n1)" >> $GITHUB_OUTPUT
+      # - name: Extract SHA tag
+      #   id: sha-tag
+      #   run: |
+      #     echo "sha_tag=$(echo "${{ steps.meta.outputs.tags }}" | grep "sha-" | head -n1)" >> $GITHUB_OUTPUT
 
-      - name: Build and Push
-        uses: docker/build-push-action@v6
-        with:
-          context: kit/dapp
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64,linux/arm64
-          provenance: mode=max
-          sbom: true
+      # - name: Build and Push
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     context: kit/dapp
+      #     push: true
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     platforms: linux/amd64,linux/arm64
+      #     provenance: mode=max
+      #     sbom: true
 
-      - name: Run Drizzle migrations
-        run: bunx drizzle-kit push --force
-        working-directory: kit/dapp
+      # - name: Run Drizzle migrations
+      #   run: bunx drizzle-kit push --force
+      #   working-directory: kit/dapp
 
-      - name: Update Hasura
-        uses: settlemint/settlemint-action@main
-        with:
-          auto-connect: false
-          access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
-          dotEnvFile: ${{ secrets.ENV_FILE }}
-          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
-          command: hasura track -a
+      # - name: Update Hasura
+      #   uses: settlemint/settlemint-action@main
+      #   with:
+      #     auto-connect: false
+      #     access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
+      #     dotEnvFile: ${{ secrets.ENV_FILE }}
+      #     dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+      #     command: hasura track -a
 
-      - name: Update Custom Deployment
-        uses: settlemint/settlemint-action@main
-        with:
-          auto-connect: false
-          access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
-          dotEnvFile: ${{ secrets.ENV_FILE }}
-          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
-          command: platform update custom-deployment ${{ env.VERSION }} --wait
+      # - name: Update Custom Deployment
+      #   uses: settlemint/settlemint-action@main
+      #   with:
+      #     auto-connect: false
+      #     access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
+      #     dotEnvFile: ${{ secrets.ENV_FILE }}
+      #     dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+      #     command: platform update custom-deployment ${{ env.VERSION }} --wait
 
   security:
     name: Security
