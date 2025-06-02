@@ -25,13 +25,9 @@
     "compile": {
       "dependsOn": ["dependencies"]
     },
-    "package": {
-      "cache": false,
-      "dependsOn": ["//#version"]
-    },
     "publish": {
       "cache": false,
-      "dependsOn": ["package"]
+      "dependsOn": ["build", "//#version"]
     },
     "dependencies": {},
     "dev": {
