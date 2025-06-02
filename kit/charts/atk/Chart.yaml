@@ -2,8 +2,8 @@ apiVersion: v2
 name: atk
 description: A Helm chart for the SettleMint Asset Tokenization Kit
 type: application
-version: v1.0.6
-appVersion: "v1.0.6"
+version: 1.0.6-pr
+appVersion: 1.0.6-pr
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:
   - name: SettleMint
@@ -11,34 +11,34 @@ maintainers:
     url: https://settlemint.com
 dependencies:
   - name: support
-    version: "*"
+    version: 1.0.6-pr
     condition: support.enabled
   - name: observability
-    version: "*"
+    version: 1.0.6-pr
     condition: observability.enabled
   - name: besu-network
-    version: "*"
+    version: 1.0.6-pr
     condition: besu-network.enabled
   - name: erpc
-    version: "*"
+    version: 1.0.6-pr
     condition: erpc.enabled
   - name: blockscout
-    version: "*"
+    version: 1.0.6-pr
     condition: blockscout.enabled
   - name: thegraph
-    version: "*"
+    version: 1.0.6-pr
     condition: thegraph.enabled
   - name: portal
-    version: "*"
+    version: 1.0.6-pr
     condition: portal.enabled
   - name: hasura
-    version: "*"
+    version: 1.0.6-pr
     condition: hasura.enabled
   - name: txsigner
-    version: "*"
+    version: 1.0.6-pr
     repository: file://./charts/txsigner
     condition: txsigner.enabled
   - name: dapp
-    version: "*"
+    version: 1.0.6-pr
     repository: file://./charts/dapp
     condition: dapp.enabled

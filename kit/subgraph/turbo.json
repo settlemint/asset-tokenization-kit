@@ -2,22 +2,20 @@
   "extends": ["//"],
   "tasks": {
     "codegen": {
-      "dependsOn": ["codegen:graph", "codegen:interfaceid"]
-    },
-    "codegen:graph": {
       "outputs": ["generated/**"],
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },
     "codegen:interfaceid": {
-      "dependsOn": ["contracts#compile"],
+      "dependsOn": ["codegen"],
       "outputs": ["src/erc165/utils/interfaceids.ts"]
     },
     "build": {
+      "dependsOn": ["codegen"],
       "outputs": ["build/**"]
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "^publish"]
+      "dependsOn": ["build"]
     }
   }
 }

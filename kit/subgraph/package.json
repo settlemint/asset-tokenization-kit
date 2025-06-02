@@ -1,6 +1,6 @@
 {
   "name": "subgraph",
-  "version": "1.0.0",
+  "version": "1.0.6-pr",
   "license": "FSL-1.1-MIT",
   "author": {
     "name": "SettleMint",
@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "matchstick-as": "0.6.0",
-    "contracts": "workspace:*"
+    "contracts": "1.0.6-pr"
   },
   "peerDependencies": {}
 }

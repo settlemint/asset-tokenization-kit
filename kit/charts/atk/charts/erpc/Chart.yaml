@@ -2,8 +2,8 @@ apiVersion: v2
 name: erpc
 description: A Helm chart for the erpc load balancer
 type: application
-version: 0.1.0
-appVersion: "0.1.0"
+version: 1.0.6-pr
+appVersion: 1.0.6-pr
 icon: https://console.settlemint.com/android-chrome-512x512.png
 maintainers:
   - name: SettleMint
