@@ -8,11 +8,12 @@ import { fetchIdentity } from "../identity/fetch/identity";
 import { fetchToken } from "../token/fetch/token";
 
 export function handleIdentityCreated(event: IdentityCreated): void {
-  fetchEvent(event, "IdentityCreated");
   const identity = fetchIdentity(event.params.identity);
   const account = fetchAccount(event.params.wallet);
   account.identity = identity.id;
   account.save();
+  // Put at the end as IdentityCreated event is needed to be processed first as the account needs to be set on the identity
+  fetchEvent(event, "IdentityCreated");
 }
 
 export function handleTokenIdentityCreated(event: TokenIdentityCreated): void {
