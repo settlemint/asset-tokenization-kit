@@ -10,6 +10,10 @@ import {
   KeyRemoved,
 } from "../../generated/templates/Identity/Identity";
 import { fetchAccount } from "../account/fetch/account";
+import {
+  isCollateralClaim,
+  updateCollateral,
+} from "../collateral/utils/collateral-utils";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
@@ -29,6 +33,10 @@ export function handleClaimAdded(event: ClaimAdded): void {
 
   // Decode claim data and create IdentityClaimValue entities
   decodeClaimValues(identityClaim, event.params.topic, event.params.data);
+
+  if (isCollateralClaim(identityClaim)) {
+    updateCollateral(identityClaim);
+  }
 }
 
 export function handleClaimChanged(event: ClaimChanged): void {
@@ -41,6 +49,10 @@ export function handleClaimChanged(event: ClaimChanged): void {
 
   // Decode claim data and create IdentityClaimValue entities
   decodeClaimValues(identityClaim, event.params.topic, event.params.data);
+
+  if (isCollateralClaim(identityClaim)) {
+    updateCollateral(identityClaim);
+  }
 }
 
 export function handleClaimRemoved(event: ClaimRemoved): void {
@@ -49,6 +61,10 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
   identityClaim.revoked = true;
   identityClaim.save();
+
+  if (isCollateralClaim(identityClaim)) {
+    updateCollateral(identityClaim);
+  }
 }
 
 export function handleExecuted(event: Executed): void {

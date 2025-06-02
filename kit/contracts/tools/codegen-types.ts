@@ -228,8 +228,11 @@ async function compileContracts(): Promise<boolean> {
       }
       return false;
     }
-  } catch (error) {
-    log.error(`Failed to execute compilation: ${error}`);
+  } catch (err) {
+    const shellError = err as $.ShellError;
+    log.info(shellError.stdout.toString());
+    log.error(shellError.stderr.toString());
+    log.error(`Failed to execute compilation`);
     return false;
   }
 }
