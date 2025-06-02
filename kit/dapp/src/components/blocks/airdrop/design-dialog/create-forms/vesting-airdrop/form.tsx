@@ -17,7 +17,7 @@ import type { AirdropFormDefinition } from "../../types";
 import { stepDefinition as distributionStep } from "../common/distribution";
 import { stepDefinition as summaryStep } from "../common/summary";
 import { stepDefinition as basicsStep } from "./steps/basics";
-import { VestingAirdropConfigurationCard } from "./steps/summary";
+import { VestingAirdropConfigurationCard } from "./steps/summaryConfigurationCard";
 import { stepDefinition as vestingStep } from "./steps/vesting";
 
 interface CreateVestingAirdropFormProps {

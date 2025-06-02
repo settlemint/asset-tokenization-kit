@@ -1488,10 +1488,10 @@
         },
         "type-selection": {
           "general": {
-            "title": "Create an airdrop",
-            "description": "Create your airdrop in a few steps."
+            "title": "Select airdrop type",
+            "description": "Choose the type of airdrop you want to create."
           },
-          "title": "Select airdrop type",
+          "title": "Create an airdrop",
           "description": "Choose the type of airdrop you want to create.",
           "key-features": "Key features:",
           "features": {

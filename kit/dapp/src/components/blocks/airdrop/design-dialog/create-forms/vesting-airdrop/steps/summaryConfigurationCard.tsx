@@ -17,7 +17,7 @@ export function VestingAirdropConfigurationCard() {
   const formValues = form.getValues();
 
   return (
-    <>
+    <div>
       {/* Time Configuration Card */}
       <FormSummaryDetailCard
         title={t("timing.title")}
@@ -67,6 +67,6 @@ export function VestingAirdropConfigurationCard() {
           }
         />
       </FormSummaryDetailCard>
-    </>
+    </div>
   );
 }
