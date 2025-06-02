@@ -4,7 +4,7 @@ import { GiftIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFeatureFlagEnabled } from "posthog-js/react";
 
-export function Distribution() {
+export function DistributionManagement() {
   const t = useTranslations("admin.sidebar.distribution");
   const flagEnabled = useFeatureFlagEnabled("airdrop");
 

@@ -29,9 +29,11 @@ export async function generateMetadata({
 }
 
 export default function DistributionLayout({ children }: LayoutProps) {
-  <>
-    <RoleGuard allowedRoles={["admin"]} redirectTo="/portfolio" />
-    <AssetsSidebar />
-    <NavInset>{children}</NavInset>
-  </>;
+  return (
+    <>
+      <RoleGuard allowedRoles={["admin"]} redirectTo="/portfolio" />
+      <AssetsSidebar />
+      <NavInset>{children}</NavInset>
+    </>
+  );
 }
