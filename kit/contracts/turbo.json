@@ -31,7 +31,7 @@
     "format:prettier": {},
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "codegen:types"]
+      "dependsOn": ["package", "codegen"]
     }
   }
 }
