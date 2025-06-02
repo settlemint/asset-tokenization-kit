@@ -22,6 +22,76 @@ interface PackageJson {
   [key: string]: unknown;
 }
 
+interface ChartYaml {
+  version: string;
+  appVersion: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Reads and parses the root package.json file
+ * @param startPath - Starting path for finding the monorepo root
+ * @returns The parsed package.json content
+ */
+async function readRootPackageJson(startPath?: string): Promise<PackageJson> {
+  const { monorepoRoot } = await findTurboRoot(startPath);
+  const packageJsonFile = Bun.file(`${monorepoRoot}/package.json`);
+
+  if (!(await packageJsonFile.exists())) {
+    throw new Error(`Package.json not found at ${monorepoRoot}/package.json`);
+  }
+
+  const packageJson = (await packageJsonFile.json()) as PackageJson;
+
+  if (!packageJson.version) {
+    throw new Error("No version found in package.json");
+  }
+
+  return packageJson;
+}
+
+/**
+ * Generates version string based on Git ref information and base version
+ * @param refSlug - Git ref slug
+ * @param refName - Git ref name
+ * @param shaShort - Short SHA
+ * @param baseVersion - Base version from package.json
+ * @returns Object containing version and tag
+ */
+function generateVersionInfo(
+  refSlug: string,
+  refName: string,
+  shaShort: string,
+  baseVersion: string
+): VersionInfo {
+  // Check if ref slug matches version pattern (v?[0-9]+\.[0-9]+\.[0-9]+$)
+  const versionPattern = /^v?[0-9]+\.[0-9]+\.[0-9]+$/;
+
+  if (versionPattern.test(refSlug)) {
+    // Remove 'v' prefix if present
+    const version = refSlug.replace(/^v/, "");
+    return {
+      tag: "latest",
+      version,
+    };
+  }
+
+  if (refName === "main") {
+    const version = `${baseVersion}-main${shaShort.replace(/^v/, "")}`;
+    return {
+      tag: "main",
+      version,
+    };
+  }
+
+  // Default case (PR or other branches)
+  const version = `${baseVersion}-pr${shaShort.replace(/^v/, "")}`;
+  return {
+    tag: "pr",
+    version,
+  };
+}
+
 /**
  * Gets version and tag information based on Git ref information
  * @param params - Configuration object with Git ref information
@@ -37,47 +107,9 @@ export async function getVersionInfo(
     startPath,
   } = params;
 
-  // Find the monorepo root and get the package.json from there
-  const { monorepoRoot } = await findTurboRoot(startPath);
-  const packageJsonFile = Bun.file(`${monorepoRoot}/package.json`);
+  const packageJson = await readRootPackageJson(startPath);
 
-  if (!(await packageJsonFile.exists())) {
-    throw new Error(`Package.json not found at ${monorepoRoot}/package.json`);
-  }
-
-  const packageJson = (await packageJsonFile.json()) as PackageJson;
-  const oldVersion = packageJson.version;
-
-  if (!oldVersion) {
-    throw new Error("No version found in package.json");
-  }
-
-  // Check if ref slug matches version pattern (v?[0-9]+\.[0-9]+\.[0-9]+$)
-  const versionPattern = /^v?[0-9]+\.[0-9]+\.[0-9]+$/;
-
-  if (versionPattern.test(refSlug)) {
-    // Remove 'v' prefix if present
-    const version = refSlug.replace(/^v/, "");
-    return {
-      tag: "latest",
-      version,
-    };
-  }
-
-  if (refName === "main") {
-    const version = `${oldVersion}-main${shaShort.replace(/^v/, "")}`;
-    return {
-      tag: "main",
-      version,
-    };
-  }
-
-  // Default case (PR or other branches)
-  const version = `${oldVersion}-pr${shaShort.replace(/^v/, "")}`;
-  return {
-    tag: "pr",
-    version,
-  };
+  return generateVersionInfo(refSlug, refName, shaShort, packageJson.version);
 }
 
 /**
@@ -97,57 +129,34 @@ export async function getVersionInfoWithLogging(
 }
 
 /**
- * Alternative async version that uses Bun's text() method instead of json()
- * @param params - Configuration object with Git ref information
- * @returns Object containing version and tag
+ * Updates workspace dependencies in a dependencies object
+ * @param deps - Dependencies object to update
+ * @param depType - Type of dependencies (for logging)
+ * @param newVersion - New version to use
+ * @returns Number of workspace dependencies updated
  */
-export async function getVersionInfoText(
-  params: VersionParams = {}
-): Promise<VersionInfo> {
-  const {
-    refSlug = process.env.GITHUB_REF_SLUG || "",
-    refName = process.env.GITHUB_REF_NAME || "",
-    shaShort = process.env.GITHUB_SHA_SHORT || "",
-    startPath,
-  } = params;
+function updateWorkspaceDependencies(
+  deps: Record<string, string> | undefined,
+  depType: string,
+  newVersion: string
+): number {
+  if (!deps) return 0;
 
-  // Find the monorepo root and get the package.json from there
-  const { monorepoRoot } = await findTurboRoot(startPath);
-  const packageJsonFile = Bun.file(`${monorepoRoot}/package.json`);
-  const packageJsonText = await packageJsonFile.text();
-  const packageJson = JSON.parse(packageJsonText) as PackageJson;
-  const oldVersion = packageJson.version;
-
-  if (!oldVersion) {
-    throw new Error("No version found in package.json");
+  let workspaceCount = 0;
+  for (const [depName, depVersion] of Object.entries(deps)) {
+    if (depVersion === "workspace:*") {
+      deps[depName] = newVersion;
+      workspaceCount++;
+    }
   }
 
-  // Check if ref slug matches version pattern (v?[0-9]+\.[0-9]+\.[0-9]+$)
-  const versionPattern = /^v?[0-9]+\.[0-9]+\.[0-9]+$/;
-
-  if (versionPattern.test(refSlug)) {
-    // Remove 'v' prefix if present
-    const version = refSlug.replace(/^v/, "");
-    return {
-      tag: "latest",
-      version,
-    };
+  if (workspaceCount > 0) {
+    console.log(
+      `    Updated ${workspaceCount} workspace:* references in ${depType}`
+    );
   }
 
-  if (refName === "main") {
-    const version = `${oldVersion}-main${shaShort.replace(/^v/, "")}`;
-    return {
-      tag: "main",
-      version,
-    };
-  }
-
-  // Default case (PR or other branches)
-  const version = `${oldVersion}-pr${shaShort.replace(/^v/, "")}`;
-  return {
-    tag: "pr",
-    version,
-  };
+  return workspaceCount;
 }
 
 /**
@@ -215,48 +224,27 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
         packageJson.version = newVersion;
         hasChanges = true;
 
-        // Helper function to update workspace dependencies
-        const updateWorkspaceDependencies = (
-          deps: Record<string, string> | undefined,
-          depType: string
-        ): number => {
-          if (!deps) return 0;
-
-          let workspaceCount = 0;
-          for (const [depName, depVersion] of Object.entries(deps)) {
-            if (depVersion === "workspace:*") {
-              deps[depName] = newVersion;
-              workspaceCount++;
-              hasChanges = true;
-            }
-          }
-
-          if (workspaceCount > 0) {
-            console.log(
-              `    Updated ${workspaceCount} workspace:* references in ${depType}`
-            );
-          }
-
-          return workspaceCount;
-        };
-
         // Update workspace dependencies in all dependency types
         const workspaceUpdates = [
           updateWorkspaceDependencies(
             packageJson.dependencies as Record<string, string>,
-            "dependencies"
+            "dependencies",
+            newVersion
           ),
           updateWorkspaceDependencies(
             packageJson.devDependencies as Record<string, string>,
-            "devDependencies"
+            "devDependencies",
+            newVersion
           ),
           updateWorkspaceDependencies(
             packageJson.peerDependencies as Record<string, string>,
-            "peerDependencies"
+            "peerDependencies",
+            newVersion
           ),
           updateWorkspaceDependencies(
             packageJson.optionalDependencies as Record<string, string>,
-            "optionalDependencies"
+            "optionalDependencies",
+            newVersion
           ),
         ];
 
@@ -292,12 +280,6 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
     console.error("Failed to update package versions:", error);
     process.exit(1);
   }
-}
-
-interface ChartYaml {
-  version: string;
-  appVersion: string;
-  [key: string]: unknown;
 }
 
 /**
