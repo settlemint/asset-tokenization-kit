@@ -365,3 +365,9 @@ docker compose up -d
 
 Then browse to <http://localhost:16686/> to view the traces and
 <http://localhost:9090/> to view the metrics.
+
+## Local tools needed
+
+```bash
+brew install chart-testing yamllint
+```

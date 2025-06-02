@@ -1,6 +1,5 @@
 #!/usr/bin/env bun
 
-import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { logger } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
@@ -18,14 +17,14 @@ const log = logger;
 /**
  * Find the charts directory using intelligent root detection
  */
-function findChartsDirectory(): string {
+async function findChartsDirectory(): Promise<string> {
   log.debug("Finding charts directory...");
 
   // If we're already in kit/charts, use current directory
-  if (existsSync("package.json")) {
+  const packageJsonFile = Bun.file(join(process.cwd(), "package.json"));
+  if (await packageJsonFile.exists()) {
     try {
-      const packageJson = Bun.file(join(process.cwd(), "package.json"));
-      const content = JSON.parse(await packageJson.text());
+      const content = JSON.parse(await packageJsonFile.text());
       if (content.name === "charts") {
         log.debug("Already in charts directory");
         return process.cwd();
@@ -49,36 +48,64 @@ function findChartsDirectory(): string {
 }
 
 /**
+ * Find all values.yaml files using Bun glob
+ */
+async function findValuesFiles(dir: string): Promise<string[]> {
+  const files: string[] = [];
+
+  try {
+    // Use Bun.glob to find all values.yaml and values-*.yaml files
+    const valuesGlob = new Bun.Glob("**/values*.yaml");
+
+    for await (const file of valuesGlob.scan({ cwd: dir, dot: false })) {
+      // Only include files that match our exact pattern
+      const basename = file.split("/").pop() || "";
+      if (basename === "values.yaml" || (basename.startsWith("values-") && basename.endsWith(".yaml"))) {
+        files.push(file);
+      }
+    }
+  } catch (error) {
+    log.warn(`Error scanning directory ${dir}: ${error}`);
+  }
+
+  return files;
+}
+
+/**
  * Get all chart files that need to be processed
  */
-function getChartFiles(projectDir: string): string[] {
-  const files = [
-    "atk/values.yaml",
-    "atk/values-prod.yaml",
-    "atk/values-example.yaml",
-    "atk/charts/besu-network/values.yaml",
-    "atk/charts/besu-network/charts/besu-node/values.yaml",
-    "atk/charts/besu-network/charts/besu-genesis/values.yaml",
-    "atk/charts/blockscout/values.yaml",
-    "atk/charts/dapp/values.yaml",
-    "atk/charts/erpc/values.yaml",
-    "atk/charts/hasura/values.yaml",
-    "atk/charts/observability/values.yaml",
-    "atk/charts/portal/values.yaml",
-    "atk/charts/support/values.yaml",
-    "atk/charts/thegraph/values.yaml",
-    "atk/charts/txsigner/values.yaml",
-  ];
+async function getChartFiles(projectDir: string): Promise<string[]> {
+  const atkDir = join(projectDir, "atk");
 
-  return files
-    .map(file => join(projectDir, file))
-    .filter(filePath => {
-      if (!existsSync(filePath)) {
-        log.warn(`File not found: ${filePath}`);
-        return false;
-      }
-      return true;
-    });
+  // Check if directory exists by trying to scan it
+  try {
+    const testGlob = new Bun.Glob("*");
+    const scanner = testGlob.scan({ cwd: atkDir, onlyFiles: false });
+    // Try to get first item to verify directory exists
+    await scanner.next();
+  } catch {
+    log.error(`ATK directory not found: ${atkDir}`);
+    return [];
+  }
+
+  // Find all values.yaml files in the atk directory
+  const relativeFiles = await findValuesFiles(atkDir);
+
+  // Convert to absolute paths and add the atk prefix
+  const files = relativeFiles.map(file => join(atkDir, file));
+
+  // Filter out files that don't exist (shouldn't happen, but defensive programming)
+  const existingFiles: string[] = [];
+  for (const filePath of files) {
+    const file = Bun.file(filePath);
+    if (await file.exists()) {
+      existingFiles.push(filePath);
+    } else {
+      log.warn(`File not found: ${filePath}`);
+    }
+  }
+
+  return existingFiles;
 }
 
 /**
@@ -139,6 +166,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
         const registryMatch = line.match(/(\s+registry:\s+)([^\s\n]+)/);
         if (
           registryMatch &&
+          registryMatch[2] &&
           registryMatch[2] !== HARBOR_PROXY &&
           !registryMatch[2].startsWith(`${HARBOR_PROXY}/`)
         ) {
@@ -157,6 +185,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
         const registryMatch = line.match(/(\s+imageRegistry:\s+)([^\s\n]+)/);
         if (
           registryMatch &&
+          registryMatch[2] &&
           registryMatch[2] !== HARBOR_PROXY &&
           !registryMatch[2].startsWith(`${HARBOR_PROXY}/`)
         ) {
@@ -175,7 +204,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
       // Process repository: values
       if (line.includes("repository:")) {
         const repoMatch = line.match(/(\s+repository:\s+)([^\s\n]+)/);
-        if (repoMatch) {
+        if (repoMatch && repoMatch[2]) {
           const repoValue = repoMatch[2];
 
           const registries = [
@@ -204,7 +233,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
       // Process image: values
       if (line.includes("image:") && !line.includes("imageRegistry")) {
         const imageMatch = line.match(/(\s+image:\s+)([^\s\n]+)/);
-        if (imageMatch) {
+        if (imageMatch && imageMatch[2]) {
           const imageValue = imageMatch[2];
 
           const registries = [
@@ -264,11 +293,11 @@ async function main(): Promise<void> {
 
   try {
     // Find the charts directory
-    const projectDir = findChartsDirectory();
+    const projectDir = await findChartsDirectory();
     log.info(`Using charts directory: ${projectDir}`);
 
     // Get all chart files to process
-    const chartFiles = getChartFiles(projectDir);
+    const chartFiles = await getChartFiles(projectDir);
 
     if (chartFiles.length === 0) {
       log.info("No chart files found to process");
