@@ -76,7 +76,7 @@ export function CreateFundForm({
   ];
 
   // Define step order and mapping
-  const stepIdToIndex = {
+  const stepIdToIndex: Record<(typeof fundSteps)[number]["id"], number> = {
     details: 0,
     configuration: 1,
     admins: 2,

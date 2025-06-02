@@ -53,7 +53,7 @@ export function CreateBondForm({
   ];
 
   // Define step order and mapping
-  const stepIdToIndex = {
+  const stepIdToIndex: Record<(typeof bondSteps)[number]["id"], number> = {
     details: 0,
     configuration: 1,
     admins: 2,

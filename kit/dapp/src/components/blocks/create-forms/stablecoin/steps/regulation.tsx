@@ -1,10 +1,7 @@
 "use client";
 
 import { DocumentUploadDialog } from "@/components/blocks/asset-designer/components/document-upload-dialog";
-import type {
-  AssetFormStep,
-  UploadedDocument,
-} from "@/components/blocks/asset-designer/types";
+import type { UploadedDocument } from "@/components/blocks/asset-designer/types";
 import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -435,7 +432,7 @@ export function AssetRegulationStep({
   onBack,
   onNext,
 }: AssetRegulationStepProps) {
-  const t = useTranslations("private.assets.create.form");
+  const t = useTranslations("private.assets.create");
   const [selectedRegion, setSelectedRegion] = useState<Region | null>("EU"); // Default to EU for demo
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [currentRegulationId, setCurrentRegulationId] = useState<string>("");
@@ -589,10 +586,11 @@ export function AssetRegulationStep({
     <StepContent>
       <div className="space-y-8 pb-4">
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold tracking-tight">Regulation</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">
+            {t(stepDefinition.title)}
+          </h2>
           <p className="text-muted-foreground">
-            Select regions and configure the regulations your asset needs to
-            adhere to.
+            {t(stepDefinition.description)}
           </p>
         </div>
         <div>
@@ -632,11 +630,9 @@ export function AssetRegulationStep({
 }
 
 // Export step definition for the asset designer
-export const stepDefinition: AssetFormStep & {
-  component: typeof AssetRegulationStep;
-} = {
+export const stepDefinition = {
   id: "regulation",
   title: "regulation.title",
   description: "regulation.description",
   component: AssetRegulationStep,
-};
+} as const;

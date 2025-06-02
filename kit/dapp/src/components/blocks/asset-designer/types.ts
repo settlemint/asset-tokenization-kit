@@ -7,15 +7,15 @@ type TranslationKeys = Parameters<
 >[0];
 
 export interface AssetFormStep {
-  id: string;
-  title: TranslationKeys;
-  description: TranslationKeys;
+  readonly id: string;
+  readonly title: TranslationKeys;
+  readonly description: TranslationKeys;
 }
 
 // Interface that each asset form will implement
 export interface AssetFormDefinition {
   // Steps for this asset type
-  steps: AssetFormStep[];
+  steps: readonly AssetFormStep[];
 }
 
 // Registry of asset forms

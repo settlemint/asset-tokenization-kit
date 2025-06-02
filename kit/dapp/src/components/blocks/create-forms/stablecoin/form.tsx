@@ -123,7 +123,7 @@ export function CreateStablecoinForm({
   // Define step order and mapping
   const stepIdToIndex = useMemo(() => {
     if (isMicaEnabled) {
-      const steps: Record<string, number> = {
+      const steps: Record<(typeof stablecoinSteps)[number]["id"], number> = {
         details: 0,
         configuration: 1,
         admins: 2,
@@ -132,7 +132,9 @@ export function CreateStablecoinForm({
       };
       return steps;
     } else {
-      const steps: Record<string, number> = {
+      const steps: Partial<
+        Record<(typeof stablecoinSteps)[number]["id"], number>
+      > = {
         details: 0,
         configuration: 1,
         admins: 2,

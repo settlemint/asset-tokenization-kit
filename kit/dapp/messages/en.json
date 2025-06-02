@@ -1897,6 +1897,10 @@
           "not-specified": "Not specified",
           "title": "Summary"
         },
+        "documents": {
+          "title": "Supporting Documents",
+          "description": "Upload supporting documents for this asset (optional)"
+        },
         "regulation": {
           "title": "Regulation & Compliance",
           "description": "Upload required compliance documents and select applicable regulations for your asset."

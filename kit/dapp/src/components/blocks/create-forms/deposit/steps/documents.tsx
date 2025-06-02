@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
 import { t } from "@/lib/utils/typebox";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 
@@ -39,6 +40,7 @@ const DocumentsSchema = t.Object({
 });
 
 export function Documents({ onNext, onBack }: DepositStepProps) {
+  const t = useTranslations("private.assets.create");
   // Get the parent form context
   const parentForm = useFormContext<
     CreateDepositInput & { documents?: UploadedDocument[] }
@@ -85,9 +87,9 @@ export function Documents({ onNext, onBack }: DepositStepProps) {
     <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
-          <h3 className="text-lg font-medium">Supporting Documents</h3>
+          <h3 className="text-lg font-medium">{t(stepDefinition.title)}</h3>
           <p className="text-sm text-muted-foreground mt-2">
-            Upload supporting documents for this deposit asset (optional)
+            {t(stepDefinition.description)}
           </p>
         </div>
 
@@ -139,7 +141,7 @@ Documents.validatedFields = [] as any;
 // Export step definition for the asset designer
 export const stepDefinition = {
   id: "documents",
-  title: "Supporting Documents",
-  description: "Upload supporting documents for this deposit asset (optional)",
+  title: "documents.title",
+  description: "documents.description",
   component: Documents,
-};
+} as const;

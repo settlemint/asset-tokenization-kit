@@ -1,6 +1,5 @@
 "use client";
 
-import type { AssetFormStep } from "@/components/blocks/asset-designer/types";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import { Badge } from "@/components/ui/badge";
@@ -235,14 +234,12 @@ export function Summary({
   );
 }
 
-export const stepDefinition: AssetFormStep & {
-  component: typeof Summary;
-} = {
+export const stepDefinition = {
   id: "summary",
   title: "summary.title",
   description: "summary.description",
   component: Summary,
-};
+} as const;
 
 // Helper component for summary rows
 export function SummaryRow({

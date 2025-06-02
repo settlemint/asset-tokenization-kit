@@ -9,36 +9,12 @@ import { getPredictedAddress } from "@/lib/queries/deposit-factory/deposit-facto
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
-import { useFormContext } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
 import { stepDefinition as summaryStep } from "../common/summary/summary";
-import { stepDefinition as regulationStep } from "../stablecoin/steps/regulation";
 import { stepDefinition as basicsStep } from "./steps/basics";
 import { stepDefinition as configurationStep } from "./steps/configuration";
 import { DepositConfigurationCard } from "./steps/summaryConfigurationCard";
-
-// Wrapper component for the regulation step to access form context
-function RegulationStepWrapper({
-  onBack,
-  onNext,
-}: {
-  onBack: () => void;
-  onNext: () => void;
-}) {
-  const form = useFormContext();
-  const RegulationComponent = regulationStep.component;
-
-  return (
-    <RegulationComponent
-      assetType="deposit"
-      form={form}
-      onBack={onBack}
-      onNext={onNext}
-    />
-  );
-}
 
 interface CreateDepositFormProps {
   userDetails: User;
@@ -64,35 +40,25 @@ export function CreateDepositForm({
   const SummaryComponent = summaryStep.component;
 
   // Create an array of all step components in order for Form to manage
-  const allStepComponents = useMemo(() => {
-    const baseSteps = [
-      <BasicsComponent key="details" />,
-      <ConfigurationComponent key="configuration" />,
-      <AdminsComponent key="admins" userDetails={userDetails} />,
-    ];
-
-    baseSteps.push(
-      <SummaryComponent
-        key="summary"
-        configurationCard={<DepositConfigurationCard />}
-        predictAddress={getPredictedAddress}
-        isAddressAvailable={isAddressAvailable}
-      />
-    );
-
-    return baseSteps;
-  }, [userDetails, onPrevStep, onNextStep]);
+  const allStepComponents = [
+    <BasicsComponent key="details" />,
+    <ConfigurationComponent key="configuration" />,
+    <AdminsComponent key="admins" userDetails={userDetails} />,
+    <SummaryComponent
+      key="summary"
+      configurationCard={<DepositConfigurationCard />}
+      predictAddress={getPredictedAddress}
+      isAddressAvailable={isAddressAvailable}
+    />,
+  ];
 
   // Define step order and mapping
-  const stepIdToIndex = useMemo(() => {
-    const steps: Record<string, number> = {
-      details: 0,
-      configuration: 1,
-      admins: 2,
-      summary: 3,
-    };
-    return steps;
-  }, []);
+  const stepIdToIndex: Record<(typeof depositSteps)[number]["id"], number> = {
+    details: 0,
+    configuration: 1,
+    admins: 2,
+    summary: 3,
+  };
 
   // Use the step synchronization hook
   const { isLastStep, onStepChange, onAnyFieldChange } = useFormStepSync({

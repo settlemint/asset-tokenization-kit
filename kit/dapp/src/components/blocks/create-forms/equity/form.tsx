@@ -53,7 +53,7 @@ export function CreateEquityForm({
   ];
 
   // Define step order and mapping
-  const stepIdToIndex = {
+  const stepIdToIndex: Record<(typeof equitySteps)[number]["id"], number> = {
     details: 0,
     configuration: 1,
     admins: 2,
