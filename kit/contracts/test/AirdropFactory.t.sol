@@ -268,4 +268,128 @@ contract AirdropFactoryTest is Test {
 
         vm.stopPrank();
     }
+
+    // Test predicting standard airdrop address
+    function testPredictStandardAirdropAddress() public {
+        vm.startPrank(deployer);
+
+        // Predict the address before deployment
+        address predictedAddress =
+            factory.predictStandardAirdropAddress(address(token), merkleRoot, owner, startTime, endTime);
+
+        // Deploy the standard airdrop
+        address actualAddress = factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime);
+
+        // Verify predicted address matches actual address
+        assertEq(predictedAddress, actualAddress, "Predicted address should match actual address for standard airdrop");
+
+        vm.stopPrank();
+    }
+
+    // Test predicting linear vesting airdrop address
+    function testPredictLinearVestingAirdropAddress() public {
+        vm.startPrank(deployer);
+
+        // Predict the addresses before deployment
+        (address predictedAirdropAddress, address predictedStrategyAddress) = factory.predictLinearVestingAirdropAddress(
+            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
+        );
+
+        // Deploy the linear vesting airdrop
+        (address actualAirdropAddress, address actualStrategyAddress) = factory.deployLinearVestingAirdrop(
+            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
+        );
+
+        // Verify predicted addresses match actual addresses
+        assertEq(predictedAirdropAddress, actualAirdropAddress, "Predicted airdrop address should match actual address");
+        assertEq(
+            predictedStrategyAddress, actualStrategyAddress, "Predicted strategy address should match actual address"
+        );
+
+        vm.stopPrank();
+    }
+
+    // Test predicting push airdrop address
+    function testPredictPushAirdropAddress() public {
+        vm.startPrank(deployer);
+
+        uint256 distributionCap = 1_000_000 * 10 ** 18; // 1M tokens cap
+
+        // Predict the address before deployment
+        address predictedAddress = factory.predictPushAirdropAddress(address(token), merkleRoot, owner, distributionCap);
+
+        // Deploy the push airdrop
+        address actualAddress = factory.deployPushAirdrop(address(token), merkleRoot, owner, distributionCap);
+
+        // Verify predicted address matches actual address
+        assertEq(predictedAddress, actualAddress, "Predicted address should match actual address for push airdrop");
+
+        vm.stopPrank();
+    }
+
+    // Test deterministic addresses for standard airdrop
+    function testDeterministicStandardAirdropAddresses() public {
+        vm.startPrank(deployer);
+
+        // Deploy first airdrop
+        address airdrop1 = factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime);
+
+        // Create a new factory instance with same forwarder
+        AirdropFactory newFactory = new AirdropFactory(trustedForwarder);
+
+        // Deploy airdrop with same parameters using new factory
+        address airdrop2 = newFactory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime);
+
+        // The addresses should be different because the factory addresses are different
+        assertNotEq(airdrop1, airdrop2, "Airdrops should have different addresses due to different factory addresses");
+
+        vm.stopPrank();
+    }
+
+    // Test deterministic addresses for vesting airdrop
+    function testDeterministicVestingAirdropAddresses() public {
+        vm.startPrank(deployer);
+
+        // Deploy first vesting airdrop
+        (address airdrop1, address strategy1) = factory.deployLinearVestingAirdrop(
+            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
+        );
+
+        // Create a new factory instance with same forwarder
+        AirdropFactory newFactory = new AirdropFactory(trustedForwarder);
+
+        // Deploy vesting airdrop with same parameters using new factory
+        (address airdrop2, address strategy2) = newFactory.deployLinearVestingAirdrop(
+            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
+        );
+
+        // The addresses should be different because the factory addresses are different
+        assertNotEq(airdrop1, airdrop2, "Airdrops should have different addresses due to different factory addresses");
+        assertNotEq(
+            strategy1, strategy2, "Strategies should have different addresses due to different factory addresses"
+        );
+
+        vm.stopPrank();
+    }
+
+    // Test deterministic addresses for push airdrop
+    function testDeterministicPushAirdropAddresses() public {
+        vm.startPrank(deployer);
+
+        uint256 distributionCap = 1_000_000 * 10 ** 18; // 1M tokens cap
+
+        // Deploy first push airdrop
+        address airdrop1 = factory.deployPushAirdrop(address(token), merkleRoot, owner, distributionCap);
+
+        // Create a new factory instance with same forwarder
+        AirdropFactory newFactory = new AirdropFactory(trustedForwarder);
+
+        // Deploy push airdrop with same parameters using new factory
+        address airdrop2 = newFactory.deployPushAirdrop(address(token), merkleRoot, owner, distributionCap);
+
+        // The addresses should be different because the factory addresses are different
+        assertNotEq(airdrop1, airdrop2, "Airdrops should have different addresses due to different factory addresses");
+
+        vm.stopPrank();
+    }
 }
