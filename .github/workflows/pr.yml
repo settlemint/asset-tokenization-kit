@@ -37,6 +37,11 @@ jobs:
       - name: Start Docker Compose
         run: docker compose up -d
 
+      - name: Setup 1Password
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
       - name: Load secrets
         uses: 1password/load-secrets-action@v2
         env:
