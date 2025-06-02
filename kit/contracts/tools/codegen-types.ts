@@ -230,9 +230,9 @@ async function compileContracts(): Promise<boolean> {
     }
   } catch (err) {
     const shellError = err as $.ShellError;
-    log.debug(shellError.stdout.toString());
-    log.debug(shellError.stderr.toString());
-    log.error(`Failed to execute compilation: ${shellError.message}`);
+    log.info(shellError.stdout.toString());
+    log.error(shellError.stderr.toString());
+    log.error(`Failed to execute compilation`);
     return false;
   }
 }
