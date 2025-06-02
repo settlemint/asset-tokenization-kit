@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "lib": ["es2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "es2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -53,8 +57,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@schemas/*": ["./*.d.ts"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@schemas/*": [
+        "./*.d.ts"
+      ]
     },
     "noImplicitAny": true,
     "noImplicitThis": true,
@@ -78,5 +86,7 @@
     "next-env.d.ts",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
