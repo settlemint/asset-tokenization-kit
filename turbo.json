@@ -5,11 +5,16 @@
     "ci": {
       "dependsOn": ["format", "compile", "codegen", "lint", "build"]
     },
-    "ci:publish": {
-      "dependsOn": ["package"]
+    "ci:gha": {
+      "dependsOn": ["publish", "ci"]
     },
     "//#version": {
-      "cache": false
+      "cache": false,
+      "passThroughEnv": [
+        "GITHUB_REF_SLUG",
+        "GITHUB_REF_NAME",
+        "GITHUB_SHA_SHORT"
+      ]
     },
     "build": {
       "dependsOn": ["codegen"]
@@ -24,8 +29,14 @@
       "cache": false,
       "dependsOn": ["//#version"]
     },
+    "publish": {
+      "cache": false,
+      "dependsOn": ["package"]
+    },
     "dependencies": {},
     "format": {},
-    "lint": {}
+    "lint": {
+      "dependsOn": ["//#version"]
+    }
   }
 }
