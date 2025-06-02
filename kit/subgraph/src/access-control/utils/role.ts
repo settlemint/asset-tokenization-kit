@@ -1,4 +1,4 @@
-import { crypto, ByteArray, Bytes } from "@graphprotocol/graph-ts";
+import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
 
 class RoleConfig {
   _name: string;

@@ -7,29 +7,29 @@ import { useFormContext } from "react-hook-form";
 
 export function Basics() {
   const { control } = useFormContext<CreateVestingAirdropInput>();
-  const t = useTranslations("private.airdrops.create.basics");
+  const t = useTranslations("private.airdrops.create");
 
   return (
     <FormStep
-      title={t("title")}
-      description={t("description")}
+      title={t(stepDefinition.title)}
+      description={t(stepDefinition.description)}
       contentClassName="space-y-6"
     >
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 w-full pt-6">
         <FormAssets
           control={control}
           name="asset"
-          label={t("asset-label")}
-          placeholder={t("asset-placeholder")}
-          description={t("asset-description")}
+          label={t("basics.asset-label")}
+          placeholder={t("basics.asset-placeholder")}
+          description={t("basics.asset-description")}
           required
         />
         <FormUsers
           control={control}
           name="owner"
-          label={t("owner-label")}
-          placeholder={t("owner-placeholder")}
-          description={t("owner-description")}
+          label={t("basics.owner-label")}
+          placeholder={t("basics.owner-placeholder")}
+          description={t("basics.owner-description")}
           required
         />
       </div>
@@ -41,3 +41,10 @@ Basics.validatedFields = [
   "asset",
   "owner",
 ] satisfies (keyof CreateVestingAirdropInput)[];
+
+export const stepDefinition = {
+  id: "basics",
+  title: "basics.title",
+  description: "basics.description",
+  component: Basics,
+} as const;

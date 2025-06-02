@@ -34,8 +34,6 @@ type AccessControl @entity(immutable: false) {
   id: Bytes!
   admin: [Account!]!
   registrar: [Account!]!
-  registrarAdmin: [Account!]!
-  registrarGovernor: [Account!]!
   claimManager: [Account!]!
   identityIssuer: [Account!]!
   tokenIdentityIssuer: [Account!]!
@@ -133,6 +131,7 @@ type Token @entity(immutable: false) {
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
   pausable: TokenPausable
+  collateral: TokenCollateral
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -153,17 +152,23 @@ type TokenPausable @entity(immutable: false) {
   paused: Boolean!
 }
 
+type TokenCollateral @entity(immutable: false) {
+  id: Bytes!
+  identityClaim: IdentityClaim
+}
+
 type Identity @entity(immutable: false) {
   id: Bytes!
   registry: IdentityRegistry
   claims: [IdentityClaim!]! @derivedFrom(field: "identity")
+  token: Token @derivedFrom(field: "identity")
 }
 
 type IdentityClaim @entity(immutable: false) {
   id: Bytes!
   identity: Identity!
   name: String!
-  issuer: Account
+  issuer: Account!
   uri: String
   revoked: Boolean!
   values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
