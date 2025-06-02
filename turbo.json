@@ -35,6 +35,8 @@
     },
     "dependencies": {},
     "format": {},
-    "lint": {}
+    "lint": {
+      "dependsOn": ["//#version"]
+    }
   }
 }
