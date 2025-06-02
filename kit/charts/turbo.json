@@ -9,19 +9,24 @@
       "outputs": ["dist/**"]
     },
     "package": {
+      "cache": false,
       "dependsOn": ["package:push:ghcr", "package:push:harbor"]
     },
     "package:harbor": {
+      "cache": false,
       "dependsOn": ["dependencies"]
     },
     "package:pack": {
+      "cache": false,
       "dependsOn": ["package:harbor"],
       "outputs": ["atk-*.tgz"]
     },
     "package:push:ghcr": {
+      "cache": false,
       "dependsOn": ["package:pack"]
     },
     "package:push:harbor": {
+      "cache": false,
       "dependsOn": ["package:pack"]
     }
   }

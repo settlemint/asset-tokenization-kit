@@ -144,3 +144,68 @@ export async function getVersionInfoText(
     version,
   };
 }
+
+/**
+ * Finds the nearest package.json file by walking upwards from the starting path
+ * @param startPath - Starting path to search from (defaults to current working directory)
+ * @returns Path to the nearest package.json file
+ */
+async function findNearestPackageJson(startPath?: string): Promise<string> {
+  let currentPath = startPath || process.cwd();
+
+  while (true) {
+    // Use Bun's native path joining
+    const packageJsonPath = `${currentPath}/package.json`;
+    const packageJsonFile = Bun.file(packageJsonPath);
+
+    // Use Bun's native file existence check
+    if (await packageJsonFile.exists()) {
+      return packageJsonPath;
+    }
+
+    // Move up one directory using string manipulation
+    const parentPath = currentPath.split("/").slice(0, -1).join("/");
+
+    // If we've reached the root directory, stop searching
+    if (
+      parentPath === currentPath ||
+      parentPath === "" ||
+      currentPath === "/"
+    ) {
+      throw new Error("No package.json found in any parent directory");
+    }
+
+    currentPath = parentPath;
+  }
+}
+
+/**
+ * Updates the nearest package.json file with a new version by walking upwards from the start path
+ * @param startPath - Starting path for finding the nearest package.json (defaults to current working directory)
+ * @returns Promise that resolves when the update is complete
+ */
+export async function updatePackageVersion(startPath?: string): Promise<void> {
+  const versionInfo = await getVersionInfo({ startPath });
+
+  // Find the nearest package.json file
+  const packageJsonPath = await findNearestPackageJson(startPath);
+  const packageJsonFile = Bun.file(packageJsonPath);
+
+  if (!(await packageJsonFile.exists())) {
+    throw new Error(`Package.json not found at ${packageJsonPath}`);
+  }
+
+  // Read the current package.json
+  const packageJson = (await packageJsonFile.json()) as PackageJson;
+  const oldVersion = packageJson.version;
+
+  // Update the version
+  packageJson.version = versionInfo.version;
+
+  // Write the updated package.json back to disk
+  await Bun.write(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
+
+  console.log(
+    `Updated ${packageJsonPath}: ${oldVersion} -> ${versionInfo.version}`
+  );
+}

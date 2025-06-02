@@ -12,10 +12,11 @@
     "dependencies": "bun run tools/dependencies.ts",
     "lint": "ct lint --chart-dirs . --check-version-increment=false --target-branch main --all",
     "compile": "helm template atk --output-dir dist --include-crds",
-    "package:harbor": "bun run tools/package.ts",
+    "package:harbor": "bun run tools/package-harbor.ts",
     "package:pack": "helm package atk --destination .",
     "package:push:ghcr": "helm push atk-*.tgz oci://ghcr.io/settlemint",
-    "package:push:harbor": "helm push ./atk-*.tgz oci://harbor.settlemint.com/atk"
+    "package:push:harbor": "helm push ./atk-*.tgz oci://harbor.settlemint.com/atk",
+    "package:version": "bun run tools/package-version.ts"
   },
   "dependencies": {},
   "devDependencies": {},

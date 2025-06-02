@@ -18,7 +18,7 @@
       "dependsOn": ["dependencies"]
     },
     "package": {
-      "dependsOn": ["build"]
+      "cache": false
     },
     "dependencies": {},
     "format": {},
