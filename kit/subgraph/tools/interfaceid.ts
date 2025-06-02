@@ -8,15 +8,6 @@
  */
 
 import { $ } from "bun";
-import {
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  statSync,
-  writeFileSync,
-} from "node:fs";
 import { basename, join, relative } from "node:path";
 import { logger } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
@@ -47,8 +38,9 @@ const DEFAULT_OUTPUT_DIR = "src/erc165/utils";
 const DEFAULT_OUTPUT_FILE = "interfaceids.ts";
 const DEFAULT_TEMP_CONTRACT = "temp_interface_calc.sol";
 
-const CONTRACTS_ROOT = getKitProjectPath("contracts");
-const SUBGRAPH_ROOT = getKitProjectPath("subgraph");
+// These will be initialized in main()
+let CONTRACTS_ROOT: string;
+let SUBGRAPH_ROOT: string;
 
 // =============================================================================
 // UTILITY FUNCTIONS
@@ -149,7 +141,7 @@ function parseArguments(): ScriptOptions {
   return options;
 }
 
-function cleanupTempFiles(tempContract: string): void {
+async function cleanupTempFiles(tempContract: string): Promise<void> {
   const tempFiles = [
     join(CONTRACTS_ROOT, "contracts", tempContract),
     join(CONTRACTS_ROOT, "contracts", "temp_single_calc.sol"),
@@ -157,9 +149,11 @@ function cleanupTempFiles(tempContract: string): void {
   ];
 
   for (const tempFile of tempFiles) {
-    if (existsSync(tempFile)) {
+    const file = Bun.file(tempFile);
+    if (await file.exists()) {
       try {
-        rmSync(tempFile);
+        await Bun.write(tempFile, ""); // Clear the file
+        await $`rm ${tempFile}`.quiet();
         log.debug(`Cleaned up temporary file: ${tempFile}`);
       } catch (error) {
         log.warn(`Failed to clean up temporary file: ${tempFile}`);
@@ -172,37 +166,38 @@ function cleanupTempFiles(tempContract: string): void {
 // MAIN FUNCTIONALITY
 // =============================================================================
 
-function findInterfaceFiles(): string[] {
+async function findInterfaceFiles(): Promise<string[]> {
   log.info("Searching for interface files...");
 
   const contractsDir = join(CONTRACTS_ROOT, "contracts");
 
-  if (!existsSync(contractsDir)) {
+  // Check if directory exists
+  let dirExists = false;
+  try {
+    const glob = new Bun.Glob("*");
+    const scanner = glob.scan({ cwd: contractsDir, onlyFiles: false });
+    await scanner.next();
+    dirExists = true;
+  } catch {
+    dirExists = false;
+  }
+
+  if (!dirExists) {
     throw new Error(`Contracts directory not found: ${contractsDir}`);
   }
 
   const interfaceFiles: string[] = [];
 
-  function searchDirectory(dir: string) {
-    const entries = readdirSync(dir);
+  // Use glob to find all interface files starting with I
+  const glob = new Bun.Glob("**/I*.sol");
 
-    for (const entry of entries) {
-      const fullPath = join(dir, entry);
-      const stats = statSync(fullPath);
-
-      if (stats.isDirectory()) {
-        searchDirectory(fullPath);
-      } else if (
-        stats.isFile() &&
-        entry.startsWith("I") &&
-        entry.endsWith(".sol")
-      ) {
-        interfaceFiles.push(fullPath);
-      }
+  for await (const file of glob.scan({ cwd: contractsDir })) {
+    const basename = file.split("/").pop() || "";
+    // Only include files that start with I (not files with I in the middle)
+    if (basename.startsWith("I")) {
+      interfaceFiles.push(join(contractsDir, file));
     }
   }
-
-  searchDirectory(contractsDir);
 
   if (interfaceFiles.length === 0) {
     throw new Error(
@@ -222,9 +217,9 @@ function findInterfaceFiles(): string[] {
   return interfaceFiles;
 }
 
-function extractInterfaceMetadata(
+async function extractInterfaceMetadata(
   interfaceFiles: string[]
-): InterfaceMetadata[] {
+): Promise<InterfaceMetadata[]> {
   log.info("Extracting interface names and metadata...");
 
   const interfaces: InterfaceMetadata[] = [];
@@ -242,7 +237,8 @@ function extractInterfaceMetadata(
     }
 
     // Check if the file actually contains an interface declaration
-    const content = readFileSync(file, "utf-8");
+    const fileHandle = Bun.file(file);
+    const content = await fileHandle.text();
     const interfaceRegex = new RegExp(
       `^\\s*interface\\s+${interfaceName}(\\s+|$)`,
       "m"
@@ -284,10 +280,10 @@ function extractInterfaceMetadata(
   return interfaces;
 }
 
-function createCalculatorContract(
+async function createCalculatorContract(
   interfaces: InterfaceMetadata[],
   tempContract: string
-): string {
+): Promise<string> {
   log.info("Creating dynamic interface ID calculator...");
 
   const tempContractPath = join(CONTRACTS_ROOT, "contracts", tempContract);
@@ -335,7 +331,7 @@ contract InterfaceIdCalculator is Script {
 }
 `;
 
-  writeFileSync(tempContractPath, contractContent);
+  await Bun.write(tempContractPath, contractContent);
   log.success(`Dynamic interface ID calculator created: ${tempContractPath}`);
 
   return tempContractPath;
@@ -423,13 +419,16 @@ async function createOutputFile(
   const outputFilePath = join(outputDirPath, outputFile);
 
   // Create output directory if it doesn't exist
-  if (!existsSync(outputDirPath)) {
-    log.info(`Creating output directory: ${outputDirPath}`);
-    mkdirSync(outputDirPath, { recursive: true });
+  try {
+    await $`mkdir -p ${outputDirPath}`.quiet();
+    log.info(`Ensured output directory exists: ${outputDirPath}`);
+  } catch (error) {
+    log.warn(`Could not create directory: ${error}`);
   }
 
-  // Always overwrite existing files
-  if (existsSync(outputFilePath)) {
+  // Check if file exists
+  const outputFileHandle = Bun.file(outputFilePath);
+  if (await outputFileHandle.exists()) {
     log.info(`Overwriting existing file: ${outputFilePath}`);
   }
 
@@ -467,7 +466,7 @@ import { Bytes } from "@graphprotocol/graph-ts";
 ${tsContent}
 `;
 
-  writeFileSync(outputFilePath, fileContent);
+  await Bun.write(outputFilePath, fileContent);
   log.success(`Interface IDs saved to: ${outputFilePath}`);
 
   // Display TypeScript output for verification
@@ -476,18 +475,19 @@ ${tsContent}
   console.log(tsContent);
 }
 
-function validateOutputFile(
+async function validateOutputFile(
   outputDir: string,
   outputFile: string,
   interfaceCount: number
-): void {
+): Promise<void> {
   const outputFilePath = join(SUBGRAPH_ROOT, outputDir, outputFile);
 
-  if (!existsSync(outputFilePath)) {
+  const file = Bun.file(outputFilePath);
+  if (!(await file.exists())) {
     throw new Error(`Output file was not created: ${outputFilePath}`);
   }
 
-  const content = readFileSync(outputFilePath, "utf-8");
+  const content = await file.text();
 
   // Check if file contains expected content
   if (!content.includes("InterfaceIds")) {
@@ -513,6 +513,10 @@ function validateOutputFile(
 async function main() {
   const options = parseArguments();
 
+  // Initialize paths
+  CONTRACTS_ROOT = await getKitProjectPath("contracts");
+  SUBGRAPH_ROOT = await getKitProjectPath("subgraph");
+
   // Process environment variables and options
   const outputDir = options.outputDir || DEFAULT_OUTPUT_DIR;
   const outputFile = options.outputFile || DEFAULT_OUTPUT_FILE;
@@ -526,19 +530,22 @@ async function main() {
 
   try {
     // Setup cleanup
-    process.on("exit", () => cleanupTempFiles(tempContract));
-    process.on("SIGINT", () => {
-      cleanupTempFiles(tempContract);
+    process.on("exit", async () => await cleanupTempFiles(tempContract));
+    process.on("SIGINT", async () => {
+      await cleanupTempFiles(tempContract);
       process.exit(130);
     });
 
     // Main workflow
-    const interfaceFiles = findInterfaceFiles();
-    const interfaces = extractInterfaceMetadata(interfaceFiles);
+    const interfaceFiles = await findInterfaceFiles();
+    const interfaces = await extractInterfaceMetadata(interfaceFiles);
 
     await compileContracts(options.skipBuild);
 
-    const tempContractPath = createCalculatorContract(interfaces, tempContract);
+    const tempContractPath = await createCalculatorContract(
+      interfaces,
+      tempContract
+    );
     const scriptOutput = await calculateInterfaceIds(tempContractPath);
 
     await createOutputFile(
@@ -547,7 +554,7 @@ async function main() {
       outputFile,
       interfaces.length
     );
-    validateOutputFile(outputDir, outputFile, interfaces.length);
+    await validateOutputFile(outputDir, outputFile, interfaces.length);
 
     log.success("Interface ID calculation completed successfully!");
     console.log("\n");

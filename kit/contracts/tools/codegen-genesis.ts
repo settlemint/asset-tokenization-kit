@@ -10,8 +10,8 @@
 import { $ } from "bun";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { logger } from "../../../tools/logging";
+import { join } from "node:path";
+import { logger, LogLevel } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -37,7 +37,7 @@ const defaultConfig: Config = {
 const log = logger;
 
 // File paths
-const CONTRACTS_ROOT = getKitProjectPath("contracts");
+const CONTRACTS_ROOT = await getKitProjectPath("contracts");
 const ALL_ALLOCATIONS_FILE = join(CONTRACTS_ROOT, "tools/genesis-output.json");
 const SECOND_OUTPUT_DIR = join(
   CONTRACTS_ROOT,
@@ -46,7 +46,7 @@ const SECOND_OUTPUT_DIR = join(
 const SECOND_OUTPUT_FILE = join(SECOND_OUTPUT_DIR, "genesis-output.json");
 
 // Contract configuration
-const CONTRACT_ADDRESSES: Record<string, string> = {
+const CONTRACT_ADDRESSES = {
   // Core infrastructure
   SMARTForwarder: "0x5e771e1417100000000000000000000000020099",
 
@@ -85,9 +85,9 @@ const CONTRACT_ADDRESSES: Record<string, string> = {
   SMARTStableCoinImplementation: "0x5e771e1417100000000000000000000000020018",
   SMARTStableCoinFactoryImplementation:
     "0x5e771e1417100000000000000000000000020019",
-};
+} as const;
 
-const CONTRACT_FILES: Record<string, string> = {
+const CONTRACT_FILES = {
   // Core infrastructure
   SMARTForwarder: "contracts/vendor/SMARTForwarder.sol",
 
@@ -133,105 +133,7 @@ const CONTRACT_FILES: Record<string, string> = {
     "contracts/assets/stable-coin/SMARTStableCoinImplementation.sol",
   SMARTStableCoinFactoryImplementation:
     "contracts/assets/stable-coin/SMARTStableCoinFactoryImplementation.sol",
-};
-
-// =============================================================================
-// ANVIL MANAGEMENT
-// =============================================================================
-
-class AnvilManager {
-  private config: Config;
-  private process?: Bun.Subprocess;
-
-  constructor(config: Config) {
-    this.config = config;
-  }
-
-  async isRunning(): Promise<boolean> {
-    try {
-      const response = await fetch(
-        `http://localhost:${this.config.anvilPort}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            method: "eth_chainId",
-            params: [],
-            id: 1,
-          }),
-        }
-      );
-      return response.ok;
-    } catch {
-      return false;
-    }
-  }
-
-  async stop(): Promise<void> {
-    if (this.process) {
-      log.info("Stopping Anvil...");
-      this.process.kill();
-      await this.process.exited;
-      this.process = undefined;
-      log.success("Anvil stopped");
-    }
-  }
-
-  async start(): Promise<void> {
-    // Check if already running
-    if (await this.isRunning()) {
-      if (this.config.forceRestartAnvil) {
-        log.info("Anvil is running, force restarting...");
-        await $`pkill -f "anvil.*--port ${this.config.anvilPort}"`.quiet();
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      } else {
-        log.info(`Anvil already running on port ${this.config.anvilPort}`);
-        return;
-      }
-    }
-
-    log.info(`Starting Anvil on port ${this.config.anvilPort}...`);
-
-    // Start Anvil process
-    this.process = Bun.spawn(
-      [
-        "anvil",
-        "--port",
-        this.config.anvilPort.toString(),
-        "--block-time",
-        this.config.anvilBlockTime.toString(),
-        "--accounts",
-        "10",
-        "--balance",
-        "10000",
-        "--gas-limit",
-        "30000000",
-        "--code-size-limit",
-        "50000",
-      ],
-      {
-        stdout: "pipe",
-        stderr: "pipe",
-      }
-    );
-
-    // Wait for Anvil to be ready
-    let attempts = 0;
-    const maxAttempts = 30;
-
-    while (attempts < maxAttempts) {
-      if (await this.isRunning()) {
-        log.success("Anvil started successfully");
-        return;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      attempts++;
-    }
-
-    throw new Error("Failed to start Anvil within timeout");
-  }
-}
+} as const;
 
 // =============================================================================
 // CONTRACT DEPLOYMENT
@@ -279,18 +181,28 @@ class ContractDeployer {
   async validateBytecode(solFile: string, contractName: string): Promise<void> {
     log.debug(`Validating bytecode for ${contractName}...`);
 
-    const result =
-      await $`forge inspect ${solFile}:${contractName} bytecode`.cwd(
-        CONTRACTS_ROOT
-      );
+    const result = log.isLevelEnabled(LogLevel.DEBUG)
+      ? await $`forge inspect ${solFile}:${contractName} bytecode`.cwd(
+          CONTRACTS_ROOT
+        )
+      : await $`forge inspect ${solFile}:${contractName} bytecode`
+          .cwd(CONTRACTS_ROOT)
+          .quiet();
 
     if (result.exitCode !== 0) {
+      log.error(`Forge inspect failed for ${contractName}: ${result.stderr}`);
       throw new Error(
         `Error getting bytecode for ${contractName}: ${result.stderr}`
       );
     }
 
     const bytecode = result.stdout.toString().trim();
+    log.debug(`Raw bytecode for ${contractName}: ${bytecode.slice(0, 100)}...`);
+
+    if (!bytecode || bytecode === "0x") {
+      throw new Error(`Empty bytecode for ${contractName}`);
+    }
+
     const bytecodeSize = (bytecode.length - 2) / 2; // Remove 0x and divide by 2
     const maxSize = 24576; // 24KB EIP-170 limit
 
@@ -304,7 +216,7 @@ class ContractDeployer {
   }
 
   async deployContract(solFile: string, contractName: string): Promise<string> {
-    log.info(`Deploying ${contractName}...`);
+    log.debug(`Deploying ${contractName}...`);
 
     const args = this.getConstructorArgs(contractName);
     const forgeArgs = [
@@ -328,34 +240,72 @@ class ContractDeployer {
       log.debug(`Using constructor args: ${args.join(" ")}`);
     }
 
-    const result = await Bun.spawn(forgeArgs, {
-      cwd: CONTRACTS_ROOT,
-      stdout: "pipe",
-      stderr: "pipe",
-    });
+    log.debug(`Forge command: ${forgeArgs.join(" ")}`);
+    log.debug(`Working directory: ${CONTRACTS_ROOT}`);
 
-    const output = await new Response(result.stdout).text();
-    const errorOutput = await new Response(result.stderr).text();
+    let result;
+    if (args.length > 0) {
+      result = log.isLevelEnabled(LogLevel.DEBUG)
+        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --constructor-args ${args}`.cwd(
+            CONTRACTS_ROOT
+          )
+        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --constructor-args ${args}`
+            .cwd(CONTRACTS_ROOT)
+            .quiet();
+    } else {
+      result = log.isLevelEnabled(LogLevel.DEBUG)
+        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200`.cwd(
+            CONTRACTS_ROOT
+          )
+        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200`
+            .cwd(CONTRACTS_ROOT)
+            .quiet();
+    }
+
+    const output = result.stdout.toString();
+    const errorOutput = result.stderr.toString();
+
+    log.debug(`Deployment exit code: ${result.exitCode}`);
+    log.debug(`Deployment stdout: ${output}`);
+    log.debug(`Deployment stderr: ${errorOutput}`);
 
     if (result.exitCode !== 0) {
-      throw new Error(`Failed to deploy ${contractName}: ${errorOutput}`);
+      throw new Error(
+        `Failed to deploy ${contractName}: ${errorOutput || output || "Unknown error"}`
+      );
+    }
+
+    // Check if output looks like bytecode instead of JSON
+    if (output.startsWith("0x") && !output.includes("{")) {
+      log.warn(
+        `Received bytecode instead of JSON for ${contractName}. This might indicate a compilation issue.`
+      );
+      log.debug(`Raw output: ${output.slice(0, 200)}...`);
+      throw new Error(
+        `Deployment failed - received bytecode instead of deployment JSON for ${contractName}`
+      );
     }
 
     let deployData;
     try {
       deployData = JSON.parse(output);
     } catch (error) {
+      log.error(`Error parsing JSON output for ${contractName}`);
+      log.error(`Raw output: ${output}`);
       throw new Error(
-        `Error parsing deployment output for ${contractName}: ${output}`
+        `Error parsing deployment output for ${contractName}: ${output.slice(0, 500)}...`
       );
     }
 
     const deployedAddress = deployData.deployedTo;
     if (!deployedAddress) {
-      throw new Error(`Unable to get deployed address for ${contractName}`);
+      log.error(`Deployment data for ${contractName}:`, deployData);
+      throw new Error(
+        `Unable to get deployed address for ${contractName}. Full output: ${JSON.stringify(deployData, null, 2)}`
+      );
     }
 
-    log.success(`${contractName} deployed to: ${deployedAddress}`);
+    log.debug(`${contractName} deployed to: ${deployedAddress}`);
     return deployedAddress;
   }
 
@@ -367,10 +317,13 @@ class ContractDeployer {
     log.debug(`Getting storage layout for ${contractName}...`);
 
     // Get storage layout from contract
-    const layoutResult =
-      await $`forge inspect ${solFile}:${contractName} storageLayout --force --json`.cwd(
-        CONTRACTS_ROOT
-      );
+    const layoutResult = log.isLevelEnabled(LogLevel.DEBUG)
+      ? await $`forge inspect ${solFile}:${contractName} storageLayout --force --json`.cwd(
+          CONTRACTS_ROOT
+        )
+      : await $`forge inspect ${solFile}:${contractName} storageLayout --force --json`
+          .cwd(CONTRACTS_ROOT)
+          .quiet();
 
     if (layoutResult.exitCode !== 0) {
       throw new Error(
@@ -389,8 +342,9 @@ class ContractDeployer {
     // Process storage slots
     for (const slot of storageLayout.storage) {
       try {
-        const slotResult =
-          await $`cast storage --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress} ${slot.slot}`;
+        const slotResult = log.isLevelEnabled(LogLevel.DEBUG)
+          ? await $`cast storage --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress} ${slot.slot}`
+          : await $`cast storage --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress} ${slot.slot}`.quiet();
 
         if (slotResult.exitCode === 0) {
           let slotValue = slotResult.stdout.toString().trim();
@@ -425,8 +379,9 @@ class ContractDeployer {
   ): Promise<string> {
     log.debug(`Getting deployed bytecode for ${contractName}...`);
 
-    const result =
-      await $`cast code --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress}`;
+    const result = log.isLevelEnabled(LogLevel.DEBUG)
+      ? await $`cast code --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress}`
+      : await $`cast code --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress}`.quiet();
 
     if (result.exitCode !== 0) {
       throw new Error(
@@ -448,6 +403,28 @@ class ContractDeployer {
     solFile: string,
     contractName: string
   ): Promise<DeploymentResult> {
+    // Test Anvil connection first
+    log.debug(`Testing Anvil connection for ${contractName}...`);
+    try {
+      const response = await fetch(
+        `http://localhost:${this.config.anvilPort}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            method: "eth_chainId",
+            params: [],
+            id: 1,
+          }),
+        }
+      );
+      const responseData = await response.json();
+      log.debug(`Anvil response: ${JSON.stringify(responseData)}`);
+    } catch (error) {
+      throw new Error(`Failed to connect to Anvil: ${error}`);
+    }
+
     // Validate bytecode size
     await this.validateBytecode(solFile, contractName);
 
@@ -531,11 +508,11 @@ class GenesisGenerator {
       JSON.stringify(currentGenesis, null, 2),
       "utf8"
     );
-    log.success(`Added ${contractName} to genesis allocation`);
+    log.debug(`Added ${contractName} to genesis allocation`);
   }
 
   async processContract(
-    contractName: string,
+    contractName: keyof typeof CONTRACT_ADDRESSES,
     totalContracts: number
   ): Promise<void> {
     const targetAddress = CONTRACT_ADDRESSES[contractName];
@@ -550,7 +527,7 @@ class GenesisGenerator {
       ((this.processedCount + this.failedCount + this.skippedCount) * 100) /
         totalContracts
     );
-    log.info(`[${progressPct}%] Processing ${contractName}...`);
+    log.debug(`[${progressPct}%] Processing ${contractName}...`);
 
     try {
       const solFile = join(CONTRACTS_ROOT, CONTRACT_FILES[contractName]);
@@ -571,7 +548,13 @@ class GenesisGenerator {
       );
 
       this.processedCount++;
-      log.success(`Successfully processed ${contractName}`);
+      log.debug(`Successfully processed ${contractName}`);
+
+      // Show concise progress
+      const totalProcessed = this.processedCount + this.failedCount;
+      log.info(
+        `Progress: ${totalProcessed}/${Object.keys(CONTRACT_ADDRESSES).length} contracts completed`
+      );
     } catch (error) {
       this.failedCount++;
       log.error(`Failed to process ${contractName}: ${error}`);
@@ -584,7 +567,7 @@ class GenesisGenerator {
 
     const contractNames = Object.keys(CONTRACT_ADDRESSES);
     const totalContracts = contractNames.length;
-    log.info(`Found ${totalContracts} contract(s) to process`);
+    log.info(`Processing ${totalContracts} contracts...`);
 
     // Process SMARTForwarder first (no dependencies)
     if (CONTRACT_ADDRESSES.SMARTForwarder) {
@@ -598,7 +581,10 @@ class GenesisGenerator {
       }
 
       try {
-        await this.processContract(contractName, totalContracts);
+        await this.processContract(
+          contractName as keyof typeof CONTRACT_ADDRESSES,
+          totalContracts
+        );
       } catch (error) {
         log.error(`Error processing ${contractName}: ${error}`);
       }
@@ -636,8 +622,8 @@ class GenesisGenerator {
       }
     }
 
-    log.info(`Expected contracts: ${expectedTotal}`);
-    log.info(`Processed contracts: ${genesisAddresses.length}`);
+    log.debug(`Expected contracts: ${expectedTotal}`);
+    log.debug(`Processed contracts: ${genesisAddresses.length}`);
 
     if (missingContracts.length > 0) {
       log.error("The following contracts are missing from the genesis file:");
@@ -765,7 +751,7 @@ function parseCliArgs(): Config {
 
       case "-p":
       case "--port":
-        const port = parseInt(args[++i], 10);
+        const port = parseInt(args[++i] ?? "", 10);
         if (isNaN(port)) {
           console.error("Option --port requires a valid port number");
           process.exit(1);
@@ -775,7 +761,7 @@ function parseCliArgs(): Config {
 
       case "-b":
       case "--block-time":
-        const blockTime = parseInt(args[++i], 10);
+        const blockTime = parseInt(args[++i] ?? "", 10);
         if (isNaN(blockTime)) {
           console.error("Option --block-time requires a valid number");
           process.exit(1);
@@ -818,13 +804,32 @@ async function main(): Promise<void> {
   log.info(`Contracts root: ${CONTRACTS_ROOT}`);
   log.info(`Anvil port: ${config.anvilPort}`);
 
-  const anvilManager = new AnvilManager(config);
+  // Check prerequisites
+  log.info("Checking prerequisites...");
+
+  // Check if forge is available
+  try {
+    const forgeResult = log.isLevelEnabled(LogLevel.DEBUG)
+      ? await $`forge --version`.cwd(CONTRACTS_ROOT)
+      : await $`forge --version`.cwd(CONTRACTS_ROOT).quiet();
+    log.debug(`Forge version: ${forgeResult.stdout}`);
+  } catch (error) {
+    throw new Error("Forge not found. Please install Foundry.");
+  }
+
+  // Check if anvil is available
+  try {
+    const anvilResult = log.isLevelEnabled(LogLevel.DEBUG)
+      ? await $`anvil --version`
+      : await $`anvil --version`.quiet();
+    log.debug(`Anvil version: ${anvilResult.stdout}`);
+  } catch (error) {
+    throw new Error("Anvil not found. Please install Foundry.");
+  }
+
   const generator = new GenesisGenerator(config);
 
   try {
-    // Start Anvil
-    await anvilManager.start();
-
     // Initialize genesis file
     await generator.initializeGenesisFile();
 
@@ -854,11 +859,6 @@ async function main(): Promise<void> {
   } catch (error) {
     log.error(`Genesis generation failed: ${error}`);
     process.exit(1);
-  } finally {
-    // Cleanup
-    if (!config.keepAnvilRunning) {
-      await anvilManager.stop();
-    }
   }
 }
 

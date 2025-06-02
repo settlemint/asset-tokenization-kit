@@ -3,10 +3,18 @@
   "ui": "tui",
   "tasks": {
     "ci": {
-      "dependsOn": ["compile", "codegen", "lint", "build"]
+      "dependsOn": ["format", "compile", "codegen", "lint", "build"]
     },
-    "ci:local": {
-      "dependsOn": ["format", "ci"]
+    "ci:gha": {
+      "dependsOn": ["publish", "ci"]
+    },
+    "//#version": {
+      "cache": false,
+      "passThroughEnv": [
+        "GITHUB_REF_SLUG",
+        "GITHUB_REF_NAME",
+        "GITHUB_SHA_SHORT"
+      ]
     },
     "build": {
       "dependsOn": ["codegen"]
@@ -17,8 +25,18 @@
     "compile": {
       "dependsOn": ["dependencies"]
     },
+    "package": {
+      "cache": false,
+      "dependsOn": ["//#version"]
+    },
+    "publish": {
+      "cache": false,
+      "dependsOn": ["package"]
+    },
     "dependencies": {},
     "format": {},
-    "lint": {}
+    "lint": {
+      "dependsOn": ["//#version"]
+    }
   }
 }
