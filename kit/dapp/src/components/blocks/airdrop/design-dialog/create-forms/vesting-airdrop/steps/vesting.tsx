@@ -9,7 +9,7 @@ import { useFormContext, useWatch, type UseFormReturn } from "react-hook-form";
 
 export function Vesting() {
   const { control } = useFormContext<CreateVestingAirdropInput>();
-  const t = useTranslations("private.airdrops.create.vesting");
+  const t = useTranslations("private.airdrops.create");
 
   const cliffDurationValue = useWatch({
     control,
@@ -19,8 +19,8 @@ export function Vesting() {
     value,
     label:
       Number(cliffDurationValue) === 1
-        ? t(`time-units.singular.${value}`)
-        : t(`time-units.plural.${value}`),
+        ? t(`vesting.time-units.singular.${value}`)
+        : t(`vesting.time-units.plural.${value}`),
   }));
 
   const vestingDurationValue = useWatch({
@@ -31,14 +31,14 @@ export function Vesting() {
     value,
     label:
       Number(vestingDurationValue) === 1
-        ? t(`time-units.singular.${value}`)
-        : t(`time-units.plural.${value}`),
+        ? t(`vesting.time-units.singular.${value}`)
+        : t(`vesting.time-units.plural.${value}`),
   }));
 
   return (
     <FormStep
-      title={t("title")}
-      description={t("description")}
+      title={t(stepDefinition.title)}
+      description={t(stepDefinition.description)}
       contentClassName="space-y-6"
     >
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 w-full pt-6">
@@ -46,8 +46,8 @@ export function Vesting() {
           control={control}
           type="datetime-local"
           name="claimPeriodEnd"
-          label={t("claim-period-end-label")}
-          description={t("claim-period-end-description")}
+          label={t("vesting.claim-period-end-label")}
+          description={t("vesting.claim-period-end-description")}
           required
         />
       </div>
@@ -56,8 +56,8 @@ export function Vesting() {
           control={control}
           type="number"
           name="cliffDuration.value"
-          label={t("cliff-duration-label")}
-          description={t("cliff-duration-description")}
+          label={t("vesting.cliff-duration-label")}
+          description={t("vesting.cliff-duration-description")}
           required
           min={0}
           postfix={
@@ -74,8 +74,8 @@ export function Vesting() {
           control={control}
           type="number"
           name="vestingDuration.value"
-          label={t("vesting-duration-label")}
-          description={t("vesting-duration-description")}
+          label={t("vesting.vesting-duration-label")}
+          description={t("vesting.vesting-duration-description")}
           required
           min={0}
           postfix={
@@ -130,3 +130,10 @@ const validateClaimPeriodEnd = async (
 };
 
 Vesting.customValidation = [validateClaimPeriodEnd];
+
+export const stepDefinition = {
+  id: "vesting",
+  title: "vesting.title",
+  description: "vesting.description",
+  component: Vesting,
+} as const;

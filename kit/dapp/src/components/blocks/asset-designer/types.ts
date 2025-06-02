@@ -7,17 +7,15 @@ type TranslationKeys = Parameters<
 >[0];
 
 export interface AssetFormStep {
-  id: string;
-  title: TranslationKeys;
-  description: TranslationKeys;
+  readonly id: string;
+  readonly title: TranslationKeys;
+  readonly description: TranslationKeys;
 }
 
 // Interface that each asset form will implement
 export interface AssetFormDefinition {
   // Steps for this asset type
-  steps: AssetFormStep[];
-  // Component for rendering each step
-  getStepComponent: (stepId: string) => React.ComponentType<any> | null;
+  steps: readonly AssetFormStep[];
 }
 
 // Registry of asset forms
@@ -49,13 +47,6 @@ export const assetForms: Record<
     import("../create-forms/stablecoin/form").then((m) => ({
       default: m.stablecoinFormDefinition,
     })),
-};
-
-// Common step for asset type selection
-export const typeSelectionStep: AssetFormStep = {
-  id: "type",
-  title: "select-asset-type.title",
-  description: "select-asset-type.description",
 };
 
 // Document types
