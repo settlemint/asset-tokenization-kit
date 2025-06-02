@@ -118,8 +118,4 @@ const cryptoSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
 // Export crypto form definition for the asset designer
 export const cryptoFormDefinition: AssetFormDefinition = {
   steps: cryptoSteps,
-  getStepComponent: (stepId: string) => {
-    const step = cryptoSteps.find((s) => s.id === stepId);
-    return step?.component || null;
-  },
 };

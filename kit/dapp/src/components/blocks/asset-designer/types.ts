@@ -16,8 +16,6 @@ export interface AssetFormStep {
 export interface AssetFormDefinition {
   // Steps for this asset type
   steps: AssetFormStep[];
-  // Component for rendering each step
-  getStepComponent: (stepId: string) => React.ComponentType<any> | null;
 }
 
 // Registry of asset forms

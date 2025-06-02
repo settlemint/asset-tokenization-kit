@@ -213,8 +213,4 @@ const stablecoinSteps = [
 // Export form definition for the asset designer
 export const stablecoinFormDefinition: AssetFormDefinition = {
   steps: stablecoinSteps,
-  getStepComponent: (stepId: string) => {
-    const step = stablecoinSteps.find((s) => s.id === stepId);
-    return step?.component || null;
-  },
 };

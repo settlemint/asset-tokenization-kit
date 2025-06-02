@@ -142,8 +142,4 @@ const fundSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
 // Export form definition for the asset designer
 export const fundFormDefinition: AssetFormDefinition = {
   steps: fundSteps,
-  getStepComponent: (stepId: string) => {
-    const step = fundSteps.find((s) => s.id === stepId);
-    return step?.component || null;
-  },
 };

@@ -116,8 +116,4 @@ const bondSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
 // Export bond form definition for the asset designer
 export const bondFormDefinition: AssetFormDefinition = {
   steps: bondSteps,
-  getStepComponent: (stepId: string) => {
-    const step = bondSteps.find((s) => s.id === stepId);
-    return step?.component || null;
-  },
 };
