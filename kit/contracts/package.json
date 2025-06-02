@@ -13,7 +13,7 @@
     "compile:forge": "settlemint scs foundry build --sizes",
     "compile:hardhat": "settlemint scs hardhat build",
     "codegen:types": "bun run tools/codegen-types.ts",
-    "codegen:genesis": "bun run tools/codegen.ts",
+    "codegen:genesis": "bun run tools/codegen-genesis.ts",
     "lint": "solhint --config .solhint.json ./contracts/**/*.sol",
     "format:forge": "settlemint scs foundry format",
     "format:prettier": "prettier --write .",
