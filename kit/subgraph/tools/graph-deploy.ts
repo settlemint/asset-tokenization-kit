@@ -49,6 +49,7 @@ interface GraphPaths {
   deployedAddressesFile: string;
   subgraphConfig: string;
   schemaFile: string;
+  subgraphYaml: string;
 }
 
 interface DeployedAddresses {
@@ -68,8 +69,10 @@ const EXIT_CODES = {
 
 type ExitCode = (typeof EXIT_CODES)[keyof typeof EXIT_CODES];
 
-const GRAPH_NODE_URL = "http://localhost:8020";
-const SUBGRAPH_NAME = "smart-protocol";
+const LOCAL_GRAPH_NODE = "http://localhost:8020";
+const REMOTE_IPFS_NODE = "https://api.thegraph.com/ipfs/";
+const GRAPH_NAME = "smart-protocol";
+const GRAPH_VERSION_PREFIX = "v1.0.0";
 
 // ============================================================================
 // GLOBAL STATE AND CLEANUP
@@ -244,11 +247,12 @@ async function initGraphPaths(): Promise<GraphPaths> {
         contractsRoot,
         "ignition",
         "deployments",
-        "chain-31337",
+        "smart-protocol-local",
         "deployed_addresses.json"
       ),
       subgraphConfig: join(subgraphRoot, "subgraph.json"),
       schemaFile: join(subgraphRoot, "schema.graphql"),
+      subgraphYaml: join(subgraphRoot, "subgraph.yaml"),
     };
 
     logger.debug("Initialized graph paths:", paths);
@@ -299,7 +303,7 @@ async function validateLocalEnvironment(): Promise<void> {
   logger.info("Checking local Graph node...");
 
   try {
-    const response = await fetch(`${GRAPH_NODE_URL}/graphql`, {
+    const response = await fetch(`${LOCAL_GRAPH_NODE}/graphql`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query: "{ __schema { types { name } } }" }),
@@ -312,7 +316,7 @@ async function validateLocalEnvironment(): Promise<void> {
     logger.success("Local Graph node is accessible");
   } catch (error) {
     logger.error("Failed to connect to local Graph node:", error);
-    logger.error(`Make sure Graph node is running at ${GRAPH_NODE_URL}`);
+    logger.error(`Make sure Graph node is running at ${LOCAL_GRAPH_NODE}`);
     throw error;
   }
 }
@@ -400,17 +404,50 @@ async function generateCode(): Promise<void> {
 }
 
 /**
+ * Create local subgraph
+ */
+async function createLocalSubgraph(
+  graphName: string = GRAPH_NAME
+): Promise<void> {
+  logger.info(`Creating local subgraph: ${graphName}`);
+
+  try {
+    // Create new subgraph
+    await Bun.$`bunx graph create --node ${LOCAL_GRAPH_NODE} ${graphName}`.cwd(
+      graphPaths!.subgraphRoot
+    );
+    logger.success(`Created subgraph: ${graphName}`);
+  } catch (error) {
+    logger.warn("Failed to create subgraph (it may already exist)");
+    // Continue with deployment even if creation fails
+  }
+}
+
+/**
  * Deploy to local Graph node
  */
 async function deployLocal(): Promise<void> {
   try {
-    logger.info("Deploying to local Graph node...");
+    const graphName = GRAPH_NAME;
+    const versionLabel = `${GRAPH_VERSION_PREFIX}.${Date.now()}`;
 
-    await Bun.$`bun run create-local`.cwd(graphPaths!.subgraphRoot);
-    await Bun.$`bun run deploy-local`.cwd(graphPaths!.subgraphRoot);
+    logger.info("Deploying subgraph locally...");
+    logger.info(`  Name: ${graphName}`);
+    logger.info(`  Version: ${versionLabel}`);
+    logger.info(`  Graph Node: ${LOCAL_GRAPH_NODE}`);
+    logger.info(`  IPFS: ${REMOTE_IPFS_NODE}`);
 
-    logger.success(
-      `Successfully deployed to local Graph node at ${GRAPH_NODE_URL}`
+    // Create subgraph first
+    await createLocalSubgraph(graphName);
+
+    // Deploy subgraph
+    await Bun.$`bunx graph deploy --version-label ${versionLabel} --node ${LOCAL_GRAPH_NODE} --ipfs ${REMOTE_IPFS_NODE} ${graphName} ${graphPaths!.subgraphYaml}`.cwd(
+      graphPaths!.subgraphRoot
+    );
+
+    logger.success("Subgraph deployed successfully!");
+    logger.info(
+      `  Access your subgraph at: ${LOCAL_GRAPH_NODE}/subgraphs/name/${graphName}`
     );
   } catch (error) {
     logger.error("Local deployment failed:", error);
@@ -425,9 +462,12 @@ async function deployRemote(): Promise<void> {
   try {
     logger.info("Deploying to SettleMint...");
 
-    await Bun.$`bun run deploy`.cwd(graphPaths!.subgraphRoot);
+    // Change to project root for SettleMint deployment
+    await Bun.$`bunx settlemint scs subgraph deploy`.cwd(
+      graphPaths!.projectRoot
+    );
 
-    logger.success("Successfully deployed to SettleMint");
+    logger.success("Subgraph deployed to SettleMint successfully!");
   } catch (error) {
     logger.error("SettleMint deployment failed:", error);
     throw error;

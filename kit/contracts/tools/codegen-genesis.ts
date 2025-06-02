@@ -213,7 +213,7 @@ class ContractDeployer {
   }
 
   async deployContract(solFile: string, contractName: string): Promise<string> {
-    log.info(`Deploying ${contractName}...`);
+    log.debug(`Deploying ${contractName}...`);
 
     const args = this.getConstructorArgs(contractName);
     const forgeArgs = [
@@ -296,7 +296,7 @@ class ContractDeployer {
       );
     }
 
-    log.success(`${contractName} deployed to: ${deployedAddress}`);
+    log.debug(`${contractName} deployed to: ${deployedAddress}`);
     return deployedAddress;
   }
 
@@ -494,7 +494,7 @@ class GenesisGenerator {
       JSON.stringify(currentGenesis, null, 2),
       "utf8"
     );
-    log.success(`Added ${contractName} to genesis allocation`);
+    log.debug(`Added ${contractName} to genesis allocation`);
   }
 
   async processContract(
@@ -513,7 +513,7 @@ class GenesisGenerator {
       ((this.processedCount + this.failedCount + this.skippedCount) * 100) /
         totalContracts
     );
-    log.info(`[${progressPct}%] Processing ${contractName}...`);
+    log.debug(`[${progressPct}%] Processing ${contractName}...`);
 
     try {
       const solFile = join(CONTRACTS_ROOT, CONTRACT_FILES[contractName]);
@@ -534,7 +534,13 @@ class GenesisGenerator {
       );
 
       this.processedCount++;
-      log.success(`Successfully processed ${contractName}`);
+      log.debug(`Successfully processed ${contractName}`);
+
+      // Show concise progress
+      const totalProcessed = this.processedCount + this.failedCount;
+      log.info(
+        `Progress: ${totalProcessed}/${Object.keys(CONTRACT_ADDRESSES).length} contracts completed`
+      );
     } catch (error) {
       this.failedCount++;
       log.error(`Failed to process ${contractName}: ${error}`);
@@ -547,7 +553,7 @@ class GenesisGenerator {
 
     const contractNames = Object.keys(CONTRACT_ADDRESSES);
     const totalContracts = contractNames.length;
-    log.info(`Found ${totalContracts} contract(s) to process`);
+    log.info(`Processing ${totalContracts} contracts...`);
 
     // Process SMARTForwarder first (no dependencies)
     if (CONTRACT_ADDRESSES.SMARTForwarder) {
@@ -602,8 +608,8 @@ class GenesisGenerator {
       }
     }
 
-    log.info(`Expected contracts: ${expectedTotal}`);
-    log.info(`Processed contracts: ${genesisAddresses.length}`);
+    log.debug(`Expected contracts: ${expectedTotal}`);
+    log.debug(`Processed contracts: ${genesisAddresses.length}`);
 
     if (missingContracts.length > 0) {
       log.error("The following contracts are missing from the genesis file:");
