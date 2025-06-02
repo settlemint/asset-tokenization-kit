@@ -44,9 +44,8 @@ export function AssetDesignerDialog({
     const steps = [
       {
         id: "type",
-        // Hardcode the translations to avoid TypeScript errors with t.raw
-        title: "Select asset type",
-        description: "Choose the type of digital asset you want to create.",
+        title: t("select-asset-type.title"),
+        description: t("select-asset-type.description"),
       },
     ];
 
@@ -57,8 +56,8 @@ export function AssetDesignerDialog({
         .filter((step) => isMicaEnabled || step.id !== "regulation")
         .map((step) => ({
           id: step.id,
-          title: t(step.title as any),
-          description: t(step.description as any),
+          title: t(step.title),
+          description: t(step.description),
         }));
 
       steps.push(...filteredSteps);

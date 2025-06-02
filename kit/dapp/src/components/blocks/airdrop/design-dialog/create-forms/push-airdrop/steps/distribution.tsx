@@ -69,3 +69,9 @@ const validateDistributionCap = async (
 };
 
 Distribution.customValidation = [validateDistributionCap];
+export const stepDefinition = {
+  id: "distribution",
+  title: "distribution.title",
+  description: "distribution.description",
+  component: Distribution,
+} as const;

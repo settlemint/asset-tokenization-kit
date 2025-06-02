@@ -13,17 +13,17 @@ import { useFormContext } from "react-hook-form";
 export function Distribution({ children }: PropsWithChildren) {
   const { setError, clearErrors, setValue } =
     useFormContext<CreateAirdropInput>();
-  const t = useTranslations("private.airdrops.create.distribution");
+  const t = useTranslations("private.airdrops.create");
 
   return (
     <FormStep
-      title={t("title")}
-      description={t("description")}
+      title={t(stepDefinition.title)}
+      description={t(stepDefinition.description)}
       contentClassName="space-y-4"
     >
       {children}
       <FormLabel>
-        {t("distribution-label")}
+        {t("distribution.distribution-label")}
         <span className="-ml-1 text-destructive">*</span>
       </FormLabel>
       <DocumentUpload
@@ -74,7 +74,9 @@ export function Distribution({ children }: PropsWithChildren) {
         }}
         acceptedFileTypes={["text/csv"]}
       />
-      <FormDescription>{t("distribution-description")}</FormDescription>
+      <FormDescription>
+        {t("distribution.distribution-description")}
+      </FormDescription>
 
       <TranslatableFormFieldMessage />
     </FormStep>
@@ -84,3 +86,10 @@ export function Distribution({ children }: PropsWithChildren) {
 Distribution.validatedFields = [
   "distribution",
 ] satisfies (keyof CreateAirdropInput)[];
+
+export const stepDefinition = {
+  id: "distribution",
+  title: "distribution.title",
+  description: "distribution.description",
+  component: Distribution,
+} as const;

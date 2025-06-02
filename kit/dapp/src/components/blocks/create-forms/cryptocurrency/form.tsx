@@ -4,12 +4,16 @@ import { CryptoConfigurationCard } from "@/components/blocks/create-forms/crypto
 import { Form } from "@/components/blocks/form/form";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createCryptoCurrency } from "@/lib/mutations/cryptocurrency/create/create-action";
-import { CreateCryptoCurrencySchema } from "@/lib/mutations/cryptocurrency/create/create-schema";
+import {
+  CreateCryptoCurrencySchema,
+  type CreateCryptoCurrencyInput,
+} from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/cryptocurrency-factory/cryptocurrency-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
+import type { UseFormReturn } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
 import { stepDefinition as summaryStep } from "../common/summary/summary";
@@ -47,13 +51,19 @@ export function CreateCryptoCurrencyForm({
     <SummaryComponent
       key="summary"
       configurationCard={<CryptoConfigurationCard />}
-      predictAddress={getPredictedAddress}
-      isAddressAvailable={isAddressAvailable}
+      isAddressAvailable={async (
+        form: UseFormReturn<CreateCryptoCurrencyInput>
+      ) => {
+        const values = form.getValues();
+        const predictedAddress = await getPredictedAddress(values);
+        const isAvailable = await isAddressAvailable(predictedAddress);
+        return isAvailable ? predictedAddress : false;
+      }}
     />,
   ];
 
   // Define step order and mapping
-  const stepIdToIndex = {
+  const stepIdToIndex: Record<(typeof cryptoSteps)[number]["id"], number> = {
     details: 0,
     configuration: 1,
     admins: 2,
@@ -94,6 +104,9 @@ export function CreateCryptoCurrencyForm({
       }}
       secureForm={true}
       hideStepProgress={true}
+      currentStep={
+        stepIdToIndex[currentStepId as keyof typeof stepIdToIndex] ?? 0
+      }
       toast={{
         loading: t("toasts.cryptocurrency.submitting"),
         success: t("toasts.cryptocurrency.success"),
@@ -115,8 +128,4 @@ const cryptoSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
 // Export crypto form definition for the asset designer
 export const cryptoFormDefinition: AssetFormDefinition = {
   steps: cryptoSteps,
-  getStepComponent: (stepId: string) => {
-    const step = cryptoSteps.find((s) => s.id === stepId);
-    return step?.component || null;
-  },
 };
