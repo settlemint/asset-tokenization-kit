@@ -15,6 +15,9 @@ jobs:
     name: Test
     runs-on: namespace-profile-atk
     environment: ${{ github.base_ref == 'v1' && 'v1' || 'staging' }}
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
@@ -61,20 +64,6 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@0d28d3144d3a25ea2cc349d6e59901c4ff469b3b # v2.7.0
 
-      - name: Run chart-testing (list-changed)
-        id: list-changed
-        run: |
-          changed=$(ct list-changed --chart-dirs kit/charts --target-branch main)
-          if [[ -n "$changed" ]]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Run chart-testing (lint)
-        if: steps.list-changed.outputs.changed == 'true'
-        run:
-          ct lint --chart-dirs kit/charts --check-version-increment=false
-          --target-branch main
-
       - name: Install Bun dependencies
         run: bun install
 
@@ -86,7 +75,7 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
-      - name: Turbo!
+      - name: Turbo - CI
         run: bun run ci
 
       - name: Store predeployed output
@@ -97,9 +86,6 @@ jobs:
             kit/contracts/genesis-output.json
             kit/subgraph/subgraph-output.txt
             kit/contracts/portal/*.json
-
-      # - name: Turbo!
-      #   run: bunx turbo deploy:local
 
   security:
     name: Security

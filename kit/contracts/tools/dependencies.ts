@@ -1,8 +1,6 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun";
-import { existsSync } from "node:fs";
-import { readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { logger } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
@@ -19,21 +17,23 @@ const log = logger;
 /**
  * Find the contracts directory using intelligent root detection
  */
-function findContractsDirectory(): string {
+async function findContractsDirectory(): Promise<string> {
   log.debug("Finding contracts directory...");
 
   // If we're already in kit/contracts with foundry.toml, use current directory
-  if (existsSync("foundry.toml")) {
+  const foundryFile = Bun.file("foundry.toml");
+  if (await foundryFile.exists()) {
     log.debug("Found foundry.toml in current directory");
     return process.cwd();
   }
 
   // Use root detection to find contracts
   try {
-    const contractsPath = getKitProjectPath("contracts");
+    const contractsPath = await getKitProjectPath("contracts");
 
     // Verify foundry.toml exists
-    if (!existsSync(join(contractsPath, "foundry.toml"))) {
+    const foundryPath = Bun.file(join(contractsPath, "foundry.toml"));
+    if (!(await foundryPath.exists())) {
       throw new Error("foundry.toml not found in contracts directory");
     }
 
@@ -53,11 +53,11 @@ function findContractsDirectory(): string {
 async function hasDependencies(projectDir: string): Promise<boolean> {
   const foundryToml = join(projectDir, "foundry.toml");
 
-  if (!existsSync(foundryToml)) {
+  const file = Bun.file(foundryToml);
+  if (!(await file.exists())) {
     return false;
   }
 
-  const file = Bun.file(foundryToml);
   const content = await file.text();
 
   // Check for [dependencies] section
@@ -101,23 +101,34 @@ async function installSoldeerDependencies(projectDir: string): Promise<void> {
 async function findOnChainIdDirs(projectDir: string): Promise<string[]> {
   const dependenciesDir = join(projectDir, "dependencies");
 
-  if (!existsSync(dependenciesDir)) {
+  // Check if dependencies directory exists
+  let dirExists = false;
+  try {
+    const glob = new Bun.Glob("*");
+    const scanner = glob.scan({ cwd: dependenciesDir, onlyFiles: false });
+    await scanner.next();
+    dirExists = true;
+  } catch {
+    dirExists = false;
+  }
+
+  if (!dirExists) {
     log.debug("No dependencies directory found");
     return [];
   }
 
-  const entries = await readdir(dependenciesDir);
   const onchainidDirs: string[] = [];
 
-  for (const entry of entries) {
-    if (entry.startsWith("@onchainid-")) {
-      const fullPath = join(dependenciesDir, entry);
-      const stats = await stat(fullPath);
-      if (stats.isDirectory()) {
-        onchainidDirs.push(fullPath);
-        log.debug(`Found OnChain ID directory: ${entry}`);
-      }
-    }
+  // Use glob to find @onchainid-* directories
+  const glob = new Bun.Glob("@onchainid-*");
+
+  for await (const dir of glob.scan({
+    cwd: dependenciesDir,
+    onlyFiles: false,
+  })) {
+    const fullPath = join(dependenciesDir, dir);
+    onchainidDirs.push(fullPath);
+    log.debug(`Found OnChain ID directory: ${dir}`);
   }
 
   return onchainidDirs;
@@ -128,18 +139,12 @@ async function findOnChainIdDirs(projectDir: string): Promise<string[]> {
  */
 async function findSolidityFiles(directory: string): Promise<string[]> {
   const solFiles: string[] = [];
-  const entries = await readdir(directory);
 
-  for (const entry of entries) {
-    const fullPath = join(directory, entry);
-    const stats = await stat(fullPath);
+  // Use glob to find all .sol files recursively
+  const glob = new Bun.Glob("**/*.sol");
 
-    if (stats.isDirectory()) {
-      const subFiles = await findSolidityFiles(fullPath);
-      solFiles.push(...subFiles);
-    } else if (entry.endsWith(".sol")) {
-      solFiles.push(fullPath);
-    }
+  for await (const file of glob.scan({ cwd: directory })) {
+    solFiles.push(join(directory, file));
   }
 
   return solFiles;
@@ -218,7 +223,7 @@ async function main(): Promise<void> {
 
   try {
     // Find the contracts directory
-    const projectDir = findContractsDirectory();
+    const projectDir = await findContractsDirectory();
     log.info(`Using contracts directory: ${projectDir}`);
 
     // Check if forge is installed
