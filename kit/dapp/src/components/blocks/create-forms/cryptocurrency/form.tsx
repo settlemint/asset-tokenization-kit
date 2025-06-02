@@ -94,6 +94,9 @@ export function CreateCryptoCurrencyForm({
       }}
       secureForm={true}
       hideStepProgress={true}
+      currentStep={
+        stepIdToIndex[currentStepId as keyof typeof stepIdToIndex] ?? 0
+      }
       toast={{
         loading: t("toasts.cryptocurrency.submitting"),
         success: t("toasts.cryptocurrency.success"),

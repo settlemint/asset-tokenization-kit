@@ -58,6 +58,7 @@ interface FormProps<
   onStepChange?: (newStep: number) => void;
   onSuccess?: () => void;
   disablePreviousButton?: boolean;
+  currentStep?: number;
 }
 
 export function Form<
@@ -83,12 +84,18 @@ export function Form<
   onStepChange,
   hideStepProgress = false,
   onSuccess,
+  currentStep: currentStepProp = 0,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(currentStepProp);
   const t = useTranslations();
   const totalSteps = Array.isArray(children) ? children.length : 1;
   const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
     useState(false);
+
+  // Sync internal step state when currentStep prop changes
+  useEffect(() => {
+    setCurrentStep(currentStepProp);
+  }, [currentStepProp]);
 
   SetErrorFunction((error): string => {
     // First check if there's a custom error message defined in the schema

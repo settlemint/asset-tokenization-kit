@@ -98,6 +98,9 @@ export function CreateEquityForm({
         loading: t("toasts.equity.submitting"),
         success: t("toasts.equity.success"),
       }}
+      currentStep={
+        stepIdToIndex[currentStepId as keyof typeof stepIdToIndex] ?? 0
+      }
       onStepChange={onStepChange}
       onAnyFieldChange={onAnyFieldChange}
       onOpenChange={onOpenChange}

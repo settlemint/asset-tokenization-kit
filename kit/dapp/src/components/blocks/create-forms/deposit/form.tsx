@@ -132,6 +132,9 @@ export function CreateDepositForm({
         loading: t("toasts.deposit.submitting"),
         success: t("toasts.deposit.success"),
       }}
+      currentStep={
+        stepIdToIndex[currentStepId as keyof typeof stepIdToIndex] ?? 0
+      }
       onStepChange={onStepChange}
       onAnyFieldChange={onAnyFieldChange}
       onOpenChange={onOpenChange}

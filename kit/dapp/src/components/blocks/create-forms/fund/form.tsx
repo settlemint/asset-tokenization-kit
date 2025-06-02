@@ -122,6 +122,9 @@ export function CreateFundForm({
         loading: t("toasts.fund.submitting"),
         success: t("toasts.fund.success"),
       }}
+      currentStep={
+        stepIdToIndex[currentStepId as keyof typeof stepIdToIndex] ?? 0
+      }
       onStepChange={onStepChange}
       onAnyFieldChange={onAnyFieldChange}
       onOpenChange={onOpenChange}
