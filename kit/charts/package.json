@@ -11,9 +11,10 @@
   "scripts": {
     "dependencies": "bun run tools/dependencies.ts",
     "compile": "helm template atk --output-dir dist --include-crds",
-    "helm:package": "helm package atk --destination .",
-    "helm:push": "helm push atk-*.tgz oci://ghcr.io/settlemint && helm push ./atk-*.tgz oci://harbor.settlemint.com/atk",
-    "helm:proxy": "bun run tools/package.ts"
+    "package:harbor": "bun run tools/package.ts",
+    "package:pack": "helm package atk --destination .",
+    "package:push:ghcr": "helm push atk-*.tgz oci://ghcr.io/settlemint",
+    "package:push:harbor": "helm push ./atk-*.tgz oci://harbor.settlemint.com/atk"
   },
   "dependencies": {},
   "devDependencies": {},

@@ -7,6 +7,22 @@
     },
     "compile": {
       "outputs": ["dist/**"]
+    },
+    "package": {
+      "dependsOn": ["package:push:ghcr", "package:push:harbor"]
+    },
+    "package:harbor": {
+      "dependsOn": ["dependencies"]
+    },
+    "package:pack": {
+      "dependsOn": ["package:harbor"],
+      "outputs": ["atk-*.tgz"]
+    },
+    "package:push:ghcr": {
+      "dependsOn": ["package:pack"]
+    },
+    "package:push:harbor": {
+      "dependsOn": ["package:pack"]
     }
   }
 }

@@ -3,7 +3,7 @@
   "ui": "tui",
   "tasks": {
     "ci": {
-      "dependsOn": ["compile", "codegen", "lint", "build"]
+      "dependsOn": ["compile", "codegen", "lint", "build", "package"]
     },
     "ci:local": {
       "dependsOn": ["format", "ci"]
@@ -16,6 +16,9 @@
     },
     "compile": {
       "dependsOn": ["dependencies"]
+    },
+    "package": {
+      "dependsOn": ["build"]
     },
     "dependencies": {},
     "format": {},
