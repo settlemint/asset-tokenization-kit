@@ -36,9 +36,17 @@ export const OnChainAirdropSchema = t.Object(
       .Transform(t.String())
       .Decode(transformTypeToAirdropType)
       .Encode((value: AirdropType) => value),
-    asset: t.EthereumAddress({
-      description: "The contract address of the token being airdropped",
-    }),
+    asset: t.Object(
+      {
+        id: t.EthereumAddress(),
+        symbol: t.AssetSymbol(),
+        type: t.AssetType(),
+        decimals: t.Decimals(),
+      },
+      {
+        description: "The asset being airdropped",
+      }
+    ),
     totalClaimed: t.BigDecimal({
       description:
         "The total claimed amount of the token in a human-readable decimal format",

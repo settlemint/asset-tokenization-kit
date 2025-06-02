@@ -11,7 +11,12 @@ export const AirdropFragment = theGraphGraphqlKit(`
   fragment AirdropFragment on Airdrop {
     type: __typename
     id
-    asset: token
+    asset: token {
+      id
+      symbol
+      type
+      decimals
+    }
     totalClaimed
     totalClaimedExact
     totalRecipients

@@ -39,14 +39,15 @@ export function columns() {
     }),
     columnHelper.accessor("asset", {
       header: t("columns.asset"),
-      cell: ({ getValue }) => <EvmAddress address={getValue()} />,
+      cell: ({ row }) => <EvmAddress address={row.original.asset.id} />,
     }),
     columnHelper.accessor("totalClaimed", {
       header: t("columns.total-claimed"),
-      cell: ({ getValue }) => {
+      cell: ({ row, getValue }) => {
         const value = getValue();
         return formatNumber(value, {
           locale,
+          token: row.original.asset.symbol,
         });
       },
     }),
