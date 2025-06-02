@@ -50,7 +50,7 @@ abstract contract AbstractCountryComplianceModule is AbstractComplianceModule {
     /// instance.
     /// This allows the deployer to initially manage both general module settings (via `DEFAULT_ADMIN_ROLE`) and any
     /// global country lists the module might implement.
-    constructor() AbstractComplianceModule() {
+    constructor(address _trustedForwarder) AbstractComplianceModule(_trustedForwarder) {
         _grantRole(GLOBAL_LIST_MANAGER_ROLE, _msgSender());
     }
 

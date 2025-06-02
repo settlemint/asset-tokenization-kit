@@ -49,6 +49,12 @@ contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
     /// (`false`) from the global allow-list.
     event GlobalAllowedCountriesUpdated(uint16[] countries, bool indexed allowed);
 
+    // --- Constructor ---
+    /// @notice Constructor for the `CountryAllowListComplianceModule`.
+    /// @dev When a contract inheriting from `CountryAllowListComplianceModule` is deployed, this constructor is called.
+    /// It calls the constructor of `AbstractCountryComplianceModule` with the `_trustedForwarder` address.
+    constructor(address _trustedForwarder) AbstractCountryComplianceModule(_trustedForwarder) { }
+
     // --- Global Allow List Management (Manager Role Only) ---
 
     /// @notice Adds or removes multiple countries from this module instance's global allow-list.

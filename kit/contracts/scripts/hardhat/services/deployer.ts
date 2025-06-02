@@ -1,6 +1,6 @@
+import hre from "hardhat";
 import { existsSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import hre from "hardhat";
 import type {
   Abi,
   Account,
@@ -32,6 +32,8 @@ type ContractName = keyof Pick<
   | "equityFactory"
   | "fundFactory"
   | "stablecoinFactory"
+  | "countryAllowListModule"
+  | "countryBlockListModule"
 >;
 
 // Helper type for Viem contract instances
@@ -220,6 +222,16 @@ export class SmartProtocolDeployer {
     });
   }
 
+  public getContractAddress(contractName: ContractName): Address {
+    if (!this._deployedContractAddresses) {
+      throw new Error(
+        "Contracts not deployed. Call setUp() before accessing contracts."
+      );
+    }
+
+    return this._deployedContractAddresses[contractName]?.address;
+  }
+
   // --- Unified Contract Accessor Methods ---
 
   public getSystemContract(
@@ -292,6 +304,18 @@ export class SmartProtocolDeployer {
     walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["stablecoinFactory"] {
     return this.getContract("stablecoinFactory", walletClient);
+  }
+
+  public getCountryAllowListModuleContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): SMARTOnboardingContracts["countryAllowListModule"] {
+    return this.getContract("countryAllowListModule", walletClient);
+  }
+
+  public getCountryBlockListModuleContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): SMARTOnboardingContracts["countryBlockListModule"] {
+    return this.getContract("countryBlockListModule", walletClient);
   }
 }
 

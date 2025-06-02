@@ -50,6 +50,12 @@ contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
     /// (`false`) from the global block-list.
     event GlobalBlockedCountriesUpdated(uint16[] countries, bool indexed blocked);
 
+    // --- Constructor ---
+    /// @notice Constructor for the `CountryBlockListComplianceModule`.
+    /// @dev When a contract inheriting from `CountryBlockListComplianceModule` is deployed, this constructor is called.
+    /// It calls the constructor of `AbstractCountryComplianceModule` with the `_trustedForwarder` address.
+    constructor(address _trustedForwarder) AbstractCountryComplianceModule(_trustedForwarder) { }
+
     // --- Global Block List Management (Manager Role Only) ---
 
     /// @notice Adds or removes multiple countries from this module instance's global block-list.

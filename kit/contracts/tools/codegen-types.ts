@@ -228,7 +228,7 @@ async function compileContracts(): Promise<boolean> {
   log.info("Compiling contracts with Hardhat...");
 
   try {
-    // Set working directory for shell commands
+    // Set working directory for shell commands);
     $.cwd(CONTRACTS_ROOT);
 
     const result = await $`settlemint scs hardhat build`.quiet();

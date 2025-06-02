@@ -1,34 +1,46 @@
-import type { Address } from "viem";
+import { encodeAbiParameters, parseAbiParameters, type Address } from "viem";
 import { investorA, investorB } from "../actors/investors";
 import { owner } from "../actors/owner";
 import { SMARTRoles } from "../constants/roles";
 
+import { Countries } from "../constants/countries";
 import { SMARTTopic } from "../constants/topics";
 import { smartProtocolDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
 import { Asset } from "../types/asset";
 import { waitForEvent } from "../utils/wait-for-event";
+import { addCountryAllowListComplianceModule } from "./actions/add-country-allow-list-compliance-module";
 import { burn } from "./actions/burn";
 import { grantRole } from "./actions/grant-role";
 import { issueCollateralClaim } from "./actions/issue-collateral-claim";
 import { issueIsinClaim } from "./actions/issue-isin-claim";
 import { mint } from "./actions/mint";
 import { transfer } from "./actions/transfer";
+import { updateRequiredTopics } from "./actions/update-required-topic";
 
 export const createDeposit = async () => {
   console.log("\n=== Creating deposit... ===\n");
 
   const depositFactory = smartProtocolDeployer.getDepositFactoryContract();
 
+  const encodedBlockedCountries = encodeAbiParameters(
+    parseAbiParameters("uint16[]"),
+    [[Countries.RU]]
+  );
+
   const transactionHash = await depositFactory.write.createDeposit([
     "Euro Deposits",
     "EURD",
     6,
+    [topicManager.getTopicId(SMARTTopic.kyc)],
     [
-      topicManager.getTopicId(SMARTTopic.kyc),
-      topicManager.getTopicId(SMARTTopic.aml),
+      {
+        module: smartProtocolDeployer.getContractAddress(
+          "countryBlockListModule"
+        ),
+        params: encodedBlockedCountries,
+      },
     ],
-    [], // TODO: fill in with the setup for ATK
   ]);
 
   const { tokenAddress, tokenIdentity, accessManager } = (await waitForEvent({
@@ -50,6 +62,18 @@ export const createDeposit = async () => {
       tokenIdentity,
       accessManager
     );
+
+    // needs to be done so that he can update the topics and compliance modules
+    await grantRole(deposit, owner, SMARTRoles.tokenGovernanceRole);
+
+    // set extra topic
+    await updateRequiredTopics(deposit, [SMARTTopic.kyc, SMARTTopic.aml]);
+
+    // add country allow list compliance module
+    await addCountryAllowListComplianceModule(deposit, [
+      Countries.BE,
+      Countries.NL,
+    ]);
 
     // needs to be done so that he can add the claims
     await grantRole(deposit, owner, SMARTRoles.claimManagerRole);

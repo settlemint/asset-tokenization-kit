@@ -8,4 +8,5 @@ export const Countries = {
   IT: 380,
   ES: 724,
   NL: 528,
+  RU: 643,
 } as const;

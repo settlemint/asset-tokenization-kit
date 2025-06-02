@@ -1,34 +1,46 @@
-import type { Address } from "viem";
+import { encodeAbiParameters, parseAbiParameters, type Address } from "viem";
 
 import { investorA, investorB } from "../actors/investors";
 import { owner } from "../actors/owner";
+import { Countries } from "../constants/countries";
 import { SMARTRoles } from "../constants/roles";
 import { SMARTTopic } from "../constants/topics";
 import { smartProtocolDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
 import { Asset } from "../types/asset";
 import { waitForEvent } from "../utils/wait-for-event";
+import { addCountryAllowListComplianceModule } from "./actions/add-country-allow-list-compliance-module";
 import { burn } from "./actions/burn";
 import { grantRole } from "./actions/grant-role";
 import { issueAssetClassificationClaim } from "./actions/issue-asset-classification-claim";
 import { issueIsinClaim } from "./actions/issue-isin-claim";
 import { mint } from "./actions/mint";
 import { transfer } from "./actions/transfer";
+import { updateRequiredTopics } from "./actions/update-required-topic";
 
 export const createEquity = async () => {
   console.log("\n=== Creating equity... ===\n");
 
   const equityFactory = smartProtocolDeployer.getEquityFactoryContract();
 
+  const encodedBlockedCountries = encodeAbiParameters(
+    parseAbiParameters("uint16[]"),
+    [[Countries.RU]]
+  );
+
   const transactionHash = await equityFactory.write.createEquity([
     "Apple",
     "AAPL",
     18,
+    [topicManager.getTopicId(SMARTTopic.kyc)],
     [
-      topicManager.getTopicId(SMARTTopic.kyc),
-      topicManager.getTopicId(SMARTTopic.aml),
+      {
+        module: smartProtocolDeployer.getContractAddress(
+          "countryBlockListModule"
+        ),
+        params: encodedBlockedCountries,
+      },
     ],
-    [], // TODO: fill in with the setup for ATK
   ]);
 
   const { tokenAddress, tokenIdentity, accessManager } = (await waitForEvent({
@@ -50,6 +62,18 @@ export const createEquity = async () => {
       tokenIdentity,
       accessManager
     );
+
+    // needs to be done so that he can update the topics and compliance modules
+    await grantRole(equity, owner, SMARTRoles.tokenGovernanceRole);
+
+    // set extra topic
+    await updateRequiredTopics(equity, [SMARTTopic.kyc, SMARTTopic.aml]);
+
+    // add country allow list compliance module
+    await addCountryAllowListComplianceModule(equity, [
+      Countries.BE,
+      Countries.NL,
+    ]);
 
     // needs to be done so that he can add the claims
     await grantRole(equity, owner, SMARTRoles.claimManagerRole);
