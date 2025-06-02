@@ -231,21 +231,16 @@ jobs:
             {
               "channel": "${{ env.SLACK_CHANNEL_ID }}",
               ${{ steps.check_message.outputs.message_exists == 'true' && format('"ts": "{0}",', steps.check_message.outputs.slack_ts) || '' }}
-                                "blocks": [
+              "blocks": [
                 {
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "${{ steps.check_message.outputs.message_exists == 'true' && 'Pull Request Updated' || 'New Pull Request Ready for Review' }}"
+                    "text": "${{ steps.check_message.outputs.message_exists == 'true' && '🔄 Pull Request Updated' || '🔍 New Pull Request Ready for Review' }}"
                   }
                 },
                 {
                   "type": "section",
-                  "accessory": {
-                    "type": "image",
-                    "image_url": "${{ steps.check_message.outputs.message_exists == 'true' && 'https://cdn.jsdelivr.net/npm/lucide@latest/icons/refresh-cw.svg' || 'https://cdn.jsdelivr.net/npm/lucide@latest/icons/search.svg' }}",
-                    "alt_text": "${{ steps.check_message.outputs.message_exists == 'true' && 'refresh' || 'search' }}"
-                  },
                   "fields": [
                     {
                       "type": "mrkdwn",
@@ -253,7 +248,7 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*Author:*\n<https://cdn.jsdelivr.net/npm/lucide@latest/icons/user.svg|user> ${{ github.event.pull_request.user.login }}"
+                      "text": "*Author:*\n👤 ${{ github.event.pull_request.user.login }}"
                     }
                   ]
                 },
@@ -266,7 +261,7 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*Reviewers:*\n<https://cdn.jsdelivr.net/npm/lucide@latest/icons/users.svg|users> ${{ join(github.event.pull_request.requested_reviewers.*.login, ', ') }}"
+                      "text": "*Reviewers:*\n👥 ${{ join(github.event.pull_request.requested_reviewers.*.login, ', ') }}"
                     }
                   ]
                 },
@@ -275,11 +270,11 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*PR Status:*\n${{ github.event.pull_request.state == 'open' && '<https://cdn.jsdelivr.net/npm/lucide@latest/icons/circle.svg|status> Open' || '<https://cdn.jsdelivr.net/npm/lucide@latest/icons/circle.svg|status> Closed' }}"
+                      "text": "*PR Status:*\n${{ github.event.pull_request.state == 'open' && '🟢 Open' || '🔴 Closed' }}"
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*QA Status:*\n${{ needs.qa.result == 'success' && '<https://cdn.jsdelivr.net/npm/lucide@latest/icons/check-circle.svg|success> Passed' || needs.qa.result == 'failure' && '<https://cdn.jsdelivr.net/npm/lucide@latest/icons/x-circle.svg|failure> Failed' || needs.qa.result == 'cancelled' && '<https://cdn.jsdelivr.net/npm/lucide@latest/icons/ban.svg|cancelled> Cancelled' || needs.qa.result == 'skipped' && '<https://cdn.jsdelivr.net/npm/lucide@latest/icons/skip-forward.svg|skipped> Skipped' || '<https://cdn.jsdelivr.net/npm/lucide@latest/icons/clock.svg|running> Running' }}"
+                      "text": "*QA Status:*\n${{ needs.qa.result == 'success' && '✅ Passed' || needs.qa.result == 'failure' && '❌ Failed' || needs.qa.result == 'cancelled' && '🚫 Cancelled' || needs.qa.result == 'skipped' && '⏭️ Skipped' || '⏳ Running' }}"
                     }
                   ]
                 },
@@ -288,11 +283,11 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*Last Updated:*\n<https://cdn.jsdelivr.net/npm/lucide@latest/icons/clock.svg|time> ${{ github.event.pull_request.updated_at }}"
+                      "text": "*Last Updated:*\n⏰ ${{ github.event.pull_request.updated_at }}"
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*Workflow:*\n<https://cdn.jsdelivr.net/npm/lucide@latest/icons/external-link.svg|link> <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"
+                      "text": "*Workflow:*\n🔗 <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"
                     }
                   ]
                 },
@@ -306,7 +301,7 @@ jobs:
                       "type": "button",
                       "text": {
                         "type": "plain_text",
-                        "text": "View Pull Request"
+                        "text": "📖 View Pull Request"
                       },
                       "url": "${{ github.event.pull_request.html_url }}",
                       "style": "primary"
@@ -315,7 +310,7 @@ jobs:
                       "type": "button",
                       "text": {
                         "type": "plain_text",
-                        "text": "View Files Changed"
+                        "text": "📁 View Files Changed"
                       },
                       "url": "${{ github.event.pull_request.html_url }}/files"
                     }
@@ -335,4 +330,4 @@ jobs:
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
-            -d "{\"body\": \"<!-- slack-ts:${{ steps.slack_message.outputs.ts }} -->\\n![bot](https://cdn.jsdelivr.net/npm/lucide@latest/icons/bot.svg) Slack notification sent for this PR\"}"
+            -d "{\"body\": \"<!-- slack-ts:${{ steps.slack_message.outputs.ts }} -->\\n🤖 Slack notification sent for this PR\"}"
