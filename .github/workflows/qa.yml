@@ -169,6 +169,7 @@ jobs:
   labels:
     name: PR Labels
     runs-on: namespace-profile-atk-services
+    if: github.event_name == 'pull_request'
     permissions:
       contents: read
       issues: write
