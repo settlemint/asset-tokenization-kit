@@ -5,8 +5,8 @@
     "ci": {
       "dependsOn": ["format", "compile", "codegen", "lint", "build"]
     },
-    "ci:gha": {
-      "dependsOn": ["package", "compile", "codegen", "lint", "build"]
+    "ci:publish": {
+      "dependsOn": ["package"]
     },
     "build": {
       "dependsOn": ["codegen"]

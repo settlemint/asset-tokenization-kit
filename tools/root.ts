@@ -23,11 +23,8 @@ export async function findTurboRoot(startPath?: string) {
     // Check if this directory has turbo.json and kit directory
     const turboFile = Bun.file(turboConfigPath);
     const packageFile = Bun.file(packageJsonPath);
-    
-    if (
-      await turboFile.exists() &&
-      await packageFile.exists()
-    ) {
+
+    if ((await turboFile.exists()) && (await packageFile.exists())) {
       // Check if kit directory exists by trying to glob it
       let kitExists = false;
       try {
@@ -38,7 +35,7 @@ export async function findTurboRoot(startPath?: string) {
       } catch {
         kitExists = false;
       }
-      
+
       if (kitExists) {
         try {
           const packageJson = JSON.parse(await packageFile.text());
@@ -80,8 +77,8 @@ export async function findTurboRoot(startPath?: string) {
 
       const turboFile = Bun.file(turboConfigPath);
       const packageFile = Bun.file(packageJsonPath);
-      
-      if (await turboFile.exists() && await packageFile.exists()) {
+
+      if ((await turboFile.exists()) && (await packageFile.exists())) {
         try {
           const packageJson = JSON.parse(await packageFile.text());
 
@@ -125,7 +122,7 @@ export async function findTurboRoot(startPath?: string) {
   } catch {
     kitExists = false;
   }
-  
+
   if (!kitExists) {
     console.warn(
       `Kit directory not found at ${kitRootPath}, but continuing with monorepo root`
@@ -148,7 +145,10 @@ export async function findTurboRoot(startPath?: string) {
  * @returns Full path to the kit project
  * @throws Error if project doesn't exist
  */
-export async function getKitProjectPath(projectName: string, startPath?: string) {
+export async function getKitProjectPath(
+  projectName: string,
+  startPath?: string
+) {
   const { kitRoot } = await findTurboRoot(startPath);
   const projectPath = join(kitRoot, projectName);
 
@@ -162,7 +162,7 @@ export async function getKitProjectPath(projectName: string, startPath?: string)
   } catch {
     exists = false;
   }
-  
+
   if (!exists) {
     throw new Error(`Kit project '${projectName}' not found at ${projectPath}`);
   }
@@ -183,13 +183,13 @@ export async function getKitProjects(startPath?: string) {
     // Use glob to find all directories with package.json
     const glob = new Bun.Glob("*/package.json");
     const projects: string[] = [];
-    
+
     for await (const file of glob.scan({ cwd: kitRoot })) {
       // Extract directory name from path (remove /package.json)
       const projectName = file.replace(/\/package\.json$/, "");
       projects.push(projectName);
     }
-    
+
     return projects;
   } catch (error) {
     throw new Error(`Failed to read kit directory: ${error}`);
@@ -217,6 +217,14 @@ export async function getCurrentKitContext(startPath?: string) {
   // Determine which kit project we're in
   const relativePath = cwd.replace(rootInfo.kitRoot, "").replace(/^[/\\]/, "");
   const projectName = relativePath.split(/[/\\]/)[0];
+
+  if (!projectName) {
+    return {
+      ...rootInfo,
+      currentProject: null,
+      isInKitProject: false,
+    };
+  }
 
   return {
     ...rootInfo,

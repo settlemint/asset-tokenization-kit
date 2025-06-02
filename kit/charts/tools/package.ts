@@ -56,7 +56,7 @@ async function findValuesFiles(dir: string): Promise<string[]> {
   try {
     // Use Bun.glob to find all values.yaml and values-*.yaml files
     const valuesGlob = new Bun.Glob("**/values*.yaml");
-    
+
     for await (const file of valuesGlob.scan({ cwd: dir, dot: false })) {
       // Only include files that match our exact pattern
       const basename = file.split("/").pop() || "";
@@ -104,7 +104,7 @@ async function getChartFiles(projectDir: string): Promise<string[]> {
       log.warn(`File not found: ${filePath}`);
     }
   }
-  
+
   return existingFiles;
 }
 
