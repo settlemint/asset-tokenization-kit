@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import type { Variants } from 'motion/react';
-import { motion, useAnimation } from 'motion/react';
-import type { HTMLAttributes } from 'react';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
-import { cn } from '@/lib/utils';
+import type { Variants } from "motion/react";
+import { motion, useAnimation } from "motion/react";
+import type { HTMLAttributes } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 export interface UsersIconHandle {
   startAnimation: () => void;
@@ -19,7 +19,7 @@ const pathVariants: Variants = {
   normal: {
     translateX: 0,
     transition: {
-      type: 'spring',
+      type: "spring",
       stiffness: 200,
       damping: 13,
     },
@@ -28,7 +28,7 @@ const pathVariants: Variants = {
     translateX: [-6, 0],
     transition: {
       delay: 0.1,
-      type: 'spring',
+      type: "spring",
       stiffness: 200,
       damping: 13,
     },
@@ -44,15 +44,15 @@ const UsersIcon = forwardRef<UsersIconHandle, UsersIconProps>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start('animate'),
-        stopAnimation: () => controls.start('normal'),
+        startAnimation: () => controls.start("animate"),
+        stopAnimation: () => controls.start("normal"),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('animate');
+          controls.start("animate");
         } else {
           onMouseEnter?.(e);
         }
@@ -63,7 +63,7 @@ const UsersIcon = forwardRef<UsersIconHandle, UsersIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('normal');
+          controls.start("normal");
         } else {
           onMouseLeave?.(e);
         }
@@ -107,6 +107,6 @@ const UsersIcon = forwardRef<UsersIconHandle, UsersIconProps>(
   }
 );
 
-UsersIcon.displayName = 'UsersIcon';
+UsersIcon.displayName = "UsersIcon";
 
 export { UsersIcon };

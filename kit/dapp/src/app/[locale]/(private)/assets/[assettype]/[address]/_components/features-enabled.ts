@@ -22,14 +22,17 @@ export const hasFreeze = (assettype: AssetType) =>
  * @param assetId The ID of the asset to check
  * @returns True if MICA is available and enabled for this asset
  */
-export const hasMica = async (assettype: AssetType, assetId: Address) => {
-  const flagEnabled = await isFeatureEnabled("mica");
-  if (!flagEnabled) {
+export const isMicaEnabledForAsset = async (
+  assettype: AssetType,
+  assetId: Address
+) => {
+  const isAvailable = assettype === "stablecoin";
+  if (!isAvailable) {
     return false;
   }
 
-  const isAvailable = assettype === "deposit" || assettype === "stablecoin";
-  if (!isAvailable) {
+  const isFeatureFlagEnabled = await isFeatureEnabled("mica");
+  if (!isFeatureFlagEnabled) {
     return false;
   }
 

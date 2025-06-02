@@ -1,5 +1,7 @@
+import { getUser } from "@/lib/auth/utils";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
+import { isTokenAdmin } from "@/lib/utils/has-role";
 import { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import { notFound } from "next/navigation";
@@ -16,7 +18,8 @@ export async function MicaRegulationLayout({
 }: {
   params: Promise<{ locale: Locale; address: Address; assettype: AssetType }>;
 }) {
-  const { address, locale } = await params;
+  const { address } = await params;
+  const user = await getUser();
 
   const regulationData = await getRegulationDetail({
     assetId: address,
@@ -33,6 +36,8 @@ export async function MicaRegulationLayout({
     address,
   });
 
+  const canEdit = isTokenAdmin(user?.wallet, assetDetails);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
       <div className="md:col-span-2">
@@ -42,18 +47,20 @@ export async function MicaRegulationLayout({
         <ReserveStatusLayout
           config={regulationData.mica_regulation_config}
           assetDetails={assetDetails}
+          canEdit={canEdit}
         />
       </div>
       <div className="md:col-span-2">
         <AuthorizationStatusLayout
           config={regulationData.mica_regulation_config}
+          canEdit={canEdit}
         />
       </div>
       <div className="md:col-span-4">
-        <DocumentationLayout />
+        <DocumentationLayout canEdit={canEdit} />
       </div>
       <div className="md:col-span-3">
-        <KycMonitoringLayout locale={locale} />
+        <KycMonitoringLayout />
       </div>
       <div className="md:col-span-3">
         <ConsumerProtectionLayout />

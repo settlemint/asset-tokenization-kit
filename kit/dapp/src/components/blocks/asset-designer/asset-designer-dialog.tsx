@@ -7,10 +7,10 @@ import {
   type Step,
 } from "@/components/blocks/step-wizard/step-wizard";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useFeatureEnabled } from "@/lib/hooks/use-feature-enabled";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { User } from "better-auth";
 import { useTranslations } from "next-intl";
-import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AssetTypeSelection } from "./steps/asset-type-selection";
 import { assetForms, type AssetFormDefinition } from "./types";
@@ -36,12 +36,7 @@ export function AssetDesignerDialog({
   const [formComponent, setFormComponent] =
     useState<React.ComponentType<any> | null>(null);
 
-  // Check if MICA feature flag is enabled
-  const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  // Match server-side behavior: if PostHog not configured, default to enabled
-  const isMicaEnabled = !process.env.NEXT_PUBLIC_POSTHOG_KEY
-    ? true
-    : !!micaFlagFromPostHog;
+  const isMicaEnabled = useFeatureEnabled("mica");
 
   // Create a unified representation of all steps, filtering out regulation step if MICA is disabled
   const allSteps: Step[] = useMemo(() => {

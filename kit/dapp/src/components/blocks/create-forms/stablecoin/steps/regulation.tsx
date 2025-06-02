@@ -11,11 +11,11 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { deleteFile } from "@/lib/actions/delete-file";
 import { uploadDocument } from "@/lib/actions/upload-document";
+import { useFeatureEnabled } from "@/lib/hooks/use-feature-enabled";
 import { cn } from "@/lib/utils";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { Check, Info, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 
@@ -442,11 +442,7 @@ export function AssetRegulationStep({
   const [uploadedDocuments, setUploadedDocuments] = useState<{
     [regulationId: string]: UploadedDocument[];
   }>({});
-  const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  // Match server-side behavior: if PostHog not configured, default to enabled
-  const isMicaEnabled = !process.env.NEXT_PUBLIC_POSTHOG_KEY
-    ? true
-    : !!micaFlagFromPostHog;
+  const isMicaEnabled = useFeatureEnabled("mica");
 
   // Initialize selectedRegulations if not already set
   useEffect(() => {

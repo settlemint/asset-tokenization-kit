@@ -1,7 +1,11 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useTranslations } from "next-intl";
 
 export type AdminRole = "admin" | "user-manager" | "issuer";
@@ -12,7 +16,11 @@ interface AdminRolesBadgesProps {
   className?: string;
 }
 
-export function AdminRolesBadges({ roles, onChangeRoles, className }: AdminRolesBadgesProps) {
+export function AdminRolesBadges({
+  roles,
+  onChangeRoles,
+  className,
+}: AdminRolesBadgesProps) {
   const t = useTranslations("private.assets.create.form.steps.asset-admins");
 
   const getRoleTranslation = (role: AdminRole) => t(`roles.${role}`);

@@ -26,7 +26,11 @@ export function SelectedAdminListItem({
       <div className="flex items-center gap-2">
         <AdminRolesBadges
           roles={admin.roles}
-          onChangeRoles={onChangeRoles ? (newRoles: AdminRole[]) => onChangeRoles(admin.wallet, newRoles) : undefined}
+          onChangeRoles={
+            onChangeRoles
+              ? (newRoles: AdminRole[]) => onChangeRoles(admin.wallet, newRoles)
+              : undefined
+          }
         />
 
         {onRemove ? (

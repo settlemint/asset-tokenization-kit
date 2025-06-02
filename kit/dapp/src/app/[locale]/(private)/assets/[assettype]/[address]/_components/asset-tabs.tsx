@@ -9,9 +9,9 @@ import { BadgeLoader, BadgeSpinner } from "./badge-loader"; // Assuming badge-lo
 import {
   hasAllowlist,
   hasBlocklist,
-  hasMica,
   hasUnderlyingAsset,
   hasYield,
+  isMicaEnabledForAsset,
 } from "./features-enabled";
 
 interface AssetTabsProps {
@@ -32,7 +32,7 @@ const tabs = async ({
 
   let isMicaEnabled = false; // Default to false to hide the tab in case of error
   try {
-    isMicaEnabled = await hasMica(assettype, address);
+    isMicaEnabled = await isMicaEnabledForAsset(assettype, address);
   } catch (error) {
     console.error("Failed to check MICA availability:", error);
   }

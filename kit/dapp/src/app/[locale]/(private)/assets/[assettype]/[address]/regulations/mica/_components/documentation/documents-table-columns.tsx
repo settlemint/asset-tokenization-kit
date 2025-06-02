@@ -261,9 +261,14 @@ function getStatusIndicator(status: string) {
 interface DocumentActionsProps {
   document: MicaDocument;
   regulationId: string;
+  canEdit: boolean;
 }
 
-function DocumentActions({ document, regulationId }: DocumentActionsProps) {
+function DocumentActions({
+  document,
+  regulationId,
+  canEdit,
+}: DocumentActionsProps) {
   const [isPDFViewerOpen, setIsPDFViewerOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const t = useTranslations("regulations.mica.documents");
@@ -341,23 +346,29 @@ function DocumentActions({ document, regulationId }: DocumentActionsProps) {
           <Download className="h-4 w-4" />
         </Button>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="ghost" title={t("table.more_options")}>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              {isDeleting ? t("table.deleting") : t("table.delete")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {canEdit && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                title={t("table.more_options")}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {isDeleting ? t("table.deleting") : t("table.delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       {/* PDF Viewer Dialog */}
@@ -373,7 +384,7 @@ function DocumentActions({ document, regulationId }: DocumentActionsProps) {
   );
 }
 
-export function DocumentsTableColumns(regulationId: string) {
+export function DocumentsTableColumns(regulationId: string, canEdit: boolean) {
   const t = useTranslations("regulations.mica.documents");
 
   return [
@@ -478,6 +489,7 @@ export function DocumentsTableColumns(regulationId: string) {
           <DocumentActions
             document={row.original}
             regulationId={regulationId}
+            canEdit={canEdit}
           />
         );
       },

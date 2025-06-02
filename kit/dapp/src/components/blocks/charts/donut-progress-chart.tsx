@@ -54,7 +54,7 @@ export function DonutProgressChart({
   // Prepare data for the donut chart
   const chartData = [
     { name: status, value: percentage },
-    { name: "remaining", value: remaining }
+    { name: "remaining", value: remaining },
   ];
 
   // Configure colors and labels
@@ -65,8 +65,8 @@ export function DonutProgressChart({
     },
     remaining: {
       label: "Remaining",
-      color: "var(--muted)" // Grey for the remaining portion
-    }
+      color: "var(--muted)", // Grey for the remaining portion
+    },
   };
 
   return (

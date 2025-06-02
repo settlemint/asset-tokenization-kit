@@ -6,40 +6,21 @@ rev = "a483cda6821e3883497972d36d0c4c1e1693e483"
 
 [[dependencies]]
 name = "@openzeppelin-contracts"
-version = "5.2.0"
-url = "https://soldeer-revisions.s3.amazonaws.com/@openzeppelin-contracts/5_2_0_11-01-2025_09:30:20_contracts.zip"
-checksum = "6dbd0440446b2ed16ca25e9f1af08fc0c5c1e73e71fee86ae8a00daa774e3817"
-integrity = "4cb7f3777f67fdf4b7d0e2f94d2f93f198b2e5dce718b7062ac7c2c83e1183bd"
+version = "5.3.0"
+url = "https://soldeer-revisions.s3.amazonaws.com/@openzeppelin-contracts/5_3_0_10-04-2025_10:51:50_contracts.zip"
+checksum = "fa2bc3db351137c4d5eb32b738a814a541b78e87fbcbfeca825e189c4c787153"
+integrity = "d69addf252dfe0688dcd893a7821cbee2421f8ce53d95ca0845a59530043cfd1"
 
 [[dependencies]]
 name = "@openzeppelin-contracts-upgradeable"
-version = "5.2.0"
-url = "https://soldeer-revisions.s3.amazonaws.com/@openzeppelin-contracts-upgradeable/5_2_0_11-01-2025_09:30:25_contracts-upgradeable.zip"
-checksum = "25d9cf22b6f4d8da7975f24234eefbf6c71348464ea74c8fdd481be3811767f5"
-integrity = "498747bedc3f757976da0b6125d26a63e79bb2b4dbabd8ecd2547e809a2fa27e"
-
-[[dependencies]]
-name = "eas-contracts"
-version = "1.4.0"
-git = "https://github.com/ethereum-attestation-service/eas-contracts.git"
-rev = "d223e17208aa110dd5ec694d77324a2321d93201"
+version = "5.3.0"
+url = "https://soldeer-revisions.s3.amazonaws.com/@openzeppelin-contracts-upgradeable/5_3_0_10-04-2025_10:51:56_contracts-upgradeable.zip"
+checksum = "4bd92f87af0cac7226b12ce367e7327f13431735fa6010508d8c8177f9d3d10f"
+integrity = "fa195a69ef4dfec7fec7fbbb77f424258c821832fdd355b0a6e5fe34d2986a16"
 
 [[dependencies]]
 name = "forge-std"
-version = "1.9.6"
-url = "https://soldeer-revisions.s3.amazonaws.com/forge-std/1_9_6_01-02-2025_20:49:10_forge-std-1.9.zip"
-checksum = "55f341818321b3f925161a72fd0dcd62e4a0a4b66785a7a932bf2bfaf96fb9d1"
-integrity = "e9ecdc364d152157431e5df5aa041ffddbe9bb1c1ad81634b1e72df9e23814e8"
-
-[[dependencies]]
-name = "openzeppelin-community-contracts"
-version = "0.0.1"
-git = "https://github.com/OpenZeppelin/openzeppelin-community-contracts.git"
-rev = "e33f73d1957e46b9ed17c319ed607bb3c7137944"
-
-[[dependencies]]
-name = "smart-protocol"
-version = "8.0.12"
-url = "https://soldeer-revisions.s3.amazonaws.com/smart-protocol/8_0_12_18-05-2025_16:29:50_solidity-smart-protocol.zip"
-checksum = "8bc243bd78e751a9d4c264b3571cd6a25a924bf84ddc3249fb74f4dee26fb736"
-integrity = "76f7df318399f303a619446f4f9d037624bc589c3959018cafa014a6095f2e9d"
+version = "1.9.7"
+url = "https://soldeer-revisions.s3.amazonaws.com/forge-std/1_9_7_28-04-2025_15:55:08_forge-std-1.9.zip"
+checksum = "8d9e0a885fa8ee6429a4d344aeb6799119f6a94c7c4fe6f188df79b0dce294ba"
+integrity = "9e60fdba82bc374df80db7f2951faff6467b9091873004a3d314cf0c084b3c7d"
