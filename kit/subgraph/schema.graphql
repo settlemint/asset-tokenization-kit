@@ -34,8 +34,6 @@ type AccessControl @entity(immutable: false) {
   id: Bytes!
   admin: [Account!]!
   registrar: [Account!]!
-  registrarAdmin: [Account!]!
-  registrarGovernor: [Account!]!
   claimManager: [Account!]!
   identityIssuer: [Account!]!
   tokenIdentityIssuer: [Account!]!

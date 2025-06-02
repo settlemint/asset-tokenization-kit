@@ -40,8 +40,6 @@ class RoleConfig {
 export const Roles = [
   new RoleConfig("DEFAULT_ADMIN_ROLE", "admin"),
   new RoleConfig("REGISTRAR_ROLE", "registrar"),
-  new RoleConfig("REGISTRAR_ADMIN_ROLE", "registrarAdmin"),
-  new RoleConfig("REGISTRAR_GOVERNOR_ROLE", "registrarGovernor"),
   new RoleConfig("CLAIM_MANAGER_ROLE", "claimManager"),
   new RoleConfig("IDENTITY_ISSUER_ROLE", "identityIssuer"),
   new RoleConfig("TOKEN_IDENTITY_ISSUER_ROLE", "tokenIdentityIssuer"),
