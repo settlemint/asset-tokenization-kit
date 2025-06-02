@@ -25,6 +25,12 @@ interface PackageJson {
 interface ChartYaml {
   version: string;
   appVersion: string;
+  dependencies?: Array<{
+    name: string;
+    version: string;
+    repository?: string;
+    [key: string]: unknown;
+  }>;
   [key: string]: unknown;
 }
 
@@ -157,6 +163,37 @@ function updateWorkspaceDependencies(
   }
 
   return workspaceCount;
+}
+
+/**
+ * Updates chart dependencies with version "*"
+ * @param dependencies - Chart dependencies array to update
+ * @param newVersion - New version to use
+ * @returns Number of chart dependencies updated
+ */
+function updateChartDependencies(
+  dependencies:
+    | Array<{ name: string; version: string; [key: string]: unknown }>
+    | undefined,
+  newVersion: string
+): number {
+  if (!dependencies) return 0;
+
+  let dependencyCount = 0;
+  for (const dep of dependencies) {
+    if (dep.version === "*") {
+      dep.version = newVersion;
+      dependencyCount++;
+    }
+  }
+
+  if (dependencyCount > 0) {
+    console.log(
+      `    Updated ${dependencyCount} "*" version references in chart dependencies`
+    );
+  }
+
+  return dependencyCount;
 }
 
 /**
@@ -333,24 +370,43 @@ async function updateChartVersions(): Promise<void> {
 
         const oldVersion = chart.version;
         const oldAppVersion = chart.appVersion;
+        let hasChanges = false;
 
         // Update the version fields
-        chart.version = newVersion;
-        chart.appVersion = newVersion;
-
-        // Convert back to YAML and write
-        const updatedContent = stringify(chart);
-
-        await Bun.write(chartPath, updatedContent);
-
-        console.log(`    Updated: ${oldVersion} -> ${newVersion}`);
-        if (oldAppVersion !== oldVersion) {
-          console.log(
-            `    Updated appVersion: ${oldAppVersion} -> ${newVersion}`
-          );
+        if (chart.version) {
+          chart.version = newVersion;
+          hasChanges = true;
+        }
+        if (chart.appVersion) {
+          chart.appVersion = newVersion;
+          hasChanges = true;
         }
 
-        updatedCount++;
+        // Update chart dependencies with version "*"
+        const dependencyUpdates = updateChartDependencies(
+          chart.dependencies,
+          newVersion
+        );
+
+        if (dependencyUpdates > 0) {
+          hasChanges = true;
+        }
+
+        if (hasChanges) {
+          // Convert back to YAML and write
+          const updatedContent = stringify(chart);
+          await Bun.write(chartPath, updatedContent);
+
+          console.log(`    Updated version: ${oldVersion} -> ${newVersion}`);
+          if (oldAppVersion !== oldVersion) {
+            console.log(
+              `    Updated appVersion: ${oldAppVersion} -> ${newVersion}`
+            );
+          }
+          updatedCount++;
+        } else {
+          console.log(`    No changes needed`);
+        }
       } catch (error) {
         console.error(`    Error processing ${chartPath}:`, error);
       }
