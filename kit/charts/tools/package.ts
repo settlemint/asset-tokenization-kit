@@ -1,6 +1,5 @@
 #!/usr/bin/env bun
 
-import { existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { logger } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
@@ -22,10 +21,10 @@ async function findChartsDirectory(): Promise<string> {
   log.debug("Finding charts directory...");
 
   // If we're already in kit/charts, use current directory
-  if (existsSync("package.json")) {
+  const packageJsonFile = Bun.file(join(process.cwd(), "package.json"));
+  if (await packageJsonFile.exists()) {
     try {
-      const packageJson = Bun.file(join(process.cwd(), "package.json"));
-      const content = JSON.parse(await packageJson.text());
+      const content = JSON.parse(await packageJsonFile.text());
       if (content.name === "charts") {
         log.debug("Already in charts directory");
         return process.cwd();
@@ -49,28 +48,24 @@ async function findChartsDirectory(): Promise<string> {
 }
 
 /**
- * Recursively find all values.yaml files in a directory
+ * Find all values.yaml files using Bun glob
  */
-function findValuesFiles(dir: string, basePath: string = ""): string[] {
+async function findValuesFiles(dir: string): Promise<string[]> {
   const files: string[] = [];
 
   try {
-    const entries = readdirSync(dir);
-
-    for (const entry of entries) {
-      const fullPath = join(dir, entry);
-      const relativePath = basePath ? join(basePath, entry) : entry;
-
-      if (statSync(fullPath).isDirectory()) {
-        // Recursively search subdirectories
-        files.push(...findValuesFiles(fullPath, relativePath));
-      } else if (entry === "values.yaml" || entry.startsWith("values-") && entry.endsWith(".yaml")) {
-        // Include values.yaml and values-*.yaml files
-        files.push(relativePath);
+    // Use Bun.glob to find all values.yaml and values-*.yaml files
+    const valuesGlob = new Bun.Glob("**/values*.yaml");
+    
+    for await (const file of valuesGlob.scan({ cwd: dir, dot: false })) {
+      // Only include files that match our exact pattern
+      const basename = file.split("/").pop() || "";
+      if (basename === "values.yaml" || (basename.startsWith("values-") && basename.endsWith(".yaml"))) {
+        files.push(file);
       }
     }
   } catch (error) {
-    log.warn(`Error reading directory ${dir}: ${error}`);
+    log.warn(`Error scanning directory ${dir}: ${error}`);
   }
 
   return files;
@@ -79,28 +74,38 @@ function findValuesFiles(dir: string, basePath: string = ""): string[] {
 /**
  * Get all chart files that need to be processed
  */
-function getChartFiles(projectDir: string): string[] {
+async function getChartFiles(projectDir: string): Promise<string[]> {
   const atkDir = join(projectDir, "atk");
 
-  if (!existsSync(atkDir)) {
+  // Check if directory exists by trying to scan it
+  try {
+    const testGlob = new Bun.Glob("*");
+    const scanner = testGlob.scan({ cwd: atkDir, onlyFiles: false });
+    // Try to get first item to verify directory exists
+    await scanner.next();
+  } catch {
     log.error(`ATK directory not found: ${atkDir}`);
     return [];
   }
 
   // Find all values.yaml files in the atk directory
-  const relativeFiles = findValuesFiles(atkDir);
+  const relativeFiles = await findValuesFiles(atkDir);
 
   // Convert to absolute paths and add the atk prefix
-  const files = relativeFiles.map(file => join(projectDir, "atk", file));
+  const files = relativeFiles.map(file => join(atkDir, file));
 
   // Filter out files that don't exist (shouldn't happen, but defensive programming)
-  return files.filter(filePath => {
-    if (!existsSync(filePath)) {
+  const existingFiles: string[] = [];
+  for (const filePath of files) {
+    const file = Bun.file(filePath);
+    if (await file.exists()) {
+      existingFiles.push(filePath);
+    } else {
       log.warn(`File not found: ${filePath}`);
-      return false;
     }
-    return true;
-  });
+  }
+  
+  return existingFiles;
 }
 
 /**
@@ -292,7 +297,7 @@ async function main(): Promise<void> {
     log.info(`Using charts directory: ${projectDir}`);
 
     // Get all chart files to process
-    const chartFiles = getChartFiles(projectDir);
+    const chartFiles = await getChartFiles(projectDir);
 
     if (chartFiles.length === 0) {
       log.info("No chart files found to process");
