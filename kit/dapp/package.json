@@ -15,6 +15,7 @@
     "lint": "next lint",
     "build": "next build --turbopack || true",
     "dev": "next dev --turbopack",
+    "publish": "echo 'Docker builds come here when the dapp builds again'",
     "prod:local": "next build --turbopack && cp -r .next/static .next/standalone/kit/dapp/.next/static && cp -r public .next/standalone/public && node .next/standalone/kit/dapp/server.js",
     "start": "next start",
     "test": "bun test",

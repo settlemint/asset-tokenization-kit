@@ -171,8 +171,11 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
     const packageFiles: string[] = [];
 
     for await (const file of glob.scan(startPath || ".")) {
-      // Skip files in node_modules directories
-      if (file.includes("node_modules/")) {
+      // Skip files in node_modules and kit/contracts/dependencies directories
+      if (
+        file.includes("node_modules/") ||
+        file.includes("kit/contracts/dependencies/")
+      ) {
         continue;
       }
       packageFiles.push(file);
