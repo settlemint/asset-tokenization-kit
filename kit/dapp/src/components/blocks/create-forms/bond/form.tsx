@@ -3,13 +3,17 @@
 import { Form } from "@/components/blocks/form/form";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createBond } from "@/lib/mutations/bond/create/create-action";
-import { CreateBondSchema } from "@/lib/mutations/bond/create/create-schema";
+import {
+  CreateBondSchema,
+  type CreateBondInput,
+} from "@/lib/mutations/bond/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/bond-factory/bond-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/bond-factory/bond-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { getTomorrowMidnight } from "@/lib/utils/date";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
+import type { UseFormReturn } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
 import { stepDefinition as summaryStep } from "../common/summary/summary";
@@ -47,8 +51,12 @@ export function CreateBondForm({
     <SummaryComponent
       key="summary"
       configurationCard={<BondConfigurationCard />}
-      predictAddress={getPredictedAddress}
-      isAddressAvailable={isAddressAvailable}
+      isAddressAvailable={async (form: UseFormReturn<CreateBondInput>) => {
+        const values = form.getValues();
+        const predictedAddress = await getPredictedAddress(values);
+        const isAvailable = await isAddressAvailable(predictedAddress);
+        return isAvailable ? predictedAddress : false;
+      }}
     />,
   ];
 

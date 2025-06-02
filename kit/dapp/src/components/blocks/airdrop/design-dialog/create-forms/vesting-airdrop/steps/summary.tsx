@@ -3,8 +3,6 @@
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { CreateVestingAirdropInput } from "@/lib/mutations/airdrop/create/vesting/create-schema";
-import { isAddressAvailable } from "@/lib/queries/airdrop-factory/vesting/is-address-available";
-import { getPredictedAddress } from "@/lib/queries/airdrop-factory/vesting/predict-address";
 import {
   formatDate,
   formatDuration,
@@ -13,17 +11,13 @@ import {
 import { Clock, Timer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import { Summary as BaseSummary } from "../../common/summary";
-export function Summary() {
+export function VestingAirdropConfigurationCard() {
   const form = useFormContext<CreateVestingAirdropInput>();
   const t = useTranslations("private.airdrops.create.summary");
   const formValues = form.getValues();
 
   return (
-    <BaseSummary
-      predictAddress={getPredictedAddress}
-      isAddressAvailable={isAddressAvailable}
-    >
+    <>
       {/* Time Configuration Card */}
       <FormSummaryDetailCard
         title={t("timing.title")}
@@ -73,6 +67,6 @@ export function Summary() {
           }
         />
       </FormSummaryDetailCard>
-    </BaseSummary>
+    </>
   );
 }
