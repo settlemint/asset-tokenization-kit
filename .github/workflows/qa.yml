@@ -1,20 +1,22 @@
-name: PR
+name: Quality Assurance
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
-      - v1
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test
+  qa:
+    name: QA
     runs-on: namespace-profile-atk
-    environment: ${{ github.base_ref == 'v1' && 'v1' || 'staging' }}
+    environment: "staging"
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
@@ -100,11 +102,11 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
-      - name: Turbo - CI
-        run: bun run ci
-
-      - name: Turbo - CI Publish
-        run: bun run ci:publish
+      - name: Turbo
+        run: |
+          bun run ci:gha --concurrency=100% --continue=dependencies-successful --output-logs="new-only"
+        env:
+          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
 
       - name: Store predeployed output
         uses: actions/upload-artifact@v4
@@ -115,9 +117,10 @@ jobs:
             kit/subgraph/subgraph-output.txt
             kit/contracts/portal/*.json
 
-  security:
-    name: Security
-    runs-on: namespace-profile-atk-trivy
+  secret-scanning:
+    name: Secret Scanning
+    runs-on: namespace-profile-atk
+    if: (github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]')
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
