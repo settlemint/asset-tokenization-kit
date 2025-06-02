@@ -8,6 +8,9 @@
     "ci:publish": {
       "dependsOn": ["package"]
     },
+    "//#version": {
+      "cache": false
+    },
     "build": {
       "dependsOn": ["codegen"]
     },
@@ -18,7 +21,8 @@
       "dependsOn": ["dependencies"]
     },
     "package": {
-      "cache": false
+      "cache": false,
+      "dependsOn": ["//#version"]
     },
     "dependencies": {},
     "format": {},

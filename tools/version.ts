@@ -1,3 +1,8 @@
+#!/usr/bin/env bun
+
+import { Glob } from "bun";
+import { relative } from "path";
+import { parse, stringify } from "yaml";
 import { findTurboRoot } from "./root";
 
 interface VersionInfo {
@@ -146,66 +151,169 @@ export async function getVersionInfoText(
 }
 
 /**
- * Finds the nearest package.json file by walking upwards from the starting path
- * @param startPath - Starting path to search from (defaults to current working directory)
- * @returns Path to the nearest package.json file
+ * Updates all package.json files in the workspace with the new version using glob pattern
+ * @param startPath - Starting path for finding package.json files (defaults to current working directory)
+ * @returns Promise that resolves when all updates are complete
  */
-async function findNearestPackageJson(startPath?: string): Promise<string> {
-  let currentPath = startPath || process.cwd();
+export async function updatePackageVersion(startPath?: string): Promise<void> {
+  const { Glob } = await import("bun");
 
-  while (true) {
-    // Use Bun's native path joining
-    const packageJsonPath = `${currentPath}/package.json`;
-    const packageJsonFile = Bun.file(packageJsonPath);
+  try {
+    // Get the current version info
+    const versionInfo = await getVersionInfo({ startPath });
+    const newVersion = versionInfo.version;
 
-    // Use Bun's native file existence check
-    if (await packageJsonFile.exists()) {
-      return packageJsonPath;
+    console.log(`Updating all package.json files to version: ${newVersion}`);
+
+    // Find all package.json files in the workspace
+    const glob = new Glob("**/package.json");
+    const packageFiles: string[] = [];
+
+    for await (const file of glob.scan(startPath || ".")) {
+      packageFiles.push(file);
     }
 
-    // Move up one directory using string manipulation
-    const parentPath = currentPath.split("/").slice(0, -1).join("/");
-
-    // If we've reached the root directory, stop searching
-    if (
-      parentPath === currentPath ||
-      parentPath === "" ||
-      currentPath === "/"
-    ) {
-      throw new Error("No package.json found in any parent directory");
+    if (packageFiles.length === 0) {
+      console.warn("No package.json files found");
+      return;
     }
 
-    currentPath = parentPath;
+    console.log(`Found ${packageFiles.length} package.json files:`);
+
+    let updatedCount = 0;
+
+    for (const packagePath of packageFiles) {
+      try {
+        console.log(`  Processing: ${packagePath}`);
+
+        // Read the current package.json file
+        const packageJsonFile = Bun.file(packagePath);
+        if (!(await packageJsonFile.exists())) {
+          console.warn(`    Skipping: File does not exist`);
+          continue;
+        }
+
+        const packageJson = (await packageJsonFile.json()) as PackageJson;
+
+        if (!packageJson.version) {
+          console.warn(`    Skipping: No version field found`);
+          continue;
+        }
+
+        const oldVersion = packageJson.version;
+
+        // Update the version
+        packageJson.version = newVersion;
+
+        // Write the updated package.json back to disk
+        await Bun.write(
+          packagePath,
+          JSON.stringify(packageJson, null, 2) + "\n"
+        );
+
+        console.log(`    Updated: ${oldVersion} -> ${newVersion}`);
+        updatedCount++;
+      } catch (error) {
+        console.error(`    Error processing ${packagePath}:`, error);
+      }
+    }
+
+    console.log(`\nSuccessfully updated ${updatedCount} package.json files`);
+  } catch (error) {
+    console.error("Failed to update package versions:", error);
+    process.exit(1);
   }
 }
 
+interface ChartYaml {
+  version: string;
+  appVersion: string;
+  [key: string]: unknown;
+}
+
 /**
- * Updates the nearest package.json file with a new version by walking upwards from the start path
- * @param startPath - Starting path for finding the nearest package.json (defaults to current working directory)
- * @returns Promise that resolves when the update is complete
+ * Updates all Chart.yaml files in the ATK directory with the current version
  */
-export async function updatePackageVersion(startPath?: string): Promise<void> {
-  const versionInfo = await getVersionInfo({ startPath });
+async function updateChartVersions(): Promise<void> {
+  try {
+    // Get the current version info
+    const versionInfo = await getVersionInfo();
+    const newVersion = versionInfo.version;
 
-  // Find the nearest package.json file
-  const packageJsonPath = await findNearestPackageJson(startPath);
-  const packageJsonFile = Bun.file(packageJsonPath);
+    console.log(`Updating charts to version: ${newVersion}`);
 
-  if (!(await packageJsonFile.exists())) {
-    throw new Error(`Package.json not found at ${packageJsonPath}`);
+    // Find all Chart.yaml files in the ATK directory
+    const glob = new Glob("kit/charts/**/Chart.yaml");
+    const chartFiles: string[] = [];
+
+    for await (const file of glob.scan(".")) {
+      chartFiles.push(file);
+    }
+
+    if (chartFiles.length === 0) {
+      console.warn("No Chart.yaml files found in kit/charts/");
+      return;
+    }
+
+    console.log(`Found ${chartFiles.length} Chart.yaml files:`);
+
+    let updatedCount = 0;
+
+    for (const chartPath of chartFiles) {
+      try {
+        const relativePath = relative(process.cwd(), chartPath);
+        console.log(`  Processing: ${relativePath}`);
+
+        // Read the current Chart.yaml file
+        const file = Bun.file(chartPath);
+        if (!(await file.exists())) {
+          console.warn(`    Skipping: File does not exist`);
+          continue;
+        }
+
+        const content = await file.text();
+        const chart = parse(content) as ChartYaml;
+
+        // Check if version fields exist
+        if (!chart.version && !chart.appVersion) {
+          console.warn(`    Skipping: No version or appVersion fields found`);
+          continue;
+        }
+
+        const oldVersion = chart.version;
+        const oldAppVersion = chart.appVersion;
+
+        // Update the version fields
+        chart.version = newVersion;
+        chart.appVersion = newVersion;
+
+        // Convert back to YAML and write
+        const updatedContent = stringify(chart);
+
+        await Bun.write(chartPath, updatedContent);
+
+        console.log(`    Updated: ${oldVersion} -> ${newVersion}`);
+        if (oldAppVersion !== oldVersion) {
+          console.log(
+            `    Updated appVersion: ${oldAppVersion} -> ${newVersion}`
+          );
+        }
+
+        updatedCount++;
+      } catch (error) {
+        console.error(`    Error processing ${chartPath}:`, error);
+      }
+    }
+
+    console.log(`\nSuccessfully updated ${updatedCount} Chart.yaml files`);
+  } catch (error) {
+    console.error("Failed to update chart versions:", error);
+    process.exit(1);
   }
+}
 
-  // Read the current package.json
-  const packageJson = (await packageJsonFile.json()) as PackageJson;
-  const oldVersion = packageJson.version;
-
-  // Update the version
-  packageJson.version = versionInfo.version;
-
-  // Write the updated package.json back to disk
-  await Bun.write(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
-
-  console.log(
-    `Updated ${packageJsonPath}: ${oldVersion} -> ${versionInfo.version}`
-  );
+// Run the script if called directly
+if (import.meta.main) {
+  await updateChartVersions();
+  await updatePackageVersion();
 }
