@@ -1,14 +1,18 @@
+import { hasFeatureFlag } from "@/app/posthog";
 import { NavMain } from "@/components/layout/nav-main";
 import { ActivityIcon } from "@/components/ui/activity";
 import { ChartScatterIcon } from "@/components/ui/chart-scatter";
 import { HandCoinsIcon } from "@/components/ui/hand-coins";
 import { MailCheckIcon } from "@/components/ui/mail-check";
 import { UsersIcon } from "@/components/ui/users";
+import { getUser } from "@/lib/auth/utils";
 import { GiftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 export async function PortfolioManagement() {
   const t = await getTranslations("admin.sidebar.portfolio-management");
+  const user = await getUser();
+  const airdropFlagEnabled = await hasFeatureFlag(user.email, "airdrop");
 
   return (
     <NavMain
@@ -51,13 +55,17 @@ export async function PortfolioManagement() {
               ),
               path: "/portfolio/my-assets",
             },
-            {
-              label: t("my-airdrops"),
-              icon: (
-                <GiftIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
-              ),
-              path: "/portfolio/my-airdrops",
-            },
+            ...(airdropFlagEnabled
+              ? [
+                  {
+                    label: t("my-airdrops"),
+                    icon: (
+                      <GiftIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+                    ),
+                    path: "/portfolio/my-airdrops",
+                  },
+                ]
+              : []),
           ],
         },
       ]}
