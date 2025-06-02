@@ -18,6 +18,10 @@
       "dependsOn": ["dependencies"]
     },
     "dependencies": {},
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
     "format": {},
     "lint": {}
   }
