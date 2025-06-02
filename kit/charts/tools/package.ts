@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { logger } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
@@ -18,7 +18,7 @@ const log = logger;
 /**
  * Find the charts directory using intelligent root detection
  */
-function findChartsDirectory(): string {
+async function findChartsDirectory(): Promise<string> {
   log.debug("Finding charts directory...");
 
   // If we're already in kit/charts, use current directory
@@ -49,36 +49,58 @@ function findChartsDirectory(): string {
 }
 
 /**
+ * Recursively find all values.yaml files in a directory
+ */
+function findValuesFiles(dir: string, basePath: string = ""): string[] {
+  const files: string[] = [];
+
+  try {
+    const entries = readdirSync(dir);
+
+    for (const entry of entries) {
+      const fullPath = join(dir, entry);
+      const relativePath = basePath ? join(basePath, entry) : entry;
+
+      if (statSync(fullPath).isDirectory()) {
+        // Recursively search subdirectories
+        files.push(...findValuesFiles(fullPath, relativePath));
+      } else if (entry === "values.yaml" || entry.startsWith("values-") && entry.endsWith(".yaml")) {
+        // Include values.yaml and values-*.yaml files
+        files.push(relativePath);
+      }
+    }
+  } catch (error) {
+    log.warn(`Error reading directory ${dir}: ${error}`);
+  }
+
+  return files;
+}
+
+/**
  * Get all chart files that need to be processed
  */
 function getChartFiles(projectDir: string): string[] {
-  const files = [
-    "atk/values.yaml",
-    "atk/values-prod.yaml",
-    "atk/values-example.yaml",
-    "atk/charts/besu-network/values.yaml",
-    "atk/charts/besu-network/charts/besu-node/values.yaml",
-    "atk/charts/besu-network/charts/besu-genesis/values.yaml",
-    "atk/charts/blockscout/values.yaml",
-    "atk/charts/dapp/values.yaml",
-    "atk/charts/erpc/values.yaml",
-    "atk/charts/hasura/values.yaml",
-    "atk/charts/observability/values.yaml",
-    "atk/charts/portal/values.yaml",
-    "atk/charts/support/values.yaml",
-    "atk/charts/thegraph/values.yaml",
-    "atk/charts/txsigner/values.yaml",
-  ];
+  const atkDir = join(projectDir, "atk");
 
-  return files
-    .map(file => join(projectDir, file))
-    .filter(filePath => {
-      if (!existsSync(filePath)) {
-        log.warn(`File not found: ${filePath}`);
-        return false;
-      }
-      return true;
-    });
+  if (!existsSync(atkDir)) {
+    log.error(`ATK directory not found: ${atkDir}`);
+    return [];
+  }
+
+  // Find all values.yaml files in the atk directory
+  const relativeFiles = findValuesFiles(atkDir);
+
+  // Convert to absolute paths and add the atk prefix
+  const files = relativeFiles.map(file => join(projectDir, "atk", file));
+
+  // Filter out files that don't exist (shouldn't happen, but defensive programming)
+  return files.filter(filePath => {
+    if (!existsSync(filePath)) {
+      log.warn(`File not found: ${filePath}`);
+      return false;
+    }
+    return true;
+  });
 }
 
 /**
@@ -139,6 +161,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
         const registryMatch = line.match(/(\s+registry:\s+)([^\s\n]+)/);
         if (
           registryMatch &&
+          registryMatch[2] &&
           registryMatch[2] !== HARBOR_PROXY &&
           !registryMatch[2].startsWith(`${HARBOR_PROXY}/`)
         ) {
@@ -157,6 +180,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
         const registryMatch = line.match(/(\s+imageRegistry:\s+)([^\s\n]+)/);
         if (
           registryMatch &&
+          registryMatch[2] &&
           registryMatch[2] !== HARBOR_PROXY &&
           !registryMatch[2].startsWith(`${HARBOR_PROXY}/`)
         ) {
@@ -175,7 +199,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
       // Process repository: values
       if (line.includes("repository:")) {
         const repoMatch = line.match(/(\s+repository:\s+)([^\s\n]+)/);
-        if (repoMatch) {
+        if (repoMatch && repoMatch[2]) {
           const repoValue = repoMatch[2];
 
           const registries = [
@@ -204,7 +228,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
       // Process image: values
       if (line.includes("image:") && !line.includes("imageRegistry")) {
         const imageMatch = line.match(/(\s+image:\s+)([^\s\n]+)/);
-        if (imageMatch) {
+        if (imageMatch && imageMatch[2]) {
           const imageValue = imageMatch[2];
 
           const registries = [
@@ -264,7 +288,7 @@ async function main(): Promise<void> {
 
   try {
     // Find the charts directory
-    const projectDir = findChartsDirectory();
+    const projectDir = await findChartsDirectory();
     log.info(`Using charts directory: ${projectDir}`);
 
     // Get all chart files to process
