@@ -4,6 +4,7 @@ import { ChartScatterIcon } from "@/components/ui/chart-scatter";
 import { HandCoinsIcon } from "@/components/ui/hand-coins";
 import { MailCheckIcon } from "@/components/ui/mail-check";
 import { UsersIcon } from "@/components/ui/users";
+import { GiftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 export async function PortfolioManagement() {
@@ -49,6 +50,13 @@ export async function PortfolioManagement() {
                 <HandCoinsIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
               ),
               path: "/portfolio/my-assets",
+            },
+            {
+              label: t("my-airdrops"),
+              icon: (
+                <GiftIcon className="size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+              ),
+              path: "/portfolio/my-airdrops",
             },
           ],
         },

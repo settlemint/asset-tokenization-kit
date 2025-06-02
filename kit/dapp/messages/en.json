@@ -273,6 +273,10 @@
         "group-title": "Custody management",
         "multisig-vaults": "Vaults"
       },
+      "distribution": {
+        "group-title": "Distribution",
+        "airdrops": "Airdrops"
+      },
       "platform-management": {
         "api": "API",
         "group-title": "Platform management",
@@ -285,6 +289,7 @@
         "group-title": "My portfolio",
         "my-activity": "My activity",
         "my-assets": "My assets",
+        "my-airdrops": "My airdrops",
         "my-contacts": "My contacts",
         "profile": "Profile",
         "settings": "Settings",

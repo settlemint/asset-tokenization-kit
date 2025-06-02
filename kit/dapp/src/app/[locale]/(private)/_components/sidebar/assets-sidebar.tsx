@@ -1,3 +1,4 @@
+import { Distribution } from "@/app/[locale]/(private)/_components/sidebar/items/distribution";
 import { AirdropDesignButton } from "@/components/blocks/airdrop/design-dialog/airdrop-design-button";
 import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-designer-button";
 import { NavHeader } from "@/components/layout/nav-header";
@@ -29,6 +30,7 @@ export async function AssetsSidebar() {
         )}
         <AssetManagement />
         <CustodyManagement />
+        <Distribution />
       </SidebarContent>
       <SidebarFooter>
         <Separator />
