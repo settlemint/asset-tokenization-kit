@@ -65,7 +65,7 @@ export function handleStandardAirdropDeployed(
   let owner = fetchAccount(ownerAddress);
 
   airdrop.factory = factoryEntity.id;
-  airdrop.token = tokenAddress; // Store token address directly (Bytes)
+  airdrop.token = tokenAddress;
   airdrop.owner = owner.id;
   airdrop.deployedOn = event.block.timestamp;
   airdrop.deploymentTx = event.transaction.hash;
