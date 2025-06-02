@@ -28,7 +28,7 @@ export const createStablecoin = async () => {
 
   const encodedBlockedCountries = encodeAbiParameters(
     parseAbiParameters("uint16[]"),
-    [[Countries.RU]]
+    [[]]
   );
 
   const transactionHash = await stablecoinFactory.write.createStableCoin([

@@ -25,7 +25,7 @@ export const createBond = async (depositToken: Asset) => {
 
   const encodedBlockedCountries = encodeAbiParameters(
     parseAbiParameters("uint16[]"),
-    [[Countries.RU]]
+    [[]]
   );
 
   const transactionHash = await bondFactory.write.createBond([

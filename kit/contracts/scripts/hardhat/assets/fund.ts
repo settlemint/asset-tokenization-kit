@@ -27,7 +27,7 @@ export const createFund = async () => {
 
   const encodedBlockedCountries = encodeAbiParameters(
     parseAbiParameters("uint16[]"),
-    [[Countries.RU]]
+    [[]]
   );
 
   const transactionHash = await fundFactory.write.createFund([

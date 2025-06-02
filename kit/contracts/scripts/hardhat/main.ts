@@ -2,6 +2,7 @@ import { batchAddToRegistry } from "./actions/add-to-registry";
 import { addTrustedIssuer } from "./actions/add-trusted-issuer";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
+import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
 import { claimIssuer } from "./actors/claim-issuer";
 import { investorA, investorANew, investorB } from "./actors/investors";
 import { owner } from "./actors/owner";
@@ -11,6 +12,7 @@ import { createDeposit } from "./assets/deposit";
 import { createEquity } from "./assets/equity";
 import { createFund } from "./assets/fund";
 import { createStablecoin } from "./assets/stablecoin";
+import { Countries } from "./constants/countries";
 import { SMARTTopic } from "./constants/topics";
 import { smartProtocolDeployer } from "./services/deployer";
 import { topicManager } from "./services/topic-manager";
@@ -64,6 +66,11 @@ async function main() {
     issueVerificationClaims(investorA),
     issueVerificationClaims(investorB),
   ]);
+
+  console.log("\n=== Setting up compliance modules... ===\n");
+
+  // block RU in the country block list module
+  await setGlobalBlockedCountries([Countries.RU]);
 
   // Create the assets
   const deposit = await createDeposit();
