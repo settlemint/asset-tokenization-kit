@@ -115,7 +115,7 @@ jobs:
         with:
           name: predeployed-output
           path: |
-            kit/contracts/genesis-output.json
+            kit/contracts/tools/genesis-output.json
             kit/subgraph/subgraph-output.txt
             kit/contracts/portal/*.json
 
