@@ -3,12 +3,16 @@
 import { Form } from "@/components/blocks/form/form";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createEquity } from "@/lib/mutations/equity/create/create-action";
-import { CreateEquitySchema } from "@/lib/mutations/equity/create/create-schema";
+import {
+  CreateEquitySchema,
+  type CreateEquityInput,
+} from "@/lib/mutations/equity/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/equity-factory/equity-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/equity-factory/equity-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
+import type { UseFormReturn } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
 import { stepDefinition as summaryStep } from "../common/summary/summary";
@@ -47,8 +51,12 @@ export function CreateEquityForm({
     <SummaryComponent
       key="summary"
       configurationCard={<EquityConfigurationCard />}
-      predictAddress={getPredictedAddress}
-      isAddressAvailable={isAddressAvailable}
+      isAddressAvailable={async (form: UseFormReturn<CreateEquityInput>) => {
+        const values = form.getValues();
+        const predictedAddress = await getPredictedAddress(values);
+        const isAvailable = await isAddressAvailable(predictedAddress);
+        return isAvailable ? predictedAddress : false;
+      }}
     />,
   ];
 

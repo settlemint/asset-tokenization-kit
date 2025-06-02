@@ -8,7 +8,7 @@ import { authClient } from "@/lib/auth/client";
 import { DollarSign, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, type UseFormReturn } from "react-hook-form";
 import type { Address } from "viem";
 
 interface AssetAdmin {
@@ -19,13 +19,11 @@ interface AssetAdmin {
 
 interface SummaryProps {
   configurationCard: React.ReactNode;
-  predictAddress: (values: any) => Promise<Address>;
-  isAddressAvailable: (address: Address) => Promise<boolean>;
+  isAddressAvailable: (form: UseFormReturn<any>) => Promise<false | Address>;
 }
 
 export function Summary({
   configurationCard,
-  predictAddress,
   isAddressAvailable,
 }: SummaryProps) {
   const form = useFormContext();
@@ -37,21 +35,14 @@ export function Summary({
 
   // Fetch and validate predicted address on initial load
   useEffect(() => {
-    // Skip validation if prediction functions aren't provided
-    if (!predictAddress || !isAddressAvailable) {
-      return;
-    }
-
     // Validate predicted address
     const validateAddress = async () => {
       try {
         setPredictionError(null);
 
-        const values = form.getValues();
-        const predictedAddress = await predictAddress(values);
-        const isAvailable = await isAddressAvailable(predictedAddress);
+        const availableAddress = await isAddressAvailable(form);
 
-        if (!isAvailable) {
+        if (!availableAddress) {
           form.setError("predictedAddress", {
             message: "private.assets.create.form.errors.duplicate-asset",
           });
@@ -62,7 +53,7 @@ export function Summary({
         }
 
         // Set the predicted address in the form
-        form.setValue("predictedAddress", predictedAddress);
+        form.setValue("predictedAddress", availableAddress);
         form.clearErrors("predictedAddress");
       } catch (error) {
         console.error("Error validating address:", error);
@@ -75,7 +66,7 @@ export function Summary({
     };
 
     validateAddress();
-  }, [form, predictAddress, isAddressAvailable]);
+  }, [form, isAddressAvailable]);
 
   return (
     <>

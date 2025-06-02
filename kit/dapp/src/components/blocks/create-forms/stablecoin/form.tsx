@@ -27,7 +27,10 @@ import { Form } from "@/components/blocks/form/form";
 import { useFeatureEnabled } from "@/lib/hooks/use-feature-enabled";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
-import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
+import {
+  CreateStablecoinSchema,
+  type CreateStablecoinInput,
+} from "@/lib/mutations/stablecoin/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/stablecoin-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
@@ -35,7 +38,7 @@ import type { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, type UseFormReturn } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
 import { stepDefinition as summaryStep } from "../common/summary/summary";
@@ -112,8 +115,14 @@ export function CreateStablecoinForm({
       <SummaryComponent
         key="summary"
         configurationCard={<StablecoinConfigurationCard />}
-        predictAddress={getPredictedAddress}
-        isAddressAvailable={isAddressAvailable}
+        isAddressAvailable={async (
+          form: UseFormReturn<CreateStablecoinInput>
+        ) => {
+          const values = form.getValues();
+          const predictedAddress = await getPredictedAddress(values);
+          const isAvailable = await isAddressAvailable(predictedAddress);
+          return isAvailable ? predictedAddress : false;
+        }}
       />
     );
 
