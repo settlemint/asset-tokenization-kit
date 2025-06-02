@@ -9,6 +9,7 @@ import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
  */
 export const AirdropFragment = theGraphGraphqlKit(`
   fragment AirdropFragment on Airdrop {
+    type: __typename
     id
     asset: token
     totalClaimed

@@ -1,10 +1,13 @@
 import { AirdropDesignButton } from "@/components/blocks/airdrop/design-dialog/airdrop-design-button";
+import { DataTable } from "@/components/blocks/data-table/data-table";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
+import { getAirdropList } from "@/lib/queries/airdrop/airdrop-list";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { columns } from "./(table)/columns";
 export async function generateMetadata({
   params,
 }: {
@@ -38,6 +41,7 @@ export default async function AirdropsPage({
     }),
     getUser(),
   ]);
+  const airdrops = await getAirdropList(user.wallet);
 
   return (
     <>
@@ -45,6 +49,7 @@ export default async function AirdropsPage({
         title={t("airdrops")}
         button={<AirdropDesignButton currentUser={user} />}
       />
+      <DataTable columns={columns} data={airdrops} name={t("airdrops")} />
     </>
   );
 }

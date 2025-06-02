@@ -1580,6 +1580,22 @@
           "not-specified": "Not specified",
           "disclaimer": "By creating this airdrop, you confirm that all information provided is accurate and that you have the necessary permissions to deploy this airdrop. This action cannot be undone."
         }
+      },
+      "table": {
+        "columns": {
+          "id": "Airdrop",
+          "type": "Type",
+          "asset": "Asset",
+          "total-claimed": "Claimed",
+          "total-recipients": "Claims",
+          "details": "Details"
+        },
+        "type": {
+          "standard": "Standard",
+          "vesting": "Vesting",
+          "push": "Push"
+        },
+        "details": "Details"
       }
     },
     "assets": {
