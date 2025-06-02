@@ -136,104 +136,6 @@ const CONTRACT_FILES = {
 } as const;
 
 // =============================================================================
-// ANVIL MANAGEMENT
-// =============================================================================
-
-class AnvilManager {
-  private config: Config;
-  private process?: Bun.Subprocess;
-
-  constructor(config: Config) {
-    this.config = config;
-  }
-
-  async isRunning(): Promise<boolean> {
-    try {
-      const response = await fetch(
-        `http://localhost:${this.config.anvilPort}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            method: "eth_chainId",
-            params: [],
-            id: 1,
-          }),
-        }
-      );
-      return response.ok;
-    } catch {
-      return false;
-    }
-  }
-
-  async stop(): Promise<void> {
-    if (this.process) {
-      log.info("Stopping Anvil...");
-      this.process.kill();
-      await this.process.exited;
-      this.process = undefined;
-      log.success("Anvil stopped");
-    }
-  }
-
-  async start(): Promise<void> {
-    // Check if already running
-    if (await this.isRunning()) {
-      if (this.config.forceRestartAnvil) {
-        log.info("Anvil is running, force restarting...");
-        await $`pkill -f "anvil.*--port ${this.config.anvilPort}"`.quiet();
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      } else {
-        log.info(`Anvil already running on port ${this.config.anvilPort}`);
-        return;
-      }
-    }
-
-    log.info(`Starting Anvil on port ${this.config.anvilPort}...`);
-
-    // Start Anvil process
-    this.process = Bun.spawn(
-      [
-        "anvil",
-        "--port",
-        this.config.anvilPort.toString(),
-        "--block-time",
-        this.config.anvilBlockTime.toString(),
-        "--accounts",
-        "10",
-        "--balance",
-        "10000",
-        "--gas-limit",
-        "30000000",
-        "--code-size-limit",
-        "50000",
-      ],
-      {
-        stdout: "pipe",
-        stderr: "pipe",
-      }
-    );
-
-    // Wait for Anvil to be ready
-    let attempts = 0;
-    const maxAttempts = 30;
-
-    while (attempts < maxAttempts) {
-      if (await this.isRunning()) {
-        log.success("Anvil started successfully");
-        return;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      attempts++;
-    }
-
-    throw new Error("Failed to start Anvil within timeout");
-  }
-}
-
-// =============================================================================
 // CONTRACT DEPLOYMENT
 // =============================================================================
 
@@ -278,19 +180,6 @@ class ContractDeployer {
 
   async validateBytecode(solFile: string, contractName: string): Promise<void> {
     log.debug(`Validating bytecode for ${contractName}...`);
-
-    // First check if the contract compiles
-    log.debug(`Checking compilation for ${contractName}...`);
-    const buildResult = await $`forge build --contracts ${solFile}`.cwd(
-      CONTRACTS_ROOT
-    );
-
-    if (buildResult.exitCode !== 0) {
-      log.error(`Build failed for ${contractName}: ${buildResult.stderr}`);
-      throw new Error(
-        `Build failed for ${contractName}: ${buildResult.stderr}`
-      );
-    }
 
     const result =
       await $`forge inspect ${solFile}:${contractName} bytecode`.cwd(
@@ -351,10 +240,18 @@ class ContractDeployer {
     log.debug(`Forge command: ${forgeArgs.join(" ")}`);
     log.debug(`Working directory: ${CONTRACTS_ROOT}`);
 
-    const result =
-      await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 ${args.length > 0 ? `--constructor-args ${args.join(" ")}` : ""}`.cwd(
-        CONTRACTS_ROOT
-      );
+    let result;
+    if (args.length > 0) {
+      result =
+        await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --constructor-args ${args}`.cwd(
+          CONTRACTS_ROOT
+        );
+    } else {
+      result =
+        await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200`.cwd(
+          CONTRACTS_ROOT
+        );
+    }
 
     const output = result.stdout.toString();
     const errorOutput = result.stderr.toString();
@@ -906,25 +803,9 @@ async function main(): Promise<void> {
     throw new Error("Anvil not found. Please install Foundry.");
   }
 
-  // Build contracts first
-  log.info("Building contracts...");
-  try {
-    const buildResult = await $`forge build`.cwd(CONTRACTS_ROOT);
-    if (buildResult.exitCode !== 0) {
-      throw new Error(`Build failed: ${buildResult.stderr}`);
-    }
-    log.success("Contracts built successfully");
-  } catch (error) {
-    throw new Error(`Failed to build contracts: ${error}`);
-  }
-
-  const anvilManager = new AnvilManager(config);
   const generator = new GenesisGenerator(config);
 
   try {
-    // Start Anvil
-    await anvilManager.start();
-
     // Initialize genesis file
     await generator.initializeGenesisFile();
 
@@ -954,11 +835,6 @@ async function main(): Promise<void> {
   } catch (error) {
     log.error(`Genesis generation failed: ${error}`);
     process.exit(1);
-  } finally {
-    // Cleanup
-    if (!config.keepAnvilRunning) {
-      await anvilManager.stop();
-    }
   }
 }
 
