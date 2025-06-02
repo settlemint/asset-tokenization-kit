@@ -46,7 +46,7 @@ const SECOND_OUTPUT_DIR = join(
 const SECOND_OUTPUT_FILE = join(SECOND_OUTPUT_DIR, "genesis-output.json");
 
 // Contract configuration
-const CONTRACT_ADDRESSES: Record<string, string> = {
+const CONTRACT_ADDRESSES = {
   // Core infrastructure
   SMARTForwarder: "0x5e771e1417100000000000000000000000020099",
 
@@ -85,9 +85,9 @@ const CONTRACT_ADDRESSES: Record<string, string> = {
   SMARTStableCoinImplementation: "0x5e771e1417100000000000000000000000020018",
   SMARTStableCoinFactoryImplementation:
     "0x5e771e1417100000000000000000000000020019",
-};
+} as const;
 
-const CONTRACT_FILES: Record<string, string> = {
+const CONTRACT_FILES = {
   // Core infrastructure
   SMARTForwarder: "contracts/vendor/SMARTForwarder.sol",
 
@@ -133,7 +133,7 @@ const CONTRACT_FILES: Record<string, string> = {
     "contracts/assets/stable-coin/SMARTStableCoinImplementation.sol",
   SMARTStableCoinFactoryImplementation:
     "contracts/assets/stable-coin/SMARTStableCoinFactoryImplementation.sol",
-};
+} as const;
 
 // =============================================================================
 // ANVIL MANAGEMENT
@@ -535,7 +535,7 @@ class GenesisGenerator {
   }
 
   async processContract(
-    contractName: string,
+    contractName: keyof typeof CONTRACT_ADDRESSES,
     totalContracts: number
   ): Promise<void> {
     const targetAddress = CONTRACT_ADDRESSES[contractName];
@@ -598,7 +598,10 @@ class GenesisGenerator {
       }
 
       try {
-        await this.processContract(contractName, totalContracts);
+        await this.processContract(
+          contractName as keyof typeof CONTRACT_ADDRESSES,
+          totalContracts
+        );
       } catch (error) {
         log.error(`Error processing ${contractName}: ${error}`);
       }
@@ -765,7 +768,7 @@ function parseCliArgs(): Config {
 
       case "-p":
       case "--port":
-        const port = parseInt(args[++i], 10);
+        const port = parseInt(args[++i] ?? "", 10);
         if (isNaN(port)) {
           console.error("Option --port requires a valid port number");
           process.exit(1);
@@ -775,7 +778,7 @@ function parseCliArgs(): Config {
 
       case "-b":
       case "--block-time":
-        const blockTime = parseInt(args[++i], 10);
+        const blockTime = parseInt(args[++i] ?? "", 10);
         if (isNaN(blockTime)) {
           console.error("Option --block-time requires a valid number");
           process.exit(1);

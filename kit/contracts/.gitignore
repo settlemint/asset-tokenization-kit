@@ -18,6 +18,7 @@ node_modules
 ignition/deployments/chain-*
 ignition/deployments/asset-tokenization
 ignition/deployments/asset-tokenization-local
+ignition/deployments/smart-protocol-local
 
 genesis-output.json
 
