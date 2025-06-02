@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
+
 export async function revalidate() {
   // Revalidate all cache tags
   revalidateTag("asset");

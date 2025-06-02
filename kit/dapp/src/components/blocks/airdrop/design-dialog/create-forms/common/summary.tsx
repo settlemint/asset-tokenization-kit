@@ -9,42 +9,33 @@ import type { CreateAirdropInput } from "@/lib/mutations/airdrop/create/common/s
 import { formatNumber } from "@/lib/utils/number";
 import { HandHeart, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import type { PropsWithChildren } from "react";
 import { useEffect } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, type UseFormReturn } from "react-hook-form";
 import type { Address } from "viem";
 
-interface SummaryProps extends PropsWithChildren {
-  predictAddress?: (values: any) => Promise<Address>;
-  isAddressAvailable?: (address: Address) => Promise<boolean>;
+interface SummaryProps {
+  configurationCard?: React.ReactNode;
+  isAddressAvailable: (form: UseFormReturn<any>) => Promise<false | Address>;
 }
 
 export function Summary({
-  children,
-  predictAddress,
+  configurationCard,
   isAddressAvailable,
 }: SummaryProps) {
   const form = useFormContext<CreateAirdropInput>();
-  const t = useTranslations("private.airdrops.create.summary");
+  const t = useTranslations("private.airdrops.create");
   const locale = useLocale();
   const formValues = form.getValues();
   const { data: session } = authClient.useSession();
 
   // Fetch and validate predicted address on initial load
   useEffect(() => {
-    // Skip validation if prediction functions aren't provided
-    if (!predictAddress || !isAddressAvailable) {
-      return;
-    }
-
     // Validate predicted address
     const validateAddress = async () => {
       try {
-        const values = form.getValues();
-        const predictedAddress = await predictAddress(values);
-        const isAvailable = await isAddressAvailable(predictedAddress);
+        const availableAddress = await isAddressAvailable(form);
 
-        if (!isAvailable) {
+        if (!availableAddress) {
           form.setError("predictedAddress", {
             message: "private.airdrops.create.form.errors.duplicate-airdrop",
           });
@@ -52,7 +43,7 @@ export function Summary({
         }
 
         // Set the predicted address in the form
-        form.setValue("predictedAddress", predictedAddress);
+        form.setValue("predictedAddress", availableAddress);
         form.clearErrors("predictedAddress");
       } catch (error) {
         console.error("Error validating address:", error);
@@ -71,9 +62,9 @@ export function Summary({
     <StepContent className="max-w-3xl w-full mx-auto">
       <div className="space-y-6">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold">{t("title")}</h2>
+          <h2 className="text-xl font-semibold">{t(stepDefinition.title)}</h2>
           <p className="text-sm text-muted-foreground mt-2">
-            {t("description")}
+            {t(stepDefinition.description)}
           </p>
         </div>
 
@@ -110,20 +101,21 @@ export function Summary({
           />
         </FormSummaryDetailCard>
 
-        {children}
+        {/* Configuration Card passed per airdrop type */}
+        {configurationCard}
 
         {/* Distribution Configuration Card */}
         <FormSummaryDetailCard
-          title={t("configuration.title")}
-          description={t("configuration.description")}
+          title={t("summary.configuration.title")}
+          description={t("summary.configuration.description")}
           icon={<HandHeart className="size-3 text-primary-foreground" />}
         >
           <FormSummaryDetailItem
-            label={t("configuration.distribution-recipients-label")}
+            label={t("summary.configuration.distribution-recipients-label")}
             value={formValues.distribution?.length?.toString()}
           />
           <FormSummaryDetailItem
-            label={t("configuration.total-distribution-amount-label")}
+            label={t("summary.configuration.total-distribution-amount-label")}
             value={
               formValues.distribution
                 ? formatNumber(
@@ -144,9 +136,16 @@ export function Summary({
 
         {/* Disclaimer */}
         <div className="text-sm text-muted-foreground mt-8">
-          <p>{t("disclaimer")}</p>
+          <p>{t("summary.disclaimer")}</p>
         </div>
       </div>
     </StepContent>
   );
 }
+
+export const stepDefinition = {
+  id: "summary",
+  title: "summary.title",
+  description: "summary.description",
+  component: Summary,
+} as const;
