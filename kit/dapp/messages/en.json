@@ -1037,7 +1037,8 @@
       "title": "Private",
       "trade-management": "Trade management",
       "vaults": "Vaults",
-      "xvp-settlement": "XvP"
+      "xvp-settlement": "XvP",
+      "distribution": "Distribution"
     },
     "user-dropdown": {
       "documentation": "Documentation",
@@ -2986,6 +2987,11 @@
       "to": "To",
       "xvp-settlement": "XvP Settlement",
       "actions": "Actions"
+    }
+  },
+  "distribution": {
+    "page": {
+      "airdrops": "Airdrops"
     }
   },
   "transactions": {
