@@ -16,9 +16,12 @@
       "cache": false,
       "dependsOn": ["dependencies"]
     },
+    "package:version": {
+      "cache": false
+    },
     "package:pack": {
       "cache": false,
-      "dependsOn": ["package:harbor"],
+      "dependsOn": ["package:harbor", "package:version"],
       "outputs": ["atk-*.tgz"]
     },
     "package:push:ghcr": {
