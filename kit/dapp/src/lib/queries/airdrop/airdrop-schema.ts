@@ -1,3 +1,4 @@
+import { AirdropDistributionListSchema } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { AirdropType } from "@/lib/utils/typebox/airdrop-types";
@@ -69,24 +70,16 @@ export type OnChainAirdrop = StaticDecode<typeof OnChainAirdropSchema>;
 
 /**
  * TypeBox schema for off-chain airdrop distribution data
- *
- * Provides validation for airdrop distribution entries including:
- * amount allocated to each recipient
  */
 export const OffChainAirdropSchema = t.Object(
   {
-    amount: t.BigDecimal({
-      description: "The amount allocated to this recipient",
-    }),
-    recipient: t.EthereumAddress({
-      description: "The Ethereum address of the airdrop recipient",
-    }),
+    distribution: AirdropDistributionListSchema,
   },
   {
-    description:
-      "Off-chain data for airdrop distributions including recipient addresses and allocated amounts",
+    description: "Off-chain data for airdrop distributions",
   }
 );
+
 export type OffChainAirdrop = StaticDecode<typeof OffChainAirdropSchema>;
 
 /**
@@ -107,23 +100,6 @@ export const CalculatedAirdropSchema = t.Object(
   }
 );
 export type CalculatedAirdrop = StaticDecode<typeof CalculatedAirdropSchema>;
-
-/**
- * Combined schema for complete airdrop details
- *
- * Merges on-chain data with optional off-chain data
- */
-export const AirdropDetailSchema = t.Object(
-  {
-    ...OnChainAirdropSchema.properties,
-    ...t.Partial(OffChainAirdropSchema).properties,
-  },
-  {
-    description:
-      "Combined schema for complete airdrop details including on-chain data and off-chain distribution data",
-  }
-);
-export type AirdropDetail = StaticDecode<typeof AirdropDetailSchema>;
 
 export const AirdropListItem = OnChainAirdropSchema;
 

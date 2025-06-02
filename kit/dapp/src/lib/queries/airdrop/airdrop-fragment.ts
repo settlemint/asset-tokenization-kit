@@ -33,5 +33,6 @@ export const OffchainAirdropFragment = hasuraGraphql(`
   fragment OffchainAirdropFragment on airdrop_distribution {
     amount
     recipient
+    index
   }
 `);
