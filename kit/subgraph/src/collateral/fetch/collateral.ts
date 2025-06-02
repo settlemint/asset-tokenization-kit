@@ -1,18 +1,12 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { TokenCollateral } from "../../../../generated/schema";
-import { setBigNumber } from "../../utils/bignumber";
+import { Address } from "@graphprotocol/graph-ts";
+import { TokenCollateral } from "../../../generated/schema";
 
-export function fetchCollateral(
-  address: Address,
-  initialDecimals: number = 18
-): TokenCollateral {
+export function fetchCollateral(address: Address): TokenCollateral {
   let collateral = TokenCollateral.load(address);
 
   if (!collateral) {
     collateral = new TokenCollateral(address);
-    collateral.issuer = Address.zero();
-    setBigNumber(collateral, "amount", BigInt.zero(), initialDecimals);
-    collateral.expiryTimestamp = BigInt.zero();
+    collateral.identityClaim = null;
     collateral.save();
   }
 

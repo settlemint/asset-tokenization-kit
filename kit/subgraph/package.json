@@ -12,8 +12,8 @@
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
     "format": "prettier --write .",
     "build": "settlemint scs subgraph build",
-    "deploy:local": "bash graph-deploy.sh --local",
-    "deploy:remote": "bash graph-deploy.sh --remote",
+    "deploy:local": "bash tools/graph-deploy.sh --local",
+    "deploy:remote": "bash tools/graph-deploy.sh --remote",
     "subgraph:deploy": "settlemint scs subgraph deploy"
   },
   "dependencies": {

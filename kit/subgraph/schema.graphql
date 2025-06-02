@@ -156,10 +156,7 @@ type TokenPausable @entity(immutable: false) {
 
 type TokenCollateral @entity(immutable: false) {
   id: Bytes!
-  amount: BigDecimal!
-  amountExact: BigInt!
-  issuer: Account!
-  expiryTimestamp: BigInt!
+  identityClaim: IdentityClaim
 }
 
 type Identity @entity(immutable: false) {

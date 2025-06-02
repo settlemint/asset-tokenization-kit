@@ -14,9 +14,9 @@
 # shellcheck disable=SC2154  # SCRIPT_NAME and other variables are set by init_common_lib
 
 # Get script directory and source libraries
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly SCRIPT_DIR
-source "${SCRIPT_DIR}/lib/all.sh"
+TOOLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly TOOLS_DIR
+source "${TOOLS_DIR}/lib/all.sh"
 
 # Initialize the common library
 init_common_lib "graph-deploy.sh"
@@ -93,7 +93,7 @@ parse_arguments() {
     done
 
     # Let common library parse its arguments
-    parse_common_arguments "${args[@]}"
+    parse_common_arguments "${args[*]:-}"
 
     # Validate deployment environment
     if [[ -z "$DEPLOYMENT_ENV" ]]; then
