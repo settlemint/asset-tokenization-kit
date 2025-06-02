@@ -122,7 +122,7 @@ jobs:
 
   secret-scanning:
     name: Secret Scanning
-    runs-on: namespace-profile-atk
+    runs-on: namespace-profile-atk-services
     if: (github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]')
     steps:
       - name: Checkout repository
@@ -141,7 +141,7 @@ jobs:
 
   codeql:
     name: CodeQL (${{ matrix.language }})
-    runs-on: namespace-profile-atk
+    runs-on: namespace-profile-atk-services
     permissions:
       security-events: write
       packages: read
@@ -170,7 +170,8 @@ jobs:
           category: "/language:${{matrix.language}}"
 
   labels:
-    runs-on: namespace-profile-atk
+    name: PR Labels
+    runs-on: namespace-profile-atk-services
     permissions:
       contents: read
       issues: write
@@ -201,8 +202,7 @@ jobs:
         id: check_message
         if:
           ${{ github.event_name == 'pull_request' && github.event.pull_request
-          != null && !github.event.pull_request.draft &&
-          tojson(github.event.pull_request.requested_reviewers) != '[]' }}
+          != null && !github.event.pull_request.draft }}
         run: |
           # Check if there's an existing comment with Slack message timestamp
           COMMENT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
@@ -221,8 +221,7 @@ jobs:
         id: slack_message
         if:
           ${{ github.event_name == 'pull_request' && github.event.pull_request
-          != null && !github.event.pull_request.draft &&
-          tojson(github.event.pull_request.requested_reviewers) != '[]' }}
+          != null && !github.event.pull_request.draft }}
         uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
         with:
           method:
