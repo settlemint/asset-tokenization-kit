@@ -183,7 +183,8 @@ jobs:
   slack:
     name: Slack
     runs-on: namespace-profile-atk-services
-    if: github.event_name == 'pull_request'
+    needs: qa
+    if: github.event_name == 'pull_request' && always()
     steps:
       - name: Configure 1Password
         uses: 1password/load-secrets-action/configure@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
@@ -271,11 +272,24 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*Status:*\n${{ github.event.pull_request.state == 'open' && '🟢 Open' || '🔴 Closed' }}"
+                      "text": "*PR Status:*\n${{ github.event.pull_request.state == 'open' && '🟢 Open' || '🔴 Closed' }}"
                     },
                     {
                       "type": "mrkdwn",
+                      "text": "*QA Status:*\n${{ needs.qa.result == 'success' && '✅ Passed' || needs.qa.result == 'failure' && '❌ Failed' || needs.qa.result == 'cancelled' && '🚫 Cancelled' || needs.qa.result == 'skipped' && '⏭️ Skipped' || '⏳ Running' }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
                       "text": "*Last Updated:*\n⏰ ${{ github.event.pull_request.updated_at }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Workflow:*\n🔗 <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"
                     }
                   ]
                 },
