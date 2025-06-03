@@ -1176,6 +1176,30 @@
       },
       "title": "My Contacts"
     },
+    "my-airdrops": {
+      "title": "My Airdrops",
+      "portfolio-management": "Portfolio management",
+      "table": {
+        "asset-header": "Asset",
+        "type-header": "Type",
+        "amount-header": "Amount",
+        "status-header": "Status",
+        "actions-header": "Actions"
+      },
+      "empty-state": {
+        "title": "No airdrops found",
+        "description": "You don't have any airdrops to claim yet. If you are eligible for an airdrop, you will see it here."
+      },
+      "airdrop-type": {
+        "standard": "Standard",
+        "vesting": "Vesting",
+        "push": "Push"
+      },
+      "claim-status": {
+        "available": "Available",
+        "claimed": "Claimed"
+      }
+    },
     "settings": {
       "api-keys": {
         "api-docs": "API Documentation",
