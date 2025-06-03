@@ -52,9 +52,9 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   await setupAsset(bond);
 
-  await mint(bond, investorA, 10n, 6);
-  await transfer(bond, investorA, investorB, 5n, 6);
-  await burn(bond, investorB, 2n, 6);
+  await mint(bond, investorA, 10n);
+  await transfer(bond, investorA, investorB, 5n);
+  await burn(bond, investorB, 2n);
 
   // TODO: add yield etc
   // TODO: execute all other functions of the bond

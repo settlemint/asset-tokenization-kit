@@ -1,11 +1,10 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { SMARTContracts } from "../../constants/contracts";
 import { owner } from "../../entities/actors/owner";
-import type { Asset } from "../../entities/asset";
+import { Asset } from "../../entities/asset";
 import { smartProtocolDeployer } from "../../services/deployer";
 import { waitForSuccess } from "../../utils/wait-for-success";
-
-export const addCountryComplianceModule = async (
+export const setCountryParametersForComplianceModule = async (
   asset: Asset<any>,
   module: "countryBlockListModule" | "countryAllowListModule",
   countryCodes: number[]
@@ -19,14 +18,15 @@ export const addCountryComplianceModule = async (
     countryCodes,
   ]);
 
-  const transactionHash = await tokenContract.write.addComplianceModule([
-    smartProtocolDeployer.getContractAddress(module),
-    encodedCountries,
-  ]);
+  const transactionHash =
+    await tokenContract.write.setParametersForComplianceModule([
+      smartProtocolDeployer.getContractAddress(module),
+      encodedCountries,
+    ]);
 
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Add country ${module} compliance module] ${countryCodes.join(", ")} for ${asset.name} (${asset.address})`
+    `[Set parameters for ${module} compliance module] ${countryCodes.join(", ")} for ${asset.name} (${asset.address})`
   );
 };

@@ -3,13 +3,18 @@ import { addTrustedIssuer } from "./actions/add-trusted-issuer";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
+import { forcedTransfer } from "./assets/actions/forced-transfer";
+import { grantRole } from "./assets/actions/grant-role";
+import { mint } from "./assets/actions/mint";
+import { recoverErc20Tokens } from "./assets/actions/recover-erc20-tokens";
 import { recoverTokens } from "./assets/actions/recover-tokens";
 import { createBond } from "./assets/bond";
 import { createDeposit } from "./assets/deposit";
 import { createEquity } from "./assets/equity";
 import { createFund } from "./assets/fund";
-import { createStablecoin } from "./assets/stablecoin";
+import { createStableCoin } from "./assets/stablecoin";
 import { Countries } from "./constants/countries";
+import { SMARTRoles } from "./constants/roles";
 import { SMARTTopic } from "./constants/topics";
 import { claimIssuer } from "./entities/actors/claim-issuer";
 import {
@@ -81,21 +86,30 @@ async function main() {
   const equity = await createEquity();
   const bond = await createBond(deposit);
   const fund = await createFund();
-  const stablecoin = await createStablecoin();
+  const stableCoin = await createStableCoin();
 
   // Recover identity & tokens
   console.log("\n=== Recover identity & tokens... ===\n");
-
   await investorANew.initialize();
   await recoverIdentity(investorA, investorANew);
   await recoverTokens(deposit, investorANew, investorA.address);
   await recoverTokens(equity, investorANew, investorA.address);
   await recoverTokens(bond, investorANew, investorA.address);
   await recoverTokens(fund, investorANew, investorA.address);
-  await recoverTokens(stablecoin, investorANew, investorA.address);
+  await recoverTokens(stableCoin, investorANew, investorA.address);
 
   // can be done upfront as well, put it here to show that this is a forced transfer
   await issueVerificationClaims(investorANew);
+
+  console.log("\n=== Recover ERC20 tokens! ===\n");
+  await mint(stableCoin, investorANew, 10n);
+
+  await grantRole(stableCoin, owner, SMARTRoles.custodianRole);
+  // need to force transfer it into the equity contract ... else it will throw RecipientNotVerified
+  await forcedTransfer(stableCoin, owner, investorANew, equity, 10n);
+
+  await grantRole(equity, owner, SMARTRoles.emergencyRole);
+  await recoverErc20Tokens(equity, owner, stableCoin, investorANew, 10n);
 }
 
 // Execute the script

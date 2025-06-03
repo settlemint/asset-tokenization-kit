@@ -1,4 +1,8 @@
-import { countryAllowListAbi, countryBlockListAbi } from "../abi";
+import {
+  countryAllowListAbi,
+  countryBlockListAbi,
+  ismartCustodianAbi,
+} from "../abi";
 import { accessManagerAbi } from "../abi/accessManager";
 import { bondAbi } from "../abi/bond";
 import { bondFactoryAbi } from "../abi/bondFactory";
@@ -49,6 +53,7 @@ export const SMARTContracts = {
   // smart
   ismart: ismartAbi,
   ismartBurnable: ismartBurnableAbi,
+  ismartCustodian: ismartCustodianAbi,
   // compliance modules
   countryAllowListModule: countryAllowListAbi,
   countryBlockListModule: countryBlockListAbi,

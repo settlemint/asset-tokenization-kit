@@ -8,16 +8,15 @@ import { waitForSuccess } from "../../utils/wait-for-success";
 export const transfer = async (
   asset: Asset<any>,
   from: AbstractActor,
-  to: AbstractActor,
-  amount: bigint,
-  decimals: number
+  to: AbstractActor | Asset<any>,
+  amount: bigint
 ) => {
   const tokenContract = from.getContractInstance({
     address: asset.address,
     abi: SMARTContracts.ismart,
   });
 
-  const tokenAmount = toDecimals(amount, decimals);
+  const tokenAmount = toDecimals(amount, asset.decimals);
 
   const transactionHash = await tokenContract.write.transfer([
     to.address,
@@ -27,6 +26,6 @@ export const transfer = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Transfer] ${formatDecimals(tokenAmount, decimals)} ${asset.symbol} tokens from ${from.name} (${from.address}) to ${to.name} (${to.address})`
+    `[Transfer] ${formatDecimals(tokenAmount, asset.decimals)} ${asset.symbol} tokens from ${from.name} (${from.address}) to ${to.name} (${to.address})`
   );
 };

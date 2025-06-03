@@ -50,9 +50,9 @@ export const createEquity = async () => {
     assetCategory: "Category A",
   });
 
-  await mint(equity, investorA, 100n, 18);
-  await transfer(equity, investorA, investorB, 50n, 18);
-  await burn(equity, investorB, 25n, 18);
+  await mint(equity, investorA, 100n);
+  await transfer(equity, investorA, investorB, 50n);
+  await burn(equity, investorB, 25n);
 
   // TODO: execute all other functions of the equity
 

@@ -8,16 +8,15 @@ import { waitForSuccess } from "../../utils/wait-for-success";
 
 export const mint = async (
   asset: Asset<any>,
-  to: AbstractActor,
-  amount: bigint,
-  decimals: number
+  to: AbstractActor | Asset<any>,
+  amount: bigint
 ) => {
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: SMARTContracts.ismart,
   });
 
-  const tokenAmount = toDecimals(amount, decimals);
+  const tokenAmount = toDecimals(amount, asset.decimals);
 
   const transactionHash = await tokenContract.write.mint([
     to.address,
@@ -27,6 +26,6 @@ export const mint = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Mint] ${formatDecimals(tokenAmount, decimals)} ${asset.symbol} tokens to ${to.name} (${to.address})`
+    `[Mint] ${formatDecimals(tokenAmount, asset.decimals)} ${asset.symbol} tokens to ${to.name} (${to.address})`
   );
 };

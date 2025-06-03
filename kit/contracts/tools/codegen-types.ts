@@ -70,6 +70,7 @@ const ABI_PATHS = {
   // smart
   ismart: `${ARTIFACTS_DIR}/contracts/interface/ISMART.sol/ISMART.json`,
   ismartBurnable: `${ARTIFACTS_DIR}/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json`,
+  ismartCustodian: `${ARTIFACTS_DIR}/contracts/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json`,
   // compliance modules
   countryAllowList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
   countryBlockList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
@@ -92,7 +93,7 @@ const AVAILABLE_ABIS = {
   ],
   tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
-  coreSmart: ["ismart", "ismartBurnable"],
+  coreSmart: ["ismart", "ismartBurnable", "ismartCustodian"],
   complianceModules: ["countryAllowList", "countryBlockList"],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 

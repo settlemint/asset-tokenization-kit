@@ -49,9 +49,9 @@ export const createDeposit = async () => {
     collateral: 1000n,
   });
 
-  await mint(deposit, investorA, 1000n, 6);
-  await transfer(deposit, investorA, investorB, 500n, 6);
-  await burn(deposit, investorB, 250n, 6);
+  await mint(deposit, investorA, 1000n);
+  await transfer(deposit, investorA, investorB, 500n);
+  await burn(deposit, investorB, 250n);
 
   // create some users with identity claims
   // burn

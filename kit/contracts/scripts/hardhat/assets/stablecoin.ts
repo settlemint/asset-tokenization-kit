@@ -12,7 +12,7 @@ import { mint } from "./actions/mint";
 import { setupAsset } from "./actions/setup-asset";
 import { transfer } from "./actions/transfer";
 
-export const createStablecoin = async () => {
+export const createStableCoin = async () => {
   console.log("\n=== Creating stablecoin... ===\n");
 
   const stablecoinFactory =
@@ -52,9 +52,9 @@ export const createStablecoin = async () => {
     collateral: 1000n,
   });
 
-  await mint(stableCoin, investorA, 1000n, 6);
-  await transfer(stableCoin, investorA, investorB, 500n, 6);
-  await burn(stableCoin, investorB, 250n, 6);
+  await mint(stableCoin, investorA, 1000n);
+  await transfer(stableCoin, investorA, investorB, 500n);
+  await burn(stableCoin, investorB, 250n);
 
   // TODO: execute all other functions of the stablecoin
 

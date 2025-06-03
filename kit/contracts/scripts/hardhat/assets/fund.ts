@@ -53,9 +53,9 @@ export const createFund = async () => {
     assetCategory: "Category A",
   });
 
-  await mint(fund, investorA, 10n, 8);
-  await transfer(fund, investorA, investorB, 5n, 8);
-  await burn(fund, investorB, 2n, 8);
+  await mint(fund, investorA, 10n);
+  await transfer(fund, investorA, investorB, 5n);
+  await burn(fund, investorB, 2n);
 
   // TODO: execute all other functions of the fund
 

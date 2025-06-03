@@ -4,12 +4,13 @@ import { SMARTTopic } from "../../constants/topics";
 import { owner } from "../../entities/actors/owner";
 import type { Asset } from "../../entities/asset";
 import { smartProtocolDeployer } from "../../services/deployer";
-import { addCountryAllowListComplianceModule } from "./add-country-allow-list-compliance-module";
+import { addCountryComplianceModule } from "./add-country-allow-list-compliance-module";
 import { grantRole } from "./grant-role";
 import { issueAssetClassificationClaim } from "./issue-asset-classification-claim";
 import { issueCollateralClaim } from "./issue-collateral-claim";
 import { issueIsinClaim } from "./issue-isin-claim";
 import { removeComplianceModule } from "./remove-compliance-module";
+import { setCountryParametersForComplianceModule } from "./set-country-parameters-for-compliance-module";
 import { updateRequiredTopics } from "./update-required-topic";
 
 export const setupAsset = async (
@@ -31,10 +32,16 @@ export const setupAsset = async (
   await updateRequiredTopics(asset, [SMARTTopic.kyc, SMARTTopic.aml]);
 
   // add country allow list compliance module
-  await addCountryAllowListComplianceModule(asset, [
+  await addCountryComplianceModule(asset, "countryAllowListModule", [
     Countries.BE,
     Countries.NL,
   ]);
+
+  await setCountryParametersForComplianceModule(
+    asset,
+    "countryAllowListModule",
+    [Countries.BE, Countries.NL, Countries.FR, Countries.DE]
+  );
 
   // remove country block list compliance module
   await removeComplianceModule(

@@ -9,15 +9,14 @@ import { waitForSuccess } from "../../utils/wait-for-success";
 export const burn = async (
   asset: Asset<any>,
   from: AbstractActor,
-  amount: bigint,
-  decimals: number
+  amount: bigint
 ) => {
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: SMARTContracts.ismartBurnable,
   });
 
-  const tokenAmount = toDecimals(amount, decimals);
+  const tokenAmount = toDecimals(amount, asset.decimals);
 
   const transactionHash = await tokenContract.write.burn([
     from.address,
@@ -27,6 +26,6 @@ export const burn = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Burn] ${formatDecimals(tokenAmount, decimals)} ${asset.symbol} tokens from ${from.name} (${from.address})`
+    `[Burn] ${formatDecimals(tokenAmount, asset.decimals)} ${asset.symbol} tokens from ${from.name} (${from.address})`
   );
 };
