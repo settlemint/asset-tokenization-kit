@@ -1,6 +1,7 @@
 import { AirdropTabs } from "@/components/blocks/airdrop/airdrop-tabs";
 import { metadata } from "@/lib/config/metadata";
 import { shortHex } from "@/lib/utils/hex";
+import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -13,6 +14,7 @@ interface LayoutProps extends PropsWithChildren {
   params: Promise<{
     locale: Locale;
     address: Address;
+    airdroptype: AirdropType;
   }>;
 }
 
@@ -20,7 +22,7 @@ export default async function AirdropDetailLayout({
   children,
   params,
 }: LayoutProps) {
-  const { address, locale } = await params;
+  const { address, locale, airdroptype } = await params;
 
   return (
     <>
@@ -31,7 +33,7 @@ export default async function AirdropDetailLayout({
       <div className="relative mt-4 space-y-2">
         <AirdropTabs
           locale={locale}
-          path={`distribution/airdrops/${address}`}
+          path={`distribution/airdrops/${airdroptype}/${address}`}
         />
       </div>
       {children}

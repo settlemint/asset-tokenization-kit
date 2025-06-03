@@ -70,7 +70,9 @@ export function columns() {
             variant="outline"
             size="sm"
             onClick={() => {
-              router.push(`/distribution/airdrops/${row.original.id}`);
+              router.push(
+                `/distribution/airdrops/${row.original.type}/${row.original.id}`
+              );
             }}
           >
             {t("details")}
