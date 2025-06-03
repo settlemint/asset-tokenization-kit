@@ -1626,6 +1626,8 @@
           "eligible-recipients-info": "The total number of addresses eligible to claim from this airdrop",
           "total-claimed": "Total claimed",
           "total-claimed-info": "The total amount of tokens that have been claimed from this airdrop",
+          "total-distributed": "Total distributed",
+          "total-distributed-info": "The total amount of tokens that have been actively distributed by this push airdrop",
           "total-distribution-amount": "Total distribution",
           "total-distribution-amount-info": "The total amount of tokens allocated for distribution in this airdrop",
           "claim-percentage": "Claim percentage",

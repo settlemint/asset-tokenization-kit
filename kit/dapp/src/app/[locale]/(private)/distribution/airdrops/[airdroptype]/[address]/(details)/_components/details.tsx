@@ -1,6 +1,7 @@
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
 import type { Address } from "viem";
+import { PushAirdropDetails } from "./details/push";
 import { StandardAirdropDetails } from "./details/standard";
 import { VestingAirdropDetails } from "./details/vesting";
 
@@ -16,8 +17,7 @@ export async function Details({ address, airdroptype }: DetailsProps) {
     case "vesting":
       return <VestingAirdropDetails address={address} />;
     case "push":
-      // TODO: Implement push airdrop details when push airdrop queries are available
-      throw new Error("Push airdrop details not yet implemented");
+      return <PushAirdropDetails address={address} />;
     default:
       exhaustiveGuard(airdroptype);
   }
