@@ -109,13 +109,11 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
 }
 
 function getAccount(address: Address): Account {
+  let accountAddress = address;
   // First check if the address is an existing identity
   const identity = Identity.load(address);
-  if (identity) {
-    const accounts = identity.account.load();
-    if (accounts && accounts.length > 0) {
-      return accounts[0];
-    }
+  if (identity && identity.account) {
+    accountAddress = Address.fromBytes(identity.account!);
   }
-  return fetchAccount(address);
+  return fetchAccount(accountAddress);
 }
