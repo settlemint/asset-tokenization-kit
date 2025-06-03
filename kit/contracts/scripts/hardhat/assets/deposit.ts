@@ -1,17 +1,13 @@
-import type { Address } from "viem";
-import { investorA, investorB } from "../actors/investors";
-import { owner } from "../actors/owner";
-import { SMARTRoles } from "../constants/roles";
+import { encodeAbiParameters, parseAbiParameters } from "viem";
+import { investorA, investorB } from "../entities/actors/investors";
 
 import { SMARTTopic } from "../constants/topics";
+import { Asset } from "../entities/asset";
 import { smartProtocolDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
-import { waitForEvent } from "../utils/wait-for-event";
 import { burn } from "./actions/burn";
-import { grantRole } from "./actions/grant-role";
-import { issueCollateralClaim } from "./actions/issue-collateral-claim";
-import { issueIsinClaim } from "./actions/issue-isin-claim";
 import { mint } from "./actions/mint";
+import { setupAsset } from "./actions/setup-asset";
 import { transfer } from "./actions/transfer";
 
 export const createDeposit = async () => {
@@ -19,65 +15,48 @@ export const createDeposit = async () => {
 
   const depositFactory = smartProtocolDeployer.getDepositFactoryContract();
 
-  const transactionHash = await depositFactory.write.createDeposit([
+  const deposit = new Asset<"depositFactory">(
     "Euro Deposits",
     "EURD",
     6,
+    "US1234567890",
+    depositFactory
+  );
+
+  const encodedBlockedCountries = encodeAbiParameters(
+    parseAbiParameters("uint16[]"),
+    [[]]
+  );
+
+  const transactionHash = await depositFactory.write.createDeposit([
+    deposit.name,
+    deposit.symbol,
+    deposit.decimals,
+    [topicManager.getTopicId(SMARTTopic.kyc)],
     [
-      topicManager.getTopicId(SMARTTopic.kyc),
-      topicManager.getTopicId(SMARTTopic.aml),
+      {
+        module: smartProtocolDeployer.getContractAddress(
+          "countryBlockListModule"
+        ),
+        params: encodedBlockedCountries,
+      },
     ],
-    [], // TODO: fill in with the setup for ATK
   ]);
 
-  const { tokenAddress, tokenIdentity, accessManager } = (await waitForEvent({
-    transactionHash,
-    contract: depositFactory,
-    eventName: "TokenAssetCreated",
-  })) as {
-    sender: Address;
-    tokenAddress: Address;
-    tokenIdentity: Address;
-    accessManager: Address;
-  };
+  await deposit.waitUntilDeployed(transactionHash);
 
-  if (tokenAddress && tokenIdentity && accessManager) {
-    console.log("[Deposit] address:", tokenAddress);
-    console.log("[Deposit] identity:", tokenIdentity);
-    console.log("[Deposit] access manager:", accessManager);
+  await setupAsset(deposit, {
+    collateral: 1000n,
+  });
 
-    // needs to be done so that he can add the claims
-    await grantRole(accessManager, owner.address, SMARTRoles.claimManagerRole);
-    // issue isin claim
-    await issueIsinClaim(tokenIdentity, "US1234567890");
+  await mint(deposit, investorA, 1000n);
+  await transfer(deposit, investorA, investorB, 500n);
+  await burn(deposit, investorB, 250n);
 
-    // Update collateral
-    const now = new Date();
-    const oneYearFromNow = new Date(
-      now.getFullYear() + 1,
-      now.getMonth(),
-      now.getDate()
-    );
-    await issueCollateralClaim(tokenIdentity, 1000n, 6, oneYearFromNow);
+  // create some users with identity claims
+  // burn
 
-    // needs supply management role to mint
-    await grantRole(
-      accessManager,
-      owner.address,
-      SMARTRoles.supplyManagementRole
-    );
+  // TODO: execute all other functions of the deposit
 
-    await mint(tokenAddress, investorA, 1000n, 6);
-    await transfer(tokenAddress, investorA, investorB, 500n, 6);
-    await burn(tokenAddress, investorB, 250n, 6);
-
-    // create some users with identity claims
-    // burn
-
-    // TODO: execute all other functions of the deposit
-
-    return tokenAddress;
-  }
-
-  throw new Error("Failed to create deposit");
+  return deposit;
 };

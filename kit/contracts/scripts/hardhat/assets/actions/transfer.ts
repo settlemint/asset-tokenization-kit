@@ -1,23 +1,22 @@
-import type { Address } from "viem";
-import type { AbstractActor } from "../../actors/abstract-actor";
 import { SMARTContracts } from "../../constants/contracts";
+import type { AbstractActor } from "../../entities/actors/abstract-actor";
+import type { Asset } from "../../entities/asset";
 import { formatDecimals } from "../../utils/format-decimals";
 import { toDecimals } from "../../utils/to-decimals";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
 export const transfer = async (
-  tokenAddress: Address,
+  asset: Asset<any>,
   from: AbstractActor,
-  to: AbstractActor,
-  amount: bigint,
-  decimals: number
+  to: AbstractActor | Asset<any>,
+  amount: bigint
 ) => {
   const tokenContract = from.getContractInstance({
-    address: tokenAddress,
+    address: asset.address,
     abi: SMARTContracts.ismart,
   });
 
-  const tokenAmount = toDecimals(amount, decimals);
+  const tokenAmount = toDecimals(amount, asset.decimals);
 
   const transactionHash = await tokenContract.write.transfer([
     to.address,
@@ -27,6 +26,6 @@ export const transfer = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Transfer] ${formatDecimals(tokenAmount, decimals)} tokens from ${from.name} (${from.address}) to ${to.name} (${to.address})`
+    `[Transfer] ${formatDecimals(tokenAmount, asset.decimals)} ${asset.symbol} tokens from ${from.name} (${from.address}) to ${to.name} (${to.address})`
   );
 };

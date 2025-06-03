@@ -118,9 +118,9 @@ contract SystemUtils is Test {
         // --- Deploy Other Contracts ---
         mockedComplianceModule = new MockedComplianceModule();
         vm.label(address(mockedComplianceModule), "Mocked Compliance Module");
-        countryAllowListComplianceModule = new CountryAllowListComplianceModule();
+        countryAllowListComplianceModule = new CountryAllowListComplianceModule(forwarder);
         vm.label(address(countryAllowListComplianceModule), "Country Allow List Compliance Module");
-        countryBlockListComplianceModule = new CountryBlockListComplianceModule();
+        countryBlockListComplianceModule = new CountryBlockListComplianceModule(forwarder);
         vm.label(address(countryBlockListComplianceModule), "Country Block List Compliance Module");
 
         vm.stopPrank();

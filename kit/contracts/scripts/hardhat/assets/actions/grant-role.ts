@@ -1,24 +1,25 @@
-import type { Address } from "viem";
-import { owner } from "../../actors/owner";
 import { SMARTContracts } from "../../constants/contracts";
 import { SMARTRoles } from "../../constants/roles";
+import type { AbstractActor } from "../../entities/actors/abstract-actor";
+import { owner } from "../../entities/actors/owner";
+import type { Asset } from "../../entities/asset";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
 // The issuer doesn't need to have a claim manager role, it can be anyone that adds the claim.
 // The issuer will create the claim and the claim manager will add it to the token identity.
 export const grantRole = async (
-  accessManagerAddress: Address,
-  targetAddress: Address,
+  asset: Asset<any>,
+  targetActor: AbstractActor,
   role: (typeof SMARTRoles)[keyof typeof SMARTRoles]
 ) => {
   const accessManagerContract = await owner.getContractInstance({
-    address: accessManagerAddress,
+    address: asset.accessManager,
     abi: SMARTContracts.accessManager,
   });
 
   const transactionHash = await accessManagerContract.write.grantRole([
     role,
-    targetAddress,
+    targetActor.address,
   ]);
 
   await waitForSuccess(transactionHash);
@@ -29,6 +30,6 @@ export const grantRole = async (
   );
 
   console.log(
-    `[Role] ${roleName || role} granted to ${targetAddress} by ${accessManagerAddress}.`
+    `[Role] ${roleName || role} granted to ${targetActor.name} (${targetActor.address}) on ${asset.name} (${asset.address}) by ${asset.accessManager}.`
   );
 };

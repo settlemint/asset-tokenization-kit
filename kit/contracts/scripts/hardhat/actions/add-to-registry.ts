@@ -1,9 +1,9 @@
-import type { AbstractActor } from "../actors/abstract-actor";
+import type { AbstractActor } from "../entities/actors/abstract-actor";
 
 import { smartProtocolDeployer } from "../services/deployer";
 import { waitForSuccess } from "../utils/wait-for-success";
 
-export async function addToRegistry(actor: AbstractActor) {
+export const addToRegistry = async (actor: AbstractActor) => {
   const identity = await actor.getIdentity();
 
   const transactionHash = await smartProtocolDeployer
@@ -13,7 +13,7 @@ export async function addToRegistry(actor: AbstractActor) {
   await waitForSuccess(transactionHash);
 
   console.log(`[Add to registry] ${actor.name} added to registry`);
-}
+};
 
 export async function batchAddToRegistry(actors: AbstractActor[]) {
   const resolvedIdentities = await Promise.all(

@@ -70,6 +70,10 @@ const ABI_PATHS = {
   // smart
   ismart: `${ARTIFACTS_DIR}/contracts/interface/ISMART.sol/ISMART.json`,
   ismartBurnable: `${ARTIFACTS_DIR}/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json`,
+  ismartCustodian: `${ARTIFACTS_DIR}/contracts/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json`,
+  // compliance modules
+  countryAllowList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
+  countryBlockList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
 } as const;
 
 const AVAILABLE_ABIS = {
@@ -89,8 +93,17 @@ const AVAILABLE_ABIS = {
   ],
   tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
-  coreSmart: ["ismart", "ismartBurnable"],
+  coreSmart: ["ismart", "ismartBurnable", "ismartCustodian"],
+  complianceModules: ["countryAllowList", "countryBlockList"],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
+
+const ALL_ABIS = [
+  ...AVAILABLE_ABIS.onboarding,
+  ...AVAILABLE_ABIS.tokenInfrastructure,
+  ...AVAILABLE_ABIS.assetTokens,
+  ...AVAILABLE_ABIS.coreSmart,
+  ...AVAILABLE_ABIS.complianceModules,
+];
 
 // =============================================================================
 // SCRIPT STATE
@@ -158,6 +171,9 @@ AVAILABLE ABI NAMES:
 
     Core SMART:
       ${AVAILABLE_ABIS.coreSmart.join(", ")}
+
+    Compliance Modules:
+      ${AVAILABLE_ABIS.complianceModules.join(", ")}
 `);
 }
 
@@ -213,7 +229,7 @@ async function compileContracts(): Promise<boolean> {
   log.info("Compiling contracts with Hardhat...");
 
   try {
-    // Set working directory for shell commands
+    // Set working directory for shell commands);
     $.cwd(CONTRACTS_ROOT);
 
     const result = await $`settlemint scs hardhat build`.quiet();
@@ -253,6 +269,11 @@ function listAbiNames(): void {
 
   console.log("\n🧠 Core SMART:");
   AVAILABLE_ABIS.coreSmart.forEach((name) => console.log(`  • ${name}`));
+
+  console.log("\n🔒 Compliance Modules:");
+  AVAILABLE_ABIS.complianceModules.forEach((name) =>
+    console.log(`  • ${name}`)
+  );
 }
 
 function findArtifactFile(contractName: string): string | null {
@@ -302,19 +323,12 @@ export type ${contractName}Abi = typeof ${contractName}Abi;
 }
 
 function generateAllAbiTypings(): boolean {
-  const allAbis = [
-    ...AVAILABLE_ABIS.onboarding,
-    ...AVAILABLE_ABIS.tokenInfrastructure,
-    ...AVAILABLE_ABIS.assetTokens,
-    ...AVAILABLE_ABIS.coreSmart,
-  ];
-
-  log.info(`Generating ABI typings for ${allAbis.length} contracts...`);
+  log.info(`Generating ABI typings for ${ALL_ABIS.length} contracts...`);
 
   let successCount = 0;
   let failureCount = 0;
 
-  for (const contractName of allAbis) {
+  for (const contractName of ALL_ABIS) {
     if (generateAbiTyping(contractName)) {
       successCount++;
     } else {
@@ -329,15 +343,8 @@ function generateAllAbiTypings(): boolean {
 }
 
 function generateSpecificAbiTypings(abiNames: string[]): boolean {
-  const allAbis = [
-    ...AVAILABLE_ABIS.onboarding,
-    ...AVAILABLE_ABIS.tokenInfrastructure,
-    ...AVAILABLE_ABIS.assetTokens,
-    ...AVAILABLE_ABIS.coreSmart,
-  ];
-
   // Validate ABI names
-  const validAbiNames = new Set(allAbis);
+  const validAbiNames = new Set(ALL_ABIS);
   const invalidAbis = abiNames.filter(
     (name) => !validAbiNames.has(name as any)
   );
@@ -369,15 +376,9 @@ function generateSpecificAbiTypings(abiNames: string[]): boolean {
 }
 
 function generateIndexFile(): void {
-  const allAbis = [
-    ...AVAILABLE_ABIS.onboarding,
-    ...AVAILABLE_ABIS.tokenInfrastructure,
-    ...AVAILABLE_ABIS.assetTokens,
-    ...AVAILABLE_ABIS.coreSmart,
-  ];
-
-  const exports = allAbis
-    .filter((name) => existsSync(join(OUTPUT_DIR, `${name}.ts`)))
+  const exports = ALL_ABIS.filter((name) =>
+    existsSync(join(OUTPUT_DIR, `${name}.ts`))
+  )
     .map((name) => `export * from "./${name}";`)
     .join("\n");
 

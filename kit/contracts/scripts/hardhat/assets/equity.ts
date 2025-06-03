@@ -1,17 +1,13 @@
-import type { Address } from "viem";
+import { encodeAbiParameters, parseAbiParameters } from "viem";
 
-import { investorA, investorB } from "../actors/investors";
-import { owner } from "../actors/owner";
-import { SMARTRoles } from "../constants/roles";
 import { SMARTTopic } from "../constants/topics";
+import { investorA, investorB } from "../entities/actors/investors";
+import { Asset } from "../entities/asset";
 import { smartProtocolDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
-import { waitForEvent } from "../utils/wait-for-event";
 import { burn } from "./actions/burn";
-import { grantRole } from "./actions/grant-role";
-import { issueAssetClassificationClaim } from "./actions/issue-asset-classification-claim";
-import { issueIsinClaim } from "./actions/issue-isin-claim";
 import { mint } from "./actions/mint";
+import { setupAsset } from "./actions/setup-asset";
 import { transfer } from "./actions/transfer";
 
 export const createEquity = async () => {
@@ -19,55 +15,46 @@ export const createEquity = async () => {
 
   const equityFactory = smartProtocolDeployer.getEquityFactoryContract();
 
-  const transactionHash = await equityFactory.write.createEquity([
+  const equity = new Asset<"equityFactory">(
     "Apple",
     "AAPL",
     18,
+    "US0378331005",
+    equityFactory
+  );
+
+  const encodedBlockedCountries = encodeAbiParameters(
+    parseAbiParameters("uint16[]"),
+    [[]]
+  );
+
+  const transactionHash = await equityFactory.write.createEquity([
+    equity.name,
+    equity.symbol,
+    equity.decimals,
+    [topicManager.getTopicId(SMARTTopic.kyc)],
     [
-      topicManager.getTopicId(SMARTTopic.kyc),
-      topicManager.getTopicId(SMARTTopic.aml),
+      {
+        module: smartProtocolDeployer.getContractAddress(
+          "countryBlockListModule"
+        ),
+        params: encodedBlockedCountries,
+      },
     ],
-    [], // TODO: fill in with the setup for ATK
   ]);
 
-  const { tokenAddress, tokenIdentity, accessManager } = (await waitForEvent({
-    transactionHash,
-    contract: equityFactory,
-    eventName: "TokenAssetCreated",
-  })) as {
-    sender: Address;
-    tokenAddress: Address;
-    tokenIdentity: Address;
-    accessManager: Address;
-  };
+  await equity.waitUntilDeployed(transactionHash);
 
-  if (tokenAddress && tokenIdentity && accessManager) {
-    console.log("[Equity] address:", tokenAddress);
-    console.log("[Equity] identity:", tokenIdentity);
-    console.log("[Equity] access manager:", accessManager);
+  await setupAsset(equity, {
+    assetClass: "Class A",
+    assetCategory: "Category A",
+  });
 
-    // needs to be done so that he can add the claims
-    await grantRole(accessManager, owner.address, SMARTRoles.claimManagerRole);
-    // issue isin claim
-    await issueIsinClaim(tokenIdentity, "DE000BAY0017");
-    // issue asset classification claim
-    await issueAssetClassificationClaim(tokenIdentity, "Class A", "Category A");
+  await mint(equity, investorA, 100n);
+  await transfer(equity, investorA, investorB, 50n);
+  await burn(equity, investorB, 25n);
 
-    // needs supply management role to mint
-    await grantRole(
-      accessManager,
-      owner.address,
-      SMARTRoles.supplyManagementRole
-    );
+  // TODO: execute all other functions of the equity
 
-    await mint(tokenAddress, investorA, 100n, 18);
-    await transfer(tokenAddress, investorA, investorB, 50n, 18);
-    await burn(tokenAddress, investorB, 25n, 18);
-
-    // TODO: execute all other functions of the equity
-
-    return tokenAddress;
-  }
-
-  throw new Error("Failed to create equity");
+  return equity;
 };
