@@ -69,15 +69,6 @@ export const createBond = async (depositToken: Asset<any>) => {
   // burnable
   await burn(bond, investorB, 2n);
 
-  // Yield schedule
-  await setYieldSchedule(
-    bond,
-    new Date(Date.now() + 1_000), // 1 second from now
-    new Date(Date.now() + 5 * 60 * 1_000), // 5 minutes from now
-    500, // 5%
-    5 // 5 seconds
-  );
-
   // custodian
   await forcedTransfer(bond, owner, investorA, investorB, 2n);
   await setAddressFrozen(bond, owner, investorA, true);
@@ -86,6 +77,13 @@ export const createBond = async (depositToken: Asset<any>) => {
   await unfreezePartialTokens(bond, owner, investorB, 2n);
 
   // yield
+  await setYieldSchedule(
+    bond,
+    new Date(Date.now() + 1_000), // 1 second from now
+    new Date(Date.now() + 5 * 60 * 1_000), // 5 minutes from now
+    500, // 5%
+    5 // 5 seconds
+  );
   await topupUnderlyingAsset(bond, depositToken, 100n);
   // wait for the first period to close so the yield can be claimed
   await new Promise((resolve) => setTimeout(resolve, 6_000));
