@@ -132,6 +132,7 @@ type Token @entity(immutable: false) {
   totalSupplyExact: BigInt!
   pausable: TokenPausable
   collateral: TokenCollateral
+  capped: TokenCapped
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -157,18 +158,25 @@ type TokenCollateral @entity(immutable: false) {
   identityClaim: IdentityClaim
 }
 
+type TokenCapped @entity(immutable: false) {
+  id: Bytes!
+  cap: BigDecimal!
+  capExact: BigInt!
+}
+
 type Identity @entity(immutable: false) {
   id: Bytes!
   registry: IdentityRegistry
   claims: [IdentityClaim!]! @derivedFrom(field: "identity")
-  token: Token @derivedFrom(field: "identity")
+  account: Account
+  token: Token
 }
 
 type IdentityClaim @entity(immutable: false) {
   id: Bytes!
   identity: Identity!
   name: String!
-  issuer: Account!
+  issuer: Identity!
   uri: String
   revoked: Boolean!
   values: [IdentityClaimValue!]! @derivedFrom(field: "claim")

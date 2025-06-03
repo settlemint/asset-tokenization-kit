@@ -357,3 +357,21 @@ templates:
         - event: CheckpointUpdated(indexed address,indexed address,uint256,uint256)
           handler: handleCheckpointUpdated
       file: ./src/historical-balances/historical-balances.ts
+  - kind: ethereum
+    name: Capped
+    network: settlemint
+    source:
+      abi: Capped
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - CapSet
+      abis:
+        - name: Capped
+          file: ../contracts/artifacts/contracts/extensions/capped/ISMARTCapped.sol/ISMARTCapped.json
+      eventHandlers:
+        - event: CapSet(indexed address,uint256)
+          handler: handleCapSet
+      file: ./src/capped/capped.ts
