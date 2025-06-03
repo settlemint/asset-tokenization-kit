@@ -9,6 +9,11 @@ pragma solidity ^0.8.28;
 ///         and return types) but not *how* they are implemented. This allows other contracts or
 ///         off-chain applications to interact with any capped token in a standard way.
 interface ISMARTCapped {
+    /// @notice Emitted when the cap is set.
+    /// @param sender The address that set the cap.
+    /// @param cap The new cap.
+    event CapSet(address indexed sender, uint256 cap);
+
     /// @notice Returns the maximum allowed total supply for this token (the "cap").
     /// @dev This function provides a way to query the hard limit on the token's supply.
     ///      It is a `view` function, meaning it does not modify the contract's state and does not
