@@ -1,8 +1,11 @@
 import { smartProtocolDeployer } from "../services/deployer";
 
+import { SMARTRoles } from "../constants/roles";
 import { SMARTTopic } from "../constants/topics";
+import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
+import { grantRoles } from "./actions/core/grant-roles";
 import { pauseAsset } from "./actions/pausable/pause-asset";
 import { unpauseAsset } from "./actions/pausable/unpause-asset";
 
@@ -29,6 +32,8 @@ export const createPausedAsset = async () => {
   ]);
 
   await pausedStableCoin.waitUntilDeployed(transactionHash);
+
+  await grantRoles(pausedStableCoin, owner, [SMARTRoles.emergencyRole]);
 
   await pauseAsset(pausedStableCoin);
 

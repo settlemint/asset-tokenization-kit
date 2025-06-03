@@ -23,6 +23,7 @@ class Investor extends AbstractActor {
 
   public async initialize(): Promise<void> {
     const wallets = await hre.viem.getWalletClients();
+
     if (!wallets[this.accountIndex]) {
       throw new Error("Could not get a default wallet client from Hardhat.");
     }

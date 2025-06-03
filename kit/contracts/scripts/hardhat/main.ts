@@ -53,9 +53,10 @@ async function main() {
   await claimIssuer.printBalance();
   await investorA.printBalance();
   await investorB.printBalance();
+  await frozenInvestor.printBalance();
 
   // Add the actors to the registry
-  await batchAddToRegistry([owner, investorA, investorB]);
+  await batchAddToRegistry([owner, investorA, investorB, frozenInvestor]);
 
   console.log("\n=== Setting up topics and trusted issuers... ===\n");
 
