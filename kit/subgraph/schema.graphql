@@ -132,6 +132,7 @@ type Token @entity(immutable: false) {
   totalSupplyExact: BigInt!
   pausable: TokenPausable
   collateral: TokenCollateral
+  capped: TokenCapped
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -155,6 +156,12 @@ type TokenPausable @entity(immutable: false) {
 type TokenCollateral @entity(immutable: false) {
   id: Bytes!
   identityClaim: IdentityClaim
+}
+
+type TokenCapped @entity(immutable: false) {
+  id: Bytes!
+  cap: BigDecimal!
+  capExact: BigInt!
 }
 
 type Identity @entity(immutable: false) {
