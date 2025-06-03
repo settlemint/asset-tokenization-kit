@@ -1,7 +1,9 @@
+import { Address } from "viem";
 import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { smartProtocolDeployer } from "../../../services/deployer";
+import { waitForEvent } from "../../../utils/wait-for-event";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const setYieldSchedule = async (
@@ -35,10 +37,14 @@ export const setYieldSchedule = async (
       BigInt(interval),
     ]
   );
-  await waitForSuccess(createYieldScheduleTransactionHash);
+  const { schedule } = (await waitForEvent({
+    transactionHash: createYieldScheduleTransactionHash,
+    contract: factoryContract,
+    eventName: "SMARTFixedYieldScheduleCreated",
+  })) as { schedule: Address };
 
   const setYieldScheduleTransactionHash =
-    await tokenContract.write.setYieldSchedule([factoryContract.address]);
+    await tokenContract.write.setYieldSchedule([schedule]);
   await waitForSuccess(setYieldScheduleTransactionHash);
 
   console.log(
