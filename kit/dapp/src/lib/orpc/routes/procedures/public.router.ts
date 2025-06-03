@@ -1,5 +1,6 @@
 import { sessionMiddleware } from "../../middlewares/auth/session.middleware";
-import { errorMiddleware } from "../../middlewares/errors/error.middleware";
+import { errorMiddleware } from "../../middlewares/monitoring/error.middleware";
+import { tracingMiddleware } from "../../middlewares/monitoring/tracing.middleware";
 import { br } from "./base.router";
 
 /**
@@ -12,6 +13,7 @@ import { br } from "./base.router";
  * Middleware composition (applied in order):
  * 1. Error middleware - Handles and formats all errors consistently
  * 2. Session middleware - Optionally loads session data if available
+ * 3. Tracing middleware - Adds tracing information to the request
  *
  * The session middleware is included even for public routes because:
  * - Some public endpoints may behave differently for authenticated users
@@ -23,8 +25,12 @@ import { br } from "./base.router";
  * - Health checks and status endpoints
  * - Public API endpoints with optional user context
  *
- * @see {@link ../../middlewares/errors/error.middleware} - Error handling middleware
+ * @see {@link ../../middlewares/monitoring/error.middleware} - Error handling middleware
+ * @see {@link ../../middlewares/monitoring/tracing.middleware} - Tracing middleware
  * @see {@link ../../middlewares/auth/session.middleware} - Session loading middleware
  * @see {@link ./base.router} - Base router implementation
  */
-export const pr = br.use(errorMiddleware).use(sessionMiddleware);
+export const pr = br
+  .use(tracingMiddleware)
+  .use(errorMiddleware)
+  .use(sessionMiddleware);
