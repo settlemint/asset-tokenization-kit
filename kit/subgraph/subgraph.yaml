@@ -180,7 +180,7 @@ dataSources:
     name: AirdropFactory
     network: settlemint
     source:
-      address: "0xF68c5dd1017bAe291878f6Dc8B1C8dc588394698"
+      address: "0x5e771e1417100000000000000000000000000009"
       abi: AirdropFactory
     mapping:
       kind: ethereum/events
