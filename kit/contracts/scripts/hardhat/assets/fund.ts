@@ -5,12 +5,17 @@ import { smartProtocolDeployer } from "../services/deployer";
 import { investorA, investorB } from "../entities/actors/investors";
 
 import { SMARTTopic } from "../constants/topics";
+import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
-import { burn } from "./actions/burn";
-import { mint } from "./actions/mint";
+import { burn } from "./actions/burnable/burn";
+import { mint } from "./actions/core/mint";
+import { transfer } from "./actions/core/transfer";
+import { forcedTransfer } from "./actions/custodian/forced-transfer";
+import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
+import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
+import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
-import { transfer } from "./actions/transfer";
 
 export const createFund = async () => {
   console.log("\n=== Creating fund... ===\n");
@@ -53,9 +58,19 @@ export const createFund = async () => {
     assetCategory: "Category A",
   });
 
+  // core
   await mint(fund, investorA, 10n);
   await transfer(fund, investorA, investorB, 5n);
+
+  // burnable
   await burn(fund, investorB, 2n);
+
+  // custodian
+  await forcedTransfer(fund, owner, investorA, investorB, 2n);
+  await setAddressFrozen(fund, owner, investorA, true);
+  await setAddressFrozen(fund, owner, investorA, false);
+  await freezePartialTokens(fund, owner, investorB, 2n);
+  await unfreezePartialTokens(fund, owner, investorB, 2n);
 
   // TODO: execute all other functions of the fund
 

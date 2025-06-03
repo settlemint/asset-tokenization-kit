@@ -1,11 +1,11 @@
-import { SMARTContracts } from "../../constants/contracts";
-import { claimIssuer } from "../../entities/actors/claim-issuer";
-import { owner } from "../../entities/actors/owner";
+import { SMARTContracts } from "../../../constants/contracts";
+import { claimIssuer } from "../../../entities/actors/claim-issuer";
+import { owner } from "../../../entities/actors/owner";
 
-import { SMARTTopic } from "../../constants/topics";
-import { Asset } from "../../entities/asset";
-import { encodeClaimData } from "../../utils/claim-scheme-utils";
-import { waitForSuccess } from "../../utils/wait-for-success";
+import { SMARTTopic } from "../../../constants/topics";
+import { Asset } from "../../../entities/asset";
+import { encodeClaimData } from "../../../utils/claim-scheme-utils";
+import { waitForSuccess } from "../../../utils/wait-for-success";
 
 /**
  * Issues a collateral claim to a token's identity contract.
