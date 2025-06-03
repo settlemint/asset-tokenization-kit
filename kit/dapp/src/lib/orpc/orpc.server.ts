@@ -25,5 +25,4 @@ import { headers } from "next/headers";
  *
  * @see {@link kit/dapp/src/lib/orpc/orpc.ts} - Client configuration that consumes these headers
  */
-(globalThis as unknown as { $headers: () => Promise<Headers> }).$headers =
-  headers;
+globalThis.$headers = headers;

@@ -26,14 +26,9 @@ const link = new OpenAPILink(contract, {
    * to provide authentication tokens, CSRF tokens, or other request metadata.
    */
   headers: async () => {
-    return (globalThis as unknown as { $headers: () => Promise<Headers> })
-      .$headers
+    return globalThis.$headers
       ? // SSR context: Use global headers function set by server middleware
-        Object.fromEntries(
-          await (
-            globalThis as unknown as { $headers: () => Promise<Headers> }
-          ).$headers()
-        )
+        Object.fromEntries(await globalThis.$headers())
       : // Browser context: No additional headers needed (cookies handle auth)
         {};
   },

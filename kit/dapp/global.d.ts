@@ -9,3 +9,7 @@ declare module "next-intl" {
     Locale: (typeof routing.locales)[number];
   }
 }
+
+declare global {
+  let $headers: (() => Promise<Headers>) | undefined;
+}
