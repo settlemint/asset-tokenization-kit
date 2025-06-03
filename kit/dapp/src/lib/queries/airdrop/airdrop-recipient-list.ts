@@ -2,13 +2,19 @@ import "server-only";
 
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { Address } from "viem";
-import { OffchainAirdropFragment } from "./airdrop-fragment";
-import { OffChainAirdropSchema } from "./airdrop-schema";
+import { AirdropFragment } from "./airdrop-fragment";
+import { AirdropRecipientFragment } from "./airdrop-recipient-fragment";
+import { AirdropRecipientSchema } from "./airdrop-recipient-schema";
+import { OnChainAirdropSchema, type OnChainAirdrop } from "./airdrop-schema";
 
 /**
  * GraphQL query to fetch airdrop distributions from Hasura filtered by recipient
@@ -25,14 +31,28 @@ const AirdropRecipientList = hasuraGraphql(
       limit: $limit
       offset: $offset
     ) {
-      ...OffchainAirdropFragment
-      airdrop_id
-      index
-      claimed
+      ...AirdropRecipientFragment
     }
   }
 `,
-  [OffchainAirdropFragment]
+  [AirdropRecipientFragment]
+);
+
+/**
+ * GraphQL query to fetch airdrop details from The Graph by IDs
+ *
+ * @remarks
+ * Used to get complete airdrop information including asset details
+ */
+const AirdropDetailsByIds = theGraphGraphqlKit(
+  `
+  query AirdropDetailsByIds($ids: [Bytes!]!) {
+    airdrops(where: { id_in: $ids }) {
+      ...AirdropFragment
+    }
+  }
+`,
+  [AirdropFragment]
 );
 
 /**
@@ -40,9 +60,10 @@ const AirdropRecipientList = hasuraGraphql(
  *
  * @param recipient - The address of the user to filter airdrop distributions by
  * @remarks
- * This function fetches data from Hasura (off-chain) to provide
- * a complete view of airdrop distributions where the user is eligible to claim tokens.
- * Includes distribution details like amount, index, and claim status.
+ * This function fetches data from both Hasura (off-chain distribution data) and
+ * The Graph (on-chain airdrop and asset data) to provide a complete view of
+ * airdrop distributions where the user is eligible to claim tokens.
+ * Includes complete airdrop details, distribution amount, index, and claim status.
  */
 export const getAirdropRecipientList = withTracing(
   "queries",
@@ -66,28 +87,58 @@ export const getAirdropRecipientList = withTracing(
           }
         );
 
-        // Extend the schema to include the additional fields from the distribution table
-        const ExtendedOffChainAirdropSchema = t.Intersect([
-          OffChainAirdropSchema,
-          t.Object({
-            airdrop_id: t.String({
-              description: "The airdrop contract address",
-            }),
-            index: t.Number({
-              description: "The index of the recipient in the Merkle tree",
-            }),
-            claimed: t.Optional(
-              t.String({
-                description:
-                  "Timestamp when the airdrop was claimed, null if not claimed",
-              })
-            ),
-          }),
-        ]);
+        const distributions = result.airdrop_distribution || [];
+
+        if (distributions.length === 0) {
+          return [];
+        }
+
+        // Get unique airdrop IDs to fetch complete airdrop information
+        const uniqueAirdropIds = [
+          ...new Set(distributions.map((d) => d.airdrop)),
+        ];
+
+        // Fetch complete airdrop details from The Graph
+        const airdropDetailsResult = await theGraphClientKit.request(
+          AirdropDetailsByIds,
+          { ids: uniqueAirdropIds },
+          {
+            "X-GraphQL-Operation-Name": "AirdropDetailsByIds",
+            "X-GraphQL-Operation-Type": "query",
+          }
+        );
+
+        // Validate and create a map of airdrop ID to complete airdrop data
+        const validatedAirdrops = safeParse(
+          t.Array(OnChainAirdropSchema),
+          airdropDetailsResult.airdrops || []
+        );
+
+        const airdropDataMap = new Map<string, OnChainAirdrop>();
+        validatedAirdrops.forEach((airdrop) => {
+          airdropDataMap.set(airdrop.id, airdrop);
+        });
+
+        // Combine distribution data with complete airdrop information
+        const recipientDataWithAirdropDetails = distributions
+          .map((item) => {
+            const airdropData = airdropDataMap.get(item.airdrop);
+            if (!airdropData) {
+              return null; // Skip distributions where airdrop data is not found
+            }
+
+            return {
+              airdrop: airdropData,
+              amount: item.amount,
+              index: item.index,
+              claimed: item.claimed,
+            };
+          })
+          .filter(Boolean); // Remove null entries
 
         return safeParse(
-          t.Array(ExtendedOffChainAirdropSchema),
-          result.airdrop_distribution || []
+          t.Array(AirdropRecipientSchema),
+          recipientDataWithAirdropDetails
         );
       }
     );
