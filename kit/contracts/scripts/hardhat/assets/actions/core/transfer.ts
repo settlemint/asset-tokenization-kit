@@ -1,9 +1,9 @@
-import { SMARTContracts } from "../../constants/contracts";
-import type { AbstractActor } from "../../entities/actors/abstract-actor";
-import type { Asset } from "../../entities/asset";
-import { formatDecimals } from "../../utils/format-decimals";
-import { toDecimals } from "../../utils/to-decimals";
-import { waitForSuccess } from "../../utils/wait-for-success";
+import { SMARTContracts } from "../../../constants/contracts";
+import type { AbstractActor } from "../../../entities/actors/abstract-actor";
+import type { Asset } from "../../../entities/asset";
+import { formatDecimals } from "../../../utils/format-decimals";
+import { toDecimals } from "../../../utils/to-decimals";
+import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const transfer = async (
   asset: Asset<any>,

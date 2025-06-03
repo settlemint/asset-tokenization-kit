@@ -1,9 +1,9 @@
-import { SMARTContracts } from "../../constants/contracts";
-import { AbstractActor } from "../../entities/actors/abstract-actor";
-import { Asset } from "../../entities/asset";
-import { formatDecimals } from "../../utils/format-decimals";
-import { toDecimals } from "../../utils/to-decimals";
-import { waitForSuccess } from "../../utils/wait-for-success";
+import { SMARTContracts } from "../../../constants/contracts";
+import { AbstractActor } from "../../../entities/actors/abstract-actor";
+import { Asset } from "../../../entities/asset";
+import { formatDecimals } from "../../../utils/format-decimals";
+import { toDecimals } from "../../../utils/to-decimals";
+import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const recoverErc20Tokens = async (
   asset: Asset<any>,

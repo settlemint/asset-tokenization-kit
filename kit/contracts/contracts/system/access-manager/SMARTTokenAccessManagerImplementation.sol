@@ -105,6 +105,36 @@ contract SMARTTokenAccessManagerImplementation is
         }
     }
 
+    /// @notice Grants multiple roles to a single account.
+    /// @dev This function calls the `grantRole` from `AccessControlUpgradeable` for each role.
+    ///      Requires the caller to have the admin role for each `role` being granted.
+    /// @param account The address that will receive all the roles.
+    /// @param roles The array of role identifiers to grant.
+    function grantMultipleRoles(address account, bytes32[] calldata roles) external override {
+        uint256 length = roles.length;
+        for (uint256 i = 0; i < length;) {
+            grantRole(roles[i], account);
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    /// @notice Revokes multiple roles from a single account.
+    /// @dev This function calls the `revokeRole` from `AccessControlUpgradeable` for each role.
+    ///      Requires the caller to have the admin role for each `role` being revoked.
+    /// @param account The address that will lose all the roles.
+    /// @param roles The array of role identifiers to revoke.
+    function revokeMultipleRoles(address account, bytes32[] calldata roles) external override {
+        uint256 length = roles.length;
+        for (uint256 i = 0; i < length;) {
+            revokeRole(roles[i], account);
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
     /// @notice Overrides the `_msgSender()` function to support meta-transactions via ERC2771.
     /// @dev This internal function is crucial for contracts that use `ERC2771ContextUpgradeable`.
     ///      When a function call is relayed through a trusted forwarder, `msg.sender` would be
