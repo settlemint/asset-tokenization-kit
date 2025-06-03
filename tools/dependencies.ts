@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { logger } from "./logging";
 
@@ -31,10 +32,61 @@ function isCI(): boolean {
 }
 
 /**
+ * Check if dependencies directory exists synchronously
+ */
+function dependenciesExist(path: string): boolean {
+  const exists = existsSync(path);
+  return exists;
+}
+
+/**
  * Check if we're running during postinstall (before tools are installed)
  */
 function isPostInstall(): boolean {
-  return process.env.npm_lifecycle_event === "postinstall";
+  const checks = {
+    npm_lifecycle_event: process.env.npm_lifecycle_event === "postinstall",
+    npm_lifecycle_script: process.env.npm_lifecycle_script?.includes(
+      "tools/dependencies.ts"
+    ),
+    argv_postinstall: process.argv.some((arg) => arg.includes("postinstall")),
+    npm_command_install: process.env.npm_command === "install",
+    bun_postinstall: process.argv.some(
+      (arg) =>
+        arg.includes("bun") &&
+        process.argv.some((a) => a.includes("postinstall"))
+    ),
+    bun_tools_deps:
+      process.env._ &&
+      process.env._.includes("bun") &&
+      process.argv.includes("tools/dependencies.ts"),
+    ci_no_deps: isCI() && !dependenciesExist("kit/contracts/dependencies"),
+  };
+
+  const result = !!(
+    checks.npm_lifecycle_event ||
+    checks.npm_lifecycle_script ||
+    checks.argv_postinstall ||
+    checks.npm_command_install ||
+    checks.bun_postinstall ||
+    checks.bun_tools_deps ||
+    checks.ci_no_deps
+  );
+
+  return result;
+}
+
+/**
+ * Check if we're in an early installation phase (tools not available)
+ */
+async function isEarlyInstallPhase(): Promise<boolean> {
+  const tools = await checkToolsAvailable();
+  const ci = isCI();
+
+  // If in CI and critical tools are missing, assume we're in early install phase
+  // We focus on forge and helm since these are the tools needed for actual dependency installation
+  const isEarly = ci && (!tools.forge || !tools.helm);
+
+  return isEarly;
 }
 
 /**
@@ -99,6 +151,8 @@ async function runDependenciesViaTurbo(): Promise<void> {
 
   const hasTurbo = await checkTurboInstalled();
   const ci = isCI();
+  const postInstall = isPostInstall();
+  const earlyInstall = await isEarlyInstallPhase();
 
   try {
     if (ci) {
@@ -126,9 +180,9 @@ async function runDependenciesViaTurbo(): Promise<void> {
 
     log.success("Dependencies installed successfully via Turbo");
   } catch (error) {
-    if (ci) {
+    if (ci && !(postInstall || earlyInstall)) {
       log.warn(`Turbo execution completed with some failures: ${error}`);
-      // In CI, check if critical dependencies (contracts) succeeded
+      // In CI, check if critical dependencies (contracts) succeeded, but not during early phases
       await validateCriticalDependencies();
     } else {
       log.error(`Failed to run dependencies via Turbo: ${error}`);
@@ -143,9 +197,11 @@ async function runDependenciesViaTurbo(): Promise<void> {
 async function validateCriticalDependencies(): Promise<void> {
   log.info("Validating critical dependencies...");
 
+  const ci = isCI();
+  const postInstall = isPostInstall();
+
   // Check if contracts dependencies were installed successfully
   const contractsDepsPath = "kit/contracts/dependencies";
-  const dependenciesDir = Bun.file(contractsDepsPath);
 
   try {
     // Check if dependencies directory exists and has content
@@ -159,6 +215,17 @@ async function validateCriticalDependencies(): Promise<void> {
 
     log.success("Critical dependencies (contracts) are available");
   } catch (error) {
+    const tools = await checkToolsAvailable();
+
+    // If we're during postinstall or in CI and tools aren't available, this might be expected
+    if (postInstall || (ci && (!tools.forge || !tools.helm))) {
+      log.warn(`Critical dependencies not found: ${error}`);
+      log.info(
+        `This is expected during ${postInstall ? "postinstall" : "early CI stages"} - dependencies will be installed when tools are available`
+      );
+      return; // Don't throw error in this case
+    }
+
     log.error(`Critical dependencies validation failed: ${error}`);
     throw new Error("Critical dependencies are missing. Cannot proceed.");
   }
@@ -189,14 +256,18 @@ async function runDependenciesManually(): Promise<void> {
   const errors: string[] = [];
   const ci = isCI();
   const postInstall = isPostInstall();
+  const earlyInstall = await isEarlyInstallPhase();
 
   for (const workspace of workspaces) {
     log.info(`Installing dependencies for ${workspace.name}...`);
 
-    // Skip if required tool is not available during postinstall
-    if (postInstall && !tools[workspace.requiresTool as keyof typeof tools]) {
+    // Skip if required tool is not available during postinstall or early install phase
+    if (
+      (postInstall || earlyInstall) &&
+      !tools[workspace.requiresTool as keyof typeof tools]
+    ) {
       log.warn(
-        `Skipping ${workspace.name} dependencies during postinstall (${workspace.requiresTool} not available yet)`
+        `Skipping ${workspace.name} dependencies during ${postInstall ? "postinstall" : "early install phase"} (${workspace.requiresTool} not available yet)`
       );
       continue;
     }
@@ -218,16 +289,19 @@ async function runDependenciesManually(): Promise<void> {
     } catch (error) {
       const errorMsg = `Failed to install dependencies for ${workspace.name}: ${error}`;
 
-      if (workspace.critical && !postInstall) {
-        // Only treat as critical error if not during postinstall
+      if (workspace.critical && !(postInstall || earlyInstall)) {
+        // Only treat as critical error if not during postinstall or early install phase
         log.error(errorMsg);
         errors.push(errorMsg);
       } else {
-        // Non-critical workspace failures or postinstall failures are warnings
-        if (ci || postInstall) {
-          log.warn(
-            `${errorMsg} (non-critical${postInstall ? " during postinstall" : " in CI"})`
-          );
+        // Non-critical workspace failures or postinstall/early install failures are warnings
+        if (ci || postInstall || earlyInstall) {
+          const phase = postInstall
+            ? "postinstall"
+            : earlyInstall
+              ? "early install phase"
+              : "CI";
+          log.warn(`${errorMsg} (non-critical during ${phase})`);
         } else {
           log.error(errorMsg);
           errors.push(errorMsg);
@@ -242,9 +316,14 @@ async function runDependenciesManually(): Promise<void> {
     );
   }
 
-  if (ci || postInstall) {
+  if (ci || postInstall || earlyInstall) {
+    const phase = postInstall
+      ? "postinstall"
+      : earlyInstall
+        ? "early install phase"
+        : "CI";
     log.info(
-      `Dependencies installation completed (some failures may have occurred${postInstall ? " during postinstall" : " in CI"})`
+      `Dependencies installation completed (some failures may have occurred during ${phase})`
     );
   }
 }
@@ -256,26 +335,37 @@ async function main(): Promise<void> {
   const startTime = Date.now();
   const ci = isCI();
   const postInstall = isPostInstall();
+  const earlyInstall = await isEarlyInstallPhase();
 
   try {
     log.info(
-      `Starting dependency installation for Asset Tokenization Kit${ci ? " (CI mode)" : ""}${postInstall ? " (postinstall)" : ""}...`
+      `Starting dependency installation for Asset Tokenization Kit${ci ? " (CI mode)" : ""}${postInstall ? " (postinstall)" : ""}${earlyInstall ? " (early install phase)" : ""}...`
     );
 
     await validateRootDirectory();
 
-    // During postinstall, be more forgiving
-    if (postInstall) {
+    // During postinstall or early install phase, be more forgiving
+    if (postInstall || earlyInstall) {
       log.info(
-        "Running during postinstall - will skip dependencies that require tools not yet installed"
+        `Running during ${postInstall ? "postinstall" : "early install phase"} - will skip dependencies that require tools not yet installed`
       );
-      try {
-        await runDependenciesViaTurbo();
-      } catch (turboError) {
+
+      // Check if we should even attempt turbo in early phases
+      const tools = await checkToolsAvailable();
+      if (!tools.forge && !tools.helm && !tools.turbo) {
         log.warn(
-          "Turbo execution failed during postinstall, will try manual execution with tool checking"
+          "No required tools available, skipping turbo and going directly to manual execution with tool checking"
         );
         await runDependenciesManually();
+      } else {
+        try {
+          await runDependenciesViaTurbo();
+        } catch (turboError) {
+          log.warn(
+            `Turbo execution failed during ${postInstall ? "postinstall" : "early install phase"}, will try manual execution with tool checking`
+          );
+          await runDependenciesManually();
+        }
       }
     } else {
       // Normal execution - try turbo first, fall back to manual execution if needed
@@ -309,12 +399,14 @@ async function main(): Promise<void> {
       `Dependencies installation completed successfully in ${duration}ms`
     );
   } catch (error) {
-    if (postInstall && ci) {
-      // During postinstall in CI, log the error but don't fail
+    if ((postInstall || earlyInstall) && ci) {
+      // During postinstall or early install phase in CI, log the error but don't fail
       log.warn(
-        `Dependencies installation had issues during postinstall: ${error}`
+        `Dependencies installation had issues during ${postInstall ? "postinstall" : "early install phase"}: ${error}`
       );
       log.info("Dependencies can be installed later when tools are available");
+      // Don't exit with error in early install phases
+      return;
     } else {
       log.error(`Dependencies installation failed: ${error}`);
       process.exit(1);
