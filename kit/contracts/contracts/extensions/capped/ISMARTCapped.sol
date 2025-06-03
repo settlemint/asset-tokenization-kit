@@ -23,7 +23,7 @@ interface ISMARTCapped {
     ///      if the provided `cap` value is not valid. The most common invalid value is zero, as a cap of zero
     ///      would mean no tokens could ever be minted.
     /// @param cap The invalid cap value that was attempted to be set during initialization (e.g., 0).
-    error SMARTInvalidCap(uint256 cap);
+    error InvalidCap(uint256 cap);
 
     /// @notice Emitted when the cap is set.
     /// @param sender The address that set the cap.

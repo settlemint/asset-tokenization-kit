@@ -3,7 +3,11 @@ import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { smartProtocolDeployer } from "../services/deployer";
 
 import { SMARTTopic } from "../constants/topics";
-import { investorA, investorB } from "../entities/actors/investors";
+import {
+  frozenInvestor,
+  investorA,
+  investorB,
+} from "../entities/actors/investors";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
@@ -66,8 +70,7 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   // custodian
   await forcedTransfer(bond, owner, investorA, investorB, 2n);
-  await setAddressFrozen(bond, owner, investorA, true);
-  await setAddressFrozen(bond, owner, investorA, false);
+  await setAddressFrozen(bond, owner, frozenInvestor, true);
   await freezePartialTokens(bond, owner, investorB, 2n);
   await unfreezePartialTokens(bond, owner, investorB, 2n);
 

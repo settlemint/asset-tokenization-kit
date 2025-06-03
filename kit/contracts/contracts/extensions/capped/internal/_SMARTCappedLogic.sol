@@ -36,14 +36,14 @@ abstract contract _SMARTCappedLogic is _SMARTExtension, ISMARTCapped {
     /// @notice Internal unchained initializer for the capped supply logic.
     /// @dev This function should only be called once, typically by the constructor of `SMARTCapped`
     ///      or the initializer of `SMARTCappedUpgradeable`.
-    ///      It sets the `_cap` state variable. It reverts with `SMARTInvalidCap` if `cap_` is 0,
+    ///      It sets the `_cap` state variable. It reverts with `InvalidCap` if `cap_` is 0,
     ///      as a cap of zero would render the token unusable (no tokens could be minted).
     ///      An "unchained" initializer doesn't call parent initializers, giving flexibility to the caller.
     ///      Emits a `CapSet` event.
     /// @param cap_ The maximum total supply for the token. Must be greater than 0.
     function __SMARTCapped_init_unchained(uint256 cap_) internal {
         if (cap_ == 0) {
-            revert SMARTInvalidCap(cap_); // A cap of 0 is not allowed.
+            revert InvalidCap(cap_); // A cap of 0 is not allowed.
         }
         _cap = cap_;
         _registerInterface(type(ISMARTCapped).interfaceId); // Register interface for ERC165

@@ -19,6 +19,7 @@ import { identityRegistryAbi } from "../abi/identityRegistry";
 import { identityRegistryStorageAbi } from "../abi/identityRegistryStorage";
 import { ismartAbi } from "../abi/ismart";
 import { ismartBurnableAbi } from "../abi/ismartBurnable";
+import { ismartPausableAbi } from "../abi/ismartPausable";
 import { stablecoinAbi } from "../abi/stablecoin";
 import { stablecoinFactoryAbi } from "../abi/stablecoinFactory";
 import { systemAbi } from "../abi/system";
@@ -54,6 +55,7 @@ export const SMARTContracts = {
   ismart: ismartAbi,
   ismartBurnable: ismartBurnableAbi,
   ismartCustodian: ismartCustodianAbi,
+  ismartPausable: ismartPausableAbi,
   // compliance modules
   countryAllowListModule: countryAllowListAbi,
   countryBlockListModule: countryBlockListAbi,
