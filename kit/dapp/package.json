@@ -13,7 +13,7 @@
     "prod:local": "next build --turbopack && cp -r .next/static .next/standalone/kit/dapp/.next/static && cp -r public .next/standalone/public && node .next/standalone/kit/dapp/server.js",
     "build": "next build --turbopack",
     "start": "next start",
-    "test": "bun test",
+    "test": "bun test --preload ./src/lib/db/mock.ts",
     "format": "prettier --write .",
     "lint": "next lint",
     "addresses": "bash contract-addresses.sh",
