@@ -9,11 +9,11 @@ import {
 import type { Account, LocalAccount } from "viem/accounts"; // viem signer type
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
-import { Countries } from "../constants/countries";
-import type { SMARTTopic } from "../constants/topics";
-import { topicManager } from "../services/topic-manager";
-import { createClaim } from "../utils/create-claim";
-import { getViemChain } from "../utils/viem-chain";
+import { Countries } from "../../constants/countries";
+import type { SMARTTopic } from "../../constants/topics";
+import { topicManager } from "../../services/topic-manager";
+import { createClaim } from "../../utils/create-claim";
+import { getViemChain } from "../../utils/viem-chain";
 import { AbstractActor } from "./abstract-actor";
 
 /**

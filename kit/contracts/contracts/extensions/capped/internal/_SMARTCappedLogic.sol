@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 import { ISMARTCapped } from "../ISMARTCapped.sol";
-import { SMARTInvalidCap, SMARTExceededCap } from "../SMARTCappedErrors.sol";
 
 /// @title Internal Logic for SMART Capped Token Extension
 /// @notice This abstract contract provides the core, shared logic and storage for implementing
@@ -40,6 +39,7 @@ abstract contract _SMARTCappedLogic is _SMARTExtension, ISMARTCapped {
     ///      It sets the `_cap` state variable. It reverts with `SMARTInvalidCap` if `cap_` is 0,
     ///      as a cap of zero would render the token unusable (no tokens could be minted).
     ///      An "unchained" initializer doesn't call parent initializers, giving flexibility to the caller.
+    ///      Emits a `CapSet` event.
     /// @param cap_ The maximum total supply for the token. Must be greater than 0.
     function __SMARTCapped_init_unchained(uint256 cap_) internal {
         if (cap_ == 0) {
@@ -47,6 +47,7 @@ abstract contract _SMARTCappedLogic is _SMARTExtension, ISMARTCapped {
         }
         _cap = cap_;
         _registerInterface(type(ISMARTCapped).interfaceId); // Register interface for ERC165
+        emit ISMARTCapped.CapSet(_smartSender(), cap_);
     }
 
     /// @notice Returns the maximum allowed total supply for this token (the "cap").
@@ -66,14 +67,14 @@ abstract contract _SMARTCappedLogic is _SMARTExtension, ISMARTCapped {
     ///      Solidity versions ^0.8.0 automatically check for arithmetic overflows, so `currentTotalSupply +
     /// amountToMint_`
     ///      is safe from overflow issues that would wrap around.
-    ///      If `newTotalSupply` is greater than the `cap()`, it reverts with `SMARTExceededCap`.
+    ///      If `newTotalSupply` is greater than the `cap()`, it reverts with `ExceededCap`.
     /// @param amountToMint_ The amount of tokens intended to be minted.
     function __capped_beforeMintLogic(uint256 amountToMint_) internal view {
         uint256 currentTotalSupply = __capped_totalSupply();
         uint256 newTotalSupply = currentTotalSupply + amountToMint_;
 
         if (newTotalSupply > cap()) {
-            revert SMARTExceededCap(newTotalSupply, cap());
+            revert ExceededCap(newTotalSupply, cap());
         }
     }
 }

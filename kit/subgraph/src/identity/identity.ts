@@ -9,7 +9,6 @@ import {
   KeyAdded,
   KeyRemoved,
 } from "../../generated/templates/Identity/Identity";
-import { fetchAccount } from "../account/fetch/account";
 import {
   isCollateralClaim,
   updateCollateral,
@@ -27,7 +26,7 @@ export function handleClaimAdded(event: ClaimAdded): void {
   fetchEvent(event, "ClaimAdded");
   const identity = fetchIdentity(event.address);
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
-  identityClaim.issuer = fetchAccount(event.params.issuer).id;
+  identityClaim.issuer = fetchIdentity(event.params.issuer).id;
   identityClaim.uri = event.params.uri;
   identityClaim.save();
 
@@ -43,7 +42,7 @@ export function handleClaimChanged(event: ClaimChanged): void {
   fetchEvent(event, "ClaimChanged");
   const identity = fetchIdentity(event.address);
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
-  identityClaim.issuer = fetchAccount(event.params.issuer).id;
+  identityClaim.issuer = fetchIdentity(event.params.issuer).id;
   identityClaim.uri = event.params.uri;
   identityClaim.save();
 

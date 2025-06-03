@@ -6,6 +6,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { Context } from "@openzeppelin/contracts/utils/Context.sol"; // Context might be implicitly inherited via
     // AccessControl
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
 // Interface imports
 import { ISMARTComplianceModule } from "../../../interface/ISMARTComplianceModule.sol";
@@ -25,7 +26,7 @@ import { ISMARTComplianceModule } from "../../../interface/ISMARTComplianceModul
 /// them to manage roles for that specific module instance.
 /// - **ERC165 Support**: It correctly reports support for the `ISMARTComplianceModule` interface.
 /// Developers should inherit from this contract to create specific compliance rule sets.
-abstract contract AbstractComplianceModule is AccessControl, ISMARTComplianceModule {
+abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISMARTComplianceModule {
     // --- Constructor ---
     /// @notice Constructor for the abstract compliance module.
     /// @dev When a contract inheriting from `AbstractComplianceModule` is deployed, this constructor is called.
@@ -35,7 +36,7 @@ abstract contract AbstractComplianceModule is AccessControl, ISMARTComplianceMod
     /// and revoke other roles.
     /// This allows the deployer to manage permissions for their specific compliance module instance (e.g., who can
     /// update settings if the module has any).
-    constructor() {
+    constructor(address _trustedForwarder) ERC2771Context(_trustedForwarder) {
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     }
 
@@ -173,4 +174,34 @@ abstract contract AbstractComplianceModule is AccessControl, ISMARTComplianceMod
     /// It should be a `pure` function as the name is typically hardcoded and doesn't depend on state.
     /// @return A string representing the name of the compliance module.
     function name() external pure virtual override returns (string memory);
+
+    // --- Internal Functions (Overrides for ERC2771Context and ERC165/AccessControl) ---
+
+    /// @dev Overrides the `_msgSender()` function from OpenZeppelin's `Context` and `ERC2771Context`.
+    /// This ensures that in the context of a meta-transaction (via a trusted forwarder), `msg.sender` (and thus
+    /// the return value of this function) correctly refers to the original user who signed the transaction,
+    /// rather than the forwarder contract that relayed it.
+    /// If not a meta-transaction, it behaves like the standard `msg.sender`.
+    /// @return The address of the original transaction sender (user) or the direct caller.
+    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+        return super._msgSender(); // Calls the ERC2771Context implementation.
+    }
+
+    /// @dev Overrides the `_msgData()` function from OpenZeppelin's `Context` and `ERC2771Context`.
+    /// Similar to `_msgSender()`, this ensures that `msg.data` (and the return value of this function)
+    /// refers to the original call data from the user in a meta-transaction context.
+    /// If not a meta-transaction, it behaves like the standard `msg.data`.
+    /// @return The original call data of the transaction.
+    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+        return super._msgData(); // Calls the ERC2771Context implementation.
+    }
+
+    /// @dev Overrides `_contextSuffixLength` from OpenZeppelin's `ERC2771Context`.
+    /// This function is part of the ERC2771 meta-transaction standard. It indicates the length of the suffix
+    /// appended to the call data by a forwarder, which typically contains the original sender's address.
+    /// The base `ERC2771Context` implementation handles this correctly.
+    /// @return The length of the context suffix in the call data for meta-transactions.
+    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+        return super._contextSuffixLength();
+    }
 }

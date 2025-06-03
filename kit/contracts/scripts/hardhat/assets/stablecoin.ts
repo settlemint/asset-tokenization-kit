@@ -1,83 +1,77 @@
-import type { Address } from "viem";
+import { encodeAbiParameters, parseAbiParameters } from "viem";
 
-import { owner } from "../actors/owner";
 import { smartProtocolDeployer } from "../services/deployer";
-import { waitForEvent } from "../utils/wait-for-event";
 
-import { investorA, investorB } from "../actors/investors";
-import { SMARTRoles } from "../constants/roles";
+import { investorA, investorB } from "../entities/actors/investors";
 
 import { SMARTTopic } from "../constants/topics";
+import { owner } from "../entities/actors/owner";
+import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
-import { burn } from "./actions/burn";
-import { grantRole } from "./actions/grant-role";
-import { issueCollateralClaim } from "./actions/issue-collateral-claim";
-import { issueIsinClaim } from "./actions/issue-isin-claim";
-import { mint } from "./actions/mint";
-import { transfer } from "./actions/transfer";
+import { burn } from "./actions/burnable/burn";
+import { mint } from "./actions/core/mint";
+import { transfer } from "./actions/core/transfer";
+import { forcedTransfer } from "./actions/custodian/forced-transfer";
+import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
+import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
+import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
+import { setupAsset } from "./actions/setup-asset";
 
-export const createStablecoin = async () => {
+export const createStableCoin = async () => {
   console.log("\n=== Creating stablecoin... ===\n");
 
   const stablecoinFactory =
     smartProtocolDeployer.getStablecoinFactoryContract();
 
-  const transactionHash = await stablecoinFactory.write.createStableCoin([
+  const stableCoin = new Asset<"stablecoinFactory">(
     "Tether",
     "USDT",
     6,
+    "JP3902900004",
+    stablecoinFactory
+  );
+
+  const encodedBlockedCountries = encodeAbiParameters(
+    parseAbiParameters("uint16[]"),
+    [[]]
+  );
+
+  const transactionHash = await stablecoinFactory.write.createStableCoin([
+    stableCoin.name,
+    stableCoin.symbol,
+    stableCoin.decimals,
+    [topicManager.getTopicId(SMARTTopic.kyc)],
     [
-      topicManager.getTopicId(SMARTTopic.kyc),
-      topicManager.getTopicId(SMARTTopic.aml),
+      {
+        module: smartProtocolDeployer.getContractAddress(
+          "countryBlockListModule"
+        ),
+        params: encodedBlockedCountries,
+      },
     ],
-    [], // TODO: fill in with the setup for ATK
   ]);
 
-  const { tokenAddress, tokenIdentity, accessManager } = (await waitForEvent({
-    transactionHash,
-    contract: stablecoinFactory,
-    eventName: "TokenAssetCreated",
-  })) as {
-    sender: Address;
-    tokenAddress: Address;
-    tokenIdentity: Address;
-    accessManager: Address;
-  };
+  await stableCoin.waitUntilDeployed(transactionHash);
 
-  if (tokenAddress && tokenIdentity && accessManager) {
-    console.log("[Stablecoin] address:", tokenAddress);
-    console.log("[Stablecoin] identity:", tokenIdentity);
-    console.log("[Stablecoin] access manager:", accessManager);
+  await setupAsset(stableCoin, {
+    collateral: 1000n,
+  });
 
-    // needs to be done so that he can add the claims
-    await grantRole(accessManager, owner.address, SMARTRoles.claimManagerRole);
-    // issue isin claim
-    await issueIsinClaim(tokenIdentity, "JP3902900004");
+  // core
+  await mint(stableCoin, investorA, 1000n);
+  await transfer(stableCoin, investorA, investorB, 500n);
 
-    // Update collateral
-    const now = new Date();
-    const oneYearFromNow = new Date(
-      now.getFullYear() + 1,
-      now.getMonth(),
-      now.getDate()
-    );
-    await issueCollateralClaim(tokenIdentity, 1000n, 6, oneYearFromNow);
+  // burnable
+  await burn(stableCoin, investorB, 250n);
 
-    // needs supply management role to mint
-    await grantRole(
-      accessManager,
-      owner.address,
-      SMARTRoles.supplyManagementRole
-    );
+  // custodian
+  await forcedTransfer(stableCoin, owner, investorA, investorB, 250n);
+  await setAddressFrozen(stableCoin, owner, investorA, true);
+  await setAddressFrozen(stableCoin, owner, investorA, false);
+  await freezePartialTokens(stableCoin, owner, investorB, 250n);
+  await unfreezePartialTokens(stableCoin, owner, investorB, 250n);
 
-    await mint(tokenAddress, investorA, 1000n, 6);
-    await transfer(tokenAddress, investorA, investorB, 500n, 6);
-    await burn(tokenAddress, investorB, 250n, 6);
+  // TODO: execute all other functions of the stablecoin
 
-    // TODO: execute all other functions of the stablecoin
-
-    return tokenAddress;
-  }
-
-  throw new Error("Failed to create deposit");
+  return stableCoin;
 };

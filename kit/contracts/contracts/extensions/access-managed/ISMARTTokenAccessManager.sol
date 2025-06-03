@@ -39,4 +39,14 @@ interface ISMARTTokenAccessManager is
     /// @param role The role identifier to revoke.
     /// @param accounts The addresses that will lose the role.
     function batchRevokeRole(bytes32 role, address[] calldata accounts) external;
+
+    /// @notice Grants multiple roles to a single account.
+    /// @param account The address that will receive all the roles.
+    /// @param roles The array of role identifiers to grant.
+    function grantMultipleRoles(address account, bytes32[] calldata roles) external;
+
+    /// @notice Revokes multiple roles from a single account.
+    /// @param account The address that will lose all the roles.
+    /// @param roles The array of role identifiers to revoke.
+    function revokeMultipleRoles(address account, bytes32[] calldata roles) external;
 }

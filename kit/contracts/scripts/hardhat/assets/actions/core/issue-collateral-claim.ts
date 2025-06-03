@@ -1,13 +1,13 @@
-import type { Address } from "viem";
-import { claimIssuer } from "../../actors/claim-issuer";
-import { owner } from "../../actors/owner";
-import { SMARTContracts } from "../../constants/contracts";
+import { SMARTContracts } from "../../../constants/contracts";
+import { claimIssuer } from "../../../entities/actors/claim-issuer";
+import { owner } from "../../../entities/actors/owner";
 
-import { SMARTTopic } from "../../constants/topics";
-import { encodeClaimData } from "../../utils/claim-scheme-utils";
-import { formatDecimals } from "../../utils/format-decimals";
-import { toDecimals } from "../../utils/to-decimals";
-import { waitForSuccess } from "../../utils/wait-for-success";
+import { SMARTTopic } from "../../../constants/topics";
+import type { Asset } from "../../../entities/asset";
+import { encodeClaimData } from "../../../utils/claim-scheme-utils";
+import { formatDecimals } from "../../../utils/format-decimals";
+import { toDecimals } from "../../../utils/to-decimals";
+import { waitForSuccess } from "../../../utils/wait-for-success";
 
 /**
  * Issues a collateral claim to a token's identity contract.
@@ -19,7 +19,7 @@ import { waitForSuccess } from "../../utils/wait-for-success";
  * @param expiryTimestamp The expiry timestamp of the collateral as a JavaScript `Date` object.
  */
 export const issueCollateralClaim = async (
-  tokenIdentityAddress: Address,
+  asset: Asset<any>,
   amount: bigint,
   decimals: number,
   expiryTimestamp: Date
@@ -45,14 +45,14 @@ export const issueCollateralClaim = async (
     signature: collateralClaimSignature,
     topicId,
   } = await claimIssuer.createClaim(
-    tokenIdentityAddress,
+    asset.identity,
     SMARTTopic.collateral,
     encodedCollateralData
   );
 
   // 3. Get an instance of the token's identity contract, interacted with by the 'owner' (assumed token owner)
   const tokenIdentityContract = owner.getContractInstance({
-    address: tokenIdentityAddress,
+    address: asset.identity!,
     abi: SMARTContracts.tokenIdentity,
   });
 
@@ -74,6 +74,6 @@ export const issueCollateralClaim = async (
 
   // Log with the original Date object for better readability if desired, or the timestamp
   console.log(
-    `[Collateral claim] issued for token identity ${tokenIdentityAddress} with amount ${formatDecimals(tokenAmount, decimals)} and expiry ${expiryTimestamp.toISOString()} (Unix: ${expiryTimestampBigInt}).`
+    `[Collateral claim] issued for token identity ${asset.name} (${asset.identity}) with amount ${formatDecimals(tokenAmount, decimals)} ${asset.symbol} and expiry ${expiryTimestamp.toISOString()} (Unix: ${expiryTimestampBigInt}).`
   );
 };

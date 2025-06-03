@@ -13,9 +13,8 @@ import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy
 import { SMARTTokenAccessManagerImplementation } from
     "../../../../contracts/system/access-manager/SMARTTokenAccessManagerImplementation.sol";
 import { ISMARTTokenAccessManager } from "../../../../contracts/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMARTTokenAccessManaged } from "../../../../contracts/extensions/access-managed/ISMARTTokenAccessManaged.sol";
 import { SMARTSystemRoles } from "../../../../contracts/system/SMARTSystemRoles.sol";
-import { AccessControlUnauthorizedAccount } from
-    "../../../../contracts/extensions/access-managed/SMARTTokenAccessManagedErrors.sol";
 
 contract SMARTTokenIdentityImplementationTest is Test {
     SMARTTokenIdentityImplementation public implementation;
@@ -134,7 +133,9 @@ contract SMARTTokenIdentityImplementationTest is Test {
         vm.prank(user1); // user1 doesn't have claim manager role
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUnauthorizedAccount.selector, user1, SMARTSystemRoles.CLAIM_MANAGER_ROLE
+                ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount.selector,
+                user1,
+                SMARTSystemRoles.CLAIM_MANAGER_ROLE
             )
         );
         tokenIdentity.addClaim(1, 1, issuer, "signature", "data", "uri");
@@ -162,7 +163,9 @@ contract SMARTTokenIdentityImplementationTest is Test {
         vm.prank(user1); // user1 doesn't have claim manager role
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUnauthorizedAccount.selector, user1, SMARTSystemRoles.CLAIM_MANAGER_ROLE
+                ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount.selector,
+                user1,
+                SMARTSystemRoles.CLAIM_MANAGER_ROLE
             )
         );
         tokenIdentity.removeClaim(claimId);
@@ -321,7 +324,9 @@ contract SMARTTokenIdentityImplementationTest is Test {
         vm.prank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUnauthorizedAccount.selector, user1, SMARTSystemRoles.CLAIM_MANAGER_ROLE
+                ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount.selector,
+                user1,
+                SMARTSystemRoles.CLAIM_MANAGER_ROLE
             )
         );
         tokenIdentity.addClaim(1, 1, issuer, "signature", "data", "uri");
@@ -338,7 +343,9 @@ contract SMARTTokenIdentityImplementationTest is Test {
         vm.prank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                AccessControlUnauthorizedAccount.selector, user1, SMARTSystemRoles.CLAIM_MANAGER_ROLE
+                ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount.selector,
+                user1,
+                SMARTSystemRoles.CLAIM_MANAGER_ROLE
             )
         );
         tokenIdentity.addClaim(1, 1, address(tokenIdentity), "signature", "data", "uri");

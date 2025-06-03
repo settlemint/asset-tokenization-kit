@@ -1,7 +1,7 @@
 import type { Address } from "viem";
-import type { AbstractActor } from "../actors/abstract-actor";
-import { claimIssuer } from "../actors/claim-issuer";
 import { SMARTContracts } from "../constants/contracts";
+import type { AbstractActor } from "../entities/actors/abstract-actor";
+import { claimIssuer } from "../entities/actors/claim-issuer";
 
 import { SMARTTopic } from "../constants/topics";
 import { smartProtocolDeployer } from "../services/deployer";

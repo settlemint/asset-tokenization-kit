@@ -1,76 +1,78 @@
-import type { Address } from "viem";
+import { encodeAbiParameters, parseAbiParameters } from "viem";
 
-import { owner } from "../actors/owner";
 import { smartProtocolDeployer } from "../services/deployer";
-import { waitForEvent } from "../utils/wait-for-event";
 
-import { investorA, investorB } from "../actors/investors";
-import { SMARTRoles } from "../constants/roles";
+import { investorA, investorB } from "../entities/actors/investors";
 
 import { SMARTTopic } from "../constants/topics";
+import { owner } from "../entities/actors/owner";
+import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
-import { burn } from "./actions/burn";
-import { grantRole } from "./actions/grant-role";
-import { issueAssetClassificationClaim } from "./actions/issue-asset-classification-claim";
-import { issueIsinClaim } from "./actions/issue-isin-claim";
-import { mint } from "./actions/mint";
-import { transfer } from "./actions/transfer";
+import { burn } from "./actions/burnable/burn";
+import { mint } from "./actions/core/mint";
+import { transfer } from "./actions/core/transfer";
+import { forcedTransfer } from "./actions/custodian/forced-transfer";
+import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
+import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
+import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
+import { setupAsset } from "./actions/setup-asset";
 
 export const createFund = async () => {
   console.log("\n=== Creating fund... ===\n");
 
   const fundFactory = smartProtocolDeployer.getFundFactoryContract();
 
-  const transactionHash = await fundFactory.write.createFund([
+  const fund = new Asset<"fundFactory">(
     "Bens Bugs",
     "BB",
     8,
+    "FR0000120271",
+    fundFactory
+  );
+
+  const encodedBlockedCountries = encodeAbiParameters(
+    parseAbiParameters("uint16[]"),
+    [[]]
+  );
+
+  const transactionHash = await fundFactory.write.createFund([
+    fund.name,
+    fund.symbol,
+    fund.decimals,
     20,
+    [topicManager.getTopicId(SMARTTopic.kyc)],
     [
-      topicManager.getTopicId(SMARTTopic.kyc),
-      topicManager.getTopicId(SMARTTopic.aml),
+      {
+        module: smartProtocolDeployer.getContractAddress(
+          "countryBlockListModule"
+        ),
+        params: encodedBlockedCountries,
+      },
     ],
-    [], // TODO: fill in with the setup for ATK
   ]);
 
-  const { tokenAddress, tokenIdentity, accessManager } = (await waitForEvent({
-    transactionHash,
-    contract: fundFactory,
-    eventName: "TokenAssetCreated",
-  })) as {
-    sender: Address;
-    tokenAddress: Address;
-    tokenIdentity: Address;
-    accessManager: Address;
-  };
+  await fund.waitUntilDeployed(transactionHash);
 
-  if (tokenAddress && tokenIdentity && accessManager) {
-    console.log("[Fund] address:", tokenAddress);
-    console.log("[Fund] identity:", tokenIdentity);
-    console.log("[Fund] access manager:", accessManager);
+  await setupAsset(fund, {
+    assetClass: "Class A",
+    assetCategory: "Category A",
+  });
 
-    // needs to be done so that he can add the claims
-    await grantRole(accessManager, owner.address, SMARTRoles.claimManagerRole);
-    // issue isin claim
-    await issueIsinClaim(tokenIdentity, "FR0000120271");
-    // issue asset classification claim
-    await issueAssetClassificationClaim(tokenIdentity, "Class A", "Category A");
+  // core
+  await mint(fund, investorA, 10n);
+  await transfer(fund, investorA, investorB, 5n);
 
-    // needs supply management role to mint
-    await grantRole(
-      accessManager,
-      owner.address,
-      SMARTRoles.supplyManagementRole
-    );
+  // burnable
+  await burn(fund, investorB, 2n);
 
-    await mint(tokenAddress, investorA, 10n, 8);
-    await transfer(tokenAddress, investorA, investorB, 5n, 8);
-    await burn(tokenAddress, investorB, 2n, 8);
+  // custodian
+  await forcedTransfer(fund, owner, investorA, investorB, 2n);
+  await setAddressFrozen(fund, owner, investorA, true);
+  await setAddressFrozen(fund, owner, investorA, false);
+  await freezePartialTokens(fund, owner, investorB, 2n);
+  await unfreezePartialTokens(fund, owner, investorB, 2n);
 
-    // TODO: execute all other functions of the fund
+  // TODO: execute all other functions of the fund
 
-    return tokenAddress;
-  }
-
-  throw new Error("Failed to create deposit");
+  return fund;
 };

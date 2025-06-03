@@ -40,6 +40,11 @@ contract MockedComplianceModule is AbstractComplianceModule {
     // --- Single Array to Store Call History ---
     CallRecord[] public callHistory;
 
+    /// @notice Constructor for the mocked compliance module.
+    /// @dev When a contract inheriting from `MockedComplianceModule` is deployed, this constructor is called.
+    /// It calls the constructor of `AbstractComplianceModule` with the `_trustedForwarder` address.
+    constructor() AbstractComplianceModule(address(0)) { }
+
     /// @notice Sets whether the next call to canTransfer should fail.
     /// @param _fail True if the next call should fail, false otherwise.
     function setNextTransferShouldFail(bool _fail) external {
