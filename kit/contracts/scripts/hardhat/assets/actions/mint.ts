@@ -1,13 +1,13 @@
-import type { AbstractActor } from "../../actors/abstract-actor";
-import { owner } from "../../actors/owner";
 import { SMARTContracts } from "../../constants/contracts";
-import type { Asset } from "../../types/asset";
+import type { AbstractActor } from "../../entities/actors/abstract-actor";
+import { owner } from "../../entities/actors/owner";
+import type { Asset } from "../../entities/asset";
 import { formatDecimals } from "../../utils/format-decimals";
 import { toDecimals } from "../../utils/to-decimals";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
 export const mint = async (
-  asset: Asset,
+  asset: Asset<any>,
   to: AbstractActor,
   amount: bigint,
   decimals: number

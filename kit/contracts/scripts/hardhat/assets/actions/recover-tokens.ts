@@ -1,11 +1,11 @@
 import { Address } from "viem";
-import { AbstractActor } from "../../actors/abstract-actor";
 import { SMARTContracts } from "../../constants/contracts";
-import type { Asset } from "../../types/asset";
+import { AbstractActor } from "../../entities/actors/abstract-actor";
+import type { Asset } from "../../entities/asset";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
 export const recoverTokens = async (
-  asset: Asset,
+  asset: Asset<any>,
   actor: AbstractActor,
   lostWallet: Address
 ) => {

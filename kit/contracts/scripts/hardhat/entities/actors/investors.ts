@@ -1,7 +1,7 @@
 import hre from "hardhat";
 import type { Chain, Transport, WalletClient } from "viem";
 import type { Account } from "viem/accounts";
-import { Countries } from "../constants/countries";
+import { Countries } from "../../constants/countries";
 import { AbstractActor } from "./abstract-actor";
 
 /**
@@ -55,4 +55,3 @@ class Investor extends AbstractActor {
 export const investorA = new Investor("Investor A", Countries.BE, 1);
 export const investorANew = new Investor("Investor A New", Countries.BE, 2);
 export const investorB = new Investor("Investor B", Countries.NL, 3);
-

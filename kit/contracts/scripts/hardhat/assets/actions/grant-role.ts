@@ -1,14 +1,14 @@
-import type { AbstractActor } from "../../actors/abstract-actor";
-import { owner } from "../../actors/owner";
 import { SMARTContracts } from "../../constants/contracts";
 import { SMARTRoles } from "../../constants/roles";
-import type { Asset } from "../../types/asset";
+import type { AbstractActor } from "../../entities/actors/abstract-actor";
+import { owner } from "../../entities/actors/owner";
+import type { Asset } from "../../entities/asset";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
 // The issuer doesn't need to have a claim manager role, it can be anyone that adds the claim.
 // The issuer will create the claim and the claim manager will add it to the token identity.
 export const grantRole = async (
-  asset: Asset,
+  asset: Asset<any>,
   targetActor: AbstractActor,
   role: (typeof SMARTRoles)[keyof typeof SMARTRoles]
 ) => {

@@ -1,4 +1,4 @@
-import type { AbstractActor } from "../actors/abstract-actor";
+import type { AbstractActor } from "../entities/actors/abstract-actor";
 
 import { smartProtocolDeployer } from "../services/deployer";
 import { waitForSuccess } from "../utils/wait-for-success";

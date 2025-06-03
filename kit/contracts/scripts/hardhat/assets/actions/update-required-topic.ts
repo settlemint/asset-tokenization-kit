@@ -1,12 +1,12 @@
-import { owner } from "../../actors/owner";
 import { SMARTContracts } from "../../constants/contracts";
 import type { SMARTTopic } from "../../constants/topics";
+import { owner } from "../../entities/actors/owner";
+import type { Asset } from "../../entities/asset";
 import { topicManager } from "../../services/topic-manager";
-import type { Asset } from "../../types/asset";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
 export const updateRequiredTopics = async (
-  asset: Asset,
+  asset: Asset<any>,
   topicNames: SMARTTopic[]
 ) => {
   const tokenContract = owner.getContractInstance({

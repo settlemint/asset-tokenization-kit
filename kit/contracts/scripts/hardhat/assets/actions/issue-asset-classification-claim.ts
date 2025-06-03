@@ -1,9 +1,9 @@
-import { claimIssuer } from "../../actors/claim-issuer";
-import { owner } from "../../actors/owner";
 import { SMARTContracts } from "../../constants/contracts";
+import { claimIssuer } from "../../entities/actors/claim-issuer";
+import { owner } from "../../entities/actors/owner";
 
 import { SMARTTopic } from "../../constants/topics";
-import { Asset } from "../../types/asset";
+import { Asset } from "../../entities/asset";
 import { encodeClaimData } from "../../utils/claim-scheme-utils";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
@@ -16,7 +16,7 @@ import { waitForSuccess } from "../../utils/wait-for-success";
  * @param assetCategory The category of the asset.
  */
 export const issueAssetClassificationClaim = async (
-  asset: Asset,
+  asset: Asset<any>,
   assetClass: string,
   assetCategory: string
 ) => {
@@ -30,7 +30,7 @@ export const issueAssetClassificationClaim = async (
     signature: assetClassificationClaimSignature,
     topicId,
   } = await claimIssuer.createClaim(
-    asset.identity,
+    asset.identity!,
     SMARTTopic.assetClassification,
     encodedAssetClassificationData
   );

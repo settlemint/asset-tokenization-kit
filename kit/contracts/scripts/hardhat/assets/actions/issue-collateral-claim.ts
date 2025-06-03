@@ -1,9 +1,9 @@
-import { claimIssuer } from "../../actors/claim-issuer";
-import { owner } from "../../actors/owner";
 import { SMARTContracts } from "../../constants/contracts";
+import { claimIssuer } from "../../entities/actors/claim-issuer";
+import { owner } from "../../entities/actors/owner";
 
 import { SMARTTopic } from "../../constants/topics";
-import type { Asset } from "../../types/asset";
+import type { Asset } from "../../entities/asset";
 import { encodeClaimData } from "../../utils/claim-scheme-utils";
 import { formatDecimals } from "../../utils/format-decimals";
 import { toDecimals } from "../../utils/to-decimals";
@@ -19,7 +19,7 @@ import { waitForSuccess } from "../../utils/wait-for-success";
  * @param expiryTimestamp The expiry timestamp of the collateral as a JavaScript `Date` object.
  */
 export const issueCollateralClaim = async (
-  asset: Asset,
+  asset: Asset<any>,
   amount: bigint,
   decimals: number,
   expiryTimestamp: Date
@@ -52,7 +52,7 @@ export const issueCollateralClaim = async (
 
   // 3. Get an instance of the token's identity contract, interacted with by the 'owner' (assumed token owner)
   const tokenIdentityContract = owner.getContractInstance({
-    address: asset.identity,
+    address: asset.identity!,
     abi: SMARTContracts.tokenIdentity,
   });
 

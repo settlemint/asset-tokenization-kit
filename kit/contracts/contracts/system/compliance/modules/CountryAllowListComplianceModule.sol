@@ -33,14 +33,6 @@ import { ISMARTComplianceModule } from "../../../interface/ISMARTComplianceModul
 ///                   `abi.encode(uint16[] memory additionalAllowedCountries)`. These are countries allowed *in
 /// addition* to the global list for a specific token.
 contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
-    // --- State Variables ---
-    /// @notice Stores the global allow-list for this specific instance of the `CountryAllowListComplianceModule`.
-    /// @dev This mapping holds country codes (ISO 3166-1 numeric) as keys and a boolean `isAllowed` as the value.
-    /// If `_globalAllowedCountries[countryCode]` is `true`, then that country is part of this module's global
-    /// allow-list.
-    /// This list is managed by users with the `GLOBAL_LIST_MANAGER_ROLE` via the `setGlobalAllowedCountries` function.
-    mapping(uint16 country => bool isAllowed) private _globalAllowedCountries;
-
     // --- Events ---
     /// @notice Emitted when one or more countries are added to or removed from this module instance's global
     /// allow-list.
@@ -60,7 +52,9 @@ contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
     /// @notice Adds or removes multiple countries from this module instance's global allow-list.
     /// @dev This function can only be called by addresses that have been granted the `GLOBAL_LIST_MANAGER_ROLE` for
     /// this module instance.
-    /// It iterates through the `_countries` array and sets their status in the `_globalAllowedCountries` mapping.
+    /// It iterates through the `_countries` array and sets their status in the global country list.
+    /// When adding countries, they are added to both the mapping and the enumerable array.
+    /// When removing countries, they are removed from both the mapping and the array using the swap-and-pop technique.
     /// @param _countries An array of country codes (ISO 3166-1 numeric) to be added or removed.
     /// @param _allow If `true`, the specified `_countries` will be added to the global allow-list (or updated if
     /// already present).
@@ -75,7 +69,7 @@ contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
     {
         uint256 countriesLength = _countries.length;
         for (uint256 i = 0; i < countriesLength;) {
-            _globalAllowedCountries[_countries[i]] = _allow;
+            _setCountryInGlobalList(_countries[i], _allow);
             unchecked {
                 ++i;
             }
@@ -89,7 +83,18 @@ contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
     /// @param _country The country code (ISO 3166-1 numeric) to check.
     /// @return `true` if the `_country` is part of the global allow-list for this module instance, `false` otherwise.
     function isGloballyAllowed(uint16 _country) public view virtual returns (bool) {
-        return _globalAllowedCountries[_country];
+        return _isCountryInGlobalList(_country);
+    }
+
+    /// @notice Returns an array of all globally allowed country codes for this module instance.
+    /// @dev This function provides a way to enumerate all countries that are currently allowed in the global
+    /// allow-list.
+    /// It's useful for administrative purposes, auditing, or for front-ends that need to display the current list of
+    /// allowed countries.
+    /// @return An array of `uint16` country codes representing all globally allowed countries.
+    /// The array will be empty if no countries are currently in the global allow-list.
+    function getGlobalAllowedCountries() external view virtual returns (uint16[] memory) {
+        return _getGlobalCountriesList();
     }
 
     // --- Compliance Check --- (ISMARTComplianceModule Implementation)
@@ -105,7 +110,7 @@ contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
     /// 2. If the recipient has no identity or their country code is 0, the transfer is allowed (return without
     /// reverting).
     ///    This is because the module cannot enforce an allow-list if the country is unknown.
-    /// 3. If the recipient's country is in this module's `_globalAllowedCountries` (checked via `isGloballyAllowed`),
+    /// 3. If the recipient's country is in this module's global allow-list (checked via `isGloballyAllowed`),
     /// the transfer is allowed.
     /// 4. If not globally allowed, decode the token-specific `additionalAllowedCountries` from `_params` (using
     /// `_decodeParams`).

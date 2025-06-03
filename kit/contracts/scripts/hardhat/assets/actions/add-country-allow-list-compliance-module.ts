@@ -1,12 +1,12 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem";
-import { owner } from "../../actors/owner";
 import { SMARTContracts } from "../../constants/contracts";
+import { owner } from "../../entities/actors/owner";
+import type { Asset } from "../../entities/asset";
 import { smartProtocolDeployer } from "../../services/deployer";
-import type { Asset } from "../../types/asset";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
 export const addCountryAllowListComplianceModule = async (
-  asset: Asset,
+  asset: Asset<any>,
   countryCodes: number[]
 ) => {
   const tokenContract = owner.getContractInstance({

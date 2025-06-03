@@ -13,12 +13,12 @@ import type {
 } from "viem";
 
 import SMARTOnboardingModule from "../../../ignition/modules/onboarding";
-import { owner } from "../actors/owner";
 import { SMARTContracts } from "../constants/contracts";
+import { owner } from "../entities/actors/owner";
 // --- Utility Imports ---
 
 // Type for the keys of CONTRACT_METADATA, e.g., "system" | "compliance" | ...
-type ContractName = keyof Pick<
+export type ContractName = keyof Pick<
   typeof SMARTContracts,
   | "system"
   | "compliance"

@@ -1,12 +1,12 @@
-import type { AbstractActor } from "../../actors/abstract-actor";
 import { SMARTContracts } from "../../constants/contracts";
-import type { Asset } from "../../types/asset";
+import type { AbstractActor } from "../../entities/actors/abstract-actor";
+import type { Asset } from "../../entities/asset";
 import { formatDecimals } from "../../utils/format-decimals";
 import { toDecimals } from "../../utils/to-decimals";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
 export const transfer = async (
-  asset: Asset,
+  asset: Asset<any>,
   from: AbstractActor,
   to: AbstractActor,
   amount: bigint,

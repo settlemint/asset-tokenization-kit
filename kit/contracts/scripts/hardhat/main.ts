@@ -3,9 +3,6 @@ import { addTrustedIssuer } from "./actions/add-trusted-issuer";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
-import { claimIssuer } from "./actors/claim-issuer";
-import { investorA, investorANew, investorB } from "./actors/investors";
-import { owner } from "./actors/owner";
 import { recoverTokens } from "./assets/actions/recover-tokens";
 import { createBond } from "./assets/bond";
 import { createDeposit } from "./assets/deposit";
@@ -14,6 +11,13 @@ import { createFund } from "./assets/fund";
 import { createStablecoin } from "./assets/stablecoin";
 import { Countries } from "./constants/countries";
 import { SMARTTopic } from "./constants/topics";
+import { claimIssuer } from "./entities/actors/claim-issuer";
+import {
+  investorA,
+  investorANew,
+  investorB,
+} from "./entities/actors/investors";
+import { owner } from "./entities/actors/owner";
 import { smartProtocolDeployer } from "./services/deployer";
 import { topicManager } from "./services/topic-manager";
 
