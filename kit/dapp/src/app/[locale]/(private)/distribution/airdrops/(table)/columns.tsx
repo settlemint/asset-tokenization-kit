@@ -39,19 +39,20 @@ export function columns() {
     }),
     columnHelper.accessor("asset", {
       header: t("columns.asset"),
-      cell: ({ getValue }) => <EvmAddress address={getValue()} />,
+      cell: ({ row }) => <EvmAddress address={row.original.asset.id} />,
     }),
     columnHelper.accessor("totalClaimed", {
       header: t("columns.total-claimed"),
-      cell: ({ getValue }) => {
+      cell: ({ row, getValue }) => {
         const value = getValue();
         return formatNumber(value, {
           locale,
+          token: row.original.asset.symbol,
         });
       },
     }),
     columnHelper.accessor("totalRecipients", {
-      header: t("columns.total-recipients"),
+      header: t("columns.total-claims"),
       cell: ({ getValue }) => {
         const value = getValue();
         return formatNumber(value, {
@@ -69,7 +70,9 @@ export function columns() {
             variant="outline"
             size="sm"
             onClick={() => {
-              router.push(`/distribution/airdrops/${row.original.id}`);
+              router.push(
+                `/distribution/airdrops/${row.original.type}/${row.original.id}`
+              );
             }}
           >
             {t("details")}

@@ -24,8 +24,6 @@ const AirdropList = theGraphGraphqlKit(
   query AirdropList($first: Int, $skip: Int, $owner: String!) {
     airdrops(
       where: { owner: $owner }
-      orderBy: totalClaimedExact
-      orderDirection: desc
       first: $first
       skip: $skip
     ) {
