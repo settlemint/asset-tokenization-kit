@@ -61,7 +61,7 @@ export default async function PortfolioDashboard({
       <PageHeader title={t("dashboard.my-assets")} className="mt-8" />
 
       <Await
-        queryOptions={orpc.planet.list.queryOptions({ input: {} })}
+        queryOptions={orpc.planet.list.queryOptions({ input: {} as const })}
         error={
           <div className="flex items-center justify-center p-8 text-center">
             <div className="space-y-3">
