@@ -25,23 +25,25 @@
     "compile": {
       "dependsOn": ["dependencies"]
     },
+    "compile:forge": {
+      "dependsOn": ["dependencies"]
+    },
+    "compile:hardhat": {
+      "dependsOn": ["dependencies"]
+    },
     "publish": {
       "cache": false,
       "dependsOn": ["build", "//#version"]
     },
     "dependencies": {},
     "dev": {
+      "dependsOn": ["dapp#codegen:settlemint"],
       "cache": false,
       "persistent": true
     },
     "format": {},
     "lint": {
       "dependsOn": ["//#version"]
-    },
-    "dev": {
-      "dependsOn": ["dapp#codegen"],
-      "cache": false,
-      "persistent": true
     }
   }
 }
