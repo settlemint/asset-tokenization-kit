@@ -17,8 +17,8 @@ import { AssetActivitySchema } from "./asset-activity-schema";
  */
 const AssetActivity = theGraphGraphqlKit(
   `
-  query AssetActivity($first: Int, $skip: Int) {
-    assetActivityDatas(first: $first, skip: $skip) {
+  query AssetActivity($first: Int, $skip: Int, $where: AssetActivityData_filter) {
+    assetActivityDatas(first: $first, skip: $skip, where: $where) {
       ...AssetActivityFragment
     }
   }
@@ -32,18 +32,20 @@ const AssetActivity = theGraphGraphqlKit(
 export interface AssetActivityOptions {
   /** Optional limit to restrict total items fetched */
   limit?: number;
+  /** Optional asset address to filter activity */
+  assetAddress?: string;
 }
 
 /**
  * Fetches and processes asset activity data
  *
- * @param options - Query options including optional limit
+ * @param options - Query options including optional limit and asset address filter
  * @returns Array of validated asset activity data
  */
 export const getAssetActivity = withTracing(
   "queries",
   "getAssetActivity",
-  cache(async ({ limit }: AssetActivityOptions = {}) => {
+  cache(async ({ limit, assetAddress }: AssetActivityOptions = {}) => {
     "use cache";
     cacheTag("asset");
     const rawData = await fetchAllTheGraphPages(async (first, skip) => {
@@ -52,6 +54,7 @@ export const getAssetActivity = withTracing(
         {
           first,
           skip,
+          where: assetAddress ? { id: assetAddress } : undefined,
         },
         {
           "X-GraphQL-Operation-Name": "AssetActivity",
