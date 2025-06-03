@@ -1,23 +1,22 @@
-import type { Address } from "viem";
-import type { AbstractActor } from "../../actors/abstract-actor";
-import { owner } from "../../actors/owner";
 import { SMARTContracts } from "../../constants/contracts";
+import type { AbstractActor } from "../../entities/actors/abstract-actor";
+import { owner } from "../../entities/actors/owner";
+import type { Asset } from "../../entities/asset";
 import { formatDecimals } from "../../utils/format-decimals";
 import { toDecimals } from "../../utils/to-decimals";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
 export const burn = async (
-  tokenAddress: Address,
+  asset: Asset<any>,
   from: AbstractActor,
-  amount: bigint,
-  decimals: number
+  amount: bigint
 ) => {
   const tokenContract = owner.getContractInstance({
-    address: tokenAddress,
+    address: asset.address,
     abi: SMARTContracts.ismartBurnable,
   });
 
-  const tokenAmount = toDecimals(amount, decimals);
+  const tokenAmount = toDecimals(amount, asset.decimals);
 
   const transactionHash = await tokenContract.write.burn([
     from.address,
@@ -27,6 +26,6 @@ export const burn = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Burn] ${formatDecimals(tokenAmount, decimals)} tokens from ${from.name} (${from.address})`
+    `[Burn] ${formatDecimals(tokenAmount, asset.decimals)} ${asset.symbol} tokens from ${from.name} (${from.address})`
   );
 };

@@ -1,23 +1,22 @@
-import type { Address } from "viem";
-import type { AbstractActor } from "../../actors/abstract-actor";
-import { owner } from "../../actors/owner";
 import { SMARTContracts } from "../../constants/contracts";
+import type { AbstractActor } from "../../entities/actors/abstract-actor";
+import { owner } from "../../entities/actors/owner";
+import type { Asset } from "../../entities/asset";
 import { formatDecimals } from "../../utils/format-decimals";
 import { toDecimals } from "../../utils/to-decimals";
 import { waitForSuccess } from "../../utils/wait-for-success";
 
 export const mint = async (
-  tokenAddress: Address,
-  to: AbstractActor,
-  amount: bigint,
-  decimals: number
+  asset: Asset<any>,
+  to: AbstractActor | Asset<any>,
+  amount: bigint
 ) => {
   const tokenContract = owner.getContractInstance({
-    address: tokenAddress,
+    address: asset.address,
     abi: SMARTContracts.ismart,
   });
 
-  const tokenAmount = toDecimals(amount, decimals);
+  const tokenAmount = toDecimals(amount, asset.decimals);
 
   const transactionHash = await tokenContract.write.mint([
     to.address,
@@ -27,6 +26,6 @@ export const mint = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Mint] ${formatDecimals(tokenAmount, decimals)} tokens to ${to.name} (${to.address})`
+    `[Mint] ${formatDecimals(tokenAmount, asset.decimals)} ${asset.symbol} tokens to ${to.name} (${to.address})`
   );
 };

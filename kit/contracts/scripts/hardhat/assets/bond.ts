@@ -1,76 +1,63 @@
-import type { Address } from "viem";
+import { encodeAbiParameters, parseAbiParameters } from "viem";
 
-import { owner } from "../actors/owner";
 import { smartProtocolDeployer } from "../services/deployer";
-import { waitForEvent } from "../utils/wait-for-event";
 
-import { investorA, investorB } from "../actors/investors";
-import { SMARTRoles } from "../constants/roles";
 import { SMARTTopic } from "../constants/topics";
+import { investorA, investorB } from "../entities/actors/investors";
+import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burn";
-import { grantRole } from "./actions/grant-role";
-import { issueIsinClaim } from "./actions/issue-isin-claim";
 import { mint } from "./actions/mint";
+import { setupAsset } from "./actions/setup-asset";
 import { transfer } from "./actions/transfer";
 
-export const createBond = async (depositToken: Address) => {
+export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
 
   const bondFactory = smartProtocolDeployer.getBondFactoryContract();
 
-  const transactionHash = await bondFactory.write.createBond([
+  const bond = new Asset<"bondFactory">(
     "Euro Bonds",
     "EURB",
     6,
+    "DE000BAY0017",
+    bondFactory
+  );
+
+  const encodedBlockedCountries = encodeAbiParameters(
+    parseAbiParameters("uint16[]"),
+    [[]]
+  );
+
+  const transactionHash = await bondFactory.write.createBond([
+    bond.name,
+    bond.symbol,
+    bond.decimals,
     BigInt(1000000 * 10 ** 6),
     BigInt(Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60), // 1 year
     BigInt(123),
-    depositToken,
+    depositToken.address!,
+    [topicManager.getTopicId(SMARTTopic.kyc)],
     [
-      topicManager.getTopicId(SMARTTopic.kyc),
-      topicManager.getTopicId(SMARTTopic.aml),
+      {
+        module: smartProtocolDeployer.getContractAddress(
+          "countryBlockListModule"
+        ),
+        params: encodedBlockedCountries,
+      },
     ],
-    [], // TODO: fill in with the setup for ATK
   ]);
 
-  const { tokenAddress, tokenIdentity, accessManager } = (await waitForEvent({
-    transactionHash,
-    contract: bondFactory,
-    eventName: "TokenAssetCreated",
-  })) as {
-    tokenAddress: Address;
-    tokenIdentity: Address;
-    accessManager: Address;
-  };
+  await bond.waitUntilDeployed(transactionHash);
 
-  if (tokenAddress && tokenIdentity && accessManager) {
-    console.log("[Bond] address:", tokenAddress);
-    console.log("[Bond] identity:", tokenIdentity);
-    console.log("[Bond] access manager:", accessManager);
+  await setupAsset(bond);
 
-    // needs to be done so that he can add the claims
-    await grantRole(accessManager, owner.address, SMARTRoles.claimManagerRole);
+  await mint(bond, investorA, 10n);
+  await transfer(bond, investorA, investorB, 5n);
+  await burn(bond, investorB, 2n);
 
-    // issue isin claim
-    await issueIsinClaim(tokenIdentity, "GB00B1XGHL29");
+  // TODO: add yield etc
+  // TODO: execute all other functions of the bond
 
-    // needs supply management role to mint
-    await grantRole(
-      accessManager,
-      owner.address,
-      SMARTRoles.supplyManagementRole
-    );
-
-    await mint(tokenAddress, investorA, 10n, 6);
-    await transfer(tokenAddress, investorA, investorB, 5n, 6);
-    await burn(tokenAddress, investorB, 2n, 6);
-
-    // TODO: add yield etc
-    // TODO: execute all other functions of the bond
-
-    return tokenAddress;
-  }
-
-  throw new Error("Failed to create bond");
+  return bond;
 };

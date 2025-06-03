@@ -5,6 +5,8 @@ import SMARTOnboardingEquityModule from "./onboarding/assets/equity";
 import SMARTOnboardingFundModule from "./onboarding/assets/fund";
 import SMARTOnboardingStableCoinModule from "./onboarding/assets/stablecoin";
 import SMARTOnboardingSystemModule from "./onboarding/system";
+import CountryAllowListModule from "./predeployed/modules/country-allow-list-module";
+import CountryBlockListModule from "./predeployed/modules/country-block-list-module";
 
 /**
  * This module is used to deploy the SMART contracts, this should be used to
@@ -29,6 +31,9 @@ const SMARTOnboardingModule = buildModule("SMARTOnboardingModule", (m) => {
   const { fundFactory } = m.useModule(SMARTOnboardingFundModule);
   const { stablecoinFactory } = m.useModule(SMARTOnboardingStableCoinModule);
 
+  const { countryAllowListModule } = m.useModule(CountryAllowListModule);
+  const { countryBlockListModule } = m.useModule(CountryBlockListModule);
+
   return {
     system,
     compliance,
@@ -42,6 +47,9 @@ const SMARTOnboardingModule = buildModule("SMARTOnboardingModule", (m) => {
     equityFactory,
     fundFactory,
     stablecoinFactory,
+    // Compliance modules
+    countryAllowListModule,
+    countryBlockListModule,
   };
 });
 

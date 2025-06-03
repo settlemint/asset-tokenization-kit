@@ -34,14 +34,6 @@ import { ISMARTComplianceModule } from "../../../interface/ISMARTComplianceModul
 ///                   `abi.encode(uint16[] memory additionalBlockedCountries)`. These are countries blocked *in
 /// addition* to the global list for a specific token.
 contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
-    // --- State Variables ---
-    /// @notice Stores the global block-list for this specific instance of the `CountryBlockListComplianceModule`.
-    /// @dev This mapping holds country codes (ISO 3166-1 numeric) as keys and a boolean `isBlocked` as the value.
-    /// If `_globalBlockedCountries[countryCode]` is `true`, then that country is part of this module's global
-    /// block-list.
-    /// This list is managed by users with the `GLOBAL_LIST_MANAGER_ROLE` via the `setGlobalBlockedCountries` function.
-    mapping(uint16 country => bool isBlocked) private _globalBlockedCountries;
-
     // --- Events ---
     /// @notice Emitted when one or more countries are added to or removed from this module instance's global
     /// block-list.
@@ -50,12 +42,20 @@ contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
     /// (`false`) from the global block-list.
     event GlobalBlockedCountriesUpdated(uint16[] countries, bool indexed blocked);
 
+    // --- Constructor ---
+    /// @notice Constructor for the `CountryBlockListComplianceModule`.
+    /// @dev When a contract inheriting from `CountryBlockListComplianceModule` is deployed, this constructor is called.
+    /// It calls the constructor of `AbstractCountryComplianceModule` with the `_trustedForwarder` address.
+    constructor(address _trustedForwarder) AbstractCountryComplianceModule(_trustedForwarder) { }
+
     // --- Global Block List Management (Manager Role Only) ---
 
     /// @notice Adds or removes multiple countries from this module instance's global block-list.
     /// @dev This function can only be called by addresses that have been granted the `GLOBAL_LIST_MANAGER_ROLE` for
     /// this module instance.
-    /// It iterates through the `_countries` array and sets their status in the `_globalBlockedCountries` mapping.
+    /// It iterates through the `_countries` array and sets their status in the global country list.
+    /// When adding countries, they are added to both the mapping and the enumerable array.
+    /// When removing countries, they are removed from both the mapping and the array using the swap-and-pop technique.
     /// @param _countries An array of country codes (ISO 3166-1 numeric) to be added or removed.
     /// @param _block If `true`, the specified `_countries` will be added to the global block-list (or updated if
     /// already present).
@@ -70,7 +70,7 @@ contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
     {
         uint256 countriesLength = _countries.length;
         for (uint256 i = 0; i < countriesLength;) {
-            _globalBlockedCountries[_countries[i]] = _block;
+            _setCountryInGlobalList(_countries[i], _block);
             unchecked {
                 ++i;
             }
@@ -84,7 +84,18 @@ contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
     /// @param _country The country code (ISO 3166-1 numeric) to check.
     /// @return `true` if the `_country` is part of the global block-list for this module instance, `false` otherwise.
     function isGloballyBlocked(uint16 _country) public view virtual returns (bool) {
-        return _globalBlockedCountries[_country];
+        return _isCountryInGlobalList(_country);
+    }
+
+    /// @notice Returns an array of all globally blocked country codes for this module instance.
+    /// @dev This function provides a way to enumerate all countries that are currently blocked in the global
+    /// block-list.
+    /// It's useful for administrative purposes, auditing, or for front-ends that need to display the current list of
+    /// blocked countries.
+    /// @return An array of `uint16` country codes representing all globally blocked countries.
+    /// The array will be empty if no countries are currently in the global block-list.
+    function getGlobalBlockedCountries() external view virtual returns (uint16[] memory) {
+        return _getGlobalCountriesList();
     }
 
     // --- Compliance Check --- (ISMARTComplianceModule Implementation)
@@ -100,7 +111,7 @@ contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
     /// 2. If the recipient has no identity or their country code is 0 (unknown), the transfer is allowed by this module
     /// (return without reverting).
     ///    This is because the module cannot enforce a block-list if the country is unknown.
-    /// 3. If the recipient's country is in this module's `_globalBlockedCountries` (checked via `isGloballyBlocked`),
+    /// 3. If the recipient's country is in this module's global block-list (checked via `isGloballyBlocked`),
     ///    the transfer is blocked, and the function reverts with `ComplianceCheckFailed("Receiver country globally
     /// blocked")`.
     /// 4. If not globally blocked, decode the token-specific `additionalBlockedCountries` from `_params` (using

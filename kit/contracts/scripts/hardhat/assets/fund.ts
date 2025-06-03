@@ -1,19 +1,15 @@
-import type { Address } from "viem";
+import { encodeAbiParameters, parseAbiParameters } from "viem";
 
-import { owner } from "../actors/owner";
 import { smartProtocolDeployer } from "../services/deployer";
-import { waitForEvent } from "../utils/wait-for-event";
 
-import { investorA, investorB } from "../actors/investors";
-import { SMARTRoles } from "../constants/roles";
+import { investorA, investorB } from "../entities/actors/investors";
 
 import { SMARTTopic } from "../constants/topics";
+import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burn";
-import { grantRole } from "./actions/grant-role";
-import { issueAssetClassificationClaim } from "./actions/issue-asset-classification-claim";
-import { issueIsinClaim } from "./actions/issue-isin-claim";
 import { mint } from "./actions/mint";
+import { setupAsset } from "./actions/setup-asset";
 import { transfer } from "./actions/transfer";
 
 export const createFund = async () => {
@@ -21,56 +17,47 @@ export const createFund = async () => {
 
   const fundFactory = smartProtocolDeployer.getFundFactoryContract();
 
-  const transactionHash = await fundFactory.write.createFund([
+  const fund = new Asset<"fundFactory">(
     "Bens Bugs",
     "BB",
     8,
+    "FR0000120271",
+    fundFactory
+  );
+
+  const encodedBlockedCountries = encodeAbiParameters(
+    parseAbiParameters("uint16[]"),
+    [[]]
+  );
+
+  const transactionHash = await fundFactory.write.createFund([
+    fund.name,
+    fund.symbol,
+    fund.decimals,
     20,
+    [topicManager.getTopicId(SMARTTopic.kyc)],
     [
-      topicManager.getTopicId(SMARTTopic.kyc),
-      topicManager.getTopicId(SMARTTopic.aml),
+      {
+        module: smartProtocolDeployer.getContractAddress(
+          "countryBlockListModule"
+        ),
+        params: encodedBlockedCountries,
+      },
     ],
-    [], // TODO: fill in with the setup for ATK
   ]);
 
-  const { tokenAddress, tokenIdentity, accessManager } = (await waitForEvent({
-    transactionHash,
-    contract: fundFactory,
-    eventName: "TokenAssetCreated",
-  })) as {
-    sender: Address;
-    tokenAddress: Address;
-    tokenIdentity: Address;
-    accessManager: Address;
-  };
+  await fund.waitUntilDeployed(transactionHash);
 
-  if (tokenAddress && tokenIdentity && accessManager) {
-    console.log("[Fund] address:", tokenAddress);
-    console.log("[Fund] identity:", tokenIdentity);
-    console.log("[Fund] access manager:", accessManager);
+  await setupAsset(fund, {
+    assetClass: "Class A",
+    assetCategory: "Category A",
+  });
 
-    // needs to be done so that he can add the claims
-    await grantRole(accessManager, owner.address, SMARTRoles.claimManagerRole);
-    // issue isin claim
-    await issueIsinClaim(tokenIdentity, "FR0000120271");
-    // issue asset classification claim
-    await issueAssetClassificationClaim(tokenIdentity, "Class A", "Category A");
+  await mint(fund, investorA, 10n);
+  await transfer(fund, investorA, investorB, 5n);
+  await burn(fund, investorB, 2n);
 
-    // needs supply management role to mint
-    await grantRole(
-      accessManager,
-      owner.address,
-      SMARTRoles.supplyManagementRole
-    );
+  // TODO: execute all other functions of the fund
 
-    await mint(tokenAddress, investorA, 10n, 8);
-    await transfer(tokenAddress, investorA, investorB, 5n, 8);
-    await burn(tokenAddress, investorB, 2n, 8);
-
-    // TODO: execute all other functions of the fund
-
-    return tokenAddress;
-  }
-
-  throw new Error("Failed to create deposit");
+  return fund;
 };

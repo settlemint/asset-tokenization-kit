@@ -10,9 +10,9 @@ import {
   getContract as getViemContract,
 } from "viem";
 import type { Account } from "viem/accounts";
-import { smartProtocolDeployer } from "../services/deployer";
-import { getPublicClient } from "../utils/public-client";
-import { waitForEvent } from "../utils/wait-for-event";
+import { smartProtocolDeployer } from "../../services/deployer";
+import { getPublicClient } from "../../utils/public-client";
+import { waitForEvent } from "../../utils/wait-for-event";
 
 // Chain to ensure identity creation operations are serialized across all actors
 // To avoid replacement transactions when in sync
