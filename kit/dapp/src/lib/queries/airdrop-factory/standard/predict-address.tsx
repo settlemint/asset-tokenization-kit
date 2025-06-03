@@ -18,7 +18,7 @@ import {
  */
 const CreateStandardAirdropPredictAddress = portalGraphql(`
   query CreateStandardAirdropPredictAddress($address: String!, $tokenAddress: String!, $merkleRoot: String!, $owner: String!, $startTime: String!, $endTime: String!) {
-    AirdropFactory2(address: $address) {
+    AirdropFactory(address: $address) {
       predictStandardAirdropAddress(
         tokenAddress: $tokenAddress
         merkleRoot: $merkleRoot
@@ -62,7 +62,7 @@ export const getPredictedAddress = withTracing(
       data
     );
 
-    return predictedAddress.AirdropFactory2.predictStandardAirdropAddress
+    return predictedAddress.AirdropFactory.predictStandardAirdropAddress
       .predictedAddress;
   }
 );
