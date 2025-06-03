@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "matchstick-as": "0.6.0",
-    "contracts": "1.0.6-pr"
+    "contracts": "1.0.6-pr-pr"
   },
   "peerDependencies": {}
 }
