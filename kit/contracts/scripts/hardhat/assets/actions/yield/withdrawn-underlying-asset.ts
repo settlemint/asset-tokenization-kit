@@ -1,9 +1,14 @@
+import { Address } from "viem";
 import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { waitForEvent } from "../../../utils/wait-for-event";
 
-export const claimYield = async (asset: Asset<any>) => {
+export const withdrawnUnderlyingAsset = async (
+  asset: Asset<any>,
+  to: Address,
+  amount: bigint
+) => {
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: SMARTContracts.ismartYield,
@@ -15,14 +20,17 @@ export const claimYield = async (asset: Asset<any>) => {
     abi: SMARTContracts.ismartFixedYieldSchedule,
   });
 
-  const transactionHash = await scheduleContract.write.claimYield();
-  const eventData = await waitForEvent({
+  const transactionHash = await scheduleContract.write.withdrawUnderlyingAsset([
+    to,
+    amount,
+  ]);
+  await waitForEvent({
     transactionHash,
     contract: scheduleContract,
-    eventName: "YieldClaimed",
+    eventName: "UnderlyingAssetWithdrawn",
   });
 
   console.log(
-    `[Claim yield] ${asset.symbol} yield claimed for ${scheduleAddress} (data: ${JSON.stringify(eventData)}).`
+    `[Withdrawn underlying asset] ${asset.symbol} underlying asset withdrawn to ${to} with amount ${amount}.`
   );
 };

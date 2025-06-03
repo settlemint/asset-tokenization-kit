@@ -4,6 +4,7 @@ pragma solidity 0.8.28;
 import { Test, console } from "forge-std/Test.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
+import { ISMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { SMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../contracts/extensions/yield/ISMARTYield.sol";
 
@@ -352,7 +353,7 @@ contract SMARTFixedYieldScheduleTest is Test {
         underlyingToken.approve(address(yieldSchedule), topUpAmount);
 
         vm.expectEmit(true, false, false, true);
-        emit SMARTFixedYieldSchedule.UnderlyingAssetTopUp(user1, topUpAmount);
+        emit ISMARTFixedYieldSchedule.UnderlyingAssetTopUp(user1, topUpAmount);
 
         yieldSchedule.topUpUnderlyingAsset(topUpAmount);
         vm.stopPrank();
@@ -403,7 +404,7 @@ contract SMARTFixedYieldScheduleTest is Test {
 
         vm.prank(owner);
         vm.expectEmit(true, false, false, true);
-        emit SMARTFixedYieldSchedule.UnderlyingAssetWithdrawn(user1, withdrawAmount);
+        emit ISMARTFixedYieldSchedule.UnderlyingAssetWithdrawn(user1, withdrawAmount);
 
         yieldSchedule.withdrawUnderlyingAsset(user1, withdrawAmount);
 

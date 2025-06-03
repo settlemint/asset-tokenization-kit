@@ -3,7 +3,10 @@ import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { waitForEvent } from "../../../utils/wait-for-event";
 
-export const claimYield = async (asset: Asset<any>) => {
+export const topupUnderlyingAsset = async (
+  asset: Asset<any>,
+  amount: bigint
+) => {
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: SMARTContracts.ismartYield,
@@ -15,14 +18,16 @@ export const claimYield = async (asset: Asset<any>) => {
     abi: SMARTContracts.ismartFixedYieldSchedule,
   });
 
-  const transactionHash = await scheduleContract.write.claimYield();
-  const eventData = await waitForEvent({
+  const transactionHash = await scheduleContract.write.topUpUnderlyingAsset([
+    amount,
+  ]);
+  await waitForEvent({
     transactionHash,
     contract: scheduleContract,
-    eventName: "YieldClaimed",
+    eventName: "UnderlyingAssetTopUp",
   });
 
   console.log(
-    `[Claim yield] ${asset.symbol} yield claimed for ${scheduleAddress} (data: ${JSON.stringify(eventData)}).`
+    `[Topup underlying asset] ${asset.symbol} underlying asset topped up with amount ${amount}.`
   );
 };

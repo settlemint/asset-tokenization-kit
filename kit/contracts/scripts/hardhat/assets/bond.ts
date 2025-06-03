@@ -12,6 +12,8 @@ import { setupAsset } from "./actions/setup-asset";
 import { transfer } from "./actions/transfer";
 import { claimYield } from "./actions/yield/claim-yield";
 import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
+import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
+import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
@@ -60,11 +62,17 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   await setYieldSchedule(
     bond,
-    new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day from now
-    new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+    new Date(Date.now() + 1_000), // 1 second from now
+    new Date(Date.now() + 5 * 60 * 1_000), // 5 minutes from now
     500, // 5%
-    86400 // 1 day
+    5 // 5 seconds
   );
+  await topupUnderlyingAsset(bond, 10n);
+  await withdrawnUnderlyingAsset(bond, investorA.address, 5n);
+  // Wait for the first period to close so the yield can be claimed
+  await new Promise((resolve) => setTimeout(resolve, 6_000));
+  await claimYield(bond);
+  await new Promise((resolve) => setTimeout(resolve, 5_000));
   await claimYield(bond);
 
   // TODO: execute all other functions of the bond
