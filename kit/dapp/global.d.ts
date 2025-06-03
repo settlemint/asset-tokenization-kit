@@ -11,5 +11,8 @@ declare module "next-intl" {
 }
 
 declare global {
-  let $headers: (() => Promise<Headers>) | undefined;
+  // eslint-disable-next-line no-var
+  var $headers: (() => Promise<Headers>) | undefined;
 }
+
+export {};
