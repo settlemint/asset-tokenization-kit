@@ -112,11 +112,3 @@ export function makeQueryClient(): QueryClient {
 
   return client;
 }
-
-/**
- * Hook to get the current QueryClient instance
- * @returns The QueryClient instance
- */
-export function useQueryClient(): QueryClient {
-  return getQueryClient();
-}
