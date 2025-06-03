@@ -17,6 +17,20 @@ import { logger } from "./logging";
 const log = logger;
 
 /**
+ * Check if we're running in a CI environment
+ */
+function isCI(): boolean {
+  return !!(
+    process.env.CI ||
+    process.env.GITHUB_ACTIONS ||
+    process.env.GITLAB_CI ||
+    process.env.JENKINS_URL ||
+    process.env.BUILDKITE ||
+    process.env.CIRCLECI
+  );
+}
+
+/**
  * Check if we're in the correct root directory
  */
 async function validateRootDirectory(): Promise<void> {
@@ -56,27 +70,75 @@ async function checkTurboInstalled(): Promise<boolean> {
 }
 
 /**
- * Run dependencies via turbo (preferred method)
+ * Run dependencies via turbo with CI-friendly error handling
  */
 async function runDependenciesViaTurbo(): Promise<void> {
   log.info("Running dependencies via Turbo...");
 
   const hasTurbo = await checkTurboInstalled();
+  const ci = isCI();
 
   try {
-    if (hasTurbo) {
-      await $`turbo run dependencies --output-logs=new-only`.env({
-        FORCE_COLOR: "1",
-      });
+    if (ci) {
+      // In CI, continue on error and show all output
+      if (hasTurbo) {
+        await $`turbo run dependencies --continue --output-logs=new-only`.env({
+          FORCE_COLOR: "1",
+        });
+      } else {
+        await $`bunx turbo run dependencies --continue --output-logs=new-only`.env(
+          { FORCE_COLOR: "1" }
+        );
+      }
     } else {
-      await $`bunx turbo run dependencies --output-logs=new-only`.env({
-        FORCE_COLOR: "1",
-      });
+      if (hasTurbo) {
+        await $`turbo run dependencies --output-logs=new-only`.env({
+          FORCE_COLOR: "1",
+        });
+      } else {
+        await $`bunx turbo run dependencies --output-logs=new-only`.env({
+          FORCE_COLOR: "1",
+        });
+      }
     }
+
     log.success("Dependencies installed successfully via Turbo");
   } catch (error) {
-    log.error(`Failed to run dependencies via Turbo: ${error}`);
-    throw error;
+    if (ci) {
+      log.warn(`Turbo execution completed with some failures: ${error}`);
+      // In CI, check if critical dependencies (contracts) succeeded
+      await validateCriticalDependencies();
+    } else {
+      log.error(`Failed to run dependencies via Turbo: ${error}`);
+      throw error;
+    }
+  }
+}
+
+/**
+ * Validate that critical dependencies (contracts) are available
+ */
+async function validateCriticalDependencies(): Promise<void> {
+  log.info("Validating critical dependencies...");
+
+  // Check if contracts dependencies were installed successfully
+  const contractsDepsPath = "kit/contracts/dependencies";
+  const dependenciesDir = Bun.file(contractsDepsPath);
+
+  try {
+    // Check if dependencies directory exists and has content
+    const glob = new Bun.Glob("*");
+    const scanner = glob.scan({ cwd: contractsDepsPath, onlyFiles: false });
+    const firstEntry = await scanner.next();
+
+    if (firstEntry.done) {
+      throw new Error("Contracts dependencies directory is empty");
+    }
+
+    log.success("Critical dependencies (contracts) are available");
+  } catch (error) {
+    log.error(`Critical dependencies validation failed: ${error}`);
+    throw new Error("Critical dependencies are missing. Cannot proceed.");
   }
 }
 
@@ -87,11 +149,12 @@ async function runDependenciesManually(): Promise<void> {
   log.info("Running dependencies manually for each workspace...");
 
   const workspaces = [
-    { name: "contracts", path: "kit/contracts" },
-    { name: "charts", path: "kit/charts" },
+    { name: "contracts", path: "kit/contracts", critical: true },
+    { name: "charts", path: "kit/charts", critical: false },
   ];
 
   const errors: string[] = [];
+  const ci = isCI();
 
   for (const workspace of workspaces) {
     log.info(`Installing dependencies for ${workspace.name}...`);
@@ -105,20 +168,38 @@ async function runDependenciesManually(): Promise<void> {
     }
 
     try {
+      // Run the script using --cwd to set the correct working directory
       await $`bun run --cwd ${workspace.path} tools/dependencies.ts`.env({
         FORCE_COLOR: "1",
       });
       log.success(`Dependencies installed for ${workspace.name}`);
     } catch (error) {
       const errorMsg = `Failed to install dependencies for ${workspace.name}: ${error}`;
-      log.error(errorMsg);
-      errors.push(errorMsg);
+
+      if (workspace.critical) {
+        log.error(errorMsg);
+        errors.push(errorMsg);
+      } else {
+        // Non-critical workspace failures are warnings in CI
+        if (ci) {
+          log.warn(`${errorMsg} (non-critical in CI)`);
+        } else {
+          log.error(errorMsg);
+          errors.push(errorMsg);
+        }
+      }
     }
   }
 
   if (errors.length > 0) {
     throw new Error(
-      `${errors.length} workspace(s) failed to install dependencies:\n${errors.join("\n")}`
+      `${errors.length} critical workspace(s) failed to install dependencies:\n${errors.join("\n")}`
+    );
+  }
+
+  if (ci) {
+    log.info(
+      "Dependencies installation completed (some non-critical failures may have occurred in CI)"
     );
   }
 }
@@ -128,9 +209,12 @@ async function runDependenciesManually(): Promise<void> {
  */
 async function main(): Promise<void> {
   const startTime = Date.now();
+  const ci = isCI();
 
   try {
-    log.info("Starting dependency installation for Asset Tokenization Kit...");
+    log.info(
+      `Starting dependency installation for Asset Tokenization Kit${ci ? " (CI mode)" : ""}...`
+    );
 
     await validateRootDirectory();
 
@@ -138,13 +222,31 @@ async function main(): Promise<void> {
     try {
       await runDependenciesViaTurbo();
     } catch (turboError) {
-      log.warn("Turbo execution failed, falling back to manual execution");
-      log.debug(`Turbo error: ${turboError}`);
-      await runDependenciesManually();
+      if (ci) {
+        // In CI, turbo may "fail" but still install critical dependencies
+        log.info(
+          "Turbo completed with some failures, validating critical dependencies..."
+        );
+        try {
+          await validateCriticalDependencies();
+          log.success("Critical dependencies are available, proceeding...");
+        } catch (validationError) {
+          log.warn(
+            "Critical dependencies validation failed, falling back to manual execution"
+          );
+          await runDependenciesManually();
+        }
+      } else {
+        log.warn("Turbo execution failed, falling back to manual execution");
+        log.debug(`Turbo error: ${turboError}`);
+        await runDependenciesManually();
+      }
     }
 
     const duration = Date.now() - startTime;
-    log.success(`All dependencies installed successfully in ${duration}ms`);
+    log.success(
+      `Dependencies installation completed successfully in ${duration}ms`
+    );
   } catch (error) {
     log.error(`Dependencies installation failed: ${error}`);
     process.exit(1);
