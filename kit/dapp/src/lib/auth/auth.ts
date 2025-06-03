@@ -4,6 +4,7 @@ import {
   sendDeleteAccountVerification,
   sendMagicLink,
 } from "@/lib/auth/emails";
+import { db } from "@/lib/db";
 import * as authSchema from "@/lib/db/schema-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -15,7 +16,6 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { getServerEnvironment } from "../config/environment";
 import { metadata } from "../config/metadata";
-import { db } from "../db";
 import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
 import { pincode } from "./plugins/pincode-plugin";
 import { secretCodes } from "./plugins/secret-codes-plugin";
@@ -88,7 +88,7 @@ export const auth = betterAuth({
       role: {
         type: "string",
         required: true,
-        default: "user",
+        defaultValue: "user",
         input: false,
       },
       currency: {
@@ -112,7 +112,7 @@ export const auth = betterAuth({
       pincodeEnabled: {
         type: "boolean",
         required: false,
-        default: false,
+        defaultValue: false,
         input: false,
       },
       pincodeVerificationId: {
@@ -136,7 +136,7 @@ export const auth = betterAuth({
       initialOnboardingFinished: {
         type: "boolean",
         required: false,
-        default: false,
+        defaultValue: false,
         input: false,
       },
     },
@@ -200,6 +200,10 @@ export const auth = betterAuth({
       maxAge: 10 * 60,
     },
   },
+  rateLimit: {
+    window: 10, // time window in seconds
+    max: 100, // max requests in the window
+  },
   plugins: [
     admin({
       ac: accessControl,
@@ -217,6 +221,11 @@ export const auth = betterAuth({
         enabled: true,
         timeWindow: 1000 * 60, // 1 minute
         maxRequests: 60, // 60 requests per minute
+      },
+      permissions: {
+        defaultPermissions: {
+          planets: ["read"],
+        },
       },
     }),
     passkey({

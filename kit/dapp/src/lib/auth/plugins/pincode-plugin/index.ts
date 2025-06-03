@@ -18,11 +18,11 @@ export const pincode = () => {
           method: "POST",
           body: z.object({
             pincode: z.string({
-              description: "The pincode for wallet verification",
+              message: "The pincode for wallet verification",
             }),
             password: z
               .string({
-                description:
+                message:
                   "User password (only required if the user has done the initial onboarding)",
               })
               .optional(),
@@ -91,7 +91,7 @@ export const pincode = () => {
           method: "POST",
           body: z.object({
             password: z.string({
-              description: "User password",
+              message: "User password",
             }),
           }),
           use: [sessionMiddleware],
@@ -146,10 +146,10 @@ export const pincode = () => {
           method: "POST",
           body: z.object({
             password: z.string({
-              description: "User password",
+              message: "User password",
             }),
             newPincode: z.string({
-              description: "New pincode",
+              message: "New pincode",
             }),
           }),
           use: [sessionMiddleware],

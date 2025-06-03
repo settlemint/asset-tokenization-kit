@@ -1,12 +1,8 @@
-import { AuthProvider } from "@/components/blocks/auth/auth-provider";
-import { ThemeProvider } from "@/components/blocks/theme/theme-provider";
-import { TransitionProvider } from "@/components/layout/transition-provider";
-import { PostHogProvider } from "@/components/PostHogProvider";
+import { Providers } from "@/components/providers/Providers";
 import { routing } from "@/i18n/routing";
-import { getServerEnvironment } from "@/lib/config/environment";
+import "@/lib/orpc/orpc.server";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
-import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { Figtree, Roboto_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
@@ -26,8 +22,6 @@ export const viewport: Viewport = {
 
 export { metadata } from "@/lib/config/metadata";
 
-const timeZone = "Europe/Brussels";
-
 const figTree = Figtree({
   subsets: ["latin"],
   display: "swap",
@@ -46,7 +40,6 @@ export default async function RootLayout({
   try {
     const locale = await getLocale();
     const direction = getLangDir(locale);
-    const env = getServerEnvironment();
 
     // Ensure that the incoming `locale` is valid
     if (!routing.locales.includes(locale)) {
@@ -65,26 +58,10 @@ export default async function RootLayout({
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       </head> */}
         <body className="min-h-screen antialiased">
-          <PostHogProvider>
-            <NextIntlClientProvider timeZone={timeZone}>
-              <ThemeProvider attribute="class" enableColorScheme enableSystem>
-                <TransitionProvider>
-                  <AuthProvider
-                    emailEnabled={!!env.RESEND_API_KEY}
-                    googleEnabled={
-                      !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET)
-                    }
-                    githubEnabled={
-                      !!(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET)
-                    }
-                  >
-                    {children}
-                  </AuthProvider>
-                </TransitionProvider>
-              </ThemeProvider>
-              <Toaster richColors />
-            </NextIntlClientProvider>
-          </PostHogProvider>
+          <Providers>
+            {children}
+            <Toaster richColors />
+          </Providers>
         </body>
       </html>
     );
