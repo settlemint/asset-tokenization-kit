@@ -62,8 +62,26 @@ export default async function PortfolioDashboard({
 
       <Await
         queryOptions={orpc.planet.list.queryOptions({ input: {} })}
-        error={<div>Error</div>}
-        fallback={<div>Loading...</div>}
+        error={
+          <div className="flex items-center justify-center p-8 text-center">
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-destructive">
+                Failed to load planets
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Please try refreshing the page or contact support if the problem persists.
+              </p>
+            </div>
+          </div>
+        }
+        fallback={
+          <div className="flex items-center justify-center p-8">
+            <div className="space-y-3 text-center">
+              <div className="inline-flex h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+              <p className="text-sm text-muted-foreground">Loading planets...</p>
+            </div>
+          </div>
+        }
       >
         <Planets />
       </Await>

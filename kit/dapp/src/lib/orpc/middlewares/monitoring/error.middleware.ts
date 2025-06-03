@@ -74,64 +74,62 @@ export const errorMiddleware = br.middleware(async ({ next }) => {
   try {
     return await next();
   } catch (error) {
-    // Handle ORPC errors (already properly formatted)
-    if (error instanceof ORPCError) {
-      console.error(" ERROR", "ORPC", error.status, error.message);
-      throw error;
-    }
-
-    // Handle Better Auth API errors
+    // Handle Better Auth API errors first
     if (error instanceof APIError) {
       console.error(" ERROR", "Auth", error.statusCode, error.message);
       throw betterAuthErrorToORPCError(error);
     }
 
-    // Handle authorization validation errors (403 Forbidden)
-    if (
-      error instanceof ORPCError &&
-      error.code === "FORBIDDEN" &&
-      error.cause instanceof ValidationError
-    ) {
-      throw new ORPCError("FORBIDDEN", {
-        status: 403,
-        cause: error.cause,
-      });
-    }
+    // Handle specific ORPC error cases before general ORPC errors
+    if (error instanceof ORPCError) {
+      // Handle authorization validation errors (403 Forbidden)
+      if (
+        error.code === "FORBIDDEN" &&
+        error.cause instanceof ValidationError
+      ) {
+        throw new ORPCError("FORBIDDEN", {
+          status: 403,
+          cause: error.cause,
+        });
+      }
 
-    // Handle input validation errors (422 Unprocessable Entity)
-    // Transform validation errors into structured field-level errors
-    if (
-      error instanceof ORPCError &&
-      error.code === "BAD_REQUEST" &&
-      error.cause instanceof ValidationError
-    ) {
-      // Convert ORPC validation issues to Zod format for consistent error structure
-      const zodError = new ZodError(error.cause.issues as ZodIssue[]);
+      // Handle input validation errors (422 Unprocessable Entity)
+      // Transform validation errors into structured field-level errors
+      if (
+        error.code === "BAD_REQUEST" &&
+        error.cause instanceof ValidationError
+      ) {
+        // Convert ORPC validation issues to Zod format for consistent error structure
+        const zodError = new ZodError(error.cause.issues as ZodIssue[]);
 
-      throw new ORPCError("INPUT_VALIDATION_FAILED", {
-        status: 422,
-        // Flatten the error structure for easier client consumption
-        data: zodError.flatten(),
-        cause: error.cause,
-      });
-    }
+        throw new ORPCError("INPUT_VALIDATION_FAILED", {
+          status: 422,
+          // Flatten the error structure for easier client consumption
+          data: zodError.flatten(),
+          cause: error.cause,
+        });
+      }
 
-    // Handle output validation errors (522 Custom Server Error)
-    // These indicate server-side data integrity issues
-    if (
-      error instanceof ORPCError &&
-      error.code === "INTERNAL_SERVER_ERROR" &&
-      error.cause instanceof ValidationError
-    ) {
-      // Convert validation issues to structured format
-      const zodError = new ZodError(error.cause.issues as ZodIssue[]);
+      // Handle output validation errors (522 Custom Server Error)
+      // These indicate server-side data integrity issues
+      if (
+        error.code === "INTERNAL_SERVER_ERROR" &&
+        error.cause instanceof ValidationError
+      ) {
+        // Convert validation issues to structured format
+        const zodError = new ZodError(error.cause.issues as ZodIssue[]);
 
-      throw new ORPCError("OUTPUT_VALIDATION_FAILED", {
-        status: 522,
-        // Include validation details for debugging (should be logged, not exposed to client)
-        data: zodError.flatten(),
-        cause: error.cause,
-      });
+        throw new ORPCError("OUTPUT_VALIDATION_FAILED", {
+          status: 522,
+          // Include validation details for debugging (should be logged, not exposed to client)
+          data: zodError.flatten(),
+          cause: error.cause,
+        });
+      }
+
+      // Handle other ORPC errors (already properly formatted)
+      console.error(" ERROR", "ORPC", error.status, error.message);
+      throw error;
     }
 
     // Re-throw unknown errors for global error handlers

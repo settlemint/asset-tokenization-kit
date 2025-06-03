@@ -81,11 +81,11 @@ export function permissionsMiddleware({
 
     // First, always check user role permissions if roles are required
     if (roles.length > 0) {
-      const user = context.auth?.user;
+      const { user } = context.auth || {};
       if (!user) {
         throw errors.UNAUTHORIZED();
       }
-      const role = user.role;
+      const { role } = user;
       if (!roles.includes(role)) {
         throw errors.FORBIDDEN({
           message: `User does not have the required permissions for resource '${resourceType}'. Required: [${roles.join(", ")}]`,
@@ -109,7 +109,8 @@ export function permissionsMiddleware({
       },
     });
 
-    if (result.valid) {
+    const { valid } = result;
+    if (valid) {
       // API key is valid and has required permissions, and user role check already passed
       return next();
     } else {

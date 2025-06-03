@@ -1,7 +1,6 @@
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
-import { cache } from "react";
 
 /**
  * Query cache configuration constants.
@@ -54,12 +53,11 @@ interface QueryError extends Error {
 }
 
 /**
- * Cached QueryClient factory function.
+ * QueryClient factory function.
  *
- * Creates a singleton QueryClient instance with optimized configuration
- * for the application's needs. The client is cached using React's cache
- * function to ensure the same instance is reused across the application,
- * preventing unnecessary re-initialization and maintaining query state.
+ * Creates a new QueryClient instance with optimized configuration
+ * for the application's needs. Each call creates a fresh instance
+ * to prevent data leakage between server-side requests.
  *
  * Configuration highlights:
  * - Smart retry logic that avoids retrying client errors (4xx)
@@ -69,7 +67,7 @@ interface QueryError extends Error {
  *
  * @returns Configured QueryClient instance
  */
-const getQueryClient = cache(() => {
+const getQueryClient = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -154,7 +152,7 @@ const getQueryClient = cache(() => {
   });
 
   return queryClient;
-});
+};
 
 /**
  * Creates and configures a new QueryClient instance with persistence support.

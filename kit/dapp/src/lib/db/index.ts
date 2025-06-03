@@ -24,4 +24,4 @@ const createDb = () =>
     },
   });
 
-export const db = globalForDb.client ?? createDb();
+export const db = globalForDb.client ?? (globalForDb.client = createDb());

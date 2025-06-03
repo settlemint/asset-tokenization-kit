@@ -243,7 +243,7 @@ export function QueryClientProvider({
     return () => {
       // Clear query cache in test environment to prevent test interference
       if (process.env.NODE_ENV === "test") {
-        queryClient.clear();
+        queryClient.getQueryCache().clear();
       }
     };
   }, [queryClient]);
