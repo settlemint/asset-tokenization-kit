@@ -1,7 +1,7 @@
-import { pc } from "@/lib/orpc/routes/procedures/public.contract";
+import { bc } from "@/lib/orpc/routes/procedures/base.contract";
 import { oo } from "@orpc/openapi";
 
-export const ac = pc.errors({
+export const ac = bc.errors({
   UNAUTHORIZED: oo.spec(
     {
       message: "Unauthorized",

@@ -1,5 +1,4 @@
-import type { Context } from "@/lib/orpc/routes/context/context";
-import { contract } from "@/lib/orpc/routes/contract";
-import { implement } from "@orpc/server";
+import { session } from "../../middlewares/auth/session.middleware";
+import { br } from "./base.router";
 
-export const pr = implement(contract).$context<Context>();
+export const pr = br.use(session);

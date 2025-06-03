@@ -1,6 +1,5 @@
 import { metadata } from "@/lib/config/metadata";
 import { siteConfig } from "@/lib/config/site";
-import { createContext } from "@/lib/orpc/routes/context/context";
 import { router } from "@/lib/orpc/routes/router";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
@@ -17,6 +16,17 @@ import pkgjson from "../../../../package.json";
 const handler = new OpenAPIHandler(router, {
   clientInterceptors: [
     onError((error) => {
+      if (
+        error instanceof ORPCError &&
+        error.code === "FORBIDDEN" &&
+        error.cause instanceof ValidationError
+      ) {
+        throw new ORPCError("FORBIDDEN", {
+          status: 403,
+          cause: error.cause,
+        });
+      }
+
       if (
         error instanceof ORPCError &&
         error.code === "BAD_REQUEST" &&
@@ -50,7 +60,7 @@ const handler = new OpenAPIHandler(router, {
     new CORSPlugin({
       allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH"],
       allowHeaders: ["Content-Type", "x-api-key"],
-      exposeHeaders: ["Content-Disposition"],
+      exposeHeaders: ["Content-Disposition", "X-Retry-After"],
       credentials: true,
       origin: (origin) => origin ?? "http://localhost:3000",
     }),
@@ -99,7 +109,9 @@ const handler = new OpenAPIHandler(router, {
 async function handleRequest(request: NextRequest) {
   const { response } = await handler.handle(request, {
     prefix: "/api",
-    context: await createContext(request),
+    context: {
+      headers: request.headers,
+    },
   });
 
   return response ?? new Response("Not found", { status: 404 });

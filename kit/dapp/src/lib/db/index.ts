@@ -7,14 +7,21 @@ import * as authSchema from "./schema-auth";
 import * as exchangeRatesSchema from "./schema-exchange-rates";
 import * as settingsSchema from "./schema-settings";
 
-export const db = drizzle(postgresPool, {
-  // logger: process.env.NODE_ENV === 'development',
-  schema: {
-    ...authSchema,
-    ...assetTokenizationSchema,
-    ...settingsSchema,
-    ...exchangeRatesSchema,
-    ...regulationConfigsSchema,
-    ...micaRegulationConfigsSchema,
-  },
-});
+const globalForDb = globalThis as unknown as {
+  client: ReturnType<typeof createDb> | undefined;
+};
+
+const createDb = () =>
+  drizzle(postgresPool, {
+    // logger: process.env.NODE_ENV === 'development',
+    schema: {
+      ...authSchema,
+      ...assetTokenizationSchema,
+      ...settingsSchema,
+      ...exchangeRatesSchema,
+      ...regulationConfigsSchema,
+      ...micaRegulationConfigsSchema,
+    },
+  });
+
+export const db = globalForDb.client ?? createDb();

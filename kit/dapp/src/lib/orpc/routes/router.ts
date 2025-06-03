@@ -1,5 +1,5 @@
-import { pr } from "./procedures/public.router";
+import { br } from "./procedures/base.router";
 
-export const router = pr.router({
-  planet: pr.planet.lazy(() => import("./planet/planet.router")),
+export const router = br.router({
+  planet: br.planet.lazy(() => import("./planet/planet.router")),
 });
