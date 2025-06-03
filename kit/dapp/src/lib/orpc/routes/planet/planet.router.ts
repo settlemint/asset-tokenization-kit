@@ -1,28 +1,24 @@
-import type { auth } from "@/lib/auth/auth";
-import { implement } from "@orpc/server";
-import { planetContract } from "./planet.contract";
+import { ar } from "@/lib/orpc/routes/procedures/authenticated.router";
 
-const os = implement(planetContract).$context<{
-  session: Awaited<ReturnType<typeof auth.api.getSession>>;
-}>();
-
-export const create = os.create.handler(async ({ input, context }) => {
+const create = ar.planet.create.handler(async ({ input, context }) => {
+  const user = context.auth.user;
   // your create code here
-  return { id: "xxx", name: "name" };
+  return { id: user.id, name: user.name };
 });
 
-export const find = os.find.handler(async ({ input }) => {
+const find = ar.planet.find.handler(async ({ input }) => {
   // your find code here
   return { id: "xxx", name: "name" };
 });
 
-export const list = os.list.handler(async ({ input }) => {
+const list = ar.planet.list.handler(async ({ input }) => {
   // your list code here
   return [{ id: "xx", name: "name" }];
 });
 
-export const planetRouter = os.router({
+// eslint-disable-next-line import/no-anonymous-default-export
+export default {
   list,
   find,
   create,
-});
+};

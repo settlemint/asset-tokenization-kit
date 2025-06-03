@@ -1,4 +1,4 @@
-import { contract } from "@/lib/orpc/routes/client";
+import { contract } from "@/lib/orpc/routes/contract";
 import { createORPCClient } from "@orpc/client";
 import type { ContractRouterClient } from "@orpc/contract";
 import type { JsonifiedClient } from "@orpc/openapi-client";

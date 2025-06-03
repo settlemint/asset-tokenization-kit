@@ -1,5 +1,7 @@
-import { auth } from "@/lib/auth/auth";
-import { router } from "@/lib/orpc/routes/server";
+import { metadata } from "@/lib/config/metadata";
+import { siteConfig } from "@/lib/config/site";
+import { createContext } from "@/lib/orpc/routes/context/context";
+import { router } from "@/lib/orpc/routes/router";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { CORSPlugin } from "@orpc/server/plugins";
@@ -7,7 +9,8 @@ import {
   experimental_ZodSmartCoercionPlugin as ZodSmartCoercionPlugin,
   experimental_ZodToJsonSchemaConverter as ZodToJsonSchemaConverter,
 } from "@orpc/zod/zod4";
-import { headers } from "next/headers";
+import { NextRequest } from "next/server";
+import pkgjson from "../../../../package.json";
 
 const handler = new OpenAPIHandler(router, {
   plugins: [
@@ -19,22 +22,47 @@ const handler = new OpenAPIHandler(router, {
       schemaConverters: [new ZodToJsonSchemaConverter()],
       specGenerateOptions: {
         info: {
-          title: "ORPC Playground",
-          version: "1.0.0",
+          title: metadata.title.default,
+          version: pkgjson.version,
+          description: metadata.description,
+          license: {
+            name: "FSL-1.1-MIT",
+            url: "https://github.com/settlemint/asset-tokenization-kit/blob/main/LICENSE",
+          },
+          contact: {
+            name: siteConfig.publisher,
+            url: siteConfig.url,
+            email: siteConfig.email,
+          },
+        },
+        externalDocs: {
+          description: "SettleMint Asset Tokenization Kit",
+          url: "https://console.settlemint.com/documentation/application-kits/asset-tokenization/introduction",
+        },
+        security: [
+          {
+            apiKey: [],
+          },
+        ],
+        components: {
+          securitySchemes: {
+            apiKey: {
+              type: "apiKey",
+              in: "header",
+              name: "x-api-key",
+              description: "API key",
+            },
+          },
         },
       },
     }),
   ],
 });
 
-async function handleRequest(request: Request) {
+async function handleRequest(request: NextRequest) {
   const { response } = await handler.handle(request, {
     prefix: "/api",
-    context: {
-      session: await auth.api.getSession({
-        headers: await headers(),
-      }),
-    },
+    context: await createContext(request),
   });
 
   return response ?? new Response("Not found", { status: 404 });
