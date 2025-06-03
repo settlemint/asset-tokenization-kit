@@ -1,0 +1,32 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "dependencies": {
+      "outputs": ["**/Chart.lock", "**/charts/**"],
+      "inputs": ["**/Chart.yaml"]
+    },
+    "compile": {
+      "outputs": ["dist/**"]
+    },
+    "package": {
+      "cache": false,
+      "dependsOn": ["package:push:harbor", "//#version"]
+    },
+    "package:harbor": {
+      "cache": false,
+      "dependsOn": ["dependencies"]
+    },
+    "package:pack": {
+      "cache": false,
+      "dependsOn": ["package:harbor"]
+    },
+    "package:push:ghcr": {
+      "cache": false,
+      "dependsOn": ["package:pack"]
+    },
+    "package:push:harbor": {
+      "cache": false,
+      "dependsOn": ["package:pack"]
+    }
+  }
+}

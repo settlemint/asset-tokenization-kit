@@ -12,20 +12,8 @@ import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
-import {
-  CreatePushAirdropForm,
-  type pushAirdropFormDefinition,
-} from "./create-forms/push-airdrop/form";
-import {
-  CreateStandardAirdropForm,
-  type standardAirdropFormDefinition,
-} from "./create-forms/standard-airdrop/form";
-import {
-  CreateVestingAirdropForm,
-  type vestingAirdropFormDefinition,
-} from "./create-forms/vesting-airdrop/form";
 import { AirdropTypeSelection } from "./steps/airdrop-type-selection";
-import { airdropForms } from "./types";
+import { airdropForms, type AirdropFormDefinition } from "./types";
 import { getAirdropDescription, getAirdropTitle } from "./utils";
 
 interface AirdropDesignerDialogProps {
@@ -43,12 +31,11 @@ export function AirdropDesignerDialog({
   const [selectedAirdropType, setSelectedAirdropType] =
     useState<AirdropType | null>(null);
   const [currentStepId, setCurrentStepId] = useState<string>("type");
-  const [airdropForm, setAirdropForm] = useState<
-    | typeof vestingAirdropFormDefinition
-    | typeof standardAirdropFormDefinition
-    | typeof pushAirdropFormDefinition
-    | null
-  >(null);
+  const [airdropForm, setAirdropForm] = useState<AirdropFormDefinition | null>(
+    null
+  );
+  const [formComponent, setFormComponent] =
+    useState<React.ComponentType<any> | null>(null);
 
   const allSteps: Step[] = [
     {
@@ -70,22 +57,67 @@ export function AirdropDesignerDialog({
       setSelectedAirdropType(null);
       setCurrentStepId("type");
       setAirdropForm(null);
+      setFormComponent(null);
     }
   }, [open]);
 
   useEffect(() => {
     if (!selectedAirdropType) {
       setAirdropForm(null);
+      setFormComponent(null);
       return;
     }
 
-    setAirdropForm(airdropForms[selectedAirdropType]);
-    if (
-      airdropForms[selectedAirdropType].steps.length > 0 &&
-      currentStepId === "type"
-    ) {
-      setCurrentStepId(airdropForms[selectedAirdropType].steps[0].id);
-    }
+    // Load the form definition
+    airdropForms[selectedAirdropType]()
+      .then((module) => {
+        setAirdropForm(module.default);
+
+        // Auto-navigate to first step of the loaded form
+        if (module.default.steps.length > 0 && currentStepId === "type") {
+          setCurrentStepId(module.default.steps[0].id);
+        }
+
+        // Load the appropriate form component based on airdrop type
+        const loadFormComponent = async () => {
+          try {
+            switch (selectedAirdropType) {
+              case "standard":
+                const standardModule = await import(
+                  "./create-forms/standard-airdrop/form"
+                );
+                setFormComponent(
+                  () => standardModule.CreateStandardAirdropForm
+                );
+                break;
+              case "vesting":
+                const vestingModule = await import(
+                  "./create-forms/vesting-airdrop/form"
+                );
+                setFormComponent(() => vestingModule.CreateVestingAirdropForm);
+                break;
+              case "push":
+                const pushModule = await import(
+                  "./create-forms/push-airdrop/form"
+                );
+                setFormComponent(() => pushModule.CreatePushAirdropForm);
+                break;
+              default:
+                exhaustiveGuard(selectedAirdropType);
+            }
+          } catch (error) {
+            console.error(
+              `Failed to load ${selectedAirdropType} airdrop form:`,
+              error
+            );
+          }
+        };
+
+        loadFormComponent();
+      })
+      .catch((error) => {
+        console.error("Failed to load airdrop form:", error);
+      });
   }, [selectedAirdropType, currentStepId]);
 
   const handleAirdropTypeSelect = (type: AirdropType) => {
@@ -125,7 +157,7 @@ export function AirdropDesignerDialog({
   const currentStepIndex = stepsOrder.indexOf(currentStepId);
 
   const renderStepContent = () => {
-    if (!selectedAirdropType) {
+    if (currentStepId === "type") {
       return (
         <StepContent>
           <AirdropTypeSelection
@@ -136,28 +168,18 @@ export function AirdropDesignerDialog({
       );
     }
 
-    const getFormComponent = () => {
-      switch (selectedAirdropType) {
-        case "standard":
-          return CreateStandardAirdropForm;
-        case "vesting":
-          return CreateVestingAirdropForm;
-        case "push":
-          return CreatePushAirdropForm;
-        default:
-          exhaustiveGuard(selectedAirdropType);
-      }
-    };
-    const FormComponent = getFormComponent();
-    return (
-      <FormComponent
-        userDetails={currentUser}
-        currentStepId={currentStepId}
-        onNextStep={handleNextStep}
-        onPrevStep={handlePreviousStep}
-        onOpenChange={onOpenChange}
-      />
-    );
+    if (formComponent) {
+      const FormComponent = formComponent;
+      return (
+        <FormComponent
+          userDetails={currentUser}
+          currentStepId={currentStepId}
+          onNextStep={handleNextStep}
+          onPrevStep={handlePreviousStep}
+          onOpenChange={onOpenChange}
+        />
+      );
+    }
   };
 
   return (

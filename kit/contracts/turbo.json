@@ -1,0 +1,37 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "dependencies": {
+      "outputs": ["dependencies/**", "soldeer.lock"],
+      "inputs": ["foundry.toml"]
+    },
+    "compile": {
+      "dependsOn": ["compile:forge", "compile:hardhat"]
+    },
+    "compile:forge": {
+      "outputs": ["out/**", "cache_forge/**"]
+    },
+    "compile:hardhat": {
+      "outputs": ["artifacts/**", "cache/**"]
+    },
+    "codegen": {
+      "dependsOn": ["codegen:types", "codegen:genesis"]
+    },
+    "codegen:types": {
+      "dependsOn": ["compile"],
+      "outputs": ["scripts/hardhat/abi/**"]
+    },
+    "codegen:genesis": {
+      "outputs": ["tools/genesis-output.json"]
+    },
+    "format": {
+      "dependsOn": ["format:forge", "format:prettier"]
+    },
+    "format:forge": {},
+    "format:prettier": {},
+    "publish": {
+      "cache": false,
+      "dependsOn": ["package", "codegen"]
+    }
+  }
+}

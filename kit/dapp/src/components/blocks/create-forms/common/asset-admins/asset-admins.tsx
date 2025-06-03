@@ -1,6 +1,5 @@
 "use client";
 
-import type { AssetFormStep } from "@/components/blocks/asset-designer/types";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
@@ -17,8 +16,8 @@ interface AssetAdminsProps {
 }
 
 export function AssetAdmins({ userDetails }: AssetAdminsProps) {
-  const t = useTranslations("private.assets.create.form.steps.asset-admins");
-  const commonT = useTranslations("private.assets.details.forms.account");
+  const t = useTranslations("private.assets");
+
   const form = useFormContext();
   const [showUserSelector, setShowUserSelector] = useState(false);
   const [isManualEntry, setIsManualEntry] = useState(false);
@@ -101,15 +100,17 @@ export function AssetAdmins({ userDetails }: AssetAdminsProps) {
     <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
-          <h3 className="text-lg font-medium">{t("title")}</h3>
+          <h3 className="text-lg font-medium">
+            {t("create.form.steps.asset-admins.title")}
+          </h3>
           <p className="text-sm text-muted-foreground mt-2">
-            {t("description")}
+            {t("create.form.steps.asset-admins.description")}
           </p>
         </div>
 
         <FormStep
-          title={t("asset-admins-title")}
-          description={t("asset-admins-description")}
+          title={t("create.form.steps.asset-admins.title")}
+          description={t("create.form.steps.asset-admins.description")}
           className="w-full"
           contentClassName="w-full"
         >
@@ -128,13 +129,17 @@ export function AssetAdmins({ userDetails }: AssetAdminsProps) {
                   <FormInput
                     control={form.control}
                     name="selectedWallet"
-                    placeholder={commonT("enter-wallet-address-placeholder")}
+                    placeholder={t(
+                      "details.forms.account.enter-wallet-address-placeholder"
+                    )}
                   />
                 ) : (
                   <FormUsers
                     control={form.control}
                     name="selectedWallet"
-                    placeholder={t("select-user-placeholder")}
+                    placeholder={t(
+                      "create.form.steps.asset-admins.select-user-placeholder"
+                    )}
                   />
                 )}
                 <div className="flex justify-end">
@@ -144,8 +149,8 @@ export function AssetAdmins({ userDetails }: AssetAdminsProps) {
                     className="text-muted-foreground text-xs transition-colors hover:text-foreground"
                   >
                     {isManualEntry
-                      ? commonT("search-user-instead")
-                      : commonT("enter-user-address-manually")}
+                      ? t("details.forms.account.search-user-instead")
+                      : t("details.forms.account.enter-user-address-manually")}
                   </button>
                 </div>
               </div>
@@ -157,12 +162,9 @@ export function AssetAdmins({ userDetails }: AssetAdminsProps) {
   );
 }
 
-// Export step definition for the asset designer
-export const stepDefinition: AssetFormStep & {
-  component: typeof AssetAdmins;
-} = {
+export const stepDefinition = {
   id: "admins",
   title: "form.steps.asset-admins.title",
   description: "form.steps.asset-admins.description",
   component: AssetAdmins,
-};
+} as const;

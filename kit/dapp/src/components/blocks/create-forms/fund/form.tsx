@@ -26,12 +26,16 @@
 import { Form } from "@/components/blocks/form/form";
 import { useFormStepSync } from "@/lib/hooks/use-form-step-sync";
 import { createFund } from "@/lib/mutations/fund/create/create-action";
-import { CreateFundSchema } from "@/lib/mutations/fund/create/create-schema";
+import {
+  CreateFundSchema,
+  type CreateFundInput,
+} from "@/lib/mutations/fund/create/create-schema";
 import { isAddressAvailable } from "@/lib/queries/fund-factory/fund-factory-address-available";
 import { getPredictedAddress } from "@/lib/queries/fund-factory/fund-factory-predict-address";
 import type { User } from "@/lib/queries/user/user-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
+import type { UseFormReturn } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";
 import { stepDefinition as adminsStep } from "../common/asset-admins/asset-admins";
 import { stepDefinition as summaryStep } from "../common/summary/summary";
@@ -70,13 +74,17 @@ export function CreateFundForm({
     <SummaryComponent
       key="summary"
       configurationCard={<FundConfigurationCard />}
-      predictAddress={getPredictedAddress}
-      isAddressAvailable={isAddressAvailable}
+      isAddressAvailable={async (form: UseFormReturn<CreateFundInput>) => {
+        const values = form.getValues();
+        const predictedAddress = await getPredictedAddress(values);
+        const isAvailable = await isAddressAvailable(predictedAddress);
+        return isAvailable ? predictedAddress : false;
+      }}
     />,
   ];
 
   // Define step order and mapping
-  const stepIdToIndex = {
+  const stepIdToIndex: Record<(typeof fundSteps)[number]["id"], number> = {
     details: 0,
     configuration: 1,
     admins: 2,
@@ -122,6 +130,9 @@ export function CreateFundForm({
         loading: t("toasts.fund.submitting"),
         success: t("toasts.fund.success"),
       }}
+      currentStep={
+        stepIdToIndex[currentStepId as keyof typeof stepIdToIndex] ?? 0
+      }
       onStepChange={onStepChange}
       onAnyFieldChange={onAnyFieldChange}
       onOpenChange={onOpenChange}
@@ -139,8 +150,4 @@ const fundSteps = [basicsStep, configurationStep, adminsStep, summaryStep];
 // Export form definition for the asset designer
 export const fundFormDefinition: AssetFormDefinition = {
   steps: fundSteps,
-  getStepComponent: (stepId: string) => {
-    const step = fundSteps.find((s) => s.id === stepId);
-    return step?.component || null;
-  },
 };

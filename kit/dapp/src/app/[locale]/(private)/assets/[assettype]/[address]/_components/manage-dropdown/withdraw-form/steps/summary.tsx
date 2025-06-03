@@ -30,13 +30,25 @@ export function Summary({ bondDetails }: SummaryProps) {
       title={t("title.withdraw")}
       description={t("description.withdraw")}
     >
-     <FormSummaryDetailItem
+      <FormSummaryDetailItem
         label={t("target-label")}
-        value={values.targetAddress ? <EvmAddress address={values.targetAddress} /> : "-"}
+        value={
+          values.targetAddress ? (
+            <EvmAddress address={values.targetAddress} />
+          ) : (
+            "-"
+          )
+        }
       />
       <FormSummaryDetailItem
         label={t("asset-label")}
-        value={values.underlyingAssetAddress ? <EvmAddress address={values.underlyingAssetAddress} /> : "-"}
+        value={
+          values.underlyingAssetAddress ? (
+            <EvmAddress address={values.underlyingAssetAddress} />
+          ) : (
+            "-"
+          )
+        }
       />
       <FormSummaryDetailItem
         label={t("account-label.recipient")}
@@ -44,7 +56,11 @@ export function Summary({ bondDetails }: SummaryProps) {
       />
       <FormSummaryDetailItem
         label={t("amount-label")}
-        value={formatNumber(values.amount ?? 0, { locale, decimals, token: tokenSymbol })}
+        value={formatNumber(values.amount ?? 0, {
+          locale,
+          decimals,
+          token: tokenSymbol,
+        })}
       />
     </FormStep>
   );

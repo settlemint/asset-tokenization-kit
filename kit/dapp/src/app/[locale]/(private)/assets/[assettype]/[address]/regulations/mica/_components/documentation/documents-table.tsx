@@ -9,18 +9,20 @@ import { DocumentsTableColumns } from "./documents-table-columns";
 interface DocumentsTableProps {
   documents: MicaDocument[];
   regulationId?: string;
+  canEdit: boolean;
 }
 
 export function DocumentsTable({
   documents,
   regulationId = "",
+  canEdit,
 }: DocumentsTableProps) {
   const t = useTranslations("regulations.mica.documents");
 
   return (
     <div className="space-y-4">
       <DataTable
-        columns={() => DocumentsTableColumns(regulationId)}
+        columns={() => DocumentsTableColumns(regulationId, canEdit)}
         data={documents}
         name="documents"
         initialSorting={[{ id: "uploadDate", desc: true }]}

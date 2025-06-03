@@ -1,6 +1,5 @@
 "use client";
 
-import type { AssetFormStep } from "@/components/blocks/asset-designer/types";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
@@ -34,11 +33,9 @@ export function Configuration() {
     <StepContent>
       <div className="space-y-6">
         <div className="mb-6">
-          <h3 className="text-lg font-medium">
-            {t("configuration.deposits.title")}
-          </h3>
+          <h3 className="text-lg font-medium">{t(stepDefinition.title)}</h3>
           <p className="text-sm text-muted-foreground mt-2">
-            {t("configuration.deposits.description")}
+            {t(stepDefinition.description)}
           </p>
         </div>
 
@@ -116,11 +113,9 @@ Configuration.validatedFields = [
 ] satisfies (keyof CreateDepositInput)[];
 
 // Export step definition for the asset designer
-export const stepDefinition: AssetFormStep & {
-  component: typeof Configuration;
-} = {
+export const stepDefinition = {
   id: "configuration",
   title: "configuration.deposits.title",
   description: "configuration.deposits.description",
   component: Configuration,
-};
+} as const;

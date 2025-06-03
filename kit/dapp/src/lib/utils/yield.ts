@@ -9,7 +9,8 @@ export const IntervalPeriod = {
   Annually: "annually",
 } as const;
 
-export type IntervalPeriod = typeof IntervalPeriod[keyof typeof IntervalPeriod];
+export type IntervalPeriod =
+  (typeof IntervalPeriod)[keyof typeof IntervalPeriod];
 
 type IntervalTranslationKey = `interval.options.${IntervalPeriod}`;
 

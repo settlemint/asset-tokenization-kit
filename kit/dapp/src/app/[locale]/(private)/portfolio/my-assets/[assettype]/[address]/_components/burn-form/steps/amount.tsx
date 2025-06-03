@@ -16,12 +16,12 @@ export function Amount({ max, decimals, symbol }: AmountProps) {
   const t = useTranslations("private.assets.details.forms.amount");
   const locale = useLocale();
 
-    const hasNoBalance = max === 0;
-    const maxDescription = hasNoBalance
-      ? t("max-limit.burn-no-balance")
-      : max
-        ? t("max-limit.burn", { limit: formatNumber(max, { locale }) })
-        : undefined;
+  const hasNoBalance = max === 0;
+  const maxDescription = hasNoBalance
+    ? t("max-limit.burn-no-balance")
+    : max
+      ? t("max-limit.burn", { limit: formatNumber(max, { locale }) })
+      : undefined;
 
   return (
     <FormStep title={t("title")} description={t("description.burn")}>

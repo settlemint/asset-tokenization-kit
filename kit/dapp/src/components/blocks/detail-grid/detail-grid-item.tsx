@@ -20,9 +20,14 @@ interface DetailGridItemProps extends PropsWithChildren {
   className?: string;
 }
 
-export function DetailGridItem({ label, children, info, className }: DetailGridItemProps) {
+export function DetailGridItem({
+  label,
+  children,
+  info,
+  className,
+}: DetailGridItemProps) {
   const t = useTranslations("components.detail-grid");
-  const contentIsString = typeof children === 'string';
+  const contentIsString = typeof children === "string";
 
   return (
     <div className={cn("space-y-1", className)}>

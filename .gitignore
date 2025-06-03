@@ -45,3 +45,8 @@ kit/charts/**/*.tgz
 kit/charts/atk/charts/portal/abis/**
 # SpecStory explanation file
 .specstory/.what-is-this.md
+.claude/settings.local.json
+kit/subgraph/subgraph.yaml.backup
+kit/subgraph/src/erc165/utils/interfaceids.ts
+kit/contracts/contracts/temp_interface_calc.sol
+kit/charts/atk/charts/besu-network/charts/besu-genesis/files/genesis-output.json

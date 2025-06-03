@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import type { Variants } from 'motion/react';
-import { motion, useAnimation } from 'motion/react';
-import type { HTMLAttributes } from 'react';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
-import { cn } from '@/lib/utils';
+import type { Variants } from "motion/react";
+import { motion, useAnimation } from "motion/react";
+import type { HTMLAttributes } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 export interface HandCoinsIconHandle {
   startAnimation: () => void;
@@ -21,7 +21,7 @@ const circleVariants: Variants = {
     opacity: 1,
     transition: {
       opacity: { duration: 0.2 },
-      type: 'spring',
+      type: "spring",
       stiffness: 150,
       damping: 15,
       bounce: 0.8,
@@ -32,7 +32,7 @@ const circleVariants: Variants = {
     translateY: [-20, 0],
     transition: {
       opacity: { duration: 0.2 },
-      type: 'spring',
+      type: "spring",
       stiffness: 150,
       damping: 15,
       bounce: 0.8,
@@ -47,7 +47,7 @@ const secondCircleVariants: Variants = {
     transition: {
       opacity: { duration: 0.2 },
       delay: 0.15,
-      type: 'spring',
+      type: "spring",
       stiffness: 150,
       damping: 15,
       bounce: 0.8,
@@ -59,7 +59,7 @@ const secondCircleVariants: Variants = {
     transition: {
       opacity: { duration: 0.2 },
       delay: 0.15,
-      type: 'spring',
+      type: "spring",
       stiffness: 150,
       damping: 15,
       bounce: 0.8,
@@ -76,15 +76,15 @@ const HandCoinsIcon = forwardRef<HandCoinsIconHandle, HandCoinsIconProps>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start('animate'),
-        stopAnimation: () => controls.start('normal'),
+        startAnimation: () => controls.start("animate"),
+        stopAnimation: () => controls.start("normal"),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('animate');
+          controls.start("animate");
         } else {
           onMouseEnter?.(e);
         }
@@ -95,7 +95,7 @@ const HandCoinsIcon = forwardRef<HandCoinsIconHandle, HandCoinsIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('normal');
+          controls.start("normal");
         } else {
           onMouseLeave?.(e);
         }
@@ -144,6 +144,6 @@ const HandCoinsIcon = forwardRef<HandCoinsIconHandle, HandCoinsIconProps>(
   }
 );
 
-HandCoinsIcon.displayName = 'HandCoinsIcon';
+HandCoinsIcon.displayName = "HandCoinsIcon";
 
 export { HandCoinsIcon };

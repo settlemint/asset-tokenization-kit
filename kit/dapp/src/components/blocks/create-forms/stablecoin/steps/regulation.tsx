@@ -1,21 +1,18 @@
 "use client";
 
 import { DocumentUploadDialog } from "@/components/blocks/asset-designer/components/document-upload-dialog";
-import type {
-  AssetFormStep,
-  UploadedDocument,
-} from "@/components/blocks/asset-designer/types";
+import type { UploadedDocument } from "@/components/blocks/asset-designer/types";
 import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { deleteFile } from "@/lib/actions/delete-file";
 import { uploadDocument } from "@/lib/actions/upload-document";
+import { useFeatureEnabled } from "@/lib/hooks/use-feature-enabled";
 import { cn } from "@/lib/utils";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { Check, Info, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 
@@ -435,19 +432,14 @@ export function AssetRegulationStep({
   onBack,
   onNext,
 }: AssetRegulationStepProps) {
-  const t = useTranslations("private.assets.create.form");
+  const t = useTranslations("private.assets.create");
   const [selectedRegion, setSelectedRegion] = useState<Region | null>("EU"); // Default to EU for demo
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [currentRegulationId, setCurrentRegulationId] = useState<string>("");
   const [uploadedDocuments, setUploadedDocuments] = useState<{
     [regulationId: string]: UploadedDocument[];
   }>({});
-  const micaFlagFromPostHog = useFeatureFlagEnabled("mica");
-  // Always enable MiCA in development mode, regardless of PostHog configuration
-  const isMicaEnabled =
-    process.env.NODE_ENV === "development" || process.env.NODE_ENV === undefined
-      ? true
-      : !!micaFlagFromPostHog;
+  const isMicaEnabled = useFeatureEnabled("mica");
 
   // Initialize selectedRegulations if not already set
   useEffect(() => {
@@ -594,10 +586,11 @@ export function AssetRegulationStep({
     <StepContent>
       <div className="space-y-8 pb-4">
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold tracking-tight">Regulation</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">
+            {t(stepDefinition.title)}
+          </h2>
           <p className="text-muted-foreground">
-            Select regions and configure the regulations your asset needs to
-            adhere to.
+            {t(stepDefinition.description)}
           </p>
         </div>
         <div>
@@ -637,11 +630,9 @@ export function AssetRegulationStep({
 }
 
 // Export step definition for the asset designer
-export const stepDefinition: AssetFormStep & {
-  component: typeof AssetRegulationStep;
-} = {
+export const stepDefinition = {
   id: "regulation",
   title: "regulation.title",
   description: "regulation.description",
   component: AssetRegulationStep,
-};
+} as const;

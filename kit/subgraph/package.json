@@ -8,24 +8,20 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "codegen:graph": "settlemint scs subgraph codegen",
-    "build": "graph build --ipfs=https://ipfs.console.settlemint.com subgraph.yaml | tee subgraph-output.txt",
-    "deploy:local": "bash graph-deploy.sh --local",
-    "deploy:remote": "bash graph-deploy.sh --remote",
+    "codegen": "settlemint scs subgraph codegen",
+    "codegen:interfaceid": "bun run tools/interfaceid.ts",
     "format": "prettier --write .",
-    "subgraph:deploy": "settlemint scs subgraph deploy",
-    "lint": "eslint src/ --ext .ts"
+    "build": "settlemint scs subgraph build",
+    "publish": "bun run tools/graph-deploy.ts --local",
+    "publish:remote": "bun run tools/graph-deploy.ts --remote"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",
-    "@graphprotocol/graph-ts": "0.38.1",
-    "@typescript-eslint/parser": "8.33.0",
-    "contracts": "workspace:*",
-    "eslint": "9.27.0",
-    "eslint-plugin-import": "2.31.0"
+    "@graphprotocol/graph-ts": "0.38.1"
   },
   "devDependencies": {
-    "matchstick-as": "0.6.0"
+    "matchstick-as": "0.6.0",
+    "contracts": "workspace:*"
   },
   "peerDependencies": {}
 }
