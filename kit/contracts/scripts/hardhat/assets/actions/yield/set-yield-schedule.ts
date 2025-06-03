@@ -48,6 +48,6 @@ export const setYieldSchedule = async (
   await waitForSuccess(setYieldScheduleTransactionHash);
 
   console.log(
-    `[Set yield schedule] ${asset.symbol} yield schedule set for ${startTime.toISOString()} to ${endTime.toISOString()} with rate ${rate}% and interval ${interval} seconds`
+    `[Set yield schedule] ${asset.symbol} yield schedule set for ${startTime.toISOString()} to ${endTime.toISOString()} with rate ${rate}% and interval ${interval} seconds (schedule address ${schedule})`
   );
 };

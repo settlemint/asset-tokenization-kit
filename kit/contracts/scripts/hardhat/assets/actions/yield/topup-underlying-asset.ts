@@ -2,9 +2,11 @@ import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { waitForEvent } from "../../../utils/wait-for-event";
+import { approve } from "../approve";
 
 export const topupUnderlyingAsset = async (
   asset: Asset<any>,
+  underlyingAsset: Asset<any>,
   amount: bigint
 ) => {
   const tokenContract = owner.getContractInstance({
@@ -13,16 +15,17 @@ export const topupUnderlyingAsset = async (
   });
 
   const scheduleAddress = await tokenContract.read.yieldSchedule();
+  await approve(underlyingAsset, scheduleAddress, amount);
+
   const scheduleContract = owner.getContractInstance({
     address: scheduleAddress,
     abi: SMARTContracts.ismartFixedYieldSchedule,
   });
 
-  const transactionHash = await scheduleContract.write.topUpUnderlyingAsset([
-    amount,
-  ]);
+  const topUpTransactionHash =
+    await scheduleContract.write.topUpUnderlyingAsset([amount]);
   await waitForEvent({
-    transactionHash,
+    transactionHash: topUpTransactionHash,
     contract: scheduleContract,
     eventName: "UnderlyingAssetTopUp",
   });

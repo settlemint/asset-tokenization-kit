@@ -4,6 +4,7 @@ import { smartProtocolDeployer } from "../services/deployer";
 
 import { SMARTTopic } from "../constants/topics";
 import { investorA, investorB } from "../entities/actors/investors";
+import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burn";
@@ -56,10 +57,12 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   await setupAsset(bond);
 
+  await mint(bond, owner, 1000n);
   await mint(bond, investorA, 10n);
   await transfer(bond, investorA, investorB, 5n);
   await burn(bond, investorB, 2n);
 
+  // Yield schedule
   await setYieldSchedule(
     bond,
     new Date(Date.now() + 1_000), // 1 second from now
@@ -67,13 +70,14 @@ export const createBond = async (depositToken: Asset<any>) => {
     500, // 5%
     5 // 5 seconds
   );
-  await topupUnderlyingAsset(bond, 10n);
-  await withdrawnUnderlyingAsset(bond, investorA.address, 5n);
+
+  await topupUnderlyingAsset(bond, depositToken, 100n);
   // Wait for the first period to close so the yield can be claimed
   await new Promise((resolve) => setTimeout(resolve, 6_000));
   await claimYield(bond);
   await new Promise((resolve) => setTimeout(resolve, 5_000));
   await claimYield(bond);
+  await withdrawnUnderlyingAsset(bond, investorA.address, 5n);
 
   // TODO: execute all other functions of the bond
 
