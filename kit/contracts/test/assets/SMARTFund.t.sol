@@ -16,7 +16,7 @@ import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
 import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
 import { ISMART } from "../../contracts/interface/ISMART.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { TokenPaused } from "../../contracts/extensions/pausable/SMARTPausableErrors.sol";
+import { ISMARTPausable } from "../../contracts/extensions/pausable/ISMARTPausable.sol";
 
 contract SMARTFundTest is AbstractSMARTAssetTest {
     ISMARTFundFactory public fundFactory;
@@ -164,7 +164,7 @@ contract SMARTFundTest is AbstractSMARTAssetTest {
         assertTrue(fund.paused());
 
         // Try to transfer while paused - should revert with EnforcedPause error
-        vm.expectRevert(abi.encodeWithSelector(TokenPaused.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTPausable.TokenPaused.selector));
         fund.transfer(investor1, INVESTMENT_AMOUNT);
 
         // Unpause

@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 import { ISMARTCapped } from "../ISMARTCapped.sol";
-import { SMARTInvalidCap, SMARTExceededCap } from "../SMARTCappedErrors.sol";
 
 /// @title Internal Logic for SMART Capped Token Extension
 /// @notice This abstract contract provides the core, shared logic and storage for implementing
@@ -68,14 +67,14 @@ abstract contract _SMARTCappedLogic is _SMARTExtension, ISMARTCapped {
     ///      Solidity versions ^0.8.0 automatically check for arithmetic overflows, so `currentTotalSupply +
     /// amountToMint_`
     ///      is safe from overflow issues that would wrap around.
-    ///      If `newTotalSupply` is greater than the `cap()`, it reverts with `SMARTExceededCap`.
+    ///      If `newTotalSupply` is greater than the `cap()`, it reverts with `ExceededCap`.
     /// @param amountToMint_ The amount of tokens intended to be minted.
     function __capped_beforeMintLogic(uint256 amountToMint_) internal view {
         uint256 currentTotalSupply = __capped_totalSupply();
         uint256 newTotalSupply = currentTotalSupply + amountToMint_;
 
         if (newTotalSupply > cap()) {
-            revert SMARTExceededCap(newTotalSupply, cap());
+            revert ExceededCap(newTotalSupply, cap());
         }
     }
 }

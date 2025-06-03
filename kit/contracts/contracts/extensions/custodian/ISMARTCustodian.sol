@@ -10,6 +10,27 @@ pragma solidity ^0.8.28;
 ///      them. Other contracts can then be written to implement this interface, guaranteeing they provide
 ///      these functions. This promotes interoperability and standardized interactions.
 interface ISMARTCustodian {
+    /// @notice Error indicating that the amount requested to be frozen exceeds the user's available (unfrozen) balance.
+    /// @param available The available, unfrozen balance of the user.
+    /// @param requested The amount of tokens requested to be frozen.
+    error FreezeAmountExceedsAvailableBalance(uint256 available, uint256 requested);
+
+    /// @notice Error indicating that an attempt to unfreeze or use frozen tokens failed because the
+    ///         amount requested exceeds the currently frozen token balance for the address.
+    /// @param frozenBalance The current amount of tokens specifically frozen for the address.
+    /// @param requested The amount requested to be unfrozen or used from the frozen portion.
+    error InsufficientFrozenTokens(uint256 frozenBalance, uint256 requested);
+
+    /// @notice Error indicating that an operation (e.g., mint, transfer) cannot proceed because the recipient address
+    /// is
+    /// frozen.
+    error RecipientAddressFrozen();
+
+    /// @notice Error indicating that an operation (e.g., transfer, burn, redeem) cannot proceed because the sender
+    /// address
+    /// is frozen.
+    error SenderAddressFrozen();
+
     /// @notice Emitted when an address's full frozen status (i.e., the entire address is frozen or unfrozen)
     ///         is changed by an authorized custodian.
     /// @param sender The address (e.g., custodian, admin) that initiated the freeze/unfreeze operation.

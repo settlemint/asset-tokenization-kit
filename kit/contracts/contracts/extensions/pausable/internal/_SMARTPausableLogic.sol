@@ -3,8 +3,7 @@ pragma solidity ^0.8.28;
 
 // Common base extension for _smartSender() and _registerInterface()
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
-// Custom errors for pausable logic
-import { TokenPaused, ExpectedPause } from "../SMARTPausableErrors.sol";
+
 // Interface for ERC165 registration and type compatibility
 import { ISMARTPausable } from "../ISMARTPausable.sol";
 
