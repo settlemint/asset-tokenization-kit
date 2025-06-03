@@ -1,6 +1,6 @@
 import "server-only";
 
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { hasuraClient } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
@@ -10,7 +10,7 @@ import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
-import { OffchainAirdropFragment } from "../airdrop/airdrop-fragment";
+import { OffchainAirdropDistributionDetail } from "../airdrop/airdrop-distribution-detail";
 import { OffChainAirdropSchema } from "../airdrop/airdrop-schema";
 import { StandardAirdropFragment } from "./standard-airdrop-fragment";
 import {
@@ -30,20 +30,6 @@ const StandardAirdropDetail = theGraphGraphqlKit(
   }
 `,
   [StandardAirdropFragment]
-);
-
-/**
- * GraphQL query to fetch off-chain airdrop distribution details from Hasura
- */
-const OffchainStandardAirdropDetail = hasuraGraphql(
-  `
-  query OffchainStandardAirdropDetail($id: String!) {
-    airdrop_distribution(where: {airdrop_id: {_eq: $id}}) {
-      ...OffchainAirdropFragment
-    }
-  }
-`,
-  [OffchainAirdropFragment]
 );
 
 /**
@@ -88,12 +74,12 @@ export const getStandardAirdropDetail = withTracing(
         })(),
         (async () => {
           const response = await hasuraClient.request(
-            OffchainStandardAirdropDetail,
+            OffchainAirdropDistributionDetail,
             {
               id: getAddress(address),
             },
             {
-              "X-GraphQL-Operation-Name": "OffchainStandardAirdropDetail",
+              "X-GraphQL-Operation-Name": "OffchainAirdropDistributionDetail",
               "X-GraphQL-Operation-Type": "query",
             }
           );
