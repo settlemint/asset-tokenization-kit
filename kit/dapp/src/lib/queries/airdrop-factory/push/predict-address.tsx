@@ -5,6 +5,7 @@ import { getMerkleRoot } from "@/lib/mutations/airdrop/create/common/merkle-tree
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
+import { parseUnits } from "viem";
 import {
   PredictedPushAirdropAddressSchema,
   type PredictPushAirdropAddressInput,
@@ -44,7 +45,10 @@ export const getPredictedAddress = withTracing(
       tokenAddress: asset.id,
       merkleRoot,
       owner,
-      distributionCap: distributionCap.toString(),
+      distributionCap: parseUnits(
+        distributionCap.toString(),
+        asset.decimals
+      ).toString(),
     });
 
     const predictedAddress = safeParse(PredictedPushAirdropAddressSchema, data);
