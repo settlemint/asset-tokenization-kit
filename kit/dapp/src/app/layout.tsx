@@ -1,7 +1,7 @@
 import { AuthProvider } from "@/components/blocks/auth/auth-provider";
 import { ThemeProvider } from "@/components/blocks/theme/theme-provider";
 import { TransitionProvider } from "@/components/layout/transition-provider";
-import { PostHogProvider } from "@/components/PostHogProvider";
+import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import { routing } from "@/i18n/routing";
 import { getServerEnvironment } from "@/lib/config/environment";
 import { cn } from "@/lib/utils";
