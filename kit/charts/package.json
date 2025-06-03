@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dependencies": "bun run tools/dependencies.ts",
+    "dev": "echo 'No dev server for charts package'",
     "xlint": "ct lint --chart-dirs . --check-version-increment=false --target-branch main --all",
     "compile": "helm template atk --output-dir dist --include-crds",
     "package:harbor": "bun run tools/package-harbor.ts",

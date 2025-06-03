@@ -10,6 +10,7 @@
   "scripts": {
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
+    "dev": "echo 'No dev server for subgraph package'",
     "format": "prettier --write .",
     "build": "settlemint scs subgraph build",
     "publish": "bun run tools/graph-deploy.ts --local",

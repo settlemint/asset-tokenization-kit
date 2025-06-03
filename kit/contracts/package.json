@@ -14,6 +14,7 @@
     "compile:hardhat": "settlemint scs hardhat build",
     "codegen:types": "bun run tools/codegen-types.ts",
     "codegen:genesis": "bun run tools/codegen-genesis.ts",
+    "dev": "echo 'No dev server for contracts package'",
     "lint": "solhint --config .solhint.json ./contracts/**/*.sol",
     "format:forge": "settlemint scs foundry format",
     "format:prettier": "prettier --write .",
