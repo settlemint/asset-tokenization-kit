@@ -18,6 +18,7 @@ import { ISMARTTokenAccessManager } from "../contracts/extensions/access-managed
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { MockedERC20Token } from "./utils/mocks/MockedERC20Token.sol";
 import { SMARTComplianceModuleParamPair } from "../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMARTPausable } from "../contracts/extensions/pausable/ISMARTPausable.sol";
 
 import { SystemUtils } from "./utils/SystemUtils.sol";
 import { IdentityUtils } from "./utils/IdentityUtils.sol";
@@ -26,9 +27,8 @@ import { ClaimUtils } from "./utils/ClaimUtils.sol";
 import { TestConstants } from "./Constants.sol";
 import { SMARTTopics } from "../contracts/system/SMARTTopics.sol";
 import { SMARTSystemRoles } from "../contracts/system/SMARTSystemRoles.sol";
-import { TokenPaused } from "../contracts/extensions/pausable/SMARTPausableErrors.sol";
-
 // Mock Access Manager that always returns true for canCall
+
 contract MockAccessManager is IAccessManager {
     mapping(address => mapping(bytes4 => bool)) public restrictions;
 
@@ -302,7 +302,7 @@ contract SMARTCrossExtensionTest is Test {
 
         // Test: Recovery also fails when paused (security feature)
         vm.prank(owner);
-        vm.expectRevert(abi.encodeWithSelector(TokenPaused.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTPausable.TokenPaused.selector));
         crossExtToken.forcedRecoverTokens(user1, user3);
     }
 

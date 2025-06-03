@@ -11,14 +11,6 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { ISMARTIdentityRegistry } from "../../../interface/ISMARTIdentityRegistry.sol";
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 
-// Internal implementation imports
-import { LengthMismatch } from "../../common/CommonErrors.sol";
-import {
-    FreezeAmountExceedsAvailableBalance,
-    InsufficientFrozenTokens,
-    RecipientAddressFrozen,
-    SenderAddressFrozen
-} from "../SMARTCustodianErrors.sol";
 import { ISMARTCustodian } from "../ISMARTCustodian.sol";
 
 /// @title Internal Core Logic for SMART Custodian Extension

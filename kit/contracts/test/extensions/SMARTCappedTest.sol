@@ -5,7 +5,6 @@ import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ISMARTCapped } from "../../contracts/extensions/capped/ISMARTCapped.sol";
-import { SMARTExceededCap, SMARTInvalidCap } from "../../contracts/extensions/capped/SMARTCappedErrors.sol";
 import { SMARTCappedToken } from "../examples/SMARTCappedToken.sol";
 
 abstract contract SMARTCappedTest is AbstractSMARTTest {
@@ -136,7 +135,7 @@ abstract contract SMARTCappedTest is AbstractSMARTTest {
         uint256 currentSupply = token.totalSupply();
         uint256 expectedNewSupply = currentSupply + overCapAmount;
 
-        vm.expectRevert(abi.encodeWithSelector(SMARTExceededCap.selector, expectedNewSupply, capValue));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.ExceededCap.selector, expectedNewSupply, capValue));
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, overCapAmount);
     }
 
@@ -153,7 +152,7 @@ abstract contract SMARTCappedTest is AbstractSMARTTest {
         uint256 additionalAmount = 1 ether;
         uint256 expectedNewSupply = capValue + additionalAmount;
 
-        vm.expectRevert(abi.encodeWithSelector(SMARTExceededCap.selector, expectedNewSupply, capValue));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.ExceededCap.selector, expectedNewSupply, capValue));
         tokenUtils.mintToken(address(token), tokenIssuer, clientJP, additionalAmount);
     }
 
@@ -165,7 +164,7 @@ abstract contract SMARTCappedTest is AbstractSMARTTest {
         uint256 currentSupply = token.totalSupply();
         uint256 expectedNewSupply = currentSupply + largeMintAmount;
 
-        vm.expectRevert(abi.encodeWithSelector(SMARTExceededCap.selector, expectedNewSupply, capValue));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.ExceededCap.selector, expectedNewSupply, capValue));
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, largeMintAmount);
     }
 
@@ -223,7 +222,7 @@ abstract contract SMARTCappedTest is AbstractSMARTTest {
         assertEq(token.totalSupply(), capValue, "Should reach exact cap");
 
         // Test that minting even 1 wei more fails
-        vm.expectRevert(abi.encodeWithSelector(SMARTExceededCap.selector, capValue + 1, capValue));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.ExceededCap.selector, capValue + 1, capValue));
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, 1);
     }
 
@@ -339,7 +338,7 @@ abstract contract SMARTCappedTest is AbstractSMARTTest {
         assertEq(token.balanceOf(clientUS), remainingAmount, "Third user should have remaining amount");
 
         // No more minting should be possible
-        vm.expectRevert(abi.encodeWithSelector(SMARTExceededCap.selector, capValue + 1, capValue));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.ExceededCap.selector, capValue + 1, capValue));
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, 1);
     }
 }

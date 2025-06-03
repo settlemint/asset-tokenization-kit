@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { ZeroAddressNotAllowed } from "../../common/CommonErrors.sol";
 import { ISMARTTokenAccessManaged } from "../ISMARTTokenAccessManaged.sol";
 import { ISMARTTokenAccessManager } from "../ISMARTTokenAccessManager.sol";
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
-import { AccessControlUnauthorizedAccount } from "../SMARTTokenAccessManagedErrors.sol";
 
 /// @title Internal Logic for SMART Token Access Management Extension
 /// @notice This abstract contract encapsulates the core shared logic for managing access

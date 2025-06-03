@@ -9,8 +9,6 @@ import { ISMARTEquity } from "../../contracts/assets/equity/ISMARTEquity.sol";
 import { SMARTEquityImplementation } from "../../contracts/assets/equity/SMARTEquityImplementation.sol";
 import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
 import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
-import { InvalidDecimals } from "../../contracts/extensions/core/SMARTErrors.sol";
-import { ClaimUtils } from "../../test/utils/ClaimUtils.sol";
 import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";

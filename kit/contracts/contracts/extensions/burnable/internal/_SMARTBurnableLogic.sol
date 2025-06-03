@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { LengthMismatch } from "../../common/CommonErrors.sol";
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 import { ISMARTBurnable } from "../ISMARTBurnable.sol";
 

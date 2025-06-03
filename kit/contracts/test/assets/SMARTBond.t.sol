@@ -11,13 +11,12 @@ import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
 import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { ISMART } from "../../contracts/interface/ISMART.sol";
+import { ISMARTCapped } from "../../contracts/extensions/capped/ISMARTCapped.sol";
 
-import { SMARTExceededCap } from "../../contracts/extensions/capped/SMARTCappedErrors.sol";
 import { SMARTFixedYieldScheduleFactory } from
     "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol";
 import { SMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
-import { InvalidDecimals } from "../../contracts/extensions/core/SMARTErrors.sol";
-import { YieldScheduleAlreadySet, YieldScheduleActive } from "../../contracts/extensions/yield/SMARTYieldErrors.sol";
 import { SMARTBondFactoryImplementation } from "../../contracts/assets/bond/SMARTBondFactoryImplementation.sol";
 import { SMARTBondImplementation } from "../../contracts/assets/bond/SMARTBondImplementation.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/extensions/access-managed/ISMARTTokenAccessManager.sol";
@@ -198,7 +197,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
 
-        vm.expectRevert(abi.encodeWithSelector(InvalidDecimals.selector, 19));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidDecimals.selector, 19));
         bondFactory.createBond(
             "Test Bond 19",
             "TBOND19",
@@ -692,7 +691,9 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         uint256 remainingToCap = CAP - bond.totalSupply();
         uint256 exceedingAmount = remainingToCap + 1;
 
-        vm.expectRevert(abi.encodeWithSelector(SMARTExceededCap.selector, exceedingAmount + bond.totalSupply(), CAP));
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTCapped.ExceededCap.selector, exceedingAmount + bond.totalSupply(), CAP)
+        );
         bond.mint(owner, exceedingAmount);
 
         // Should be able to mint up to the cap
@@ -700,7 +701,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         assertEq(bond.totalSupply(), CAP, "Total supply should equal cap");
 
         // Verify can't mint even 1 more token
-        vm.expectRevert(abi.encodeWithSelector(SMARTExceededCap.selector, CAP + 1, CAP));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.ExceededCap.selector, CAP + 1, CAP));
         bond.mint(owner, 1);
 
         vm.stopPrank();
@@ -721,7 +722,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         assertEq(bond.totalSupply(), CAP, "Supply should equal cap");
 
         // Try to mint one more token
-        vm.expectRevert(abi.encodeWithSelector(SMARTExceededCap.selector, CAP + 1, CAP));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.ExceededCap.selector, CAP + 1, CAP));
         bond.mint(owner, 1);
 
         vm.stopPrank();
@@ -774,7 +775,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         assertEq(bond.yieldSchedule(), yieldScheduleAddr, "Bond should reference the yield schedule");
 
         // Try to change it (should fail)
-        vm.expectRevert(YieldScheduleAlreadySet.selector);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTYield.YieldScheduleAlreadySet.selector));
         bond.setYieldSchedule(address(0x123));
 
         vm.stopPrank();
@@ -805,7 +806,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         vm.warp(startDate + 1);
 
         // Now, attempt to mint again
-        vm.expectRevert(YieldScheduleActive.selector);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTYield.YieldScheduleActive.selector));
         bond.mint(owner, 1);
 
         // Ensure total supply hasn't changed after the revert
