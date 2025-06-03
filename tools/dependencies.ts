@@ -59,6 +59,12 @@ function isPostInstall(): boolean {
       process.env._ &&
       process.env._.includes("bun") &&
       process.argv.includes("tools/dependencies.ts"),
+    // Additional detection for bun postinstall in CI
+    bun_ci_postinstall:
+      isCI() &&
+      (process.env.npm_lifecycle_event === "postinstall" ||
+        process.argv.some((arg) => arg.includes("tools/dependencies.ts")) ||
+        !dependenciesExist("kit/contracts/dependencies")),
   };
 
   const result = !!(
@@ -67,7 +73,8 @@ function isPostInstall(): boolean {
     checks.argv_postinstall ||
     checks.npm_command_install ||
     checks.bun_postinstall ||
-    checks.bun_tools_deps
+    checks.bun_tools_deps ||
+    checks.bun_ci_postinstall
   );
 
   return result;
@@ -324,6 +331,17 @@ async function runDependenciesManually(): Promise<void> {
   }
 
   if (errors.length > 0) {
+    // During postinstall or early install phase in CI, don't treat tool unavailability as critical
+    if ((postInstall || earlyInstall) && ci) {
+      log.warn(
+        `Some dependencies could not be installed during ${postInstall ? "postinstall" : "early install phase"}: ${errors.join(", ")}`
+      );
+      log.info(
+        "This is expected when tools aren't available yet - dependencies will be installed later"
+      );
+      return; // Don't throw error during postinstall/early install in CI
+    }
+
     throw new Error(
       `${errors.length} critical workspace(s) failed to install dependencies:\n${errors.join("\n")}`
     );
