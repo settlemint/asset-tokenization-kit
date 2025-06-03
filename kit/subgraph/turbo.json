@@ -6,11 +6,11 @@
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },
     "codegen:interfaceid": {
-      "dependsOn": ["codegen"],
+      "dependsOn": ["contracts#compile:hardhat", "contracts#compile:forge"],
       "outputs": ["src/erc165/utils/interfaceids.ts"]
     },
     "build": {
-      "dependsOn": ["codegen"],
+      "dependsOn": ["codegen", "codegen:interfaceid"],
       "outputs": ["build/**"]
     },
     "publish": {
