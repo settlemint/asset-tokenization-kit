@@ -1587,7 +1587,7 @@
           "type": "Type",
           "asset": "Asset",
           "total-claimed": "Claimed",
-          "total-recipients": "Claims",
+          "total-claims": "Claims",
           "details": "Details"
         },
         "type": {
@@ -1596,6 +1596,57 @@
           "push": "Push"
         },
         "details": "Details"
+      },
+      "tabs": {
+        "details": "Details"
+      },
+      "details": {
+        "airdrop-management": "Airdrop management",
+        "page-title": "Airdrop {address}",
+        "page-description": "View and manage airdrop at {address}",
+        "fields": {
+          "contract-address": "Contract address",
+          "type": "Type",
+          "type-standard": "Standard",
+          "type-vesting": "Vesting",
+          "type-push": "Push",
+          "asset": "Asset",
+          "start-time": "Start time",
+          "end-time": "End time",
+          "claim-period-end": "Claim period end",
+          "vesting-strategy": "Vesting strategy",
+          "strategy-linear": "Linear vesting",
+          "cliff-duration": "Cliff duration",
+          "cliff-duration-info": "The waiting period after claiming before any tokens can be withdrawn",
+          "vesting-duration": "Vesting duration",
+          "vesting-duration-info": "The total time for all tokens to unlock gradually after claiming",
+          "total-claims": "Total claims",
+          "total-claims-info": "The number of accounts who have actually claimed their airdrop assets",
+          "eligible-recipients": "Eligible recipients",
+          "eligible-recipients-info": "The total number of addresses eligible to claim from this airdrop",
+          "total-claimed": "Total claimed",
+          "total-claimed-info": "The total amount of tokens that have been claimed from this airdrop",
+          "total-distributed": "Total distributed",
+          "total-distributed-info": "The total amount of tokens that have been actively distributed by this push airdrop",
+          "distribution-cap": "Distribution limit",
+          "distribution-cap-info": "The maximum amount of tokens that can be distributed by this airdrop",
+          "total-distribution-amount": "Total distribution",
+          "total-distribution-amount-info": "The total amount of tokens allocated for distribution in this airdrop",
+          "claim-percentage": "Claim percentage",
+          "claim-percentage-info": "The percentage of eligible recipients who have claimed their tokens",
+          "status": "Status",
+          "status-active": "Active",
+          "status-upcoming": "Upcoming",
+          "status-expired": "Expired",
+          "duration-days": "days",
+          "duration-hours": "hours",
+          "duration-minutes": "minutes"
+        }
+      },
+      "detail": {
+        "forms": {
+          "manage": "Manage"
+        }
       }
     },
     "assets": {
