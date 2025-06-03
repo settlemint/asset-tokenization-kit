@@ -10,7 +10,7 @@ import { ar } from "@/lib/orpc/routes/procedures/auth.router";
  * with actual database queries.
  *
  * Authentication: Required (uses authenticated router)
- * API Key Permissions: Requires "read" and "write" permissions for "planet" resource
+ * API Key Permissions: Requires "read" permission for "planet" resource
  * Method: GET /planets/{id}
  *
  * @param input - Find parameters including the planet ID (validated against FindSchema)
@@ -18,7 +18,7 @@ import { ar } from "@/lib/orpc/routes/procedures/auth.router";
  * @returns Promise<Planet> - The found planet object
  *
  * @throws UNAUTHORIZED - If user is not authenticated
- * @throws FORBIDDEN - If API key lacks required permissions (planet: [read, write])
+ * @throws FORBIDDEN - If API key lacks required permissions (planet: [read])
  * @throws NOT_FOUND - If planet with given ID doesn't exist (should be implemented)
  *
  * @example

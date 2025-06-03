@@ -51,7 +51,7 @@ export const ListSchema = z.object({
    *
    * Example: offset: 20 with limit: 10 returns items 21-30
    */
-  offset: z.number().int().min(0).default(0),
+  offset: z.number().int().nonnegative().default(0),
 
   /**
    * Maximum number of items to return.
@@ -67,5 +67,5 @@ export const ListSchema = z.object({
    *
    * Example: limit: 25 returns up to 25 items in the response
    */
-  limit: z.number().int().min(1).max(100).default(10),
+  limit: z.number().int().positive().max(100).default(10),
 });

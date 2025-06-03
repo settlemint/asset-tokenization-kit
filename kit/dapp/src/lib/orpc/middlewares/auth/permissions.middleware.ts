@@ -81,11 +81,16 @@ export function permissionsMiddleware({
 
     // First, always check user role permissions if roles are required
     if (roles.length > 0) {
-      const { user } = context.auth || {};
-      if (!user) {
-        throw errors.UNAUTHORIZED();
+      // Since this middleware is designed to be used with authenticated routes,
+      // context.auth should always exist. If it doesn't, it means the auth
+      // middleware hasn't run, which is a configuration error.
+      if (!context.auth?.user) {
+        throw errors.FORBIDDEN({
+          message:
+            "Authentication context not found. Ensure auth middleware runs before permissions middleware.",
+        });
       }
-      const { role } = user;
+      const { role } = context.auth.user;
       if (!roles.includes(role)) {
         throw errors.FORBIDDEN({
           message: `User does not have the required permissions for resource '${resourceType}'. Required: [${roles.join(", ")}]`,

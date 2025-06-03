@@ -52,5 +52,9 @@ export const create = ar.planet.create
     // return planet;
 
     // Temporary mock implementation - replace with actual database operations
-    return { id: user.id, name: user.name };
+    return {
+      id: `planet-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      name: input.name,
+      description: input.description || undefined,
+    };
   });

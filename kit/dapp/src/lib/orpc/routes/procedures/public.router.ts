@@ -11,9 +11,9 @@ import { br } from "./base.router";
  * procedures that should be accessible to all users, whether authenticated or not.
  *
  * Middleware composition (applied in order):
- * 1. Error middleware - Handles and formats all errors consistently
- * 2. Session middleware - Optionally loads session data if available
- * 3. Tracing middleware - Adds tracing information to the request
+ * 1. Tracing middleware - Adds tracing information to the request
+ * 2. Error middleware - Handles and formats all errors consistently
+ * 3. Session middleware - Optionally loads session data if available
  *
  * The session middleware is included even for public routes because:
  * - Some public endpoints may behave differently for authenticated users

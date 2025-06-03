@@ -98,8 +98,6 @@ function QueryErrorFallback({
     // Log error to monitoring service in production for debugging and analytics
     if (process.env.NODE_ENV === "production") {
       console.error("React Query Error:", error);
-      // TODO: Send to error monitoring service (e.g., Sentry, LogRocket, etc.)
-      // Example: Sentry.captureException(error);
     }
   }, [error]);
 
@@ -254,6 +252,7 @@ export function QueryClientProvider({
       onReset={() => {
         // Clear the query cache and retry all queries when error boundary resets
         // This provides a clean slate for recovery from error states
+        queryClient.clear();
         queryClient.resetQueries();
       }}
     >
@@ -290,7 +289,7 @@ export function QueryClientProvider({
  * @example
  * ```tsx
  * function useCustomInvalidation() {
- *   const queryClient = useQueryClientInstance();
+ *   const queryClient = useAppQueryClient();
  *
  *   const invalidateUserData = useCallback(() => {
  *     queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -304,7 +303,7 @@ export function QueryClientProvider({
  * ```tsx
  * // Manual cache updates
  * function useOptimisticUpdate() {
- *   const queryClient = useQueryClientInstance();
+ *   const queryClient = useAppQueryClient();
  *
  *   const updateUserOptimistically = (userId: string, data: UserData) => {
  *     queryClient.setQueryData(['users', userId], data);
@@ -316,6 +315,6 @@ export function QueryClientProvider({
  *
  * @see {@link https://tanstack.com/query/latest/docs/framework/react/reference/useQueryClient} - Standard useQueryClient hook
  */
-export function useQueryClient(): QueryClient {
+export function useAppQueryClient(): QueryClient {
   return getQueryClient();
 }

@@ -228,7 +228,7 @@ export function makeQueryClient(): QueryClient {
     } catch (error) {
       // Graceful fallback if localStorage is unavailable
       // (e.g., private browsing mode, quota exceeded, or disabled)
-      console.warn("Failed to set up query persistence:", error);
+      console.warn("[QueryClient] Failed to set up localStorage persistence. Queries will not persist across sessions:", error);
     }
   }
 

@@ -3,6 +3,18 @@ import { SpanStatusCode, trace, type Attributes } from "@opentelemetry/api";
 import SuperJSON from "superjson";
 
 /**
+ * Maximum size in characters for serialized results in trace attributes.
+ * Prevents excessive memory usage and performance issues with large payloads.
+ */
+const MAX_TRACE_RESULT_SIZE = 10000;
+
+/**
+ * Maximum length for error messages in span status.
+ * Ensures span status messages don't exceed reasonable limits.
+ */
+const MAX_ERROR_MESSAGE_LENGTH = 1000;
+
+/**
  * ORPC tracing middleware for distributed request tracing.
  *
  * This middleware provides comprehensive OpenTelemetry tracing for all ORPC procedures,
@@ -101,7 +113,7 @@ export const tracingMiddleware = br.middleware(
         try {
           const serializedResult = SuperJSON.stringify(result);
           // Limit result size to prevent excessive attribute data
-          if (serializedResult.length <= 10000) {
+          if (serializedResult.length <= MAX_TRACE_RESULT_SIZE) {
             span.setAttribute("orpc.result", serializedResult);
           } else {
             span.setAttribute("orpc.result", "[Large Result - Truncated]");
@@ -127,7 +139,7 @@ export const tracingMiddleware = br.middleware(
 
         span.setStatus({
           code: SpanStatusCode.ERROR,
-          message: errorMessage.substring(0, 1000), // Limit message length
+          message: errorMessage.substring(0, MAX_ERROR_MESSAGE_LENGTH), // Limit message length
         });
 
         // Add error-specific attributes

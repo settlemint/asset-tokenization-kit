@@ -1,3 +1,4 @@
+import { getServerEnvironment } from "@/lib/config/environment";
 import { contract } from "@/lib/orpc/routes/contract";
 import { createORPCClient } from "@orpc/client";
 import type { ContractRouterClient } from "@orpc/contract";
@@ -16,7 +17,7 @@ const link = new OpenAPILink(contract, {
   // Dynamically determine the API base URL based on environment
   // - Browser: Use current origin to avoid CORS issues
   // - Server: Use localhost for SSR/build-time requests
-  url: `${typeof window !== "undefined" ? `${window.location.origin}/api` : "http://localhost:3000/api"}`,
+  url: `${typeof window !== "undefined" ? `${window.location.origin}/api` : `${getServerEnvironment().APP_URL}/api`}`,
 
   /**
    * Dynamic header injection for authentication and request context.
@@ -26,11 +27,11 @@ const link = new OpenAPILink(contract, {
    * to provide authentication tokens, CSRF tokens, or other request metadata.
    */
   headers: async () => {
-    return globalThis.$headers
-      ? // SSR context: Use global headers function set by server middleware
-        Object.fromEntries(await globalThis.$headers())
-      : // Browser context: No additional headers needed (cookies handle auth)
-        {};
+    if (globalThis.$headers) {
+      const headers = await globalThis.$headers();
+      return Object.fromEntries(headers);
+    }
+    return {};
   },
 
   /**

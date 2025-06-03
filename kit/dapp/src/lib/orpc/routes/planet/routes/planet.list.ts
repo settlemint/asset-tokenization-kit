@@ -54,14 +54,61 @@ export const list = ar.planet.list
     // return planets;
 
     // Temporary mock implementation - replace with actual database query
-    return [
-      { id: "xx", name: "name" },
-      { id: "xxx", name: "name 2" },
-      { id: "xxxx", name: "name 3" },
-      { id: "xxxxx", name: "name 4" },
-      { id: "xxxxxx", name: "name 5" },
-      { id: "xxxxxxx", name: "name 6" },
-      { id: "xxxxxxxx", name: "name 7" },
-      { id: "xxxxxxxxx", name: "name 8" },
+    const mockPlanets = [
+      { 
+        id: "planet-mercury-001", 
+        name: "Mercury",
+        description: "The smallest planet in our solar system and closest to the Sun"
+      },
+      { 
+        id: "planet-venus-002", 
+        name: "Venus",
+        description: "The second planet from the Sun, known for its thick atmosphere and extreme temperatures"
+      },
+      { 
+        id: "planet-earth-003", 
+        name: "Earth",
+        description: "Our home planet, the only known planet with life"
+      },
+      { 
+        id: "planet-mars-004", 
+        name: "Mars",
+        description: "The Red Planet, fourth from the Sun with potential for human colonization"
+      },
+      { 
+        id: "planet-jupiter-005", 
+        name: "Jupiter",
+        description: "The largest planet in our solar system, a gas giant with many moons"
+      },
+      { 
+        id: "planet-saturn-006", 
+        name: "Saturn",
+        description: "Famous for its spectacular ring system, the sixth planet from the Sun"
+      },
+      { 
+        id: "planet-kepler452b-007", 
+        name: "Kepler-452b",
+        description: "An exoplanet orbiting in the habitable zone of a Sun-like star"
+      },
+      { 
+        id: "planet-proxima-b-008", 
+        name: "Proxima Centauri b",
+        description: "The closest known exoplanet to Earth, orbiting Proxima Centauri"
+      },
+      { 
+        id: "planet-trappist1e-009", 
+        name: "TRAPPIST-1e",
+        description: "One of seven Earth-sized planets in the TRAPPIST-1 system"
+      },
+      { 
+        id: "planet-gliese667cc-010", 
+        name: "Gliese 667Cc",
+        description: "A super-Earth exoplanet within the habitable zone of its host star"
+      },
     ];
+
+    // Apply pagination to the mock data
+    const paginatedPlanets = mockPlanets.slice(offset, offset + limit);
+    
+    return paginatedPlanets;
   });
