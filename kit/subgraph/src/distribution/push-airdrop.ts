@@ -6,16 +6,7 @@ import {
   ethereum,
   log,
 } from "@graphprotocol/graph-ts";
-import {
-  AirdropStatsData,
-  Bond,
-  CryptoCurrency,
-  Deposit,
-  Equity,
-  Fund,
-  PushAirdrop,
-  StableCoin,
-} from "../../generated/schema";
+import { AirdropStatsData, PushAirdrop } from "../../generated/schema";
 import {
   BatchDistributed,
   DistributionCapUpdated,
@@ -25,37 +16,10 @@ import {
 } from "../../generated/templates/PushAirdropTemplate/PushAirdrop";
 
 // Use fetchAccount for consistent account entity creation
+import { fetchAssetDecimals } from "../assets/fetch/asset";
 import { fetchAccount } from "../utils/account";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { toDecimals } from "../utils/decimals";
-
-// Helper function to get token decimals from any asset type
-function getTokenDecimals(tokenAddress: Address): i32 {
-  // Try loading each possible asset type
-  let crypto = CryptoCurrency.load(tokenAddress);
-  if (crypto) return crypto.decimals;
-
-  let stable = StableCoin.load(tokenAddress);
-  if (stable) return stable.decimals;
-
-  let bond = Bond.load(tokenAddress);
-  if (bond) return bond.decimals;
-
-  let equity = Equity.load(tokenAddress);
-  if (equity) return equity.decimals;
-
-  let fund = Fund.load(tokenAddress);
-  if (fund) return fund.decimals;
-
-  let deposit = Deposit.load(tokenAddress);
-  if (deposit) return deposit.decimals;
-
-  // Default to 18 if not found
-  log.warning("Token not found for address {}, defaulting to 18 decimals", [
-    tokenAddress.toHex(),
-  ]);
-  return 18;
-}
 
 // Helper function to generate a unique ID for stats data
 function getStatsId(event: ethereum.Event): i64 {
@@ -73,7 +37,7 @@ function updateDistributionStats(
   event: ethereum.Event
 ): void {
   // Get token decimals
-  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  const decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
   const amountBD = toDecimals(amount, decimals);
 
   // Create AirdropStatsData entry
@@ -123,7 +87,7 @@ export function handleTokensDistributed(event: TokensDistributed): void {
   let recipient = fetchAccount(recipientAddress);
 
   // Get token decimals
-  let decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  let decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
   let amountBD = toDecimals(amount, decimals);
 
   // Create PushDistribution entity
@@ -173,7 +137,7 @@ export function handleBatchDistributed(event: BatchDistributed): void {
   let distributor = fetchAccount(event.transaction.from);
 
   // Get token decimals
-  let decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  let decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
   let totalAmountBD = toDecimals(totalAmount, decimals);
 
   // Create PushBatchDistribution entity
@@ -214,7 +178,7 @@ export function handleTokensWithdrawn(event: TokensWithdrawn): void {
   // Get token details
   let tokenAddress = Address.fromBytes(airdrop.token);
   let amount = event.params.amount;
-  let decimals = getTokenDecimals(tokenAddress);
+  let decimals = fetchAssetDecimals(tokenAddress);
   let amountBD = toDecimals(amount, decimals);
 
   log.info(
