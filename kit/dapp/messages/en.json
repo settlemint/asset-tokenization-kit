@@ -1596,6 +1596,19 @@
           "push": "Push"
         },
         "details": "Details"
+      },
+      "tabs": {
+        "details": "Details"
+      },
+      "details": {
+        "airdrop-management": "Airdrop management",
+        "page-title": "Airdrop {address}",
+        "page-description": "View and manage airdrop at {address}"
+      },
+      "detail": {
+        "forms": {
+          "manage": "Manage"
+        }
       }
     },
     "assets": {
