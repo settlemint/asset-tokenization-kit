@@ -13,7 +13,10 @@ import { type Address, getAddress } from "viem";
 import { OffchainAirdropFragment } from "../airdrop/airdrop-fragment";
 import { OffChainAirdropSchema } from "../airdrop/airdrop-schema";
 import { StandardAirdropFragment } from "./standard-airdrop-fragment";
-import { OnChainStandardAirdropSchema } from "./standard-airdrop-schema";
+import {
+  OnChainStandardAirdropSchema,
+  StandardAirdropSchema,
+} from "./standard-airdrop-schema";
 
 /**
  * GraphQL query to fetch on-chain standard airdrop details from The Graph
@@ -94,18 +97,17 @@ export const getStandardAirdropDetail = withTracing(
               "X-GraphQL-Operation-Type": "query",
             }
           );
-          const offChainInfo = {
-            distribution: response.airdrop_distribution,
-          };
 
-          return safeParse(OffChainAirdropSchema, offChainInfo);
+          return safeParse(OffChainAirdropSchema, {
+            distribution: response.airdrop_distribution,
+          });
         })(),
       ]
     );
 
-    return {
+    return safeParse(StandardAirdropSchema, {
       ...onChainStandardAirdrop,
       ...offChainStandardAirdrop,
-    };
+    });
   })
 );

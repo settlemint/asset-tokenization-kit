@@ -1,5 +1,8 @@
 import { t } from "@/lib/utils/typebox";
-import { OnChainAirdropSchema } from "../airdrop/airdrop-schema";
+import {
+  OffChainAirdropSchema,
+  OnChainAirdropSchema,
+} from "../airdrop/airdrop-schema";
 
 /**
  * Schema for on-chain standard airdrop data with timing constraints
@@ -17,5 +20,19 @@ export const OnChainStandardAirdropSchema = t.Object(
   },
   {
     description: "Complete on-chain data for standard airdrops",
+  }
+);
+
+/**
+ * Standard airdrop schema combining on-chain and off-chain data
+ */
+export const StandardAirdropSchema = t.Object(
+  {
+    ...OnChainStandardAirdropSchema.properties,
+    ...OffChainAirdropSchema.properties,
+  },
+  {
+    description:
+      "Complete standard airdrop data including both on-chain and off-chain properties",
   }
 );
