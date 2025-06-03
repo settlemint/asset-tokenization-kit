@@ -1,3 +1,4 @@
+import { permissionsMiddleware } from "@/lib/orpc/middlewares/auth/permissions.middleware";
 import { ar } from "@/lib/orpc/routes/procedures/auth.router";
 
 /**
@@ -9,6 +10,7 @@ import { ar } from "@/lib/orpc/routes/procedures/auth.router";
  * currently returns mock data but should be replaced with actual database queries.
  *
  * Authentication: Required (uses authenticated router)
+ * API Key Permissions: Requires "read" permissions for "planet" resource
  * Method: GET /planets
  *
  * @param input - List parameters including pagination (validated against ListSchema)
@@ -16,6 +18,7 @@ import { ar } from "@/lib/orpc/routes/procedures/auth.router";
  * @returns Promise<Planet[]> - Array of planet objects matching the query criteria
  *
  * @throws UNAUTHORIZED - If user is not authenticated
+ * @throws FORBIDDEN - If API key lacks required permissions (planet: [read])
  *
  * @example
  * ```typescript
@@ -26,32 +29,39 @@ import { ar } from "@/lib/orpc/routes/procedures/auth.router";
  * });
  * ```
  */
-export const list = ar.planet.list.handler(async ({ input, context }) => {
-  // Extract query parameters for pagination (offset-based pagination)
-  const { offset, limit } = input;
+export const list = ar.planet.list
+  .use(
+    permissionsMiddleware({
+      requiredPermissions: ["read"],
+      roles: ["admin", "issuer", "user", "auditor"],
+    })
+  )
+  .handler(async ({ input, context }) => {
+    // Extract query parameters for pagination (offset-based pagination)
+    const { offset, limit } = input;
 
-  // Get database connection and user context
-  const _db = context.db;
-  const _user = context.auth.user;
+    // Get database connection and user context
+    const _db = context.db;
+    const _user = context.auth.user;
 
-  // TODO: Implement actual planet listing logic with database queries
-  // Example implementation:
-  // const planets = await db.planets.findMany({
-  //   orderBy: { createdAt: 'desc' },
-  //   skip: offset || 0,
-  //   take: limit || 50,
-  // });
-  // return planets;
+    // TODO: Implement actual planet listing logic with database queries
+    // Example implementation:
+    // const planets = await db.planets.findMany({
+    //   orderBy: { createdAt: 'desc' },
+    //   skip: offset || 0,
+    //   take: limit || 50,
+    // });
+    // return planets;
 
-  // Temporary mock implementation - replace with actual database query
-  return [
-    { id: "xx", name: "name" },
-    { id: "xxx", name: "name 2" },
-    { id: "xxxx", name: "name 3" },
-    { id: "xxxxx", name: "name 4" },
-    { id: "xxxxxx", name: "name 5" },
-    { id: "xxxxxxx", name: "name 6" },
-    { id: "xxxxxxxx", name: "name 7" },
-    { id: "xxxxxxxxx", name: "name 8" },
-  ];
-});
+    // Temporary mock implementation - replace with actual database query
+    return [
+      { id: "xx", name: "name" },
+      { id: "xxx", name: "name 2" },
+      { id: "xxxx", name: "name 3" },
+      { id: "xxxxx", name: "name 4" },
+      { id: "xxxxxx", name: "name 5" },
+      { id: "xxxxxxx", name: "name 6" },
+      { id: "xxxxxxxx", name: "name 7" },
+      { id: "xxxxxxxxx", name: "name 8" },
+    ];
+  });

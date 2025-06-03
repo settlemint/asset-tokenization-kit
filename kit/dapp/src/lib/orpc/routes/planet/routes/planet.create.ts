@@ -1,3 +1,4 @@
+import { permissionsMiddleware } from "@/lib/orpc/middlewares/auth/permissions.middleware";
 import { ar } from "../../procedures/auth.router";
 
 /**
@@ -9,11 +10,15 @@ import { ar } from "../../procedures/auth.router";
  * be replaced with actual database operations.
  *
  * Authentication: Required (uses authenticated router)
+ * API Key Permissions: Requires "write" permissions for "planet" resource
  * Method: POST /planets
  *
  * @param input - Planet data without ID (validated against PlanetSchema.omit({ id: true }))
  * @param context - Request context including authenticated user and database connection
  * @returns Promise<Planet> - The created planet with generated ID
+ *
+ * @throws UNAUTHORIZED - If user is not authenticated
+ * @throws FORBIDDEN - If API key lacks required permissions (planet: [write])
  *
  * @example
  * ```typescript
@@ -24,24 +29,28 @@ import { ar } from "../../procedures/auth.router";
  * });
  * ```
  */
-export const create = ar.planet.create.handler(async ({ input, context }) => {
-  // Extract authenticated user information from context
-  const user = context.auth.user;
+export const create = ar.planet.create
+  .use(
+    permissionsMiddleware({ requiredPermissions: ["create"], roles: ["admin"] })
+  )
+  .handler(async ({ input, context }) => {
+    // Extract authenticated user information from context
+    const user = context.auth.user;
 
-  // Get database connection from context
-  const _db = context.db;
+    // Get database connection from context
+    const _db = context.db;
 
-  // TODO: Implement actual planet creation logic
-  // Example implementation:
-  // const planet = await db.planets.create({
-  //   data: {
-  //     ...input,
-  //     createdBy: user.id,
-  //     createdAt: new Date(),
-  //   }
-  // });
-  // return planet;
+    // TODO: Implement actual planet creation logic
+    // Example implementation:
+    // const planet = await db.planets.create({
+    //   data: {
+    //     ...input,
+    //     createdBy: user.id,
+    //     createdAt: new Date(),
+    //   }
+    // });
+    // return planet;
 
-  // Temporary mock implementation - replace with actual database operations
-  return { id: user.id, name: user.name };
-});
+    // Temporary mock implementation - replace with actual database operations
+    return { id: user.id, name: user.name };
+  });

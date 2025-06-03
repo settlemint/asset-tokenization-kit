@@ -1,3 +1,4 @@
+import { permissionsMiddleware } from "@/lib/orpc/middlewares/auth/permissions.middleware";
 import { ar } from "@/lib/orpc/routes/procedures/auth.router";
 
 /**
@@ -9,6 +10,7 @@ import { ar } from "@/lib/orpc/routes/procedures/auth.router";
  * with actual database queries.
  *
  * Authentication: Required (uses authenticated router)
+ * API Key Permissions: Requires "read" and "write" permissions for "planet" resource
  * Method: GET /planets/{id}
  *
  * @param input - Find parameters including the planet ID (validated against FindSchema)
@@ -16,6 +18,7 @@ import { ar } from "@/lib/orpc/routes/procedures/auth.router";
  * @returns Promise<Planet> - The found planet object
  *
  * @throws UNAUTHORIZED - If user is not authenticated
+ * @throws FORBIDDEN - If API key lacks required permissions (planet: [read, write])
  * @throws NOT_FOUND - If planet with given ID doesn't exist (should be implemented)
  *
  * @example
@@ -24,22 +27,29 @@ import { ar } from "@/lib/orpc/routes/procedures/auth.router";
  * const planet = await orpc.planet.find.query({ id: "planet-123" });
  * ```
  */
-export const find = ar.planet.find.handler(async ({ input }) => {
-  // Extract the planet ID from input parameters
-  const { id } = input;
+export const find = ar.planet.find
+  .use(
+    permissionsMiddleware({
+      requiredPermissions: ["read"],
+      roles: ["admin", "issuer", "user", "auditor"],
+    })
+  )
+  .handler(async ({ input }) => {
+    // Extract the planet ID from input parameters
+    const { id } = input;
 
-  // TODO: Implement actual planet lookup logic
-  // Example implementation:
-  // const planet = await db.planets.findUnique({
-  //   where: { id }
-  // });
-  //
-  // if (!planet) {
-  //   throw new Error("Planet not found");
-  // }
-  //
-  // return planet;
+    // TODO: Implement actual planet lookup logic
+    // Example implementation:
+    // const planet = await db.planets.findUnique({
+    //   where: { id }
+    // });
+    //
+    // if (!planet) {
+    //   throw new Error("Planet not found");
+    // }
+    //
+    // return planet;
 
-  // Temporary mock implementation - replace with actual database query
-  return { id: "xxx", name: "name" };
-});
+    // Temporary mock implementation - replace with actual database query
+    return { id: "xxx", name: "name" };
+  });
