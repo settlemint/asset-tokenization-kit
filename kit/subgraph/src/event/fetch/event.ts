@@ -1,5 +1,10 @@
-import { Bytes, ethereum, log } from "@graphprotocol/graph-ts";
-import { Event, EventValue } from "../../../generated/schema";
+import { Address, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
+import {
+  Account,
+  Event,
+  EventValue,
+  Identity,
+} from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
 
 export function convertEthereumValue(value: ethereum.Value): string {
@@ -44,7 +49,7 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
     return eventEntity;
   }
 
-  const emitter = fetchAccount(event.address);
+  const emitter = getAccount(event.address);
   const txSender = fetchAccount(event.transaction.from);
 
   const entry = new Event(id);
@@ -61,7 +66,7 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
   for (let i = 0; i < event.parameters.length; i++) {
     const param = event.parameters[i];
     if (param.value.kind == ethereum.ValueKind.ADDRESS) {
-      const address = fetchAccount(param.value.toAddress());
+      const address = getAccount(param.value.toAddress());
       if (param.name == "sender") {
         entry.sender = address.id;
       }
@@ -101,4 +106,14 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
   }
 
   return entry;
+}
+
+function getAccount(address: Address): Account {
+  let accountAddress = address;
+  // First check if the address is an existing identity
+  const identity = Identity.load(address);
+  if (identity && identity.account) {
+    accountAddress = Address.fromBytes(identity.account!);
+  }
+  return fetchAccount(accountAddress);
 }

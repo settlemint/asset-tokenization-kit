@@ -168,14 +168,15 @@ type Identity @entity(immutable: false) {
   id: Bytes!
   registry: IdentityRegistry
   claims: [IdentityClaim!]! @derivedFrom(field: "identity")
-  token: Token @derivedFrom(field: "identity")
+  account: Account
+  token: Token
 }
 
 type IdentityClaim @entity(immutable: false) {
   id: Bytes!
   identity: Identity!
   name: String!
-  issuer: Account!
+  issuer: Identity!
   uri: String
   revoked: Boolean!
   values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
