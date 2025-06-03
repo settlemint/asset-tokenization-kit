@@ -15,6 +15,20 @@ import { getKitProjectPath } from "../../../tools/root";
 const log = logger;
 
 /**
+ * Check if we're running in a CI environment
+ */
+function isCI(): boolean {
+  return !!(
+    process.env.CI ||
+    process.env.GITHUB_ACTIONS ||
+    process.env.GITLAB_CI ||
+    process.env.JENKINS_URL ||
+    process.env.BUILDKITE ||
+    process.env.CIRCLECI
+  );
+}
+
+/**
  * Find the contracts directory using intelligent root detection
  */
 async function findContractsDirectory(): Promise<string> {
@@ -219,7 +233,9 @@ async function patchOnChainIdContracts(projectDir: string): Promise<void> {
  * Main execution
  */
 async function main(): Promise<void> {
-  log.info("Starting Soldeer dependency installer...");
+  const ci = isCI();
+
+  log.info(`Starting Soldeer dependency installer${ci ? " (CI mode)" : ""}...`);
 
   try {
     // Find the contracts directory
@@ -227,7 +243,23 @@ async function main(): Promise<void> {
     log.info(`Using contracts directory: ${projectDir}`);
 
     // Check if forge is installed
-    await checkForgeInstalled();
+    try {
+      await checkForgeInstalled();
+    } catch (forgeError) {
+      if (ci) {
+        // In CI, if forge isn't available yet, this might be during early install phase
+        log.warn(
+          `Forge not available: ${forgeError instanceof Error ? forgeError.message : String(forgeError)}`
+        );
+        log.info(
+          "This may be expected during early CI phases - dependencies will be installed when forge becomes available"
+        );
+        return; // Exit gracefully in CI when forge isn't available
+      } else {
+        // In local development, forge must be available
+        throw forgeError;
+      }
+    }
 
     // Check if project has dependencies
     if (!(await hasDependencies(projectDir))) {
@@ -245,10 +277,30 @@ async function main(): Promise<void> {
       "All done installing soldeer dependencies and patching onchainid contracts!"
     );
   } catch (error) {
-    log.error(
-      `Error: ${error instanceof Error ? error.message : String(error)}`
-    );
-    process.exit(1);
+    if (ci) {
+      // In CI, log error but don't exit with failure unless forge was available
+      // (meaning this is a real installation failure, not a tool availability issue)
+      const forgeAvailable = !!Bun.which("forge");
+      if (forgeAvailable) {
+        log.error(
+          `Critical error installing Solidity dependencies: ${error instanceof Error ? error.message : String(error)}`
+        );
+        process.exit(1);
+      } else {
+        log.warn(
+          `Solidity dependencies installation skipped: ${error instanceof Error ? error.message : String(error)}`
+        );
+        log.info(
+          "Dependencies will be installed when Foundry tools become available"
+        );
+        return;
+      }
+    } else {
+      log.error(
+        `Error: ${error instanceof Error ? error.message : String(error)}`
+      );
+      process.exit(1);
+    }
   }
 }
 

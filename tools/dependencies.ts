@@ -59,7 +59,6 @@ function isPostInstall(): boolean {
       process.env._ &&
       process.env._.includes("bun") &&
       process.argv.includes("tools/dependencies.ts"),
-    ci_no_deps: isCI() && !dependenciesExist("kit/contracts/dependencies"),
   };
 
   const result = !!(
@@ -68,8 +67,7 @@ function isPostInstall(): boolean {
     checks.argv_postinstall ||
     checks.npm_command_install ||
     checks.bun_postinstall ||
-    checks.bun_tools_deps ||
-    checks.ci_no_deps
+    checks.bun_tools_deps
   );
 
   return result;
@@ -81,10 +79,15 @@ function isPostInstall(): boolean {
 async function isEarlyInstallPhase(): Promise<boolean> {
   const tools = await checkToolsAvailable();
   const ci = isCI();
+  const postInstall = isPostInstall();
 
-  // If in CI and critical tools are missing, assume we're in early install phase
-  // We focus on forge and helm since these are the tools needed for actual dependency installation
-  const isEarly = ci && (!tools.forge || !tools.helm);
+  // We're in early install phase if:
+  // 1. We're in CI AND postinstall AND tools aren't available
+  // 2. OR dependencies don't exist yet AND tools aren't available
+  const dependenciesExistNow = dependenciesExist("kit/contracts/dependencies");
+  const isEarly =
+    (ci && postInstall && (!tools.forge || !tools.helm)) ||
+    (!dependenciesExistNow && (!tools.forge || !tools.helm));
 
   return isEarly;
 }
@@ -261,14 +264,24 @@ async function runDependenciesManually(): Promise<void> {
   for (const workspace of workspaces) {
     log.info(`Installing dependencies for ${workspace.name}...`);
 
-    // Skip if required tool is not available during postinstall or early install phase
-    if (
-      (postInstall || earlyInstall) &&
-      !tools[workspace.requiresTool as keyof typeof tools]
-    ) {
+    // Check if required tool is available
+    const toolAvailable = tools[workspace.requiresTool as keyof typeof tools];
+
+    // Skip if required tool is not available AND we're in early phases
+    if (!toolAvailable && (postInstall || earlyInstall)) {
       log.warn(
         `Skipping ${workspace.name} dependencies during ${postInstall ? "postinstall" : "early install phase"} (${workspace.requiresTool} not available yet)`
       );
+      continue;
+    }
+
+    // If tool is not available and we're not in early phases, this is an error
+    if (!toolAvailable && !(postInstall || earlyInstall)) {
+      const errorMsg = `${workspace.requiresTool} not available for ${workspace.name} dependencies`;
+      log.error(errorMsg);
+      if (workspace.critical) {
+        errors.push(errorMsg);
+      }
       continue;
     }
 
@@ -344,20 +357,20 @@ async function main(): Promise<void> {
 
     await validateRootDirectory();
 
-    // During postinstall or early install phase, be more forgiving
+    // Check tool availability first
+    const tools = await checkToolsAvailable();
+
+    // During postinstall or early install phase, be more forgiving but still try if tools are available
     if (postInstall || earlyInstall) {
       log.info(
         `Running during ${postInstall ? "postinstall" : "early install phase"} - will skip dependencies that require tools not yet installed`
       );
 
-      // Check if we should even attempt turbo in early phases
-      const tools = await checkToolsAvailable();
-      if (!tools.forge && !tools.helm && !tools.turbo) {
-        log.warn(
-          "No required tools available, skipping turbo and going directly to manual execution with tool checking"
+      // If we have tools available, try turbo, otherwise go directly to manual with tool checking
+      if (tools.forge || tools.helm || tools.turbo) {
+        log.info(
+          "Some tools are available, attempting dependency installation..."
         );
-        await runDependenciesManually();
-      } else {
         try {
           await runDependenciesViaTurbo();
         } catch (turboError) {
@@ -366,9 +379,15 @@ async function main(): Promise<void> {
           );
           await runDependenciesManually();
         }
+      } else {
+        log.warn(
+          "No required tools available, skipping dependency installation (will be retried later when tools are available)"
+        );
+        await runDependenciesManually(); // This will skip everything but log the attempts
       }
     } else {
-      // Normal execution - try turbo first, fall back to manual execution if needed
+      // Normal execution - tools should be available, so install dependencies
+      log.info("Normal execution mode - installing dependencies...");
       try {
         await runDependenciesViaTurbo();
       } catch (turboError) {
