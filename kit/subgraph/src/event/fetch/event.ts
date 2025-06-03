@@ -1,7 +1,11 @@
 import { Address, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
-import { Event, EventValue } from "../../../generated/schema";
+import {
+  Account,
+  Event,
+  EventValue,
+  Identity,
+} from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
-import { fetchIdentity } from "../../identity/fetch/identity";
 
 export function convertEthereumValue(value: ethereum.Value): string {
   if (value.kind == ethereum.ValueKind.ADDRESS) {
@@ -45,12 +49,7 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
     return eventEntity;
   }
 
-  const emitterIdentity = fetchIdentity(event.address);
-  const account = emitterIdentity.account.load();
-  const emitter =
-    account && account.length > 0
-      ? fetchAccount(Address.fromBytes(account[0].id))
-      : null;
+  const emitter = getAccount(event.address);
   const txSender = fetchAccount(event.transaction.from);
 
   const entry = new Event(id);
@@ -59,39 +58,15 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
   entry.blockTimestamp = event.block.timestamp;
   entry.txIndex = event.transaction.index;
   entry.transactionHash = event.transaction.hash;
-  if (emitter) {
-    log.info(
-      "Emitter mapped for event '{}' with emitter '{}' and identity '{}'",
-      [eventType, emitter.id.toHexString(), emitterIdentity.id.toHexString()]
-    );
-    entry.emitter = emitter.id;
-  } else {
-    log.warning("No emitter found for event '{}' with identity '{}'", [
-      eventType,
-      emitterIdentity.id.toHexString(),
-    ]);
-    entry.emitter = txSender.id;
-  }
+  entry.emitter = emitter.id;
   entry.sender = txSender.id;
 
-  const involvedAccounts: Bytes[] = [txSender.id];
-  if (emitter) {
-    involvedAccounts.push(emitter.id);
-  }
+  const involvedAccounts: Bytes[] = [txSender.id, emitter.id];
 
   for (let i = 0; i < event.parameters.length; i++) {
     const param = event.parameters[i];
     if (param.value.kind == ethereum.ValueKind.ADDRESS) {
-      const isEmitterIdentity =
-        param.value.toAddress().toHexString() == event.address.toHexString();
-      if (isEmitterIdentity) {
-        log.info("Skipping emitter identity for event '{}' with id '{}'", [
-          eventType,
-          id.toHexString(),
-        ]);
-        continue;
-      }
-      const address = fetchAccount(param.value.toAddress());
+      const address = getAccount(param.value.toAddress());
       if (param.name == "sender") {
         entry.sender = address.id;
       }
@@ -131,4 +106,16 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
   }
 
   return entry;
+}
+
+function getAccount(address: Address): Account {
+  // First check if the address is an existing identity
+  const identity = Identity.load(address);
+  if (identity) {
+    const accounts = identity.account.load();
+    if (accounts && accounts.length > 0) {
+      return accounts[0];
+    }
+  }
+  return fetchAccount(address);
 }
