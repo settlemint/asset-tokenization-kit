@@ -11,16 +11,14 @@ export function updateCollateral(collateralClaim: IdentityClaim): void {
   const identityAddress = Address.fromBytes(collateralClaim.identity);
 
   const identity = fetchIdentity(identityAddress);
-  const tokens = identity.token.load();
-  if (!tokens || tokens.length === 0) {
-    log.warning(`No tokens found for identity {}`, [
+  if (!identity.token) {
+    log.warning(`No token found for identity {}`, [
       identityAddress.toHexString(),
     ]);
     return;
   }
 
-  const token = tokens[0];
-  const collateral = fetchCollateral(Address.fromBytes(token.id));
+  const collateral = fetchCollateral(Address.fromBytes(identity.token!));
   collateral.identityClaim = collateralClaim.id;
 
   collateral.save();
