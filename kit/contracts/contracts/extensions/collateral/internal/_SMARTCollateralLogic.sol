@@ -6,7 +6,6 @@ import { ISMARTIdentityRegistry } from "../../../interface/ISMARTIdentityRegistr
 import { IERC3643TrustedIssuersRegistry } from "../../../interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
-import { InsufficientCollateral, InvalidCollateralTopic } from "../SMARTCollateralErrors.sol";
 import { ISMARTCollateral } from "../ISMARTCollateral.sol";
 
 /// @title Internal Logic for SMART Collateral Extension

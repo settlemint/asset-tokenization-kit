@@ -1,14 +1,23 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem";
-import { investorA, investorB } from "../entities/actors/investors";
+import {
+  frozenInvestor,
+  investorA,
+  investorB,
+} from "../entities/actors/investors";
 
 import { SMARTTopic } from "../constants/topics";
+import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { smartProtocolDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
-import { burn } from "./actions/burn";
-import { mint } from "./actions/mint";
+import { burn } from "./actions/burnable/burn";
+import { mint } from "./actions/core/mint";
+import { transfer } from "./actions/core/transfer";
+import { forcedTransfer } from "./actions/custodian/forced-transfer";
+import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
+import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
+import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
-import { transfer } from "./actions/transfer";
 
 export const createDeposit = async () => {
   console.log("\n=== Creating deposit... ===\n");
@@ -49,12 +58,18 @@ export const createDeposit = async () => {
     collateral: 1000n,
   });
 
+  // core
   await mint(deposit, investorA, 1000n);
   await transfer(deposit, investorA, investorB, 500n);
+
+  // burnable
   await burn(deposit, investorB, 250n);
 
-  // create some users with identity claims
-  // burn
+  // custodian
+  await forcedTransfer(deposit, owner, investorA, investorB, 250n);
+  await setAddressFrozen(deposit, owner, frozenInvestor, true);
+  await freezePartialTokens(deposit, owner, investorB, 250n);
+  await unfreezePartialTokens(deposit, owner, investorB, 125n);
 
   // TODO: execute all other functions of the deposit
 

@@ -10,7 +10,6 @@ import { ISMARTCompliance } from "../../../contracts/interface/ISMARTCompliance.
 import { ISMARTComplianceModule } from "../../../contracts/interface/ISMARTComplianceModule.sol";
 import { ISMART } from "../../../contracts/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ZeroAddressNotAllowed } from "../../../contracts/extensions/common/CommonErrors.sol";
 
 import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -144,7 +143,7 @@ contract SMARTComplianceImplementationTest is Test {
 
     function testIsValidComplianceModuleWithZeroAddress() public {
         bytes memory params = abi.encode(uint256(100));
-        vm.expectRevert(ZeroAddressNotAllowed.selector);
+        vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
         ISMARTCompliance(address(compliance)).isValidComplianceModule(address(0), params);
     }
 
@@ -177,7 +176,7 @@ contract SMARTComplianceImplementationTest is Test {
         pairs[0] = SMARTComplianceModuleParamPair(address(validModule), abi.encode(uint256(100)));
         pairs[1] = SMARTComplianceModuleParamPair(address(0), abi.encode(uint256(200)));
 
-        vm.expectRevert(ZeroAddressNotAllowed.selector);
+        vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
         ISMARTCompliance(address(compliance)).areValidComplianceModules(pairs);
     }
 

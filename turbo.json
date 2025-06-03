@@ -37,6 +37,11 @@
     "format": {},
     "lint": {
       "dependsOn": ["//#version"]
+    },
+    "dev": {
+      "dependsOn": ["dapp#codegen"],
+      "cache": false,
+      "persistent": true
     }
   }
 }

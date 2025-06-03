@@ -1,4 +1,5 @@
 import { getUser } from "@/lib/auth/utils";
+import { getAssetActivity } from "@/lib/queries/asset-activity/asset-activity";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
 import { isTokenAdmin } from "@/lib/utils/has-role";
@@ -36,6 +37,10 @@ export async function MicaRegulationLayout({
     address,
   });
 
+  const [{ burnEventCount = 0n } = {}] = await getAssetActivity({
+    assetAddress: address,
+  });
+
   const canEdit = isTokenAdmin(user?.wallet, assetDetails);
 
   return (
@@ -63,7 +68,7 @@ export async function MicaRegulationLayout({
         <KycMonitoringLayout locale={locale} />
       </div>
       <div className="md:col-span-3">
-        <ConsumerProtectionLayout />
+        <ConsumerProtectionLayout burnEventCount={burnEventCount} />
       </div>
     </div>
   );

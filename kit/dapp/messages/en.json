@@ -3122,6 +3122,17 @@
             "sanction-lists": "Sanction Lists",
             "enabled": "Enabled"
           }
+        },
+        "consumer-protection": {
+          "title": "Consumer protection",
+          "description": "The consumer protection status of the asset",
+          "total-redemptions": "Total redemptions",
+          "average-redemption-time": "Average redemption time",
+          "completed-within-24-hours": "Completed within 24 hours",
+          "redemptions-at-par-value": "Redemptions at par value",
+          "redemptions-at-par-value-info": "Par value is the original issued price of a token, regardless of its current market value",
+          "compliant": "Compliant",
+          "non-compliant": "Non-compliant"
         }
       }
     }

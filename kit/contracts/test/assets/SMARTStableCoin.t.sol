@@ -11,14 +11,14 @@ import { SMARTStableCoinFactoryImplementation } from
 import { SMARTStableCoinImplementation } from "../../contracts/assets/stable-coin/SMARTStableCoinImplementation.sol";
 import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
 import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
-import { InvalidDecimals } from "../../contracts/extensions/core/SMARTErrors.sol";
 import { ClaimUtils } from "../../test/utils/ClaimUtils.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { InsufficientCollateral } from "../../contracts/extensions/collateral/SMARTCollateralErrors.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMART } from "../../contracts/interface/ISMART.sol";
+import { ISMARTCollateral } from "../../contracts/extensions/collateral/ISMARTCollateral.sol";
 
 contract SMARTStableCoinTest is AbstractSMARTAssetTest {
     ISMARTStableCoinFactory public stableCoinFactory;
@@ -145,7 +145,7 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
 
-        vm.expectRevert(abi.encodeWithSelector(InvalidDecimals.selector, 19));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidDecimals.selector, 19));
         stableCoinFactory.createStableCoin(
             "StableCoin 19", "STBL19", 19, new uint256[](0), new SMARTComplianceModuleParamPair[](0)
         );
@@ -231,7 +231,8 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
 
         // Expect mint to revert due to insufficient collateral
         vm.startPrank(owner);
-        vm.expectRevert(abi.encodeWithSelector(InsufficientCollateral.selector, 100, 0)); // Assuming mint amount is 100
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCollateral.InsufficientCollateral.selector, 100, 0)); // Assuming
+            // mint amount is 100
         stableCoin.mint(user1, 100);
         vm.stopPrank();
 

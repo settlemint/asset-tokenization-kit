@@ -3,21 +3,24 @@ import { addTrustedIssuer } from "./actions/add-trusted-issuer";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
-import { forcedTransfer } from "./assets/actions/forced-transfer";
-import { grantRole } from "./assets/actions/grant-role";
-import { mint } from "./assets/actions/mint";
-import { recoverErc20Tokens } from "./assets/actions/recover-erc20-tokens";
-import { recoverTokens } from "./assets/actions/recover-tokens";
+import { grantRoles } from "./assets/actions/core/grant-roles";
+import { mint } from "./assets/actions/core/mint";
+import { recoverErc20Tokens } from "./assets/actions/core/recover-erc20-tokens";
+import { recoverTokens } from "./assets/actions/core/recover-tokens";
+import { forcedRecoverTokens } from "./assets/actions/custodian/forced-recover-tokens";
+import { forcedTransfer } from "./assets/actions/custodian/forced-transfer";
 import { createBond } from "./assets/bond";
 import { createDeposit } from "./assets/deposit";
 import { createEquity } from "./assets/equity";
 import { createFund } from "./assets/fund";
+import { createPausedAsset } from "./assets/paused";
 import { createStableCoin } from "./assets/stablecoin";
 import { Countries } from "./constants/countries";
 import { SMARTRoles } from "./constants/roles";
 import { SMARTTopic } from "./constants/topics";
 import { claimIssuer } from "./entities/actors/claim-issuer";
 import {
+  frozenInvestor,
   investorA,
   investorANew,
   investorB,
@@ -42,6 +45,7 @@ async function main() {
     claimIssuer.initialize(),
     investorA.initialize(),
     investorB.initialize(),
+    frozenInvestor.initialize(),
   ]);
 
   // Print initial balances
@@ -49,9 +53,10 @@ async function main() {
   await claimIssuer.printBalance();
   await investorA.printBalance();
   await investorB.printBalance();
+  await frozenInvestor.printBalance();
 
   // Add the actors to the registry
-  await batchAddToRegistry([owner, investorA, investorB]);
+  await batchAddToRegistry([owner, investorA, investorB, frozenInvestor]);
 
   console.log("\n=== Setting up topics and trusted issuers... ===\n");
 
@@ -74,6 +79,7 @@ async function main() {
     issueVerificationClaims(owner),
     issueVerificationClaims(investorA),
     issueVerificationClaims(investorB),
+    issueVerificationClaims(frozenInvestor),
   ]);
 
   console.log("\n=== Setting up compliance modules... ===\n");
@@ -88,11 +94,13 @@ async function main() {
   const fund = await createFund();
   const stableCoin = await createStableCoin();
 
+  await createPausedAsset();
+
   // Recover identity & tokens
   console.log("\n=== Recover identity & tokens... ===\n");
   await investorANew.initialize();
   await recoverIdentity(investorA, investorANew);
-  await recoverTokens(deposit, investorANew, investorA.address);
+  await forcedRecoverTokens(deposit, owner, investorANew, investorA.address);
   await recoverTokens(equity, investorANew, investorA.address);
   await recoverTokens(bond, investorANew, investorA.address);
   await recoverTokens(fund, investorANew, investorA.address);
@@ -104,11 +112,10 @@ async function main() {
   console.log("\n=== Recover ERC20 tokens! ===\n");
   await mint(stableCoin, investorANew, 10n);
 
-  await grantRole(stableCoin, owner, SMARTRoles.custodianRole);
   // need to force transfer it into the equity contract ... else it will throw RecipientNotVerified
   await forcedTransfer(stableCoin, owner, investorANew, equity, 10n);
 
-  await grantRole(equity, owner, SMARTRoles.emergencyRole);
+  await grantRoles(equity, owner, [SMARTRoles.emergencyRole]);
   await recoverErc20Tokens(equity, owner, stableCoin, investorANew, 10n);
 }
 

@@ -3,13 +3,22 @@ import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { smartProtocolDeployer } from "../services/deployer";
 
 import { SMARTTopic } from "../constants/topics";
-import { investorA, investorB } from "../entities/actors/investors";
+import {
+  frozenInvestor,
+  investorA,
+  investorB,
+} from "../entities/actors/investors";
+import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
-import { burn } from "./actions/burn";
-import { mint } from "./actions/mint";
+import { burn } from "./actions/burnable/burn";
+import { mint } from "./actions/core/mint";
+import { transfer } from "./actions/core/transfer";
+import { forcedTransfer } from "./actions/custodian/forced-transfer";
+import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
+import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
+import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
-import { transfer } from "./actions/transfer";
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
@@ -52,9 +61,18 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   await setupAsset(bond);
 
+  // core
   await mint(bond, investorA, 10n);
   await transfer(bond, investorA, investorB, 5n);
+
+  // burnable
   await burn(bond, investorB, 2n);
+
+  // custodian
+  await forcedTransfer(bond, owner, investorA, investorB, 2n);
+  await setAddressFrozen(bond, owner, frozenInvestor, true);
+  await freezePartialTokens(bond, owner, investorB, 2n);
+  await unfreezePartialTokens(bond, owner, investorB, 2n);
 
   // TODO: add yield etc
   // TODO: execute all other functions of the bond

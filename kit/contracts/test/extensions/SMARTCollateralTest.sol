@@ -8,7 +8,6 @@ import { ClaimUtils } from "../utils/ClaimUtils.sol";
 import { ISMART } from "../../contracts/interface/ISMART.sol";
 import { ISMARTCollateral } from "../../contracts/extensions/collateral/ISMARTCollateral.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { InsufficientCollateral } from "../../contracts/extensions/collateral/SMARTCollateralErrors.sol";
 
 abstract contract SMARTCollateralTest is AbstractSMARTTest {
     uint256 internal constant COLLATERAL_AMOUNT = 1_000_000 ether; // Example collateral amount
@@ -44,7 +43,11 @@ abstract contract SMARTCollateralTest is AbstractSMARTTest {
         uint256 currentSupply = token.totalSupply(); // Could be 0
         uint256 requiredSupply = currentSupply + MINT_AMOUNT;
 
-        vm.expectRevert(abi.encodeWithSelector(InsufficientCollateral.selector, requiredSupply, insufficientCollateral));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTCollateral.InsufficientCollateral.selector, requiredSupply, insufficientCollateral
+            )
+        );
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, MINT_AMOUNT);
     }
 
@@ -82,7 +85,9 @@ abstract contract SMARTCollateralTest is AbstractSMARTTest {
         uint256 mintAmount2 = specificCollateral / 2 + 1 ether; // Exceeds limit
         uint256 requiredSupply = supplyAfter1 + mintAmount2;
 
-        vm.expectRevert(abi.encodeWithSelector(InsufficientCollateral.selector, requiredSupply, specificCollateral));
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTCollateral.InsufficientCollateral.selector, requiredSupply, specificCollateral)
+        );
         tokenUtils.mintToken(address(token), tokenIssuer, clientJP, mintAmount2);
     }
 
@@ -100,7 +105,8 @@ abstract contract SMARTCollateralTest is AbstractSMARTTest {
 
         // Expect revert because findValidCollateralClaim returns 0 for expired claims
         vm.expectRevert(
-            abi.encodeWithSelector(InsufficientCollateral.selector, requiredSupply, 0) // Available collateral is 0
+            abi.encodeWithSelector(ISMARTCollateral.InsufficientCollateral.selector, requiredSupply, 0) // Available
+                // collateral is 0
         );
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, MINT_AMOUNT);
     }
@@ -114,7 +120,8 @@ abstract contract SMARTCollateralTest is AbstractSMARTTest {
 
         // Expect revert because findValidCollateralClaim returns 0
         vm.expectRevert(
-            abi.encodeWithSelector(InsufficientCollateral.selector, requiredSupply, 0) // Available collateral is 0
+            abi.encodeWithSelector(ISMARTCollateral.InsufficientCollateral.selector, requiredSupply, 0) // Available
+                // collateral is 0
         );
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, MINT_AMOUNT);
     }
@@ -152,7 +159,8 @@ abstract contract SMARTCollateralTest is AbstractSMARTTest {
         // findValidCollateralClaim will iterate issuers, find the claim, but see it's not from a trusted source for the
         // topic.
         vm.expectRevert(
-            abi.encodeWithSelector(InsufficientCollateral.selector, requiredSupply, 0) // Available collateral is 0
+            abi.encodeWithSelector(ISMARTCollateral.InsufficientCollateral.selector, requiredSupply, 0) // Available
+                // collateral is 0
         );
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, MINT_AMOUNT);
     }
