@@ -157,7 +157,19 @@ async function main(): Promise<void> {
     log.info(`Using charts directory: ${projectDir}`);
 
     // Check if helm is installed
-    await checkHelmInstalled();
+    try {
+      await checkHelmInstalled();
+    } catch (helmError) {
+      if (ci) {
+        // In CI, if helm isn't available, treat as non-critical
+        log.warn(`Helm not available: ${helmError instanceof Error ? helmError.message : String(helmError)}`);
+        log.info("Chart dependencies will be skipped in CI when Helm is not available");
+        return; // Exit gracefully in CI when helm isn't available
+      } else {
+        // In local development, helm must be available
+        throw helmError;
+      }
+    }
 
     // Get charts with dependencies
     const chartsWithDeps = await getChartsWithDependencies(projectDir);
@@ -194,6 +206,7 @@ async function main(): Promise<void> {
       // In CI, even fatal errors should be warnings for chart dependencies
       log.warn(`Chart dependencies update failed: ${error instanceof Error ? error.message : String(error)}`);
       log.info("Chart dependency errors are treated as non-critical in CI environments");
+      // Don't exit with error in CI
     } else {
       log.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
       process.exit(1);
