@@ -375,3 +375,69 @@ templates:
         - event: CapSet(indexed address,uint256)
           handler: handleCapSet
       file: ./src/capped/capped.ts
+  - kind: ethereum
+    name: Yield
+    network: settlemint
+    source:
+      abi: Yield
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - CheckpointUpdated
+        - YieldScheduleSet
+      abis:
+        - name: Yield
+          file: ../contracts/artifacts/contracts/extensions/yield/ISMARTYield.sol/ISMARTYield.json
+      eventHandlers:
+        - event: CheckpointUpdated(indexed address,indexed address,uint256,uint256)
+          handler: handleCheckpointUpdated
+        - event: YieldScheduleSet(indexed address,indexed address)
+          handler: handleYieldScheduleSet
+      file: ./src/yield/yield.ts
+  - kind: ethereum
+    name: FixedYieldScheduleFactory
+    network: settlemint
+    source:
+      abi: FixedYieldScheduleFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - SMARTFixedYieldScheduleCreated
+      abis:
+        - name: FixedYieldScheduleFactory
+          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json
+      eventHandlers:
+        - event: SMARTFixedYieldScheduleCreated(indexed address,indexed address)
+          handler: handleSMARTFixedYieldScheduleCreated
+      file: ./src/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
+  - kind: ethereum
+    name: FixedYieldSchedule
+    network: settlemint
+    source:
+      abi: FixedYieldSchedule
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - FixedYieldScheduleSet
+        - UnderlyingAssetTopUp
+        - UnderlyingAssetWithdrawn
+        - YieldClaimed
+      abis:
+        - name: FixedYieldSchedule
+          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
+      eventHandlers:
+        - event: FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address)
+          handler: handleFixedYieldScheduleSet
+        - event: UnderlyingAssetTopUp(indexed address,uint256)
+          handler: handleUnderlyingAssetTopUp
+        - event: UnderlyingAssetWithdrawn(indexed address,uint256)
+          handler: handleUnderlyingAssetWithdrawn
+        - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
+          handler: handleYieldClaimed
+      file: ./src/fixed-yield-schedule/fixed-yield-schedule.ts

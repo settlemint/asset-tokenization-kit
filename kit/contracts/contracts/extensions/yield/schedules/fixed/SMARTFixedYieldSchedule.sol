@@ -120,39 +120,10 @@ contract SMARTFixedYieldSchedule is
     /// @dev This helps in tracking the overall distribution progress and can be used with `totalUnclaimedYield`.
     uint256 private _totalClaimed;
 
-    /// @notice Emitted when an administrator or funder successfully deposits `_underlyingAsset` into the contract to
-    /// fund yield payments.
-    /// @param from The address that sent the `_underlyingAsset` tokens (the funder).
-    /// @param amount The quantity of `_underlyingAsset` tokens deposited.
-    event UnderlyingAssetTopUp(address indexed from, uint256 amount);
-
-    /// @notice Emitted when an administrator successfully withdraws `_underlyingAsset` from the contract.
-    /// @param to The address that received the withdrawn `_underlyingAsset` tokens.
-    /// @param amount The quantity of `_underlyingAsset` tokens withdrawn.
-    event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
-
-    /// @notice Emitted when a token holder successfully claims their accrued yield.
-    /// @param holder The address of the token holder who claimed the yield.
-    /// @param totalAmount The total quantity of `_underlyingAsset` transferred to the holder in this claim.
-    /// @param fromPeriod The first period number (1-indexed) included in this claim.
-    /// @param toPeriod The last period number (1-indexed) included in this claim.
-    /// @param periodAmounts An array containing the amount of yield claimed for each specific period within the
-    /// `fromPeriod` to `toPeriod` range.
-    /// The length of this array is `toPeriod - fromPeriod + 1`.
-    /// @param unclaimedYield The total amount of unclaimed yield remaining in the contract across all holders after
-    /// this claim.
-    event YieldClaimed( // Amounts per period, matches the range fromPeriod to toPeriod
-        address indexed holder,
-        uint256 totalAmount,
-        uint256 fromPeriod,
-        uint256 toPeriod,
-        uint256[] periodAmounts,
-        uint256 unclaimedYield
-    );
-
     /// @notice Constructor to deploy a new `SMARTFixedYieldSchedule` contract.
     /// @dev Initializes all immutable parameters of the yield schedule and sets up administrative roles.
     /// It calculates and caches all period end timestamps for gas efficiency.
+    /// Emits `YieldSet` event.
     /// @param tokenAddress The address of the `ISMARTYield`-compliant token this schedule is for.
     /// @param initialOwner The address that will be granted `DEFAULT_ADMIN_ROLE`, giving control over pausable
     /// functions and withdrawals.
@@ -210,6 +181,10 @@ contract SMARTFixedYieldSchedule is
         // Grant the `DEFAULT_ADMIN_ROLE` to the `initialOwner`.
         // This role typically controls pausing, unpausing, and withdrawing funds.
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
+
+        emit ISMARTFixedYieldSchedule.FixedYieldScheduleSet(
+            startDate_, endDate_, rate_, interval_, _periodEndTimestamps, _underlyingAsset
+        );
     }
 
     /// @dev Overridden from `Context` and `ERC2771Context` to correctly identify the transaction sender,
@@ -466,7 +441,9 @@ contract SMARTFixedYieldSchedule is
         // Calculate the remaining total unclaimed yield in the contract for the event.
         uint256 remainingUnclaimed = totalUnclaimedYield();
 
-        emit YieldClaimed(sender, totalAmountToClaim, fromPeriod, lastPeriod, periodAmounts, remainingUnclaimed);
+        emit ISMARTFixedYieldSchedule.YieldClaimed(
+            sender, totalAmountToClaim, fromPeriod, lastPeriod, periodAmounts, remainingUnclaimed
+        );
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -476,7 +453,7 @@ contract SMARTFixedYieldSchedule is
         // Transfer `_underlyingAsset` from the caller to this contract.
         _underlyingAsset.safeTransferFrom(_msgSender(), address(this), amount);
 
-        emit UnderlyingAssetTopUp(_msgSender(), amount);
+        emit ISMARTFixedYieldSchedule.UnderlyingAssetTopUp(_msgSender(), amount);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -499,7 +476,7 @@ contract SMARTFixedYieldSchedule is
 
         _underlyingAsset.safeTransfer(to, amount);
 
-        emit UnderlyingAssetWithdrawn(to, amount);
+        emit ISMARTFixedYieldSchedule.UnderlyingAssetWithdrawn(to, amount);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -518,7 +495,7 @@ contract SMARTFixedYieldSchedule is
 
         _underlyingAsset.safeTransfer(to, balance);
 
-        emit UnderlyingAssetWithdrawn(to, balance);
+        emit ISMARTFixedYieldSchedule.UnderlyingAssetWithdrawn(to, balance);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule

@@ -10,6 +10,8 @@ import { burn } from "./actions/burn";
 import { mint } from "./actions/mint";
 import { setupAsset } from "./actions/setup-asset";
 import { transfer } from "./actions/transfer";
+import { claimYield } from "./actions/yield/claim-yield";
+import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
@@ -56,7 +58,15 @@ export const createBond = async (depositToken: Asset<any>) => {
   await transfer(bond, investorA, investorB, 5n);
   await burn(bond, investorB, 2n);
 
-  // TODO: add yield etc
+  await setYieldSchedule(
+    bond,
+    new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day from now
+    new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+    500, // 5%
+    86400 // 1 day
+  );
+  await claimYield(bond);
+
   // TODO: execute all other functions of the bond
 
   return bond;

@@ -133,6 +133,7 @@ type Token @entity(immutable: false) {
   pausable: TokenPausable
   collateral: TokenCollateral
   capped: TokenCapped
+  yield: TokenYield
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -162,6 +163,36 @@ type TokenCapped @entity(immutable: false) {
   id: Bytes!
   cap: BigDecimal!
   capExact: BigInt!
+}
+
+type TokenYield @entity(immutable: false) {
+  id: Bytes!
+  schedule: TokenFixedYieldSchedule!
+}
+
+type TokenFixedYieldSchedule @entity(immutable: false) {
+  id: Bytes!
+  underlyingToken: Token!
+  startDate: BigInt!
+  endDate: BigInt!
+  rate: BigInt!
+  interval: BigInt!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
+  underlyingBalance: BigDecimal!
+  underlyingBalanceExact: BigInt!
+  periods: [TokenFixedYieldSchedulePeriod!]! @derivedFrom(field: "schedule")
+}
+
+type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
+  id: Bytes!
+  schedule: TokenFixedYieldSchedule!
+  startDate: BigInt!
+  endDate: BigInt!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
+  totalYield: BigDecimal!
+  totalYieldExact: BigInt!
 }
 
 type Identity @entity(immutable: false) {
