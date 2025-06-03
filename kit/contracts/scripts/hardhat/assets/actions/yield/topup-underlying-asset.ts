@@ -4,6 +4,7 @@ import { Asset } from "../../../entities/asset";
 import { toDecimals } from "../../../utils/to-decimals";
 import { waitForEvent } from "../../../utils/wait-for-event";
 import { approve } from "../core/approve";
+import { mint } from "../core/mint";
 
 export const topupUnderlyingAsset = async (
   asset: Asset<any>,
@@ -16,6 +17,7 @@ export const topupUnderlyingAsset = async (
   });
 
   const scheduleAddress = await tokenContract.read.yieldSchedule();
+  await mint(underlyingAsset, owner, amount);
   await approve(underlyingAsset, scheduleAddress, amount);
 
   const scheduleContract = owner.getContractInstance({

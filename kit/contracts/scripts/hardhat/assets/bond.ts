@@ -62,7 +62,6 @@ export const createBond = async (depositToken: Asset<any>) => {
   await setupAsset(bond);
 
   // core
-  await mint(bond, owner, 1000n);
   await mint(bond, investorA, 10n);
   await transfer(bond, investorA, investorB, 5n);
 
