@@ -22,6 +22,15 @@
     "codegen": {
       "dependsOn": ["dependencies"]
     },
+    "subgraph#codegen": {
+      "dependsOn": ["contracts#compile:hardhat", "contracts#compile:forge"]
+    },
+    "contracts#codegen:types": {
+      "dependsOn": ["contracts#compile:hardhat", "contracts#compile:forge"]
+    },
+    "contracts#codegen:genesis": {
+      "dependsOn": ["contracts#compile:hardhat", "contracts#compile:forge"]
+    },
     "compile": {
       "dependsOn": ["dependencies"]
     },
