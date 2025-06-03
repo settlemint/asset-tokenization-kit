@@ -1,40 +1,13 @@
 /**
  * Tests for MICA regulation provider implementation
  */
+import { mockInsert, mockSelect, mockUpdate } from "@/lib/db/mock";
 import type {
   MicaDocument,
   MicaRegulationConfig,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { MicaRegulationProvider } from "./mica-regulation-provider";
-
-// Mock database operations
-const mockInsert = mock(() => ({
-  values: mock(() => Promise.resolve()),
-}));
-
-const mockUpdate = mock(() => ({
-  set: mock(() => ({
-    where: mock(() => Promise.resolve()),
-  })),
-}));
-
-const mockSelect = mock(() => ({
-  from: mock(() => ({
-    where: mock(() => ({
-      execute: mock(() => []),
-    })),
-  })),
-}));
-
-// Mock the db module
-mock.module("@/lib/db", () => ({
-  db: {
-    select: mockSelect,
-    insert: mockInsert,
-    update: mockUpdate,
-  },
-}));
 
 // Mock transaction
 const mockTx = {
@@ -168,7 +141,7 @@ describe("MICA Regulation Provider", () => {
           corporateBonds: 5,
           centralBankAssets: 5,
         },
-      } as unknown as MicaRegulationConfig;
+      } as MicaRegulationConfig;
 
       // Configure mock to return the config
       mockSelect.mockImplementation(() => ({
