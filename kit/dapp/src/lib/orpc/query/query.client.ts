@@ -1,8 +1,7 @@
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { cache } from "react";
-import { toast } from "sonner";
 
 // Constants for better maintainability
 const QUERY_CACHE_TIME = 1000 * 60 * 60 * 24; // 24 hours
@@ -18,66 +17,8 @@ interface QueryError extends Error {
   data?: unknown;
 }
 
-// Enhanced error handler with more context
-function handleQueryError(error: unknown): void {
-  const queryError = error as QueryError;
-
-  // Don't show toast for network errors that will be retried
-  if (queryError.code === "NETWORK_ERROR") {
-    return;
-  }
-
-  // Provide more specific error messages based on error type
-  const errorMessage =
-    queryError.status === 401
-      ? "Authentication required. Please log in."
-      : queryError.status === 403
-        ? "You don't have permission to perform this action."
-        : queryError.status === 404
-          ? "The requested resource was not found."
-          : queryError.status && queryError.status >= 500
-            ? "Server error. Please try again later."
-            : queryError.message || "An unexpected error occurred";
-
-  toast.error(errorMessage, {
-    action:
-      queryError.status !== 401
-        ? {
-            label: "Retry",
-            onClick: () => {
-              // Get the query client instance to invalidate queries
-              const client = getQueryClient();
-              client.invalidateQueries();
-            },
-          }
-        : undefined,
-    duration: queryError.status && queryError.status >= 500 ? 10000 : 5000,
-  });
-}
-
 const getQueryClient = cache(() => {
   const queryClient = new QueryClient({
-    queryCache: new QueryCache({
-      onError: handleQueryError,
-      onSuccess: () => {
-        // Optional: Clear any error toasts on successful refetch
-      },
-    }),
-    mutationCache: new MutationCache({
-      onError: (error, _variables, _context, mutation) => {
-        // Handle mutation-specific errors
-        if (mutation.options.onError) {
-          return; // Let the mutation handle its own error
-        }
-        handleQueryError(error);
-      },
-      onSuccess: (_data, _variables, _context, mutation) => {
-        // Show success toast for mutations if configured
-        if (mutation.meta?.successMessage) {
-          toast.success(mutation.meta.successMessage as string);
-        }
-      },
-    }),
     defaultOptions: {
       queries: {
         refetchOnWindowFocus: process.env.NODE_ENV === "production",
@@ -122,16 +63,6 @@ const getQueryClient = cache(() => {
       },
     },
   });
-
-  // Set up global error boundary integration
-  if (typeof window !== "undefined") {
-    window.addEventListener("unhandledrejection", (event) => {
-      if (event.reason?.name === "QueryError") {
-        event.preventDefault();
-        handleQueryError(event.reason);
-      }
-    });
-  }
 
   return queryClient;
 });

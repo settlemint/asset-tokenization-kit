@@ -1,12 +1,8 @@
-import { AuthProvider } from "@/components/blocks/auth/auth-provider";
-import { ThemeProvider } from "@/components/blocks/theme/theme-provider";
-import { TransitionProvider } from "@/components/layout/transition-provider";
-import { PostHogProvider } from "@/components/providers/PostHogProvider";
+import { Providers } from "@/components/providers/Providers";
 import { routing } from "@/i18n/routing";
 import { getServerEnvironment } from "@/lib/config/environment";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
-import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { Figtree, Roboto_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
@@ -65,26 +61,10 @@ export default async function RootLayout({
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       </head> */}
         <body className="min-h-screen antialiased">
-          <PostHogProvider>
-            <NextIntlClientProvider timeZone={timeZone}>
-              <ThemeProvider attribute="class" enableColorScheme enableSystem>
-                <TransitionProvider>
-                  <AuthProvider
-                    emailEnabled={!!env.RESEND_API_KEY}
-                    googleEnabled={
-                      !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET)
-                    }
-                    githubEnabled={
-                      !!(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET)
-                    }
-                  >
-                    {children}
-                  </AuthProvider>
-                </TransitionProvider>
-              </ThemeProvider>
-              <Toaster richColors />
-            </NextIntlClientProvider>
-          </PostHogProvider>
+          <Providers>
+            {children}
+            <Toaster richColors />
+          </Providers>
         </body>
       </html>
     );
