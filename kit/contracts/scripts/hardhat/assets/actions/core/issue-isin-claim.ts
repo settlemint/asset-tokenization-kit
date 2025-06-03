@@ -1,10 +1,10 @@
-import { SMARTContracts } from "../../constants/contracts";
-import { SMARTTopic } from "../../constants/topics";
-import { claimIssuer } from "../../entities/actors/claim-issuer";
-import { owner } from "../../entities/actors/owner";
-import type { Asset } from "../../entities/asset";
-import { encodeClaimData } from "../../utils/claim-scheme-utils";
-import { waitForSuccess } from "../../utils/wait-for-success";
+import { SMARTContracts } from "../../../constants/contracts";
+import { SMARTTopic } from "../../../constants/topics";
+import { claimIssuer } from "../../../entities/actors/claim-issuer";
+import { owner } from "../../../entities/actors/owner";
+import type { Asset } from "../../../entities/asset";
+import { encodeClaimData } from "../../../utils/claim-scheme-utils";
+import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const issueIsinClaim = async (asset: Asset<any>, isin: string) => {
   const encodedIsinData = encodeClaimData(SMARTTopic.isin, [isin]);
