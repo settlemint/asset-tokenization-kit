@@ -12,7 +12,7 @@ contract TestComplianceModule is AbstractComplianceModule {
     bool private _allowTransfers;
     bool private _shouldRevertOnValidation;
 
-    constructor(string memory moduleName) {
+    constructor(string memory moduleName) AbstractComplianceModule(address(0)) {
         _moduleName = moduleName;
         _allowTransfers = true;
         _shouldRevertOnValidation = false;
