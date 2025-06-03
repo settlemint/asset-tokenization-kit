@@ -2,10 +2,12 @@ import { Address } from "viem";
 import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
+import { toDecimals } from "../../../utils/to-decimals";
 import { waitForEvent } from "../../../utils/wait-for-event";
 
 export const withdrawnUnderlyingAsset = async (
   asset: Asset<any>,
+  underlyingAsset: Asset<any>,
   to: Address,
   amount: bigint
 ) => {
@@ -20,9 +22,10 @@ export const withdrawnUnderlyingAsset = async (
     abi: SMARTContracts.ismartFixedYieldSchedule,
   });
 
+  const withdrawnAmount = toDecimals(amount, underlyingAsset.decimals);
   const transactionHash = await scheduleContract.write.withdrawUnderlyingAsset([
     to,
-    amount,
+    withdrawnAmount,
   ]);
   await waitForEvent({
     transactionHash,

@@ -92,7 +92,7 @@ export const createBond = async (depositToken: Asset<any>) => {
   await claimYield(bond);
   await new Promise((resolve) => setTimeout(resolve, 5_000));
   await claimYield(bond);
-  await withdrawnUnderlyingAsset(bond, investorA.address, 5n);
+  await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);
 
   // TODO: execute all other functions of the bond
 

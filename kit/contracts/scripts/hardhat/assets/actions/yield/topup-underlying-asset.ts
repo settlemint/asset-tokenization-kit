@@ -1,6 +1,7 @@
 import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
+import { toDecimals } from "../../../utils/to-decimals";
 import { waitForEvent } from "../../../utils/wait-for-event";
 import { approve } from "../core/approve";
 
@@ -22,8 +23,9 @@ export const topupUnderlyingAsset = async (
     abi: SMARTContracts.ismartFixedYieldSchedule,
   });
 
+  const topUpAmount = toDecimals(amount, underlyingAsset.decimals);
   const topUpTransactionHash =
-    await scheduleContract.write.topUpUnderlyingAsset([amount]);
+    await scheduleContract.write.topUpUnderlyingAsset([topUpAmount]);
   await waitForEvent({
     transactionHash: topUpTransactionHash,
     contract: scheduleContract,
