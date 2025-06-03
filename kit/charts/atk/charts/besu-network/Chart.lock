@@ -1,24 +1,24 @@
 dependencies:
 - name: besu-genesis
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: besu-node
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: besu-node
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: besu-node
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: besu-node
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: besu-node
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: besu-node
   repository: ""
-  version: '*'
-digest: sha256:b46496d01aad3385da2bfac0c217b160760414b55fd950beb358d8b92c9d56fd
-generated: "2025-04-16T11:55:06.594636+03:00"
+  version: 1.0.6-pr
+digest: sha256:9fa52a73af397c526067788c546a57e44954ef4fed970e49a43740659a85e89d
+generated: "2025-06-03T11:12:03.198051+02:00"

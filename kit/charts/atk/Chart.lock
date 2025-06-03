@@ -1,33 +1,33 @@
 dependencies:
 - name: support
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: observability
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: besu-network
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: erpc
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: blockscout
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: thegraph
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: portal
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: hasura
   repository: ""
-  version: '*'
+  version: 1.0.6-pr
 - name: txsigner
   repository: file://./charts/txsigner
-  version: 0.1.0
+  version: 1.0.6-pr
 - name: dapp
   repository: file://./charts/dapp
-  version: 0.1.0
-digest: sha256:35c4904fdc371e1e0c6dca5c18c524d97ecd8304c34c51ab589cec3c43630097
-generated: "2025-04-21T17:16:50.644333+03:00"
+  version: 1.0.6-pr
+digest: sha256:1484031f18a6907c67f3be833664633efc4f17b44d3c048aae11f5716adcb5d3
+generated: "2025-06-03T11:12:02.941042+02:00"
