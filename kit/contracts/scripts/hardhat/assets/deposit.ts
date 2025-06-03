@@ -1,5 +1,9 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem";
-import { investorA, investorB } from "../entities/actors/investors";
+import {
+  frozenInvestor,
+  investorA,
+  investorB,
+} from "../entities/actors/investors";
 
 import { SMARTTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
@@ -63,10 +67,9 @@ export const createDeposit = async () => {
 
   // custodian
   await forcedTransfer(deposit, owner, investorA, investorB, 250n);
-  await setAddressFrozen(deposit, owner, investorA, true);
-  await setAddressFrozen(deposit, owner, investorA, false);
+  await setAddressFrozen(deposit, owner, frozenInvestor, true);
   await freezePartialTokens(deposit, owner, investorB, 250n);
-  await unfreezePartialTokens(deposit, owner, investorB, 250n);
+  await unfreezePartialTokens(deposit, owner, investorB, 125n);
 
   // TODO: execute all other functions of the deposit
 

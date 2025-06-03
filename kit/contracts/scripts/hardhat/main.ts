@@ -13,12 +13,14 @@ import { createBond } from "./assets/bond";
 import { createDeposit } from "./assets/deposit";
 import { createEquity } from "./assets/equity";
 import { createFund } from "./assets/fund";
+import { createPausedAsset } from "./assets/paused";
 import { createStableCoin } from "./assets/stablecoin";
 import { Countries } from "./constants/countries";
 import { SMARTRoles } from "./constants/roles";
 import { SMARTTopic } from "./constants/topics";
 import { claimIssuer } from "./entities/actors/claim-issuer";
 import {
+  frozenInvestor,
   investorA,
   investorANew,
   investorB,
@@ -43,6 +45,7 @@ async function main() {
     claimIssuer.initialize(),
     investorA.initialize(),
     investorB.initialize(),
+    frozenInvestor.initialize(),
   ]);
 
   // Print initial balances
@@ -75,6 +78,7 @@ async function main() {
     issueVerificationClaims(owner),
     issueVerificationClaims(investorA),
     issueVerificationClaims(investorB),
+    issueVerificationClaims(frozenInvestor),
   ]);
 
   console.log("\n=== Setting up compliance modules... ===\n");
@@ -88,6 +92,8 @@ async function main() {
   const bond = await createBond(deposit);
   const fund = await createFund();
   const stableCoin = await createStableCoin();
+
+  await createPausedAsset();
 
   // Recover identity & tokens
   console.log("\n=== Recover identity & tokens... ===\n");
