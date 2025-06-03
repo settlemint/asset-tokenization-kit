@@ -9,10 +9,15 @@ import {
 import { AlertCircle, CheckCircle, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-export function ConsumerProtectionLayout() {
+export function ConsumerProtectionLayout({
+  burnEventCount,
+}: {
+  burnEventCount: bigint;
+}) {
   const t = useTranslations("regulations.mica.dashboard.consumer-protection");
 
-  const totalRedemptions = 1000; // TODO: get from API
+  // TODO: this should come from the new subgraph
+  const totalRedemptions = burnEventCount;
   const averageRedemptionTime = "-"; // We assume this is immediate
   const completedWithin24Hours = 100; // We assume this is always true
   const redemptionsAtParValue = 100; // We assume this is always true
