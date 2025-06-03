@@ -119,6 +119,7 @@ type TokenFactory @entity(immutable: false) {
 
 type Token @entity(immutable: false) {
   id: Bytes!
+  account: Account!
   accessControl: AccessControl
   identity: Identity
   balances: [TokenBalance!]! @derivedFrom(field: "token")

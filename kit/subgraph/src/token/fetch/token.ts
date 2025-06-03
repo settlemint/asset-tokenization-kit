@@ -5,6 +5,7 @@ import {
   Token as TokenTemplate,
 } from "../../../generated/templates";
 import { Token as TokenContract } from "../../../generated/templates/Token/Token";
+import { fetchAccount } from "../../account/fetch/account";
 import { fetchCollateral } from "../../collateral/fetch/collateral";
 import { fetchCustodian } from "../../custodian/fetch/custodian";
 import { InterfaceIds } from "../../erc165/utils/interfaceids";
@@ -16,6 +17,7 @@ export function fetchToken(address: Address): Token {
 
   if (!token) {
     token = new Token(address);
+    token.account = fetchAccount(address).id;
     token.type = "unknown";
 
     const tokenContract = TokenContract.bind(address);
