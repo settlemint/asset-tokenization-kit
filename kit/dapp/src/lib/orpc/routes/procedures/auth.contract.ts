@@ -4,7 +4,7 @@ import { oo } from "@orpc/openapi";
 export const ac = bc.errors({
   UNAUTHORIZED: oo.spec(
     {
-      message: "Unauthorized",
+      message: "Authentication missing or failed",
     },
     {
       security: [{ apiKey: [] }],
