@@ -27,7 +27,7 @@ export type PredictStandardAirdropAddressInput = StaticDecode<
 >;
 
 export const PredictedStandardAirdropAddressSchema = t.Object({
-  AirdropFactory: t.Object({
+  AirdropFactory2: t.Object({
     predictStandardAirdropAddress: t.Object({
       predictedAddress: t.EthereumAddress(),
     }),

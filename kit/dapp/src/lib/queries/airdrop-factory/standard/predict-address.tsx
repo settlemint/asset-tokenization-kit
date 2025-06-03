@@ -1,5 +1,4 @@
 "use server";
-import { getUser } from "@/lib/auth/utils";
 import { AIRDROP_FACTORY_ADDRESS } from "@/lib/contracts";
 import { getMerkleRoot } from "@/lib/mutations/airdrop/create/common/merkle-tree";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
@@ -18,10 +17,9 @@ import {
  * Uses deterministic deployment to predict the contract address before creation
  */
 const CreateStandardAirdropPredictAddress = portalGraphql(`
-  query CreateStandardAirdropPredictAddress($address: String!, $deployer: String!, $tokenAddress: String!, $merkleRoot: String!, $owner: String!, $startTime: String!, $endTime: String!) {
-    AirdropFactory(address: $address) {
+  query CreateStandardAirdropPredictAddress($address: String!, $tokenAddress: String!, $merkleRoot: String!, $owner: String!, $startTime: String!, $endTime: String!) {
+    AirdropFactory2(address: $address) {
       predictStandardAirdropAddress(
-        deployer: $deployer
         tokenAddress: $tokenAddress
         merkleRoot: $merkleRoot
         owner: $owner
@@ -45,14 +43,12 @@ export const getPredictedAddress = withTracing(
   "getPredictedAirdropAddress",
   async (input: PredictStandardAirdropAddressInput) => {
     const { asset, distribution, owner, startTime, endTime } = input;
-    const user = await getUser();
     const merkleRoot = getMerkleRoot(distribution);
 
     const data = await portalClient.request(
       CreateStandardAirdropPredictAddress,
       {
         address: AIRDROP_FACTORY_ADDRESS,
-        deployer: user.wallet,
         tokenAddress: asset.id,
         merkleRoot,
         owner,
@@ -66,7 +62,7 @@ export const getPredictedAddress = withTracing(
       data
     );
 
-    return predictedAddress.AirdropFactory.predictStandardAirdropAddress
+    return predictedAddress.AirdropFactory2.predictStandardAirdropAddress
       .predictedAddress;
   }
 );
