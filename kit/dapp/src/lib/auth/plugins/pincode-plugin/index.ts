@@ -18,11 +18,11 @@ export const pincode = () => {
           method: "POST",
           body: z.object({
             pincode: z.string({
-              description: "The pincode for wallet verification",
+              message: "The pincode for wallet verification",
             }),
             password: z
               .string({
-                description:
+                message:
                   "User password (only required if the user has done the initial onboarding)",
               })
               .optional(),

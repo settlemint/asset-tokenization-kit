@@ -88,7 +88,7 @@ export const auth = betterAuth({
       role: {
         type: "string",
         required: true,
-        default: "user",
+        defaultValue: "user",
         input: false,
       },
       currency: {
@@ -112,7 +112,7 @@ export const auth = betterAuth({
       pincodeEnabled: {
         type: "boolean",
         required: false,
-        default: false,
+        defaultValue: false,
         input: false,
       },
       pincodeVerificationId: {
@@ -136,7 +136,7 @@ export const auth = betterAuth({
       initialOnboardingFinished: {
         type: "boolean",
         required: false,
-        default: false,
+        defaultValue: false,
         input: false,
       },
     },

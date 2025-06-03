@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 
 export const ListSchema = z.object({
   offset: z.number().int().min(0).default(0),

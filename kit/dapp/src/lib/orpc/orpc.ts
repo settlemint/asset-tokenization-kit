@@ -6,7 +6,7 @@ import { OpenAPILink } from "@orpc/openapi-client/fetch";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 
 const link = new OpenAPILink(contract, {
-  url: `${typeof window !== "undefined" ? `${window.location.origin}/api` : "http://localhost:3000"}/api`,
+  url: `${typeof window !== "undefined" ? `${window.location.origin}/api` : "http://localhost:3000/api"}`,
   fetch(url, options) {
     return fetch(url, {
       ...options,

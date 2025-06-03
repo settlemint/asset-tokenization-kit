@@ -3,59 +3,12 @@ import { siteConfig } from "@/lib/config/site";
 import { router } from "@/lib/orpc/routes/router";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
-import { onError, ORPCError, ValidationError } from "@orpc/server";
 import { CORSPlugin } from "@orpc/server/plugins";
-import {
-  experimental_ZodSmartCoercionPlugin as ZodSmartCoercionPlugin,
-  experimental_ZodToJsonSchemaConverter as ZodToJsonSchemaConverter,
-} from "@orpc/zod/zod4";
+import { ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from "@orpc/zod";
 import { NextRequest } from "next/server";
-import { z, ZodError } from "zod/v4";
 import pkgjson from "../../../../package.json";
 
 const handler = new OpenAPIHandler(router, {
-  clientInterceptors: [
-    onError((error) => {
-      if (
-        error instanceof ORPCError &&
-        error.code === "FORBIDDEN" &&
-        error.cause instanceof ValidationError
-      ) {
-        throw new ORPCError("FORBIDDEN", {
-          status: 403,
-          cause: error.cause,
-        });
-      }
-
-      if (
-        error instanceof ORPCError &&
-        error.code === "BAD_REQUEST" &&
-        error.cause instanceof ValidationError
-      ) {
-        const zodError = new ZodError(error.cause.issues as z.core.$ZodIssue[]);
-
-        throw new ORPCError("INPUT_VALIDATION_FAILED", {
-          status: 422,
-          data: z.treeifyError(zodError),
-          cause: error.cause,
-        });
-      }
-
-      if (
-        error instanceof ORPCError &&
-        error.code === "INTERNAL_SERVER_ERROR" &&
-        error.cause instanceof ValidationError
-      ) {
-        const zodError = new ZodError(error.cause.issues as z.core.$ZodIssue[]);
-
-        throw new ORPCError("OUTPUT_VALIDATION_FAILED", {
-          status: 522,
-          data: z.treeifyError(zodError),
-          cause: error.cause,
-        });
-      }
-    }),
-  ],
   plugins: [
     new CORSPlugin({
       allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH"],
@@ -64,7 +17,6 @@ const handler = new OpenAPIHandler(router, {
       credentials: true,
       origin: (origin) => origin ?? "http://localhost:3000",
     }),
-    new ZodSmartCoercionPlugin(),
     new OpenAPIReferencePlugin({
       schemaConverters: [new ZodToJsonSchemaConverter()],
       specGenerateOptions: {
@@ -103,6 +55,7 @@ const handler = new OpenAPIHandler(router, {
         },
       },
     }),
+    new ZodSmartCoercionPlugin(),
   ],
 });
 
