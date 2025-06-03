@@ -15,7 +15,7 @@ import { OffChainAirdropSchema } from "../airdrop/airdrop-schema";
 import { VestingAirdropFragment } from "./vesting-airdrop-fragment";
 import {
   OnChainVestingAirdropSchema,
-  VestingAirdropSchema,
+  type VestingAirdrop,
 } from "./vesting-airdrop-schema";
 
 /**
@@ -50,45 +50,52 @@ export interface VestingAirdropDetailProps {
 export const getVestingAirdropDetail = withTracing(
   "queries",
   "getVestingAirdropDetail",
-  cache(async ({ address }: VestingAirdropDetailProps) => {
-    "use cache";
-    cacheTag("airdrop");
+  cache(
+    async ({ address }: VestingAirdropDetailProps): Promise<VestingAirdrop> => {
+      "use cache";
+      cacheTag("airdrop");
 
-    const [onChainVestingAirdrop, offChainVestingAirdrop] = await Promise.all([
-      (async () => {
-        const response = await theGraphClientKit.request(
-          VestingAirdropDetail,
-          {
-            id: address,
-          },
-          {
-            "X-GraphQL-Operation-Name": "VestingAirdropDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
-        return safeParse(OnChainVestingAirdropSchema, response.vestingAirdrop);
-      })(),
-      (async () => {
-        const response = await hasuraClient.request(
-          OffchainAirdropDistributionDetail,
-          {
-            id: getAddress(address),
-          },
-          {
-            "X-GraphQL-Operation-Name": "OffchainAirdropDistributionDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+      const [onChainVestingAirdrop, offChainVestingAirdrop] = await Promise.all(
+        [
+          (async () => {
+            const response = await theGraphClientKit.request(
+              VestingAirdropDetail,
+              {
+                id: address,
+              },
+              {
+                "X-GraphQL-Operation-Name": "VestingAirdropDetail",
+                "X-GraphQL-Operation-Type": "query",
+              }
+            );
+            return safeParse(
+              OnChainVestingAirdropSchema,
+              response.vestingAirdrop
+            );
+          })(),
+          (async () => {
+            const response = await hasuraClient.request(
+              OffchainAirdropDistributionDetail,
+              {
+                id: getAddress(address),
+              },
+              {
+                "X-GraphQL-Operation-Name": "OffchainAirdropDistributionDetail",
+                "X-GraphQL-Operation-Type": "query",
+              }
+            );
 
-        return safeParse(OffChainAirdropSchema, {
-          distribution: response.airdrop_distribution,
-        });
-      })(),
-    ]);
+            return safeParse(OffChainAirdropSchema, {
+              distribution: response.airdrop_distribution,
+            });
+          })(),
+        ]
+      );
 
-    return safeParse(VestingAirdropSchema, {
-      ...onChainVestingAirdrop,
-      ...offChainVestingAirdrop,
-    });
-  })
+      return {
+        ...onChainVestingAirdrop,
+        ...offChainVestingAirdrop,
+      };
+    }
+  )
 );

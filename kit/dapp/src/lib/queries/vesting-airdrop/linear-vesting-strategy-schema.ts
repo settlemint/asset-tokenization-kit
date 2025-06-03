@@ -32,7 +32,9 @@ export const LinearVestingStrategySchema = t.Object(
     vestingDuration: t.StringifiedBigInt({
       description: "Total duration of the vesting period in seconds",
     }),
-    vestingData: VestingDataSchema,
+    vestingData: t.Array(VestingDataSchema, {
+      description: "The vesting data for the linear vesting strategy",
+    }),
   },
   {
     description: "Linear vesting strategy configuration",

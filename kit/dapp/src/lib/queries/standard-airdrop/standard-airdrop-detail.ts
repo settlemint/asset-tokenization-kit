@@ -9,13 +9,13 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
-import { type Address, getAddress } from "viem";
+import { getAddress, type Address } from "viem";
 import { OffchainAirdropDistributionDetail } from "../airdrop/airdrop-distribution-detail";
 import { OffChainAirdropSchema } from "../airdrop/airdrop-schema";
 import { StandardAirdropFragment } from "./standard-airdrop-fragment";
 import {
   OnChainStandardAirdropSchema,
-  StandardAirdropSchema,
+  type StandardAirdrop,
 } from "./standard-airdrop-schema";
 
 /**
@@ -50,50 +50,53 @@ export interface StandardAirdropDetailProps {
 export const getStandardAirdropDetail = withTracing(
   "queries",
   "getStandardAirdropDetail",
-  cache(async ({ address }: StandardAirdropDetailProps) => {
-    "use cache";
-    cacheTag("airdrop");
+  cache(
+    async ({
+      address,
+    }: StandardAirdropDetailProps): Promise<StandardAirdrop> => {
+      "use cache";
+      cacheTag("airdrop");
 
-    const [onChainStandardAirdrop, offChainStandardAirdrop] = await Promise.all(
-      [
-        (async () => {
-          const response = await theGraphClientKit.request(
-            StandardAirdropDetail,
-            {
-              id: address,
-            },
-            {
-              "X-GraphQL-Operation-Name": "StandardAirdropDetail",
-              "X-GraphQL-Operation-Type": "query",
-            }
-          );
-          return safeParse(
-            OnChainStandardAirdropSchema,
-            response.standardAirdrop
-          );
-        })(),
-        (async () => {
-          const response = await hasuraClient.request(
-            OffchainAirdropDistributionDetail,
-            {
-              id: getAddress(address),
-            },
-            {
-              "X-GraphQL-Operation-Name": "OffchainAirdropDistributionDetail",
-              "X-GraphQL-Operation-Type": "query",
-            }
-          );
+      const [onChainStandardAirdrop, offChainStandardAirdrop] =
+        await Promise.all([
+          (async () => {
+            const response = await theGraphClientKit.request(
+              StandardAirdropDetail,
+              {
+                id: address,
+              },
+              {
+                "X-GraphQL-Operation-Name": "StandardAirdropDetail",
+                "X-GraphQL-Operation-Type": "query",
+              }
+            );
+            return safeParse(
+              OnChainStandardAirdropSchema,
+              response.standardAirdrop
+            );
+          })(),
+          (async () => {
+            const response = await hasuraClient.request(
+              OffchainAirdropDistributionDetail,
+              {
+                id: getAddress(address),
+              },
+              {
+                "X-GraphQL-Operation-Name": "OffchainAirdropDistributionDetail",
+                "X-GraphQL-Operation-Type": "query",
+              }
+            );
 
-          return safeParse(OffChainAirdropSchema, {
-            distribution: response.airdrop_distribution,
-          });
-        })(),
-      ]
-    );
+            return safeParse(OffChainAirdropSchema, {
+              distribution: response.airdrop_distribution,
+            });
+          })(),
+        ]);
 
-    return safeParse(StandardAirdropSchema, {
-      ...onChainStandardAirdrop,
-      ...offChainStandardAirdrop,
-    });
-  })
+      return {
+        ...onChainStandardAirdrop,
+        ...offChainStandardAirdrop,
+      };
+    }
+  )
 );

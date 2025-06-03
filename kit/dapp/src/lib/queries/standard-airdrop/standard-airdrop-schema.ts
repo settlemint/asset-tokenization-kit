@@ -1,4 +1,4 @@
-import { t } from "@/lib/utils/typebox";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
 import {
   OffChainAirdropSchema,
   OnChainAirdropSchema,
@@ -36,3 +36,5 @@ export const StandardAirdropSchema = t.Object(
       "Complete standard airdrop data including both on-chain and off-chain properties",
   }
 );
+
+export type StandardAirdrop = StaticDecode<typeof StandardAirdropSchema>;
