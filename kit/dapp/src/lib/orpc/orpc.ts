@@ -7,8 +7,19 @@ import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 
 const link = new OpenAPILink(contract, {
   url: `${typeof window !== "undefined" ? `${window.location.origin}/api` : "http://localhost:3000/api"}`,
+  headers: async () => {
+    return (globalThis as unknown as { $headers: () => Promise<Headers> })
+      .$headers
+      ? Object.fromEntries(
+          await (
+            globalThis as unknown as { $headers: () => Promise<Headers> }
+          ).$headers()
+        ) // use this on ssr
+      : {}; // use this on browser
+  },
+
   fetch(url, options) {
-    return fetch(url, {
+    return globalThis.fetch(url, {
       ...options,
       credentials: "include",
     });

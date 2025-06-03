@@ -1,5 +1,6 @@
 import { Providers } from "@/components/providers/Providers";
 import { routing } from "@/i18n/routing";
+import "@/lib/orpc/orpc.server";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
 import { getLocale } from "next-intl/server";
