@@ -85,6 +85,18 @@ export async function PushAirdropDetails({ address }: PushAirdropDetailsProps) {
           adjustDecimals: true,
         })}
       </DetailGridItem>
+
+      <DetailGridItem
+        label={t("distribution-cap")}
+        info={t("distribution-cap-info")}
+      >
+        {formatNumber(airdrop.distributionCap, {
+          token: airdrop.asset.symbol,
+          decimals: airdrop.asset.decimals,
+          locale: locale,
+          adjustDecimals: true,
+        })}
+      </DetailGridItem>
       <DetailGridItem
         label={t("claim-percentage")}
         info={t("claim-percentage-info")}

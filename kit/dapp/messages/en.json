@@ -1628,6 +1628,8 @@
           "total-claimed-info": "The total amount of tokens that have been claimed from this airdrop",
           "total-distributed": "Total distributed",
           "total-distributed-info": "The total amount of tokens that have been actively distributed by this push airdrop",
+          "distribution-cap": "Distribution limit",
+          "distribution-cap-info": "The maximum amount of tokens that can be distributed by this airdrop",
           "total-distribution-amount": "Total distribution",
           "total-distribution-amount-info": "The total amount of tokens allocated for distribution in this airdrop",
           "claim-percentage": "Claim percentage",

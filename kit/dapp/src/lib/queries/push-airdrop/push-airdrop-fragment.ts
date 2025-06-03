@@ -13,6 +13,7 @@ export const PushAirdropFragment = theGraphGraphqlKit(
   fragment PushAirdropFragment on PushAirdrop {
     ...AirdropFragment
     totalDistributed
+    distributionCap
   }
 `,
   [AirdropFragment]

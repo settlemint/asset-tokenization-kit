@@ -15,6 +15,10 @@ export const OnChainPushAirdropSchema = t.Object(
       description:
         "The total distributed amount of the token in a human-readable decimal format",
     }),
+    distributionCap: t.BigDecimal({
+      description:
+        "The total amount of tokens that can be distributed by the push airdrop",
+    }),
   },
   {
     description: "Complete on-chain data for push airdrops",
