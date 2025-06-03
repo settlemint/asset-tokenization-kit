@@ -4,6 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getVestingAirdropDetail } from "@/lib/queries/vesting-airdrop/vesting-airdrop-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
+import { isAfter } from "date-fns";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
@@ -63,9 +64,8 @@ export async function VestingAirdropDetails({
         />
       </DetailGridItem>
       <DetailGridItem label={t("claim-period-end")}>
-        {formatDate(new Date(Number(airdrop.claimPeriodEnd) * 1000), {
+        {formatDate(airdrop.claimPeriodEnd, {
           locale: locale,
-          formatOptions: { dateStyle: "long", timeStyle: "short" },
         })}
       </DetailGridItem>
       <DetailGridItem label={t("vesting-strategy")}>
@@ -83,10 +83,7 @@ export async function VestingAirdropDetails({
       >
         {formatDuration(Number(airdrop.strategy.vestingDuration))}
       </DetailGridItem>
-      <DetailGridItem
-        label={t("total-recipients")}
-        info={t("total-recipients-info")}
-      >
+      <DetailGridItem label={t("total-claims")} info={t("total-claims-info")}>
         {airdrop.totalRecipients}
       </DetailGridItem>
       <DetailGridItem
@@ -110,6 +107,7 @@ export async function VestingAirdropDetails({
           token: airdrop.asset.symbol,
           decimals: airdrop.asset.decimals,
           locale: locale,
+          adjustDecimals: true,
         })}
       </DetailGridItem>
       <DetailGridItem
@@ -123,7 +121,7 @@ export async function VestingAirdropDetails({
         })}
       </DetailGridItem>
       <DetailGridItem label={t("status")}>
-        {new Date() > new Date(Number(airdrop.claimPeriodEnd) * 1000)
+        {isAfter(new Date(), airdrop.claimPeriodEnd)
           ? t("status-expired")
           : t("status-active")}
       </DetailGridItem>

@@ -58,10 +58,7 @@ export async function PushAirdropDetails({ address }: PushAirdropDetailsProps) {
           locale: locale,
         })}
       </DetailGridItem>
-      <DetailGridItem
-        label={t("total-recipients")}
-        info={t("total-recipients-info")}
-      >
+      <DetailGridItem label={t("total-claims")} info={t("total-claims-info")}>
         {airdrop.totalRecipients}
       </DetailGridItem>
       <DetailGridItem
@@ -85,6 +82,7 @@ export async function PushAirdropDetails({ address }: PushAirdropDetailsProps) {
           token: airdrop.asset.symbol,
           decimals: airdrop.asset.decimals,
           locale: locale,
+          adjustDecimals: true,
         })}
       </DetailGridItem>
       <DetailGridItem

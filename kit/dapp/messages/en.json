@@ -1587,7 +1587,7 @@
           "type": "Type",
           "asset": "Asset",
           "total-claimed": "Claimed",
-          "total-recipients": "Claims",
+          "total-claims": "Claims",
           "details": "Details"
         },
         "type": {
@@ -1620,8 +1620,8 @@
           "cliff-duration-info": "The waiting period after claiming before any tokens can be withdrawn",
           "vesting-duration": "Vesting duration",
           "vesting-duration-info": "The total time for all tokens to unlock gradually after claiming",
-          "total-recipients": "Total recipients",
-          "total-recipients-info": "The number of accounts who have actually claimed their airdrop assets",
+          "total-claims": "Total claims",
+          "total-claims-info": "The number of accounts who have actually claimed their airdrop assets",
           "eligible-recipients": "Eligible recipients",
           "eligible-recipients-info": "The total number of addresses eligible to claim from this airdrop",
           "total-claimed": "Total claimed",

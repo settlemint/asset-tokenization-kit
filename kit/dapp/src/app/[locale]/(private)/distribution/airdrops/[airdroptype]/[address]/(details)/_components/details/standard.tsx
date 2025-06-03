@@ -4,6 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getStandardAirdropDetail } from "@/lib/queries/standard-airdrop/standard-airdrop-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
+import { isAfter, isBefore } from "date-fns";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
@@ -53,21 +54,16 @@ export async function StandardAirdropDetails({
       </DetailGridItem>
 
       <DetailGridItem label={t("start-time")}>
-        {formatDate(new Date(Number(airdrop.startTime) * 1000), {
+        {formatDate(airdrop.startTime, {
           locale: locale,
-          formatOptions: { dateStyle: "long", timeStyle: "short" },
         })}
       </DetailGridItem>
       <DetailGridItem label={t("end-time")}>
-        {formatDate(new Date(Number(airdrop.endTime) * 1000), {
+        {formatDate(airdrop.endTime, {
           locale: locale,
-          formatOptions: { dateStyle: "long", timeStyle: "short" },
         })}
       </DetailGridItem>
-      <DetailGridItem
-        label={t("total-recipients")}
-        info={t("total-recipients-info")}
-      >
+      <DetailGridItem label={t("total-claims")} info={t("total-claims-info")}>
         {airdrop.totalRecipients}
       </DetailGridItem>
       <DetailGridItem
@@ -91,6 +87,7 @@ export async function StandardAirdropDetails({
           token: airdrop.asset.symbol,
           decimals: airdrop.asset.decimals,
           locale: locale,
+          adjustDecimals: true,
         })}
       </DetailGridItem>
       <DetailGridItem
@@ -104,9 +101,9 @@ export async function StandardAirdropDetails({
         })}
       </DetailGridItem>
       <DetailGridItem label={t("status")}>
-        {new Date() < new Date(Number(airdrop.startTime) * 1000)
+        {isBefore(new Date(), airdrop.startTime)
           ? t("status-upcoming")
-          : new Date() > new Date(Number(airdrop.endTime) * 1000)
+          : isAfter(new Date(), airdrop.endTime)
             ? t("status-expired")
             : t("status-active")}
       </DetailGridItem>

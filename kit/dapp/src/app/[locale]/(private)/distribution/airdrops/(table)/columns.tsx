@@ -52,7 +52,7 @@ export function columns() {
       },
     }),
     columnHelper.accessor("totalRecipients", {
-      header: t("columns.total-recipients"),
+      header: t("columns.total-claims"),
       cell: ({ getValue }) => {
         const value = getValue();
         return formatNumber(value, {
