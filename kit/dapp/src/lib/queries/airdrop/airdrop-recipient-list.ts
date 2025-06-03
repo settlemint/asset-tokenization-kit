@@ -9,12 +9,14 @@ import {
 import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import type { Address } from "viem";
+import type { ResultOf } from "@settlemint/sdk-thegraph";
+import { getAddress, type Address } from "viem";
 import { AirdropFragment } from "./airdrop-fragment";
 import { AirdropRecipientFragment } from "./airdrop-recipient-fragment";
-import { AirdropRecipientSchema } from "./airdrop-recipient-schema";
-import { OnChainAirdropSchema, type OnChainAirdrop } from "./airdrop-schema";
+import {
+  AirdropRecipientSchema,
+  type AirdropRecipient,
+} from "./airdrop-recipient-schema";
 
 /**
  * GraphQL query to fetch airdrop distributions from Hasura filtered by recipient
@@ -68,9 +70,9 @@ const AirdropDetailsByIds = theGraphGraphqlKit(
 export const getAirdropRecipientList = withTracing(
   "queries",
   "getAirdropRecipientList",
-  async (recipient: Address) => {
-    "use cache";
-    cacheTag("airdrop");
+  async (recipient: Address): Promise<AirdropRecipient[]> => {
+    // "use cache";
+    // cacheTag("airdrop");
 
     const airdropDistributions = await fetchAllHasuraPages(
       async (limit, offset) => {
@@ -108,41 +110,35 @@ export const getAirdropRecipientList = withTracing(
           }
         );
 
-        // Validate and create a map of airdrop ID to complete airdrop data
-        const validatedAirdrops = safeParse(
-          t.Array(OnChainAirdropSchema),
-          airdropDetailsResult.airdrops || []
-        );
-
-        const airdropDataMap = new Map<string, OnChainAirdrop>();
-        validatedAirdrops.forEach((airdrop) => {
-          airdropDataMap.set(airdrop.id, airdrop);
+        const airdropDataMap = new Map<
+          Address,
+          ResultOf<typeof AirdropDetailsByIds>["airdrops"][number]
+        >();
+        airdropDetailsResult.airdrops.forEach((airdrop) => {
+          airdropDataMap.set(getAddress(airdrop.id), airdrop);
         });
 
         // Combine distribution data with complete airdrop information
-        const recipientDataWithAirdropDetails = distributions
-          .map((item) => {
-            const airdropData = airdropDataMap.get(item.airdrop);
-            if (!airdropData) {
-              return null; // Skip distributions where airdrop data is not found
-            }
+        const recipientDataWithAirdropDetails = distributions.map((item) => {
+          const airdropData = airdropDataMap.get(getAddress(item.airdrop));
+          if (!airdropData) {
+            throw new Error(
+              `Airdrop data not found for airdrop ${item.airdrop}`
+            );
+          }
 
-            return {
-              airdrop: airdropData,
-              amount: item.amount,
-              index: item.index,
-              claimed: item.claimed,
-            };
-          })
-          .filter(Boolean); // Remove null entries
+          return {
+            airdrop: airdropData,
+            amount: item.amount,
+            index: item.index,
+            claimed: item.claimed,
+          };
+        });
 
-        return safeParse(
-          t.Array(AirdropRecipientSchema),
-          recipientDataWithAirdropDetails
-        );
+        return recipientDataWithAirdropDetails;
       }
     );
 
-    return airdropDistributions;
+    return safeParse(t.Array(AirdropRecipientSchema), airdropDistributions);
   }
 );

@@ -1,3 +1,4 @@
+import { AirdropDistributionListSchema } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { AirdropType } from "@/lib/utils/typebox/airdrop-types";
@@ -70,3 +71,9 @@ export type OnChainAirdrop = StaticDecode<typeof OnChainAirdropSchema>;
 export const AirdropListItem = OnChainAirdropSchema;
 
 export type AirdropListItem = StaticDecode<typeof AirdropListItem>;
+
+export const OffChainAirdropSchema = t.Object({
+  distribution: AirdropDistributionListSchema,
+});
+
+export type OffChainAirdrop = StaticDecode<typeof OffChainAirdropSchema>;

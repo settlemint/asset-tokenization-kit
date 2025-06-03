@@ -18,10 +18,12 @@ export const AirdropRecipientSchema = t.Object(
       description: "The index of the recipient in the Merkle tree",
     }),
     claimed: t.Optional(
-      t.String({
-        description:
-          "Timestamp when the airdrop was claimed, null if not claimed",
-      })
+      t.MaybeEmpty(
+        t.Timestamp({
+          description:
+            "Timestamp when the airdrop was claimed, null if not claimed",
+        })
+      )
     ),
   },
   {
