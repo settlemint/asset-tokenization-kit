@@ -2,7 +2,7 @@ import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { waitForEvent } from "../../../utils/wait-for-event";
-import { approve } from "../approve";
+import { approve } from "../core/approve";
 
 export const topupUnderlyingAsset = async (
   asset: Asset<any>,

@@ -1,9 +1,9 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem";
-import { SMARTContracts } from "../../constants/contracts";
-import { owner } from "../../entities/actors/owner";
-import type { Asset } from "../../entities/asset";
-import { smartProtocolDeployer } from "../../services/deployer";
-import { waitForSuccess } from "../../utils/wait-for-success";
+import { SMARTContracts } from "../../../constants/contracts";
+import { owner } from "../../../entities/actors/owner";
+import type { Asset } from "../../../entities/asset";
+import { smartProtocolDeployer } from "../../../services/deployer";
+import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const addCountryComplianceModule = async (
   asset: Asset<any>,

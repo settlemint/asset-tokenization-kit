@@ -126,9 +126,9 @@ interface ISMARTCustodian {
     /// @dev This is a powerful administrative function. It can recover tokens even if addresses are frozen or
     ///      if other transfer conditions (like compliance checks) would normally fail.
     ///      Requires strong authorization (e.g., a FORCED_TRANSFER_ROLE).
-    /// @param newWallet The address to which tokens will be recovered.
     /// @param lostWallet The address from which tokens will be recovered.
-    function forcedRecoverTokens(address newWallet, address lostWallet) external;
+    /// @param newWallet The address to which tokens will be recovered.
+    function forcedRecoverTokens(address lostWallet, address newWallet) external;
 
     // -- View Functions --
 

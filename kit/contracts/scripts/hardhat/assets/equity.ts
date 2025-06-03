@@ -2,13 +2,18 @@ import { encodeAbiParameters, parseAbiParameters } from "viem";
 
 import { SMARTTopic } from "../constants/topics";
 import { investorA, investorB } from "../entities/actors/investors";
+import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { smartProtocolDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
-import { burn } from "./actions/burn";
-import { mint } from "./actions/mint";
+import { burn } from "./actions/burnable/burn";
+import { mint } from "./actions/core/mint";
+import { transfer } from "./actions/core/transfer";
+import { forcedTransfer } from "./actions/custodian/forced-transfer";
+import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
+import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
+import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
-import { transfer } from "./actions/transfer";
 
 export const createEquity = async () => {
   console.log("\n=== Creating equity... ===\n");
@@ -50,9 +55,19 @@ export const createEquity = async () => {
     assetCategory: "Category A",
   });
 
+  // core
   await mint(equity, investorA, 100n);
   await transfer(equity, investorA, investorB, 50n);
+
+  // burnable
   await burn(equity, investorB, 25n);
+
+  // custodian
+  await forcedTransfer(equity, owner, investorA, investorB, 25n);
+  await setAddressFrozen(equity, owner, investorA, true);
+  await setAddressFrozen(equity, owner, investorA, false);
+  await freezePartialTokens(equity, owner, investorB, 25n);
+  await unfreezePartialTokens(equity, owner, investorB, 25n);
 
   // TODO: execute all other functions of the equity
 
