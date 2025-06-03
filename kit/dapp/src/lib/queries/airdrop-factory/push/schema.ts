@@ -9,6 +9,9 @@ export const PredictPushAirdropAddressInputSchema = t.Object({
     id: t.EthereumAddress({
       description: "The id of the asset to be distributed",
     }),
+    decimals: t.Decimals({
+      description: "The decimals of the asset",
+    }),
   }),
   distribution: AirdropDistributionListSchema,
   owner: t.EthereumAddress({
