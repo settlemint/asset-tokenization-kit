@@ -51,5 +51,4 @@ the-graph-cache-*.d.ts
 the-graph-env-*.d.ts
 the-graph-schema-*.graphql
 src/lib/settlemint
-src/lib/contracts.ts
 .env.local

@@ -339,3 +339,21 @@ templates:
         - event: TokensUnfrozen(indexed address,indexed address,uint256)
           handler: handleTokensUnfrozen
       file: ./src/custodian/custodian.ts
+  - kind: ethereum
+    name: HistoricalBalances
+    network: settlemint
+    source:
+      abi: HistoricalBalances
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - CheckpointUpdated
+      abis:
+        - name: HistoricalBalances
+          file: ../contracts/artifacts/contracts/extensions/historical-balances/ISMARTHistoricalBalances.sol/ISMARTHistoricalBalances.json
+      eventHandlers:
+        - event: CheckpointUpdated(indexed address,indexed address,uint256,uint256)
+          handler: handleCheckpointUpdated
+      file: ./src/historical-balances/historical-balances.ts
