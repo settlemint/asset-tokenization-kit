@@ -34,7 +34,8 @@
     "turbo.json"
   ],
   "scripts": {
-    "postinstall": "turbo run dependencies",
+    "postinstall": "bun run tools/dependencies.ts",
+    "dependencies": "bun run tools/dependencies.ts",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
     "build": "turbo build",
