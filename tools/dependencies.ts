@@ -31,6 +31,13 @@ function isCI(): boolean {
 }
 
 /**
+ * Check if we're running during postinstall (before tools are installed)
+ */
+function isPostInstall(): boolean {
+  return process.env.npm_lifecycle_event === "postinstall";
+}
+
+/**
  * Check if we're in the correct root directory
  */
 async function validateRootDirectory(): Promise<void> {
@@ -51,6 +58,21 @@ async function validateRootDirectory(): Promise<void> {
   }
 
   log.debug("Root directory validated");
+}
+
+/**
+ * Check if required tools are available
+ */
+async function checkToolsAvailable(): Promise<{
+  forge: boolean;
+  helm: boolean;
+  turbo: boolean;
+}> {
+  const forge = !!Bun.which("forge");
+  const helm = !!Bun.which("helm");
+  const turbo = !!Bun.which("turbo");
+
+  return { forge, helm, turbo };
 }
 
 /**
@@ -148,16 +170,36 @@ async function validateCriticalDependencies(): Promise<void> {
 async function runDependenciesManually(): Promise<void> {
   log.info("Running dependencies manually for each workspace...");
 
+  const tools = await checkToolsAvailable();
   const workspaces = [
-    { name: "contracts", path: "kit/contracts", critical: true },
-    { name: "charts", path: "kit/charts", critical: false },
+    {
+      name: "contracts",
+      path: "kit/contracts",
+      critical: true,
+      requiresTool: "forge",
+    },
+    {
+      name: "charts",
+      path: "kit/charts",
+      critical: false,
+      requiresTool: "helm",
+    },
   ];
 
   const errors: string[] = [];
   const ci = isCI();
+  const postInstall = isPostInstall();
 
   for (const workspace of workspaces) {
     log.info(`Installing dependencies for ${workspace.name}...`);
+
+    // Skip if required tool is not available during postinstall
+    if (postInstall && !tools[workspace.requiresTool as keyof typeof tools]) {
+      log.warn(
+        `Skipping ${workspace.name} dependencies during postinstall (${workspace.requiresTool} not available yet)`
+      );
+      continue;
+    }
 
     const dependenciesScript = join(workspace.path, "tools", "dependencies.ts");
     const scriptFile = Bun.file(dependenciesScript);
@@ -176,13 +218,16 @@ async function runDependenciesManually(): Promise<void> {
     } catch (error) {
       const errorMsg = `Failed to install dependencies for ${workspace.name}: ${error}`;
 
-      if (workspace.critical) {
+      if (workspace.critical && !postInstall) {
+        // Only treat as critical error if not during postinstall
         log.error(errorMsg);
         errors.push(errorMsg);
       } else {
-        // Non-critical workspace failures are warnings in CI
-        if (ci) {
-          log.warn(`${errorMsg} (non-critical in CI)`);
+        // Non-critical workspace failures or postinstall failures are warnings
+        if (ci || postInstall) {
+          log.warn(
+            `${errorMsg} (non-critical${postInstall ? " during postinstall" : " in CI"})`
+          );
         } else {
           log.error(errorMsg);
           errors.push(errorMsg);
@@ -197,9 +242,9 @@ async function runDependenciesManually(): Promise<void> {
     );
   }
 
-  if (ci) {
+  if (ci || postInstall) {
     log.info(
-      "Dependencies installation completed (some non-critical failures may have occurred in CI)"
+      `Dependencies installation completed (some failures may have occurred${postInstall ? " during postinstall" : " in CI"})`
     );
   }
 }
@@ -210,36 +255,52 @@ async function runDependenciesManually(): Promise<void> {
 async function main(): Promise<void> {
   const startTime = Date.now();
   const ci = isCI();
+  const postInstall = isPostInstall();
 
   try {
     log.info(
-      `Starting dependency installation for Asset Tokenization Kit${ci ? " (CI mode)" : ""}...`
+      `Starting dependency installation for Asset Tokenization Kit${ci ? " (CI mode)" : ""}${postInstall ? " (postinstall)" : ""}...`
     );
 
     await validateRootDirectory();
 
-    // Try turbo first, fall back to manual execution if needed
-    try {
-      await runDependenciesViaTurbo();
-    } catch (turboError) {
-      if (ci) {
-        // In CI, turbo may "fail" but still install critical dependencies
-        log.info(
-          "Turbo completed with some failures, validating critical dependencies..."
+    // During postinstall, be more forgiving
+    if (postInstall) {
+      log.info(
+        "Running during postinstall - will skip dependencies that require tools not yet installed"
+      );
+      try {
+        await runDependenciesViaTurbo();
+      } catch (turboError) {
+        log.warn(
+          "Turbo execution failed during postinstall, will try manual execution with tool checking"
         );
-        try {
-          await validateCriticalDependencies();
-          log.success("Critical dependencies are available, proceeding...");
-        } catch (validationError) {
-          log.warn(
-            "Critical dependencies validation failed, falling back to manual execution"
+        await runDependenciesManually();
+      }
+    } else {
+      // Normal execution - try turbo first, fall back to manual execution if needed
+      try {
+        await runDependenciesViaTurbo();
+      } catch (turboError) {
+        if (ci) {
+          // In CI, turbo may "fail" but still install critical dependencies
+          log.info(
+            "Turbo completed with some failures, validating critical dependencies..."
           );
+          try {
+            await validateCriticalDependencies();
+            log.success("Critical dependencies are available, proceeding...");
+          } catch (validationError) {
+            log.warn(
+              "Critical dependencies validation failed, falling back to manual execution"
+            );
+            await runDependenciesManually();
+          }
+        } else {
+          log.warn("Turbo execution failed, falling back to manual execution");
+          log.debug(`Turbo error: ${turboError}`);
           await runDependenciesManually();
         }
-      } else {
-        log.warn("Turbo execution failed, falling back to manual execution");
-        log.debug(`Turbo error: ${turboError}`);
-        await runDependenciesManually();
       }
     }
 
@@ -248,8 +309,16 @@ async function main(): Promise<void> {
       `Dependencies installation completed successfully in ${duration}ms`
     );
   } catch (error) {
-    log.error(`Dependencies installation failed: ${error}`);
-    process.exit(1);
+    if (postInstall && ci) {
+      // During postinstall in CI, log the error but don't fail
+      log.warn(
+        `Dependencies installation had issues during postinstall: ${error}`
+      );
+      log.info("Dependencies can be installed later when tools are available");
+    } else {
+      log.error(`Dependencies installation failed: ${error}`);
+      process.exit(1);
+    }
   }
 }
 
