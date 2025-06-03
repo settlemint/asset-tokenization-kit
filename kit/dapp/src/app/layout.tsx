@@ -1,6 +1,5 @@
 import { Providers } from "@/components/providers/Providers";
 import { routing } from "@/i18n/routing";
-import { getServerEnvironment } from "@/lib/config/environment";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
 import { getLocale } from "next-intl/server";
@@ -22,8 +21,6 @@ export const viewport: Viewport = {
 
 export { metadata } from "@/lib/config/metadata";
 
-const timeZone = "Europe/Brussels";
-
 const figTree = Figtree({
   subsets: ["latin"],
   display: "swap",
@@ -42,7 +39,6 @@ export default async function RootLayout({
   try {
     const locale = await getLocale();
     const direction = getLangDir(locale);
-    const env = getServerEnvironment();
 
     // Ensure that the incoming `locale` is valid
     if (!routing.locales.includes(locale)) {
