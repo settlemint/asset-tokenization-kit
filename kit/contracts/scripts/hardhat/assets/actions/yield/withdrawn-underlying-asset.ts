@@ -2,6 +2,7 @@ import { Address } from "viem";
 import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
+import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { toDecimals } from "../../../utils/to-decimals";
 import { waitForEvent } from "../../../utils/wait-for-event";
 
@@ -23,10 +24,9 @@ export const withdrawnUnderlyingAsset = async (
   });
 
   const withdrawnAmount = toDecimals(amount, underlyingAsset.decimals);
-  const transactionHash = await scheduleContract.write.withdrawUnderlyingAsset([
-    to,
-    withdrawnAmount,
-  ]);
+  const transactionHash = await withDecodedRevertReason(() =>
+    scheduleContract.write.withdrawUnderlyingAsset([to, withdrawnAmount])
+  );
   await waitForEvent({
     transactionHash,
     contract: scheduleContract,

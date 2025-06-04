@@ -1,6 +1,7 @@
 import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
+import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { toDecimals } from "../../../utils/to-decimals";
 import { waitForEvent } from "../../../utils/wait-for-event";
 import { approve } from "../core/approve";
@@ -17,7 +18,7 @@ export const topupUnderlyingAsset = async (
   });
 
   const scheduleAddress = await tokenContract.read.yieldSchedule();
-  await mint(underlyingAsset, owner, amount);
+  await mint(asset, owner, amount);
   await approve(underlyingAsset, scheduleAddress, amount);
 
   const scheduleContract = owner.getContractInstance({
@@ -26,8 +27,10 @@ export const topupUnderlyingAsset = async (
   });
 
   const topUpAmount = toDecimals(amount, underlyingAsset.decimals);
-  const topUpTransactionHash =
-    await scheduleContract.write.topUpUnderlyingAsset([topUpAmount]);
+
+  const topUpTransactionHash = await withDecodedRevertReason(() =>
+    scheduleContract.write.topUpUnderlyingAsset([topUpAmount])
+  );
   await waitForEvent({
     transactionHash: topUpTransactionHash,
     contract: scheduleContract,

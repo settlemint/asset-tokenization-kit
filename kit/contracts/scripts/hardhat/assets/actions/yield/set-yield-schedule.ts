@@ -3,6 +3,7 @@ import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { smartProtocolDeployer } from "../../../services/deployer";
+import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForEvent } from "../../../utils/wait-for-event";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
@@ -28,14 +29,14 @@ export const setYieldSchedule = async (
     abi: SMARTContracts.fixedYieldScheduleFactory,
   });
 
-  const createYieldScheduleTransactionHash = await factoryContract.write.create(
-    [
+  const createYieldScheduleTransactionHash = await withDecodedRevertReason(() =>
+    factoryContract.write.create([
       tokenContract.address,
       BigInt(startTime.getTime()),
       BigInt(endTime.getTime()),
       BigInt(rate),
       BigInt(interval),
-    ]
+    ])
   );
   const { schedule } = (await waitForEvent({
     transactionHash: createYieldScheduleTransactionHash,
