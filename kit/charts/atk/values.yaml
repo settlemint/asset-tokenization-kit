@@ -122,12 +122,7 @@ besu-network:
 
 erpc:
   enabled: true
-  resources:
-    requests:
-      cpu: 100m
-      memory: 512Mi
-    limits:
-      memory: 1024Mi
+  resources: {}
   imagePullSecrets:
     - name: image-pull-secret-docker
     - name: image-pull-secret-ghcr
@@ -204,12 +199,7 @@ blockscout:
       env:
         API_URL: https://explorer.k8s.orb.local
         WEBAPP_URL: https://explorer.k8s.orb.local
-      resources:
-        requests:
-          cpu: 100m
-          memory: 512Mi
-        limits:
-          memory: 1024Mi
+      resources: {}
     frontend:
       ingress:
         hostname: explorer.k8s.orb.local
@@ -372,10 +362,7 @@ observability:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
       - name: image-pull-secret-harbor
-    resources:
-      requests:
-        cpu: 10m
-        memory: 32Mi
+    resources: {}
 
   # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml
   kube-state-metrics:
@@ -464,13 +451,7 @@ txsigner:
     derivationPath: "m/44'/60'/0'/0/0"
   postgresql: postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable
   replicaCount: 1
-  # resources:
-  #   limits:
-  #     cpu: 450m
-  #     memory: 768Mi
-  #   requests:
-  #     cpu: 225m
-  #     memory: 384Mi
+  resources: {}
 
 # DApp Frontend Configuration
 dapp:
@@ -484,12 +465,7 @@ dapp:
         paths:
           - path: /  # Adjust path if needed
             pathType: ImplementationSpecific
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      memory: 512Mi
+  resources: {}
   secretEnv:
     BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
     NEXT_PUBLIC_APP_ID: "dapp"

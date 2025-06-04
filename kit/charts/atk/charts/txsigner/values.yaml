@@ -65,13 +65,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources:
-  limits:
-    cpu: 450m
-    memory: 768Mi
-  requests:
-    cpu: 225m
-    memory: 384Mi
+resources: {}
 
 livenessProbe:
   tcpSocket:
@@ -149,7 +143,7 @@ networkPolicy:
       ports:
         - protocol: TCP
           port: 3000
-  
+
   # Egress rules
   egress:
     # Allow DNS resolution

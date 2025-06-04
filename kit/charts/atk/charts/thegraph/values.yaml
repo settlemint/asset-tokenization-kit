@@ -156,12 +156,7 @@ job:
   #     pullPolicy: IfNotPresent
 
   # Resource configuration
-  resources:
-    requests:
-      memory: "2Gi"
-      cpu: "250m"
-    limits:
-      memory: "3Gi"
+  resources: {}
 
   workspace:
     # Size of the workspace PVC

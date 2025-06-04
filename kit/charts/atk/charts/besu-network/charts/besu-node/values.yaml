@@ -183,11 +183,7 @@ node:
     syncMode: "FULL"
 
   tessera:
-    resources:
-      cpuLimit: 1
-      cpuRequest: 0.5
-      memLimit: "2G"
-      memRequest: "1G"
+    resources: {}
     image:
       repository: docker.io/quorumengineering/tessera
       tag: 24.4
@@ -272,7 +268,7 @@ networkPolicy:
       ports:
         - protocol: TCP
           port: 30303  # P2P
-  
+
   # Egress rules
   egress:
     # Allow DNS resolution
