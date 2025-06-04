@@ -44,8 +44,8 @@ spec:
         {{- end }}
       containers:
         - name: {{ template "besu-node.fullname" . }}-pre-start-hook
-          image: {{ .Values.image.hooks.repository }}:{{ .Values.image.hooks.tag }}
-          imagePullPolicy: {{ .Values.image.besu.pullPolicy }}
+          image: {{ .Values.hooks.image.repository }}:{{ .Values.hooks.image.tag }}
+          imagePullPolicy: {{ .Values.hooks.image.pullPolicy }}
           securityContext:
             runAsUser: 0
           command:

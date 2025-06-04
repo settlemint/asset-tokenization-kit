@@ -61,6 +61,10 @@ node:
     genesisFilePath: "/etc/genesis/genesis.json"
     logging: INFO
     customLabels: {}
+    image:
+      repository: docker.io/hyperledger/besu
+      tag: 25.3.0
+      pullPolicy: IfNotPresent
     account:
       password: "password"
       passwordPath: "/keys/accountPassword"
@@ -184,6 +188,10 @@ node:
       cpuRequest: 0.5
       memLimit: "2G"
       memRequest: "1G"
+    image:
+      repository: docker.io/quorumengineering/tessera
+      tag: 24.4
+      pullPolicy: IfNotPresent
     tmkey: ""
     tmpub: ""
     password: "password"
@@ -194,24 +202,19 @@ node:
     tpport: 9080
     q2tport: 9101
 
-image:
-  besu:
-    repository: docker.io/hyperledger/besu
-    tag: 25.3.0
-    pullPolicy: IfNotPresent
-  tessera:
-    repository: docker.io/quorumengineering/tessera
-    tag: 24.4
-    pullPolicy: IfNotPresent
-  hooks:
+hooks:
+  image:
     repository: ghcr.io/settlemint/quorum-genesis-tool
     tag: sha-49c40f5
     pullPolicy: IfNotPresent
 
-busybox:
-  registry: docker.io
-  tag: 1.37
-  pullPolicy: IfNotPresent
+initContainers:
+  busybox:
+    image:
+      registry: docker.io
+      repository: busybox
+      tag: 1.37
+      pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 

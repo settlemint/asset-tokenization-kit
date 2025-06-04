@@ -42,7 +42,6 @@ spec:
 {{- else }}
       serviceAccountName: {{ include "besu-node.fullname" . }}-sa
 {{- end }}
-      {{- include "atk.imagePullSecrets" . | nindent 6 }}
       initContainers:
       # Genesis file retrieval with automatic fallback
       - name: genesis-init
@@ -88,14 +87,14 @@ spec:
             TEMP_POD_NAME="genesis-reader-$(date +%s)-$RANDOM"
 
             kubectl run "$TEMP_POD_NAME" --namespace "$NAMESPACE" \
-              --image=busybox:latest \
+              --image={{ .Values.initContainers.busybox.image.registry }}/{{ .Values.initContainers.busybox.image.repository }}:{{ .Values.initContainers.busybox.image.tag }} \
               --restart=Never \
               --rm -i \
               --overrides='{
                 "spec": {
                   "containers": [{
                     "name": "genesis-reader",
-                    "image": "busybox:latest",
+                    "image": "{{ .Values.initContainers.busybox.image.registry }}/{{ .Values.initContainers.busybox.image.repository }}:{{ .Values.initContainers.busybox.image.tag }}",
                     "command": ["cat", "/genesis/genesis.json"],
                     "volumeMounts": [
                       {"name": "genesis-pvc", "mountPath": "/genesis"}
@@ -146,8 +145,8 @@ spec:
 {{- if has .Values.cluster.provider .Values.volumePermissionsFix }}
       # fix for minikube and PVC's only writable as root https://github.com/kubernetes/minikube/issues/1990
       - name: volume-permission-besu
-        image: "{{ .Values.busybox.registry }}/busybox:{{ .Values.busybox.tag }}"
-        imagePullPolicy: {{ .Values.busybox.pullPolicy }}
+        image: "{{ .Values.initContainers.busybox.image.registry }}/{{ .Values.initContainers.busybox.image.repository }}:{{ .Values.initContainers.busybox.image.tag }}"
+        imagePullPolicy: {{ .Values.initContainers.busybox.image.pullPolicy }}
         command: ["sh", "-c", "chown -R 1000:1000 /data"]
         volumeMounts:
           - name: data
@@ -160,8 +159,8 @@ spec:
 
 {{- if .Values.quorumFlags.privacy }}
       - name: {{ .Release.Name }}-tessera
-        image: {{ .Values.image.tessera.repository }}:{{ .Values.image.tessera.tag }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: {{ .Values.node.tessera.image.repository }}:{{ .Values.node.tessera.image.tag }}
+        imagePullPolicy: {{ .Values.node.tessera.image.pullPolicy }}
         {{- with .Values.node.tessera.resources }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -269,8 +268,8 @@ spec:
 
 
       - name: {{ .Release.Name }}-besu
-        image: {{ .Values.image.besu.repository }}:{{ .Values.image.besu.tag }}
-        imagePullPolicy: {{ .Values.image.besu.pullPolicy }}
+        image: {{ .Values.node.besu.image.repository }}:{{ .Values.node.besu.image.tag }}
+        imagePullPolicy: {{ .Values.node.besu.image.pullPolicy }}
         {{- with .Values.node.besu.resources }}
         resources:
           {{- toYaml . | nindent 10 }}
