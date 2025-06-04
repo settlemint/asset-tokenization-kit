@@ -8,6 +8,23 @@ export const VestingDataSchema = t.Object(
     id: t.EthereumAddress({
       description: "The vesting data contract address",
     }),
+    user: t.Object({
+      id: t.EthereumAddress({
+        description: "The user address",
+      }),
+    }),
+    initialized: t.Boolean({
+      description: "Whether the user has initialized the vesting",
+    }),
+    vestingStart: t.Timestamp({
+      description: "The start time of the vesting in seconds",
+    }),
+    claimedAmountTrackedByStrategy: t.BigDecimal({
+      description: "The amount claimed by the strategy",
+    }),
+    totalAmountAggregated: t.BigDecimal({
+      description: "The total amount aggregated",
+    }),
   },
   {
     description: "Vesting data associated with the strategy",
