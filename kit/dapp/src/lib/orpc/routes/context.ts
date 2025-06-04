@@ -1,5 +1,9 @@
 import { auth } from "@/lib/auth/auth";
 import type { db } from "@/lib/db";
+import type { hasuraClient } from "@/lib/settlemint/hasura";
+import type { client as minioClient } from "@/lib/settlemint/minio";
+import type { portalClient } from "@/lib/settlemint/portal";
+import type { theGraphClient } from "@/lib/settlemint/the-graph";
 
 /**
  * ORPC procedure context type definition.
@@ -55,4 +59,36 @@ export type Context = {
    * @see {@link @/lib/db} - Database configuration and connection
    */
   db?: typeof db;
+
+  /**
+   * The Graph client instance for querying blockchain data.
+   * Injected by theGraphMiddleware for procedures that need to query indexed blockchain events.
+   * @optional
+   * @see {@link @/lib/settlemint/the-graph} - The Graph client configuration
+   */
+  theGraphClient?: typeof theGraphClient;
+
+  /**
+   * Portal client instance for interacting with the SettleMint Portal API.
+   * Injected by portalMiddleware for procedures that need to interact with Portal services.
+   * @optional
+   * @see {@link @/lib/settlemint/portal} - Portal client configuration
+   */
+  portalClient?: typeof portalClient;
+
+  /**
+   * MinIO client instance for object storage operations.
+   * Injected by minioMiddleware for procedures that need to store/retrieve files.
+   * @optional
+   * @see {@link @/lib/settlemint/minio} - MinIO client configuration
+   */
+  minioClient?: typeof minioClient;
+
+  /**
+   * Hasura GraphQL client instance for querying and mutating data.
+   * Injected by hasuraMiddleware for procedures that need to interact with Hasura.
+   * @optional
+   * @see {@link @/lib/settlemint/hasura} - Hasura client configuration
+   */
+  hasuraClient?: typeof hasuraClient;
 };
