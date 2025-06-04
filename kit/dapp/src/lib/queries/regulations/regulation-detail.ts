@@ -126,7 +126,7 @@ type BaseRegulationConfig = {
   updated_at: unknown;
 };
 
-type RegulationDetailResponse = {
+export type RegulationDetailResponse = {
   mica_regulation_config?: MicaRegulationConfig;
 } & BaseRegulationConfig;
 

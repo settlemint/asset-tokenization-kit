@@ -1,47 +1,18 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { StatusPill } from "@/components/blocks/status-pill/status-pill";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import type {
-  MicaDocument,
-  MicaRegulationConfig,
-} from "@/lib/db/regulations/schema-mica-regulation-configs";
+import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import {
-  MicaDocumentType,
-  ReserveComplianceStatus,
-} from "@/lib/db/regulations/schema-mica-regulation-configs";
-import { CheckCircle, ChevronDown, XCircle } from "lucide-react";
+  hasRequiredDocuments,
+  isAuthorized,
+  isReserveCompliant,
+} from "@/lib/utils/mica";
+import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-
-interface ComplianceStatusProps {
-  isCompliant: boolean;
-}
-
-function ComplianceStatus({ isCompliant }: ComplianceStatusProps) {
-  const t = useTranslations("regulations.mica.dashboard.compliance-status");
-
-  return (
-    <Badge
-      className={`
-        ${
-          isCompliant
-            ? "bg-success text-success-foreground"
-            : "bg-destructive text-destructive-foreground"
-        }
-      `}
-    >
-      {isCompliant ? (
-        <CheckCircle className="size-4" />
-      ) : (
-        <XCircle className="size-4" />
-      )}
-      {isCompliant ? t("compliant") : t("non-compliant")}
-    </Badge>
-  );
-}
 
 interface RequirementProps {
   title: string;
@@ -50,6 +21,8 @@ interface RequirementProps {
 }
 
 function Requirement({ title, description, isCompliant }: RequirementProps) {
+  const t = useTranslations("regulations.mica.dashboard.compliance-status");
+
   return (
     <div className="flex items-start justify-between p-4 border rounded-lg">
       <div className="flex gap-3">
@@ -58,7 +31,10 @@ function Requirement({ title, description, isCompliant }: RequirementProps) {
           <p className="text-sm text-muted-foreground">{description}</p>
         </div>
       </div>
-      <ComplianceStatus isCompliant={isCompliant} />
+      <StatusPill
+        status={isCompliant ? "success" : "warning"}
+        label={isCompliant ? t("compliant") : t("non-compliant")}
+      />
     </div>
   );
 }
@@ -71,31 +47,16 @@ export function ComplianceScoreLayout({ config }: ComplianceScoreLayoutProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const t = useTranslations("regulations.mica.dashboard.compliance-status");
 
-  // Check if required documents exist
-  const hasWhitePaper = config.documents?.some(
-    (doc: MicaDocument) => doc.type === MicaDocumentType.WHITE_PAPER
-  );
-  const hasAudit = config.documents?.some(
-    (doc: MicaDocument) => doc.type === MicaDocumentType.AUDIT
-  );
-
-  // Check if authorization data is complete
-  const hasAuthorization = !!(
-    config.licenceNumber &&
-    config.regulatoryAuthority &&
-    config.approvalDate
-  );
-
   const requirements = [
     {
       title: t("reserve-status"),
       description: t("reserve-status-description"),
-      isCompliant: config.reserveStatus === ReserveComplianceStatus.COMPLIANT,
+      isCompliant: isReserveCompliant(config),
     },
     {
       title: t("authorization-status"),
       description: t("authorization-status-description"),
-      isCompliant: hasAuthorization,
+      isCompliant: isAuthorized(config),
     },
     {
       title: t("kyc-aml-monitoring"),
@@ -110,7 +71,7 @@ export function ComplianceScoreLayout({ config }: ComplianceScoreLayoutProps) {
     {
       title: t("documentation"),
       description: t("documentation-description"),
-      isCompliant: !!(hasWhitePaper && hasAudit),
+      isCompliant: hasRequiredDocuments(config),
     },
   ];
 
