@@ -70,6 +70,61 @@ export const UserVestingDataSchema = t.Optional(
 
 export type UserVestingData = Static<typeof UserVestingDataSchema>;
 
+export const StandardAirdropRecipientSchema = t.Object({
+  ...OnChainStandardAirdropSchema.properties,
+  claimed: t.Optional(
+    t.MaybeEmpty(
+      t.Timestamp({
+        description:
+          "Timestamp when the airdrop was claimed, null if not claimed",
+      })
+    )
+  ),
+  claimData: AirdropClaimSchema,
+  __typename: t.Literal("StandardAirdrop"),
+});
+
+export type StandardAirdropRecipient = StaticDecode<
+  typeof StandardAirdropRecipientSchema
+>;
+
+export const PushAirdropRecipientSchema = t.Object({
+  ...OnChainPushAirdropSchema.properties,
+  claimed: t.Optional(
+    t.MaybeEmpty(
+      t.Timestamp({
+        description:
+          "Timestamp when the airdrop was claimed, null if not claimed",
+      })
+    )
+  ),
+  claimData: AirdropClaimSchema,
+  __typename: t.Literal("PushAirdrop"),
+});
+
+export type PushAirdropRecipient = StaticDecode<
+  typeof PushAirdropRecipientSchema
+>;
+
+export const VestingAirdropRecipientSchema = t.Object({
+  ...OnChainVestingAirdropSchema.properties,
+  userVestingData: UserVestingDataSchema,
+  claimed: t.Optional(
+    t.MaybeEmpty(
+      t.Timestamp({
+        description:
+          "Timestamp when the airdrop was claimed, null if not claimed",
+      })
+    )
+  ),
+  claimData: AirdropClaimSchema,
+  __typename: t.Literal("VestingAirdrop"),
+});
+
+export type VestingAirdropRecipient = StaticDecode<
+  typeof VestingAirdropRecipientSchema
+>;
+
 /**
  * TypeBox schema for airdrop recipient data
  *
@@ -80,46 +135,9 @@ export const AirdropRecipientSchema = t.Object(
   {
     airdrop: t.Union(
       [
-        t.Object({
-          ...OnChainStandardAirdropSchema.properties,
-          claimed: t.Optional(
-            t.MaybeEmpty(
-              t.Timestamp({
-                description:
-                  "Timestamp when the airdrop was claimed, null if not claimed",
-              })
-            )
-          ),
-          claimData: AirdropClaimSchema,
-          __typename: t.Literal("StandardAirdrop"),
-        }),
-        t.Object({
-          ...OnChainPushAirdropSchema.properties,
-          claimed: t.Optional(
-            t.MaybeEmpty(
-              t.Timestamp({
-                description:
-                  "Timestamp when the airdrop was claimed, null if not claimed",
-              })
-            )
-          ),
-          claimData: AirdropClaimSchema,
-          __typename: t.Literal("PushAirdrop"),
-        }),
-        t.Object({
-          ...OnChainVestingAirdropSchema.properties,
-          userVestingData: UserVestingDataSchema,
-          claimed: t.Optional(
-            t.MaybeEmpty(
-              t.Timestamp({
-                description:
-                  "Timestamp when the airdrop was claimed, null if not claimed",
-              })
-            )
-          ),
-          claimData: AirdropClaimSchema,
-          __typename: t.Literal("VestingAirdrop"),
-        }),
+        StandardAirdropRecipientSchema,
+        PushAirdropRecipientSchema,
+        VestingAirdropRecipientSchema,
       ],
       {
         description: "Discriminated union of airdrop types based on type",
