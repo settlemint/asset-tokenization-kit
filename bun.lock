@@ -141,7 +141,7 @@
         "@types/node": "22.15.29",
         "@types/pg": "8.15.4",
         "@types/react": "19.1.6",
-        "@types/react-dom": "19.1.5",
+        "@types/react-dom": "19.1.6",
         "@types/react-pdf": "7.0.0",
         "@types/rtl-detect": "1.0.3",
         "babel-plugin-react-compiler": "19.1.0-rc.2",
@@ -190,13 +190,13 @@
     "prisma",
   ],
   "overrides": {
-    "ws": "8.18.2",
-    "react-is": "19.1.0",
-    "undici": "7.10.0",
     "adm-zip": "0.5.16",
     "elliptic": "6.6.1",
     "graphql": "16.11.0",
     "prettier": "3.5.3",
+    "react-is": "19.1.0",
+    "undici": "7.10.0",
+    "ws": "8.18.2",
   },
   "packages": {
     "@0no-co/graphql.web": ["@0no-co/graphql.web@1.1.2", "", { "peerDependencies": { "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0" }, "optionalPeers": ["graphql"] }, "sha512-N2NGsU5FLBhT8NZ+3l2YrzZSHITjNXNuDhC4iDiikv0IujaJ0Xc6xIxQZ/Ek3Cb+rgPjnLHYyJm11tInuJn+cw=="],
@@ -1401,7 +1401,7 @@
 
     "@types/react": ["@types/react@19.1.6", "", { "dependencies": { "csstype": "^3.0.2" } }, "sha512-JeG0rEWak0N6Itr6QUx+X60uQmN+5t3j9r/OVDtWzFXKaj6kD1BwJzOksD0FF6iWxZlbE1kB0q9vtnU2ekqa1Q=="],
 
-    "@types/react-dom": ["@types/react-dom@19.1.5", "", { "peerDependencies": { "@types/react": "^19.0.0" } }, "sha512-CMCjrWucUBZvohgZxkjd6S9h0nZxXjzus6yDfUb+xLxYM7VvjKNH1tQrE9GWLql1XoOP4/Ds3bwFqShHUYraGg=="],
+    "@types/react-dom": ["@types/react-dom@19.1.6", "", { "peerDependencies": { "@types/react": "^19.0.0" } }, "sha512-4hOiT/dwO8Ko0gV1m/TJZYk3y0KBnY9vzDh7W+DH17b2HFSOGgdj33dhihPeuy3l0q23+4e+hoXHV6hCC4dCXw=="],
 
     "@types/react-pdf": ["@types/react-pdf@7.0.0", "", { "dependencies": { "react-pdf": "*" } }, "sha512-G0a+5UiKk3AvEauBP/Js7r9kGZNW3iBbS6kXkH0foGSaKWR6K3ElTe7Y4tlolc2VKbM9udmMxpkbxh/dtR2wXA=="],
 

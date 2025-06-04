@@ -133,7 +133,7 @@
     "@types/node": "22.15.29",
     "@types/pg": "8.15.4",
     "@types/react": "19.1.6",
-    "@types/react-dom": "19.1.5",
+    "@types/react-dom": "19.1.6",
     "@types/react-pdf": "7.0.0",
     "@types/rtl-detect": "1.0.3",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
