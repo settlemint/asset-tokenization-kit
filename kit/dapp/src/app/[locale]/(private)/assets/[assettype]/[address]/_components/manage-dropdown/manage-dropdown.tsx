@@ -22,10 +22,13 @@ import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { getAddress, type Address } from "viem";
+import {
+  hasAllowlist,
+  hasBlocklist,
+} from "../../../../../../../../lib/utils/features-enabled";
 import { AllowForm } from "../allow-form/form";
 import { BlockForm } from "../block-form/form";
 import { DisallowForm } from "../disallow-form/form";
-import { hasAllowlist, hasBlocklist } from "../features-enabled";
 import { MintForm } from "../mint-form/form";
 import { UnblockForm } from "../unblock-form/form";
 import { GrantRoleForm } from "./grant-role-form/form";

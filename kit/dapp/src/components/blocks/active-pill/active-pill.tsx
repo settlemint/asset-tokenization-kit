@@ -9,23 +9,26 @@ export function ActivePill({ paused }: { paused: boolean }): ReactElement {
 
   return (
     <Badge
+      asChild
       variant={paused ? "destructive" : "default"}
       className={cn(
         "bg-destructive/80 text-destructive-foreground",
         !paused && "bg-success/80 text-success-foreground"
       )}
     >
-      {paused ? (
-        <>
-          <PauseCircle className="mr-1 size-3" />
-          <span>{t("paused")}</span>
-        </>
-      ) : (
-        <>
-          <PlayCircle className="mr-1 size-3" />
-          <span>{t("active")}</span>
-        </>
-      )}
+      <span className="flex items-center">
+        {paused ? (
+          <>
+            <PauseCircle className="mr-1 size-3" />
+            <span>{t("paused")}</span>
+          </>
+        ) : (
+          <>
+            <PlayCircle className="mr-1 size-3" />
+            <span>{t("active")}</span>
+          </>
+        )}
+      </span>
     </Badge>
   );
 }

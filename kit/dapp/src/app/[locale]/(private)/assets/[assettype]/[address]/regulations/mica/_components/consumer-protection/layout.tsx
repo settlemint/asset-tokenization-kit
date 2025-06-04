@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { StatusPill } from "@/components/blocks/status-pill/status-pill";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Tooltip,
@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { AlertCircle, CheckCircle, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export function ConsumerProtectionLayout({
@@ -29,20 +29,12 @@ export function ConsumerProtectionLayout({
     <Card className="w-full h-full flex flex-col">
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
-        <Badge
-          className={`mt-2 ${
-            isCompliant
-              ? "!bg-success/80 !text-success-foreground"
-              : "!bg-warning/80 !text-warning-foreground"
-          } border-transparent`}
-        >
-          {isCompliant ? (
-            <CheckCircle className="mr-1 size-3" />
-          ) : (
-            <AlertCircle className="mr-1 size-3" />
-          )}
-          {isCompliant ? t("compliant") : t("non-compliant")}
-        </Badge>
+        <div className="mt-2">
+          <StatusPill
+            status={isCompliant ? "success" : "warning"}
+            label={isCompliant ? t("compliant") : t("non-compliant")}
+          />
+        </div>
       </CardHeader>
       <CardContent className="flex-1">
         <div className="grid grid-cols-2 md:grid-cols-2 gap-8">
