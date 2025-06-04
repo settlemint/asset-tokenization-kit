@@ -1,6 +1,11 @@
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
+
+const logger = createLogger({
+  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
+});
 
 /**
  * Query cache configuration constants.
@@ -228,7 +233,12 @@ export function makeQueryClient(): QueryClient {
     } catch (error) {
       // Graceful fallback if localStorage is unavailable
       // (e.g., private browsing mode, quota exceeded, or disabled)
-      console.warn("[QueryClient] Failed to set up localStorage persistence. Queries will not persist across sessions:", error);
+      logger.warn("Failed to set up localStorage persistence for QueryClient", {
+        message: "Queries will not persist across sessions",
+        error: error instanceof Error ? error.message : String(error),
+        errorType:
+          error instanceof Error ? error.constructor.name : typeof error,
+      });
     }
   }
 
