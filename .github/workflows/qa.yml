@@ -119,6 +119,7 @@ jobs:
           path: |
             kit/contracts/tools/genesis-output.json
             kit/contracts/portal/*.json
+            kit/subgraph/subgraph-output.txt
 
   secret-scanning:
     name: Secret Scanning
