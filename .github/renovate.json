@@ -33,9 +33,9 @@
       "matchPackageNames": ["elysia", "/^@elysiajs//"]
     },
     {
-      "groupName": "ORPC",
+      "groupName": "ORPC / Tanstack",
       "groupSlug": "orpc",
-      "matchPackageNames": ["/^@orpc//"]
+      "matchPackageNames": ["/^@orpc//", "/^@tanstack//"]
     }
   ],
   "hostRules": [
