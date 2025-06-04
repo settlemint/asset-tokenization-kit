@@ -6,9 +6,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "besu-genesis.labels" . | nindent 4 }}
-  annotations:
-    "helm.sh/hook": "pre-install"
-    "helm.sh/hook-weight": "-15"
 data:
   default.conf: |
     server {
@@ -42,4 +39,4 @@ data:
             return 200 "healthy\n";
             add_header Content-Type text/plain;
         }
-    } 
+    }

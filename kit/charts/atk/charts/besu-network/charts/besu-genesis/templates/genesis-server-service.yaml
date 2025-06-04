@@ -7,9 +7,6 @@ metadata:
   labels:
     {{- include "besu-genesis.labels" . | nindent 4 }}
     app.kubernetes.io/component: genesis-server
-  annotations:
-    "helm.sh/hook": "post-install"
-    "helm.sh/hook-weight": "6"
 spec:
   type: ClusterIP
   ports:

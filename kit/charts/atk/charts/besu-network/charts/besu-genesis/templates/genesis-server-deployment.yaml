@@ -7,9 +7,6 @@ metadata:
   labels:
     {{- include "besu-genesis.labels" . | nindent 4 }}
     app.kubernetes.io/component: genesis-server
-  annotations:
-    "helm.sh/hook": "post-install"
-    "helm.sh/hook-weight": "5"
 spec:
   replicas: 1
   selector:
@@ -60,4 +57,4 @@ spec:
           claimName: besu-genesis-pvc
       - name: nginx-config
         configMap:
-          name: besu-genesis-nginx-config 
+          name: besu-genesis-nginx-config
