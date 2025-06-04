@@ -17,7 +17,8 @@ import {
     IdentityImplementationNotSet,
     TokenIdentityImplementationNotSet,
     TokenAccessManagerImplementationNotSet,
-    IndexOutOfBounds
+    IndexOutOfBounds,
+    IdentityVerificationModuleNotSet
 } from "../../contracts/system/SMARTSystemErrors.sol";
 
 // Implementations for testing
@@ -264,6 +265,23 @@ contract SMARTSystemFactoryTest is Test {
         );
     }
 
+    function test_ConstructorWithZeroIdentityVerificationModule() public {
+        vm.expectRevert(IdentityVerificationModuleNotSet.selector);
+        new SMARTSystemFactory(
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            tokenIdentityImpl,
+            tokenAccessManagerImpl,
+            address(0), // Zero identity verification module
+            forwarder
+        );
+    }
+
     function test_CreateSystemSuccess() public {
         vm.prank(admin);
         address systemAddress = factory.createSystem();
@@ -371,6 +389,7 @@ contract SMARTSystemFactoryTest is Test {
         assertEq(factory.defaultIdentityImplementation(), identityImpl);
         assertEq(factory.defaultTokenIdentityImplementation(), tokenIdentityImpl);
         assertEq(factory.defaultTokenAccessManagerImplementation(), tokenAccessManagerImpl);
+        assertEq(factory.defaultIdentityVerificationModule(), identityVerificationModule);
         assertEq(factory.factoryForwarder(), forwarder);
     }
 
