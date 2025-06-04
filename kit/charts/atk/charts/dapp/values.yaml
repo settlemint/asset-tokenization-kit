@@ -100,6 +100,78 @@ tolerations: []
 
 affinity: {}
 
+# NetworkPolicy configuration
+networkPolicy:
+  enabled: false
+  # Ingress rules
+  ingress:
+    # Allow from ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3000
+    # Allow from same namespace
+    - from:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 3000
+  
+  # Egress rules
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow access to PostgreSQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgresql-ha
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow access to Hasura GraphQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: graphql-engine
+      ports:
+        - protocol: TCP
+          port: 8080
+    # Allow access to Portal API
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: portal
+      ports:
+        - protocol: TCP
+          port: 3000
+        - protocol: TCP
+          port: 3001
+    # Allow access to ERPC
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: erpc
+      ports:
+        - protocol: TCP
+          port: 4000
+    # Allow external HTTPS (for external APIs)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+
 # Environment variables sourced from a secret
 # These will be created in the secret.yaml template
 secretEnv:
@@ -129,6 +201,17 @@ autoscaling:
   maxReplicas: 10
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
+
+# PodDisruptionBudget configuration
+podDisruptionBudget:
+  enabled: false
+  # Minimum number of pods that must be available during disruption
+  # Can be an integer or percentage (e.g., "50%")
+  minAvailable: 1
+  # Maximum number of pods that can be unavailable during disruption
+  # Can be an integer or percentage (e.g., "50%")
+  # Note: Only one of minAvailable or maxUnavailable can be specified
+  # maxUnavailable: 1
 
 # Init container configuration
 initContainer:

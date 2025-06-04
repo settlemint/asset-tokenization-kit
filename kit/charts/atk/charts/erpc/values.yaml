@@ -109,6 +109,14 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 
+# PodDisruptionBudget configuration
+podDisruptionBudget:
+  enabled: false
+  # Minimum number of pods that must be available during disruption
+  minAvailable: 1
+  # Maximum number of pods that can be unavailable during disruption
+  # maxUnavailable: 1
+
 # Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
@@ -127,6 +135,49 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# NetworkPolicy configuration
+networkPolicy:
+  enabled: false
+  # Ingress rules
+  ingress:
+    # Allow from services that need RPC access
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: dapp
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: txsigner
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: ingress-nginx
+        - podSelector: {}  # Same namespace
+      ports:
+        - protocol: TCP
+          port: 4000  # RPC port
+        - protocol: TCP
+          port: 4001  # Metrics port
+  
+  # Egress rules
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow access to Besu nodes
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: besu-statefulset
+      ports:
+        - protocol: TCP
+          port: 8545  # RPC
 
 tests:
   image:

@@ -6,6 +6,12 @@
 global:
   labels:
     kots.io/app-slug: settlemint-atk
+  # NetworkPolicy configuration
+  networkPolicy:
+    # Enable NetworkPolicies across all services
+    enabled: false
+  # Namespace where ingress controller is deployed
+  ingressNamespace: ingress-nginx
 
 
 imagePullCredentials:
