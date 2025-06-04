@@ -321,7 +321,11 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
         // This avoids reading from state that is being modified in the same transaction before it's fully updated.
 
         // Deploy the SMARTComplianceProxy, linking it to this SMARTSystem contract.
-        address localComplianceProxy = address(new SMARTComplianceProxy(address(this)));
+        address[] memory initialComplianceAdmins = new address[](2);
+        initialComplianceAdmins[0] = initialAdmin;
+        // This is needed to give the token factories the whitelist manager role
+        initialComplianceAdmins[1] = address(this);
+        address localComplianceProxy = address(new SMARTComplianceProxy(address(this), initialComplianceAdmins));
 
         // Deploy the SMARTIdentityRegistryStorageProxy, linking it to this SMARTSystem and setting an initial admin.
         address localIdentityRegistryStorageProxy =
@@ -425,6 +429,11 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
         // Make it possible that the token factory can issue token identities.
         IAccessControl(address(identityFactoryProxy())).grantRole(
             SMARTSystemRoles.TOKEN_IDENTITY_ISSUER_ROLE, _tokenFactoryProxy
+        );
+
+        // Make it possible that the token factory can add addresses to the compliance whitelist
+        IAccessControl(address(complianceProxy())).grantRole(
+            SMARTSystemRoles.WHITELIST_MANAGER_ROLE, _tokenFactoryProxy
         );
 
         emit TokenFactoryCreated(_msgSender(), _typeName, _tokenFactoryProxy, _factoryImplementation, block.timestamp);
