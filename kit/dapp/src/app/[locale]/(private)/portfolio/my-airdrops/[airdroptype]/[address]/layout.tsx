@@ -40,7 +40,7 @@ export async function generateMetadata({
   const { address, locale } = await params;
   const t = await getTranslations({
     locale,
-    namespace: "portfolio.my-airdrops.details",
+    namespace: "private.airdrops.details",
   });
 
   const shortAddress = shortHex(address)!;

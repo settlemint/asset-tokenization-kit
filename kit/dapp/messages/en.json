@@ -1227,6 +1227,13 @@
           "expired": "The initialization period ended on {date}. You can no longer claim this airdrop",
           "claimed": "You have claimed all available assets from your vesting schedule"
         }
+      },
+      "details": {
+        "page-title": "Airdrop {address}",
+        "page-description": "View and manage your airdrop at {address}",
+        "forms": {
+          "manage": "Manage"
+        }
       }
     },
     "settings": {
