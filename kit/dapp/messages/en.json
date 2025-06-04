@@ -1700,7 +1700,15 @@
           "status-expired": "Expired",
           "duration-days": "days",
           "duration-hours": "hours",
-          "duration-minutes": "minutes"
+          "duration-minutes": "minutes",
+          "amount": "Amount",
+          "value": "Value",
+          "vesting-start": "Vesting period start",
+          "vesting-start-info": "The date and time when the vesting starts",
+          "vesting-end": "Vesting period end",
+          "vesting-end-info": "The date and time when the vesting ends",
+          "vesting-cliff-end": "Assets available from",
+          "vesting-cliff-end-info": "You can claim your assets starting on this date. Before this date, the assets are locked and cannot be claimed."
         }
       },
       "detail": {

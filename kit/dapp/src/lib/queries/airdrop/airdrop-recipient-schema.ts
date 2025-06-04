@@ -158,3 +158,14 @@ export const AirdropRecipientSchema = t.Object(
 );
 
 export type AirdropRecipient = StaticDecode<typeof AirdropRecipientSchema>;
+
+export const AirdropRecipientDetailSchema = t.Object({
+  ...AirdropRecipientSchema.properties,
+  price: t.Price({
+    description: "The price of the asset in the user's currency",
+  }),
+});
+
+export type AirdropRecipientDetail = StaticDecode<
+  typeof AirdropRecipientDetailSchema
+>;

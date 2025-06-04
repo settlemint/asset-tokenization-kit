@@ -1,7 +1,6 @@
 import { AirdropDetailPageHeader } from "@/app/[locale]/(private)/distribution/airdrops/[airdroptype]/[address]/_components/airdrop-detail-page-header";
 import { metadata } from "@/lib/config/metadata";
 import { shortHex } from "@/lib/utils/hex";
-import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -13,7 +12,6 @@ interface LayoutProps extends PropsWithChildren {
   params: Promise<{
     locale: Locale;
     address: Address;
-    airdroptype: AirdropType;
   }>;
 }
 
