@@ -18,6 +18,82 @@ import { ISMARTYieldSchedule } from "../ISMARTYieldSchedule.sol";
 /// Functions are `external`, meaning they are designed to be called from other contracts or off-chain applications.
 /// Many are `view` functions, which read state but don't modify it.
 interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule {
+    /// @notice Defines custom error types for more gas-efficient and descriptive error handling.
+    /// @dev Using custom errors (Solidity 0.8.4+) saves gas compared to `require` with string messages.
+
+    /// @dev Reverted if the `tokenAddress` provided in the constructor is the zero address.
+    error InvalidToken();
+    /// @dev Reverted if the `startDate_` provided in the constructor is not in the future (i.e., less than or equal to
+    /// `block.timestamp`).
+    error InvalidStartDate();
+    /// @dev Reverted if the `endDate_` provided in the constructor is not after the `startDate_`.
+    error InvalidEndDate();
+    /// @dev Reverted if the `rate_` (yield rate in basis points) provided in the constructor is zero.
+    error InvalidRate();
+    /// @dev Reverted if the `interval_` (distribution interval in seconds) provided in the constructor is zero.
+    error InvalidInterval();
+    /// @dev Reverted by `claimYield` if there is no accumulated yield for the caller to claim for completed periods.
+    error NoYieldAvailable();
+    /// @dev Reverted by `calculateAccruedYield` if the schedule has not yet started (i.e., `block.timestamp <
+    /// _startDate`).
+    error ScheduleNotActive();
+    /// @dev Reverted by `topUpUnderlyingAsset` or `withdrawUnderlyingAsset` if the underlying asset transfer fails or
+    /// if there's not enough balance.
+    error InsufficientUnderlyingBalance(); // Could also be used if a transferFrom fails.
+    /// @dev Reverted if the `_underlyingAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to`
+    /// address in withdrawal is zero.
+    error InvalidUnderlyingAsset();
+    /// @dev Reverted by `withdrawUnderlyingAsset` if the withdrawal `amount` is zero.
+    error InvalidAmount();
+    /// @dev Reverted by `periodEnd` if an invalid period number (0 or out of bounds) is requested.
+    error InvalidPeriod();
+
+    /// @notice Emitted when a new fixed yield schedule is set.
+    /// @param startDate The start date of the yield schedule.
+    /// @param endDate The end date of the yield schedule.
+    /// @param rate The rate of the yield schedule.
+    /// @param interval The interval of the yield schedule.
+    /// @param periodEndTimestamps The timestamps of the end of each period.
+    /// @param underlyingAsset The underlying asset of the yield schedule.
+    event FixedYieldScheduleSet(
+        uint256 startDate,
+        uint256 endDate,
+        uint256 rate,
+        uint256 interval,
+        uint256[] periodEndTimestamps,
+        IERC20 underlyingAsset
+    );
+
+    /// @notice Emitted when an administrator or funder successfully deposits `_underlyingAsset` into the contract to
+    /// fund yield payments.
+    /// @param from The address that sent the `_underlyingAsset` tokens (the funder).
+    /// @param amount The quantity of `_underlyingAsset` tokens deposited.
+    event UnderlyingAssetTopUp(address indexed from, uint256 amount);
+
+    /// @notice Emitted when an administrator successfully withdraws `_underlyingAsset` from the contract.
+    /// @param to The address that received the withdrawn `_underlyingAsset` tokens.
+    /// @param amount The quantity of `_underlyingAsset` tokens withdrawn.
+    event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
+
+    /// @notice Emitted when a token holder successfully claims their accrued yield.
+    /// @param holder The address of the token holder who claimed the yield.
+    /// @param totalAmount The total quantity of `_underlyingAsset` transferred to the holder in this claim.
+    /// @param fromPeriod The first period number (1-indexed) included in this claim.
+    /// @param toPeriod The last period number (1-indexed) included in this claim.
+    /// @param periodAmounts An array containing the amount of yield claimed for each specific period within the
+    /// `fromPeriod` to `toPeriod` range.
+    /// The length of this array is `toPeriod - fromPeriod + 1`.
+    /// @param unclaimedYield The total amount of unclaimed yield remaining in the contract across all holders after
+    /// this claim.
+    event YieldClaimed( // Amounts per period, matches the range fromPeriod to toPeriod
+        address indexed holder,
+        uint256 totalAmount,
+        uint256 fromPeriod,
+        uint256 toPeriod,
+        uint256[] periodAmounts,
+        uint256 unclaimedYield
+    );
+
     /// @notice Returns an array of all period end timestamps for this yield schedule.
     /// @dev Each timestamp in the array marks the conclusion of a yield distribution period.
     /// The number of elements in this array corresponds to the total number of periods in the schedule.
