@@ -3117,6 +3117,22 @@
           "redemptions-at-par-value-info": "Par value is the original issued price of a token, regardless of its current market value",
           "compliant": "Compliant",
           "non-compliant": "Non-compliant"
+        },
+        "kyc-monitoring": {
+          "active-monitoring": "Active Monitoring",
+          "user-kyc-status": {
+            "title": "User KYC Status",
+            "verified-holders": "KYC Verified Holders",
+            "pending-verification": "Pending Verification",
+            "blocked-holders": "Blocked Holders"
+          },
+          "compliance-features": {
+            "title": "Compliance Features",
+            "address-blocklist": "Address Blocklist",
+            "asset-freezing": "Asset Freezing",
+            "sanction-lists": "Sanction Lists",
+            "enabled": "Enabled"
+          }
         }
       }
     }
