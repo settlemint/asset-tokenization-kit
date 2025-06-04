@@ -19,6 +19,8 @@ import { SMARTSystemRoles } from "../SMARTSystemRoles.sol";
 import { SMARTRoles } from "../../assets/SMARTRoles.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
+import { ISMARTComplianceModule } from "../../interface/ISMARTComplianceModule.sol";
+import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
 
 /// @title SMARTTokenFactory - Contract for managing token registries with role-based access control
 /// @notice This contract provides functionality for registering tokens and checking their registration status,
@@ -59,6 +61,8 @@ abstract contract AbstractSMARTTokenFactoryImplementation is
     error AccessManagerAlreadyDeployed(address predictedAddress);
     /// @notice Error when a token identity address mismatch is detected.
     error TokenIdentityAddressMismatch(address deployedTokenIdentityAddress, address tokenIdentityAddress);
+    /// @notice Error when the provided identity verification module address is the zero address.
+    error InvalidIdentityVerificationModuleAddress();
 
     // --- State Variables ---
 
@@ -68,6 +72,10 @@ abstract contract AbstractSMARTTokenFactoryImplementation is
     /// @notice Address of the underlying token implementation contract.
     /// @dev This address points to the contract that holds the core logic for token operations.
     address internal _tokenImplementation;
+
+    /// @notice Address of the identity verification module.
+    /// @dev This address points to the contract that holds the core logic for identity verification.
+    address internal _identityVerificationModule;
 
     /// @notice Constructor for the token factory implementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions (ERC2771).
@@ -79,10 +87,12 @@ abstract contract AbstractSMARTTokenFactoryImplementation is
     /// @param systemAddress The address of the `ISMARTSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
     /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and TOKEN_DEPLOYER_ROLE.
+    /// @param identityVerificationModule The address of the identity verification module.
     function initialize(
         address systemAddress,
         address tokenImplementation_,
-        address initialAdmin
+        address initialAdmin,
+        address identityVerificationModule
     )
         public
         virtual
@@ -98,11 +108,18 @@ abstract contract AbstractSMARTTokenFactoryImplementation is
         ) {
             revert InvalidImplementationAddress();
         }
+        if (
+            identityVerificationModule == address(0)
+                || !IERC165(identityVerificationModule).supportsInterface(type(ISMARTComplianceModule).interfaceId)
+        ) {
+            revert InvalidIdentityVerificationModuleAddress();
+        }
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
         _grantRole(SMARTSystemRoles.TOKEN_DEPLOYER_ROLE, initialAdmin);
 
         _tokenImplementation = tokenImplementation_;
         _systemAddress = systemAddress;
+        _identityVerificationModule = identityVerificationModule;
     }
 
     /// @inheritdoc ISMARTTokenFactory
@@ -129,12 +146,51 @@ abstract contract AbstractSMARTTokenFactoryImplementation is
     }
 
     // --- Internal Functions ---
+
+    /// @notice Returns the identity registry contract.
+    /// @return The identity registry contract.
     function _identityRegistry() internal view returns (ISMARTIdentityRegistry) {
         return ISMARTIdentityRegistry(ISMARTSystem(_systemAddress).identityRegistryProxy());
     }
 
+    /// @notice Returns the compliance contract.
+    /// @return The compliance contract.
     function _compliance() internal view returns (ISMARTCompliance) {
         return ISMARTCompliance(ISMARTSystem(_systemAddress).complianceProxy());
+    }
+
+    /// @notice Creates a pair for the identity verification module.
+    /// @param requiredClaimTopics The required claim topics.
+    /// @return The pair for the identity verification module.
+    function _identityVerificationModulePair(uint256[] memory requiredClaimTopics)
+        internal
+        view
+        returns (SMARTComplianceModuleParamPair memory)
+    {
+        return SMARTComplianceModuleParamPair({
+            module: _identityVerificationModule,
+            params: abi.encode(requiredClaimTopics)
+        });
+    }
+
+    /// @notice Adds the identity verification module pair to the module pairs.
+    /// @param modulePairs The module pairs.
+    /// @param requiredClaimTopics The required claim topics.
+    /// @return result The module pairs with the identity verification module pair added.
+    function _addIdentityVerificationModulePair(
+        SMARTComplianceModuleParamPair[] memory modulePairs,
+        uint256[] memory requiredClaimTopics
+    )
+        internal
+        view
+        returns (SMARTComplianceModuleParamPair[] memory result)
+    {
+        result = new SMARTComplianceModuleParamPair[](modulePairs.length + 1);
+        result[0] = _identityVerificationModulePair(requiredClaimTopics);
+        for (uint256 i = 0; i < modulePairs.length; i++) {
+            result[i + 1] = modulePairs[i];
+        }
+        return result;
     }
 
     /// @notice Calculates the salt for CREATE2 deployment.

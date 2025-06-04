@@ -65,8 +65,7 @@ contract SMARTBondFactoryImplementation is ISMARTBondFactory, AbstractSMARTToken
             maturityDate_,
             faceValue_,
             underlyingAsset_,
-            requiredClaimTopics_,
-            initialModulePairs_,
+            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -124,6 +123,22 @@ contract SMARTBondFactoryImplementation is ISMARTBondFactory, AbstractSMARTToken
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
         address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
+
+        SMARTComplianceModuleParamPair memory identityVerificationModulePair =
+            _identityVerificationModulePair(requiredClaimTopics_);
+
+        // Combine identity verification module with initial modules
+        SMARTComplianceModuleParamPair[] memory allModulePairs =
+            new SMARTComplianceModuleParamPair[](initialModulePairs_.length + 1);
+
+        // Add identity verification module as the first element
+        allModulePairs[0] = identityVerificationModulePair;
+
+        // Copy initial modules to the rest of the array
+        for (uint256 i = 0; i < initialModulePairs_.length; i++) {
+            allModulePairs[i + 1] = initialModulePairs_[i];
+        }
+
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
@@ -134,8 +149,7 @@ contract SMARTBondFactoryImplementation is ISMARTBondFactory, AbstractSMARTToken
             maturityDate_,
             faceValue_,
             underlyingAsset_,
-            requiredClaimTopics_,
-            initialModulePairs_,
+            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_

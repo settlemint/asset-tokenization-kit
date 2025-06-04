@@ -58,7 +58,6 @@ abstract contract SMARTUpgradeable is Initializable, SMARTExtensionUpgradeable, 
     /// @param onchainID_ Optional on-chain identifier address.
     /// @param identityRegistry_ Address of the `ISMARTIdentityRegistry` contract.
     /// @param compliance_ Address of the `ISMARTCompliance` contract.
-    /// @param requiredClaimTopics_ Initial list of `uint256` claim topic IDs for identity verification.
     /// @param initialModulePairs_ Initial list of `SMARTComplianceModuleParamPair` structs for compliance modules.
     function __SMART_init(
         string memory name_,
@@ -67,7 +66,6 @@ abstract contract SMARTUpgradeable is Initializable, SMARTExtensionUpgradeable, 
         address onchainID_,
         address identityRegistry_,
         address compliance_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         internal
@@ -78,9 +76,7 @@ abstract contract SMARTUpgradeable is Initializable, SMARTExtensionUpgradeable, 
         __ERC20_init(name_, symbol_);
 
         // Initialize the core SMART logic state using the unchained initializer from _SMARTLogic.
-        __SMART_init_unchained(
-            decimals_, onchainID_, identityRegistry_, compliance_, requiredClaimTopics_, initialModulePairs_
-        );
+        __SMART_init_unchained(decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_);
         // Developer Note: In the final contract's `initialize` function, ensure that initializers for
         // UUPSUpgradeable, ERC20Upgradeable (done above), AccessControl/Ownable patterns are called
         // *before* this `__SMART_init` function if they set up state this depends on or if order matters for them.

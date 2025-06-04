@@ -56,8 +56,7 @@ contract SMARTFundFactoryImplementation is ISMARTFundFactory, AbstractSMARTToken
             decimals_,
             tokenIdentityAddress,
             managementFeeBps_,
-            requiredClaimTopics_,
-            initialModulePairs_,
+            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -116,8 +115,7 @@ contract SMARTFundFactoryImplementation is ISMARTFundFactory, AbstractSMARTToken
             decimals_,
             tokenIdentityAddress,
             managementFeeBps_,
-            requiredClaimTopics_,
-            initialModulePairs_,
+            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_

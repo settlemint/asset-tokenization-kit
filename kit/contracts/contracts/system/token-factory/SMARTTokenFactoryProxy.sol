@@ -48,11 +48,13 @@ contract SMARTTokenFactoryProxy is Proxy {
     /// @param initialAdmin The address of the initial admin for the token factory.
     /// @param factoryTypeHash The hash of the factory type.
     /// @param tokenImplementation The address of the token implementation contract.
+    /// @param identityVerificationModule The address of the identity verification module.
     constructor(
         address systemAddress,
         address initialAdmin,
         bytes32 factoryTypeHash,
-        address tokenImplementation
+        address tokenImplementation,
+        address identityVerificationModule
     )
         payable
     {
@@ -67,7 +69,11 @@ contract SMARTTokenFactoryProxy is Proxy {
         if (implementation == address(0)) revert TokenFactoryImplementationNotSet(factoryTypeHash);
 
         bytes memory data = abi.encodeWithSelector(
-            ISMARTTokenFactory.initialize.selector, systemAddress, tokenImplementation, initialAdmin
+            ISMARTTokenFactory.initialize.selector,
+            systemAddress,
+            tokenImplementation,
+            initialAdmin,
+            identityVerificationModule
         );
 
         // Perform the delegatecall to initialize the identity logic in the context of this proxy's storage.

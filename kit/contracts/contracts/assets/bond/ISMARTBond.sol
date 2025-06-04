@@ -59,7 +59,6 @@ interface ISMARTBond is
     /// @param maturityDate_ The Unix timestamp representing the bond's maturity date.
     /// @param faceValue_ The face value of each bond token in the underlying asset's base units.
     /// @param underlyingAsset_ The address of the ERC20 token used as the underlying asset for the bond.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the bond.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
     /// @param compliance_ The address of the compliance contract.
@@ -73,7 +72,6 @@ interface ISMARTBond is
         uint256 maturityDate_,
         uint256 faceValue_,
         address underlyingAsset_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,

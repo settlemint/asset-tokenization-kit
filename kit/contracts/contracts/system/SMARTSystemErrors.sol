@@ -63,6 +63,12 @@ error TokenIdentityImplementationNotSet();
 /// contract address is zero or has not been configured in the `SMARTSystem`.
 error TokenAccessManagerImplementationNotSet();
 
+/// @notice Error indicating that the identity verification module implementation address has not been set.
+/// @dev This error is thrown if an operation requires the identity verification module, but its logic contract address
+/// is
+/// zero or has not been configured in the `SMARTSystem`.
+error IdentityVerificationModuleNotSet();
+
 /// @notice Error indicating that an index provided for accessing an array or list is out of its valid range.
 /// @dev For example, trying to access the 5th element in an array that only has 3 elements.
 /// @param index The invalid index that was attempted to be accessed.

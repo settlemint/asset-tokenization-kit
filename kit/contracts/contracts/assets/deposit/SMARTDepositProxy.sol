@@ -23,7 +23,6 @@ contract SMARTDepositProxy is SMARTAssetProxy {
     /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
     /// one.
     /// @param collateralTopicId_ The topic ID of the collateral claim.
-    /// @param requiredClaimTopics_ The required claim topics of the deposit.
     /// @param initialModulePairs_ The initial module pairs of the deposit.
     /// @param identityRegistry_ The identity registry of the deposit.
     /// @param compliance_ The compliance of the deposit.
@@ -35,7 +34,6 @@ contract SMARTDepositProxy is SMARTAssetProxy {
         uint8 decimals_,
         address onchainID_,
         uint256 collateralTopicId_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
@@ -53,7 +51,6 @@ contract SMARTDepositProxy is SMARTAssetProxy {
             decimals_,
             onchainID_,
             collateralTopicId_,
-            requiredClaimTopics_,
             initialModulePairs_,
             identityRegistry_,
             compliance_,

@@ -25,7 +25,6 @@ contract SMARTBondProxy is SMARTAssetProxy {
     /// @param maturityDate_ The maturity date of the bond.
     /// @param faceValue_ The face value of the bond.
     /// @param underlyingAsset_ The underlying asset of the bond.
-    /// @param requiredClaimTopics_ The required claim topics of the bond.
     /// @param initialModulePairs_ The initial module pairs of the bond.
     /// @param identityRegistry_ The identity registry of the bond.
     /// @param compliance_ The compliance of the bond.
@@ -40,7 +39,6 @@ contract SMARTBondProxy is SMARTAssetProxy {
         uint256 maturityDate_,
         uint256 faceValue_,
         address underlyingAsset_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
@@ -61,7 +59,6 @@ contract SMARTBondProxy is SMARTAssetProxy {
             maturityDate_,
             faceValue_,
             underlyingAsset_,
-            requiredClaimTopics_,
             initialModulePairs_,
             identityRegistry_,
             compliance_,

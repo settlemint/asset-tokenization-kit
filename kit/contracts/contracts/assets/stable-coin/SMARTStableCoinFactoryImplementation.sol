@@ -35,16 +35,18 @@ contract SMARTStableCoinFactoryImplementation is ISMARTStableCoinFactory, Abstra
     /// @param systemAddress The address of the `ISMARTSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
     /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and TOKEN_DEPLOYER_ROLE.
+    /// @param identityVerificationModule_ The address of the identity verification module.
     function initialize(
         address systemAddress,
         address tokenImplementation_,
-        address initialAdmin
+        address initialAdmin,
+        address identityVerificationModule_
     )
         public
         override(AbstractSMARTTokenFactoryImplementation, ISMARTTokenFactory)
         initializer
     {
-        super.initialize(systemAddress, tokenImplementation_, initialAdmin);
+        super.initialize(systemAddress, tokenImplementation_, initialAdmin, identityVerificationModule_);
 
         ISMARTTopicSchemeRegistry topicSchemeRegistry =
             ISMARTTopicSchemeRegistry(ISMARTSystem(_systemAddress).topicSchemeRegistryProxy());
@@ -83,8 +85,7 @@ contract SMARTStableCoinFactoryImplementation is ISMARTStableCoinFactory, Abstra
             decimals_,
             tokenIdentityAddress,
             _collateralClaimTopicId,
-            requiredClaimTopics_,
-            initialModulePairs_,
+            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -141,8 +142,7 @@ contract SMARTStableCoinFactoryImplementation is ISMARTStableCoinFactory, Abstra
             decimals_,
             tokenIdentityAddress,
             _collateralClaimTopicId,
-            requiredClaimTopics_,
-            initialModulePairs_,
+            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_
