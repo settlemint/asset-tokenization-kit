@@ -125,6 +125,13 @@ tolerations: []
 
 affinity: {}
 
+tests:
+  image:
+    registry: docker.io
+    repository: busybox
+    tag: 1.37.0
+    pullPolicy: IfNotPresent
+
 # Define any init containers needed
 initContainers:
   # - name: wait-for-postgres

@@ -54,7 +54,7 @@ git:
   image:
     registry: docker.io
     repository: alpine/git
-    tag: latest
+    tag: 2.49.0
     pullPolicy: IfNotPresent
 
 job:

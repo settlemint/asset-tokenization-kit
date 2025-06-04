@@ -128,6 +128,12 @@ tolerations: []
 
 affinity: {}
 
+tests:
+  image:
+    registry: docker.io
+    repository: busybox
+    tag: 1.37.0
+    pullPolicy: IfNotPresent
 
 config:
   logLevel: info

@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: besu-genesis-server
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "besu-genesis.labels" . | nindent 4 }}
+    app.kubernetes.io/component: genesis-server
+  annotations:
+    "helm.sh/hook": "post-install"
+    "helm.sh/hook-weight": "6"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "besu-genesis.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: genesis-server

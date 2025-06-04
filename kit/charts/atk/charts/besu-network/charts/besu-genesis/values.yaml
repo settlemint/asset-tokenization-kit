@@ -73,6 +73,13 @@ image:
   tag: sha-49c40f5
   pullPolicy: IfNotPresent
 
+genesisServer:
+  image:
+    registry: docker.io
+    repository: nginx
+    tag: 1.27.5-alpine
+    pullPolicy: IfNotPresent
+
 imagePullSecrets:
   - image-pull-secret-harbor
   - image-pull-secret-ghcr

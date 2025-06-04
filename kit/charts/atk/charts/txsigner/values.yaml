@@ -114,6 +114,13 @@ tolerations: []
 
 affinity: {}
 
+tests:
+  image:
+    registry: docker.io
+    repository: busybox
+    tag: 1.37.0
+    pullPolicy: IfNotPresent
+
 initContainers:
   - name: wait-for-postgres
     image: ghcr.io/settlemint/btp-waitforit:v7.7.5

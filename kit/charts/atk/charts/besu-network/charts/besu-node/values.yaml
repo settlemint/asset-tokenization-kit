@@ -215,6 +215,12 @@ initContainers:
       repository: busybox
       tag: 1.37
       pullPolicy: IfNotPresent
+  curl:
+    image:
+      registry: docker.io
+      repository: curlimages/curl
+      tag: 8.11.1
+      pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 

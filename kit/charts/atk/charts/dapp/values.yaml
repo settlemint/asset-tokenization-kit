@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/settlemint/asset-tokenization-kit
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.0.6-main83e81f549"
+  tag: "1.0.6"
 
 imagePullSecrets:
   - name: image-pull-secret-docker
@@ -160,7 +160,7 @@ initContainer:
     image:
       registry: docker.io
       repository: curlimages/curl
-      tag: latest # Or pin to a specific version like 8.7.1
+      tag: 8.13.0 # Or pin to a specific version like 8.7.1
       pullPolicy: IfNotPresent
     # Target GraphQL endpoint URL (where POST requests are sent)
     url: "http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"
@@ -197,7 +197,7 @@ job:
       image:
         registry: docker.io
         repository: alpine/git
-        tag: latest # Or pin to a specific version
+        tag: 2.49.0 # Or pin to a specific version
         pullPolicy: IfNotPresent
 
   # Pod annotations
