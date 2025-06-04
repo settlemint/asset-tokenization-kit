@@ -1203,6 +1203,30 @@
         "EXPIRED": "Expired",
         "available": "Available",
         "claimed": "Claimed"
+      },
+      "status-info-label": "Additional information about this status",
+      "tooltip": {
+        "standard-airdrop": {
+          "pending-with-start": "Claims will start on {date}",
+          "ready-with-end": "You can claim your assets now. Claiming period ends on {date}",
+          "expired": "The claiming period ended on {date}",
+          "claimed": "You have successfully claimed your airdrop assets"
+        },
+        "push-airdrop": {
+          "ready": "The admin will send your assets to you",
+          "pending": "Waiting for administrator to distribute your assets",
+          "expired": "Distribution is complete. {distributed} out of {cap} assets have been distributed",
+          "claimed": "Your assets have been distributed to your wallet"
+        },
+        "vesting-airdrop": {
+          "ready-initialize": "You can initialize your vesting schedule now. Deadline: {date}",
+          "ready-claim": "You have assets available to claim from your vesting schedule",
+          "pending-not-initialized": "You need to initialize your vesting schedule first",
+          "pending-cliff": "Your assets are in the cliff period. Vesting will begin on {date}",
+          "pending-vesting": "No assets are ready for claiming yet. Check back later as assets vest",
+          "expired": "The initialization period ended on {date}. You can no longer claim this airdrop",
+          "claimed": "You have claimed all available assets from your vesting schedule"
+        }
       }
     },
     "settings": {
