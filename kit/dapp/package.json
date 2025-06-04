@@ -38,7 +38,7 @@
     "@opentelemetry/instrumentation": "0.202.0",
     "@opentelemetry/sdk-logs": "0.202.0",
     "@orpc/client": "1.4.0",
-    "@orpc/contract": "1.4.0",
+    "@orpc/contract": "1.4.1",
     "@orpc/openapi": "1.4.0",
     "@orpc/server": "1.4.0",
     "@orpc/tanstack-query": "1.4.0",
