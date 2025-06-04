@@ -21,6 +21,10 @@
       "dependsOn": ["compile"],
       "outputs": ["scripts/hardhat/abi/**"]
     },
+    "codegen:abi": {
+      "dependsOn": ["compile"],
+      "outputs": ["portal/**"]
+    },
     "codegen:genesis": {
       "outputs": ["tools/genesis-output.json"]
     },

@@ -38,12 +38,8 @@ const log = logger;
 
 // File paths
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
+const FORGE_OUT_DIR = join(CONTRACTS_ROOT, "out-genesis");
 const ALL_ALLOCATIONS_FILE = join(CONTRACTS_ROOT, "tools/genesis-output.json");
-const SECOND_OUTPUT_DIR = join(
-  CONTRACTS_ROOT,
-  "../charts/atk/charts/besu-network/charts/besu-genesis/files"
-);
-const SECOND_OUTPUT_FILE = join(SECOND_OUTPUT_DIR, "genesis-output.json");
 
 // Contract configuration
 const CONTRACT_ADDRESSES = {
@@ -182,10 +178,10 @@ class ContractDeployer {
     log.debug(`Validating bytecode for ${contractName}...`);
 
     const result = log.isLevelEnabled(LogLevel.DEBUG)
-      ? await $`forge inspect ${solFile}:${contractName} bytecode`.cwd(
+      ? await $`forge inspect ${solFile}:${contractName} bytecode --out ${FORGE_OUT_DIR}`.cwd(
           CONTRACTS_ROOT
         )
-      : await $`forge inspect ${solFile}:${contractName} bytecode`
+      : await $`forge inspect ${solFile}:${contractName} bytecode --out ${FORGE_OUT_DIR}`
           .cwd(CONTRACTS_ROOT)
           .quiet();
 
@@ -246,18 +242,18 @@ class ContractDeployer {
     let result;
     if (args.length > 0) {
       result = log.isLevelEnabled(LogLevel.DEBUG)
-        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --constructor-args ${args}`.cwd(
+        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --constructor-args ${args}`.cwd(
             CONTRACTS_ROOT
           )
-        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --constructor-args ${args}`
+        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --constructor-args ${args}`
             .cwd(CONTRACTS_ROOT)
             .quiet();
     } else {
       result = log.isLevelEnabled(LogLevel.DEBUG)
-        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200`.cwd(
+        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR}`.cwd(
             CONTRACTS_ROOT
           )
-        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200`
+        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR}`
             .cwd(CONTRACTS_ROOT)
             .quiet();
     }
@@ -318,10 +314,10 @@ class ContractDeployer {
 
     // Get storage layout from contract
     const layoutResult = log.isLevelEnabled(LogLevel.DEBUG)
-      ? await $`forge inspect ${solFile}:${contractName} storageLayout --force --json`.cwd(
+      ? await $`forge inspect ${solFile}:${contractName} storageLayout --force --json --out ${FORGE_OUT_DIR}`.cwd(
           CONTRACTS_ROOT
         )
-      : await $`forge inspect ${solFile}:${contractName} storageLayout --force --json`
+      : await $`forge inspect ${solFile}:${contractName} storageLayout --force --json --out ${FORGE_OUT_DIR}`
           .cwd(CONTRACTS_ROOT)
           .quiet();
 
@@ -470,6 +466,10 @@ class GenesisGenerator {
 
   async initializeGenesisFile(): Promise<void> {
     log.info("Initializing genesis allocation file...");
+
+    // Create forge output directory
+    await mkdir(FORGE_OUT_DIR, { recursive: true });
+    log.debug(`Created forge output directory: ${FORGE_OUT_DIR}`);
 
     // Remove existing file if it exists
     if (existsSync(ALL_ALLOCATIONS_FILE)) {
@@ -638,19 +638,17 @@ class GenesisGenerator {
     log.success(`All ${expectedTotal} contracts were successfully processed!`);
   }
 
-  async copyToSecondLocation(): Promise<void> {
-    log.info("Copying genesis allocation to second location...");
+  async cleanupForgeOutput(): Promise<void> {
+    log.info("Cleaning up forge output directory...");
 
-    // Create the second output directory if it doesn't exist
-    await mkdir(SECOND_OUTPUT_DIR, { recursive: true });
-
-    // Copy the file
-    const genesisContent = await readFile(ALL_ALLOCATIONS_FILE, "utf8");
-    await writeFile(SECOND_OUTPUT_FILE, genesisContent, "utf8");
-
-    log.success(
-      `Successfully copied genesis allocation to: ${SECOND_OUTPUT_FILE}`
-    );
+    try {
+      if (existsSync(FORGE_OUT_DIR)) {
+        await $`rm -rf ${FORGE_OUT_DIR}`.quiet();
+        log.debug(`Removed forge output directory: ${FORGE_OUT_DIR}`);
+      }
+    } catch (error) {
+      log.warn(`Failed to cleanup forge output directory: ${error}`);
+    }
   }
 
   getStats(): { processed: number; skipped: number; failed: number } {
@@ -671,6 +669,10 @@ function showUsage(): void {
 Usage: bun run codegen-genesis.ts [OPTIONS]
 
 This script deploys contracts to a temporary blockchain and generates genesis allocations.
+Uses an alternative output directory (out-genesis) to avoid conflicts with other tasks.
+
+To copy the generated genesis file to the charts directory, run:
+    bun run copy-artifacts --genesis-only
 
 OPTIONS:
     -h, --help              Show this help message
@@ -839,8 +841,8 @@ async function main(): Promise<void> {
     // Verify all contracts were processed
     await generator.verifyAllContractsProcessed();
 
-    // Copy to second location
-    await generator.copyToSecondLocation();
+    // Cleanup forge output directory
+    await generator.cleanupForgeOutput();
 
     const stats = generator.getStats();
     log.success("Genesis generation completed successfully!");
@@ -848,7 +850,6 @@ async function main(): Promise<void> {
       `Processing summary: ${stats.processed} processed, ${stats.skipped} skipped, ${stats.failed} failed`
     );
     log.info(`Genesis allocation written to: ${ALL_ALLOCATIONS_FILE}`);
-    log.info(`Also copied to: ${SECOND_OUTPUT_FILE}`);
 
     // Show output if requested
     if (config.showOutput) {
@@ -857,6 +858,13 @@ async function main(): Promise<void> {
       console.log(genesisContent);
     }
   } catch (error) {
+    // Cleanup forge output directory even on error
+    try {
+      await generator.cleanupForgeOutput();
+    } catch (cleanupError) {
+      log.warn(`Failed to cleanup on error: ${cleanupError}`);
+    }
+
     log.error(`Genesis generation failed: ${error}`);
     process.exit(1);
   }

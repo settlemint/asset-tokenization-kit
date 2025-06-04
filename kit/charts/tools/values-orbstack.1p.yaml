@@ -39,3 +39,9 @@ imagePullCredentials:
 
 dapp:
   enabled: false
+
+observability:
+  enabled: false
+
+blockscout:
+  enabled: false

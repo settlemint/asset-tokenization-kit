@@ -29,7 +29,7 @@
       "dependsOn": ["package:pack"]
     },
     "helm": {
-      "dependsOn": ["helm:check-context", "dependencies", "helm:secrets", "^codegen"],
+      "dependsOn": ["helm:check-context", "dependencies", "helm:secrets", "^codegen", "codegen", "subgraph#build"],
       "cache": false
     },
     "helm:check-context": {
@@ -38,6 +38,10 @@
     "helm:secrets": {
       "outputs": ["**/values-orbstack.yaml"],
       "inputs": ["**/values-orb.1p.yaml"]
+    },
+    "codegen": {
+      "cache": false,
+      "dependsOn": ["^codegen"]
     }
   }
 }
