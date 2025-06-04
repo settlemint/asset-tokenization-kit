@@ -1,6 +1,6 @@
 import "server-only";
 
-import { fetchAllHasuraPages } from "@/lib/pagination";
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
@@ -10,6 +10,7 @@ import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress, type Address } from "viem";
 import { PushAirdropFragment } from "../push-airdrop/push-airdrop-fragment";
 import { StandardAirdropFragment } from "../standard-airdrop/standard-airdrop-fragment";
@@ -22,6 +23,7 @@ import {
   AirdropClaimSchema,
   AirdropRecipientSchema,
   type AirdropRecipient,
+  type UserVestingData,
 } from "./airdrop-recipient-schema";
 
 /**
@@ -103,122 +105,115 @@ export const getAirdropRecipientList = withTracing(
   "queries",
   "getAirdropRecipientList",
   async (recipient: Address): Promise<AirdropRecipient[]> => {
-    // "use cache";
-    // cacheTag("airdrop");
+    "use cache";
+    cacheTag("airdrop");
 
-    const airdropDistributions = await fetchAllHasuraPages(
-      async (limit, offset) => {
-        const result = await hasuraClient.request(
-          AirdropRecipientList,
+    const distributions = await fetchAllHasuraPages(async (limit, offset) => {
+      const result = await hasuraClient.request(
+        AirdropRecipientList,
+        {
+          limit,
+          offset,
+          recipient,
+        },
+        {
+          "X-GraphQL-Operation-Name": "AirdropRecipientList",
+          "X-GraphQL-Operation-Type": "query",
+        }
+      );
+
+      return result.airdrop_distribution;
+    });
+
+    if (distributions.length === 0) {
+      return [];
+    }
+
+    const uniqueAirdropIds = [...new Set(distributions.map((d) => d.airdrop))];
+
+    // Create recipient IDs for The Graph query (airdropId-recipientAddress format)
+    const recipientIds = distributions.map((d) =>
+      `${d.airdrop}-${recipient}`.toLowerCase()
+    );
+
+    // Fetch both airdrop details and recipient claim status concurrently
+    const [airdropDetailsResult, airdropRecipientsResult] = await Promise.all([
+      fetchAllTheGraphPages(async (limit, offset) => {
+        const result = await theGraphClientKit.request(
+          AirdropDetailsByIds,
+          { ids: uniqueAirdropIds, limit, offset },
           {
-            limit,
-            offset,
-            recipient,
-          },
-          {
-            "X-GraphQL-Operation-Name": "AirdropRecipientList",
+            "X-GraphQL-Operation-Name": "AirdropDetailsByIds",
             "X-GraphQL-Operation-Type": "query",
           }
         );
-
-        const distributions = result.airdrop_distribution || [];
-
-        if (distributions.length === 0) {
-          return [];
-        }
-
-        // Get unique airdrop IDs to fetch complete airdrop information
-        const uniqueAirdropIds = [
-          ...new Set(distributions.map((d) => d.airdrop)),
-        ];
-
-        // Create recipient IDs for The Graph query (airdropId-recipientAddress format)
-        const recipientIds = distributions.map((d) =>
-          `${d.airdrop}-${recipient}`.toLowerCase()
-        );
-
-        // Fetch both airdrop details and recipient claim status concurrently
-        const [airdropDetailsResult, airdropRecipientsResult] =
-          await Promise.all([
-            theGraphClientKit.request(
-              AirdropDetailsByIds,
-              { ids: uniqueAirdropIds },
-              {
-                "X-GraphQL-Operation-Name": "AirdropDetailsByIds",
-                "X-GraphQL-Operation-Type": "query",
-              }
-            ),
-            theGraphClientKit.request(
-              AirdropRecipientsByIds,
-              { ids: recipientIds },
-              {
-                "X-GraphQL-Operation-Name": "AirdropRecipientsByIds",
-                "X-GraphQL-Operation-Type": "query",
-              }
-            ),
-          ]);
-
-        const airdropDataMap = new Map<
-          Address,
-          ResultOf<typeof AirdropDetailsByIds>["airdrops"][number]
-        >();
-        airdropDetailsResult.airdrops.forEach((airdrop) => {
-          airdropDataMap.set(getAddress(airdrop.id), airdrop);
+        return result.airdrops;
+      }),
+      fetchAllTheGraphPages(async (limit, offset) => {
+        const result = await theGraphClientKit.request(AirdropRecipientsByIds, {
+          ids: recipientIds,
+          limit,
+          offset,
         });
+        return result.airdropRecipients;
+      }),
+    ]);
 
-        const recipientDataMap = new Map<
-          string,
-          ResultOf<typeof AirdropRecipientsByIds>["airdropRecipients"][number]
-        >();
-        airdropRecipientsResult.airdropRecipients.forEach((recipient) => {
-          recipientDataMap.set(recipient.id, recipient);
-        });
+    const airdropDataMap = new Map<
+      Address,
+      ResultOf<typeof AirdropDetailsByIds>["airdrops"][number]
+    >();
+    airdropDetailsResult.forEach((airdrop) => {
+      airdropDataMap.set(getAddress(airdrop.id), airdrop);
+    });
 
-        // Combine distribution data with complete airdrop information and claim status
-        const recipientDataWithAirdropDetails = distributions.map((item) => {
-          const airdropData = airdropDataMap.get(getAddress(item.airdrop));
-          if (!airdropData) {
-            throw new Error(
-              `Airdrop data not found for airdrop ${item.airdrop}`
-            );
-          }
+    const recipientDataMap = new Map<
+      string,
+      ResultOf<typeof AirdropRecipientsByIds>["airdropRecipients"][number]
+    >();
+    airdropRecipientsResult.forEach((recipient) => {
+      recipientDataMap.set(recipient.id, recipient);
+    });
 
-          // Get claim status from The Graph
-          const recipientId = `${item.airdrop}-${recipient}`.toLowerCase();
-          const recipientClaimData = safeParse(
-            AirdropClaimSchema,
-            recipientDataMap.get(recipientId)
-          );
-
-          // Get user vesting data if this is a vesting airdrop
-          let userVestingData = null;
-          if (airdropData.type === "VestingAirdrop") {
-            const vestingAirdrop = airdropData;
-            // Filter the vestingData array for the current user
-            if (vestingAirdrop.strategy?.vestingData) {
-              userVestingData =
-                vestingAirdrop.strategy.vestingData.find(
-                  (vd) => getAddress(vd.user.id) === getAddress(recipient)
-                ) || null;
-            }
-          }
-
-          return {
-            airdrop: {
-              ...airdropData,
-              claimed: recipientClaimData?.firstClaimedTimestamp,
-              claimData: recipientClaimData,
-              userVestingData,
-            },
-            amount: item.amount,
-            index: item.index,
-          };
-        });
-
-        return recipientDataWithAirdropDetails;
+    // Combine distribution data with complete airdrop information and claim status
+    const recipientDataWithAirdropDetails = distributions.map((item) => {
+      const airdropData = airdropDataMap.get(getAddress(item.airdrop));
+      if (!airdropData) {
+        throw new Error(`Airdrop data not found for airdrop ${item.airdrop}`);
       }
-    );
 
-    return safeParse(t.Array(AirdropRecipientSchema), airdropDistributions);
+      // Get claim status from The Graph
+      const recipientId = `${item.airdrop}-${recipient}`.toLowerCase();
+      const recipientClaimData = safeParse(
+        AirdropClaimSchema,
+        recipientDataMap.get(recipientId)
+      );
+
+      // Get user vesting data if this is a vesting airdrop
+      let userVestingData: UserVestingData = null;
+      if (airdropData.type === "VestingAirdrop") {
+        if (airdropData.strategy?.vestingData) {
+          userVestingData = airdropData.strategy.vestingData.find(
+            (vd) => getAddress(vd.user.id) === getAddress(recipient)
+          );
+        }
+      }
+
+      return {
+        airdrop: {
+          ...airdropData,
+          claimed: recipientClaimData?.firstClaimedTimestamp,
+          claimData: recipientClaimData,
+          userVestingData,
+        },
+        amount: item.amount,
+        index: item.index,
+      };
+    });
+
+    return safeParse(
+      t.Array(AirdropRecipientSchema),
+      recipientDataWithAirdropDetails
+    );
   }
 );

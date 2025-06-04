@@ -1,4 +1,5 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
+import type { Static } from "@sinclair/typebox";
 import { OnChainPushAirdropSchema } from "../push-airdrop/push-airdrop-schema";
 import { OnChainStandardAirdropSchema } from "../standard-airdrop/standard-airdrop-schema";
 import { OnChainVestingAirdropSchema } from "../vesting-airdrop/vesting-airdrop-schema";
@@ -67,7 +68,7 @@ export const UserVestingDataSchema = t.Optional(
   )
 );
 
-export type UserVestingData = StaticDecode<typeof UserVestingDataSchema>;
+export type UserVestingData = Static<typeof UserVestingDataSchema>;
 
 /**
  * TypeBox schema for airdrop recipient data
