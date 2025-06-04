@@ -3,6 +3,7 @@ import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { smartProtocolDeployer } from "../../../services/deployer";
+import { mineAnvilBlock } from "../../../utils/anvil";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForEvent } from "../../../utils/wait-for-event";
 import { waitForSuccess } from "../../../utils/wait-for-success";
@@ -58,9 +59,11 @@ export const setYieldSchedule = async (
   );
 
   return {
-    getTimeUntilNextPeriod: async () => {
+    advanceToNextPeriod: async () => {
       const time = await scheduleContract.read.timeUntilNextPeriod();
-      return Number(time) * 1_000;
+      await new Promise((resolve) => setTimeout(resolve, Number(time) * 1_000));
+      // Mine a block to advance the time
+      await mineAnvilBlock(owner);
     },
   };
 };

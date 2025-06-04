@@ -7,7 +7,6 @@ import { investorA, investorB } from "../entities/actors/investors";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
-import { mineAnvilBlock } from "../utils/anvil";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
@@ -78,21 +77,17 @@ export const createBond = async (depositToken: Asset<any>) => {
   await unfreezePartialTokens(bond, owner, investorB, 2n);
 
   // yield
-  const { getTimeUntilNextPeriod, getCurrentPeriod, getLastCompletedPeriod } =
-    await setYieldSchedule(
-      bond,
-      new Date(Date.now() + 1_000), // 1 second from now
-      new Date(Date.now() + 5 * 60 * 1_000), // 5 minutes from now
-      500, // 5%
-      5 // 5 seconds
-    );
+  const { advanceToNextPeriod } = await setYieldSchedule(
+    bond,
+    new Date(Date.now() + 1_000), // 1 second from now
+    new Date(Date.now() + 5 * 60 * 1_000), // 5 minutes from now
+    500, // 5%
+    5 // 5 seconds
+  );
   await topupUnderlyingAsset(bond, depositToken, 100n);
   // Claim yield for 3 periods
   for (let i = 0; i < 3; i++) {
-    const nextPeriodTime = await getTimeUntilNextPeriod();
-    await new Promise((resolve) => setTimeout(resolve, nextPeriodTime));
-    // Mine a block to advance the time
-    await mineAnvilBlock(owner);
+    await advanceToNextPeriod();
     await claimYield(bond);
   }
   await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);
