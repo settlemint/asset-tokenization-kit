@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - main
+    types: [opened, synchronize, reopened, closed]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -17,6 +18,7 @@ jobs:
     name: QA
     runs-on: namespace-profile-atk
     environment: "staging"
+    if: github.event.action == 'opened' || github.event.action == 'synchronize'
     steps:
       - uses: fuxingloh/multi-labeler@v4
         if: github.event_name == 'pull_request'
@@ -120,7 +122,9 @@ jobs:
   secret-scanning:
     name: Secret Scanning
     runs-on: namespace-profile-atk-services
-    if: (github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]')
+    if:
+      (github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]') &&
+      github.event.action == 'opened' || github.event.action == 'synchronize'
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
@@ -139,7 +143,9 @@ jobs:
   codeql:
     name: CodeQL (${{ matrix.language }})
     runs-on: namespace-profile-atk-services
-    if: (github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]')
+    if:
+      (github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]') &&
+      github.event.action == 'opened' || github.event.action == 'synchronize'
     permissions:
       security-events: write
       packages: read
@@ -184,7 +190,7 @@ jobs:
     name: Slack
     runs-on: namespace-profile-atk-services
     needs: qa
-    if:
+    if: |
       github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' &&
       github.event_name == 'pull_request' && always()
     steps:
@@ -238,7 +244,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "${{ steps.check_message.outputs.message_exists == 'true' && '🔄 Pull Request Updated' || '🔍 New Pull Request Ready for Review' }}"
+                    "text": "${{ github.event.pull_request.merged == true && '🎉 Pull Request Merged' || (steps.check_message.outputs.message_exists == 'true' && '🔄 Pull Request Updated') || '🔍 New Pull Request Ready for Review' }}"
                   }
                 },
                 {
@@ -272,7 +278,7 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*PR Status:*\n${{ github.event.pull_request.state == 'open' && '🟢 Open' || '🔴 Closed' }}"
+                      "text": "*PR Status:*\n${{ github.event.pull_request.state == 'open' && '🟢 Open' || (github.event.pull_request.merged == true && '🎉 Merged') || '🔴 Closed' }}"
                     },
                     {
                       "type": "mrkdwn",
