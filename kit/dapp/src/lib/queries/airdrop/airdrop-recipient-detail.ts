@@ -11,7 +11,7 @@ import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import type { Address } from "viem";
 import { AirdropFragment } from "./airdrop-fragment";
-import { AirdropRecipientFragment } from "./airdrop-recipient-fragment";
+import { AirdropClaimFragment } from "./airdrop-recipient-fragment";
 import {
   AirdropRecipientSchema,
   type AirdropRecipient,
@@ -34,7 +34,7 @@ const AirdropRecipientDetailQuery = hasuraGraphql(
     }
   }
 `,
-  [AirdropRecipientFragment]
+  [AirdropClaimFragment]
 );
 
 /**

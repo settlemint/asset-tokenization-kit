@@ -2,6 +2,33 @@ import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { OnChainAirdropSchema } from "./airdrop-schema";
 
 /**
+ * TypeBox schema for airdrop recipient data from The Graph
+ *
+ * Provides validation for on-chain airdrop recipient claim information
+ */
+export const AirdropClaimSchema = t.Optional(
+  t.MaybeEmpty(
+    t.Object(
+      {
+        id: t.String({
+          description: "Composite ID in format: airdropId-recipientAddress",
+        }),
+        firstClaimedTimestamp: t.Timestamp({
+          description:
+            "Timestamp when the recipient first claimed from this airdrop",
+        }),
+      },
+      {
+        description:
+          "Schema for on-chain airdrop recipient claim data from The Graph",
+      }
+    )
+  )
+);
+
+export type AirdropClaim = StaticDecode<typeof AirdropClaimSchema>;
+
+/**
  * TypeBox schema for airdrop recipient data
  *
  * Provides validation for airdrop recipient information including:

@@ -12,8 +12,12 @@ import { safeParse } from "@/lib/utils/typebox/index";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { getAddress, type Address } from "viem";
 import { AirdropFragment } from "./airdrop-fragment";
-import { AirdropRecipientFragment } from "./airdrop-recipient-fragment";
 import {
+  AirdropClaimFragment,
+  AirdropRecipientFragment,
+} from "./airdrop-recipient-fragment";
+import {
+  AirdropClaimSchema,
   AirdropRecipientSchema,
   type AirdropRecipient,
 } from "./airdrop-recipient-schema";
@@ -55,6 +59,23 @@ const AirdropDetailsByIds = theGraphGraphqlKit(
   }
 `,
   [AirdropFragment]
+);
+
+/**
+ * GraphQL query to fetch airdrop recipients from The Graph by IDs
+ *
+ * @remarks
+ * Used to get claim status and timing information for specific airdrop recipients
+ */
+const AirdropRecipientsByIds = theGraphGraphqlKit(
+  `
+  query AirdropRecipientsByIds($ids: [String!]!) {
+    airdropRecipients(where: { id_in: $ids }) {
+      ...AirdropClaimFragment
+    }
+  }
+`,
+  [AirdropClaimFragment]
 );
 
 /**
@@ -100,15 +121,31 @@ export const getAirdropRecipientList = withTracing(
           ...new Set(distributions.map((d) => d.airdrop)),
         ];
 
-        // Fetch complete airdrop details from The Graph
-        const airdropDetailsResult = await theGraphClientKit.request(
-          AirdropDetailsByIds,
-          { ids: uniqueAirdropIds },
-          {
-            "X-GraphQL-Operation-Name": "AirdropDetailsByIds",
-            "X-GraphQL-Operation-Type": "query",
-          }
+        // Create recipient IDs for The Graph query (airdropId-recipientAddress format)
+        const recipientIds = distributions.map((d) =>
+          `${d.airdrop}-${recipient}`.toLowerCase()
         );
+
+        // Fetch both airdrop details and recipient claim status concurrently
+        const [airdropDetailsResult, airdropRecipientsResult] =
+          await Promise.all([
+            theGraphClientKit.request(
+              AirdropDetailsByIds,
+              { ids: uniqueAirdropIds },
+              {
+                "X-GraphQL-Operation-Name": "AirdropDetailsByIds",
+                "X-GraphQL-Operation-Type": "query",
+              }
+            ),
+            theGraphClientKit.request(
+              AirdropRecipientsByIds,
+              { ids: recipientIds },
+              {
+                "X-GraphQL-Operation-Name": "AirdropRecipientsByIds",
+                "X-GraphQL-Operation-Type": "query",
+              }
+            ),
+          ]);
 
         const airdropDataMap = new Map<
           Address,
@@ -118,7 +155,15 @@ export const getAirdropRecipientList = withTracing(
           airdropDataMap.set(getAddress(airdrop.id), airdrop);
         });
 
-        // Combine distribution data with complete airdrop information
+        const recipientDataMap = new Map<
+          string,
+          ResultOf<typeof AirdropRecipientsByIds>["airdropRecipients"][number]
+        >();
+        airdropRecipientsResult.airdropRecipients.forEach((recipient) => {
+          recipientDataMap.set(recipient.id, recipient);
+        });
+
+        // Combine distribution data with complete airdrop information and claim status
         const recipientDataWithAirdropDetails = distributions.map((item) => {
           const airdropData = airdropDataMap.get(getAddress(item.airdrop));
           if (!airdropData) {
@@ -127,11 +172,18 @@ export const getAirdropRecipientList = withTracing(
             );
           }
 
+          // Get claim status from The Graph
+          const recipientId = `${item.airdrop}-${recipient}`.toLowerCase();
+          const recipientClaimData = safeParse(
+            AirdropClaimSchema,
+            recipientDataMap.get(recipientId)
+          );
+
           return {
             airdrop: airdropData,
             amount: item.amount,
             index: item.index,
-            claimed: item.claimed,
+            claimed: recipientClaimData?.firstClaimedTimestamp,
           };
         });
 

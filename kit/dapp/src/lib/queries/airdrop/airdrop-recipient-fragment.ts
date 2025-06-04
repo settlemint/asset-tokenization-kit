@@ -1,4 +1,5 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
+import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 
 /**
  * GraphQL fragment for airdrop recipient data from Hasura
@@ -13,6 +14,19 @@ export const AirdropRecipientFragment = hasuraGraphql(`
     airdrop: airdrop_id
     amount
     index
-    claimed
+  }
+`);
+
+/**
+ * GraphQL fragment for airdrop recipient data from The Graph
+ *
+ * @remarks
+ * Contains recipient-specific claim data from on-chain events
+ * Only fetches the ID and first claimed timestamp for mapping claim status
+ */
+export const AirdropClaimFragment = theGraphGraphqlKit(`
+  fragment AirdropClaimFragment on AirdropRecipient {
+    id
+    firstClaimedTimestamp
   }
 `);
