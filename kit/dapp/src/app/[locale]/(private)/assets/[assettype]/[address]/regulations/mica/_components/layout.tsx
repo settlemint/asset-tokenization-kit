@@ -46,7 +46,7 @@ export async function MicaRegulationLayout({
   return (
     <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
       <div className="md:col-span-2">
-        <ComplianceScoreLayout />
+        <ComplianceScoreLayout config={regulationData.mica_regulation_config} />
       </div>
       <div className="md:col-span-4">
         <ReserveStatusLayout
