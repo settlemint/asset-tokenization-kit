@@ -71,6 +71,9 @@ const CONTRACT_ADDRESSES = {
   // System factory
   SMARTSystemFactory: "0x5e771e1417100000000000000000000000020088",
 
+  // Fixed yield
+  SMARTFixedYieldScheduleFactory: "0x5e771e1417100000000000000000000000020089",
+
   // Asset implementations
   SMARTBondImplementation: "0x5e771e1417100000000000000000000000020010",
   SMARTBondFactoryImplementation: "0x5e771e1417100000000000000000000000020011",
@@ -113,6 +116,10 @@ const CONTRACT_FILES = {
 
   // System factory
   SMARTSystemFactory: "contracts/system/SMARTSystemFactory.sol",
+
+  // Fixed yield
+  SMARTFixedYieldScheduleFactory:
+    "contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol",
 
   // Asset implementations
   SMARTBondImplementation: "contracts/assets/bond/SMARTBondImplementation.sol",
@@ -711,7 +718,7 @@ function parseCliArgs(): Config {
   if (process.env.LOG_LEVEL) {
     const level = process.env.LOG_LEVEL.toUpperCase();
     if (["DEBUG", "INFO", "WARN", "ERROR"].includes(level)) {
-      log.setLevel(level as any);
+      log.setLevel(level);
     }
   }
   if (process.env.ANVIL_PORT) {
@@ -741,12 +748,12 @@ function parseCliArgs(): Config {
 
       case "-v":
       case "--verbose":
-        log.setLevel("DEBUG" as any);
+        log.setLevel(LogLevel.DEBUG);
         break;
 
       case "-q":
       case "--quiet":
-        log.setLevel("ERROR" as any);
+        log.setLevel(LogLevel.ERROR);
         break;
 
       case "-p":

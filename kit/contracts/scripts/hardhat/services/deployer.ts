@@ -34,6 +34,7 @@ export type ContractName = keyof Pick<
   | "stablecoinFactory"
   | "countryAllowListModule"
   | "countryBlockListModule"
+  | "fixedYieldScheduleFactory"
 >;
 
 // Helper type for Viem contract instances
@@ -316,6 +317,12 @@ export class SmartProtocolDeployer {
     walletClient?: WalletClient<Transport, Chain, Account>
   ): SMARTOnboardingContracts["countryBlockListModule"] {
     return this.getContract("countryBlockListModule", walletClient);
+  }
+
+  public getFixedYieldScheduleFactoryContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): SMARTOnboardingContracts["fixedYieldScheduleFactory"] {
+    return this.getContract("fixedYieldScheduleFactory", walletClient);
   }
 }
 

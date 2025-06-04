@@ -1,20 +1,31 @@
 import type { ExtractAbiEventNames } from "abitype";
 import {
-  type ContractEventName,
-  type Hex,
-  type TransactionReceipt,
+  Account,
+  Chain,
+  ContractEventName,
+  Hex,
+  PublicClient,
+  TransactionReceipt,
+  Transport,
+  WalletClient,
   decodeEventLog,
 } from "viem";
-import type { SMARTOnboardingContracts } from "../services/deployer";
+import { SMARTContracts } from "../constants/contracts";
+import { ViemContract } from "../services/deployer";
 import { waitForSuccess } from "./wait-for-success";
 
+type Contracts = {
+  [K in keyof typeof SMARTContracts]: ViemContract<
+    (typeof SMARTContracts)[K], // Access ABI by key
+    { public: PublicClient; wallet: WalletClient<Transport, Chain, Account> }
+  >;
+};
+
 // Utility function to find specific event arguments from a transaction
-export async function waitForEvent<
-  Key extends keyof SMARTOnboardingContracts,
->(params: {
-  contract: SMARTOnboardingContracts[Key];
+export async function waitForEvent<Key extends keyof Contracts>(params: {
+  contract: Contracts[Key];
   transactionHash: Hex;
-  eventName: ExtractAbiEventNames<SMARTOnboardingContracts[Key]["abi"]>;
+  eventName: ExtractAbiEventNames<Contracts[Key]["abi"]>;
 }) {
   const { transactionHash, contract, eventName } = params;
   const contractAddress = contract.address;
@@ -29,9 +40,7 @@ export async function waitForEvent<
           abi: abi,
           data: log.data,
           topics: log.topics,
-          eventName: eventName as ContractEventName<
-            SMARTOnboardingContracts[Key]["abi"]
-          >,
+          eventName: eventName as ContractEventName<Contracts[Key]["abi"]>,
         });
         // If decodeEventLog doesn't throw and finds the event, it means topics matched for the specific eventName.
         console.log(`Decoded ${eventName} event args:`, decodedEvent.args);
