@@ -9,10 +9,6 @@ on:
       - main
     types: [opened, synchronize, reopened, closed]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   qa:
     name: QA
