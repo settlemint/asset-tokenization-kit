@@ -42,6 +42,9 @@
       "dependsOn": ["dapp#codegen"],
       "cache": false,
       "persistent": true
+    },
+    "helm": {
+      "cache": false
     }
   }
 }

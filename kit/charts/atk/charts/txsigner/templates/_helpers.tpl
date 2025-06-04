@@ -78,3 +78,27 @@ Define volumes
 {{- toYaml . }}
 {{- end }}
 {{- end -}}
+
+{{/*
+Common image pull secrets for all deployments/statefulsets
+*/}}
+{{- define "atk.imagePullSecrets" -}}
+{{- if .Values.global }}
+{{- if .Values.global.imagePullSecrets }}
+imagePullSecrets:
+{{- range .Values.global.imagePullSecrets }}
+  - name: {{ . }}
+{{- end }}
+{{- else }}
+imagePullSecrets:
+  - name: image-pull-secret-docker
+  - name: image-pull-secret-ghcr
+  - name: image-pull-secret-harbor
+{{- end }}
+{{- else }}
+imagePullSecrets:
+  - name: image-pull-secret-docker
+  - name: image-pull-secret-ghcr
+  - name: image-pull-secret-harbor
+{{- end }}
+{{- end }}
