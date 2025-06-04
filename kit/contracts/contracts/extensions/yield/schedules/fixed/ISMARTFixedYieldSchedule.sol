@@ -18,6 +18,36 @@ import { ISMARTYieldSchedule } from "../ISMARTYieldSchedule.sol";
 /// Functions are `external`, meaning they are designed to be called from other contracts or off-chain applications.
 /// Many are `view` functions, which read state but don't modify it.
 interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule {
+    /// @notice Defines custom error types for more gas-efficient and descriptive error handling.
+    /// @dev Using custom errors (Solidity 0.8.4+) saves gas compared to `require` with string messages.
+
+    /// @dev Reverted if the `tokenAddress` provided in the constructor is the zero address.
+    error InvalidToken();
+    /// @dev Reverted if the `startDate_` provided in the constructor is not in the future (i.e., less than or equal to
+    /// `block.timestamp`).
+    error InvalidStartDate();
+    /// @dev Reverted if the `endDate_` provided in the constructor is not after the `startDate_`.
+    error InvalidEndDate();
+    /// @dev Reverted if the `rate_` (yield rate in basis points) provided in the constructor is zero.
+    error InvalidRate();
+    /// @dev Reverted if the `interval_` (distribution interval in seconds) provided in the constructor is zero.
+    error InvalidInterval();
+    /// @dev Reverted by `claimYield` if there is no accumulated yield for the caller to claim for completed periods.
+    error NoYieldAvailable();
+    /// @dev Reverted by `calculateAccruedYield` if the schedule has not yet started (i.e., `block.timestamp <
+    /// _startDate`).
+    error ScheduleNotActive();
+    /// @dev Reverted by `topUpUnderlyingAsset` or `withdrawUnderlyingAsset` if the underlying asset transfer fails or
+    /// if there's not enough balance.
+    error InsufficientUnderlyingBalance(); // Could also be used if a transferFrom fails.
+    /// @dev Reverted if the `_underlyingAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to`
+    /// address in withdrawal is zero.
+    error InvalidUnderlyingAsset();
+    /// @dev Reverted by `withdrawUnderlyingAsset` if the withdrawal `amount` is zero.
+    error InvalidAmount();
+    /// @dev Reverted by `periodEnd` if an invalid period number (0 or out of bounds) is requested.
+    error InvalidPeriod();
+
     /// @notice Emitted when a new fixed yield schedule is set.
     /// @param startDate The start date of the yield schedule.
     /// @param endDate The end date of the yield schedule.

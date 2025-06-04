@@ -42,35 +42,6 @@ contract SMARTFixedYieldSchedule is
     ReentrancyGuard // To prevent reentrancy attacks.
 {
     using SafeERC20 for IERC20;
-    /// @notice Defines custom error types for more gas-efficient and descriptive error handling.
-    /// @dev Using custom errors (Solidity 0.8.4+) saves gas compared to `require` with string messages.
-
-    /// @dev Reverted if the `tokenAddress` provided in the constructor is the zero address.
-    error InvalidToken();
-    /// @dev Reverted if the `startDate_` provided in the constructor is not in the future (i.e., less than or equal to
-    /// `block.timestamp`).
-    error InvalidStartDate();
-    /// @dev Reverted if the `endDate_` provided in the constructor is not after the `startDate_`.
-    error InvalidEndDate();
-    /// @dev Reverted if the `rate_` (yield rate in basis points) provided in the constructor is zero.
-    error InvalidRate();
-    /// @dev Reverted if the `interval_` (distribution interval in seconds) provided in the constructor is zero.
-    error InvalidInterval();
-    /// @dev Reverted by `claimYield` if there is no accumulated yield for the caller to claim for completed periods.
-    error NoYieldAvailable();
-    /// @dev Reverted by `calculateAccruedYield` if the schedule has not yet started (i.e., `block.timestamp <
-    /// _startDate`).
-    error ScheduleNotActive();
-    /// @dev Reverted by `topUpUnderlyingAsset` or `withdrawUnderlyingAsset` if the underlying asset transfer fails or
-    /// if there's not enough balance.
-    error InsufficientUnderlyingBalance(); // Could also be used if a transferFrom fails.
-    /// @dev Reverted if the `_underlyingAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to`
-    /// address in withdrawal is zero.
-    error InvalidUnderlyingAsset();
-    /// @dev Reverted by `withdrawUnderlyingAsset` if the withdrawal `amount` is zero.
-    error InvalidAmount();
-    /// @dev Reverted by `periodEnd` if an invalid period number (0 or out of bounds) is requested.
-    error InvalidPeriod();
 
     /// @notice The denominator used for rate calculations. `10_000` represents 100% (since rate is in basis points).
     /// @dev For example, a `_rate` of 500 means 500 / 10,000 = 0.05 or 5%.
@@ -146,16 +117,19 @@ contract SMARTFixedYieldSchedule is
     {
         // Initialize ERC2771Context with the trusted forwarder address.
         // Input validations
-        if (tokenAddress == address(0)) revert InvalidToken();
-        if (startDate_ <= block.timestamp) revert InvalidStartDate(); // Start date must be in the future.
-        if (endDate_ <= startDate_) revert InvalidEndDate(); // End date must be after start date.
-        if (rate_ == 0) revert InvalidRate(); // Rate must be positive.
-        if (interval_ == 0) revert InvalidInterval(); // Interval must be positive.
+        if (tokenAddress == address(0)) revert ISMARTFixedYieldSchedule.InvalidToken();
+        if (startDate_ <= block.timestamp) revert ISMARTFixedYieldSchedule.InvalidStartDate(); // Start date must be in
+            // the future.
+        if (endDate_ <= startDate_) revert ISMARTFixedYieldSchedule.InvalidEndDate(); // End date must be after start
+            // date.
+        if (rate_ == 0) revert ISMARTFixedYieldSchedule.InvalidRate(); // Rate must be positive.
+        if (interval_ == 0) revert ISMARTFixedYieldSchedule.InvalidInterval(); // Interval must be positive.
 
         _token = ISMARTYield(tokenAddress); // Store the associated SMART token contract.
         // aderyn-fp-next-line(reentrancy-state-change)
         _underlyingAsset = _token.yieldToken(); // Determine the payment token from the SMART token.
-        if (address(_underlyingAsset) == address(0)) revert InvalidUnderlyingAsset(); // Payment token cannot be zero
+        if (address(_underlyingAsset) == address(0)) revert ISMARTFixedYieldSchedule.InvalidUnderlyingAsset(); // Payment
+            // token cannot be zero
             // address.
 
         // Set immutable state variables.
@@ -217,7 +191,7 @@ contract SMARTFixedYieldSchedule is
     /// @dev Periods are 1-indexed. Accessing `_periodEndTimestamps` requires 0-indexed access (`period - 1`).
     function periodEnd(uint256 period) public view override returns (uint256) {
         // Validate that the requested period number is within the valid range.
-        if (period == 0 || period > _periodEndTimestamps.length) revert InvalidPeriod();
+        if (period == 0 || period > _periodEndTimestamps.length) revert ISMARTFixedYieldSchedule.InvalidPeriod();
         return _periodEndTimestamps[period - 1]; // Adjust to 0-based index for array access.
     }
 
@@ -340,7 +314,8 @@ contract SMARTFixedYieldSchedule is
     /// elapsed in the period.
     function calculateAccruedYield(address holder) public view override returns (uint256) {
         uint256 currentPeriod_ = currentPeriod(); // Determine the current period number.
-        if (currentPeriod_ < 1 && block.timestamp < _startDate) revert ScheduleNotActive(); // If before start date and
+        if (currentPeriod_ < 1 && block.timestamp < _startDate) revert ISMARTFixedYieldSchedule.ScheduleNotActive(); // If
+            // before start date and
             // not even in period 0 (edge case for exactly startDate)
 
         // Get the holder-specific yield basis.
@@ -403,11 +378,12 @@ contract SMARTFixedYieldSchedule is
     /// claimed after period completion or via `calculateAccruedYield` for view).
     function claimYield() external override nonReentrant whenNotPaused {
         uint256 lastPeriod = lastCompletedPeriod(); // Last period fully completed.
-        if (lastPeriod < 1) revert NoYieldAvailable(); // No completed periods.
+        if (lastPeriod < 1) revert ISMARTFixedYieldSchedule.NoYieldAvailable(); // No completed periods.
 
         address sender = _msgSender(); // Cache sender.
         uint256 fromPeriod = _lastClaimedPeriod[sender] + 1; // First period to claim for this user.
-        if (fromPeriod > lastPeriod) revert NoYieldAvailable(); // All completed periods already claimed.
+        if (fromPeriod > lastPeriod) revert ISMARTFixedYieldSchedule.NoYieldAvailable(); // All completed periods
+            // already claimed.
 
         // aderyn-fp-next-line(reentrancy-state-change)
         uint256 basis = _token.yieldBasisPerUnit(sender); // Holder-specific basis.
@@ -429,7 +405,8 @@ contract SMARTFixedYieldSchedule is
             // If balance is 0 for a period, its corresponding entry in periodAmounts remains 0.
         }
 
-        if (totalAmountToClaim <= 0) revert NoYieldAvailable(); // No yield accrued in the claimable periods.
+        if (totalAmountToClaim <= 0) revert ISMARTFixedYieldSchedule.NoYieldAvailable(); // No yield accrued in the
+            // claimable periods.
 
         // State updates *before* external call (transfer).
         _lastClaimedPeriod[sender] = lastPeriod; // Update the last period claimed by the user.
@@ -468,11 +445,13 @@ contract SMARTFixedYieldSchedule is
         onlyRole(DEFAULT_ADMIN_ROLE)
         whenNotPaused
     {
-        if (to == address(0)) revert InvalidUnderlyingAsset(); // Cannot withdraw to zero address.
-        if (amount == 0) revert InvalidAmount(); // Cannot withdraw zero amount.
+        if (to == address(0)) revert ISMARTFixedYieldSchedule.InvalidUnderlyingAsset(); // Cannot withdraw to zero
+            // address.
+        if (amount == 0) revert ISMARTFixedYieldSchedule.InvalidAmount(); // Cannot withdraw zero amount.
 
         uint256 balance = _underlyingAsset.balanceOf(address(this));
-        if (amount > balance) revert InsufficientUnderlyingBalance(); // Not enough funds in contract.
+        if (amount > balance) revert ISMARTFixedYieldSchedule.InsufficientUnderlyingBalance(); // Not enough funds in
+            // contract.
 
         _underlyingAsset.safeTransfer(to, amount);
 
@@ -488,10 +467,11 @@ contract SMARTFixedYieldSchedule is
         onlyRole(DEFAULT_ADMIN_ROLE)
         whenNotPaused
     {
-        if (to == address(0)) revert InvalidUnderlyingAsset(); // Cannot withdraw to zero address.
+        if (to == address(0)) revert ISMARTFixedYieldSchedule.InvalidUnderlyingAsset(); // Cannot withdraw to zero
+            // address.
 
         uint256 balance = _underlyingAsset.balanceOf(address(this));
-        if (balance <= 0) revert InsufficientUnderlyingBalance(); // No funds to withdraw.
+        if (balance <= 0) revert ISMARTFixedYieldSchedule.InsufficientUnderlyingBalance(); // No funds to withdraw.
 
         _underlyingAsset.safeTransfer(to, balance);
 

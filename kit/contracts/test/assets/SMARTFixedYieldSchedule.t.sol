@@ -333,7 +333,7 @@ contract SMARTFixedYieldScheduleTest is Test {
         // Before start date, no yield should be calculated
         vm.warp(startDate - 1);
 
-        vm.expectRevert(SMARTFixedYieldSchedule.ScheduleNotActive.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.ScheduleNotActive.selector);
         yieldSchedule.calculateAccruedYield(user1);
     }
 
@@ -394,7 +394,7 @@ contract SMARTFixedYieldScheduleTest is Test {
     function test_ClaimYield_NoYieldAvailable() public {
         // Try to claim before any periods complete
         vm.prank(user1);
-        vm.expectRevert(SMARTFixedYieldSchedule.NoYieldAvailable.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.NoYieldAvailable.selector);
         yieldSchedule.claimYield();
     }
 
@@ -468,50 +468,50 @@ contract SMARTFixedYieldScheduleTest is Test {
 
     function test_InvalidConstructorParameters() public {
         // Invalid start date (in the past)
-        vm.expectRevert(SMARTFixedYieldSchedule.InvalidStartDate.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.InvalidStartDate.selector);
         new SMARTFixedYieldSchedule(address(smartToken), owner, block.timestamp - 1, endDate, RATE, INTERVAL, forwarder);
 
         // Invalid end date (before start)
-        vm.expectRevert(SMARTFixedYieldSchedule.InvalidEndDate.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.InvalidEndDate.selector);
         new SMARTFixedYieldSchedule(address(smartToken), owner, startDate, startDate - 1, RATE, INTERVAL, forwarder);
 
         // Invalid rate (zero)
-        vm.expectRevert(SMARTFixedYieldSchedule.InvalidRate.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.InvalidRate.selector);
         new SMARTFixedYieldSchedule(address(smartToken), owner, startDate, endDate, 0, INTERVAL, forwarder);
 
         // Invalid interval (zero)
-        vm.expectRevert(SMARTFixedYieldSchedule.InvalidInterval.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.InvalidInterval.selector);
         new SMARTFixedYieldSchedule(address(smartToken), owner, startDate, endDate, RATE, 0, forwarder);
     }
 
     function test_InvalidPeriod() public {
-        vm.expectRevert(SMARTFixedYieldSchedule.InvalidPeriod.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.InvalidPeriod.selector);
         yieldSchedule.periodEnd(0);
 
-        vm.expectRevert(SMARTFixedYieldSchedule.InvalidPeriod.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.InvalidPeriod.selector);
         yieldSchedule.periodEnd(1000);
     }
 
     function test_ScheduleNotActive() public {
-        vm.expectRevert(SMARTFixedYieldSchedule.ScheduleNotActive.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.ScheduleNotActive.selector);
         yieldSchedule.calculateAccruedYield(user1);
     }
 
     function test_WithdrawInvalidAmount() public {
         vm.prank(owner);
-        vm.expectRevert(SMARTFixedYieldSchedule.InvalidAmount.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.InvalidAmount.selector);
         yieldSchedule.withdrawUnderlyingAsset(user1, 0);
     }
 
     function test_WithdrawToZeroAddress() public {
         vm.prank(owner);
-        vm.expectRevert(SMARTFixedYieldSchedule.InvalidUnderlyingAsset.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.InvalidUnderlyingAsset.selector);
         yieldSchedule.withdrawUnderlyingAsset(address(0), 1000e18);
     }
 
     function test_InsufficientUnderlyingBalance() public {
         vm.prank(owner);
-        vm.expectRevert(SMARTFixedYieldSchedule.InsufficientUnderlyingBalance.selector);
+        vm.expectRevert(ISMARTFixedYieldSchedule.InsufficientUnderlyingBalance.selector);
         yieldSchedule.withdrawUnderlyingAsset(user1, 1000e18);
     }
 }
