@@ -73,3 +73,8 @@ imagePullSecrets:
   - image-pull-secret-harbor
   - image-pull-secret-ghcr
   - image-pull-secret-docker
+
+storage:
+  # Storage class for PVC when genesis file is too large for ConfigMap
+  storageClassName: ""  # Uses default storage class if empty
+  size: "1Gi"

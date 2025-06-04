@@ -27,6 +27,17 @@
     "package:push:harbor": {
       "cache": false,
       "dependsOn": ["package:pack"]
+    },
+    "helm": {
+      "dependsOn": ["helm:check-context", "dependencies", "helm:secrets", "^codegen"],
+      "cache": false
+    },
+    "helm:check-context": {
+      "cache": false
+    },
+    "helm:secrets": {
+      "outputs": ["**/values-orbstack.yaml"],
+      "inputs": ["**/values-orb.1p.yaml"]
     }
   }
 }
