@@ -8,12 +8,15 @@ import { SMARTComplianceImplementation } from "../../../contracts/system/complia
 import { SMARTComplianceProxy } from "../../../contracts/system/compliance/SMARTComplianceProxy.sol";
 import { ISMARTCompliance } from "../../../contracts/interface/ISMARTCompliance.sol";
 import { ISMARTComplianceModule } from "../../../contracts/interface/ISMARTComplianceModule.sol";
+import { ISMARTComplianceWhitelist } from "../../../contracts/system/compliance/ISMARTComplianceWhitelist.sol";
 import { ISMART } from "../../../contracts/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTSystemRoles } from "../../../contracts/system/SMARTSystemRoles.sol";
 
 import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 contract MockSMARTToken {
     SMARTComplianceModuleParamPair[] private _modules;
@@ -101,9 +104,12 @@ contract SMARTComplianceImplementationTest is Test {
     MockNonCompliantModule public nonCompliantModule;
 
     address public admin = makeAddr("admin");
+    address public whitelistManager = makeAddr("whitelistManager");
+    address public unauthorizedUser = makeAddr("unauthorizedUser");
     address public trustedForwarder = address(0x1234);
     address public alice = address(0xa11ce);
     address public bob = address(0xb0b);
+    address public charlie = address(0xc4a12e);
 
     function setUp() public {
         // Deploy implementation and use it directly for unit testing
@@ -117,6 +123,10 @@ contract SMARTComplianceImplementationTest is Test {
 
         // Access proxy as SMARTComplianceImplementation
         compliance = SMARTComplianceImplementation(address(proxy));
+
+        // Grant whitelist manager role
+        vm.prank(admin);
+        compliance.grantRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE, whitelistManager);
 
         // Deploy mock token
         token = new MockSMARTToken(address(compliance));
@@ -136,6 +146,7 @@ contract SMARTComplianceImplementationTest is Test {
 
     function testSupportsInterface() public view {
         assertTrue(compliance.supportsInterface(type(ISMARTCompliance).interfaceId));
+        assertTrue(compliance.supportsInterface(type(ISMARTComplianceWhitelist).interfaceId));
         assertTrue(compliance.supportsInterface(type(IERC165).interfaceId));
         assertFalse(compliance.supportsInterface(0xdeadbeef));
     }
@@ -331,5 +342,313 @@ contract SMARTComplianceImplementationTest is Test {
         // Should revert for non-compliant modules (EOA addresses)
         vm.expectRevert();
         ISMARTCompliance(address(compliance)).isValidComplianceModule(moduleAddr, params);
+    }
+
+    // --- Whitelist Management Tests ---
+
+    function testAddToWhitelistSuccess() public {
+        vm.prank(whitelistManager);
+        vm.expectEmit(true, true, false, true);
+        emit ISMARTComplianceWhitelist.AddressWhitelisted(alice, whitelistManager);
+        compliance.addToWhitelist(alice);
+
+        assertTrue(compliance.isWhitelisted(alice));
+    }
+
+    function testAddToWhitelistUnauthorized() public {
+        vm.prank(unauthorizedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                SMARTSystemRoles.WHITELIST_MANAGER_ROLE
+            )
+        );
+        compliance.addToWhitelist(alice);
+    }
+
+    function testAddToWhitelistZeroAddress() public {
+        vm.prank(whitelistManager);
+        vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
+        compliance.addToWhitelist(address(0));
+    }
+
+    function testAddToWhitelistAlreadyWhitelisted() public {
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(alice);
+
+        vm.prank(whitelistManager);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceWhitelist.AddressAlreadyWhitelisted.selector, alice));
+        compliance.addToWhitelist(alice);
+    }
+
+    function testRemoveFromWhitelistSuccess() public {
+        // First add to whitelist
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(alice);
+        assertTrue(compliance.isWhitelisted(alice));
+
+        // Then remove
+        vm.prank(whitelistManager);
+        vm.expectEmit(true, true, false, true);
+        emit ISMARTComplianceWhitelist.AddressRemovedFromWhitelist(alice, whitelistManager);
+        compliance.removeFromWhitelist(alice);
+
+        assertFalse(compliance.isWhitelisted(alice));
+    }
+
+    function testRemoveFromWhitelistUnauthorized() public {
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(alice);
+
+        vm.prank(unauthorizedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                SMARTSystemRoles.WHITELIST_MANAGER_ROLE
+            )
+        );
+        compliance.removeFromWhitelist(alice);
+    }
+
+    function testRemoveFromWhitelistNotWhitelisted() public {
+        vm.prank(whitelistManager);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceWhitelist.AddressNotWhitelisted.selector, alice));
+        compliance.removeFromWhitelist(alice);
+    }
+
+    function testAddMultipleToWhitelistSuccess() public {
+        address[] memory accounts = new address[](3);
+        accounts[0] = alice;
+        accounts[1] = bob;
+        accounts[2] = charlie;
+
+        vm.prank(whitelistManager);
+        for (uint256 i = 0; i < accounts.length; i++) {
+            vm.expectEmit(true, true, false, true);
+            emit ISMARTComplianceWhitelist.AddressWhitelisted(accounts[i], whitelistManager);
+        }
+        compliance.addMultipleToWhitelist(accounts);
+
+        assertTrue(compliance.isWhitelisted(alice));
+        assertTrue(compliance.isWhitelisted(bob));
+        assertTrue(compliance.isWhitelisted(charlie));
+    }
+
+    function testAddMultipleToWhitelistWithZeroAddress() public {
+        address[] memory accounts = new address[](3);
+        accounts[0] = alice;
+        accounts[1] = address(0); // Zero address
+        accounts[2] = charlie;
+
+        vm.prank(whitelistManager);
+        vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
+        compliance.addMultipleToWhitelist(accounts);
+
+        // None should be whitelisted due to revert
+        assertFalse(compliance.isWhitelisted(alice));
+        assertFalse(compliance.isWhitelisted(charlie));
+    }
+
+    function testAddMultipleToWhitelistWithDuplicate() public {
+        // First add alice
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(alice);
+
+        address[] memory accounts = new address[](3);
+        accounts[0] = bob;
+        accounts[1] = alice; // Already whitelisted
+        accounts[2] = charlie;
+
+        vm.prank(whitelistManager);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceWhitelist.AddressAlreadyWhitelisted.selector, alice));
+        compliance.addMultipleToWhitelist(accounts);
+
+        // Bob should not be whitelisted due to revert
+        assertFalse(compliance.isWhitelisted(bob));
+        assertFalse(compliance.isWhitelisted(charlie));
+    }
+
+    function testRemoveMultipleFromWhitelistSuccess() public {
+        // First add all to whitelist
+        address[] memory accounts = new address[](3);
+        accounts[0] = alice;
+        accounts[1] = bob;
+        accounts[2] = charlie;
+
+        vm.prank(whitelistManager);
+        compliance.addMultipleToWhitelist(accounts);
+
+        // Then remove all
+        vm.prank(whitelistManager);
+        for (uint256 i = 0; i < accounts.length; i++) {
+            vm.expectEmit(true, true, false, true);
+            emit ISMARTComplianceWhitelist.AddressRemovedFromWhitelist(accounts[i], whitelistManager);
+        }
+        compliance.removeMultipleFromWhitelist(accounts);
+
+        assertFalse(compliance.isWhitelisted(alice));
+        assertFalse(compliance.isWhitelisted(bob));
+        assertFalse(compliance.isWhitelisted(charlie));
+    }
+
+    function testRemoveMultipleFromWhitelistWithNotWhitelisted() public {
+        // Only add alice to whitelist
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(alice);
+
+        address[] memory accounts = new address[](3);
+        accounts[0] = alice;
+        accounts[1] = bob; // Not whitelisted
+        accounts[2] = charlie;
+
+        vm.prank(whitelistManager);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceWhitelist.AddressNotWhitelisted.selector, bob));
+        compliance.removeMultipleFromWhitelist(accounts);
+
+        // Alice should still be whitelisted due to revert
+        assertTrue(compliance.isWhitelisted(alice));
+    }
+
+    function testIsWhitelistedInitiallyFalse() public view {
+        assertFalse(compliance.isWhitelisted(alice));
+        assertFalse(compliance.isWhitelisted(bob));
+        assertFalse(compliance.isWhitelisted(address(0)));
+    }
+
+    // --- Whitelist Effect on canTransfer Tests ---
+
+    function testCanTransferWithWhitelistedReceiver() public {
+        // Add failing module that would normally prevent transfers
+        token.addModule(address(failingModule), abi.encode(uint256(100)));
+
+        // Whitelist the receiver
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(bob);
+
+        // Transfer should succeed despite failing module because receiver is whitelisted
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
+    }
+
+    function testCanTransferWithNonWhitelistedReceiver() public {
+        // Add failing module
+        token.addModule(address(failingModule), abi.encode(uint256(100)));
+
+        // Don't whitelist receiver - should fail due to failing module
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Transfer not allowed")
+        );
+        ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100);
+    }
+
+    function testCanTransferWhitelistBypassesAllModules() public {
+        // Add multiple failing modules
+        MockFailingModule failingModule2 = new MockFailingModule("Another failure", true, false);
+        token.addModule(address(failingModule), abi.encode(uint256(100)));
+        token.addModule(address(failingModule2), abi.encode(uint256(200)));
+
+        // Whitelist receiver
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(bob);
+
+        // Should succeed despite multiple failing modules
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
+    }
+
+    function testCanTransferWhitelistedMintOperation() public {
+        // Add failing module
+        token.addModule(address(failingModule), abi.encode(uint256(100)));
+
+        // Whitelist receiver for mint (from = address(0))
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(alice);
+
+        // Mint should succeed despite failing module
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), address(0), alice, 1000));
+    }
+
+    function testCanTransferNonWhitelistedSenderStillChecked() public {
+        // Add a valid module (allows transfers)
+        token.addModule(address(validModule), abi.encode(uint256(100)));
+
+        // Don't whitelist anyone - should use normal compliance flow
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
+    }
+
+    // --- Gas optimization tests for whitelist ---
+
+    function testWhitelistGasOptimization() public {
+        // Add many modules
+        for (uint256 i = 0; i < 5; i++) {
+            MockedComplianceModule module = new MockedComplianceModule();
+            token.addModule(address(module), abi.encode(i * 100));
+        }
+
+        // Whitelist receiver
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(bob);
+
+        // Measure gas - should be much lower due to early return
+        uint256 gasBefore = gasleft();
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
+        uint256 gasUsedWhitelisted = gasBefore - gasleft();
+
+        // Remove from whitelist and measure gas for normal flow
+        vm.prank(whitelistManager);
+        compliance.removeFromWhitelist(bob);
+
+        gasBefore = gasleft();
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
+        uint256 gasUsedNormal = gasBefore - gasleft();
+
+        console2.log("Gas used with whitelisted receiver:", gasUsedWhitelisted);
+        console2.log("Gas used with normal flow:", gasUsedNormal);
+
+        // Whitelisted should use significantly less gas
+        assertLt(gasUsedWhitelisted, gasUsedNormal);
+    }
+
+    // --- Fuzz tests for whitelist ---
+
+    function testFuzzAddToWhitelist(address account) public {
+        vm.assume(account != address(0));
+
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(account);
+
+        assertTrue(compliance.isWhitelisted(account));
+    }
+
+    function testFuzzWhitelistCanTransfer(address receiver, uint256 amount) public {
+        vm.assume(receiver != address(0));
+
+        // Add failing module
+        token.addModule(address(failingModule), abi.encode(uint256(100)));
+
+        // Whitelist receiver
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(receiver);
+
+        // Should always succeed with whitelisted receiver
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, receiver, amount));
+    }
+
+    // --- Integration tests ---
+
+    function testWhitelistIntegrationWithTransferredCallback() public {
+        // Add valid module to track calls
+        token.addModule(address(validModule), abi.encode(uint256(100)));
+
+        // Whitelist receiver
+        vm.prank(whitelistManager);
+        compliance.addToWhitelist(bob);
+
+        // Even with whitelisted receiver, transferred callback should still work
+        vm.prank(address(token));
+        ISMARTCompliance(address(compliance)).transferred(address(token), alice, bob, 100);
+
+        // Verify module was called
+        assertEq(validModule.transferredCallCount(), 1);
     }
 }
