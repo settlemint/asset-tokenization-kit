@@ -14,6 +14,7 @@ import { SMARTCountryBlockListTest } from "./extensions/SMARTCountryBlockListTes
 import { ISMART } from "../contracts/interface/ISMART.sol";
 import { SMARTToken } from "./examples/SMARTToken.sol";
 import { SMARTTopics } from "../contracts/system/SMARTTopics.sol";
+import { SMARTIdentityVerificationTest } from "./extensions/SMARTIdentityVerificationTest.sol";
 // Rename contract to reflect its purpose
 
 contract SMARTStandardTest is
@@ -23,7 +24,8 @@ contract SMARTStandardTest is
     SMARTCustodianTest,
     SMARTCollateralTest,
     SMARTCountryAllowListTest,
-    SMARTCountryBlockListTest
+    SMARTCountryBlockListTest,
+    SMARTIdentityVerificationTest
 {
     function _setupToken() internal override {
         // 1. Create the token contract

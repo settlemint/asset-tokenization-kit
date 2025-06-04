@@ -12,6 +12,7 @@ import { ISMART } from "../contracts/interface/ISMART.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { SMARTTokenUpgradeable } from "./examples/SMARTTokenUpgradeable.sol";
 import { SMARTTopics } from "../contracts/system/SMARTTopics.sol";
+import { SMARTIdentityVerificationTest } from "./extensions/SMARTIdentityVerificationTest.sol";
 
 // Contract for testing the UPGRADEABLE SMART token implementation
 
@@ -22,7 +23,8 @@ contract SMARTUpgradeableTest is
     SMARTCustodianTest,
     SMARTCollateralTest,
     SMARTCountryAllowListTest,
-    SMARTCountryBlockListTest
+    SMARTCountryBlockListTest,
+    SMARTIdentityVerificationTest
 {
     function _setupToken() internal override {
         // 1. Deploy the implementation contract (no constructor args for upgradeable)
