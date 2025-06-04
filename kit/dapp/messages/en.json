@@ -2972,6 +2972,24 @@
         }
       },
       "dashboard": {
+        "compliance-status": {
+          "title": "Compliance status",
+          "of": "of",
+          "requirements-compliant": "Requirements compliant",
+          "compliant": "Compliant",
+          "non-compliant": "Non-compliant",
+          "view-details": "View details",
+          "reserve-status": "Reserve status",
+          "reserve-status-description": "Maintain sufficient reserves and proper asset composition",
+          "authorization-status": "Authorization status",
+          "authorization-status-description": "Valid regulatory approval and licensing",
+          "kyc-aml-monitoring": "KYC/AML monitoring",
+          "kyc-aml-monitoring-description": "Comprehensive KYC procedures and monitoring",
+          "consumer-protection": "Consumer protection",
+          "consumer-protection-description": "Redemption policies and user protection measures",
+          "documentation": "Documentation",
+          "documentation-description": "Complete and up-to-date regulatory documentation"
+        },
         "reserve-status": {
           "title": "Reserve status",
           "ratio": {
