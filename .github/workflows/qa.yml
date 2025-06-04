@@ -139,6 +139,7 @@ jobs:
   codeql:
     name: CodeQL (${{ matrix.language }})
     runs-on: namespace-profile-atk-services
+    if: (github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]')
     permissions:
       security-events: write
       packages: read
@@ -183,7 +184,9 @@ jobs:
     name: Slack
     runs-on: namespace-profile-atk-services
     needs: qa
-    if: github.event_name == 'pull_request' && always()
+    if:
+      github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' &&
+      github.event_name == 'pull_request' && always()
     steps:
       - name: Configure 1Password
         uses: 1password/load-secrets-action/configure@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
