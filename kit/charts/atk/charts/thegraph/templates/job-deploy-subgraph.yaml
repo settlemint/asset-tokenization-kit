@@ -78,11 +78,7 @@ spec:
           image: {{ .Values.job.image.repository }}:{{ .Values.job.image.tag }}
           imagePullPolicy: {{ .Values.job.image.pullPolicy }}
           resources:
-            requests:
-              memory: {{ .Values.job.resources.requests.memory | quote }}
-              cpu: {{ .Values.job.resources.requests.cpu | quote }}
-            limits:
-              memory: {{ .Values.job.resources.limits.memory | quote }}
+            {{- toYaml .Values.job.resources | nindent 12 }}
           command:
             - /bin/sh
             - -c
