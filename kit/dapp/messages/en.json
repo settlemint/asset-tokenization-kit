@@ -1197,6 +1197,10 @@
         "push": "Push"
       },
       "claim-status": {
+        "READY": "Ready",
+        "PENDING": "Pending",
+        "CLAIMED": "Claimed",
+        "EXPIRED": "Expired",
         "available": "Available",
         "claimed": "Claimed"
       }

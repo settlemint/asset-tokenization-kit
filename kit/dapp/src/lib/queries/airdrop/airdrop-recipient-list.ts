@@ -11,7 +11,9 @@ import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { getAddress, type Address } from "viem";
-import { AirdropFragment } from "./airdrop-fragment";
+import { PushAirdropFragment } from "../push-airdrop/push-airdrop-fragment";
+import { StandardAirdropFragment } from "../standard-airdrop/standard-airdrop-fragment";
+import { VestingAirdropFragment } from "../vesting-airdrop/vesting-airdrop-fragment";
 import {
   AirdropClaimFragment,
   AirdropRecipientFragment,
@@ -48,17 +50,25 @@ const AirdropRecipientList = hasuraGraphql(
  * GraphQL query to fetch airdrop details from The Graph by IDs
  *
  * @remarks
- * Used to get complete airdrop information including asset details
+ * Used to get complete airdrop information including asset details and type-specific fields
  */
 const AirdropDetailsByIds = theGraphGraphqlKit(
   `
   query AirdropDetailsByIds($ids: [Bytes!]!) {
     airdrops(where: { id_in: $ids }) {
-      ...AirdropFragment
+      ... on StandardAirdrop {
+        ...StandardAirdropFragment
+      }
+      ... on VestingAirdrop {
+        ...VestingAirdropFragment
+      }
+      ... on PushAirdrop {
+        ...PushAirdropFragment
+      }
     }
   }
 `,
-  [AirdropFragment]
+  [StandardAirdropFragment, VestingAirdropFragment, PushAirdropFragment]
 );
 
 /**
@@ -86,7 +96,8 @@ const AirdropRecipientsByIds = theGraphGraphqlKit(
  * This function fetches data from both Hasura (off-chain distribution data) and
  * The Graph (on-chain airdrop and asset data) to provide a complete view of
  * airdrop distributions where the user is eligible to claim tokens.
- * Includes complete airdrop details, distribution amount, index, and claim status.
+ * Includes complete airdrop details, distribution amount, index, claim status,
+ * and user-specific vesting data for vesting airdrops.
  */
 export const getAirdropRecipientList = withTracing(
   "queries",
@@ -179,11 +190,28 @@ export const getAirdropRecipientList = withTracing(
             recipientDataMap.get(recipientId)
           );
 
+          // Get user vesting data if this is a vesting airdrop
+          let userVestingData = null;
+          if (airdropData.type === "VestingAirdrop") {
+            const vestingAirdrop = airdropData;
+            // Filter the vestingData array for the current user
+            if (vestingAirdrop.strategy?.vestingData) {
+              userVestingData =
+                vestingAirdrop.strategy.vestingData.find(
+                  (vd) => getAddress(vd.user.id) === getAddress(recipient)
+                ) || null;
+            }
+          }
+
           return {
-            airdrop: airdropData,
+            airdrop: {
+              ...airdropData,
+              claimed: recipientClaimData?.firstClaimedTimestamp,
+              claimData: recipientClaimData,
+              userVestingData,
+            },
             amount: item.amount,
             index: item.index,
-            claimed: recipientClaimData?.firstClaimedTimestamp,
           };
         });
 

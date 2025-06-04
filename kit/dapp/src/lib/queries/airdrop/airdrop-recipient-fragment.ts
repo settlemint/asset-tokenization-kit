@@ -22,11 +22,14 @@ export const AirdropRecipientFragment = hasuraGraphql(`
  *
  * @remarks
  * Contains recipient-specific claim data from on-chain events
- * Only fetches the ID and first claimed timestamp for mapping claim status
+ * Includes claim timestamps and total claimed amounts for status calculation
  */
 export const AirdropClaimFragment = theGraphGraphqlKit(`
   fragment AirdropClaimFragment on AirdropRecipient {
     id
     firstClaimedTimestamp
+    lastClaimedTimestamp
+    totalClaimedByRecipient
+    totalClaimedByRecipientExact
   }
 `);

@@ -1,5 +1,6 @@
 "use client";
 
+import { AirdropClaimStatusIndicator } from "@/components/blocks/airdrop-claim-status/airdrop-claim-status";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import type { AirdropRecipient } from "@/lib/queries/airdrop/airdrop-recipient-schema";
@@ -38,6 +39,12 @@ export function Columns() {
           decimals: row.original.airdrop.asset.decimals,
           adjustDecimals: true,
         }),
+    }),
+    columnHelper.display({
+      header: t("table.status-header"),
+      cell: ({ row }) => (
+        <AirdropClaimStatusIndicator airdropRecipient={row.original} />
+      ),
     }),
     columnHelper.display({
       id: "details",
