@@ -32,8 +32,8 @@ export const setYieldSchedule = async (
   const createYieldScheduleTransactionHash = await withDecodedRevertReason(() =>
     factoryContract.write.create([
       tokenContract.address,
-      BigInt(startTime.getTime()),
-      BigInt(endTime.getTime()),
+      BigInt(Math.ceil(startTime.getTime() / 1000)),
+      BigInt(Math.ceil(endTime.getTime() / 1000)),
       BigInt(rate),
       BigInt(interval),
     ])
@@ -48,7 +48,19 @@ export const setYieldSchedule = async (
     await tokenContract.write.setYieldSchedule([schedule]);
   await waitForSuccess(setYieldScheduleTransactionHash);
 
+  const scheduleContract = owner.getContractInstance({
+    address: schedule,
+    abi: SMARTContracts.ismartFixedYieldSchedule,
+  });
+
   console.log(
-    `[Set yield schedule] ${asset.symbol} yield schedule set (schedule address ${schedule})`
+    `[Set yield schedule] ${asset.symbol} yield schedule set with start time ${startTime.toISOString()} and end time ${endTime.toISOString()} (schedule address ${schedule})`
   );
+
+  return {
+    getTimeUntilNextPeriod: async () => {
+      const time = await scheduleContract.read.timeUntilNextPeriod();
+      return Number(time) * 1_000;
+    },
+  };
 };
