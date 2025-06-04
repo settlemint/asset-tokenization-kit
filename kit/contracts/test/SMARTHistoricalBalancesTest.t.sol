@@ -5,7 +5,6 @@ import { Test } from "forge-std/Test.sol";
 import { ISMARTHistoricalBalances } from "../contracts/extensions/historical-balances/ISMARTHistoricalBalances.sol";
 import { _SMARTHistoricalBalancesLogic } from
     "../contracts/extensions/historical-balances/internal/_SMARTHistoricalBalancesLogic.sol";
-import { FutureLookup } from "../contracts/extensions/historical-balances/SMARTHistoricalBalancesErrors.sol";
 import { console } from "forge-std/Test.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { SMARTComplianceModuleParamPair } from "../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
@@ -214,14 +213,16 @@ contract SMARTHistoricalBalancesTest is Test {
         uint256 futureTime = block.timestamp + 1000;
 
         // Test future time
-        vm.expectRevert(abi.encodeWithSelector(FutureLookup.selector, futureTime, currentTime));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTHistoricalBalances.FutureLookup.selector, futureTime, currentTime));
         token.balanceOfAt(alice, futureTime);
 
         // Test current time (also considered future)
-        vm.expectRevert(abi.encodeWithSelector(FutureLookup.selector, currentTime, currentTime));
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTHistoricalBalances.FutureLookup.selector, currentTime, currentTime)
+        );
         token.balanceOfAt(alice, currentTime);
 
-        vm.expectRevert(abi.encodeWithSelector(FutureLookup.selector, futureTime, currentTime));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTHistoricalBalances.FutureLookup.selector, futureTime, currentTime));
         token.totalSupplyAt(futureTime);
     }
 

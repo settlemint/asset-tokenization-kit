@@ -9,6 +9,18 @@ pragma solidity ^0.8.28;
 ///         Other contracts can then interact with any contract that implements this
 ///         interface, knowing that these functions will be available.
 interface ISMARTTokenAccessManaged {
+    /// @dev Error: Account Lacks Required Role.
+    ///      This error is emitted when an action is attempted by an account (`account`)
+    ///      that does not possess the necessary authorization role (`neededRole`).
+    ///      For example, if an account tries to mint new tokens but doesn't have the 'MINTER_ROLE'.
+    /// @notice This error is functionally identical to `AccessControlUnauthorizedAccount`
+    ///         defined in OpenZeppelin's `access/AccessControl.sol` contract.
+    ///         Re-defining it here ensures consistency within the SMART framework and can
+    ///         help in scenarios where specific error catching is needed for this module.
+    /// @param account The address of the account that attempted the unauthorized action.
+    /// @param neededRole The `bytes32` identifier of the role that the `account` was missing.
+    error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
+
     /// @notice Emitted when the address of the access manager contract is successfully changed or set.
     /// @dev This event is crucial for transparency and monitoring. It allows external observers
     ///      to know when the authority managing roles and permissions for a token has been updated.

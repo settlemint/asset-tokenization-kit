@@ -11,15 +11,14 @@ import { SMARTDepositFactoryImplementation } from "../../contracts/assets/deposi
 import { SMARTDepositImplementation } from "../../contracts/assets/deposit/SMARTDepositImplementation.sol";
 import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
 import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
-import { InvalidDecimals } from "../../contracts/extensions/core/SMARTErrors.sol";
 import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { InsufficientCollateral } from "../../contracts/extensions/collateral/SMARTCollateralErrors.sol";
-import { console } from "forge-std/console.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+import { ISMART } from "../../contracts/interface/ISMART.sol";
+import { ISMARTCollateral } from "../../contracts/extensions/collateral/ISMARTCollateral.sol";
 
 contract SMARTDepositTest is AbstractSMARTAssetTest {
     ISMARTDepositFactory public depositFactory;
@@ -138,7 +137,7 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
 
-        vm.expectRevert(abi.encodeWithSelector(InvalidDecimals.selector, 19));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidDecimals.selector, 19));
         depositFactory.createDeposit(
             "Deposit 19", "DEP19", 19, new uint256[](0), new SMARTComplianceModuleParamPair[](0)
         );
@@ -216,7 +215,7 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        vm.expectRevert(abi.encodeWithSelector(InsufficientCollateral.selector, 100, 0));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCollateral.InsufficientCollateral.selector, 100, 0));
         deposit.mint(user1, 100);
         vm.stopPrank();
 

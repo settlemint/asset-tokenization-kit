@@ -3,7 +3,11 @@ import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { smartProtocolDeployer } from "../services/deployer";
 
 import { SMARTTopic } from "../constants/topics";
-import { investorA, investorB } from "../entities/actors/investors";
+import {
+  frozenInvestor,
+  investorA,
+  investorB,
+} from "../entities/actors/investors";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
@@ -15,10 +19,6 @@ import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
-import { claimYield } from "./actions/yield/claim-yield";
-import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
-import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
-import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
@@ -71,12 +71,12 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   // custodian
   await forcedTransfer(bond, owner, investorA, investorB, 2n);
-  await setAddressFrozen(bond, owner, investorA, true);
-  await setAddressFrozen(bond, owner, investorA, false);
+  await setAddressFrozen(bond, owner, frozenInvestor, true);
   await freezePartialTokens(bond, owner, investorB, 2n);
   await unfreezePartialTokens(bond, owner, investorB, 2n);
 
   // yield
+  /* Blocked by https://linear.app/settlemint/issue/ENG-3214/fixed-yield-extension-should-not-verify-required-claims-for
   const { advanceToNextPeriod } = await setYieldSchedule(
     bond,
     new Date(Date.now() + 1_000), // 1 second from now
@@ -91,6 +91,7 @@ export const createBond = async (depositToken: Asset<any>) => {
     await claimYield(bond);
   }
   await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);
+  */
 
   // TODO: execute all other functions of the bond
 

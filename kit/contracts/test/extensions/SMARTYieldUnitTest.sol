@@ -11,8 +11,7 @@ import { ISMARTFixedYieldSchedule } from "../../contracts/extensions/yield/sched
 import { SMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
 import { SMARTFixedYieldScheduleFactory } from
     "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol";
-import { YieldScheduleAlreadySet, YieldScheduleActive } from "../../contracts/extensions/yield/SMARTYieldErrors.sol";
-import { ZeroAddressNotAllowed } from "../../contracts/extensions/common/CommonErrors.sol";
+import { ISMART } from "../../contracts/interface/ISMART.sol";
 import { SMARTYieldToken } from "../examples/SMARTYieldToken.sol";
 
 /// @title Unit tests for SMART Yield core functionality
@@ -68,7 +67,7 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     function test_Yield_SetYieldSchedule_ZeroAddress_Reverts() public {
         _setUpYieldTest();
 
-        vm.expectRevert(ZeroAddressNotAllowed.selector);
+        vm.expectRevert(abi.encodeWithSelector(ISMART.ZeroAddressNotAllowed.selector));
         vm.prank(tokenIssuer);
         ISMARTYield(address(token)).setYieldSchedule(address(0));
     }
@@ -86,7 +85,7 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
         address anotherSchedule = _createYieldSchedule(
             yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, block.timestamp + 2 days
         );
-        vm.expectRevert(YieldScheduleAlreadySet.selector);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTYield.YieldScheduleAlreadySet.selector));
         vm.prank(tokenIssuer);
         ISMARTYield(address(token)).setYieldSchedule(anotherSchedule);
     }
@@ -151,7 +150,7 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
         // Minting should fail after schedule starts
         uint256 mintAmount = 1000 ether;
 
-        vm.expectRevert(YieldScheduleActive.selector);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTYield.YieldScheduleActive.selector));
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, mintAmount);
     }
 
@@ -185,7 +184,7 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
         // Minting should fail at exactly the start time
         uint256 mintAmount = 1000 ether;
 
-        vm.expectRevert(YieldScheduleActive.selector);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTYield.YieldScheduleActive.selector));
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, mintAmount);
     }
 

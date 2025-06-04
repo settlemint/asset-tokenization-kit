@@ -12,7 +12,6 @@ import { ISMARTCompliance } from "../../interface/ISMARTCompliance.sol";
 import { ISMARTComplianceModule } from "../../interface/ISMARTComplianceModule.sol";
 import { ISMART } from "../../interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ZeroAddressNotAllowed } from "../../extensions/common/CommonErrors.sol";
 
 /// @title SMART Compliance Contract Implementation
 /// @author SettleMint Tokenization Services

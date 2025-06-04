@@ -9,13 +9,6 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { ISMARTCustodian } from "../../contracts/extensions/custodian/ISMARTCustodian.sol";
 import { ISMART } from "../../contracts/interface/ISMART.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {
-    SenderAddressFrozen,
-    RecipientAddressFrozen,
-    FreezeAmountExceedsAvailableBalance,
-    InsufficientFrozenTokens,
-    NoTokensToRecover
-} from "../../contracts/extensions/custodian/SMARTCustodianErrors.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
 
 abstract contract SMARTCustodianTest is AbstractSMARTTest {
@@ -41,28 +34,28 @@ abstract contract SMARTCustodianTest is AbstractSMARTTest {
     function test_Custodian_FreezeAddress_TransferFromFrozen_Reverts() public {
         _setUpCustodianTest(); // Call setup explicitly
         tokenUtils.setAddressFrozen(address(token), tokenIssuer, clientBE, true);
-        vm.expectRevert(abi.encodeWithSelector(SenderAddressFrozen.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCustodian.SenderAddressFrozen.selector));
         tokenUtils.transferToken(address(token), clientBE, clientJP, 1 ether);
     }
 
     function test_Custodian_FreezeAddress_TransferToFrozen_Reverts() public {
         _setUpCustodianTest(); // Call setup explicitly
         tokenUtils.setAddressFrozen(address(token), tokenIssuer, clientJP, true);
-        vm.expectRevert(abi.encodeWithSelector(RecipientAddressFrozen.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCustodian.RecipientAddressFrozen.selector));
         tokenUtils.transferToken(address(token), clientBE, clientJP, 1 ether);
     }
 
     function test_Custodian_FreezeAddress_MintToFrozen_Reverts() public {
         _setUpCustodianTest(); // Call setup explicitly
         tokenUtils.setAddressFrozen(address(token), tokenIssuer, clientBE, true);
-        vm.expectRevert(abi.encodeWithSelector(RecipientAddressFrozen.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCustodian.RecipientAddressFrozen.selector));
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, 1 ether);
     }
 
     function test_Custodian_FreezeAddress_RedeemFromFrozen_Reverts() public {
         _setUpCustodianTest(); // Call setup explicitly
         tokenUtils.setAddressFrozen(address(token), tokenIssuer, clientBE, true);
-        vm.expectRevert(abi.encodeWithSelector(SenderAddressFrozen.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCustodian.SenderAddressFrozen.selector));
         tokenUtils.redeemToken(address(token), clientBE, 1 ether);
     }
 
@@ -143,7 +136,7 @@ abstract contract SMARTCustodianTest is AbstractSMARTTest {
         uint256 freezeAmount = currentBalance + 1 ether;
         vm.expectRevert(
             abi.encodeWithSelector(
-                FreezeAmountExceedsAvailableBalance.selector,
+                ISMARTCustodian.FreezeAmountExceedsAvailableBalance.selector,
                 currentBalance, // Available balance (no frozen tokens yet)
                 freezeAmount
             )
@@ -178,7 +171,7 @@ abstract contract SMARTCustodianTest is AbstractSMARTTest {
         uint256 unfreezeAmount = freezeAmount + 1 ether;
         vm.expectRevert(
             abi.encodeWithSelector(
-                InsufficientFrozenTokens.selector,
+                ISMARTCustodian.InsufficientFrozenTokens.selector,
                 freezeAmount, // Currently frozen
                 unfreezeAmount
             )
@@ -723,7 +716,7 @@ abstract contract SMARTCustodianTest is AbstractSMARTTest {
         claimUtils.issueAllClaims(newWallet);
         identityUtils.recoverIdentity(lostWallet, newWallet, newIdentity);
 
-        vm.expectRevert(abi.encodeWithSelector(NoTokensToRecover.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.NoTokensToRecover.selector));
 
         vm.startPrank(tokenIssuer);
         ISMARTCustodian(address(token)).forcedRecoverTokens(lostWallet, newWallet);

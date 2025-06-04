@@ -9,3 +9,10 @@ declare module "next-intl" {
     Locale: (typeof routing.locales)[number];
   }
 }
+
+declare global {
+  // eslint-disable-next-line no-var
+  var $headers: (() => Promise<Headers>) | undefined;
+}
+
+export {};

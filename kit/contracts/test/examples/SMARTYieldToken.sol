@@ -7,8 +7,6 @@ import { SMARTToken } from "./SMARTToken.sol";
 import { SMART } from "../../contracts/extensions/core/SMART.sol";
 import { ISMARTYield } from "../../contracts/extensions/yield/ISMARTYield.sol";
 import { ISMARTYieldSchedule } from "../../contracts/extensions/yield/schedules/ISMARTYieldSchedule.sol";
-import { YieldScheduleAlreadySet, YieldScheduleActive } from "../../contracts/extensions/yield/SMARTYieldErrors.sol";
-import { ZeroAddressNotAllowed } from "../../contracts/extensions/common/CommonErrors.sol";
 import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 contract SMARTYieldToken is SMARTToken, ISMARTYield {

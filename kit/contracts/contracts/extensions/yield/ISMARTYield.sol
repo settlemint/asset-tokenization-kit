@@ -15,6 +15,23 @@ import { ISMARTHistoricalBalances } from "../historical-balances/ISMARTHistorica
 /// tokens.
 /// The functions are external, allowing them to be called from other contracts or off-chain applications.
 interface ISMARTYield is ISMARTHistoricalBalances {
+    /// @notice Error indicating that a yield schedule has already been set for the token and an attempt was made to set
+    /// it
+    /// again.
+    /// @dev This error is typically reverted when a function like `setYieldSchedule` is called but the token
+    /// already has an active or previously configured yield schedule. To change a schedule, it might need to be unset
+    /// or
+    /// updated via a different mechanism if supported.
+    error YieldScheduleAlreadySet();
+
+    /// @notice Error indicating that an action cannot be performed because the yield schedule is currently active.
+    /// @dev For example, this might be reverted if an attempt is made to modify certain parameters of the token or the
+    /// yield mechanism
+    /// (like `_beforeMint` in `_SMARTYieldLogic` preventing minting) once the yield schedule has started (i.e.,
+    /// `schedule.startDate() <= block.timestamp`).
+    /// Some operations might be restricted to only occur before the yield schedule begins distributing rewards.
+    error YieldScheduleActive();
+
     /// @notice Emitted when a new yield schedule is successfully set or updated for a token.
     /// @dev This event is critical for transparency and tracking changes to how a token generates and distributes
     /// yield.

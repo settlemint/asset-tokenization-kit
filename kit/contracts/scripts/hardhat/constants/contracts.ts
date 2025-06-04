@@ -20,6 +20,7 @@ import {
   ismartBurnableAbi,
   ismartCustodianAbi,
   ismartFixedYieldScheduleAbi,
+  ismartPausableAbi,
   ismartYieldAbi,
   stablecoinAbi,
   stablecoinFactoryAbi,
@@ -58,6 +59,7 @@ export const SMARTContracts = {
   ismart: ismartAbi,
   ismartBurnable: ismartBurnableAbi,
   ismartCustodian: ismartCustodianAbi,
+  ismartPausable: ismartPausableAbi,
   ismartYield: ismartYieldAbi,
   ismartFixedYieldSchedule: ismartFixedYieldScheduleAbi,
   // compliance modules

@@ -2,7 +2,11 @@ import { encodeAbiParameters, parseAbiParameters } from "viem";
 
 import { smartProtocolDeployer } from "../services/deployer";
 
-import { investorA, investorB } from "../entities/actors/investors";
+import {
+  frozenInvestor,
+  investorA,
+  investorB,
+} from "../entities/actors/investors";
 
 import { SMARTTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
@@ -67,10 +71,9 @@ export const createFund = async () => {
 
   // custodian
   await forcedTransfer(fund, owner, investorA, investorB, 2n);
-  await setAddressFrozen(fund, owner, investorA, true);
-  await setAddressFrozen(fund, owner, investorA, false);
+  await setAddressFrozen(fund, owner, frozenInvestor, true);
   await freezePartialTokens(fund, owner, investorB, 2n);
-  await unfreezePartialTokens(fund, owner, investorB, 2n);
+  await unfreezePartialTokens(fund, owner, investorB, 1n);
 
   // TODO: execute all other functions of the fund
 
