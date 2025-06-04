@@ -1,6 +1,9 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import {
+  StatusPill,
+  type StatusType,
+} from "@/components/blocks/status-pill/status-pill";
 import { ReserveComplianceStatus } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { useTranslations } from "next-intl";
 
@@ -19,19 +22,16 @@ export function ReserveDetails({
 }: ReserveDetailsProps) {
   const t = useTranslations("regulations.mica.dashboard.reserve-status");
 
-  // Get status color and label based on status
-  const getStatusColor = (status: ReserveComplianceStatus) => {
+  const getStatusConfig = (status: ReserveComplianceStatus): StatusType => {
     switch (status) {
       case ReserveComplianceStatus.COMPLIANT:
-        return "bg-success text-success-foreground";
+        return "success";
       case ReserveComplianceStatus.PENDING_REVIEW:
-        return "bg-warning text-warning-foreground";
       case ReserveComplianceStatus.UNDER_INVESTIGATION:
-        return "bg-warning text-warning-foreground";
       case ReserveComplianceStatus.NON_COMPLIANT:
-        return "bg-destructive text-destructive-foreground";
+        return "warning";
       default:
-        return "bg-muted text-muted-foreground";
+        return "warning";
     }
   };
 
@@ -49,6 +49,8 @@ export function ReserveDetails({
         return status;
     }
   };
+
+  const currentStatus = reserveStatus ?? ReserveComplianceStatus.PENDING_REVIEW;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -76,15 +78,10 @@ export function ReserveDetails({
         <h3 className="text-muted-foreground text-sm">
           {t("form.fields.audit-details.reserve-status")}
         </h3>
-        <Badge
-          className={getStatusColor(
-            reserveStatus ?? ReserveComplianceStatus.PENDING_REVIEW
-          )}
-        >
-          {getStatusLabel(
-            reserveStatus ?? ReserveComplianceStatus.PENDING_REVIEW
-          )}
-        </Badge>
+        <StatusPill
+          status={getStatusConfig(currentStatus)}
+          label={getStatusLabel(currentStatus)}
+        />
       </div>
     </div>
   );

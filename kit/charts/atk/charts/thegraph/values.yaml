@@ -1,9 +1,13 @@
 global:
   labels: {}
-
 # https://github.com/graphops/launchpad-charts/blob/main/charts/graph-node/values.yaml
 graph-node:
   fullnameOverride: graph-node
+  image:
+    # -- Image for Graph Node
+    repository: graphprotocol/graph-node
+    pullPolicy: IfNotPresent
+    tag: "v0.39.1"
   customSecret:
     PGUSER: thegraph
     PGPASSWORD: atk
@@ -26,6 +30,39 @@ graph-node:
       PRIMARY_SUBGRAPH_DATA_PGDATABASE: "thegraph"
       # -- The URL for your IPFS node
       IPFS: "https://ipfs.console.settlemint.com"
+      EXPERIMENTAL_SUBGRAPH_VERSION_SWITCHING_MODE: 'synced'
+      GRAPH_ETH_CALL_GAS: '50000000'
+      GRAPH_GETH_ETH_CALL_ERRORS: 'out of gas'
+      GRAPH_KILL_IF_UNRESPONSIVE: 'true'
+      ETHEREUM_POLLING_INTERVAL: '1000'
+      GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH: 'true'
+      GRAPH_QUERY_CACHE_MAX_MEM: '3000'
+      GRAPH_QUERY_CACHE_BLOCKS: '6'
+      GRAPH_QUERY_CACHE_STALE_PERIOD: '1000'
+      GRAPH_LOG: 'info'
+      GRAPH_LOG_QUERY_TIMING: 'gql'
+      GRAPH_ALLOW_NON_DETERMINISTIC_IPFS: 'true'
+      GRAPH_PARALLEL_BLOCK_CONSTRAINTS: 'true'
+      GRAPH_ETHEREUM_CLEANUP_BLOCKS: 'true'
+      GRAPH_CHAIN_HEAD_WATCHER_TIMEOUT: '5'
+      GRAPH_LOAD_WINDOW_SIZE: '3600'
+      GRAPH_LOAD_BIN_SIZE: '10'
+      GRAPH_POSTPONE_ATTRIBUTE_INDEX_CREATION: 'true'
+      GRAPH_STORE_WRITE_BATCH_DURATION: '0'
+      GRAPH_STORE_WRITE_BATCH_SIZE: '0'
+      GRAPH_MAX_GAS_PER_HANDLER: '1_000_000_000_000_000'
+      GRAPH_MAX_SPEC_VERSION: '1.2.0'
+      SUBGRAPH: kit:QmSUCU1TaGpD5THDvtvjaHXSnSs66zTuXyzcNXnAZjLXEd
+      GRAPH_ETHEREUM_REQUEST_RETRIES: '10'
+      GRAPH_ETHEREUM_BLOCK_BATCH_SIZE: '100'
+      GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE: '1000'
+      GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE: '100'
+      GRAPH_ENABLE_PROMETHEUS_METRICS: 'true'
+      GRAPH_PROMETHEUS_HOST: '0.0.0.0'
+      GRAPH_DISABLE_GRAFTS: 'false'
+      GRAPH_STATIC_FILTERS_THRESHOLD: '10000'
+      GRAPH_IPFS_TIMEOUT: '30'
+      GRAPH_ETHEREUM_BLOCK_INGESTOR_MAX_CONCURRENT_JSON_RPC_CALLS: '100'
     secretEnv:
       PRIMARY_SUBGRAPH_DATA_PGUSER:
         # -- Name of the secret that contains your PG username
@@ -43,7 +80,6 @@ graph-node:
       replicaCount: 1
       env:
         node_role: query-node # this key must be lowercase
-
   # -- Blockchain configuration for Graph Node
   chains:
     # -- Ethereum Mainnet
@@ -54,8 +90,7 @@ graph-node:
       shard: primary
       ## -- A list of JSON-RPC endpoints for this node (you should override this list with your own configuration)
       provider:
-        -
-          # -- Label for a JSON-RPC endpoint
+        - # -- Label for a JSON-RPC endpoint
           label: erpc
           details:
             # -- Type of Provider: web3
@@ -97,47 +132,39 @@ graph-node:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-
 job:
   fullnameOverride: graph
   enabled: true
-
   # Pod Security Context
   podSecurityContext: {}
-
   # Container Security Context
   securityContext: {}
-
   # Image configuration
   image:
     repository: docker.io/node
     tag: "23.11.1-slim"
     pullPolicy: IfNotPresent
-
   # Pod annotations
   podAnnotations: {}
-
   # Image pull secrets
   imagePullSecrets:
     - image-pull-secret-docker
     - image-pull-secret-ghcr
     - image-pull-secret-harbor
-
   initContainer:
     graphNodeCheck:
       image:
         registry: docker.io
         repository: busybox
-        tag: 1.37 # Use specific stable tag
+        tag: 1.37.0 # Use specific stable tag
         pullPolicy: IfNotPresent
     cloneRepo:
       atkTag: "1.1.1"
       image:
         registry: docker.io
         repository: alpine/git
-        tag: latest # Or pin to a specific version
+        tag: 2.49.0 # Or pin to a specific version
         pullPolicy: IfNotPresent
-
   # Custom Init Containers (add definitions here if needed, e.g., for dependencies)
   # extraInitContainers: []
 
@@ -151,15 +178,9 @@ job:
   #     pullPolicy: IfNotPresent
 
   # Resource configuration
-  resources:
-    requests:
-      memory: "2Gi"
-      cpu: "250m"
-    limits:
-      memory: "3Gi"
-
+  resources: {}
   workspace:
     # Size of the workspace PVC
     size: 1Gi
     # Storage class to use for the workspace PVC
-    storageClass: local-path
+    storageClass: ""

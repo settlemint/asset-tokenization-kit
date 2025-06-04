@@ -65,13 +65,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources:
-  limits:
-    cpu: 450m
-    memory: 768Mi
-  requests:
-    cpu: 225m
-    memory: 384Mi
+resources: {}
 
 livenessProbe:
   tcpSocket:
@@ -98,6 +92,14 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+# PodDisruptionBudget configuration
+podDisruptionBudget:
+  enabled: false
+  # Minimum number of pods that must be available during disruption
+  minAvailable: 1
+  # Maximum number of pods that can be unavailable during disruption
+  # maxUnavailable: 1
+
 # Additional volumes on the output Deployment definition.
 volumes:
   - name: tx-signer-cache
@@ -113,6 +115,79 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# NetworkPolicy configuration
+networkPolicy:
+  enabled: false
+  # Ingress rules
+  ingress:
+    # Allow from portal
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: portal
+      ports:
+        - protocol: TCP
+          port: 3000
+    # Allow from dapp
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: dapp
+      ports:
+        - protocol: TCP
+          port: 3000
+    # Allow from same namespace
+    - from:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 3000
+
+  # Egress rules
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow access to PostgreSQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgresql-ha
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow access to Besu nodes
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: besu-statefulset
+      ports:
+        - protocol: TCP
+          port: 8545  # RPC
+        - protocol: TCP
+          port: 8546  # WebSocket
+    # Allow access to ERPC
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: erpc
+      ports:
+        - protocol: TCP
+          port: 4000
+
+tests:
+  image:
+    registry: docker.io
+    repository: busybox
+    tag: 1.37.0
+    pullPolicy: IfNotPresent
 
 initContainers:
   - name: wait-for-postgres

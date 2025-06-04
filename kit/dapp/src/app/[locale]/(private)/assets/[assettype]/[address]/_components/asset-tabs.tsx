@@ -1,18 +1,18 @@
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
-import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
-import { Suspense } from "react";
-import type { Address } from "viem";
-import { BadgeLoader, BadgeSpinner } from "./badge-loader"; // Assuming badge-loader.tsx is in the same directory or adjust path
 import {
   hasAllowlist,
   hasBlocklist,
   hasUnderlyingAsset,
   hasYield,
   isMicaEnabledForAsset,
-} from "./features-enabled";
+} from "@/lib/utils/features-enabled";
+import type { AssetType } from "@/lib/utils/typebox/asset-types";
+import type { Locale } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import type { Address } from "viem";
+import { BadgeLoader, BadgeSpinner } from "./badge-loader";
 
 interface AssetTabsProps {
   locale: Locale;
@@ -30,11 +30,11 @@ const tabs = async ({
     namespace: "private.assets.details",
   });
 
-  let isMicaEnabled = false; // Default to false to hide the tab in case of error
+  let isMicaEnabled = false;
   try {
     isMicaEnabled = await isMicaEnabledForAsset(assettype, address);
   } catch (error) {
-    console.error("Failed to check MICA availability:", error);
+    console.error("Failed to check MICA status:", error);
   }
 
   const tabItems = [

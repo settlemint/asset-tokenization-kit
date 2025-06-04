@@ -2,7 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "dependencies": {
-      "outputs": ["**/Chart.lock", "**/charts/**"],
+      "outputs": ["**/Chart.lock", "**/charts/**/*.tgz"],
       "inputs": ["**/Chart.yaml"]
     },
     "compile": {
@@ -27,6 +27,25 @@
     "package:push:harbor": {
       "cache": false,
       "dependsOn": ["package:pack"]
+    },
+    "helm": {
+      "dependsOn": ["helm:check-context", "dependencies", "helm:secrets", "^codegen", "codegen", "subgraph#build","helm:subgraph"],
+      "cache": false
+    },
+    "helm:check-context": {
+      "cache": false
+    },
+    "helm:subgraph": {
+      "cache": false,
+      "dependsOn": ["subgraph#compile"]
+    },
+    "helm:secrets": {
+      "outputs": ["**/values-orbstack.yaml"],
+      "inputs": ["**/values-orbstack.1p.yaml"]
+    },
+    "codegen": {
+      "cache": false,
+      "dependsOn": ["^codegen"]
     }
   }
 }

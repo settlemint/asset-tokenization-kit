@@ -28,3 +28,4 @@ portal
 
 # Scripts
 scripts/hardhat/abi
+out-genesis
