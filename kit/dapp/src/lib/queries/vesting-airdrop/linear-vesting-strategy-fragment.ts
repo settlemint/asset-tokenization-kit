@@ -4,16 +4,22 @@ import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
  * GraphQL fragment for linear vesting strategy data
  *
  * @remarks
- * Contains the core linear vesting strategy properties including
- * contract ID, cliff duration, vesting duration, and associated vesting data
+ * Contains only the fields needed for status calculation:
+ * cliff duration, vesting duration, and minimal vesting data
+ * for filtering by recipient address
  */
 export const LinearVestingStrategyFragment = theGraphGraphqlKit(`
   fragment LinearVestingStrategyFragment on LinearVestingStrategy {
-    id
     cliffDuration
     vestingDuration
     vestingData {
-      id
+      user {
+        id
+      }
+      totalAmountAggregated
+      claimedAmountTrackedByStrategy
+      vestingStart
+      initialized
     }
   }
 `);

@@ -1,6 +1,6 @@
 "use client";
 
-import { AirdropTypeIcon } from "@/components/blocks/airdrop-type-icon/airdrop-type-icon";
+import { AirdropTypeIndicator } from "@/components/blocks/airdrop-type-indicator/airdrop-type-indicator";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/routing";
@@ -29,12 +29,7 @@ export function columns() {
       header: t("columns.type"),
       cell: ({ getValue }) => {
         const typeValue = getValue();
-        return (
-          <div className="flex items-center gap-2">
-            <AirdropTypeIcon type={typeValue} size="sm" />
-            <span className="capitalize">{t(`type.${typeValue}` as any)}</span>
-          </div>
-        );
+        return <AirdropTypeIndicator type={typeValue} />;
       },
     }),
     columnHelper.accessor("asset", {
