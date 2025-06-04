@@ -92,4 +92,26 @@ spec:
                 echo "Contracts genesis configmap not found, skipping"
               fi
 
+              echo "Checking and deleting genesis server resources in k8s ..."
+              if kubectl get deployment --namespace {{ .Release.Namespace }} besu-genesis-server &>/dev/null; then
+                kubectl delete deployment --namespace {{ .Release.Namespace }} besu-genesis-server
+                echo "Genesis server deployment deleted"
+              else
+                echo "Genesis server deployment not found, skipping"
+              fi
+
+              if kubectl get service --namespace {{ .Release.Namespace }} besu-genesis-server &>/dev/null; then
+                kubectl delete service --namespace {{ .Release.Namespace }} besu-genesis-server
+                echo "Genesis server service deleted"
+              else
+                echo "Genesis server service not found, skipping"
+              fi
+
+              if kubectl get configmap --namespace {{ .Release.Namespace }} besu-genesis-nginx-config &>/dev/null; then
+                kubectl delete configmap --namespace {{ .Release.Namespace }} besu-genesis-nginx-config
+                echo "Genesis server nginx config deleted"
+              else
+                echo "Genesis server nginx config not found, skipping"
+              fi
+
 {{- end}}

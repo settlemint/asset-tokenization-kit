@@ -47,6 +47,14 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
 {{/*
+Selector labels
+*/}}
+{{- define "besu-genesis.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "besu-genesis.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "besu-genesis.serviceAccountName" -}}

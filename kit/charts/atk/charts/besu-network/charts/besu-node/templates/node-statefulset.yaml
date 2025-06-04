@@ -44,7 +44,7 @@ spec:
 {{- end }}
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
       initContainers:
-      # Genesis file retrieval from PVC
+      # Genesis file retrieval with automatic fallback
       - name: genesis-init
         image: bitnami/kubectl:latest
         command:
@@ -52,14 +52,42 @@ spec:
           - -c
           - |
             set -e
-            
+
             NAMESPACE="{{ .Release.Namespace }}"
             OUTPUT_FILE="/shared/genesis.json"
-            
-            echo "Retrieving genesis file from PVC..."
-            
-            # Create a temporary pod to access PVC and copy genesis file
-            kubectl run genesis-reader-$RANDOM --namespace "$NAMESPACE" \
+            GENESIS_URL="http://besu-genesis-server.{{ .Release.Namespace }}.svc.cluster.local/genesis.json"
+
+            echo "Attempting to retrieve genesis file..."
+
+            # Install curl if not available
+            if ! command -v curl >/dev/null 2>&1; then
+              echo "Installing curl..."
+              apt-get update -qq && apt-get install -y -qq curl >/dev/null 2>&1 || {
+                echo "Failed to install curl, will skip HTTP method"
+              }
+            fi
+
+            # Method 1: Try HTTP server first (works universally and is fastest)
+            echo "Method 1: Trying HTTP server at $GENESIS_URL"
+            if command -v curl >/dev/null 2>&1; then
+              for i in $(seq 1 10); do
+                if curl -f -s --connect-timeout 5 "$GENESIS_URL" > "$OUTPUT_FILE" 2>/dev/null; then
+                  echo "Genesis file retrieved successfully via HTTP"
+                  ls -la "$OUTPUT_FILE"
+                  exit 0
+                fi
+                echo "HTTP attempt $i/10 failed, waiting 3s..."
+                sleep 3
+              done
+            else
+              echo "curl not available, skipping HTTP method"
+            fi
+
+            # Method 2: Try direct PVC access via temporary pod
+            echo "Method 2: Trying direct PVC access..."
+            TEMP_POD_NAME="genesis-reader-$(date +%s)-$RANDOM"
+
+            kubectl run "$TEMP_POD_NAME" --namespace "$NAMESPACE" \
               --image=busybox:latest \
               --restart=Never \
               --rm -i \
@@ -78,10 +106,36 @@ spec:
                   ]
                 }
               }' \
-              --timeout=60s > "$OUTPUT_FILE"
-            
-            echo "Genesis file retrieved successfully"
-            ls -la "$OUTPUT_FILE"
+              --timeout=60s > "$OUTPUT_FILE" 2>/dev/null
+
+            if [ -s "$OUTPUT_FILE" ]; then
+              echo "Genesis file retrieved successfully via PVC"
+              ls -la "$OUTPUT_FILE"
+              exit 0
+            fi
+
+            # Method 3: Last resort - try to mount PVC directly if possible
+            echo "Method 3: Checking if PVC supports ReadWriteMany..."
+            if kubectl get pvc besu-genesis-pvc -n "$NAMESPACE" -o jsonpath='{.spec.accessModes}' | grep -q "ReadWriteMany"; then
+              echo "PVC supports ReadWriteMany, but genesis server might not be ready yet"
+              echo "Waiting longer for genesis server..."
+              for i in $(seq 1 30); do
+                if curl -f -s --connect-timeout 10 "$GENESIS_URL" > "$OUTPUT_FILE" 2>/dev/null; then
+                  echo "Genesis file retrieved successfully via HTTP (extended wait)"
+                  ls -la "$OUTPUT_FILE"
+                  exit 0
+                fi
+                echo "Extended wait attempt $i/30, waiting 10s..."
+                sleep 10
+              done
+            fi
+
+            echo "ERROR: Failed to retrieve genesis file using all methods"
+            echo "Available methods tried:"
+            echo "1. HTTP server (fastest, works with any storage)"
+            echo "2. Direct PVC access via temporary pod"
+            echo "3. Extended wait for HTTP server"
+            exit 1
         volumeMounts:
           - name: shared-genesis
             mountPath: /shared

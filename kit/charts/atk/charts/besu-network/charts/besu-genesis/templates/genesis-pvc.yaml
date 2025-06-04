@@ -10,7 +10,7 @@ metadata:
     "helm.sh/hook-weight": "-16"  # Must be created before genesis job
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: {{ .Values.storage.size | default "1Gi" }}
