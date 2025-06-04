@@ -1,8 +1,13 @@
 import { br } from "@/lib/orpc/routes/procedures/base.router";
 import type { ORPCErrorCode } from "@orpc/client";
 import { ORPCError, ValidationError } from "@orpc/server";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { APIError } from "better-auth/api";
 import { ZodError, type ZodIssue } from "zod";
+
+const logger = createLogger({
+  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
+});
 
 /**
  * Converts Better Auth API errors to ORPC errors.
@@ -76,7 +81,11 @@ export const errorMiddleware = br.middleware(async ({ next }) => {
   } catch (error) {
     // Handle Better Auth API errors first
     if (error instanceof APIError) {
-      console.error(" ERROR", "Auth", error.statusCode, error.message);
+      logger.error("Better Auth API error", {
+        statusCode: error.statusCode,
+        message: error.message,
+        error: error.name,
+      });
       throw betterAuthErrorToORPCError(error);
     }
 
@@ -128,7 +137,12 @@ export const errorMiddleware = br.middleware(async ({ next }) => {
       }
 
       // Handle other ORPC errors (already properly formatted)
-      console.error(" ERROR", "ORPC", error.status, error.message);
+      logger.error("ORPC error", {
+        status: error.status,
+        code: error.code,
+        message: error.message,
+        cause: error.cause?.constructor?.name,
+      });
       throw error;
     }
 
