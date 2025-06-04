@@ -186,7 +186,7 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
     /// be IERC734/IIdentity compliant.
     /// @param tokenAccessManagerImplementation_ The initial address of the token access manager contract's logic. Must
     /// be ISMARTTokenAccessManager compliant.
-    /// @param _identityVerificationModule_ The initial address of the identity verification module
+    /// @param identityVerificationModule_ The initial address of the identity verification module
     /// contract's logic.
     /// @param forwarder_ The address of the trusted forwarder contract for ERC2771 meta-transaction support.
     constructor(
@@ -200,7 +200,7 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
         address identityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
-        address _identityVerificationModule_,
+        address identityVerificationModule_,
         address forwarder_
     )
         ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
@@ -272,10 +272,10 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
         emit TokenIdentityImplementationUpdated(initialAdmin_, _tokenIdentityImplementation);
 
         // Validate and set the identity verification module implementation address.
-        if (_identityVerificationModule_ == address(0)) {
+        if (identityVerificationModule_ == address(0)) {
             revert IdentityVerificationModuleNotSet();
         }
-        _identityVerificationModule = _identityVerificationModule_;
+        _identityVerificationModule = identityVerificationModule_;
     }
 
     // --- Bootstrap Function ---
