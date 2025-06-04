@@ -72,6 +72,15 @@ export const AirdropListItem = OnChainAirdropSchema;
 
 export type AirdropListItem = StaticDecode<typeof AirdropListItem>;
 
+export const AirdropClaimStatusSchema = t.Union([
+  t.Literal("READY"),
+  t.Literal("PENDING"),
+  t.Literal("CLAIMED"),
+  t.Literal("EXPIRED"),
+]);
+
+export type AirdropClaimStatus = StaticDecode<typeof AirdropClaimStatusSchema>;
+
 export const OffChainAirdropSchema = t.Object({
   distribution: AirdropDistributionListSchema,
 });

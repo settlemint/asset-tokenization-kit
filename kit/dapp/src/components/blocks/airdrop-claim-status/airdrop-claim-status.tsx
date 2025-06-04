@@ -1,11 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import type { AirdropRecipient } from "@/lib/queries/airdrop/airdrop-recipient-schema";
+import type { AirdropClaimStatus } from "@/lib/queries/airdrop/airdrop-schema";
 import { cn } from "@/lib/utils";
 import { CheckCircle, Clock, Rocket, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
-
-type AirdropClaimStatus = "READY" | "PENDING" | "CLAIMED" | "EXPIRED";
 
 type AirdropClaimStatusIndicatorProps = {
   airdropRecipient: AirdropRecipient;
