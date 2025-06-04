@@ -77,7 +77,6 @@ export const airdropDistribution = pgTable(
     recipient: text("recipient").notNull(),
     amount: text("amount").notNull(),
     index: integer("index").notNull(),
-    claimed: timestamp("claimed", { withTimezone: true }),
   },
   (table) => [
     index("airdrop_distribution_recipient_idx").on(table.recipient),
