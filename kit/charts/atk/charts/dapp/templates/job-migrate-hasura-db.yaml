@@ -21,12 +21,7 @@ spec:
         {{- include "dapp.selectorLabels" . | nindent 8 }}
     spec:
       restartPolicy: Never
-      {{- with .Values.job.imagePullSecrets }}
-      imagePullSecrets:
-        {{- range . }}
-        - name: {{ . }}
-        {{- end }}
-      {{- end }}
+      {{- include "atk.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.job.podSecurityContext }}
       securityContext:
         {{- toYaml .Values.job.podSecurityContext | nindent 8 }}

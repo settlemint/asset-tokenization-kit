@@ -19,12 +19,7 @@ spec:
         {{- include "besu-genesis.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: genesis-server
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- range . }}
-        - name: {{ . }}
-        {{- end }}
-      {{- end }}
+      {{- include "atk.imagePullSecrets" . | nindent 6 }}
       containers:
       - name: genesis-server
         image: "{{ .Values.genesisServer.image.registry }}/{{ .Values.genesisServer.image.repository }}:{{ .Values.genesisServer.image.tag }}"

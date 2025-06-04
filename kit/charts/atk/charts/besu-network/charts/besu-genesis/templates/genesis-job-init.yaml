@@ -34,12 +34,7 @@ spec:
         app.kubernetes.io/managed-by: helm
     spec:
       restartPolicy: Never
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- range . }}
-        - name: {{ . }}
-        {{- end }}
-      {{- end }}
+      {{- include "atk.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "besu-genesis.serviceAccountName" . }}
       volumes:
         - name: generated-config

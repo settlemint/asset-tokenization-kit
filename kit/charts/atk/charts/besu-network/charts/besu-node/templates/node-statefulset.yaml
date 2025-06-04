@@ -42,6 +42,7 @@ spec:
 {{- else }}
       serviceAccountName: {{ include "besu-node.fullname" . }}-sa
 {{- end }}
+      {{- include "atk.imagePullSecrets" . | nindent 6 }}
       initContainers:
       # Genesis file retrieval via HTTP server
       - name: genesis-init
