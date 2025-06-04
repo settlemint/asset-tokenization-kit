@@ -19,13 +19,11 @@ export const claimYield = async (asset: Asset<any>) => {
   const transactionHash = await withDecodedRevertReason(() =>
     scheduleContract.write.claimYield()
   );
-  const eventData = await waitForEvent({
+  await waitForEvent({
     transactionHash,
     contract: scheduleContract,
     eventName: "YieldClaimed",
   });
 
-  console.log(
-    `[Claim yield] ${asset.symbol} yield claimed for ${scheduleAddress} (data: ${JSON.stringify(eventData)}).`
-  );
+  console.log(`[Claim yield] ${asset.symbol} yield claimed`);
 };

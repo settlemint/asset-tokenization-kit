@@ -81,10 +81,10 @@ export const createBond = async (depositToken: Asset<any>) => {
     bond,
     new Date(Date.now() + 1_000), // 1 second from now
     new Date(Date.now() + 5 * 60 * 1_000), // 5 minutes from now
-    500, // 5%
+    50, // 0.5%
     5 // 5 seconds
   );
-  await topupUnderlyingAsset(bond, depositToken, 100n);
+  await topupUnderlyingAsset(bond, depositToken, 10000n);
   // Claim yield for 3 periods
   for (let i = 0; i < 3; i++) {
     await advanceToNextPeriod();
