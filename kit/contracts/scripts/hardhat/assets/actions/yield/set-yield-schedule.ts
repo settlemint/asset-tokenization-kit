@@ -60,10 +60,29 @@ export const setYieldSchedule = async (
 
   return {
     advanceToNextPeriod: async () => {
-      const time = await scheduleContract.read.timeUntilNextPeriod();
-      await new Promise((resolve) => setTimeout(resolve, Number(time) * 1_000));
+      const currentPeriod = await scheduleContract.read.currentPeriod();
+      const timeUntilNextPeriod =
+        await scheduleContract.read.timeUntilNextPeriod();
+      await new Promise((resolve) =>
+        setTimeout(resolve, Number(timeUntilNextPeriod) * 1_000)
+      );
       // Mine a block to advance the time
       await mineAnvilBlock(owner);
+      if (currentPeriod.toString() === "0") {
+        const timeToFirstPeriodCompleted =
+          await scheduleContract.read.timeUntilNextPeriod();
+        await new Promise((resolve) =>
+          setTimeout(resolve, Number(timeToFirstPeriodCompleted) * 1_000)
+        );
+        // Mine a block to advance the time
+        await mineAnvilBlock(owner);
+      }
+      const lastCompletedPeriod =
+        await scheduleContract.read.lastCompletedPeriod();
+      const newPeriod = await scheduleContract.read.currentPeriod();
+      console.log(
+        `[Yield schedule] ${asset.symbol} period advanced from ${currentPeriod} to ${newPeriod}, last completed period ${lastCompletedPeriod}`
+      );
     },
   };
 };
