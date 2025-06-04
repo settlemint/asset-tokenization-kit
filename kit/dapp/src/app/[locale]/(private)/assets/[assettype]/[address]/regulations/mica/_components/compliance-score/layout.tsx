@@ -4,6 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import type {
+  MicaDocument,
+  MicaRegulationConfig,
+} from "@/lib/db/regulations/schema-mica-regulation-configs";
+import {
+  MicaDocumentType,
+  ReserveComplianceStatus,
+} from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { CheckCircle, ChevronDown, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -55,40 +63,57 @@ function Requirement({ title, description, isCompliant }: RequirementProps) {
   );
 }
 
-export function ComplianceScoreLayout() {
+interface ComplianceScoreLayoutProps {
+  config: MicaRegulationConfig;
+}
+
+export function ComplianceScoreLayout({ config }: ComplianceScoreLayoutProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const t = useTranslations("regulations.mica.dashboard.compliance-status");
 
-  // Temporary hardcoded values for UI development
-  const mockCompliance = {
-    reserves: {
+  // Check if required documents exist
+  const hasWhitePaper = config.documents?.some(
+    (doc: MicaDocument) => doc.type === MicaDocumentType.WHITE_PAPER
+  );
+  const hasAudit = config.documents?.some(
+    (doc: MicaDocument) => doc.type === MicaDocumentType.AUDIT
+  );
+
+  // Check if authorization data is complete
+  const hasAuthorization = !!(
+    config.licenceNumber &&
+    config.regulatoryAuthority &&
+    config.approvalDate
+  );
+
+  const requirements = [
+    {
       title: t("reserve-status"),
       description: t("reserve-status-description"),
-      isCompliant: false,
+      isCompliant: config.reserveStatus === ReserveComplianceStatus.COMPLIANT,
     },
-    authorization: {
+    {
       title: t("authorization-status"),
       description: t("authorization-status-description"),
-      isCompliant: true,
+      isCompliant: hasAuthorization,
     },
-    kyc: {
+    {
       title: t("kyc-aml-monitoring"),
       description: t("kyc-aml-monitoring-description"),
-      isCompliant: false,
+      isCompliant: true, // Always compliant as per requirements
     },
-    consumerProtection: {
+    {
       title: t("consumer-protection"),
       description: t("consumer-protection-description"),
-      isCompliant: true,
+      isCompliant: true, // Always compliant as per requirements
     },
-    documentation: {
+    {
       title: t("documentation"),
       description: t("documentation-description"),
-      isCompliant: false,
+      isCompliant: !!(hasWhitePaper && hasAudit),
     },
-  };
+  ];
 
-  const requirements = Object.values(mockCompliance);
   const compliantCount = requirements.filter((req) => req.isCompliant).length;
   const compliancePercentage = (compliantCount / requirements.length) * 100;
 

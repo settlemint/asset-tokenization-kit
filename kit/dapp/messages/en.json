@@ -2980,15 +2980,15 @@
           "non-compliant": "Non-compliant",
           "view-details": "View details",
           "reserve-status": "Reserve status",
-          "reserve-status-description": "Maintain sufficient reserves and proper asset composition",
+          "reserve-status-description": "Reserve status must be marked as compliant",
           "authorization-status": "Authorization status",
-          "authorization-status-description": "Valid regulatory approval and licensing",
+          "authorization-status-description": "Requires valid license number, regulatory authority, and approval date",
           "kyc-aml-monitoring": "KYC/AML monitoring",
-          "kyc-aml-monitoring-description": "Comprehensive KYC procedures and monitoring",
+          "kyc-aml-monitoring-description": "Always compliant by default for this platform",
           "consumer-protection": "Consumer protection",
-          "consumer-protection-description": "Redemption policies and user protection measures",
+          "consumer-protection-description": "Always compliant by default for this platform",
           "documentation": "Documentation",
-          "documentation-description": "Complete and up-to-date regulatory documentation"
+          "documentation-description": "Requires both white paper and reserve audit documents to be uploaded"
         },
         "reserve-status": {
           "title": "Reserve status",
