@@ -2,7 +2,11 @@ import { encodeAbiParameters, parseAbiParameters } from "viem";
 
 import { smartProtocolDeployer } from "../services/deployer";
 
-import { investorA, investorB } from "../entities/actors/investors";
+import {
+  frozenInvestor,
+  investorA,
+  investorB,
+} from "../entities/actors/investors";
 
 import { SMARTTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
@@ -66,10 +70,9 @@ export const createStableCoin = async () => {
 
   // custodian
   await forcedTransfer(stableCoin, owner, investorA, investorB, 250n);
-  await setAddressFrozen(stableCoin, owner, investorA, true);
-  await setAddressFrozen(stableCoin, owner, investorA, false);
+  await setAddressFrozen(stableCoin, owner, frozenInvestor, true);
   await freezePartialTokens(stableCoin, owner, investorB, 250n);
-  await unfreezePartialTokens(stableCoin, owner, investorB, 250n);
+  await unfreezePartialTokens(stableCoin, owner, investorB, 125n);
 
   // TODO: execute all other functions of the stablecoin
 

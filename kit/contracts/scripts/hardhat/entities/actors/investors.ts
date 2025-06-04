@@ -23,6 +23,7 @@ class Investor extends AbstractActor {
 
   public async initialize(): Promise<void> {
     const wallets = await hre.viem.getWalletClients();
+
     if (!wallets[this.accountIndex]) {
       throw new Error("Could not get a default wallet client from Hardhat.");
     }
@@ -48,10 +49,7 @@ class Investor extends AbstractActor {
   }
 }
 
-/**
- * A reusable instance of the ClaimIssuer with a consistent address
- */
-
 export const investorA = new Investor("Investor A", Countries.BE, 1);
 export const investorANew = new Investor("Investor A New", Countries.BE, 2);
 export const investorB = new Investor("Investor B", Countries.NL, 3);
+export const frozenInvestor = new Investor("Frozen Investor", Countries.NL, 4);

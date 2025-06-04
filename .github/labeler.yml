@@ -26,3 +26,4 @@ checks:
         - fix
         - chore
         - docs
+        - dependencies

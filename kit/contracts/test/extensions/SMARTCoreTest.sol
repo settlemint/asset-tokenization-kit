@@ -9,13 +9,6 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { ISMARTComplianceModule } from "../../contracts/interface/ISMARTComplianceModule.sol";
 import { ISMART } from "../../contracts/interface/ISMART.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {
-    ZeroAddressNotAllowed,
-    CannotRecoverSelf,
-    InvalidLostWallet,
-    NoTokensToRecover
-} from "../../contracts/extensions/common/CommonErrors.sol";
-import { InsufficientTokenBalance } from "../../contracts/extensions/core/SMARTErrors.sol";
 import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
@@ -169,7 +162,7 @@ abstract contract SMARTCoreTest is AbstractSMARTTest {
         _setUpCoreTest();
         uint256 amountToRecover = 100 ether;
 
-        vm.expectRevert(abi.encodeWithSelector(CannotRecoverSelf.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.CannotRecoverSelf.selector));
         tokenUtils.recoverERC20Token(address(token), tokenIssuer, address(token), clientBE, amountToRecover); // Attempt
             // to recover self
     }
@@ -178,7 +171,7 @@ abstract contract SMARTCoreTest is AbstractSMARTTest {
         _setUpCoreTest();
         uint256 amountToRecover = 100 ether;
 
-        vm.expectRevert(abi.encodeWithSelector(ZeroAddressNotAllowed.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.ZeroAddressNotAllowed.selector));
         tokenUtils.recoverERC20Token(address(token), tokenIssuer, address(0), clientBE, amountToRecover);
     }
 
@@ -186,7 +179,7 @@ abstract contract SMARTCoreTest is AbstractSMARTTest {
         _setUpCoreTest();
         uint256 amountToRecover = 100 ether;
 
-        vm.expectRevert(abi.encodeWithSelector(ZeroAddressNotAllowed.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.ZeroAddressNotAllowed.selector));
         tokenUtils.recoverERC20Token(
             address(token), tokenIssuer, address(mockForeignToken), address(0), amountToRecover
         );
@@ -196,7 +189,7 @@ abstract contract SMARTCoreTest is AbstractSMARTTest {
         _setUpCoreTest();
         uint256 amountToRecover = FOREIGN_TOKEN_SENT_AMOUNT + 1 ether; // More than available
 
-        vm.expectRevert(abi.encodeWithSelector(InsufficientTokenBalance.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.InsufficientTokenBalance.selector));
         tokenUtils.recoverERC20Token(address(token), tokenIssuer, address(mockForeignToken), clientBE, amountToRecover);
     }
 
@@ -246,7 +239,7 @@ abstract contract SMARTCoreTest is AbstractSMARTTest {
         _setUpCoreTest();
         _mintInitialBalances();
 
-        vm.expectRevert(abi.encodeWithSelector(ZeroAddressNotAllowed.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.ZeroAddressNotAllowed.selector));
         vm.prank(clientBE);
         token.recoverTokens(address(0));
     }
@@ -255,7 +248,7 @@ abstract contract SMARTCoreTest is AbstractSMARTTest {
         _setUpCoreTest();
         _mintInitialBalances();
 
-        vm.expectRevert(abi.encodeWithSelector(CannotRecoverSelf.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.CannotRecoverSelf.selector));
         vm.prank(clientBE);
         token.recoverTokens(address(token));
     }
@@ -278,7 +271,7 @@ abstract contract SMARTCoreTest is AbstractSMARTTest {
 
         identityUtils.recoverIdentity(lostWallet, newWallet, newIdentity);
 
-        vm.expectRevert(abi.encodeWithSelector(NoTokensToRecover.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.NoTokensToRecover.selector));
         vm.prank(newWallet);
         token.recoverTokens(lostWallet);
     }
@@ -295,7 +288,7 @@ abstract contract SMARTCoreTest is AbstractSMARTTest {
         claimUtils.issueAllClaims(newWallet);
 
         // Try to recover without marking the wallet as lost in identity registry
-        vm.expectRevert(abi.encodeWithSelector(InvalidLostWallet.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidLostWallet.selector));
         vm.prank(newWallet);
         token.recoverTokens(lostWallet);
     }
@@ -319,7 +312,7 @@ abstract contract SMARTCoreTest is AbstractSMARTTest {
         identityUtils.recoverIdentity(differentWallet, newWallet, newIdentity);
 
         // Try to recover the BE wallet's tokens (which is not marked as lost for any identity)
-        vm.expectRevert(abi.encodeWithSelector(InvalidLostWallet.selector));
+        vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidLostWallet.selector));
         vm.prank(newWallet);
         token.recoverTokens(lostWallet);
     }

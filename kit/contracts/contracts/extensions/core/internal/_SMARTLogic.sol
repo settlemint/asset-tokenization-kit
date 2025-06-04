@@ -8,26 +8,10 @@ import { SMARTComplianceModuleParamPair } from "../../../interface/structs/SMART
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {
-    DuplicateModule,
-    MintNotCompliant,
-    TransferNotCompliant,
-    ModuleAlreadyAdded,
-    ModuleNotFound,
-    InsufficientTokenBalance,
-    InvalidDecimals
-} from "../SMARTErrors.sol";
+
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
-// Error imports
-import {
-    LengthMismatch,
-    ZeroAddressNotAllowed,
-    CannotRecoverSelf,
-    NoTokensToRecover,
-    InvalidLostWallet
-} from "../../common/CommonErrors.sol";
 /// @title Internal Core Logic for SMART Tokens
 /// @notice This abstract contract serves as the central repository for shared state, core business logic,
 ///         event emissions, and authorization hook placeholders for all SMART token implementations.
