@@ -2,6 +2,10 @@
 quorumFlags:
   removeGenesisOnDelete: true
 
+storage:
+  storageClassName: ""
+  size: "1Gi"
+
 cluster:
   provider: local # choose from: local | aws | azure
   cloudNativeServices: false # set to true to use Cloud Native Services (SecretsManager and IAM for AWS; KeyVault & Managed Identities for Azure)
@@ -74,7 +78,3 @@ imagePullSecrets:
   - image-pull-secret-ghcr
   - image-pull-secret-docker
 
-storage:
-  # Storage class for PVC when genesis file is too large for ConfigMap
-  storageClassName: ""  # Uses default storage class if empty
-  size: "1Gi"

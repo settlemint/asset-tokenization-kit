@@ -44,6 +44,9 @@ spec:
       volumes:
         - name: generated-config
           emptyDir: {}
+        - name: genesis-pvc
+          persistentVolumeClaim:
+            claimName: besu-genesis-pvc
         {{- if .Files.Glob "files/genesis-output.json" }}
         - name: contracts-config
           configMap:
@@ -58,6 +61,8 @@ spec:
           volumeMounts:
             - name: generated-config
               mountPath: /generated-config
+            - name: genesis-pvc
+              mountPath: /genesis-pvc
             {{- if .Files.Glob "files/genesis-output.json" }}
             - name: contracts-config
               mountPath: /contracts
@@ -115,8 +120,12 @@ spec:
 
               function safeWriteGenesisConfigmap {
                 FOLDER_PATH=$1
-                echo "Creating/updating besu-genesis configmap..."
-                kubectl create configmap --namespace {{ .Release.Namespace }} besu-genesis --from-file=genesis.json=$FOLDER_PATH/besu/genesis.json --dry-run=client -o yaml | kubectl apply -f -
+                echo "Storing genesis file in PVC..."
+                
+                # Copy genesis file directly to the mounted PVC
+                cp "$FOLDER_PATH/besu/genesis.json" /genesis-pvc/genesis.json
+                
+                echo "Genesis file stored in PVC successfully"
               }
 
               echo "Creating config ..."

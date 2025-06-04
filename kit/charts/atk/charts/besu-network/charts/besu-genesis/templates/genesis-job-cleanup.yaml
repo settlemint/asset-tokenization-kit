@@ -60,12 +60,12 @@ spec:
 
 {{- if .Values.quorumFlags.removeGenesisOnDelete }}
 
-              echo "Checking and deleting genesis configmap in k8s ..."
-              if kubectl get configmap --namespace {{ .Release.Namespace }} besu-genesis &>/dev/null; then
-                kubectl delete configmap --namespace {{ .Release.Namespace }} besu-genesis
-                echo "Genesis configmap deleted"
+              echo "Checking and deleting genesis PVC in k8s ..."
+              if kubectl get pvc --namespace {{ .Release.Namespace }} besu-genesis-pvc &>/dev/null; then
+                kubectl delete pvc --namespace {{ .Release.Namespace }} besu-genesis-pvc
+                echo "Genesis PVC deleted"
               else
-                echo "Genesis configmap not found, skipping"
+                echo "Genesis PVC not found, skipping"
               fi
 
               echo "Checking and deleting bootnodes configmap in k8s ..."

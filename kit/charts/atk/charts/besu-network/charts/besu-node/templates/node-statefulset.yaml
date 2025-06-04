@@ -44,6 +44,50 @@ spec:
 {{- end }}
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
       initContainers:
+      # Genesis file retrieval from PVC
+      - name: genesis-init
+        image: bitnami/kubectl:latest
+        command:
+          - /bin/bash
+          - -c
+          - |
+            set -e
+            
+            NAMESPACE="{{ .Release.Namespace }}"
+            OUTPUT_FILE="/shared/genesis.json"
+            
+            echo "Retrieving genesis file from PVC..."
+            
+            # Create a temporary pod to access PVC and copy genesis file
+            kubectl run genesis-reader-$RANDOM --namespace "$NAMESPACE" \
+              --image=busybox:latest \
+              --restart=Never \
+              --rm -i \
+              --overrides='{
+                "spec": {
+                  "containers": [{
+                    "name": "genesis-reader",
+                    "image": "busybox:latest",
+                    "command": ["cat", "/genesis/genesis.json"],
+                    "volumeMounts": [
+                      {"name": "genesis-pvc", "mountPath": "/genesis"}
+                    ]
+                  }],
+                  "volumes": [
+                    {"name": "genesis-pvc", "persistentVolumeClaim": {"claimName": "besu-genesis-pvc"}}
+                  ]
+                }
+              }' \
+              --timeout=60s > "$OUTPUT_FILE"
+            
+            echo "Genesis file retrieved successfully"
+            ls -la "$OUTPUT_FILE"
+        volumeMounts:
+          - name: shared-genesis
+            mountPath: /shared
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
 
 {{- if has .Values.cluster.provider .Values.volumePermissionsFix }}
       # fix for minikube and PVC's only writable as root https://github.com/kubernetes/minikube/issues/1990
@@ -212,8 +256,8 @@ spec:
             readOnly: true
 {{- end }}
 {{- end }}
-          - name: genesis
-            mountPath: /etc/genesis
+          - name: shared-genesis
+            mountPath: /shared
             readOnly: true
           - name: static-nodes
             mountPath: /config/static
@@ -259,12 +303,8 @@ spec:
           initialDelaySeconds: 180
           periodSeconds: 60
       volumes:
-      - name: genesis
-        configMap:
-          name: besu-genesis
-          items:
-            - key: genesis.json
-              path: genesis.json
+      - name: shared-genesis
+        emptyDir: {}
       - name: static-nodes
         configMap:
           name: besu-peers

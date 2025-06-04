@@ -2,7 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "dependencies": {
-      "outputs": ["**/Chart.lock", "**/charts/**"],
+      "outputs": ["**/Chart.lock", "**/charts/**/*.tgz"],
       "inputs": ["**/Chart.yaml"]
     },
     "compile": {
