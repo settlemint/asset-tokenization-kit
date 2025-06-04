@@ -88,6 +88,9 @@ const CONTRACT_ADDRESSES = {
   SMARTStableCoinImplementation: "0x5e771e1417100000000000000000000000020018",
   SMARTStableCoinFactoryImplementation:
     "0x5e771e1417100000000000000000000000020019",
+
+  // Compliance modules
+  SMARTIdentityVerificationModule: "0x5e771e1417100000000000000000000000020100",
 } as const;
 
 const CONTRACT_FILES = {
@@ -140,6 +143,10 @@ const CONTRACT_FILES = {
     "contracts/assets/stable-coin/SMARTStableCoinImplementation.sol",
   SMARTStableCoinFactoryImplementation:
     "contracts/assets/stable-coin/SMARTStableCoinFactoryImplementation.sol",
+
+  // Compliance modules
+  SMARTIdentityVerificationModule:
+    "contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol",
 } as const;
 
 // =============================================================================
@@ -166,6 +173,9 @@ class ContractDeployer {
       case "SMARTForwarder":
         return [];
 
+      case "SMARTIdentityVerificationModule":
+        return [forwarderAddress];
+
       case "SMARTSystemFactory":
         return [
           CONTRACT_ADDRESSES.SMARTComplianceImplementation,
@@ -177,6 +187,7 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.SMARTIdentityImplementation,
           CONTRACT_ADDRESSES.SMARTTokenIdentityImplementation,
           CONTRACT_ADDRESSES.SMARTTokenAccessManagerImplementation,
+          CONTRACT_ADDRESSES.SMARTIdentityVerificationModule,
           forwarderAddress,
         ];
 

@@ -76,6 +76,7 @@ const ABI_PATHS = {
   ismartYield: `${ARTIFACTS_DIR}/contracts/extensions/yield/ISMARTYield.sol/ISMARTYield.json`,
   ismartFixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json`,
   // compliance modules
+  identityVerification: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol/SMARTIdentityVerificationModule.json`,
   countryAllowList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
   countryBlockList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
 } as const;
@@ -106,7 +107,11 @@ const AVAILABLE_ABIS = {
     "ismartYield",
     "ismartFixedYieldSchedule",
   ],
-  complianceModules: ["countryAllowList", "countryBlockList"],
+  complianceModules: [
+    "identityVerification",
+    "countryAllowList",
+    "countryBlockList",
+  ],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 
 const ALL_ABIS = [
