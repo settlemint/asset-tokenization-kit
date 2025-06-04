@@ -15,7 +15,7 @@
       "outputs": ["artifacts/**", "cache/**"]
     },
     "codegen": {
-      "dependsOn": ["codegen:types", "codegen:genesis"]
+      "dependsOn": ["codegen:types", "codegen:genesis", "codegen:abi"]
     },
     "codegen:types": {
       "dependsOn": ["compile"],

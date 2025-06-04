@@ -37,7 +37,7 @@
     },
     "helm:secrets": {
       "outputs": ["**/values-orbstack.yaml"],
-      "inputs": ["**/values-orb.1p.yaml"]
+      "inputs": ["**/values-orbstack.1p.yaml"]
     },
     "codegen": {
       "cache": false,
