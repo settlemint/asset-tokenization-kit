@@ -14,7 +14,7 @@
 import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { logger } from "../../../tools/logging";
+import { logger, LogLevel } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -200,12 +200,12 @@ function parseArguments(args: string[]): void {
         process.exit(0);
       case "-v":
       case "--verbose":
-        log.setLevel("DEBUG" as any);
+        log.setLevel(LogLevel.DEBUG);
         log.info("Verbose mode enabled");
         break;
       case "-q":
       case "--quiet":
-        log.setLevel("ERROR" as any);
+        log.setLevel(LogLevel.ERROR);
         break;
       case "-l":
       case "--list":
