@@ -27,6 +27,26 @@ dataSources:
         - event: SMARTSystemCreated(indexed address,indexed address)
           handler: handleSMARTSystemCreated
       file: ./src/system-factory/system-factory.ts
+  - kind: ethereum
+    name: FixedYieldScheduleFactory
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000020089"
+      abi: FixedYieldScheduleFactory
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - SMARTFixedYieldScheduleCreated
+      abis:
+        - name: FixedYieldScheduleFactory
+          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json
+      eventHandlers:
+        - event: SMARTFixedYieldScheduleCreated(indexed address,indexed address)
+          handler: handleSMARTFixedYieldScheduleCreated
+      file: ./src/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
 templates:
   - kind: ethereum
     name: AccessControl
@@ -396,24 +416,6 @@ templates:
         - event: YieldScheduleSet(indexed address,indexed address)
           handler: handleYieldScheduleSet
       file: ./src/yield/yield.ts
-  - kind: ethereum
-    name: FixedYieldScheduleFactory
-    network: settlemint
-    source:
-      abi: FixedYieldScheduleFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - SMARTFixedYieldScheduleCreated
-      abis:
-        - name: FixedYieldScheduleFactory
-          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json
-      eventHandlers:
-        - event: SMARTFixedYieldScheduleCreated(indexed address,indexed address)
-          handler: handleSMARTFixedYieldScheduleCreated
-      file: ./src/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
   - kind: ethereum
     name: FixedYieldSchedule
     network: settlemint

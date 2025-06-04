@@ -3,6 +3,7 @@ import {
   YieldScheduleSet,
 } from "../../generated/templates/Yield/Yield";
 import { fetchEvent } from "../event/fetch/event";
+import { fetchFixedYieldSchedule } from "../fixed-yield-schedule/fetch/fixed-yield-schedule";
 import { fetchYield } from "./fetch/yield";
 
 export function handleCheckpointUpdated(event: CheckpointUpdated): void {
@@ -12,6 +13,6 @@ export function handleCheckpointUpdated(event: CheckpointUpdated): void {
 export function handleYieldScheduleSet(event: YieldScheduleSet): void {
   fetchEvent(event, "YieldScheduleSet");
   const tokenYield = fetchYield(event.address);
-  tokenYield.schedule = event.params.schedule;
+  tokenYield.schedule = fetchFixedYieldSchedule(event.params.schedule).id;
   tokenYield.save();
 }
