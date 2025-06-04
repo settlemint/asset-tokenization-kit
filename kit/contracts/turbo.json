@@ -15,11 +15,15 @@
       "outputs": ["artifacts/**", "cache/**"]
     },
     "codegen": {
-      "dependsOn": ["codegen:types", "codegen:genesis"]
+      "dependsOn": ["codegen:types", "codegen:genesis", "codegen:abi"]
     },
     "codegen:types": {
       "dependsOn": ["compile"],
       "outputs": ["scripts/hardhat/abi/**"]
+    },
+    "codegen:abi": {
+      "dependsOn": ["compile"],
+      "outputs": ["portal/**"]
     },
     "codegen:genesis": {
       "outputs": ["tools/genesis-output.json"]

@@ -47,6 +47,14 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
 {{/*
+Selector labels
+*/}}
+{{- define "besu-genesis.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "besu-genesis.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "besu-genesis.serviceAccountName" -}}
@@ -56,6 +64,30 @@ Create the name of the service account to use
 {{- .Values.aws.serviceAccountName }}
 {{- else }}
 {{- include "besu-genesis.name" . }}-sa
+{{- end }}
+{{- end }}
+
+{{/*
+Common image pull secrets for all deployments/statefulsets
+*/}}
+{{- define "atk.imagePullSecrets" -}}
+{{- if .Values.global }}
+{{- if .Values.global.imagePullSecrets }}
+imagePullSecrets:
+{{- range .Values.global.imagePullSecrets }}
+  - name: {{ . }}
+{{- end }}
+{{- else }}
+imagePullSecrets:
+  - name: image-pull-secret-docker
+  - name: image-pull-secret-ghcr
+  - name: image-pull-secret-harbor
+{{- end }}
+{{- else }}
+imagePullSecrets:
+  - name: image-pull-secret-docker
+  - name: image-pull-secret-ghcr
+  - name: image-pull-secret-harbor
 {{- end }}
 {{- end }}
 

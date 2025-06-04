@@ -61,6 +61,10 @@ node:
     genesisFilePath: "/etc/genesis/genesis.json"
     logging: INFO
     customLabels: {}
+    image:
+      repository: docker.io/hyperledger/besu
+      tag: 25.3.0
+      pullPolicy: IfNotPresent
     account:
       password: "password"
       passwordPath: "/keys/accountPassword"
@@ -179,11 +183,11 @@ node:
     syncMode: "FULL"
 
   tessera:
-    resources:
-      cpuLimit: 1
-      cpuRequest: 0.5
-      memLimit: "2G"
-      memRequest: "1G"
+    resources: {}
+    image:
+      repository: docker.io/quorumengineering/tessera
+      tag: 24.4
+      pullPolicy: IfNotPresent
     tmkey: ""
     tmpub: ""
     password: "password"
@@ -194,25 +198,99 @@ node:
     tpport: 9080
     q2tport: 9101
 
-image:
-  besu:
-    repository: docker.io/hyperledger/besu
-    tag: 25.3.0
-    pullPolicy: IfNotPresent
-  tessera:
-    repository: docker.io/quorumengineering/tessera
-    tag: 24.4
-    pullPolicy: IfNotPresent
-  hooks:
+hooks:
+  image:
     repository: ghcr.io/settlemint/quorum-genesis-tool
     tag: sha-49c40f5
     pullPolicy: IfNotPresent
 
-busybox:
-  registry: docker.io
-  tag: 1.37
-  pullPolicy: IfNotPresent
+initContainers:
+  busybox:
+    image:
+      registry: docker.io
+      repository: busybox
+      tag: 1.37
+      pullPolicy: IfNotPresent
+  curl:
+    image:
+      registry: docker.io
+      repository: curlimages/curl
+      tag: 8.11.1
+      pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 
 imagePullPolicy: IfNotPresent
+
+# PodDisruptionBudget configuration
+podDisruptionBudget:
+  enabled: false
+  # For blockchain nodes, we typically want to ensure high availability
+  # Minimum number of pods that must be available during disruption
+  minAvailable: 1
+  # Maximum number of pods that can be unavailable during disruption
+  # maxUnavailable: 1
+
+# NetworkPolicy configuration
+networkPolicy:
+  enabled: false
+  # Ingress rules
+  ingress:
+    # Allow from services that need blockchain access
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: txsigner
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: erpc
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: blockscout-stack
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: graph-node
+        - podSelector: {}  # Same namespace
+      ports:
+        - protocol: TCP
+          port: 8545  # RPC
+        - protocol: TCP
+          port: 8546  # WebSocket
+        - protocol: TCP
+          port: 8547  # GraphQL
+        - protocol: TCP
+          port: 9545  # Metrics
+    # P2P communication between Besu nodes
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: besu-statefulset
+      ports:
+        - protocol: TCP
+          port: 30303  # P2P
+
+  # Egress rules
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow P2P communication between Besu nodes
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: besu-statefulset
+      ports:
+        - protocol: TCP
+          port: 30303  # P2P
+    # Allow external P2P connections (for public networks)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 30303

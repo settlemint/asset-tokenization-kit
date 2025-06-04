@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/settlemint/asset-tokenization-kit
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.0.6-main83e81f549"
+  tag: "1.0.6"
 
 imagePullSecrets:
   - name: image-pull-secret-docker
@@ -100,6 +100,78 @@ tolerations: []
 
 affinity: {}
 
+# NetworkPolicy configuration
+networkPolicy:
+  enabled: false
+  # Ingress rules
+  ingress:
+    # Allow from ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3000
+    # Allow from same namespace
+    - from:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 3000
+
+  # Egress rules
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow access to PostgreSQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgresql-ha
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow access to Hasura GraphQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: graphql-engine
+      ports:
+        - protocol: TCP
+          port: 8080
+    # Allow access to Portal API
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: portal
+      ports:
+        - protocol: TCP
+          port: 3000
+        - protocol: TCP
+          port: 3001
+    # Allow access to ERPC
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: erpc
+      ports:
+        - protocol: TCP
+          port: 4000
+    # Allow external HTTPS (for external APIs)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+
 # Environment variables sourced from a secret
 # These will be created in the secret.yaml template
 secretEnv:
@@ -129,6 +201,17 @@ autoscaling:
   maxReplicas: 10
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
+
+# PodDisruptionBudget configuration
+podDisruptionBudget:
+  enabled: false
+  # Minimum number of pods that must be available during disruption
+  # Can be an integer or percentage (e.g., "50%")
+  minAvailable: 1
+  # Maximum number of pods that can be unavailable during disruption
+  # Can be an integer or percentage (e.g., "50%")
+  # Note: Only one of minAvailable or maxUnavailable can be specified
+  # maxUnavailable: 1
 
 # Init container configuration
 initContainer:
@@ -160,7 +243,7 @@ initContainer:
     image:
       registry: docker.io
       repository: curlimages/curl
-      tag: latest # Or pin to a specific version like 8.7.1
+      tag: 8.13.0 # Or pin to a specific version like 8.7.1
       pullPolicy: IfNotPresent
     # Target GraphQL endpoint URL (where POST requests are sent)
     url: "http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"
@@ -197,7 +280,7 @@ job:
       image:
         registry: docker.io
         repository: alpine/git
-        tag: latest # Or pin to a specific version
+        tag: 2.49.0 # Or pin to a specific version
         pullPolicy: IfNotPresent
 
   # Pod annotations
@@ -210,15 +293,10 @@ job:
     - image-pull-secret-harbor
 
   # Resource configuration
-  resources:
-    requests:
-      memory: "2Gi"
-      cpu: "250m"
-    limits:
-      memory: "3Gi"
+  resources: {}
 
   workspace:
     # Size of the workspace PVC
     size: 1Gi
     # Storage class to use for the workspace PVC
-    storageClass: local-path
+    storageClass: ""

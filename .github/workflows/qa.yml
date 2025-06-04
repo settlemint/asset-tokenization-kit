@@ -118,6 +118,7 @@ jobs:
           name: predeployed-output
           path: |
             kit/contracts/tools/genesis-output.json
+            kit/contracts/portal/*.json
 
   secret-scanning:
     name: Secret Scanning

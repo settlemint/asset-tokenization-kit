@@ -4,6 +4,11 @@ global:
 # https://github.com/graphops/launchpad-charts/blob/main/charts/graph-node/values.yaml
 graph-node:
   fullnameOverride: graph-node
+  image:
+    # -- Image for Graph Node
+    repository: graphprotocol/graph-node
+    pullPolicy: IfNotPresent
+    tag: "v0.39.1"
   customSecret:
     PGUSER: thegraph
     PGPASSWORD: atk
@@ -128,14 +133,14 @@ job:
       image:
         registry: docker.io
         repository: busybox
-        tag: 1.37 # Use specific stable tag
+        tag: 1.37.0 # Use specific stable tag
         pullPolicy: IfNotPresent
     cloneRepo:
       atkTag: "1.1.1"
       image:
         registry: docker.io
         repository: alpine/git
-        tag: latest # Or pin to a specific version
+        tag: 2.49.0 # Or pin to a specific version
         pullPolicy: IfNotPresent
 
   # Custom Init Containers (add definitions here if needed, e.g., for dependencies)
@@ -151,15 +156,10 @@ job:
   #     pullPolicy: IfNotPresent
 
   # Resource configuration
-  resources:
-    requests:
-      memory: "2Gi"
-      cpu: "250m"
-    limits:
-      memory: "3Gi"
+  resources: {}
 
   workspace:
     # Size of the workspace PVC
     size: 1Gi
     # Storage class to use for the workspace PVC
-    storageClass: local-path
+    storageClass: ""
