@@ -18,7 +18,7 @@ export const topupUnderlyingAsset = async (
   });
 
   const scheduleAddress = await tokenContract.read.yieldSchedule();
-  await mint(asset, owner, amount);
+  await mint(underlyingAsset, owner, amount);
   await approve(underlyingAsset, scheduleAddress, amount);
 
   const scheduleContract = owner.getContractInstance({
