@@ -58,7 +58,6 @@ contract SMARTIdentityFactoryImplementationTest is Test {
             address(0),
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
             address(accessManager)
@@ -131,7 +130,6 @@ contract SMARTIdentityFactoryImplementationTest is Test {
             address(0),
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
             address(accessManager)
@@ -164,7 +162,6 @@ contract SMARTIdentityFactoryImplementationTest is Test {
             address(0),
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
             address(accessManager)
@@ -203,7 +200,6 @@ contract SMARTIdentityFactoryImplementationTest is Test {
             address(0),
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
             address(accessManager)
@@ -215,7 +211,6 @@ contract SMARTIdentityFactoryImplementationTest is Test {
             address(0),
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
             address(accessManager)

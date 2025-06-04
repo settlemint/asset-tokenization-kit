@@ -45,6 +45,10 @@ import { SMARTTokenAccessManagerImplementation } from
 import { SMARTTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/SMARTTopicSchemeRegistryImplementation.sol";
 
+// Import compliance module
+import { SMARTIdentityVerificationModule } from
+    "../../contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol";
+
 // Mock contracts for testing edge cases that require invalid contracts
 contract MockInvalidContract {
 // This contract doesn't implement IERC165
@@ -68,6 +72,7 @@ contract SMARTSystemTest is Test {
     SMARTIdentityImplementation public identityImpl;
     SMARTTokenIdentityImplementation public tokenIdentityImpl;
     SMARTTokenAccessManagerImplementation public tokenAccessManagerImpl;
+    SMARTIdentityVerificationModule public identityVerificationModule;
 
     address public forwarder = address(0x5);
 
@@ -86,6 +91,7 @@ contract SMARTSystemTest is Test {
         identityImpl = new SMARTIdentityImplementation(forwarder);
         tokenIdentityImpl = new SMARTTokenIdentityImplementation(forwarder);
         tokenAccessManagerImpl = new SMARTTokenAccessManagerImplementation(forwarder);
+        identityVerificationModule = new SMARTIdentityVerificationModule(forwarder);
     }
 
     function test_InitialState() public view {
@@ -107,6 +113,9 @@ contract SMARTSystemTest is Test {
         assertTrue(smartSystem.trustedIssuersRegistryProxy() != address(0));
         assertTrue(smartSystem.topicSchemeRegistryProxy() != address(0));
         assertTrue(smartSystem.identityFactoryProxy() != address(0));
+
+        // Compliance module should be set
+        assertTrue(smartSystem.identityVerificationModule() != address(0));
 
         // Admin should have default admin role
         assertTrue(IAccessControl(address(smartSystem)).hasRole(SMARTSystemRoles.DEFAULT_ADMIN_ROLE, admin));
@@ -135,6 +144,7 @@ contract SMARTSystemTest is Test {
             newIdentityImplAddr,
             newTokenIdentityImpl,
             newTokenAccessManagerImpl,
+            address(identityVerificationModule),
             forwarder
         );
 
@@ -291,6 +301,7 @@ contract SMARTSystemTest is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(tokenAccessManagerImpl),
+            address(identityVerificationModule),
             forwarder
         );
 
@@ -306,6 +317,7 @@ contract SMARTSystemTest is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(tokenAccessManagerImpl),
+            address(identityVerificationModule),
             forwarder
         );
     }
@@ -323,6 +335,7 @@ contract SMARTSystemTest is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(tokenAccessManagerImpl),
+            address(identityVerificationModule),
             forwarder
         );
     }

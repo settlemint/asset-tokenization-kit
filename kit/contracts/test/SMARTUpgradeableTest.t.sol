@@ -38,7 +38,6 @@ contract SMARTUpgradeableTest is
             address(0), // onchainID will be set by _createAndSetTokenOnchainID via proxy
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
-            requiredClaimTopics,
             modulePairs,
             systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
             address(accessManager)

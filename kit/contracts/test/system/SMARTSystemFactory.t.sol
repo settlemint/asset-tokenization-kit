@@ -39,6 +39,10 @@ import { SMARTTokenIdentityImplementation } from
 import { SMARTTokenAccessManagerImplementation } from
     "../../contracts/system/access-manager/SMARTTokenAccessManagerImplementation.sol";
 
+// Import compliance module
+import { SMARTIdentityVerificationModule } from
+    "../../contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol";
+
 contract SMARTSystemFactoryTest is Test {
     SMARTSystemFactory public factory;
 
@@ -52,6 +56,7 @@ contract SMARTSystemFactoryTest is Test {
     address public identityImpl;
     address public tokenIdentityImpl;
     address public tokenAccessManagerImpl;
+    address public identityVerificationModule;
     address public forwarder;
 
     // Test addresses
@@ -74,6 +79,7 @@ contract SMARTSystemFactoryTest is Test {
         identityImpl = address(new SMARTIdentityImplementation(forwarder));
         tokenIdentityImpl = address(new SMARTTokenIdentityImplementation(forwarder));
         tokenAccessManagerImpl = address(new SMARTTokenAccessManagerImplementation(forwarder));
+        identityVerificationModule = address(new SMARTIdentityVerificationModule(forwarder));
 
         // Deploy factory with valid implementations
         factory = new SMARTSystemFactory(
@@ -86,6 +92,7 @@ contract SMARTSystemFactoryTest is Test {
             identityImpl,
             tokenIdentityImpl,
             tokenAccessManagerImpl,
+            identityVerificationModule,
             forwarder
         );
     }
@@ -116,6 +123,7 @@ contract SMARTSystemFactoryTest is Test {
             identityImpl,
             tokenIdentityImpl,
             tokenAccessManagerImpl,
+            identityVerificationModule,
             forwarder
         );
     }
@@ -132,6 +140,7 @@ contract SMARTSystemFactoryTest is Test {
             identityImpl,
             tokenIdentityImpl,
             tokenAccessManagerImpl,
+            identityVerificationModule,
             forwarder
         );
     }
@@ -148,6 +157,7 @@ contract SMARTSystemFactoryTest is Test {
             identityImpl,
             tokenIdentityImpl,
             tokenAccessManagerImpl,
+            identityVerificationModule,
             forwarder
         );
     }
@@ -164,6 +174,7 @@ contract SMARTSystemFactoryTest is Test {
             identityImpl,
             tokenIdentityImpl,
             tokenAccessManagerImpl,
+            identityVerificationModule,
             forwarder
         );
     }
@@ -180,6 +191,7 @@ contract SMARTSystemFactoryTest is Test {
             identityImpl,
             tokenIdentityImpl,
             tokenAccessManagerImpl,
+            identityVerificationModule,
             forwarder
         );
     }
@@ -196,6 +208,7 @@ contract SMARTSystemFactoryTest is Test {
             identityImpl,
             tokenIdentityImpl,
             tokenAccessManagerImpl,
+            identityVerificationModule,
             forwarder
         );
     }
@@ -212,6 +225,7 @@ contract SMARTSystemFactoryTest is Test {
             address(0), // Zero identity implementation
             tokenIdentityImpl,
             tokenAccessManagerImpl,
+            identityVerificationModule,
             forwarder
         );
     }
@@ -228,6 +242,7 @@ contract SMARTSystemFactoryTest is Test {
             identityImpl,
             address(0), // Zero token identity implementation
             tokenAccessManagerImpl,
+            identityVerificationModule,
             forwarder
         );
     }
@@ -244,6 +259,7 @@ contract SMARTSystemFactoryTest is Test {
             identityImpl,
             tokenIdentityImpl,
             address(0), // Zero token access manager implementation
+            identityVerificationModule,
             forwarder
         );
     }
@@ -370,6 +386,7 @@ contract SMARTSystemFactoryTest is Test {
             identityImpl,
             tokenIdentityImpl,
             tokenAccessManagerImpl,
+            identityVerificationModule,
             address(0) // Zero forwarder
         );
 

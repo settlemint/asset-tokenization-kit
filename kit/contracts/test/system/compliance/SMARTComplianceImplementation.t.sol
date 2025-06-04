@@ -100,6 +100,7 @@ contract SMARTComplianceImplementationTest is Test {
     MockFailingModule public failingModule;
     MockNonCompliantModule public nonCompliantModule;
 
+    address public admin = makeAddr("admin");
     address public trustedForwarder = address(0x1234);
     address public alice = address(0xa11ce);
     address public bob = address(0xb0b);
@@ -109,7 +110,9 @@ contract SMARTComplianceImplementationTest is Test {
         implementation = new SMARTComplianceImplementation(trustedForwarder);
 
         // Deploy as proxy
-        bytes memory initData = abi.encodeWithSelector(SMARTComplianceImplementation.initialize.selector);
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        bytes memory initData = abi.encodeWithSelector(SMARTComplianceImplementation.initialize.selector, initialAdmins);
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
 
         // Access proxy as SMARTComplianceImplementation
@@ -126,7 +129,9 @@ contract SMARTComplianceImplementationTest is Test {
 
     function testInitializeCanOnlyBeCalledOnce() public {
         vm.expectRevert();
-        compliance.initialize();
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        compliance.initialize(initialAdmins);
     }
 
     function testSupportsInterface() public view {

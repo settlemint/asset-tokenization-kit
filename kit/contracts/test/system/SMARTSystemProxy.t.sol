@@ -106,6 +106,10 @@ contract MockSMARTSystem is ISMARTSystem {
         return address(0); // Return zero instead of revert
     }
 
+    function identityVerificationModule() external pure returns (address) {
+        return address(0); // Return zero instead of revert
+    }
+
     function setComplianceImplementation(address) external pure {
         return; // Empty implementation instead of revert
     }
