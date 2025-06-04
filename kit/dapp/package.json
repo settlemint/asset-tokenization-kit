@@ -40,7 +40,7 @@
     "@orpc/client": "1.4.0",
     "@orpc/contract": "1.4.1",
     "@orpc/openapi": "1.4.0",
-    "@orpc/server": "1.4.0",
+    "@orpc/server": "1.4.1",
     "@orpc/tanstack-query": "1.4.0",
     "@orpc/zod": "1.4.0",
     "@radix-ui/react-accordion": "1.2.11",
