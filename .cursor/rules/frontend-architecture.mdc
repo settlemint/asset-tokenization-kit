@@ -1,0 +1,43 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+# Frontend Architecture
+
+The frontend is a Next.js application located in `[kit/dapp/](mdc:kit/dapp/)`.
+
+### 1. Next.js App Router
+
+The project uses the modern Next.js App Router with server components.
+
+- Located in `[kit/dapp/src/app/](mdc:kit/dapp/src/app/)`
+- Internationalization is handled via `next-intl`.
+
+### 2. Database
+
+The application uses a PostgreSQL database with Drizzle ORM.
+
+- Schema is defined in `[kit/dapp/src/lib/db/](mdc:kit/dapp/src/lib/db/)`.
+- A Hasura GraphQL layer is used for querying.
+
+### 3. Authentication
+
+Authentication is managed by the Better Auth library.
+
+- Configuration is in
+  `[kit/dapp/src/lib/auth/auth.ts](mdc:kit/dapp/src/lib/auth/auth.ts)`.
+
+### 4. Blockchain Integration
+
+- **Viem** is used for all smart contract interactions.
+- Contract addresses are managed in
+  `[kit/dapp/src/lib/contracts.ts](mdc:kit/dapp/src/lib/contracts.ts)`.
+- TypeScript types are generated from the contract ABIs.
+
+### 5. State Management
+
+- **SWR** is used for data fetching.
+- **React Hook Form** is used for forms.
+- Server actions are handled securely via `next-safe-action`.

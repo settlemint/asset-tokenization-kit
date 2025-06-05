@@ -3,5 +3,13 @@
   "trailingComma": "es5",
   "quoteProps": "as-needed",
   "arrowParens": "always",
-  "proseWrap": "always"
+  "proseWrap": "always",
+  "overrides": [
+    {
+      "files": "*.mdc",
+      "options": {
+        "parser": "markdown"
+      }
+    }
+  ]
 }
