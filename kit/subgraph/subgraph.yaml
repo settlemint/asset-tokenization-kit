@@ -153,6 +153,8 @@ templates:
       abis:
         - name: Token
           file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
+        - name: FixedYieldSchedule
+          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval

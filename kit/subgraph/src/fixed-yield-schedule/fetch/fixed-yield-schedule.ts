@@ -12,7 +12,6 @@ export function fetchFixedYieldSchedule(
   if (!fixedYieldSchedule) {
     fixedYieldSchedule = new TokenFixedYieldSchedule(address);
     fixedYieldSchedule.token = Address.zero();
-    fixedYieldSchedule.underlyingAsset = Address.zero();
     fixedYieldSchedule.endDate = BigInt.zero();
     fixedYieldSchedule.startDate = BigInt.zero();
     fixedYieldSchedule.rate = BigInt.zero();
@@ -32,6 +31,13 @@ export function fetchFixedYieldSchedule(
     setBigNumber(
       fixedYieldSchedule,
       "totalYield",
+      BigInt.zero(),
+      DEFAULT_TOKEN_DECIMALS
+    );
+    fixedYieldSchedule.underlyingAsset = Address.zero();
+    setBigNumber(
+      fixedYieldSchedule,
+      "underlyingAssetBalance",
       BigInt.zero(),
       DEFAULT_TOKEN_DECIMALS
     );

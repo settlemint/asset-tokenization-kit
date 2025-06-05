@@ -5,8 +5,10 @@ import {
   UnderlyingAssetWithdrawn,
   YieldClaimed,
 } from "../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
+import { fetchAccount } from "../account/fetch/account";
 import { DEFAULT_TOKEN_DECIMALS } from "../config/token";
 import { fetchEvent } from "../event/fetch/event";
+import { fetchTokenBalance } from "../token-balance/fetch/token-balance";
 import { fetchToken } from "../token/fetch/token";
 import { setBigNumber } from "../utils/bignumber";
 import { fetchFixedYieldSchedule } from "./fetch/fixed-yield-schedule";
@@ -19,11 +21,7 @@ export function handleFixedYieldScheduleSet(
   fetchEvent(event, "FixedYieldScheduleSet");
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
   const tokenAddress = Address.fromBytes(fixedYieldSchedule.token);
-  const tokenDecimals =
-    tokenAddress == Address.zero()
-      ? DEFAULT_TOKEN_DECIMALS
-      : fetchToken(tokenAddress).decimals;
-  fixedYieldSchedule.underlyingAsset = event.params.underlyingAsset;
+  const tokenDecimals = getTokenDecimals(tokenAddress);
   fixedYieldSchedule.startDate = event.params.startDate;
   fixedYieldSchedule.endDate = event.params.endDate;
   fixedYieldSchedule.rate = event.params.rate;
@@ -46,6 +44,18 @@ export function handleFixedYieldScheduleSet(
     event.params.yieldForNextPeriod,
     tokenDecimals
   );
+  fixedYieldSchedule.underlyingAsset = event.params.underlyingAsset;
+  const underlyingAsset = fetchToken(event.params.underlyingAsset);
+  const underlyingAssetBalance = fetchTokenBalance(
+    underlyingAsset,
+    fetchAccount(event.address)
+  );
+  setBigNumber(
+    fixedYieldSchedule,
+    "underlyingAssetBalance",
+    underlyingAssetBalance.valueExact,
+    underlyingAsset.decimals
+  );
   for (let i = 1; i <= event.params.periodEndTimestamps.length; i++) {
     const period = fetchFixedYieldSchedulePeriod(getPeriodId(event.address, i));
     period.schedule = fixedYieldSchedule.id;
@@ -67,24 +77,41 @@ export function handleFixedYieldScheduleSet(
 
 export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
   fetchEvent(event, "UnderlyingAssetTopUp");
-  // The transfer/burn/mint event handler of the token will update the balance
+  const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
+  const underlyingAsset = fetchToken(
+    Address.fromBytes(fixedYieldSchedule.underlyingAsset)
+  );
+  setBigNumber(
+    fixedYieldSchedule,
+    "underlyingAssetBalance",
+    fixedYieldSchedule.underlyingAssetBalanceExact.plus(event.params.amount),
+    underlyingAsset.decimals
+  );
+  fixedYieldSchedule.save();
 }
 
 export function handleUnderlyingAssetWithdrawn(
   event: UnderlyingAssetWithdrawn
 ): void {
   fetchEvent(event, "UnderlyingAssetWithdrawn");
-  // The transfer/burn/mint event handler of the token will update the balance
+  const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
+  const underlyingAsset = fetchToken(
+    Address.fromBytes(fixedYieldSchedule.underlyingAsset)
+  );
+  setBigNumber(
+    fixedYieldSchedule,
+    "underlyingAssetBalance",
+    fixedYieldSchedule.underlyingAssetBalanceExact.minus(event.params.amount),
+    underlyingAsset.decimals
+  );
+  fixedYieldSchedule.save();
 }
 
 export function handleYieldClaimed(event: YieldClaimed): void {
   fetchEvent(event, "YieldClaimed");
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
   const tokenAddress = Address.fromBytes(fixedYieldSchedule.token);
-  const tokenDecimals =
-    tokenAddress == Address.zero()
-      ? DEFAULT_TOKEN_DECIMALS
-      : fetchToken(tokenAddress).decimals;
+  const tokenDecimals = getTokenDecimals(tokenAddress);
 
   for (
     let i = event.params.fromPeriod.toI32();
@@ -131,4 +158,10 @@ export function handleYieldClaimed(event: YieldClaimed): void {
   );
   setBigNumber(fixedYieldSchedule, "totalYield", totalYield, tokenDecimals);
   fixedYieldSchedule.save();
+}
+
+function getTokenDecimals(tokenAddress: Address): i32 {
+  return tokenAddress == Address.zero()
+    ? DEFAULT_TOKEN_DECIMALS
+    : fetchToken(tokenAddress).decimals;
 }

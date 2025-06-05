@@ -173,7 +173,6 @@ type TokenYield @entity(immutable: false) {
 type TokenFixedYieldSchedule @entity(immutable: false) {
   id: Bytes!
   token: Token!
-  underlyingAsset: Token!
   startDate: BigInt!
   endDate: BigInt!
   rate: BigInt!
@@ -184,6 +183,9 @@ type TokenFixedYieldSchedule @entity(immutable: false) {
   totalUnclaimedYieldExact: BigInt!
   totalYield: BigDecimal!
   totalYieldExact: BigInt!
+  underlyingAsset: Token!
+  underlyingAssetBalance: BigDecimal!
+  underlyingAssetBalanceExact: BigInt!
   periods: [TokenFixedYieldSchedulePeriod!]! @derivedFrom(field: "schedule")
 }
 
