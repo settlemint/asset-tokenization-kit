@@ -372,3 +372,4 @@ Then browse to <http://localhost:16686/> to view the traces and
 brew install chart-testing yamllint
 ```
 # Test comment
+# Another test
