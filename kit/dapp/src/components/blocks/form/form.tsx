@@ -355,7 +355,7 @@ export function Form<
           return successMessage;
         },
         error: (error) => {
-          let errorMessage = "Unknown error";
+          let errorMessage = (error as Error).message;
           if (error?.error?.serverError) {
             errorMessage = error.error.serverError as string;
           } else if (error?.error?.validationErrors) {
