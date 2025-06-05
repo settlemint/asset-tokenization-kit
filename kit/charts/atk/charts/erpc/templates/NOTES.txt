@@ -4,9 +4,18 @@ APP VERSION: {{ .Chart.AppVersion }}
 
 ** Please be patient while the chart is being deployed **
 
+{{- if .Values.config }}
+eRPC Configuration:
+  - Log Level: {{ .Values.config.logLevel }}
+  - Projects: {{ len .Values.config.projects }}
+  {{- range .Values.config.projects }}
+  - Project "{{ .id }}": {{ len .upstreams }} upstream(s)
+  {{- end }}
+{{- end }}
+
 eRPC can be accessed through the following DNS name from within your cluster:
 
-    {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.{{ .Values.clusterDomain }} (port {{ .Values.service.port }})
+    {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local (port {{ .Values.service.port }})
 
 To access eRPC from outside the cluster execute the following commands:
 
@@ -50,9 +59,20 @@ To access eRPC from outside the cluster execute the following commands:
     The metrics endpoint is available at port {{ .Values.service.metricsPort }}:
     http://[eRPC_URL]:{{ .Values.service.metricsPort }}/metrics
 
+3. Test the connection:
+
+    You can test eRPC is working by sending a request:
+    curl -X POST http://[eRPC_URL]/53771311147 \
+      -H "Content-Type: application/json" \
+      -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+
 {{- if .Values.networkPolicy.enabled }}
 
 WARNING: Network Policy is enabled. Make sure your client is allowed to access eRPC.
+{{- if .Values.networkPolicy.addExternalClientAccess }}
+To allow external access, label your client pod with:
+  kubectl label pod <POD_NAME> {{ include "common.names.fullname" . }}-client=true
+{{- end }}
 {{- end }}
 
 {{- include "common.warnings.rollingTag" .Values.image }}

@@ -7,12 +7,6 @@ global:
   # -- Global StorageClass for Persistent Volume(s)
   storageClass: ""
 
-# -- Override Kubernetes version
-kubeVersion: ""
-
-# -- String to partially override common.names.fullname
-nameOverride: ""
-
 # -- String to fully override common.names.fullname
 fullnameOverride: "erpc"
 
@@ -22,11 +16,6 @@ commonLabels: {}
 # -- Annotations to add to all deployed objects
 commonAnnotations: {}
 
-# -- Default Kubernetes cluster domain
-clusterDomain: cluster.local
-
-# -- Array of extra objects to deploy with the release
-extraDeploy: []
 
 # -- eRPC image
 image:
