@@ -1,6 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { TokenFixedYieldSchedule } from "../../../generated/schema";
 import { FixedYieldSchedule as FixedYieldScheduleTemplate } from "../../../generated/templates";
+import { fetchAccount } from "../../account/fetch/account";
 import { DEFAULT_TOKEN_DECIMALS } from "../../config/token";
 import { setBigNumber } from "../../utils/bignumber";
 
@@ -11,6 +12,7 @@ export function fetchFixedYieldSchedule(
 
   if (!fixedYieldSchedule) {
     fixedYieldSchedule = new TokenFixedYieldSchedule(address);
+    fixedYieldSchedule.account = fetchAccount(address).id;
     fixedYieldSchedule.token = Address.zero();
     fixedYieldSchedule.endDate = BigInt.zero();
     fixedYieldSchedule.startDate = BigInt.zero();

@@ -172,6 +172,7 @@ type TokenYield @entity(immutable: false) {
 
 type TokenFixedYieldSchedule @entity(immutable: false) {
   id: Bytes!
+  account: Account!
   token: Token!
   startDate: BigInt!
   endDate: BigInt!
