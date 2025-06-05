@@ -10,6 +10,7 @@ import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
  */
 export const LinearVestingStrategyFragment = theGraphGraphqlKit(`
   fragment LinearVestingStrategyFragment on LinearVestingStrategy {
+    id
     cliffDuration
     vestingDuration
     vestingData {
