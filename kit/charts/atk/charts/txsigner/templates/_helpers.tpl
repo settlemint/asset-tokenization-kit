@@ -1,104 +1,37 @@
 {{/*
-Expand the name of the chart.
+This file contains custom helpers specific to the txsigner chart.
+Most naming and labeling functions are now provided by the Bitnami common chart.
 */}}
-{{- define "txsigner.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
-*/}}
-{{- define "txsigner.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-{{- end }}
-
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "txsigner.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{/*
-Common labels
-*/}}
-{{- define "txsigner.labels" -}}
-helm.sh/chart: {{ include "txsigner.chart" . }}
-{{ include "txsigner.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Selector labels
-*/}}
-{{- define "txsigner.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "txsigner.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
 {{- define "txsigner.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "txsigner.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{/*
-Define volume mounts
-*/}}
-{{- define "txsigner.volumeMounts" -}}
-{{- with .Values.volumeMounts }}
-{{- toYaml . }}
-{{- end }}
+{{- if .Values.serviceAccount.create -}}
+{{- default (include "common.names.fullname" .) .Values.serviceAccount.name -}}
+{{- else -}}
+{{- default "default" .Values.serviceAccount.name -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
-Define volumes
+Return true if ingress supports ingressClassName field
 */}}
-{{- define "txsigner.volumes" -}}
-{{- with .Values.volumes }}
-{{- toYaml . }}
-{{- end }}
+{{- define "common.ingress.supportsIngressClassname" -}}
+{{- if semverCompare "<1.18-0" (include "common.capabilities.kubeVersion" .) -}}
+{{- print "false" -}}
+{{- else -}}
+{{- print "true" -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
-Common image pull secrets for all deployments/statefulsets
+Return true if ingress supports pathType field
 */}}
-{{- define "atk.imagePullSecrets" -}}
-{{- if .Values.global }}
-{{- if .Values.global.imagePullSecrets }}
-imagePullSecrets:
-{{- range .Values.global.imagePullSecrets }}
-  - name: {{ . }}
-{{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
-{{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
-{{- end }}
-{{- end }}
+{{- define "common.ingress.supportsPathType" -}}
+{{- if semverCompare "<1.18-0" (include "common.capabilities.kubeVersion" .) -}}
+{{- print "false" -}}
+{{- else -}}
+{{- print "true" -}}
+{{- end -}}
+{{- end -}}
