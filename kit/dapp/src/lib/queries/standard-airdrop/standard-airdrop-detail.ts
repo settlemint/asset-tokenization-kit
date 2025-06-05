@@ -10,7 +10,6 @@ import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import type { Address } from "viem";
-import { OffChainAirdropSchema } from "../airdrop/airdrop-schema";
 import { StandardAirdropFragment } from "./standard-airdrop-fragment";
 import {
   OnChainStandardAirdropSchema,
@@ -76,9 +75,9 @@ export const getStandardAirdropDetail = withTracing(
           })(),
           (async () => {
             const response = await getAirdropDistribution(address);
-            return safeParse(OffChainAirdropSchema, {
+            return {
               distribution: response,
-            });
+            };
           })(),
         ]);
 
