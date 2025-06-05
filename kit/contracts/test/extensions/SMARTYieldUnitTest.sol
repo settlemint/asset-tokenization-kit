@@ -9,8 +9,6 @@ import { ISMARTYield } from "../../contracts/extensions/yield/ISMARTYield.sol";
 import { ISMARTYieldSchedule } from "../../contracts/extensions/yield/schedules/ISMARTYieldSchedule.sol";
 import { ISMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { SMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
-import { SMARTFixedYieldScheduleFactory } from
-    "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol";
 import { ISMART } from "../../contracts/interface/ISMART.sol";
 import { SMARTYieldToken } from "../examples/SMARTYieldToken.sol";
 

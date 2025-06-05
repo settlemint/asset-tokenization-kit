@@ -14,8 +14,7 @@ import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy
 import { ISMART } from "../../contracts/interface/ISMART.sol";
 import { ISMARTCapped } from "../../contracts/extensions/capped/ISMARTCapped.sol";
 
-import { SMARTFixedYieldScheduleFactory } from
-    "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol";
+import { SMARTFixedYieldScheduleFactory } from "../../contracts/system/yield/SMARTFixedYieldScheduleFactory.sol";
 import { SMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
 import { SMARTBondFactoryImplementation } from "../../contracts/assets/bond/SMARTBondFactoryImplementation.sol";
 import { SMARTBondImplementation } from "../../contracts/assets/bond/SMARTBondImplementation.sol";
@@ -752,7 +751,11 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
 
         // Create a forwarder for the FixedYield (already in setup)
         // Create a factory to create the FixedYield
-        SMARTFixedYieldScheduleFactory factory = new SMARTFixedYieldScheduleFactory(address(forwarder));
+        SMARTFixedYieldScheduleFactory factory =
+            new SMARTFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
+        IAccessControl(address(systemUtils.compliance())).grantRole(
+            SMARTSystemRoles.WHITELIST_MANAGER_ROLE, address(factory)
+        );
 
         // Setup yield schedule parameters
         uint256 startDate = block.timestamp + 1 days;
@@ -784,7 +787,11 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
     function test_CannotMintIfYieldScheduleStarted() public {
         // Setup: Deploy factory and create yield schedule linked to the bond
         vm.startPrank(owner);
-        SMARTFixedYieldScheduleFactory factory = new SMARTFixedYieldScheduleFactory(address(forwarder));
+        SMARTFixedYieldScheduleFactory factory =
+            new SMARTFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
+        IAccessControl(address(systemUtils.compliance())).grantRole(
+            SMARTSystemRoles.WHITELIST_MANAGER_ROLE, address(factory)
+        );
         uint256 startDate = block.timestamp + 1 days; // Schedule starts in the future
         uint256 endDate = startDate + 365 days;
         uint256 yieldRate = 500; // 5%
