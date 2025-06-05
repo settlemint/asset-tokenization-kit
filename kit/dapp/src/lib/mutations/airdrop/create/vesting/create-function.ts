@@ -42,6 +42,24 @@ export const createVestingAirdropFunction = async ({
   parsedInput: CreateVestingAirdropInput;
   ctx: { user: User };
 }) => {
+  // To ensure atomicity, we first try to store the distribution data.
+  // If this fails, the airdrop contract (immutable!) is never created.
+  try {
+    await hasuraClient.request(AddAirdropDistribution, {
+      objects: distribution.map((d) => ({
+        airdrop_id: predictedAddress,
+        recipient: d.recipient,
+        amount: parseUnits(d.amount.toString(), asset.decimals).toString(),
+        amount_exact: d.amount.toString(),
+        index: d.index,
+      })),
+    });
+  } catch (error) {
+    throw new Error(
+      `Failed to store airdrop distribution in database: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
+  }
+
   const result = await portalClient.request(
     AirdropFactoryDeployLinearVestingAirdrop,
     {
@@ -81,13 +99,5 @@ export const createVestingAirdropFunction = async ({
   }
   const hashes = safeParse(t.Hashes(), [createTxHash]);
   const block = await waitForIndexingTransactions(hashes);
-  await hasuraClient.request(AddAirdropDistribution, {
-    objects: distribution.map((d) => ({
-      airdrop_id: predictedAddress,
-      recipient: d.recipient,
-      amount: parseUnits(d.amount.toString(), asset.decimals).toString(),
-      index: d.index,
-    })),
-  });
   return block;
 };
