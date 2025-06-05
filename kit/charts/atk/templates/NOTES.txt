@@ -5,10 +5,68 @@
 The following endpoints are now available:
 
   Blockchain JSON-RPC: https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
-   Blockchain Exlorer: https://{{ (index .Values "blockscout" "blockscout-stack" "frontend" "ingress" "hostname" ) | default "explorer.k8s.orb.local" }}
-            The Graph: https://{{ (index .Values "thegraph" "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
-               Hasura: https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}
-              Grafana: https://{{ (index .Values "observability" "grafana" "ingress" "hosts" 0 ) | default "grafana.k8s.orb.local" }}
+   Blockchain Explorer: https://{{ (index .Values "blockscout" "blockscout-stack" "frontend" "ingress" "hostname" ) | default "explorer.k8s.orb.local" }}
+             The Graph: https://{{ (index .Values "thegraph" "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
+                Hasura: https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}
+               Grafana: https://{{ (index .Values "observability" "grafana" "ingress" "hosts" 0 ) | default "grafana.k8s.orb.local" }}
 {{- if .Values.dapp.enabled }}
-                 DApp: https://{{ (index .Values.dapp.ingress.hosts 0).host | default "dapp.k8s.orb.local" }}
+                  DApp: https://{{ (index .Values.dapp.ingress.hosts 0).host | default "dapp.k8s.orb.local" }}
+{{- end }}
+
+========================================================================
+                      Environment Configuration
+========================================================================
+
+To connect your development environment to this deployment, you need
+to configure the following environment variables:
+
+Configuration Details:
+  Instance Type: standalone
+  Blockchain RPC: {{- if and .Values.txsigner.enabled .Values.txsigner.ingress.enabled }} https://{{ .Values.txsigner.ingress.hostname | default "txsigner.k8s.orb.local" }}{{- else }} https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}{{- end }}
+  Load Balancer: https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
+  Hasura GraphQL: https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}/v1/graphql
+  Hasura Admin Secret: {{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | default "atk" }}
+  Database URL: {{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_DATABASE_URL | default "postgresql://hasura:atk@postgresql-pgpool:5432/hasura" }}
+  The Graph Endpoint: https://{{ (index .Values "thegraph" "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
+  Subgraph Names: kit
+  Portal GraphQL: https://{{ .Values.portal.ingress.hostname | default "portal.k8s.orb.local" }}/graphql
+  MinIO Endpoint: s3://minio.k8s.orb.local
+  MinIO Access Key: <MINIO_ACCESS_KEY>
+  MinIO Secret Key: <MINIO_SECRET_KEY>
+  IPFS Endpoint: https://ipfs.console.settlemint.com
+  Blockscout GraphQL: https://{{ (index .Values "blockscout" "blockscout-stack" "frontend" "ingress" "hostname" ) | default "explorer.k8s.orb.local" }}/api/v1/graphql
+
+========================================================================
+                    Environment Variable Files
+========================================================================
+
+Create the following files in your project root directory:
+
+=== .env ===
+SETTLEMINT_BLOCKCHAIN_NODE_JSON_RPC_ENDPOINT={{- if and .Values.txsigner.enabled .Values.txsigner.ingress.enabled }}https://{{ .Values.txsigner.ingress.hostname | default "txsigner.k8s.orb.local" }}{{- else }}https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}{{- end }}
+SETTLEMINT_BLOCKCHAIN_NODE_OR_LOAD_BALANCER_JSON_RPC_ENDPOINT=https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
+SETTLEMINT_BLOCKSCOUT_GRAPHQL_ENDPOINT=https://{{ (index .Values "blockscout" "blockscout-stack" "frontend" "ingress" "hostname" ) | default "explorer.k8s.orb.local" }}/api/v1/graphql
+SETTLEMINT_HASURA_ENDPOINT=https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}/v1/graphql
+SETTLEMINT_INSTANCE=standalone
+SETTLEMINT_IPFS_API_ENDPOINT=https://ipfs.console.settlemint.com
+SETTLEMINT_MINIO_ACCESS_KEY=<MINIO_ACCESS_KEY>
+SETTLEMINT_MINIO_ENDPOINT=s3://minio.k8s.orb.local
+SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT=https://{{ .Values.portal.ingress.hostname | default "portal.k8s.orb.local" }}/graphql
+SETTLEMINT_THEGRAPH_DEFAULT_SUBGRAPH=kit
+SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS=["https://{{ (index .Values "thegraph" "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}/subgraphs/name/kit"]
+
+=== .env.local ===
+SETTLEMINT_HASURA_ADMIN_SECRET={{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | default "atk" }}
+SETTLEMINT_HASURA_DATABASE_URL={{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_DATABASE_URL | default "postgresql://hasura:atk@postgresql-pgpool:5432/hasura" }}
+SETTLEMINT_MINIO_SECRET_KEY=<MINIO_SECRET_KEY>
+
+========================================================================
+
+Notes:
+- Replace <MINIO_ACCESS_KEY> and <MINIO_SECRET_KEY> with your actual
+  MinIO credentials when MinIO is configured in your deployment.
+{{- if and .Values.txsigner.enabled (not .Values.txsigner.ingress.enabled) }}
+- Transaction Signer is enabled but not exposed via ingress. To use it
+  for signing transactions, either enable ingress for txsigner or use
+  the regular RPC endpoint which will handle transactions internally.
 {{- end }}
