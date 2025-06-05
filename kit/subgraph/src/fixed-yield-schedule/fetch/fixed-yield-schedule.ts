@@ -16,6 +16,8 @@ export function fetchFixedYieldSchedule(
     fixedYieldSchedule.rate = BigInt.zero();
     fixedYieldSchedule.interval = BigInt.zero();
     setBigNumber(fixedYieldSchedule, "totalClaimed", BigInt.zero(), 18);
+    setBigNumber(fixedYieldSchedule, "totalUnclaimedYield", BigInt.zero(), 18);
+    setBigNumber(fixedYieldSchedule, "totalYield", BigInt.zero(), 18);
     fixedYieldSchedule.save();
     FixedYieldScheduleTemplate.create(address);
   }

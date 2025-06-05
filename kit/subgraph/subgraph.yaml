@@ -360,24 +360,6 @@ templates:
           handler: handleTokensUnfrozen
       file: ./src/custodian/custodian.ts
   - kind: ethereum
-    name: HistoricalBalances
-    network: settlemint
-    source:
-      abi: HistoricalBalances
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - CheckpointUpdated
-      abis:
-        - name: HistoricalBalances
-          file: ../contracts/artifacts/contracts/extensions/historical-balances/ISMARTHistoricalBalances.sol/ISMARTHistoricalBalances.json
-      eventHandlers:
-        - event: CheckpointUpdated(indexed address,indexed address,uint256,uint256)
-          handler: handleCheckpointUpdated
-      file: ./src/historical-balances/historical-balances.ts
-  - kind: ethereum
     name: Capped
     network: settlemint
     source:
@@ -434,12 +416,13 @@ templates:
         - name: FixedYieldSchedule
           file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
       eventHandlers:
-        - event: FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address)
+        - event: FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address,uint256)
           handler: handleFixedYieldScheduleSet
         - event: UnderlyingAssetTopUp(indexed address,uint256)
           handler: handleUnderlyingAssetTopUp
         - event: UnderlyingAssetWithdrawn(indexed address,uint256)
           handler: handleUnderlyingAssetWithdrawn
-        - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
+        - event: YieldClaimed(indexed
+            address,uint256,uint256,uint256,uint256[],uint256,uint256)
           handler: handleYieldClaimed
       file: ./src/fixed-yield-schedule/fixed-yield-schedule.ts

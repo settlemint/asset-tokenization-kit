@@ -12,6 +12,7 @@ import { fetchCustodian } from "../../custodian/fetch/custodian";
 import { InterfaceIds } from "../../erc165/utils/interfaceids";
 import { fetchPausable } from "../../pausable/fetch/pausable";
 import { setBigNumber } from "../../utils/bignumber";
+import { fetchYield } from "../../yield/fetch/yield";
 
 export function fetchToken(address: Address): Token {
   let token = Token.load(address);
@@ -51,6 +52,10 @@ export function fetchToken(address: Address): Token {
     }
     if (tokenContract.supportsInterface(InterfaceIds.ISMARTCapped)) {
       token.capped = fetchCapped(address).id;
+      token.save();
+    }
+    if (tokenContract.supportsInterface(InterfaceIds.ISMARTYield)) {
+      token.yield_ = fetchYield(address).id;
       token.save();
     }
   }

@@ -6,6 +6,5 @@ export function handleSMARTFixedYieldScheduleCreated(
   event: SMARTFixedYieldScheduleCreated
 ): void {
   fetchEvent(event, "FixedYieldScheduleCreated");
-  const fixedYieldSchedule = fetchFixedYieldSchedule(event.params.schedule);
-  fixedYieldSchedule.save();
+  fetchFixedYieldSchedule(event.params.schedule);
 }

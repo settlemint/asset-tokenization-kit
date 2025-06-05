@@ -8,11 +8,15 @@ import { fetchYield } from "./fetch/yield";
 
 export function handleCheckpointUpdated(event: CheckpointUpdated): void {
   fetchEvent(event, "CheckpointUpdated");
+  // The transfer/burn/mint event handler of the token will update the balance
 }
 
 export function handleYieldScheduleSet(event: YieldScheduleSet): void {
   fetchEvent(event, "YieldScheduleSet");
   const tokenYield = fetchYield(event.address);
-  tokenYield.schedule = fetchFixedYieldSchedule(event.params.schedule).id;
+  const fixedYieldSchedule = fetchFixedYieldSchedule(event.params.schedule);
+  tokenYield.schedule = fixedYieldSchedule.id;
   tokenYield.save();
+  fixedYieldSchedule.token = event.address;
+  fixedYieldSchedule.save();
 }
