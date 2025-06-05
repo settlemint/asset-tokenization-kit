@@ -5,6 +5,7 @@ import {
   UnderlyingAssetWithdrawn,
   YieldClaimed,
 } from "../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
+import { DEFAULT_TOKEN_DECIMALS } from "../config/token";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchToken } from "../token/fetch/token";
 import { setBigNumber } from "../utils/bignumber";
@@ -17,7 +18,11 @@ export function handleFixedYieldScheduleSet(
 ): void {
   fetchEvent(event, "FixedYieldScheduleSet");
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
-  const token = fetchToken(Address.fromBytes(fixedYieldSchedule.token));
+  const tokenAddress = Address.fromBytes(fixedYieldSchedule.token);
+  const tokenDecimals =
+    tokenAddress == Address.zero()
+      ? DEFAULT_TOKEN_DECIMALS
+      : fetchToken(tokenAddress).decimals;
   fixedYieldSchedule.underlyingAsset = event.params.underlyingAsset;
   fixedYieldSchedule.startDate = event.params.startDate;
   fixedYieldSchedule.endDate = event.params.endDate;
@@ -27,19 +32,19 @@ export function handleFixedYieldScheduleSet(
     fixedYieldSchedule,
     "totalClaimed",
     BigInt.zero(),
-    token.decimals
+    tokenDecimals
   );
   setBigNumber(
     fixedYieldSchedule,
     "totalUnclaimedYield",
     BigInt.zero(),
-    token.decimals
+    tokenDecimals
   );
   setBigNumber(
     fixedYieldSchedule,
     "totalYield",
     event.params.yieldForNextPeriod,
-    token.decimals
+    tokenDecimals
   );
   for (let i = 1; i <= event.params.periodEndTimestamps.length; i++) {
     const period = fetchFixedYieldSchedulePeriod(getPeriodId(event.address, i));
@@ -47,14 +52,14 @@ export function handleFixedYieldScheduleSet(
     period.startDate =
       i == 0 ? event.params.startDate : event.params.periodEndTimestamps[i - 1];
     period.endDate = event.params.periodEndTimestamps[i];
-    setBigNumber(period, "claimed", BigInt.zero(), token.decimals);
+    setBigNumber(period, "claimed", BigInt.zero(), tokenDecimals);
     setBigNumber(
       period,
       "yield",
       i == 0 ? event.params.yieldForNextPeriod : BigInt.zero(),
-      token.decimals
+      tokenDecimals
     );
-    setBigNumber(period, "unclaimedYield", BigInt.zero(), token.decimals);
+    setBigNumber(period, "unclaimedYield", BigInt.zero(), tokenDecimals);
     period.save();
   }
   fixedYieldSchedule.save();
@@ -75,7 +80,11 @@ export function handleUnderlyingAssetWithdrawn(
 export function handleYieldClaimed(event: YieldClaimed): void {
   fetchEvent(event, "YieldClaimed");
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
-  const token = fetchToken(Address.fromBytes(fixedYieldSchedule.token));
+  const tokenAddress = Address.fromBytes(fixedYieldSchedule.token);
+  const tokenDecimals =
+    tokenAddress == Address.zero()
+      ? DEFAULT_TOKEN_DECIMALS
+      : fetchToken(tokenAddress).decimals;
 
   for (
     let i = event.params.fromPeriod.toI32();
@@ -87,15 +96,15 @@ export function handleYieldClaimed(event: YieldClaimed): void {
       period,
       "totalClaimed",
       event.params.periodAmounts[i - event.params.fromPeriod.toI32()],
-      token.decimals
+      tokenDecimals
     );
     setBigNumber(
       period,
       "totalYield",
       event.params.periodAmounts[i - event.params.fromPeriod.toI32()],
-      token.decimals
+      tokenDecimals
     );
-    setBigNumber(period, "totalUnclaimedYield", BigInt.zero(), token.decimals);
+    setBigNumber(period, "totalUnclaimedYield", BigInt.zero(), tokenDecimals);
     period.save();
   }
   const nextPeriod = fetchFixedYieldSchedulePeriod(
@@ -105,7 +114,7 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     nextPeriod,
     "yield",
     event.params.yieldForNextPeriod,
-    token.decimals
+    tokenDecimals
   );
   nextPeriod.save();
 
@@ -113,18 +122,13 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     event.params.claimedAmount
   );
   const totalYield = totalClaimed.plus(event.params.totalUnclaimedYield);
-  setBigNumber(
-    fixedYieldSchedule,
-    "totalClaimed",
-    totalClaimed,
-    token.decimals
-  );
+  setBigNumber(fixedYieldSchedule, "totalClaimed", totalClaimed, tokenDecimals);
   setBigNumber(
     fixedYieldSchedule,
     "totalUnclaimedYield",
     event.params.totalUnclaimedYield,
-    token.decimals
+    tokenDecimals
   );
-  setBigNumber(fixedYieldSchedule, "totalYield", totalYield, token.decimals);
+  setBigNumber(fixedYieldSchedule, "totalYield", totalYield, tokenDecimals);
   fixedYieldSchedule.save();
 }
