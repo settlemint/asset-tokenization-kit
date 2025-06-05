@@ -1,22 +1,79 @@
-1. Get the application URL by running these commands:
-{{- if .Values.ingress.enabled }}
-{{- range $host := .Values.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
+** Please be patient while the chart is being deployed **
+
+{{- if .Values.config }}
+eRPC Configuration:
+  - Log Level: {{ .Values.config.logLevel }}
+  - Projects: {{ len .Values.config.projects }}
+  {{- range .Values.config.projects }}
+  - Project "{{ .id }}": {{ len .upstreams }} upstream(s)
   {{- end }}
 {{- end }}
+
+eRPC can be accessed through the following DNS name from within your cluster:
+
+    {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local (port {{ .Values.service.port }})
+
+To access eRPC from outside the cluster execute the following commands:
+
+{{- if .Values.ingress.enabled }}
+
+1. Get the eRPC URL and associate its hostname to your cluster external IP:
+
+   export CLUSTER_IP=$(minikube ip) # On Minikube. Use: `kubectl cluster-info` on others K8s clusters
+   echo "eRPC URL: http{{ if .Values.ingress.tls }}s{{ end }}://{{ .Values.ingress.hostname }}/"
+   echo "$CLUSTER_IP  {{ .Values.ingress.hostname }}" | sudo tee -a /etc/hosts
+
 {{- else if contains "NodePort" .Values.service.type }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "erpc.fullname" . }})
-  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-  echo http://$NODE_IP:$NODE_PORT
+
+1. Get the eRPC URL by running these commands:
+
+    export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" . }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "common.names.fullname" . }})
+    export NODE_IP=$(kubectl get nodes --namespace {{ include "common.names.namespace" . }} -o jsonpath="{.items[0].status.addresses[0].address}")
+    echo "eRPC URL: http://$NODE_IP:$NODE_PORT/"
+
 {{- else if contains "LoadBalancer" .Values.service.type }}
+
+1. Get the eRPC URL by running these commands:
+
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch its status by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "erpc.fullname" . }}'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "erpc.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-  echo http://$SERVICE_IP:{{ .Values.service.port }}
+           You can watch its status by running 'kubectl get svc --namespace {{ include "common.names.namespace" . }} -w {{ include "common.names.fullname" . }}'
+
+    export SERVICE_IP=$(kubectl get svc --namespace {{ include "common.names.namespace" . }} {{ include "common.names.fullname" . }} --template "{{ "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}" }}")
+    echo "eRPC URL: http://$SERVICE_IP:{{ .Values.service.port }}/"
+
 {{- else if contains "ClusterIP" .Values.service.type }}
-  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "erpc.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-  echo "Visit http://127.0.0.1:8080 to use your application"
-  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+
+1. Get the eRPC URL by running these commands:
+
+    kubectl port-forward --namespace {{ include "common.names.namespace" . }} svc/{{ include "common.names.fullname" . }} 8080:{{ .Values.service.port }} &
+    echo "eRPC URL: http://127.0.0.1:8080/"
+
 {{- end }}
+
+2. Access eRPC metrics:
+
+    The metrics endpoint is available at port {{ .Values.service.metricsPort }}:
+    http://[eRPC_URL]:{{ .Values.service.metricsPort }}/metrics
+
+3. Test the connection:
+
+    You can test eRPC is working by sending a request:
+    curl -X POST http://[eRPC_URL]/53771311147 \
+      -H "Content-Type: application/json" \
+      -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+
+{{- if .Values.networkPolicy.enabled }}
+
+WARNING: Network Policy is enabled. Make sure your client is allowed to access eRPC.
+{{- if .Values.networkPolicy.addExternalClientAccess }}
+To allow external access, label your client pod with:
+  kubectl label pod <POD_NAME> {{ include "common.names.fullname" . }}-client=true
+{{- end }}
+{{- end }}
+
+{{- include "common.warnings.rollingTag" .Values.image }}
+{{- include "common.warnings.rollingTag" .Values.tests.image }}

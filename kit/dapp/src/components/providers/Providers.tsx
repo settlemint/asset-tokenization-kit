@@ -8,12 +8,12 @@ import { NextIntlClientProvider } from "next-intl";
 
 /**
  * Extracts authentication configuration from environment variables.
- * 
+ *
  * This function determines which authentication methods are enabled based on
  * the presence of required environment variables. It provides a centralized
  * way to configure authentication providers, making it easier to test and
  * maintain the authentication setup.
- * 
+ *
  * @param env - The server environment configuration
  * @returns Object containing flags for each enabled authentication method
  */
@@ -33,9 +33,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <NextIntlClientProvider>
           <ThemeProvider attribute="class" enableColorScheme enableSystem>
             <TransitionProvider>
-              <AuthProvider {...authConfig}>
-                {children}
-              </AuthProvider>
+              <AuthProvider {...authConfig}>{children}</AuthProvider>
             </TransitionProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

@@ -369,5 +369,5 @@ Then browse to <http://localhost:16686/> to view the traces and
 ## Local tools needed
 
 ```bash
-brew install chart-testing yamllint
+brew install chart-testing yamllint helm-docs
 ```
