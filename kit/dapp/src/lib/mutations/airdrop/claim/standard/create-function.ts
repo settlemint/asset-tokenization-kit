@@ -60,7 +60,7 @@ export const claimStandardAirdropFunction = async ({
     address: airdrop,
     from: user.wallet,
     input: {
-      amount: amount.toString(),
+      amount: amountExact.toString(),
       index: index.toString(),
       merkleProof,
     },

@@ -89,7 +89,8 @@ export const getUserAirdropDetail = withTracing(
     );
 
     // Create recipient ID for The Graph query (airdropId-recipientAddress format)
-    const recipientId = `${airdropAddress}-${user.wallet}`.toLowerCase();
+    const recipientId =
+      `${airdropAddress}${user.wallet.slice(2)}`.toLowerCase();
 
     // Fetch both airdrop details and recipient claim status concurrently
     const [airdropDetailsResult, airdropRecipientResult] = await Promise.all([

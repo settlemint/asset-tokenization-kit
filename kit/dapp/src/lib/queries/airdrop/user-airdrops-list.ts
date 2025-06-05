@@ -88,7 +88,7 @@ export const getUserAirdropList = withTracing(
 
     // Create recipient IDs for The Graph query (airdropId-recipientAddress format)
     const recipientIds = distributions.map((d) =>
-      `${d.airdrop}-${user}`.toLowerCase()
+      `${d.airdrop}${user.slice(2)}`.toLowerCase()
     );
 
     // Fetch both airdrop details and recipient claim status concurrently
@@ -138,7 +138,7 @@ export const getUserAirdropList = withTracing(
       }
 
       // Get claim status from The Graph
-      const recipientId = `${item.airdrop}-${user}`.toLowerCase();
+      const recipientId = `${item.airdrop}${user.slice(2)}`.toLowerCase();
       const recipientClaimData = safeParse(
         AirdropClaimSchema,
         recipientDataMap.get(recipientId)

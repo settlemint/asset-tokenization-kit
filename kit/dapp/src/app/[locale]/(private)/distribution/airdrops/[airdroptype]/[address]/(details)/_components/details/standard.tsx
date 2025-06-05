@@ -87,7 +87,6 @@ export async function StandardAirdropDetails({
           token: airdrop.asset.symbol,
           decimals: airdrop.asset.decimals,
           locale: locale,
-          adjustDecimals: true,
         })}
       </DetailGridItem>
       <DetailGridItem
