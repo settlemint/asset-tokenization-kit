@@ -157,6 +157,14 @@ A Helm chart for the supporting components
 | postgresql-ha.postgresql.repmgrUsername | string | `"repmgr"` |  |
 | postgresql-ha.postgresql.resourcesPreset | string | `"none"` |  |
 | postgresql-ha.postgresql.username | string | `"postgres"` |  |
+| postgresql-ha.service.annotations."service.beta.kubernetes.io/aws-load-balancer-backend-protocol" | string | `"tcp"` |  |
+| postgresql-ha.service.annotations."service.beta.kubernetes.io/aws-load-balancer-nlb-target-type" | string | `"ip"` |  |
+| postgresql-ha.service.annotations."service.beta.kubernetes.io/aws-load-balancer-scheme" | string | `"internet-facing"` |  |
+| postgresql-ha.service.annotations."service.beta.kubernetes.io/aws-load-balancer-type" | string | `"nlb"` |  |
+| postgresql-ha.service.annotations."service.beta.kubernetes.io/azure-load-balancer-disable-tcp-reset" | string | `"true"` |  |
+| postgresql-ha.service.annotations."service.beta.kubernetes.io/azure-load-balancer-tcp-idle-timeout" | string | `"30"` |  |
+| postgresql-ha.service.externalTrafficPolicy | string | `"Local"` |  |
+| postgresql-ha.service.type | string | `"LoadBalancer"` |  |
 | redis.auth.password | string | `"atk"` |  |
 | redis.commonLabels."app.kubernetes.io/managed-by" | string | `"helm"` |  |
 | redis.commonLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
