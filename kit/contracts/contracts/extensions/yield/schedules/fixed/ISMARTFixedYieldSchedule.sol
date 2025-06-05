@@ -85,6 +85,9 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule {
     /// @param periodAmounts An array containing the amount of yield claimed for each specific period within the
     /// `fromPeriod` to `toPeriod` range.
     /// The length of this array is `toPeriod - fromPeriod + 1`.
+    /// @param periodYields An array containing the total yield for each specific period within the
+    /// `fromPeriod` to `toPeriod` range.
+    /// The length of this array is `toPeriod - fromPeriod + 1`.
     /// @param totalUnclaimedYield The total amount of unclaimed yield remaining in the contract across all holders
     /// after this claim.
     /// @param yieldForNextPeriod The yield for the next period.
@@ -94,6 +97,7 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule {
         uint256 fromPeriod,
         uint256 toPeriod,
         uint256[] periodAmounts,
+        uint256[] periodYields,
         uint256 totalUnclaimedYield,
         uint256 yieldForNextPeriod
     );

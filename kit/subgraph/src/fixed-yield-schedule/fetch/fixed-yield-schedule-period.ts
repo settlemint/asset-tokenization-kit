@@ -29,7 +29,7 @@ export function fetchFixedYieldSchedulePeriod(
       fixedYieldSchedulePeriod,
       "totalUnclaimedYield",
       BigInt.zero(),
-      18
+      DEFAULT_TOKEN_DECIMALS
     );
     fixedYieldSchedulePeriod.save();
   }

@@ -92,32 +92,25 @@ templates:
           handler: handleBootstrapped
         - event: ComplianceImplementationUpdated(indexed address,indexed address)
           handler: handleComplianceImplementationUpdated
-        - event: IdentityFactoryImplementationUpdated(indexed address,indexed
-            address)
+        - event: IdentityFactoryImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityFactoryImplementationUpdated
         - event: IdentityImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityImplementationUpdated
-        - event: IdentityRegistryImplementationUpdated(indexed address,indexed
-            address)
+        - event: IdentityRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityRegistryImplementationUpdated
-        - event:
-            IdentityRegistryStorageImplementationUpdated(indexed address,indexed
+        - event: IdentityRegistryStorageImplementationUpdated(indexed address,indexed
             address)
           handler: handleIdentityRegistryStorageImplementationUpdated
-        - event: TokenAccessManagerImplementationUpdated(indexed address,indexed
-            address)
+        - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
           handler: handleTokenAccessManagerImplementationUpdated
         - event: TokenFactoryCreated(indexed address,string,address,address,uint256)
           handler: handleTokenFactoryCreated
         - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
           handler: handleTokenIdentityImplementationUpdated
-        - event:
-            TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
+        - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
             address)
           handler: handleTrustedIssuersRegistryImplementationUpdated
-        - event:
-            TopicSchemeRegistryImplementationUpdated(indexed address,indexed
-            address)
+        - event: TopicSchemeRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleTopicSchemeRegistryImplementationUpdated
       file: ./src/system/system.ts
   - kind: ethereum
@@ -141,8 +134,7 @@ templates:
         - event: TokenAssetCreated(indexed address,indexed address,indexed
             address,address)
           handler: handleTokenAssetCreated
-        - event:
-            TokenImplementationUpdated(indexed address,indexed address,indexed
+        - event: TokenImplementationUpdated(indexed address,indexed address,indexed
             address)
           handler: handleTokenImplementationUpdated
       file: ./src/token-factory/token-factory.ts
@@ -255,11 +247,9 @@ templates:
           handler: handleClaimRemoved
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
-        - event: ExecutionFailed(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionFailed
-        - event: ExecutionRequested(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionRequested
         - event: KeyAdded(indexed bytes32,indexed uint256,indexed uint256)
           handler: handleKeyAdded
@@ -286,8 +276,7 @@ templates:
       eventHandlers:
         - event: IdentityCreated(indexed address,indexed address,indexed address)
           handler: handleIdentityCreated
-        - event: TokenIdentityCreated(indexed address,indexed address,indexed
-            address)
+        - event: TokenIdentityCreated(indexed address,indexed address,indexed address)
           handler: handleTokenIdentityCreated
       file: ./src/identity-factory/identity-factory.ts
   - kind: ethereum
@@ -310,11 +299,9 @@ templates:
           handler: handleTopicSchemeRegistered
         - event: TopicSchemeRemoved(indexed address,indexed uint256,string)
           handler: handleTopicSchemeRemoved
-        - event: TopicSchemeUpdated(indexed address,indexed
-            uint256,string,string,string)
+        - event: TopicSchemeUpdated(indexed address,indexed uint256,string,string,string)
           handler: handleTopicSchemeUpdated
-        - event: TopicSchemesBatchRegistered(indexed
-            address,uint256[],string[],string[])
+        - event: TopicSchemesBatchRegistered(indexed address,uint256[],string[],string[])
           handler: handleTopicSchemesBatchRegistered
       file: ./src/topic-scheme-registry/topic-scheme-registry.ts
   - kind: ethereum
@@ -367,8 +354,7 @@ templates:
       eventHandlers:
         - event: AddressFrozen(indexed address,indexed address,indexed bool)
           handler: handleAddressFrozen
-        - event: RecoverySuccess(indexed address,indexed address,indexed
-            address,address)
+        - event: RecoverySuccess(indexed address,indexed address,indexed address,address)
           handler: handleRecoverySuccess
         - event: TokensFrozen(indexed address,indexed address,uint256)
           handler: handleTokensFrozen
@@ -439,6 +425,6 @@ templates:
         - event: UnderlyingAssetWithdrawn(indexed address,uint256)
           handler: handleUnderlyingAssetWithdrawn
         - event: YieldClaimed(indexed
-            address,uint256,uint256,uint256,uint256[],uint256,uint256)
+            address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)
           handler: handleYieldClaimed
       file: ./src/fixed-yield-schedule/fixed-yield-schedule.ts

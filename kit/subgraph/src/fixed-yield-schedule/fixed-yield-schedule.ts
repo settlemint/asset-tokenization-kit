@@ -119,19 +119,23 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     i++
   ) {
     const period = fetchFixedYieldSchedulePeriod(getPeriodId(event.address, i));
+    const claimedForPeriod =
+      event.params.periodAmounts[i - event.params.fromPeriod.toI32()];
+    const totalYieldForPeriod =
+      event.params.periodYields[i - event.params.fromPeriod.toI32()];
+    const totalClaimedForPeriod =
+      period.totalClaimedExact.plus(claimedForPeriod);
+    const totalUnclaimedYieldForPeriod = totalYieldForPeriod.minus(
+      totalClaimedForPeriod
+    );
+    setBigNumber(period, "totalClaimed", totalClaimedForPeriod, tokenDecimals);
+    setBigNumber(period, "totalYield", totalYieldForPeriod, tokenDecimals);
     setBigNumber(
       period,
-      "totalClaimed",
-      event.params.periodAmounts[i - event.params.fromPeriod.toI32()],
+      "totalUnclaimedYield",
+      totalUnclaimedYieldForPeriod,
       tokenDecimals
     );
-    setBigNumber(
-      period,
-      "totalYield",
-      event.params.periodAmounts[i - event.params.fromPeriod.toI32()],
-      tokenDecimals
-    );
-    setBigNumber(period, "totalUnclaimedYield", BigInt.zero(), tokenDecimals);
     period.save();
   }
   const nextPeriod = fetchFixedYieldSchedulePeriod(

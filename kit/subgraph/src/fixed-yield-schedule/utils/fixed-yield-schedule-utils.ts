@@ -40,12 +40,6 @@ export function updateYield(token: Token): void {
     nextPeriodYield.value,
     token.decimals
   );
-  setBigNumber(
-    fixedYieldPeriod,
-    "totalUnclaimedYield",
-    nextPeriodYield.value,
-    token.decimals
-  );
   fixedYieldPeriod.save();
 
   const unclaimedYield = fixedYieldScheduleContract.try_totalUnclaimedYield();
@@ -62,7 +56,7 @@ export function updateYield(token: Token): void {
   setBigNumber(
     fixedYieldSchedule,
     "totalYield",
-    fixedYieldSchedule.totalClaimedExact.plus(unclaimedYield.value),
+    fixedYieldSchedule.totalYieldExact.plus(nextPeriodYield.value),
     token.decimals
   );
   fixedYieldSchedule.save();

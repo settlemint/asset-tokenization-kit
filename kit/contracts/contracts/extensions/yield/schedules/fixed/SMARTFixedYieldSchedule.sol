@@ -394,6 +394,7 @@ contract SMARTFixedYieldSchedule is
 
         // Array to store yield amounts for each period being claimed. Useful for event emission.
         uint256[] memory periodAmounts = new uint256[](lastPeriod - fromPeriod + 1);
+        uint256[] memory periodYields = new uint256[](lastPeriod - fromPeriod + 1);
 
         // Calculate yield for each unclaimed, completed period.
         for (uint256 period = fromPeriod; period <= lastPeriod; ++period) {
@@ -404,6 +405,13 @@ contract SMARTFixedYieldSchedule is
                 uint256 periodYield = (balance * basis * _rate) / RATE_BASIS_POINTS;
                 totalAmountToClaim += periodYield;
                 periodAmounts[period - fromPeriod] = periodYield; // Store amount for this specific period.
+            }
+            // Fetch the total supply of the token as it was at the end of this specific period.
+            // This is crucial for accuracy if the total supply changes over time.
+            uint256 historicalTotalSupply = _token.totalSupplyAt(_periodEndTimestamps[period - 1]);
+            if (historicalTotalSupply > 0) {
+                uint256 totalPeriodYield = (historicalTotalSupply * basis * _rate) / RATE_BASIS_POINTS;
+                periodYields[period - fromPeriod] = totalPeriodYield; // Store amount for this specific period.
             }
             // If balance is 0 for a period, its corresponding entry in periodAmounts remains 0.
         }
@@ -425,7 +433,14 @@ contract SMARTFixedYieldSchedule is
         uint256 yieldForNextPeriod = totalYieldForNextPeriod();
 
         emit YieldClaimed(
-            sender, totalAmountToClaim, fromPeriod, lastPeriod, periodAmounts, remainingUnclaimed, yieldForNextPeriod
+            sender,
+            totalAmountToClaim,
+            fromPeriod,
+            lastPeriod,
+            periodAmounts,
+            periodYields,
+            remainingUnclaimed,
+            yieldForNextPeriod
         );
     }
 
