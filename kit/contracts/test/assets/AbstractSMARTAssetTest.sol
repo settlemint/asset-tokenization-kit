@@ -69,9 +69,6 @@ abstract contract AbstractSMARTAssetTest is Test {
 
         // Initialize the forwarder
         forwarder = new SMARTForwarder();
-
-        // Initialize the access manager
-        vm.prank(_owner);
     }
 
     function _setUpIdentity(address _wallet, string memory _label) internal {
