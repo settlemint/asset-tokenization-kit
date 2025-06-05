@@ -43,7 +43,7 @@ export function Columns() {
     columnHelper.display({
       header: t("table.status-header"),
       cell: ({ row }) => (
-        <AirdropClaimStatusIndicator airdropRecipient={row.original} />
+        <AirdropClaimStatusIndicator airdrop={row.original.airdrop} />
       ),
     }),
     columnHelper.display({
@@ -51,7 +51,7 @@ export function Columns() {
       cell: ({ row }) => {
         return (
           <DataTableRowActions
-            detailUrl={`/portfolio/my-airdrops/${row.original.airdrop.type}/${row.original.airdrop.id}`}
+            detailUrl={`/portfolio/my-airdrops/${row.original.airdrop.id}`}
           />
         );
       },

@@ -17,7 +17,7 @@ import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
 
 type AirdropClaimStatusIndicatorProps = {
-  airdropRecipient: AirdropRecipient;
+  airdrop: AirdropRecipient["airdrop"];
   asBadge?: boolean;
 };
 
@@ -30,30 +30,29 @@ type StatusResult = {
  * Calculate airdrop status and message based on type
  */
 function calculateAirdropStatusAndMessage(
-  recipient: AirdropRecipient
+  airdrop: AirdropRecipient["airdrop"]
 ): StatusResult {
-  switch (recipient.airdrop.__typename) {
+  switch (airdrop.__typename) {
     case "StandardAirdrop":
-      return CalculateStandardAirdropStatus(recipient.airdrop);
+      return CalculateStandardAirdropStatus(airdrop);
 
     case "PushAirdrop":
-      return CalculatePushAirdropStatus(recipient.airdrop);
+      return CalculatePushAirdropStatus(airdrop);
 
     case "VestingAirdrop":
-      return CalculateVestingAirdropStatus(recipient.airdrop);
+      return CalculateVestingAirdropStatus(airdrop);
 
     default:
-      exhaustiveGuard(recipient.airdrop);
+      exhaustiveGuard(airdrop);
   }
 }
 
 export function AirdropClaimStatusIndicator({
-  airdropRecipient,
+  airdrop,
   asBadge = false,
 }: AirdropClaimStatusIndicatorProps): ReactElement {
   const t = useTranslations("portfolio.my-airdrops");
-  const { status, message } =
-    calculateAirdropStatusAndMessage(airdropRecipient);
+  const { status, message } = calculateAirdropStatusAndMessage(airdrop);
 
   const statusConfig = {
     READY: {
