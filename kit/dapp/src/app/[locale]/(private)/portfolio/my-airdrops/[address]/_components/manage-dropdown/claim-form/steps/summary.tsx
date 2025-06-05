@@ -1,7 +1,7 @@
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import type { ClaimAirdropInput } from "@/lib/mutations/airdrop/claim/standard/claim-schema";
+import type { ClaimAirdropInput } from "@/lib/mutations/airdrop/claim/claim-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";

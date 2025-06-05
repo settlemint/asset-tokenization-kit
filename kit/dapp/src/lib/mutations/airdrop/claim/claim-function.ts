@@ -6,10 +6,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
-import {
-  createMerkleTree,
-  getMerkleProof,
-} from "../../create/common/merkle-tree";
+import { createMerkleTree, getMerkleProof } from "../create/common/merkle-tree";
 import type { ClaimAirdropInput } from "./claim-schema";
 
 /**

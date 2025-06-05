@@ -1,6 +1,6 @@
 import { t } from "@/lib/utils/typebox";
 import type { Static } from "@sinclair/typebox";
-import { AirdropDistributionSchema } from "../../create/common/airdrop-distribution-schema";
+import { AirdropDistributionSchema } from "../create/common/airdrop-distribution-schema";
 
 export const ClaimAirdropSchema = t.Object(
   {

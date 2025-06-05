@@ -2,8 +2,8 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { claimAirdrop } from "@/lib/mutations/airdrop/claim/standard/claim-action";
-import { ClaimAirdropSchema } from "@/lib/mutations/airdrop/claim/standard/claim-schema";
+import { claimAirdrop } from "@/lib/mutations/airdrop/claim/claim-action";
+import { ClaimAirdropSchema } from "@/lib/mutations/airdrop/claim/claim-schema";
 import type { getUserAirdropDetail } from "@/lib/queries/airdrop/user-airdrop-detail";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
