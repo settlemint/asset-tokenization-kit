@@ -8,7 +8,7 @@ class RoleConfig {
 
   constructor(name: string, fieldName: string) {
     this._name = name;
-    if (name === "DEFAULT_ADMIN_ROLE") {
+    if (name == "DEFAULT_ADMIN_ROLE") {
       this._hexString =
         "0x0000000000000000000000000000000000000000000000000000000000000000";
     } else {

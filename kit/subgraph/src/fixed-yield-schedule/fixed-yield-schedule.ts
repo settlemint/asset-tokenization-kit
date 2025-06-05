@@ -51,15 +51,15 @@ export function handleFixedYieldScheduleSet(
     period.schedule = fixedYieldSchedule.id;
     period.startDate =
       i == 0 ? event.params.startDate : event.params.periodEndTimestamps[i - 1];
-    period.endDate = event.params.periodEndTimestamps[i];
-    setBigNumber(period, "claimed", BigInt.zero(), tokenDecimals);
+    period.endDate = event.params.periodEndTimestamps[i - 1];
+    setBigNumber(period, "totalClaimed", BigInt.zero(), tokenDecimals);
     setBigNumber(
       period,
-      "yield",
+      "totalYield",
       i == 0 ? event.params.yieldForNextPeriod : BigInt.zero(),
       tokenDecimals
     );
-    setBigNumber(period, "unclaimedYield", BigInt.zero(), tokenDecimals);
+    setBigNumber(period, "totalUnclaimedYield", BigInt.zero(), tokenDecimals);
     period.save();
   }
   fixedYieldSchedule.save();
@@ -112,7 +112,7 @@ export function handleYieldClaimed(event: YieldClaimed): void {
   );
   setBigNumber(
     nextPeriod,
-    "yield",
+    "totalYield",
     event.params.yieldForNextPeriod,
     tokenDecimals
   );
