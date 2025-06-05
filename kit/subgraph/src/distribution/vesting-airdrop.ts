@@ -9,14 +9,8 @@ import {
   AirdropClaimIndex,
   AirdropRecipient,
   AirdropStatsData,
-  Bond,
-  CryptoCurrency,
-  Deposit,
-  Equity,
-  Fund,
   //Asset,
   LinearVestingStrategy,
-  StableCoin,
   UserVestingData,
   VestingAirdrop,
   VestingStatsData,
@@ -29,37 +23,10 @@ import {
   TokensWithdrawn,
 } from "../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
 
+import { fetchAssetDecimals } from "../assets/fetch/asset";
 import { fetchAccount } from "../utils/account";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { toDecimals } from "../utils/decimals";
-
-// Helper function to get token decimals from any asset type
-function getTokenDecimals(tokenAddress: Address): i32 {
-  // Try loading each possible asset type
-  let crypto = CryptoCurrency.load(tokenAddress);
-  if (crypto) return crypto.decimals;
-
-  let stable = StableCoin.load(tokenAddress);
-  if (stable) return stable.decimals;
-
-  let bond = Bond.load(tokenAddress);
-  if (bond) return bond.decimals;
-
-  let equity = Equity.load(tokenAddress);
-  if (equity) return equity.decimals;
-
-  let fund = Fund.load(tokenAddress);
-  if (fund) return fund.decimals;
-
-  let deposit = Deposit.load(tokenAddress);
-  if (deposit) return deposit.decimals;
-
-  // Default to 18 if not found
-  log.warning("Token not found for address {}, defaulting to 18 decimals", [
-    tokenAddress.toHex(),
-  ]);
-  return 18;
-}
 
 // Helper function to generate a unique ID for stats data
 function getStatsId(event: ethereum.Event): i64 {
@@ -134,7 +101,7 @@ function updateVestingStats(
   }
 
   // Get token decimals
-  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  const decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
 
   // Create vesting stats
   let statsId = getStatsId(event);
@@ -184,7 +151,7 @@ export function handleClaimed(event: Claimed): void {
   let claimantAccount = fetchAccount(claimantAddress);
 
   // Get the correct token decimals
-  let decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  let decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
   let amountBD = toDecimals(amount, decimals);
 
   createActivityLogEntry(
@@ -252,24 +219,11 @@ export function handleBatchClaimed(event: BatchClaimed): void {
     return;
   }
 
-  // let token = Asset.load(airdrop.token); // Removed: Asset interface cannot be loaded directly
-  // if (!token) { // Removed
-  //   log.error( // Removed
-  //     "Token entity not found for address {}. Skipping BatchClaimed event.", // Removed
-  //     [airdrop.token.toHex()] // Removed
-  //   );
-  //   return; // Removed
-  // } // Removed
-
-  // Extract event parameters
   const claimantAddress = event.params.claimant;
   const totalAmount = event.params.totalAmount;
   const indices = event.params.indices;
-  const amounts = event.params.amounts; // New parameter from enhanced event
+  const amounts = event.params.amounts;
 
-  // With the contract update, we now have individual amounts per index
-
-  // Log event information
   log.info(
     "BatchClaimed event processed (Vesting): Airdrop {}, Claimant {}, TotalAmount {}, IndicesCount {}",
     [
@@ -299,7 +253,7 @@ export function handleBatchClaimed(event: BatchClaimed): void {
   statsData.claims = 1;
 
   // Get token decimals
-  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  const decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
   const totalAmountBD = toDecimals(totalAmount, decimals);
 
   statsData.claimVolume = totalAmountBD;
@@ -337,7 +291,7 @@ export function handleTokensWithdrawn(event: TokensWithdrawn): void {
   // Get token details
   let tokenAddress = Address.fromBytes(airdrop.token);
   let amount = event.params.amount;
-  let decimals = getTokenDecimals(tokenAddress);
+  let decimals = fetchAssetDecimals(tokenAddress);
   let amountBD = toDecimals(amount, decimals);
 
   log.info(
@@ -383,7 +337,7 @@ export function handleClaimInitialized(event: ClaimInitialized): void {
   );
 
   let claimantAccount = fetchAccount(claimantAddress);
-  let decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  let decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
   let allocatedAmountBD = toDecimals(allocatedAmount, decimals);
 
   // Update AirdropRecipient to track the initial allocation
@@ -454,7 +408,7 @@ function processBatchClaim(
   const claimantAccount = fetchAccount(claimantAddress);
 
   // Get the correct token decimals
-  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  const decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
   const totalAmountBD = toDecimals(totalAmount, decimals);
 
   // Create AirdropClaim entity

@@ -9,12 +9,6 @@ import {
   AirdropClaimIndex,
   AirdropRecipient,
   AirdropStatsData,
-  Bond,
-  CryptoCurrency,
-  Deposit,
-  Equity,
-  Fund,
-  StableCoin,
   // Asset is an interface and cannot be loaded directly
   StandardAirdrop,
 } from "../../generated/schema";
@@ -25,37 +19,10 @@ import {
 } from "../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
 
 // Use fetchAccount and direct constants
+import { fetchAssetDecimals } from "../assets/fetch/asset";
 import { fetchAccount } from "../utils/account";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import { toDecimals } from "../utils/decimals";
-
-// Helper function to get token decimals from any asset type
-function getTokenDecimals(tokenAddress: Address): i32 {
-  // Try loading each possible asset type
-  let crypto = CryptoCurrency.load(tokenAddress);
-  if (crypto) return crypto.decimals;
-
-  let stable = StableCoin.load(tokenAddress);
-  if (stable) return stable.decimals;
-
-  let bond = Bond.load(tokenAddress);
-  if (bond) return bond.decimals;
-
-  let equity = Equity.load(tokenAddress);
-  if (equity) return equity.decimals;
-
-  let fund = Fund.load(tokenAddress);
-  if (fund) return fund.decimals;
-
-  let deposit = Deposit.load(tokenAddress);
-  if (deposit) return deposit.decimals;
-
-  // Default to 18 if not found
-  log.warning("Token not found for address {}, defaulting to 18 decimals", [
-    tokenAddress.toHex(),
-  ]);
-  return 18;
-}
 
 // Helper function to generate a unique ID for stats data
 function getStatsId(event: ethereum.Event): i64 {
@@ -89,7 +56,7 @@ export function handleClaimed(event: Claimed): void {
   let claimantAccount = fetchAccount(claimantAddress);
 
   // Get the correct token decimals using our helper function
-  let decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  let decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
   let amountBD = toDecimals(amount, decimals);
 
   createActivityLogEntry(
@@ -160,7 +127,7 @@ function processBatchClaim(
   const claimantAccount = fetchAccount(claimantAddress);
 
   // Get the correct token decimals
-  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  const decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
   const totalAmountBD = toDecimals(totalAmount, decimals);
 
   createActivityLogEntry(
