@@ -10,18 +10,21 @@
   "scripts": {
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
+    "codegen:gql-tada": "gql-tada generate-schema http://localhost:8000/subgraphs/name/smart-protocol && gql-tada turbo && gql-tada generate-output",
     "format": "prettier --write .",
     "compile": "bunx graph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 > subgraph-output.txt",
     "publish": "bun run tools/graph-deploy.ts --local",
-    "publish:remote": "bun run tools/graph-deploy.ts --remote"
+    "publish:remote": "bun run tools/graph-deploy.ts --remote",
+    "test": "bun run test"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",
     "@graphprotocol/graph-ts": "0.38.1"
   },
   "devDependencies": {
-    "matchstick-as": "0.6.0",
-    "contracts": "workspace:*"
+    "@settlemint/sdk-thegraph": "2.3.5",
+    "contracts": "workspace:*",
+    "matchstick-as": "0.6.0"
   },
   "peerDependencies": {}
 }
