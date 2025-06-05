@@ -1,13 +1,13 @@
 "use client";
 
 import { DataTable } from "@/components/blocks/data-table/data-table";
-import type { AirdropRecipient } from "@/lib/queries/airdrop/airdrop-recipient-schema";
+import type { UserAirdrop } from "@/lib/queries/airdrop/user-airdrop-schema";
 import { HeartMinus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Columns } from "./my-airdrops-table-columns";
 
 interface MyAirdropsClientTableProps {
-  airdropRecipients: AirdropRecipient[];
+  airdropRecipients: UserAirdrop[];
   title: string;
 }
 

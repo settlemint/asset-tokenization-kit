@@ -1,6 +1,6 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
-import { getAllAirdropDistributions } from "@/lib/queries/airdrop/airdrop-distribution-detail";
+import { getAirdropDistribution } from "@/lib/queries/airdrop/airdrop-distribution";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -40,7 +40,7 @@ export const claimStandardAirdropFunction = async ({
   ctx: { user: User };
 }) => {
   // Get all distributions for this airdrop to build the merkle tree
-  const distributions = await getAllAirdropDistributions(airdrop);
+  const distributions = await getAirdropDistribution(airdrop);
 
   // Create the merkle tree from all distributions
   const tree = createMerkleTree(distributions);

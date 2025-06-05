@@ -1,7 +1,6 @@
 import "server-only";
 
-import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
@@ -15,38 +14,14 @@ import { getAddress, type Address } from "viem";
 import { PushAirdropFragment } from "../push-airdrop/push-airdrop-fragment";
 import { StandardAirdropFragment } from "../standard-airdrop/standard-airdrop-fragment";
 import { VestingAirdropFragment } from "../vesting-airdrop/vesting-airdrop-fragment";
-import {
-  AirdropClaimFragment,
-  AirdropRecipientFragment,
-} from "./airdrop-recipient-fragment";
+import { AirdropClaimFragment } from "./airdrop-fragment";
+import { getUserAirdropDistributionList } from "./user-airdrop-distribution";
 import {
   AirdropClaimSchema,
-  AirdropRecipientSchema,
-  type AirdropRecipient,
+  UserAirdropSchema,
+  type UserAirdrop,
   type UserVestingData,
-} from "./airdrop-recipient-schema";
-
-/**
- * GraphQL query to fetch airdrop distributions from Hasura filtered by recipient
- *
- * @remarks
- * Retrieves airdrop distributions where the user is a recipient, ordered by amount in descending order
- */
-const AirdropRecipientList = hasuraGraphql(
-  `
-  query AirdropRecipientList($limit: Int, $offset: Int, $recipient: String!) {
-    airdrop_distribution(
-      where: { recipient: { _ilike: $recipient } }
-      order_by: { amount: desc }
-      limit: $limit
-      offset: $offset
-    ) {
-      ...AirdropRecipientFragment
-    }
-  }
-`,
-  [AirdropRecipientFragment]
-);
+} from "./user-airdrop-schema";
 
 /**
  * GraphQL query to fetch airdrop details from The Graph by IDs
@@ -101,34 +76,14 @@ const AirdropRecipientsByIds = theGraphGraphqlKit(
  * Includes complete airdrop details, distribution amount, index, claim status,
  * and user-specific vesting data for vesting airdrops.
  */
-export const getAirdropRecipientList = withTracing(
+export const getUserAirdropList = withTracing(
   "queries",
-  "getAirdropRecipientList",
-  async (recipient: Address): Promise<AirdropRecipient[]> => {
+  "getUserAirdropList",
+  async (recipient: Address): Promise<UserAirdrop[]> => {
     "use cache";
     cacheTag("airdrop");
 
-    const distributions = await fetchAllHasuraPages(async (limit, offset) => {
-      const result = await hasuraClient.request(
-        AirdropRecipientList,
-        {
-          limit,
-          offset,
-          recipient,
-        },
-        {
-          "X-GraphQL-Operation-Name": "AirdropRecipientList",
-          "X-GraphQL-Operation-Type": "query",
-        }
-      );
-
-      return result.airdrop_distribution;
-    });
-
-    if (distributions.length === 0) {
-      return [];
-    }
-
+    const distributions = await getUserAirdropDistributionList(recipient);
     const uniqueAirdropIds = [...new Set(distributions.map((d) => d.airdrop))];
 
     // Create recipient IDs for The Graph query (airdropId-recipientAddress format)
@@ -200,19 +155,18 @@ export const getAirdropRecipientList = withTracing(
       }
 
       return {
+        ...item,
         airdrop: {
           ...airdropData,
           claimed: recipientClaimData?.firstClaimedTimestamp,
           claimData: recipientClaimData,
           userVestingData,
         },
-        amount: item.amount,
-        index: item.index,
       };
     });
 
     return safeParse(
-      t.Array(AirdropRecipientSchema),
+      t.Array(UserAirdropSchema),
       recipientDataWithAirdropDetails
     );
   }

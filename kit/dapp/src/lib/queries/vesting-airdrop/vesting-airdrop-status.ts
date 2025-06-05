@@ -2,8 +2,8 @@
 import { formatDate } from "@/lib/utils/date";
 import { addSeconds, isAfter } from "date-fns";
 import { useTranslations } from "next-intl";
-import type { VestingAirdropRecipient } from "../airdrop/airdrop-recipient-schema";
 import type { AirdropClaimStatus } from "../airdrop/airdrop-schema";
+import type { VestingAirdropRecipient } from "../airdrop/user-airdrop-schema";
 
 export type VestingAirdropStatusResult = {
   status: AirdropClaimStatus;

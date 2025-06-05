@@ -5,8 +5,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { AirdropRecipient } from "@/lib/queries/airdrop/airdrop-recipient-schema";
 import type { AirdropClaimStatus } from "@/lib/queries/airdrop/airdrop-schema";
+import type { UserAirdrop } from "@/lib/queries/airdrop/user-airdrop-schema";
 import { CalculatePushAirdropStatus } from "@/lib/queries/push-airdrop/push-airdrop-status";
 import { CalculateStandardAirdropStatus } from "@/lib/queries/standard-airdrop/standard-airdrop-status";
 import { CalculateVestingAirdropStatus } from "@/lib/queries/vesting-airdrop/vesting-airdrop-status";
@@ -17,7 +17,7 @@ import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
 
 type AirdropClaimStatusIndicatorProps = {
-  airdrop: AirdropRecipient["airdrop"];
+  airdrop: UserAirdrop["airdrop"];
   asBadge?: boolean;
 };
 
@@ -30,7 +30,7 @@ type StatusResult = {
  * Calculate airdrop status and message based on type
  */
 function calculateAirdropStatusAndMessage(
-  airdrop: AirdropRecipient["airdrop"]
+  airdrop: UserAirdrop["airdrop"]
 ): StatusResult {
   switch (airdrop.__typename) {
     case "StandardAirdrop":

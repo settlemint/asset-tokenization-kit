@@ -1,6 +1,6 @@
 import "server-only";
 
-import { hasuraClient } from "@/lib/settlemint/hasura";
+import { getAirdropDistribution } from "@/lib/queries/airdrop/airdrop-distribution";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
@@ -9,8 +9,7 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
-import { getAddress, type Address } from "viem";
-import { OffchainAirdropDistributionDetail } from "../airdrop/airdrop-distribution-detail";
+import type { Address } from "viem";
 import { OffChainAirdropSchema } from "../airdrop/airdrop-schema";
 import { StandardAirdropFragment } from "./standard-airdrop-fragment";
 import {
@@ -76,19 +75,9 @@ export const getStandardAirdropDetail = withTracing(
             );
           })(),
           (async () => {
-            const response = await hasuraClient.request(
-              OffchainAirdropDistributionDetail,
-              {
-                id: getAddress(address),
-              },
-              {
-                "X-GraphQL-Operation-Name": "OffchainAirdropDistributionDetail",
-                "X-GraphQL-Operation-Type": "query",
-              }
-            );
-
+            const response = await getAirdropDistribution(address);
             return safeParse(OffChainAirdropSchema, {
-              distribution: response.airdrop_distribution,
+              distribution: response,
             });
           })(),
         ]);

@@ -13,13 +13,13 @@ import { getAssetsPricesInUserCurrency } from "../asset-price/asset-price";
 import { PushAirdropFragment } from "../push-airdrop/push-airdrop-fragment";
 import { StandardAirdropFragment } from "../standard-airdrop/standard-airdrop-fragment";
 import { VestingAirdropFragment } from "../vesting-airdrop/vesting-airdrop-fragment";
-import { getAirdropRecipientDistribution } from "./airdrop-distribution-detail";
-import { AirdropClaimFragment } from "./airdrop-recipient-fragment";
+import { AirdropClaimFragment } from "./airdrop-fragment";
+import { getUserAirdropDistribution } from "./user-airdrop-distribution";
 import {
   AirdropClaimSchema,
-  AirdropRecipientDetailSchema,
+  UserAirdropDetailSchema,
   type UserVestingData,
-} from "./airdrop-recipient-schema";
+} from "./user-airdrop-schema";
 
 /**
  * GraphQL query to fetch a specific airdrop details from The Graph by ID
@@ -76,14 +76,14 @@ const AirdropRecipientById = theGraphGraphqlKit(
  * Includes complete airdrop details, distribution amount, index, claim status,
  * and user-specific vesting data for vesting airdrops.
  */
-export const getAirdropRecipientDetail = withTracing(
+export const getUserAirdropDetail = withTracing(
   "queries",
   "getAirdropRecipientDetail",
   async (airdropAddress: Address, recipient: User) => {
     "use cache";
     cacheTag("airdrop");
 
-    const distribution = await getAirdropRecipientDistribution(
+    const distribution = await getUserAirdropDistribution(
       airdropAddress,
       recipient
     );
@@ -142,9 +142,10 @@ export const getAirdropRecipientDetail = withTracing(
       }
     }
 
-    const price = distribution.amount * assetPrice.amount;
+    const price = Number(distribution.amount) * assetPrice.amount;
 
     const recipientDataWithAirdropDetails = {
+      ...distribution,
       airdrop: {
         ...airdrop,
         claimed: recipientClaimData?.firstClaimedTimestamp,
@@ -155,13 +156,8 @@ export const getAirdropRecipientDetail = withTracing(
         amount: price,
         currency: assetPrice.currency,
       },
-      amount: distribution.amount,
-      index: distribution.index,
     };
 
-    return safeParse(
-      AirdropRecipientDetailSchema,
-      recipientDataWithAirdropDetails
-    );
+    return safeParse(UserAirdropDetailSchema, recipientDataWithAirdropDetails);
   }
 );

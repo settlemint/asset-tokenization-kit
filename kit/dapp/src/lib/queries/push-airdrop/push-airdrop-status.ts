@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
-import type { PushAirdropRecipient } from "../airdrop/airdrop-recipient-schema";
 import type { AirdropClaimStatus } from "../airdrop/airdrop-schema";
+import type { PushAirdropRecipient } from "../airdrop/user-airdrop-schema";
 
 export type PushAirdropStatusResult = {
   status: AirdropClaimStatus;
