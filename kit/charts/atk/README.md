@@ -315,9 +315,9 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | thegraph.job.enabled | bool | `true` |  |
 | thegraph.job.fullnameOverride | string | `"graph"` |  |
 | thegraph.job.workspace.size | string | `"1Gi"` |  |
+| txsigner.config.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
+| txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.enabled | bool | `true` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable"` |  |
-| txsigner.privateKey.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
-| txsigner.privateKey.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
