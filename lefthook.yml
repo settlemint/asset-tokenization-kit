@@ -2,5 +2,8 @@ pre-commit:
   parallel: true
   jobs:
     - name: format
-      run: bun format
+      run: bun run format
+      stage_fixed: true
+    - name: docs
+      run: bun run docs
       stage_fixed: true
