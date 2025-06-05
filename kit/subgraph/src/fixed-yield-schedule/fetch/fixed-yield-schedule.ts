@@ -39,7 +39,7 @@ export function fetchFixedYieldSchedule(
     fixedYieldSchedule.underlyingAsset = Address.zero();
     setBigNumber(
       fixedYieldSchedule,
-      "underlyingAssetBalance",
+      "underlyingAssetBalanceAvailable",
       BigInt.zero(),
       DEFAULT_TOKEN_DECIMALS
     );

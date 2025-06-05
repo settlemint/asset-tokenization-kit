@@ -52,8 +52,8 @@ export function handleFixedYieldScheduleSet(
   );
   setBigNumber(
     fixedYieldSchedule,
-    "underlyingAssetBalance",
-    underlyingAssetBalance.valueExact,
+    "underlyingAssetBalanceAvailable",
+    underlyingAssetBalance.availableExact,
     underlyingAsset.decimals
   );
   for (let i = 1; i <= event.params.periodEndTimestamps.length; i++) {
@@ -81,10 +81,14 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
   const underlyingAsset = fetchToken(
     Address.fromBytes(fixedYieldSchedule.underlyingAsset)
   );
+  const tokenBalance = fetchTokenBalance(
+    underlyingAsset,
+    fetchAccount(event.address)
+  );
   setBigNumber(
     fixedYieldSchedule,
-    "underlyingAssetBalance",
-    fixedYieldSchedule.underlyingAssetBalanceExact.plus(event.params.amount),
+    "underlyingAssetBalanceAvailable",
+    tokenBalance.availableExact,
     underlyingAsset.decimals
   );
   fixedYieldSchedule.save();
@@ -98,10 +102,14 @@ export function handleUnderlyingAssetWithdrawn(
   const underlyingAsset = fetchToken(
     Address.fromBytes(fixedYieldSchedule.underlyingAsset)
   );
+  const tokenBalance = fetchTokenBalance(
+    underlyingAsset,
+    fetchAccount(event.address)
+  );
   setBigNumber(
     fixedYieldSchedule,
-    "underlyingAssetBalance",
-    fixedYieldSchedule.underlyingAssetBalanceExact.minus(event.params.amount),
+    "underlyingAssetBalanceAvailable",
+    tokenBalance.availableExact,
     underlyingAsset.decimals
   );
   fixedYieldSchedule.save();
