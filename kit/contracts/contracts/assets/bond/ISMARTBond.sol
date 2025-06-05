@@ -49,6 +49,17 @@ interface ISMARTBond is
     /// @notice Error the caller does not have enough redeemable bond tokens for the operation.
     error InsufficientRedeemableBalance();
 
+    /// @notice Emitted when the bond reaches maturity and is closed
+    /// @param timestamp The block timestamp when the bond matured
+    event BondMatured(uint256 indexed timestamp);
+
+    /// @notice Emitted when a bond is redeemed for underlying assets
+    /// @param sender The address that initiated the redemption
+    /// @param holder The address redeeming the bonds
+    /// @param bondAmount The amount of bonds redeemed
+    /// @param underlyingAmount The amount of underlying assets received
+    event BondRedeemed(address indexed sender, address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
+
     /// @notice Initializes the SMART Bond contract.
     /// @param name_ The name of the bond.
     /// @param symbol_ The symbol of the bond.

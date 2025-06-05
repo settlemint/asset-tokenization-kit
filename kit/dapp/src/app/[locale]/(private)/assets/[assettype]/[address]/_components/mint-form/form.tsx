@@ -17,7 +17,7 @@ import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { getAddress, type Address } from "viem";
-import { hasAllowlist } from "../features-enabled";
+import { hasAllowlist } from "../../../../../../../../lib/utils/features-enabled";
 import { Amount } from "./steps/amount";
 import { Recipients as RecipientsStep } from "./steps/recipients";
 import { Summary } from "./steps/summary";

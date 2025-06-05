@@ -21,12 +21,7 @@ spec:
         {{- include "dapp.selectorLabels" . | nindent 8 }}
     spec:
       restartPolicy: Never
-      {{- with .Values.job.imagePullSecrets }}
-      imagePullSecrets:
-        {{- range . }}
-        - name: {{ . }}
-        {{- end }}
-      {{- end }}
+      {{- include "atk.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.job.podSecurityContext }}
       securityContext:
         {{- toYaml .Values.job.podSecurityContext | nindent 8 }}
@@ -35,6 +30,8 @@ spec:
         - name: clone-repo
           image: "{{ $.Values.job.initContainer.cloneRepo.image.registry }}/{{ $.Values.job.initContainer.cloneRepo.image.repository }}:{{ $.Values.job.initContainer.cloneRepo.image.tag }}"
           imagePullPolicy: {{ $.Values.job.initContainer.cloneRepo.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.job.resources | nindent 12 }}
           command:
             - /bin/sh
             - -c
@@ -65,13 +62,8 @@ spec:
           image: "{{ $.Values.job.initContainer.hasuraCheck.image.repository }}:{{ $.Values.job.initContainer.hasuraCheck.image.tag }}"
           imagePullPolicy: {{ $.Values.job.initContainer.hasuraCheck.image.pullPolicy }}
           command: ['/usr/bin/wait-for-it', '{{ $.Values.job.initContainer.hasuraCheck.endpoint }}', '-t', '{{ $.Values.job.initContainer.hasuraCheck.timeout }}']
-          resources: # Optional: Define minimal resources for init containers
-            limits:
-              cpu: 100m
-              memory: 64Mi
-            requests:
-              cpu: 50m
-              memory: 32Mi
+          resources:
+            {{- toYaml .Values.job.resources | nindent 12 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -82,11 +74,7 @@ spec:
             - secretRef:
                 name: {{ include "dapp.fullname" . }}-env
           resources:
-            requests:
-              memory: {{ .Values.job.resources.requests.memory | quote }}
-              cpu: {{ .Values.job.resources.requests.cpu | quote }}
-            limits:
-              memory: {{ .Values.job.resources.limits.memory | quote }}
+            {{- toYaml .Values.job.resources | nindent 12 }}
           command:
             - /bin/sh
             - -c

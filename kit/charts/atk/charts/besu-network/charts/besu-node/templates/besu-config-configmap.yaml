@@ -22,7 +22,7 @@ data:
 
     # Node Information
     data-path={{ .Values.node.besu.dataPath | quote }}
-    genesis-file={{ .Values.node.besu.genesisFilePath | quote }}
+    genesis-file="/shared/genesis.json"
     logging={{ .Values.node.besu.logging | quote }}
     node-private-key-file={{.Values.node.besu.privateKeyPath | quote }}
 

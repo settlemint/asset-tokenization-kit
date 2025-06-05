@@ -3,6 +3,7 @@ import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
 import { smartProtocolDeployer } from "../../../services/deployer";
+import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const addCountryComplianceModule = async (
@@ -19,10 +20,12 @@ export const addCountryComplianceModule = async (
     countryCodes,
   ]);
 
-  const transactionHash = await tokenContract.write.addComplianceModule([
-    smartProtocolDeployer.getContractAddress(module),
-    encodedCountries,
-  ]);
+  const transactionHash = await withDecodedRevertReason(() =>
+    tokenContract.write.addComplianceModule([
+      smartProtocolDeployer.getContractAddress(module),
+      encodedCountries,
+    ])
+  );
 
   await waitForSuccess(transactionHash);
 

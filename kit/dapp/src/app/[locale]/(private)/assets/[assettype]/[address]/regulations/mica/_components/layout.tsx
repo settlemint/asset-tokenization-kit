@@ -19,7 +19,7 @@ export async function MicaRegulationLayout({
 }: {
   params: Promise<{ locale: Locale; address: Address; assettype: AssetType }>;
 }) {
-  const { address } = await params;
+  const { address, locale } = await params;
   const user = await getUser();
 
   const regulationData = await getRegulationDetail({
@@ -46,7 +46,7 @@ export async function MicaRegulationLayout({
   return (
     <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
       <div className="md:col-span-2">
-        <ComplianceScoreLayout />
+        <ComplianceScoreLayout config={regulationData.mica_regulation_config} />
       </div>
       <div className="md:col-span-4">
         <ReserveStatusLayout
@@ -65,7 +65,7 @@ export async function MicaRegulationLayout({
         <DocumentationLayout canEdit={canEdit} />
       </div>
       <div className="md:col-span-3">
-        <KycMonitoringLayout />
+        <KycMonitoringLayout locale={locale} />
       </div>
       <div className="md:col-span-3">
         <ConsumerProtectionLayout burnEventCount={burnEventCount} />

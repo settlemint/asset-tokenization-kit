@@ -9,7 +9,7 @@
 
 import { $ } from "bun";
 import { basename, join, relative } from "node:path";
-import { logger } from "../../../tools/logging";
+import { logger, LogLevel } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -100,12 +100,12 @@ function parseArguments(): ScriptOptions {
         process.exit(0);
       case "-v":
       case "--verbose":
-        log.setLevel("DEBUG" as any);
+        log.setLevel(LogLevel.DEBUG);
         log.info("Verbose mode enabled");
         break;
       case "-q":
       case "--quiet":
-        log.setLevel("ERROR" as any);
+        log.setLevel(LogLevel.ERROR);
         break;
       case "--skip-build":
         options.skipBuild = true;

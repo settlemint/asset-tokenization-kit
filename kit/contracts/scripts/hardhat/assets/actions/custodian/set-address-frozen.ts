@@ -1,6 +1,7 @@
 import { SMARTContracts } from "../../../constants/contracts";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import { Asset } from "../../../entities/asset";
+import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const setAddressFrozen = async (
@@ -14,10 +15,9 @@ export const setAddressFrozen = async (
     abi: SMARTContracts.ismartCustodian,
   });
 
-  const transactionHash = await tokenContract.write.setAddressFrozen([
-    address.address,
-    frozen,
-  ]);
+  const transactionHash = await withDecodedRevertReason(() =>
+    tokenContract.write.setAddressFrozen([address.address, frozen])
+  );
 
   await waitForSuccess(transactionHash);
 

@@ -1,4 +1,5 @@
 import { Providers } from "@/components/providers/Providers";
+import { ClientToaster } from "@/components/ui/toaster";
 import { routing } from "@/i18n/routing";
 import "@/lib/orpc/orpc.server";
 import { cn } from "@/lib/utils";
@@ -8,7 +9,6 @@ import { Figtree, Roboto_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { getLangDir } from "rtl-detect";
-import { Toaster } from "sonner";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -60,7 +60,7 @@ export default async function RootLayout({
         <body className="min-h-screen antialiased">
           <Providers>
             {children}
-            <Toaster richColors />
+            <ClientToaster />
           </Providers>
         </body>
       </html>

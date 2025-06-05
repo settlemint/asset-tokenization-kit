@@ -14,7 +14,7 @@
 import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { logger } from "../../../tools/logging";
+import { logger, LogLevel } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -57,6 +57,7 @@ const ABI_PATHS = {
   equityFactory: `${ARTIFACTS_DIR}/contracts/assets/equity/ISMARTEquityFactory.sol/ISMARTEquityFactory.json`,
   fundFactory: `${ARTIFACTS_DIR}/contracts/assets/fund/ISMARTFundFactory.sol/ISMARTFundFactory.json`,
   stablecoinFactory: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/ISMARTStableCoinFactory.sol/ISMARTStableCoinFactory.json`,
+  fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json`,
   // token
   accessManager: `${ARTIFACTS_DIR}/contracts/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
   identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/SMARTIdentityImplementation.sol/SMARTIdentityImplementation.json`,
@@ -72,6 +73,8 @@ const ABI_PATHS = {
   ismartBurnable: `${ARTIFACTS_DIR}/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json`,
   ismartCustodian: `${ARTIFACTS_DIR}/contracts/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json`,
   ismartPausable: `${ARTIFACTS_DIR}/contracts/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json`,
+  ismartYield: `${ARTIFACTS_DIR}/contracts/extensions/yield/ISMARTYield.sol/ISMARTYield.json`,
+  ismartFixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json`,
   // compliance modules
   countryAllowList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
   countryBlockList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
@@ -91,10 +94,18 @@ const AVAILABLE_ABIS = {
     "equityFactory",
     "fundFactory",
     "stablecoinFactory",
+    "fixedYieldScheduleFactory",
   ],
   tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
-  coreSmart: ["ismart", "ismartBurnable", "ismartCustodian", "ismartPausable"],
+  coreSmart: [
+    "ismart",
+    "ismartBurnable",
+    "ismartCustodian",
+    "ismartPausable",
+    "ismartYield",
+    "ismartFixedYieldSchedule",
+  ],
   complianceModules: ["countryAllowList", "countryBlockList"],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 
@@ -189,12 +200,12 @@ function parseArguments(args: string[]): void {
         process.exit(0);
       case "-v":
       case "--verbose":
-        log.setLevel("DEBUG" as any);
+        log.setLevel(LogLevel.DEBUG);
         log.info("Verbose mode enabled");
         break;
       case "-q":
       case "--quiet":
-        log.setLevel("ERROR" as any);
+        log.setLevel(LogLevel.ERROR);
         break;
       case "-l":
       case "--list":

@@ -23,8 +23,11 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { getAddress } from "viem";
+import {
+  hasBlocklist,
+  hasFreeze,
+} from "../../../../../../../../lib/utils/features-enabled";
 import { BlockForm } from "../../_components/block-form/form";
-import { hasBlocklist, hasFreeze } from "../../_components/features-enabled";
 import { MintForm } from "../../_components/mint-form/form";
 import { FreezeForm } from "./actions/freeze-form/form";
 

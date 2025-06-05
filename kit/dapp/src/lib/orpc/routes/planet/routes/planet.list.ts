@@ -55,60 +55,69 @@ export const list = ar.planet.list
 
     // Temporary mock implementation - replace with actual database query
     const mockPlanets = [
-      { 
-        id: "planet-mercury-001", 
+      {
+        id: "planet-mercury-001",
         name: "Mercury",
-        description: "The smallest planet in our solar system and closest to the Sun"
+        description:
+          "The smallest planet in our solar system and closest to the Sun",
       },
-      { 
-        id: "planet-venus-002", 
+      {
+        id: "planet-venus-002",
         name: "Venus",
-        description: "The second planet from the Sun, known for its thick atmosphere and extreme temperatures"
+        description:
+          "The second planet from the Sun, known for its thick atmosphere and extreme temperatures",
       },
-      { 
-        id: "planet-earth-003", 
+      {
+        id: "planet-earth-003",
         name: "Earth",
-        description: "Our home planet, the only known planet with life"
+        description: "Our home planet, the only known planet with life",
       },
-      { 
-        id: "planet-mars-004", 
+      {
+        id: "planet-mars-004",
         name: "Mars",
-        description: "The Red Planet, fourth from the Sun with potential for human colonization"
+        description:
+          "The Red Planet, fourth from the Sun with potential for human colonization",
       },
-      { 
-        id: "planet-jupiter-005", 
+      {
+        id: "planet-jupiter-005",
         name: "Jupiter",
-        description: "The largest planet in our solar system, a gas giant with many moons"
+        description:
+          "The largest planet in our solar system, a gas giant with many moons",
       },
-      { 
-        id: "planet-saturn-006", 
+      {
+        id: "planet-saturn-006",
         name: "Saturn",
-        description: "Famous for its spectacular ring system, the sixth planet from the Sun"
+        description:
+          "Famous for its spectacular ring system, the sixth planet from the Sun",
       },
-      { 
-        id: "planet-kepler452b-007", 
+      {
+        id: "planet-kepler452b-007",
         name: "Kepler-452b",
-        description: "An exoplanet orbiting in the habitable zone of a Sun-like star"
+        description:
+          "An exoplanet orbiting in the habitable zone of a Sun-like star",
       },
-      { 
-        id: "planet-proxima-b-008", 
+      {
+        id: "planet-proxima-b-008",
         name: "Proxima Centauri b",
-        description: "The closest known exoplanet to Earth, orbiting Proxima Centauri"
+        description:
+          "The closest known exoplanet to Earth, orbiting Proxima Centauri",
       },
-      { 
-        id: "planet-trappist1e-009", 
+      {
+        id: "planet-trappist1e-009",
         name: "TRAPPIST-1e",
-        description: "One of seven Earth-sized planets in the TRAPPIST-1 system"
+        description:
+          "One of seven Earth-sized planets in the TRAPPIST-1 system",
       },
-      { 
-        id: "planet-gliese667cc-010", 
+      {
+        id: "planet-gliese667cc-010",
         name: "Gliese 667Cc",
-        description: "A super-Earth exoplanet within the habitable zone of its host star"
+        description:
+          "A super-Earth exoplanet within the habitable zone of its host star",
       },
     ];
 
     // Apply pagination to the mock data
     const paginatedPlanets = mockPlanets.slice(offset, offset + limit);
-    
+
     return paginatedPlanets;
   });

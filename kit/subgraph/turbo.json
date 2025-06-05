@@ -12,7 +12,8 @@
       "dependsOn": ["contracts#compile"],
       "outputs": ["src/erc165/utils/interfaceids.ts"]
     },
-    "build": {
+    "compile": {
+      "dependsOn": ["^compile", "codegen"],
       "outputs": ["build/**"]
     },
     "publish": {

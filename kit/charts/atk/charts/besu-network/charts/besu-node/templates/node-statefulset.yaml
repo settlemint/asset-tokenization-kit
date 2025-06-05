@@ -44,12 +44,46 @@ spec:
 {{- end }}
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
       initContainers:
+      # Genesis file retrieval via HTTP server
+      - name: genesis-init
+        image: "{{ .Values.initContainers.curl.image.registry }}/{{ .Values.initContainers.curl.image.repository }}:{{ .Values.initContainers.curl.image.tag }}"
+        imagePullPolicy: {{ .Values.initContainers.curl.image.pullPolicy }}
+        command:
+          - /bin/sh
+          - -c
+          - |
+            set -e
+
+            OUTPUT_FILE="/shared/genesis.json"
+            GENESIS_URL="http://besu-genesis-server.{{ .Release.Namespace }}.svc.cluster.local/genesis.json"
+
+            echo "Retrieving genesis file from HTTP server..."
+
+            # Retrieve genesis file via HTTP server
+            for i in $(seq 1 30); do
+              if curl -f -s --connect-timeout 10 "$GENESIS_URL" > "$OUTPUT_FILE" 2>/dev/null; then
+                echo "Genesis file retrieved successfully"
+                ls -la "$OUTPUT_FILE"
+                exit 0
+              fi
+              echo "Attempt $i/30 failed, waiting 10s..."
+              sleep 10
+            done
+
+            echo "ERROR: Failed to retrieve genesis file from HTTP server"
+            exit 1
+        volumeMounts:
+          - name: shared-genesis
+            mountPath: /shared
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
 
 {{- if has .Values.cluster.provider .Values.volumePermissionsFix }}
       # fix for minikube and PVC's only writable as root https://github.com/kubernetes/minikube/issues/1990
       - name: volume-permission-besu
-        image: "{{ .Values.busybox.registry }}/busybox:{{ .Values.busybox.tag }}"
-        imagePullPolicy: {{ .Values.busybox.pullPolicy }}
+        image: "{{ .Values.initContainers.busybox.image.registry }}/{{ .Values.initContainers.busybox.image.repository }}:{{ .Values.initContainers.busybox.image.tag }}"
+        imagePullPolicy: {{ .Values.initContainers.busybox.image.pullPolicy }}
         command: ["sh", "-c", "chown -R 1000:1000 /data"]
         volumeMounts:
           - name: data
@@ -62,8 +96,8 @@ spec:
 
 {{- if .Values.quorumFlags.privacy }}
       - name: {{ .Release.Name }}-tessera
-        image: {{ .Values.image.tessera.repository }}:{{ .Values.image.tessera.tag }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: {{ .Values.node.tessera.image.repository }}:{{ .Values.node.tessera.image.tag }}
+        imagePullPolicy: {{ .Values.node.tessera.image.pullPolicy }}
         {{- with .Values.node.tessera.resources }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -171,8 +205,8 @@ spec:
 
 
       - name: {{ .Release.Name }}-besu
-        image: {{ .Values.image.besu.repository }}:{{ .Values.image.besu.tag }}
-        imagePullPolicy: {{ .Values.image.besu.pullPolicy }}
+        image: {{ .Values.node.besu.image.repository }}:{{ .Values.node.besu.image.tag }}
+        imagePullPolicy: {{ .Values.node.besu.image.pullPolicy }}
         {{- with .Values.node.besu.resources }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -212,8 +246,8 @@ spec:
             readOnly: true
 {{- end }}
 {{- end }}
-          - name: genesis
-            mountPath: /etc/genesis
+          - name: shared-genesis
+            mountPath: /shared
             readOnly: true
           - name: static-nodes
             mountPath: /config/static
@@ -259,12 +293,8 @@ spec:
           initialDelaySeconds: 180
           periodSeconds: 60
       volumes:
-      - name: genesis
-        configMap:
-          name: besu-genesis
-          items:
-            - key: genesis.json
-              path: genesis.json
+      - name: shared-genesis
+        emptyDir: {}
       - name: static-nodes
         configMap:
           name: besu-peers

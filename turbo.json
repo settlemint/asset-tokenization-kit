@@ -20,7 +20,7 @@
       "dependsOn": ["codegen"]
     },
     "codegen": {
-      "dependsOn": ["dependencies"]
+      "dependsOn": ["dependencies", "docs"]
     },
     "compile": {
       "dependsOn": ["dependencies"]
@@ -42,6 +42,12 @@
       "dependsOn": ["dapp#codegen"],
       "cache": false,
       "persistent": true
+    },
+    "helm": {
+      "cache": false
+    },
+    "docs": {
+      "cache": false
     }
   }
 }

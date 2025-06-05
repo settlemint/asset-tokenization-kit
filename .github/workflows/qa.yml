@@ -9,16 +9,14 @@ on:
       - main
     types: [opened, synchronize, reopened, closed]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   qa:
     name: QA
     runs-on: namespace-profile-atk
     environment: "staging"
-    if: github.event.action == 'opened' || github.event.action == 'synchronize'
+    if:
+      github.event_name == 'push' || github.event.action == 'opened' ||
+      github.event.action == 'synchronize'
     steps:
       - uses: fuxingloh/multi-labeler@v4
         if: github.event_name == 'pull_request'
@@ -89,7 +87,7 @@ jobs:
 
       - uses: actions/setup-python@5db1cf9a59fb97c40a68accab29236f0da7e94db
         with:
-          python-version: "3.13.3"
+          python-version: "3.13.4"
           check-latest: true
 
       - name: Set up chart-testing
@@ -118,13 +116,16 @@ jobs:
           name: predeployed-output
           path: |
             kit/contracts/tools/genesis-output.json
+            kit/contracts/portal/*.json
+            kit/subgraph/subgraph-output.txt
 
   secret-scanning:
     name: Secret Scanning
     runs-on: namespace-profile-atk-services
     if:
       (github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]') &&
-      github.event.action == 'opened' || github.event.action == 'synchronize'
+      (github.event_name == 'push' || github.event.action == 'opened' ||
+      github.event.action == 'synchronize')
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
@@ -145,7 +146,8 @@ jobs:
     runs-on: namespace-profile-atk-services
     if:
       (github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]') &&
-      github.event.action == 'opened' || github.event.action == 'synchronize'
+      (github.event_name == 'push' || github.event.action == 'opened' ||
+      github.event.action == 'synchronize')
     permissions:
       security-events: write
       packages: read

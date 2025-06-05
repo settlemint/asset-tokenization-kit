@@ -1,20 +1,15 @@
-import { isMicaEnabledForAsset } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled";
+import { MicaRegulationPill } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/mica-regulation-pill";
 import { ActivePill } from "@/components/blocks/active-pill/active-pill";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import { RegulationPill } from "@/components/blocks/regulation-pill/regulation-pill";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
-import { regulations } from "@/lib/config/regulations";
-import {
-  RegulationStatus,
-  type RegulationType,
-} from "@/lib/db/regulations/schema-base-regulation-configs";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import { getRegulationList } from "@/lib/queries/regulations/regulation-list";
+import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
+import { isMicaEnabledForAsset } from "@/lib/utils/features-enabled";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
@@ -32,27 +27,6 @@ interface DetailPageHeaderProps {
     > | null;
     userAddress: Address;
   }) => ReactNode;
-}
-
-async function getRegulationPills(assetId: Address) {
-  const regulationConfigs = await getRegulationList({
-    assetId,
-  });
-
-  return regulationConfigs
-    .filter((config) => config.status === RegulationStatus.COMPLIANT)
-    .map((config) => {
-      const regulationInfo = regulations.find(
-        (r) => r.id === config.regulation_type
-      );
-      if (!regulationInfo) return null;
-
-      return {
-        type: config.regulation_type as RegulationType,
-        documentationUrl: regulationInfo.documentationUrl,
-      };
-    })
-    .filter((pill): pill is NonNullable<typeof pill> => pill !== null);
 }
 
 export async function DetailPageHeader({
@@ -81,9 +55,12 @@ export async function DetailPageHeader({
       : null;
 
   const isMicaEnabled = await isMicaEnabledForAsset(assettype, address);
-  const regulationPills = isMicaEnabled
-    ? await getRegulationPills(address)
-    : [];
+  const micaRegulation = isMicaEnabled
+    ? await getRegulationDetail({
+        assetId: address,
+        regulationType: "mica",
+      })
+    : null;
 
   return (
     <PageHeader
@@ -104,9 +81,11 @@ export async function DetailPageHeader({
           <ActivePill
             paused={"paused" in assetDetails ? assetDetails.paused : false}
           />
-          {regulationPills.map((regulation) => {
-            return <RegulationPill key={regulation.type} {...regulation} />;
-          })}
+          {micaRegulation?.mica_regulation_config && (
+            <MicaRegulationPill
+              config={micaRegulation.mica_regulation_config}
+            />
+          )}
         </div>
       }
       button={manageDropdown({

@@ -86,15 +86,14 @@ const LOG_CONFIG = {
     name: "SUCCESS",
     method: "log" as const,
   },
+  [LogLevel.SILENT]: null,
 } as const;
 
 /**
  * Parse log level from environment variable or return default
  */
-function parseLogLevel(): LogLevel {
-  const envLevel = process.env.LOG_LEVEL?.toUpperCase();
-
-  switch (envLevel) {
+function parseLogLevel(level: string | undefined): LogLevel {
+  switch (level) {
     case "TRACE":
       return LogLevel.TRACE;
     case "DEBUG":
@@ -117,7 +116,7 @@ function parseLogLevel(): LogLevel {
 /**
  * Current active log level
  */
-const currentLogLevel = parseLogLevel();
+const currentLogLevel = parseLogLevel(process.env.LOG_LEVEL?.toUpperCase());
 
 /**
  * Format timestamp for log output
@@ -137,6 +136,9 @@ function formatTimestamp(): string {
  */
 function formatLogLevel(level: LogLevel): string {
   const config = LOG_CONFIG[level];
+  if (!config) {
+    return "";
+  }
   return `${config.emoji} ${config.color}${Colors.bright}${config.name}${Colors.reset}`;
 }
 
@@ -173,7 +175,7 @@ export interface Logger {
   warn: (message: string, ...args: unknown[]) => void;
   error: (message: string, ...args: unknown[]) => void;
   success: (message: string, ...args: unknown[]) => void;
-  setLevel: (level: LogLevel) => void;
+  setLevel: (level: LogLevel | string) => void;
   getLevel: () => LogLevel;
   isLevelEnabled: (level: LogLevel) => boolean;
 }
@@ -181,7 +183,10 @@ export interface Logger {
 /**
  * Set the current log level programmatically
  */
-function setLogLevel(level: LogLevel): void {
+function setLogLevel(level: LogLevel | string): void {
+  if (typeof level === "string") {
+    level = parseLogLevel(level);
+  }
   // We'll store this in a module variable since we can't modify the const
   Object.defineProperty(logger, "_currentLevel", {
     value: level,
@@ -201,7 +206,8 @@ function getLogLevel(): LogLevel {
  * Check if a log level is enabled
  */
 function isLevelEnabled(level: LogLevel): boolean {
-  return level >= getLogLevel() && level !== LogLevel.SILENT;
+  const logLevel = getLogLevel();
+  return level >= logLevel && level !== LogLevel.SILENT;
 }
 
 /**

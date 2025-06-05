@@ -1,13 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Locale } from "next-intl";
+import { KycMonitoringDashboard } from "./kyc-monitoring-dashboard";
 
-export function KycMonitoringLayout() {
+interface KycMonitoringLayoutProps {
+  locale: Locale;
+}
+
+export function KycMonitoringLayout({ locale }: KycMonitoringLayoutProps) {
   return (
     <Card className="w-full h-full flex flex-col">
       <CardHeader>
         <CardTitle>KYC Monitoring</CardTitle>
       </CardHeader>
       <CardContent className="flex-1">
-        {/* Content will be added later */}
+        <KycMonitoringDashboard locale={locale} />
       </CardContent>
     </Card>
   );

@@ -1,10 +1,10 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { StatusPill } from "@/components/blocks/status-pill/status-pill";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { isAuthorized } from "@/lib/utils/mica";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { EditForm } from "./_components/edit-form";
@@ -12,14 +12,6 @@ import { EditForm } from "./_components/edit-form";
 interface AuthorizationStatusLayoutProps {
   config?: MicaRegulationConfig | null;
   canEdit: boolean;
-}
-
-function isAuthorized(config: MicaRegulationConfig): boolean {
-  return !!(
-    config.licenceNumber &&
-    config.regulatoryAuthority &&
-    config.approvalDate
-  );
 }
 
 export function AuthorizationStatusLayout({
@@ -51,22 +43,16 @@ export function AuthorizationStatusLayout({
           <div className="flex items-start justify-between">
             <div>
               <CardTitle>{t("title")}</CardTitle>
-              <Badge
-                className={`mt-4 ${
-                  isAuthorized(config)
-                    ? "!bg-success/80 !text-success-foreground"
-                    : "!bg-warning/80 !text-warning-foreground"
-                } border-transparent`}
-              >
-                {isAuthorized(config) ? (
-                  <CheckCircle className="mr-1 size-3" />
-                ) : (
-                  <AlertCircle className="mr-1 size-3" />
-                )}
-                {t(
-                  isAuthorized(config) ? "authorized" : "pending-authorization"
-                )}
-              </Badge>
+              <div className="mt-4">
+                <StatusPill
+                  status={isAuthorized(config) ? "success" : "warning"}
+                  label={t(
+                    isAuthorized(config)
+                      ? "authorized"
+                      : "pending-authorization"
+                  )}
+                />
+              </div>
             </div>
             <div className="flex items-center gap-2">
               {canEdit && (

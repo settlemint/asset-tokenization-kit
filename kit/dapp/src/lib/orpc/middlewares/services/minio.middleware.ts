@@ -3,15 +3,15 @@ import { client as minioClient } from "@/lib/settlemint/minio";
 
 /**
  * ORPC middleware that injects the MinIO client into the procedure context.
- * 
+ *
  * This middleware provides access to MinIO object storage functionality,
  * enabling procedures to upload, download, and manage files in S3-compatible storage.
- * 
+ *
  * @remarks
  * - Uses dependency injection pattern to allow overriding in tests
  * - Falls back to the default minioClient if none provided in context
  * - Essential for procedures that handle file uploads, document storage, or media management
- * 
+ *
  * @example
  * ```typescript
  * const uploadProcedure = pr

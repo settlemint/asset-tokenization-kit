@@ -1,6 +1,7 @@
 import { SMARTContracts } from "../../../constants/contracts";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import type { Asset } from "../../../entities/asset";
+import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { formatDecimals } from "../../../utils/format-decimals";
 import { toDecimals } from "../../../utils/to-decimals";
 import { waitForSuccess } from "../../../utils/wait-for-success";
@@ -18,10 +19,9 @@ export const transfer = async (
 
   const tokenAmount = toDecimals(amount, asset.decimals);
 
-  const transactionHash = await tokenContract.write.transfer([
-    to.address,
-    tokenAmount,
-  ]);
+  const transactionHash = await withDecodedRevertReason(() =>
+    tokenContract.write.transfer([to.address, tokenAmount])
+  );
 
   await waitForSuccess(transactionHash);
 

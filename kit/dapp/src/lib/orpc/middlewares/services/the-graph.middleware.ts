@@ -3,15 +3,15 @@ import { theGraphClient } from "@/lib/settlemint/the-graph";
 
 /**
  * ORPC middleware that injects The Graph client into the procedure context.
- * 
+ *
  * This middleware provides access to The Graph protocol for querying indexed blockchain data,
  * enabling efficient retrieval of on-chain events, transactions, and state changes.
- * 
+ *
  * @remarks
  * - Uses dependency injection pattern to allow overriding in tests
  * - Falls back to the default theGraphClient if none provided in context
  * - Essential for procedures that need to query historical blockchain data or events
- * 
+ *
  * @example
  * ```typescript
  * const tokenHistoryProcedure = pr

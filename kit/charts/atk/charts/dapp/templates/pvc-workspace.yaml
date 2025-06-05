@@ -10,4 +10,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.job.workspace.size | default "1Gi" }}
-  storageClassName: {{ .Values.job.workspace.storageClass | default "standard" }}
+  storageClassName: {{ .Values.job.workspace.storageClass | default "" }}

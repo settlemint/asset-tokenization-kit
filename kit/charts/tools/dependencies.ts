@@ -3,7 +3,7 @@
 import { $ } from "bun";
 import { join } from "node:path";
 import { logger } from "../../../tools/logging";
-import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
+import { getKitProjectPath } from "../../../tools/root";
 
 /**
  * Script to update Helm chart dependencies
@@ -52,14 +52,14 @@ async function findChartsDirectory(): Promise<string> {
  */
 async function checkHelmInstalled(): Promise<void> {
   log.debug("Checking for Helm installation...");
-  
+
   const helmPath = Bun.which("helm");
   if (!helmPath) {
     throw new Error(
       "helm command not found. Please install Helm first: https://helm.sh/docs/intro/install/"
     );
   }
-  
+
   log.debug(`Helm found at: ${helmPath}`);
 }
 
@@ -96,7 +96,7 @@ async function getChartsWithDependencies(projectDir: string): Promise<string[]> 
 
   // Use glob to find all Chart.yaml files in atk/charts/
   const chartGlob = new Bun.Glob("atk/charts/*/Chart.yaml");
-  
+
   for await (const chartYamlRelative of chartGlob.scan({ cwd: projectDir })) {
     const chartYamlPath = join(projectDir, chartYamlRelative);
     if (await hasDependencies(chartYamlPath)) {

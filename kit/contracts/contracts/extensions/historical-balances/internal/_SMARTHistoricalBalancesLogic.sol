@@ -85,7 +85,7 @@ abstract contract _SMARTHistoricalBalancesLogic is _SMARTExtension, ISMARTHistor
     ///      `timepoint` is cast to `uint48` to match the `Checkpoints` library's timestamp format.
     function balanceOfAt(address account, uint256 timepoint) public view virtual override returns (uint256) {
         uint48 currentTimepoint = clock();
-        if (timepoint >= currentTimepoint) {
+        if (timepoint > currentTimepoint) {
             revert FutureLookup(timepoint, currentTimepoint);
         }
         // `SafeCast.toUint48` ensures the timepoint fits; will revert if timepoint is too large for uint48,
@@ -99,7 +99,7 @@ abstract contract _SMARTHistoricalBalancesLogic is _SMARTExtension, ISMARTHistor
     ///      Reverts with `FutureLookup` for non-past timepoints.
     function totalSupplyAt(uint256 timepoint) public view virtual override returns (uint256) {
         uint48 currentTimepoint = clock();
-        if (timepoint >= currentTimepoint) {
+        if (timepoint > currentTimepoint) {
             revert FutureLookup(timepoint, currentTimepoint);
         }
         return _totalSupplyCheckpoints.upperLookupRecent(SafeCast.toUint48(timepoint));
