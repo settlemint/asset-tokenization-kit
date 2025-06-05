@@ -1,0 +1,6 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: format
+      run: bun format
+      stage_fixed: true
