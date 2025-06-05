@@ -5,4 +5,4 @@ pre-commit:
       run: bun run format
       stage_fixed: true
     - name: docs-and-stage
-      run: bun run docs && git add -u && git add . --ignore-errors
+      run: bun run docs && git add "**/README.md" || true
