@@ -8,7 +8,7 @@ import {
   createMerkleTree,
   getMerkleProof,
 } from "../../create/common/merkle-tree";
-import type { ClaimStandardAirdropInput } from "./create-schema";
+import type { ClaimStandardAirdropInput } from "./claim-schema";
 
 const ClaimStandardAirdrop = portalGraphql(`
   mutation ClaimStandardAirdrop($address: String!, $from: String!, $input: StandardAirdropClaimInput!, $challengeResponse: String!, $verificationId: String) {

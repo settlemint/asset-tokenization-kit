@@ -1232,7 +1232,32 @@
         "page-title": "Airdrop {address}",
         "page-description": "View and manage your airdrop at {address}",
         "forms": {
-          "manage": "Manage"
+          "manage": "Manage",
+          "actions": {
+            "claim": "Claim"
+          },
+          "form": {
+            "title": {
+              "claim": "Claim Airdrop"
+            },
+            "description": {
+              "claim": "Claim your allocated tokens from this airdrop"
+            },
+            "trigger-label": {
+              "claim": "Claim"
+            }
+          },
+          "summary": {
+            "title": {
+              "claim": "Claim Summary"
+            },
+            "description": {
+              "claim": "Review your claim details before proceeding"
+            },
+            "airdrop-contract-label": "Airdrop Contract",
+            "amount-label": "Amount",
+            "value-label": "Value"
+          }
         }
       }
     },

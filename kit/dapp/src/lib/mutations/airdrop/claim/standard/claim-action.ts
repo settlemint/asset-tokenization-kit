@@ -2,8 +2,8 @@
 
 import { action } from "@/lib/mutations/safe-action";
 import { t } from "@/lib/utils/typebox";
-import { claimStandardAirdropFunction } from "./create-function";
-import { ClaimStandardAirdropSchema } from "./create-schema";
+import { claimStandardAirdropFunction } from "./claim-function";
+import { ClaimStandardAirdropSchema } from "./claim-schema";
 
 export const claimStandardAirdrop = action
   .schema(ClaimStandardAirdropSchema)
