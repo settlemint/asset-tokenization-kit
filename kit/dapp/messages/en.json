@@ -1714,7 +1714,19 @@
       },
       "detail": {
         "forms": {
-          "manage": "Manage"
+          "manage": "Manage",
+          "push-batch": {
+            "title": "Push tokens",
+            "description": "Push tokens to all recipients in this airdrop.",
+            "button-label": "Push tokens",
+            "submitting": "Pushing tokens...",
+            "summary": {
+              "title": "Review and confirm pushing tokens",
+              "description": "Push tokens to all recipients in this airdrop.",
+              "airdrop": "Airdrop",
+              "recipients": "Recipients"
+            }
+          }
         }
       }
     },

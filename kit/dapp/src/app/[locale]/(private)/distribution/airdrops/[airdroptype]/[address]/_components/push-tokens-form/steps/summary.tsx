@@ -4,6 +4,7 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import type { PushAirdropDistributeInput } from "@/lib/mutations/push-airdrop/push-schema";
 import type { PushAirdrop } from "@/lib/queries/push-airdrop/push-airdrop-schema";
+import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 
 interface SummaryProps {
@@ -31,18 +32,17 @@ function RecipientsTable({ airdrop }: { airdrop: PushAirdrop }) {
 }
 
 export function Summary({ airdrop }: SummaryProps) {
+  const t = useTranslations("private.airdrops.detail.forms.push-batch.summary");
+
   return (
-    <FormStep
-      title="Review and confirm pushing tokens"
-      description="Push tokens to airdrop recipients"
-    >
+    <FormStep title={t("title")} description={t("description")}>
       <FormSummaryDetailItem
-        label="Airdrop"
+        label={t("airdrop")}
         value={<EvmAddress address={airdrop.id} prettyNames={true} />}
       />
 
       <div className="py-1.5 ">
-        <dt className="text-muted-foreground text-sm">Recipients</dt>
+        <dt className="text-muted-foreground text-sm">{t("recipients")}</dt>
         <div className="max-h-[400px] min-h-[100px] overflow-auto mt-2">
           <RecipientsTable airdrop={airdrop} />
         </div>

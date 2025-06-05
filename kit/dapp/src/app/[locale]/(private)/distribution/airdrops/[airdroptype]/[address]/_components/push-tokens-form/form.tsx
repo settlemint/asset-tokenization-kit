@@ -7,6 +7,7 @@ import { pushAirdropDistribute } from "@/lib/mutations/push-airdrop/push-action"
 import { PushAirdropDistributeSchema } from "@/lib/mutations/push-airdrop/push-schema";
 import type { PushAirdrop } from "@/lib/queries/push-airdrop/push-airdrop-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 interface PushTokensFormProps {
@@ -27,6 +28,7 @@ export function PushTokensForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
+  const t = useTranslations("private.airdrops.detail.forms.push-batch");
 
   return (
     <FormSheet
@@ -35,8 +37,8 @@ export function PushTokensForm({
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
       triggerLabel={isExternallyControlled ? undefined : "Push"}
-      title="Push tokens"
-      description="Push tokens to airdrop recipients"
+      title={t("title")}
+      description={t("description")}
       asButton={asButton}
       disabled={disabled}
     >
@@ -44,7 +46,8 @@ export function PushTokensForm({
         action={pushAirdropDistribute}
         resolver={typeboxResolver(PushAirdropDistributeSchema)}
         buttonLabels={{
-          label: "Push",
+          label: t("button-label"),
+          submittingLabel: t("submitting"),
         }}
         defaultValues={{
           address: airdrop.id,
