@@ -39,7 +39,9 @@ export function NavMode() {
   const { data: session } = authClient.useSession();
   const userRole = session?.user?.role;
   const mode =
-    pathname.includes("/assets") || pathname.includes("/actions")
+    pathname.includes("/assets") ||
+    pathname.includes("/actions") ||
+    pathname.includes("/distribution")
       ? "assets"
       : pathname.includes("/platform")
         ? "platform"
