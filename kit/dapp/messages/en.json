@@ -1238,10 +1238,10 @@
           },
           "form": {
             "title": {
-              "claim": "Claim Airdrop"
+              "claim": "Claim airdrop assets"
             },
             "description": {
-              "claim": "Claim your allocated tokens from this airdrop"
+              "claim": "Claim your allocated assets from this airdrop. Once claimed, the assets will be transferred directly to your wallet."
             },
             "trigger-label": {
               "claim": "Claim"
@@ -1252,7 +1252,7 @@
               "claim": "Claim Summary"
             },
             "description": {
-              "claim": "Review your claim details before proceeding"
+              "claim": "Review your claim details and confirm the transaction to receive your assets."
             },
             "airdrop-contract-label": "Airdrop Contract",
             "amount-label": "Amount",
