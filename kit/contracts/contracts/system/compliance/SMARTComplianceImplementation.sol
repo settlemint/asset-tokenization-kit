@@ -11,7 +11,7 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 
 // Interface imports
 import { ISMARTCompliance } from "../../interface/ISMARTCompliance.sol";
-import { ISMARTComplianceWhitelist } from "./ISMARTComplianceWhitelist.sol";
+import { ISMARTComplianceAllowList } from "./ISMARTComplianceAllowList.sol";
 import { ISMARTComplianceModule } from "../../interface/ISMARTComplianceModule.sol";
 import { ISMART } from "../../interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
@@ -37,7 +37,7 @@ contract SMARTComplianceImplementation is
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
     ISMARTCompliance,
-    ISMARTComplianceWhitelist
+    ISMARTComplianceAllowList
 {
     // --- Storage ---
     /// @notice Mapping of addresses that are whitelisted to bypass compliance checks
@@ -77,35 +77,35 @@ contract SMARTComplianceImplementation is
         }
     }
 
-    // --- Whitelist Management Functions ---
+    // --- AllowList Management Functions ---
 
     /// @notice Adds an address to the compliance whitelist
     /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
-    /// Whitelisted addresses can bypass compliance checks in canTransfer function.
+    /// AllowListed addresses can bypass compliance checks in canTransfer function.
     /// @param account The address to add to the whitelist
-    function addToWhitelist(address account) external onlyRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE) {
+    function addToAllowList(address account) external onlyRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE) {
         if (account == address(0)) revert ZeroAddressNotAllowed();
-        if (_whitelistedAddresses[account]) revert AddressAlreadyWhitelisted(account);
+        if (_whitelistedAddresses[account]) revert AddressAlreadyAllowListed(account);
 
         _whitelistedAddresses[account] = true;
-        emit AddressWhitelisted(account, _msgSender());
+        emit AddressAllowListed(account, _msgSender());
     }
 
     /// @notice Removes an address from the compliance whitelist
     /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
     /// @param account The address to remove from the whitelist
-    function removeFromWhitelist(address account) external onlyRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE) {
-        if (!_whitelistedAddresses[account]) revert AddressNotWhitelisted(account);
+    function removeFromAllowList(address account) external onlyRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE) {
+        if (!_whitelistedAddresses[account]) revert AddressNotAllowListed(account);
 
         _whitelistedAddresses[account] = false;
-        emit AddressRemovedFromWhitelist(account, _msgSender());
+        emit AddressRemovedFromAllowList(account, _msgSender());
     }
 
     /// @notice Adds multiple addresses to the compliance whitelist in a single transaction
     /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
     /// This is a gas-efficient way to whitelist multiple addresses at once.
     /// @param accounts Array of addresses to add to the whitelist
-    function addMultipleToWhitelist(address[] calldata accounts)
+    function addMultipleToAllowList(address[] calldata accounts)
         external
         onlyRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE)
     {
@@ -113,10 +113,10 @@ contract SMARTComplianceImplementation is
         for (uint256 i = 0; i < accountsLength;) {
             address account = accounts[i];
             if (account == address(0)) revert ZeroAddressNotAllowed();
-            if (_whitelistedAddresses[account]) revert AddressAlreadyWhitelisted(account);
+            if (_whitelistedAddresses[account]) revert AddressAlreadyAllowListed(account);
 
             _whitelistedAddresses[account] = true;
-            emit AddressWhitelisted(account, _msgSender());
+            emit AddressAllowListed(account, _msgSender());
 
             unchecked {
                 ++i;
@@ -127,17 +127,17 @@ contract SMARTComplianceImplementation is
     /// @notice Removes multiple addresses from the compliance whitelist in a single transaction
     /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
     /// @param accounts Array of addresses to remove from the whitelist
-    function removeMultipleFromWhitelist(address[] calldata accounts)
+    function removeMultipleFromAllowList(address[] calldata accounts)
         external
         onlyRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE)
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
             address account = accounts[i];
-            if (!_whitelistedAddresses[account]) revert AddressNotWhitelisted(account);
+            if (!_whitelistedAddresses[account]) revert AddressNotAllowListed(account);
 
             _whitelistedAddresses[account] = false;
-            emit AddressRemovedFromWhitelist(account, _msgSender());
+            emit AddressRemovedFromAllowList(account, _msgSender());
 
             unchecked {
                 ++i;
@@ -148,7 +148,7 @@ contract SMARTComplianceImplementation is
     /// @notice Checks if an address is whitelisted
     /// @param account The address to check
     /// @return True if the address is whitelisted, false otherwise
-    function isWhitelisted(address account) external view returns (bool) {
+    function isAllowListed(address account) external view returns (bool) {
         return _whitelistedAddresses[account];
     }
 
@@ -355,7 +355,7 @@ contract SMARTComplianceImplementation is
     // --- Overrides for ERC2771ContextUpgradeable ---
 
     /// @notice Override supportsInterface to support ERC165 interface detection
-    /// @dev Announces support for ISMARTCompliance and ISMARTComplianceWhitelist interfaces
+    /// @dev Announces support for ISMARTCompliance and ISMARTComplianceAllowList interfaces
     /// @param interfaceId The interface identifier to check
     /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
@@ -366,7 +366,7 @@ contract SMARTComplianceImplementation is
         returns (bool)
     {
         return interfaceId == type(ISMARTCompliance).interfaceId
-            || interfaceId == type(ISMARTComplianceWhitelist).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(ISMARTComplianceAllowList).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /// @notice Override _msgSender to support meta-transactions via ERC2771

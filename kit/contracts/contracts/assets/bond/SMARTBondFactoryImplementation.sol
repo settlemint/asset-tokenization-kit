@@ -10,7 +10,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ISMARTBond } from "./ISMARTBond.sol";
 import { ISMARTBondFactory } from "./ISMARTBondFactory.sol";
 import { ISMARTTokenAccessManager } from "../../extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { ISMARTComplianceWhitelist } from "../../system/compliance/ISMARTComplianceWhitelist.sol";
+import { ISMARTComplianceAllowList } from "../../system/compliance/ISMARTComplianceAllowList.sol";
 import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
 
 // Local imports
@@ -85,7 +85,7 @@ contract SMARTBondFactoryImplementation is ISMARTBondFactory, AbstractSMARTToken
         }
 
         // Add the bond to the compliance whitelist, because it needs to be able to hold other tokens
-        ISMARTComplianceWhitelist(address(_compliance())).addToWhitelist(deployedBondAddress);
+        ISMARTComplianceAllowList(address(_compliance())).addToAllowList(deployedBondAddress);
 
         return deployedBondAddress;
     }

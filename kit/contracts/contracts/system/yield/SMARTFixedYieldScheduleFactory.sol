@@ -14,7 +14,7 @@ import { ISMARTFixedYieldScheduleFactory } from "./ISMARTFixedYieldScheduleFacto
 import { ISMARTFixedYieldSchedule } from "../../extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../extensions/yield/ISMARTYield.sol";
 import { ISMARTSystem } from "../ISMARTSystem.sol";
-import { ISMARTComplianceWhitelist } from "../compliance/ISMARTComplianceWhitelist.sol";
+import { ISMARTComplianceAllowList } from "../compliance/ISMARTComplianceAllowList.sol";
 
 // Implementations
 import { SMARTFixedYieldSchedule } from "../../extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
@@ -121,10 +121,10 @@ contract SMARTFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl
         address complianceProxy = ISMARTSystem(systemAddress).complianceProxy();
         if (
             complianceProxy != address(0)
-                && IERC165(complianceProxy).supportsInterface(type(ISMARTComplianceWhitelist).interfaceId)
+                && IERC165(complianceProxy).supportsInterface(type(ISMARTComplianceAllowList).interfaceId)
         ) {
             // Allow schedule to receive tokens
-            ISMARTComplianceWhitelist(complianceProxy).addToWhitelist(scheduleProxyAddress);
+            ISMARTComplianceAllowList(complianceProxy).addToAllowList(scheduleProxyAddress);
         }
 
         return scheduleProxyAddress;
