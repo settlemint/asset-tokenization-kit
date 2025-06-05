@@ -46,9 +46,9 @@ contract SMARTFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl
     /// @notice Constructor for the `SMARTFixedYieldScheduleFactory`.
     /// @dev Initializes the factory, deploys the initial `SMARTFixedYieldSchedule` implementation,
     /// and sets up support for meta-transactions via ERC2771Context.
-    /// @param forwarder The address of the trusted forwarder contract for meta-transactions.
     /// @param systemAddress_ The address of the `ISMARTSystem` contract.
-    constructor(address forwarder, address systemAddress_) ERC2771Context(forwarder) AccessControl() {
+    /// @param forwarder The address of the trusted forwarder contract for meta-transactions.
+    constructor(address systemAddress_, address forwarder) ERC2771Context(forwarder) AccessControl() {
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
 
         systemAddress = systemAddress_;
