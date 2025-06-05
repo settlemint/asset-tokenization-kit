@@ -371,5 +371,3 @@ Then browse to <http://localhost:16686/> to view the traces and
 ```bash
 brew install chart-testing yamllint helm-docs
 ```
-
-const test = 'formatting test';
