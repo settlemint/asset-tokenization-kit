@@ -74,7 +74,8 @@ export const createPushAirdropFunction = async ({
     objects: distribution.map((d) => ({
       airdrop_id: predictedAddress,
       recipient: d.recipient,
-      amount: parseUnits(d.amount.toString(), asset.decimals).toString(),
+      amount: d.amount.toString(),
+      amount_exact: d.amountExact,
       index: d.index,
     })),
   });

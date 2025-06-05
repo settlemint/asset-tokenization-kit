@@ -15,6 +15,7 @@ export const AddAirdropDistribution = hasuraGraphql(`
         airdrop_id
         recipient
         amount
+        amount_exact
         index
       }
     }

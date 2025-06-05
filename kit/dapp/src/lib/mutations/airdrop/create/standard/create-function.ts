@@ -6,7 +6,6 @@ import { hasuraClient } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { parseUnits } from "viem";
 import { AddAirdropDistribution } from "../common/add-distribution";
 import { AirdropDistributionListSchema } from "../common/airdrop-distribution-schema";
 import { getMerkleRoot } from "../common/merkle-tree";
@@ -82,7 +81,8 @@ export const createStandardAirdropFunction = async ({
     objects: distribution.map((d) => ({
       airdrop_id: predictedAddress,
       recipient: d.recipient,
-      amount: parseUnits(d.amount.toString(), asset.decimals).toString(),
+      amount: d.amount.toString(),
+      amount_exact: d.amountExact,
       index: d.index,
     })),
   });
