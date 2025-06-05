@@ -1,0 +1,8 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: format
+      run: bunx prettier --write {staged_files}
+      stage_fixed: true
+    - name: docs-and-stage
+      run: bun run docs && git add "**/README.md" || true

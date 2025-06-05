@@ -1,11 +1,45 @@
 apiVersion: v2
 name: erpc
-description: A Helm chart for the erpc load balancer
+description: |
+  eRPC is a fault-tolerant EVM RPC proxy and permanent caching solution that provides
+  high availability, load balancing, and intelligent request routing for Ethereum
+  and EVM-compatible blockchain networks. It offers advanced caching mechanisms,
+  automatic failover, and comprehensive monitoring for production-grade blockchain
+  infrastructure.
 type: application
 version: 0.1.0
-appVersion: "0.1.0"
+appVersion: "0.0.50"
 icon: https://console.settlemint.com/android-chrome-512x512.png
+home: https://erpc.cloud/
+sources:
+  - https://github.com/erpc/erpc
+  - https://github.com/settlemint/starterkit-asset-tokenization
+deprecated: false
+kubeVersion: ">=1.21.0-0"
+engine: gotpl
+keywords:
+  - ethereum
+  - rpc
+  - proxy
+  - cache
+  - blockchain
+  - web3
+  - evm
+  - infrastructure
+  - failover
+  - load-balancer
+  - high-availability
+  - monitoring
+  - asset-tokenization
+  - defi
+  - settlemint
 maintainers:
   - name: SettleMint
     email: support@settlemint.com
     url: https://settlemint.com
+  - name: eRPC Community
+    url: https://github.com/erpc/erpc
+dependencies:
+  - name: common
+    version: 2.31.1
+    repository: oci://registry-1.docker.io/bitnamicharts

@@ -38,6 +38,7 @@
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
     "build": "turbo build",
+    "docs": "turbo run docs",
     "ci:gha": "turbo run ci:gha",
     "ci": "turbo run ci",
     "ci:publish": "turbo run ci:publish",
@@ -58,6 +59,7 @@
   "dependencies": {},
   "devDependencies": {
     "@settlemint/sdk-cli": "2.3.5",
+    "lefthook": "1.11.13",
     "prettier": "3.5.3",
     "turbo": "2.5.4",
     "typescript": "5.8.3"

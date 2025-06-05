@@ -1,137 +1,327 @@
-# Default values for erpc.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+# -- Global Docker image registry
+global:
+  # -- Global Docker image registry
+  imageRegistry: ""
+  # -- Global Docker registry secret names as an array
+  imagePullSecrets: []
+  # -- Global StorageClass for Persistent Volume(s)
+  storageClass: ""
 
-# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
-replicaCount: 1
-
-# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
-image:
-  repository: ghcr.io/erpc/erpc
-  # This sets the pull policy for images.
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.50"
-
-# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-imagePullSecrets: []
-
-# This is to override the chart name.
-nameOverride: ""
+# -- String to fully override common.names.fullname
 fullnameOverride: "erpc"
 
-# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Automatically mount a ServiceAccount's API credentials?
-  automount: false
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+# -- Labels to add to all deployed objects
+commonLabels: {}
 
-# This is for setting Kubernetes Annotations to a Pod.
-# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
-podAnnotations:
-  prometheus.io/scrape: "true"
-  prometheus.io/port: "4001"
-  prometheus.io/path: "/metrics"
+# -- Annotations to add to all deployed objects
+commonAnnotations: {}
 
-# This is for setting Kubernetes Labels to a Pod.
-# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+
+# -- eRPC image
+image:
+  # -- eRPC image registry
+  registry: ghcr.io
+  # -- eRPC image repository
+  repository: erpc/erpc
+  # -- eRPC image tag (immutable tags are recommended)
+  tag: "0.0.50"
+  # -- eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+  digest: ""
+  # -- eRPC image pull policy
+  pullPolicy: IfNotPresent
+  # -- eRPC image pull secrets
+  pullSecrets: []
+
+# -- Number of eRPC replicas to deploy
+replicaCount: 1
+
+# -- Update strategy configuration for eRPC deployment
+updateStrategy:
+  # -- eRPC deployment strategy type
+  type: RollingUpdate
+  # -- eRPC deployment rolling update configuration parameters
+  rollingUpdate: {}
+
+# -- Alternate scheduler
+schedulerName: ""
+
+# -- eRPC pods' priority class name
+priorityClassName: ""
+
+# -- Topology Spread Constraints for pod assignment
+topologySpreadConstraints: []
+
+# -- Extra labels for eRPC pods
 podLabels: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+# -- Annotations for eRPC pods
+podAnnotations:
+  # -- Enable prometheus scraping
+  prometheus.io/scrape: "true"
+  # -- Prometheus metrics port
+  prometheus.io/port: "4001"
+  # -- Prometheus metrics path
+  prometheus.io/path: "/metrics"
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+# -- Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+podAffinityPreset: ""
 
-# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
-service:
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  type: ClusterIP
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 4000
-  metricsPort: 4001
+# -- Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+podAntiAffinityPreset: soft
 
-# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
-ingress:
-  enabled: true
-  className: "settlemint-nginx"
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: besu.k8s.orb.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+# -- Node affinity preset configuration
+nodeAffinityPreset:
+  # -- Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+  type: ""
+  # -- Node label key to match. Ignored if `affinity` is set
+  key: ""
+  # -- Node label values to match. Ignored if `affinity` is set
+  values: []
 
-resources: {}
-
-# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-livenessProbe:
-  httpGet:
-    path: /healthcheck
-    port: http
-readinessProbe:
-  httpGet:
-    path: /healthcheck
-    port: http
-
-# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
-autoscaling:
-  enabled: true
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
-
-# PodDisruptionBudget configuration
-podDisruptionBudget:
-  enabled: false
-  # Minimum number of pods that must be available during disruption
-  minAvailable: 1
-  # Maximum number of pods that can be unavailable during disruption
-  # maxUnavailable: 1
-
-# Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
-
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
-
-nodeSelector: {}
-
-tolerations: []
-
+# -- Affinity for pod assignment
 affinity: {}
 
-# NetworkPolicy configuration
-networkPolicy:
+# -- Node labels for pod assignment
+nodeSelector: {}
+
+# -- Tolerations for pod assignment
+tolerations: []
+
+# -- Pod Security Context configuration
+podSecurityContext:
+  # -- Enabled eRPC pods' Security Context
   enabled: false
-  # Ingress rules
-  ingress:
-    # Allow from services that need RPC access
+  # -- Set eRPC pod's Security Context fsGroup
+  fsGroup: 1001
+  # -- Set kernel settings using the sysctl interface
+  sysctls: []
+
+# -- Container Security Context configuration
+containerSecurityContext:
+  # -- Enable container Security Context
+  enabled: false
+  # -- Set container's Security Context runAsUser
+  runAsUser: 1001
+  # -- Set container's Security Context runAsGroup
+  runAsGroup: 1001
+  # -- Set container's Security Context allowPrivilegeEscalation
+  allowPrivilegeEscalation: false
+  # -- Set container's Security Context readOnlyRootFilesystem
+  readOnlyRootFilesystem: false
+  # -- Set container's Security Context runAsNonRoot
+  runAsNonRoot: true
+  # -- Linux capabilities configuration
+  capabilities:
+    # -- Set container's Security Context drop capabilities
+    drop: ["ALL"]
+  # -- Seccomp profile configuration
+  seccompProfile:
+    # -- Set container's Security Context seccomp profile
+    type: "RuntimeDefault"
+
+# -- eRPC containers resource requests and limits
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# -- Configure eRPC containers' liveness probe
+livenessProbe:
+  # -- Enable livenessProbe on eRPC containers
+  enabled: true
+  # -- Initial delay seconds for livenessProbe
+  initialDelaySeconds: 10
+  # -- Period seconds for livenessProbe
+  periodSeconds: 10
+  # -- Timeout seconds for livenessProbe
+  timeoutSeconds: 5
+  # -- Failure threshold for livenessProbe
+  failureThreshold: 3
+  # -- Success threshold for livenessProbe
+  successThreshold: 1
+  # -- HTTP get parameters for livenessProbe
+  httpGet:
+    # -- Path for httpGet livenessProbe
+    path: /healthcheck
+    # -- Port for httpGet livenessProbe
+    port: http
+
+# -- Configure eRPC containers' readiness probe
+readinessProbe:
+  # -- Enable readinessProbe on eRPC containers
+  enabled: true
+  # -- Initial delay seconds for readinessProbe
+  initialDelaySeconds: 5
+  # -- Period seconds for readinessProbe
+  periodSeconds: 10
+  # -- Timeout seconds for readinessProbe
+  timeoutSeconds: 5
+  # -- Failure threshold for readinessProbe
+  failureThreshold: 3
+  # -- Success threshold for readinessProbe
+  successThreshold: 1
+  # -- HTTP get parameters for readinessProbe
+  httpGet:
+    # -- Path for httpGet readinessProbe
+    path: /healthcheck
+    # -- Port for httpGet readinessProbe
+    port: http
+
+# -- Configure eRPC containers' startup probe
+startupProbe:
+  # -- Enable startupProbe on eRPC containers
+  enabled: false
+  # -- Initial delay seconds for startupProbe
+  initialDelaySeconds: 30
+  # -- Period seconds for startupProbe
+  periodSeconds: 10
+  # -- Timeout seconds for startupProbe
+  timeoutSeconds: 5
+  # -- Failure threshold for startupProbe
+  failureThreshold: 10
+  # -- Success threshold for startupProbe
+  successThreshold: 1
+
+# -- lifecycleHooks for the eRPC container(s) to automate configuration before or after startup
+lifecycleHooks: {}
+
+# -- Optionally specify extra list of additional volumes for the eRPC pod(s)
+extraVolumes: []
+
+# -- Optionally specify extra list of additional volumeMounts for the eRPC container(s)
+extraVolumeMounts: []
+
+# -- Array with extra environment variables to add to eRPC nodes
+extraEnvVars: []
+
+# -- Name of existing ConfigMap containing extra env vars for eRPC nodes
+extraEnvVarsCM: ""
+
+# -- Name of existing Secret containing extra env vars for eRPC nodes
+extraEnvVarsSecret: ""
+
+# -- Service parameters
+service:
+  # -- eRPC service type
+  type: ClusterIP
+  # -- eRPC service HTTP port
+  port: 4000
+  # -- eRPC service metrics port
+  metricsPort: 4001
+  # -- Node port for HTTP
+  nodePort: ""
+  # -- Node port for metrics
+  metricsNodePort: ""
+  # -- eRPC service Cluster IP
+  clusterIP: ""
+  # -- eRPC service Load Balancer IP
+  loadBalancerIP: ""
+  # -- eRPC service Load Balancer sources
+  loadBalancerSourceRanges: []
+  # -- eRPC service external traffic policy
+  externalTrafficPolicy: Cluster
+  # -- Additional custom annotations for eRPC service
+  annotations: {}
+  # -- Extra ports to expose in the eRPC service (normally used with the `sidecar` value)
+  extraPorts: []
+  # -- Session Affinity for Kubernetes service, can be "None" or "ClientIP"
+  sessionAffinity: None
+  # -- Additional settings for the sessionAffinity
+  sessionAffinityConfig: {}
+
+# -- Ingress parameters
+ingress:
+  # -- Enable ingress record generation for eRPC
+  enabled: true
+  # -- Ingress path type
+  pathType: ImplementationSpecific
+  # -- Force Ingress API version (automatically detected if not set)
+  apiVersion: ""
+  # -- Default host for the ingress record
+  hostname: besu.k8s.orb.local
+  # -- IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ingressClassName: "settlemint-nginx"
+  # -- Default path for the ingress record
+  path: /
+  # -- Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  annotations: {}
+  # -- Enable TLS configuration for the host defined at `ingress.hostname` parameter
+  tls: false
+  # -- Create a TLS secret for this ingress record using self-signed certificates generated by Helm
+  selfSigned: false
+  # -- An array with additional hostname(s) to be covered with the ingress record
+  extraHosts: []
+  # -- An array with additional arbitrary paths that may need to be added to the ingress under the main host
+  extraPaths: []
+  # -- TLS configuration for additional hostname(s) to be covered with this ingress record
+  extraTls: []
+  # -- Custom TLS certificates as secrets
+  secrets: []
+  # -- Additional rules to be covered with this ingress record
+  extraRules: []
+
+# -- Service account for eRPC pods
+serviceAccount:
+  # -- Specifies whether a ServiceAccount should be created
+  create: true
+  # -- The name of the ServiceAccount to use.
+  name: ""
+  # -- Automount service account token for the deployment controller service account
+  automountServiceAccountToken: false
+  # -- Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
+  annotations: {}
+  # -- Extra labels to be added to the service account
+  labels: {}
+
+# -- Autoscaling configuration for eRPC
+autoscaling:
+  # -- Enable autoscaling for eRPC
+  enabled: false
+  # -- Maximum number of eRPC replicas
+  maxReplicas: 3
+  # -- Minimum number of eRPC replicas
+  minReplicas: 1
+  # -- Built-in metrics configuration
+  builtInMetrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  # -- Custom metrics configuration
+  customMetrics: []
+
+# -- Pod disruption budget configuration
+pdb:
+  # -- If true, create a pod disruption budget for pods.
+  enabled: false
+  # -- Minimum number/percentage of pods that should remain scheduled
+  minAvailable: ""
+  # -- Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty.
+  maxUnavailable: ""
+
+# -- Network policies configuration
+networkPolicy:
+  # -- Enable creation of NetworkPolicy resources
+  enabled: false
+  # -- The Policy model to apply
+  allowExternal: true
+  # -- Allow the pod to access any range of port and all destinations.
+  allowExternalEgress: true
+  # -- Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
+  addExternalClientAccess: true
+  # -- Add extra ingress rules to the NetworkPolicy
+  extraIngress:
     - from:
         - podSelector:
             matchLabels:
@@ -148,9 +338,8 @@ networkPolicy:
           port: 4000  # RPC port
         - protocol: TCP
           port: 4001  # Metrics port
-
-  # Egress rules
-  egress:
+  # -- Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
+  extraEgress:
     # Allow DNS resolution
     - to:
         - namespaceSelector: {}
@@ -168,23 +357,45 @@ networkPolicy:
       ports:
         - protocol: TCP
           port: 8545  # RPC
+  # -- Ingress rules configuration
+  ingressRules:
+    # -- Access restrictions configuration
+    accessOnlyFrom:
+      # -- Enable ingress rule that makes eRPC only accessible from a particular origin.
+      enabled: false
+      # -- Namespace selector label that is allowed to access eRPC. This label will be used to identified allowed namespace(s).
+      namespaceSelector: {}
+      # -- Pods selector label that is allowed to access eRPC. This label will be used to identified allowed pod(s).
+      podSelector: {}
 
+# -- Test parameters
 tests:
+  # -- Image for test pods
   image:
+    # -- Test image registry
     registry: docker.io
+    # -- Test image repository
     repository: busybox
+    # -- Test image tag
     tag: 1.37.0
+    # -- Test image pull policy
     pullPolicy: IfNotPresent
 
+# -- eRPC configuration
 config:
+  # -- Log level for eRPC
   logLevel: info
+  # -- Array of project configurations
   projects:
     - id: settlemint
       upstreams:
         - endpoint: http://besu-node-rpc-1:8545
         # - endpoint: http://besu-node-rpc-2:8545
+  # -- Server configuration
   server:
+    # -- Aliasing configuration
     aliasing:
+      # -- Array of aliasing rules
       rules:
         - matchDomain: "*"
           serveProject: "settlemint"
