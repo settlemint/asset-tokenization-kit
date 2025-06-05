@@ -19,6 +19,10 @@ import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
+import { claimYield } from "./actions/yield/claim-yield";
+import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
+import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
+import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
@@ -76,22 +80,23 @@ export const createBond = async (depositToken: Asset<any>) => {
   await unfreezePartialTokens(bond, owner, investorB, 2n);
 
   // yield
-  /* Blocked by https://linear.app/settlemint/issue/ENG-3214/fixed-yield-extension-should-not-verify-required-claims-for
   const { advanceToNextPeriod } = await setYieldSchedule(
     bond,
     new Date(Date.now() + 1_000), // 1 second from now
-    new Date(Date.now() + 5 * 60 * 1_000), // 5 minutes from now
+    new Date(Date.now() + 30 * 1_000), // 30 seconds from now
     50, // 0.5%
     5 // 5 seconds
   );
   await topupUnderlyingAsset(bond, depositToken, 10000n);
-  // Claim yield for 3 periods
+  // claim yield for 3 periods
   for (let i = 0; i < 3; i++) {
     await advanceToNextPeriod();
     await claimYield(bond);
   }
+  // transfer some  tokens to change the yield for the next period
+  await transfer(bond, owner, investorA, 6n);
+  await transfer(bond, owner, investorB, 3n);
   await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);
-  */
 
   // TODO: execute all other functions of the bond
 
