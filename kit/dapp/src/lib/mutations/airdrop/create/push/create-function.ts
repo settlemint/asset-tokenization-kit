@@ -7,6 +7,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { AddAirdropDistribution } from "../common/add-distribution";
+import { AirdropDistributionListSchema } from "../common/airdrop-distribution-schema";
 import { getMerkleRoot } from "../common/merkle-tree";
 import type { CreatePushAirdropInput } from "./create-schema";
 
@@ -39,12 +40,13 @@ export const createPushAirdropFunction = async ({
   parsedInput: CreatePushAirdropInput;
   ctx: { user: User };
 }) => {
+  const leaves = safeParse(AirdropDistributionListSchema, distribution);
   const result = await portalClient.request(AirdropFactoryDeployPushAirdrop, {
     address: AIRDROP_FACTORY_ADDRESS,
     from: user.wallet,
     input: {
       tokenAddress: asset.id,
-      merkleRoot: getMerkleRoot(distribution),
+      merkleRoot: getMerkleRoot(leaves),
       owner,
       distributionCap: parseUnits(
         distributionCap.toString(),
@@ -72,7 +74,8 @@ export const createPushAirdropFunction = async ({
     objects: distribution.map((d) => ({
       airdrop_id: predictedAddress,
       recipient: d.recipient,
-      amount: parseUnits(d.amount.toString(), asset.decimals).toString(),
+      amount: d.amount.toString(),
+      amount_exact: d.amountExact,
       index: d.index,
     })),
   });

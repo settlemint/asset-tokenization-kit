@@ -2,16 +2,15 @@ import { DocumentUpload } from "@/components/blocks/document-upload/document-upl
 import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormDescription, FormLabel } from "@/components/ui/form";
-import { AirdropDistributionListSchema } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
 import type { CreateAirdropInput } from "@/lib/mutations/airdrop/create/common/schema";
-import { safeParse } from "@/lib/utils/typebox";
 import { useTranslations } from "next-intl";
 import { parse } from "papaparse";
 import type { PropsWithChildren } from "react";
 import { useFormContext } from "react-hook-form";
+import { getAddress, parseUnits } from "viem";
 
 export function Distribution({ children }: PropsWithChildren) {
-  const { setError, clearErrors, setValue } =
+  const { setError, clearErrors, setValue, getValues } =
     useFormContext<CreateAirdropInput>();
   const t = useTranslations("private.airdrops.create.distribution");
 
@@ -31,7 +30,7 @@ export function Distribution({ children }: PropsWithChildren) {
           clearErrors("distribution");
 
           const fileText = await file.text();
-          const parseResult = parse<string[][]>(fileText);
+          const parseResult = parse<string[]>(fileText);
           if (parseResult.errors.length > 0) {
             console.error("Error processing CSV:", parseResult.errors);
             setError("distribution", {
@@ -43,24 +42,26 @@ export function Distribution({ children }: PropsWithChildren) {
           }
 
           try {
-            // Skip header row and transform data
-            const jsonData = parseResult.data.slice(1).map((row, index) => ({
-              amount: row[0],
-              recipient: row[1],
-              index,
-            }));
+            const asset = getValues("asset");
+            const decimals = asset.decimals;
 
-            if (jsonData.length === 0) {
+            // Skip header row and transform data
+            const distribution = parseResult.data
+              .slice(1)
+              .map((row, index) => ({
+                amount: Number(row[0]),
+                amountExact: parseUnits(String(row[0]), decimals).toString(),
+                recipient: getAddress(row[1]),
+                index,
+              }));
+
+            if (distribution.length === 0) {
               setError("distribution", {
                 type: "manual",
                 message: "The CSV file is empty or does not contain data.",
               });
               return;
             }
-            const distribution = safeParse(
-              AirdropDistributionListSchema,
-              jsonData
-            );
 
             setValue("distribution", distribution);
           } catch (error) {

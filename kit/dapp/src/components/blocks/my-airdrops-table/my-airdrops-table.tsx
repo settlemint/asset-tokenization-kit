@@ -1,4 +1,4 @@
-import { getAirdropRecipientList } from "@/lib/queries/airdrop/airdrop-recipient-list";
+import { getUserAirdropList } from "@/lib/queries/airdrop/user-airdrops-list";
 import type { Address } from "viem";
 import { MyAirdropsClientTable } from "./my-airdrops-client-table";
 
@@ -11,12 +11,7 @@ export default async function MyAirdropsTable({
   wallet,
   title,
 }: MyAirdropsTableProps) {
-  const airdropRecipients = await getAirdropRecipientList(wallet);
+  const airdrops = await getUserAirdropList(wallet);
 
-  return (
-    <MyAirdropsClientTable
-      airdropRecipients={airdropRecipients}
-      title={title}
-    />
-  );
+  return <MyAirdropsClientTable airdrops={airdrops} title={title} />;
 }

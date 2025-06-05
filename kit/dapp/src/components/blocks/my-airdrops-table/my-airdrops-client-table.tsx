@@ -1,18 +1,18 @@
 "use client";
 
 import { DataTable } from "@/components/blocks/data-table/data-table";
-import type { AirdropRecipient } from "@/lib/queries/airdrop/airdrop-recipient-schema";
+import type { UserAirdrop } from "@/lib/queries/airdrop/user-airdrop-schema";
 import { HeartMinus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Columns } from "./my-airdrops-table-columns";
 
 interface MyAirdropsClientTableProps {
-  airdropRecipients: AirdropRecipient[];
+  airdrops: UserAirdrop[];
   title: string;
 }
 
 export function MyAirdropsClientTable({
-  airdropRecipients,
+  airdrops,
   title,
 }: MyAirdropsClientTableProps) {
   const t = useTranslations("portfolio.my-airdrops");
@@ -20,7 +20,7 @@ export function MyAirdropsClientTable({
   return (
     <DataTable
       columns={Columns}
-      data={airdropRecipients}
+      data={airdrops}
       name={title}
       customEmptyState={{
         icon: HeartMinus,

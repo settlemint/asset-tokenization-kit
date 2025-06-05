@@ -107,7 +107,6 @@ export async function VestingAirdropDetails({
           token: airdrop.asset.symbol,
           decimals: airdrop.asset.decimals,
           locale: locale,
-          adjustDecimals: true,
         })}
       </DetailGridItem>
       <DetailGridItem

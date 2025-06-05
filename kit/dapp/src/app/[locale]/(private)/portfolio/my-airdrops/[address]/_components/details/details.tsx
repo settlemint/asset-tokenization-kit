@@ -1,5 +1,5 @@
 import { getUser } from "@/lib/auth/utils";
-import { getAirdropRecipientDetail } from "@/lib/queries/airdrop/airdrop-recipient-detail";
+import { getUserAirdropDetail } from "@/lib/queries/airdrop/user-airdrop-detail";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import type { Address } from "viem";
 import { PushAirdropDetails } from "./push";
@@ -12,7 +12,7 @@ interface DetailsProps {
 
 export async function MyAirdropDetails({ address }: DetailsProps) {
   const user = await getUser();
-  const myAirdropDetails = await getAirdropRecipientDetail(address, user);
+  const myAirdropDetails = await getUserAirdropDetail(address, user);
 
   switch (myAirdropDetails?.airdrop.__typename) {
     case "StandardAirdrop":

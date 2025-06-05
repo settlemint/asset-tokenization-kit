@@ -1,3 +1,4 @@
+import { AirdropDistributionSchema } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import type { Static } from "@sinclair/typebox";
 import { OnChainPushAirdropSchema } from "../push-airdrop/push-airdrop-schema";
@@ -131,7 +132,7 @@ export type VestingAirdropRecipient = StaticDecode<
  * Provides validation for airdrop recipient information including:
  * complete airdrop details, amount allocated, Merkle tree index, claim data, and vesting data
  */
-export const AirdropRecipientSchema = t.Object(
+export const UserAirdropSchema = t.Object(
   {
     airdrop: t.Union(
       [
@@ -143,13 +144,7 @@ export const AirdropRecipientSchema = t.Object(
         description: "Discriminated union of airdrop types based on type",
       }
     ),
-    amount: t.StringifiedBigInt({
-      description:
-        "The amount allocated to this recipient as a raw big integer value",
-    }),
-    index: t.Number({
-      description: "The index of the recipient in the Merkle tree",
-    }),
+    ...AirdropDistributionSchema.properties,
   },
   {
     description:
@@ -157,15 +152,13 @@ export const AirdropRecipientSchema = t.Object(
   }
 );
 
-export type AirdropRecipient = StaticDecode<typeof AirdropRecipientSchema>;
+export type UserAirdrop = StaticDecode<typeof UserAirdropSchema>;
 
-export const AirdropRecipientDetailSchema = t.Object({
-  ...AirdropRecipientSchema.properties,
+export const UserAirdropDetailSchema = t.Object({
+  ...UserAirdropSchema.properties,
   price: t.Price({
     description: "The price of the asset in the user's currency",
   }),
 });
 
-export type AirdropRecipientDetail = StaticDecode<
-  typeof AirdropRecipientDetailSchema
->;
+export type UserAirdropDetail = StaticDecode<typeof UserAirdropDetailSchema>;

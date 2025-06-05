@@ -32,8 +32,27 @@ export const AirdropFragment = theGraphGraphqlKit(`
  */
 export const OffchainAirdropFragment = hasuraGraphql(`
   fragment OffchainAirdropFragment on airdrop_distribution {
-    amount
-    recipient
+    airdrop: airdrop_id
     index
+    recipient
+    amount
+    amountExact: amount_exact
+  }
+`);
+
+/**
+ * GraphQL fragment for airdrop recipient data from The Graph
+ *
+ * @remarks
+ * Contains recipient-specific claim data from on-chain events
+ * Includes claim timestamps and total claimed amounts for status calculation
+ */
+export const AirdropClaimFragment = theGraphGraphqlKit(`
+  fragment AirdropClaimFragment on AirdropRecipient {
+    id
+    firstClaimedTimestamp
+    lastClaimedTimestamp
+    totalClaimedByRecipient
+    totalClaimedByRecipientExact
   }
 `);

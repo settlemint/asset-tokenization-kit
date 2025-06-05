@@ -10,17 +10,13 @@ import type {
   AirdropDistributionList,
 } from "./airdrop-distribution-schema";
 
-function createMerkleLeaf(
-  index: bigint,
-  account: `0x${string}`,
-  amount: bigint
-): Hex {
-  // First hash: keccak256(abi.encode(index, account, amount))
+function createMerkleLeaf(leaf: AirdropDistribution): Hex {
+  // First hash: keccak256(abi.encode(index, account, amountExact))
   const firstHash = keccak256(
     encodeAbiParameters(parseAbiParameters("uint256, address, uint256"), [
-      index,
-      account,
-      amount,
+      BigInt(leaf.index),
+      leaf.recipient,
+      leaf.amountExact,
     ])
   );
 
@@ -34,9 +30,7 @@ function createMerkleLeaf(
 
 export const createMerkleTree = (leaves: AirdropDistributionList): MerkleTree =>
   new MerkleTree(
-    leaves.map((leaf) =>
-      createMerkleLeaf(BigInt(leaf.index), leaf.recipient, BigInt(leaf.amount))
-    ),
+    leaves.map((leaf) => createMerkleLeaf(leaf)),
     keccak256,
     { sort: true }
   );
@@ -50,11 +44,7 @@ export const getMerkleProof = (
   leaf: AirdropDistribution,
   tree: MerkleTree
 ): Hex[] => {
-  const leafHash = createMerkleLeaf(
-    BigInt(leaf.index),
-    leaf.recipient,
-    BigInt(leaf.amount)
-  );
+  const leafHash = createMerkleLeaf(leaf);
   return tree.getHexProof(leafHash) as Hex[];
 };
 
@@ -64,10 +54,6 @@ export const verifyMerkleProof = (
   root: Hex
 ): boolean => {
   const tree = createMerkleTree([leaf]);
-  const leafHash = createMerkleLeaf(
-    BigInt(leaf.index),
-    leaf.recipient,
-    BigInt(leaf.amount)
-  );
+  const leafHash = createMerkleLeaf(leaf);
   return tree.verify(proof, leafHash, root);
 };

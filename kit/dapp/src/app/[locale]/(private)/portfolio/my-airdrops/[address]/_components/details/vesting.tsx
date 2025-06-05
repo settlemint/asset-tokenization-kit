@@ -4,7 +4,7 @@ import { AirdropClaimStatusIndicator } from "@/components/blocks/airdrop-claim-s
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import type { VestingAirdropRecipient } from "@/lib/queries/airdrop/airdrop-recipient-schema";
+import type { VestingAirdropRecipient } from "@/lib/queries/airdrop/user-airdrop-schema";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import type { Price } from "@/lib/utils/typebox/price";
@@ -50,7 +50,6 @@ export function VestingAirdropDetails({
         {formatNumber(amount, {
           locale: locale,
           decimals: airdrop.asset.decimals,
-          adjustDecimals: true,
           token: airdrop.asset.symbol,
         })}
       </DetailGridItem>

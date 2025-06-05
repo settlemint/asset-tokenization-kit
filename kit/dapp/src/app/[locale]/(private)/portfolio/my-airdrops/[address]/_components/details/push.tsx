@@ -4,7 +4,7 @@ import { AirdropClaimStatusIndicator } from "@/components/blocks/airdrop-claim-s
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import type { PushAirdropRecipient } from "@/lib/queries/airdrop/airdrop-recipient-schema";
+import type { PushAirdropRecipient } from "@/lib/queries/airdrop/user-airdrop-schema";
 import { formatNumber } from "@/lib/utils/number";
 import type { Price } from "@/lib/utils/typebox/price";
 import { useLocale, useTranslations } from "next-intl";
@@ -48,7 +48,6 @@ export function PushAirdropDetails({
         {formatNumber(amount, {
           locale: locale,
           decimals: airdrop.asset.decimals,
-          adjustDecimals: true,
           token: airdrop.asset.symbol,
         })}
       </DetailGridItem>

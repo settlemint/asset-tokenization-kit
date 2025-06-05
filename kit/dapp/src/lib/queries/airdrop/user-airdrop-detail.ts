@@ -1,52 +1,25 @@
 import "server-only";
 
 import type { User } from "@/lib/auth/types";
-import { fetchAllHasuraPages } from "@/lib/pagination";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress, type Address } from "viem";
 import { getAssetsPricesInUserCurrency } from "../asset-price/asset-price";
 import { PushAirdropFragment } from "../push-airdrop/push-airdrop-fragment";
 import { StandardAirdropFragment } from "../standard-airdrop/standard-airdrop-fragment";
 import { VestingAirdropFragment } from "../vesting-airdrop/vesting-airdrop-fragment";
-import {
-  AirdropClaimFragment,
-  AirdropRecipientFragment,
-} from "./airdrop-recipient-fragment";
+import { AirdropClaimFragment } from "./airdrop-fragment";
+import { getUserAirdropDistribution } from "./user-airdrop-distribution";
 import {
   AirdropClaimSchema,
-  AirdropRecipientDetailSchema,
+  UserAirdropDetailSchema,
   type UserVestingData,
-} from "./airdrop-recipient-schema";
-
-/**
- * GraphQL query to fetch a specific airdrop distribution from Hasura
- *
- * @remarks
- * Retrieves a single airdrop distribution where the user is a recipient for a specific airdrop
- */
-const AirdropRecipientDetail = hasuraGraphql(
-  `
-  query AirdropRecipientDetail($recipient: String!, $airdrop: String!, $limit: Int, $offset: Int) {
-    airdrop_distribution(
-      where: {
-        recipient: { _eq: $recipient }
-        airdrop_id: { _eq: $airdrop }
-      }
-      limit: $limit
-      offset: $offset
-    ) {
-      ...AirdropRecipientFragment
-    }
-  }
-`,
-  [AirdropRecipientFragment]
-);
+} from "./user-airdrop-schema";
 
 /**
  * GraphQL query to fetch a specific airdrop details from The Graph by ID
@@ -103,39 +76,21 @@ const AirdropRecipientById = theGraphGraphqlKit(
  * Includes complete airdrop details, distribution amount, index, claim status,
  * and user-specific vesting data for vesting airdrops.
  */
-export const getAirdropRecipientDetail = withTracing(
+export const getUserAirdropDetail = withTracing(
   "queries",
   "getAirdropRecipientDetail",
-  async (airdropAddress: Address, recipient: User) => {
-    // "use cache";
-    // cacheTag("airdrop");
+  async (airdropAddress: Address, user: User) => {
+    "use cache";
+    cacheTag("airdrop");
 
-    const distributions = await fetchAllHasuraPages(async (limit, offset) => {
-      const result = await hasuraClient.request(
-        AirdropRecipientDetail,
-        {
-          limit,
-          offset,
-          recipient: recipient.wallet,
-          airdrop: airdropAddress,
-        },
-        {
-          "X-GraphQL-Operation-Name": "AirdropRecipientList",
-          "X-GraphQL-Operation-Type": "query",
-        }
-      );
-
-      return result.airdrop_distribution;
-    });
-
-    if (distributions.length !== 1) {
-      throw new Error(`Expected 1 distribution, got ${distributions.length}`);
-    }
-
-    const distribution = distributions[0];
+    const distribution = await getUserAirdropDistribution(
+      airdropAddress,
+      user.wallet
+    );
 
     // Create recipient ID for The Graph query (airdropId-recipientAddress format)
-    const recipientId = `${airdropAddress}-${recipient}`.toLowerCase();
+    const recipientId =
+      `${airdropAddress}${user.wallet.slice(2)}`.toLowerCase();
 
     // Fetch both airdrop details and recipient claim status concurrently
     const [airdropDetailsResult, airdropRecipientResult] = await Promise.all([
@@ -165,7 +120,7 @@ export const getAirdropRecipientDetail = withTracing(
 
     const assetPrices = await getAssetsPricesInUserCurrency(
       [airdrop.asset.id],
-      recipient.currency
+      user.currency
     );
     const assetPrice = assetPrices.get(getAddress(airdrop.asset.id));
     if (!assetPrice) {
@@ -183,17 +138,15 @@ export const getAirdropRecipientDetail = withTracing(
     if (airdrop.type === "VestingAirdrop") {
       if (airdrop.strategy?.vestingData) {
         userVestingData = airdrop.strategy.vestingData.find(
-          (vd) => getAddress(vd.user.id) === getAddress(recipient.wallet)
+          (vd) => getAddress(vd.user.id) === getAddress(user.wallet)
         );
       }
     }
 
-    const amountNumber = Number(
-      BigInt(distribution.amount) / BigInt(10 ** airdrop.asset.decimals)
-    );
-    const price = amountNumber * assetPrice.amount;
+    const price = Number(distribution.amount) * assetPrice.amount;
 
     const recipientDataWithAirdropDetails = {
+      ...distribution,
       airdrop: {
         ...airdrop,
         claimed: recipientClaimData?.firstClaimedTimestamp,
@@ -204,13 +157,8 @@ export const getAirdropRecipientDetail = withTracing(
         amount: price,
         currency: assetPrice.currency,
       },
-      amount: distribution.amount,
-      index: distribution.index,
     };
 
-    return safeParse(
-      AirdropRecipientDetailSchema,
-      recipientDataWithAirdropDetails
-    );
+    return safeParse(UserAirdropDetailSchema, recipientDataWithAirdropDetails);
   }
 );

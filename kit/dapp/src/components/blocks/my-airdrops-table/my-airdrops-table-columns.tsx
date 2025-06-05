@@ -3,13 +3,13 @@
 import { AirdropClaimStatusIndicator } from "@/components/blocks/airdrop-claim-status/airdrop-claim-status";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import type { AirdropRecipient } from "@/lib/queries/airdrop/airdrop-recipient-schema";
+import type { UserAirdrop } from "@/lib/queries/airdrop/user-airdrop-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
 import { AirdropTypeIndicator } from "../airdrop-type-indicator/airdrop-type-indicator";
 
-const columnHelper = createColumnHelper<AirdropRecipient>();
+const columnHelper = createColumnHelper<UserAirdrop>();
 
 export function Columns() {
   const t = useTranslations("portfolio.my-airdrops");
@@ -37,7 +37,6 @@ export function Columns() {
           token: row.original.airdrop.asset.symbol,
           locale: locale,
           decimals: row.original.airdrop.asset.decimals,
-          adjustDecimals: true,
         }),
     }),
     columnHelper.display({
