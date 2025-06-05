@@ -11,12 +11,7 @@ export default async function MyAirdropsTable({
   wallet,
   title,
 }: MyAirdropsTableProps) {
-  const airdropRecipients = await getUserAirdropList(wallet);
+  const airdrops = await getUserAirdropList(wallet);
 
-  return (
-    <MyAirdropsClientTable
-      airdropRecipients={airdropRecipients}
-      title={title}
-    />
-  );
+  return <MyAirdropsClientTable airdrops={airdrops} title={title} />;
 }

@@ -16,7 +16,7 @@ function createMerkleLeaf(leaf: AirdropDistribution): Hex {
     encodeAbiParameters(parseAbiParameters("uint256, address, uint256"), [
       BigInt(leaf.index),
       leaf.recipient,
-      BigInt(leaf.amountExact),
+      leaf.amountExact,
     ])
   );
 

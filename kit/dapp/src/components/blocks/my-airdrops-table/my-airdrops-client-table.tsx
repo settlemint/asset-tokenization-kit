@@ -7,12 +7,12 @@ import { useTranslations } from "next-intl";
 import { Columns } from "./my-airdrops-table-columns";
 
 interface MyAirdropsClientTableProps {
-  airdropRecipients: UserAirdrop[];
+  airdrops: UserAirdrop[];
   title: string;
 }
 
 export function MyAirdropsClientTable({
-  airdropRecipients,
+  airdrops,
   title,
 }: MyAirdropsClientTableProps) {
   const t = useTranslations("portfolio.my-airdrops");
@@ -20,7 +20,7 @@ export function MyAirdropsClientTable({
   return (
     <DataTable
       columns={Columns}
-      data={airdropRecipients}
+      data={airdrops}
       name={title}
       customEmptyState={{
         icon: HeartMinus,

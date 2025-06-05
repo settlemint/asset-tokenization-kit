@@ -79,17 +79,17 @@ const AirdropRecipientById = theGraphGraphqlKit(
 export const getUserAirdropDetail = withTracing(
   "queries",
   "getAirdropRecipientDetail",
-  async (airdropAddress: Address, recipient: User) => {
+  async (airdropAddress: Address, user: User) => {
     "use cache";
     cacheTag("airdrop");
 
     const distribution = await getUserAirdropDistribution(
       airdropAddress,
-      recipient
+      user.wallet
     );
 
     // Create recipient ID for The Graph query (airdropId-recipientAddress format)
-    const recipientId = `${airdropAddress}-${recipient}`.toLowerCase();
+    const recipientId = `${airdropAddress}-${user.wallet}`.toLowerCase();
 
     // Fetch both airdrop details and recipient claim status concurrently
     const [airdropDetailsResult, airdropRecipientResult] = await Promise.all([
@@ -119,7 +119,7 @@ export const getUserAirdropDetail = withTracing(
 
     const assetPrices = await getAssetsPricesInUserCurrency(
       [airdrop.asset.id],
-      recipient.currency
+      user.currency
     );
     const assetPrice = assetPrices.get(getAddress(airdrop.asset.id));
     if (!assetPrice) {
@@ -137,7 +137,7 @@ export const getUserAirdropDetail = withTracing(
     if (airdrop.type === "VestingAirdrop") {
       if (airdrop.strategy?.vestingData) {
         userVestingData = airdrop.strategy.vestingData.find(
-          (vd) => getAddress(vd.user.id) === getAddress(recipient.wallet)
+          (vd) => getAddress(vd.user.id) === getAddress(user.wallet)
         );
       }
     }

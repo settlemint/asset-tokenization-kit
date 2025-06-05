@@ -79,16 +79,16 @@ const AirdropRecipientsByIds = theGraphGraphqlKit(
 export const getUserAirdropList = withTracing(
   "queries",
   "getUserAirdropList",
-  async (recipient: Address): Promise<UserAirdrop[]> => {
+  async (user: Address): Promise<UserAirdrop[]> => {
     "use cache";
     cacheTag("airdrop");
 
-    const distributions = await getUserAirdropDistributionList(recipient);
+    const distributions = await getUserAirdropDistributionList(user);
     const uniqueAirdropIds = [...new Set(distributions.map((d) => d.airdrop))];
 
     // Create recipient IDs for The Graph query (airdropId-recipientAddress format)
     const recipientIds = distributions.map((d) =>
-      `${d.airdrop}-${recipient}`.toLowerCase()
+      `${d.airdrop}-${user}`.toLowerCase()
     );
 
     // Fetch both airdrop details and recipient claim status concurrently
@@ -138,7 +138,7 @@ export const getUserAirdropList = withTracing(
       }
 
       // Get claim status from The Graph
-      const recipientId = `${item.airdrop}-${recipient}`.toLowerCase();
+      const recipientId = `${item.airdrop}-${user}`.toLowerCase();
       const recipientClaimData = safeParse(
         AirdropClaimSchema,
         recipientDataMap.get(recipientId)
@@ -149,7 +149,7 @@ export const getUserAirdropList = withTracing(
       if (airdropData.type === "VestingAirdrop") {
         if (airdropData.strategy?.vestingData) {
           userVestingData = airdropData.strategy.vestingData.find(
-            (vd) => getAddress(vd.user.id) === getAddress(recipient)
+            (vd) => getAddress(vd.user.id) === getAddress(user)
           );
         }
       }

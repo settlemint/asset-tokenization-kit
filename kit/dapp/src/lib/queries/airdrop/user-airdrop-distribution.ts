@@ -1,6 +1,5 @@
 import "server-only";
 
-import type { User } from "@/lib/auth/types";
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
@@ -46,7 +45,7 @@ const UserAirdropDistribution = hasuraGraphql(
 export const getUserAirdropDistribution = withTracing(
   "queries",
   "getUserAirdropDistribution",
-  async (airdropAddress: Address, recipient: User) => {
+  async (airdropAddress: Address, user: Address) => {
     "use cache";
     cacheTag("airdrop");
 
@@ -56,7 +55,7 @@ export const getUserAirdropDistribution = withTracing(
         {
           limit,
           offset,
-          recipient: recipient.wallet,
+          recipient: user,
           airdrop: airdropAddress,
         },
         {
@@ -100,7 +99,7 @@ const UserAirdropDistributionList = hasuraGraphql(
 export const getUserAirdropDistributionList = withTracing(
   "queries",
   "getUserAirdropDistributionList",
-  async (recipient: Address) => {
+  async (user: Address) => {
     "use cache";
     cacheTag("airdrop");
 
@@ -110,7 +109,7 @@ export const getUserAirdropDistributionList = withTracing(
         {
           limit,
           offset,
-          recipient,
+          recipient: user,
         },
         {
           "X-GraphQL-Operation-Name": "UserAirdropDistributionList",
