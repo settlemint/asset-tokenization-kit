@@ -446,7 +446,7 @@ observability:
 txsigner:
   enabled: true
   # Configuration for the txsigner subchart
-  privateKey:
+  config:
     mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
   postgresql: postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable

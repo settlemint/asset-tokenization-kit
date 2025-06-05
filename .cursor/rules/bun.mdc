@@ -1,11 +1,50 @@
 ---
 description: Best practices for using Bun as a runtime and package manager
-globs: 
+globs:
 alwaysApply: true
 ---
-- Use `bun install` for faster package installation
 
-- we ONLY use Bun, NEVER suggest commands with npm, npx, yarn, pnpm, or anything else.
-  - bun add
-  - bunx
-  - bun run
+# Bun Usage
+
+- **Installation:** Use `bun install` for faster package installation.
+- **Exclusivity:** We ONLY use Bun. NEVER suggest commands with `npm`, `npx`,
+  `yarn`, `pnpm`, or anything else. Use `bun add`, `bunx`, and `bun run`.
+
+## Monorepo Usage (Turborepo)
+
+This project uses Turborepo with workspaces defined in `kit/*`. The package name
+is the directory name inside `kit`. For example, the frontend app is named
+`dapp`.
+
+To run commands in specific workspaces, you can use `turbo` which will invoke
+`bun` under the hood. The root `package.json` contains many scripts to run tasks
+across the monorepo.
+
+- **Running a script in a specific package:** It is recommended to use the
+  scripts in the root `package.json` like `bun dev` which runs `turbo dev`. If
+  you need to run a script for a single package, use the `--filter` flag with
+  `turbo`.
+
+  ```bash
+  turbo run --filter=<package-name> <script>
+  ```
+
+  For example, to run the `dev` script only in the `dapp`:
+
+  ```bash
+  turbo run --filter=dapp dev
+  ```
+
+- **Adding a dependency to a specific package:** Use `bun add` with the `--cwd`
+  flag to target a specific workspace.
+  ```bash
+  bun add <dependency-name> --cwd=kit/<package-name>
+  ```
+  For example, to add `react-query` to the `dapp`:
+  ```bash
+  bun add react-query --cwd=kit/dapp
+  ```
+  To add a dev dependency, use the `-d` or `--development` flag.
+
+Refer to the `turbo.json` and `package.json` files in the root and individual
+packages (`kit/*`) for available scripts and package names.
