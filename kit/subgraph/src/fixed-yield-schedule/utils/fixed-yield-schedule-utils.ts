@@ -5,8 +5,8 @@ import { setBigNumber } from "../../utils/bignumber";
 import { fetchYield } from "../../yield/fetch/yield";
 import { fetchFixedYieldSchedulePeriod } from "../fetch/fixed-yield-schedule-period";
 
-export function getPeriodId(address: Address, index: i32): Bytes {
-  return address.concat(Bytes.fromUTF8(`-period-${index.toString()}`));
+export function getPeriodId(address: Address, periodNumber: i32): Bytes {
+  return address.concat(Bytes.fromUTF8(`-period-${periodNumber.toString()}`));
 }
 
 export function updateYield(token: Token): void {

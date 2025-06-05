@@ -10,6 +10,7 @@ export function fetchFixedYieldSchedule(
 
   if (!fixedYieldSchedule) {
     fixedYieldSchedule = new TokenFixedYieldSchedule(address);
+    fixedYieldSchedule.token = Address.zero();
     fixedYieldSchedule.underlyingAsset = Address.zero();
     fixedYieldSchedule.endDate = BigInt.zero();
     fixedYieldSchedule.startDate = BigInt.zero();
