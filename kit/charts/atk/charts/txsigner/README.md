@@ -90,7 +90,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | autoscaling.minReplicas | int | `1` | Minimum number of TxSigner replicas |
 | commonAnnotations | object | `{}` | Annotations to add to all deployed objects |
 | commonLabels | object | `{}` | Labels to add to all deployed objects |
-| config | object | `{"allowedContracts":[],"allowedMethods":[],"audit":{"enabled":true,"retentionDays":30},"chainId":"53771311147","cors":{"enabled":false,"headers":["Content-Type","Authorization"],"methods":["GET","POST"],"origins":[]},"debug":false,"envSecret":{"create":false,"data":{}},"existingSecret":"","existingSecretKey":"private-key","gas":{"fixedPrice":20,"limit":3000000,"multiplier":1.1,"priceStrategy":"estimator"},"hsm":{"module":"","pin":"","slot":""},"kms":{"keyId":"","provider":"","region":""},"logLevel":"info","metricsPort":3001,"nonce":{"maxPending":10,"strategy":"sequential"},"port":3000,"privateKey":"","queue":{"maxSize":1000,"processingInterval":1000},"rateLimit":{"enabled":true,"maxRequestsPerHour":1000,"maxRequestsPerMinute":60},"rpcUrl":"http://besu-node-rpc-1:8545","signingStrategy":"local"}` | TxSigner configuration |
+| config | object | `{"allowedContracts":[],"allowedMethods":[],"audit":{"enabled":true,"retentionDays":30},"chainId":"53771311147","cors":{"enabled":false,"headers":["Content-Type","Authorization"],"methods":["GET","POST"],"origins":[]},"debug":false,"derivationPath":"","existingSecret":"","existingSecretKey":"private-key","extraSecretEnv":{},"gas":{"fixedPrice":20,"limit":3000000,"multiplier":1.1,"priceStrategy":"estimator"},"hsm":{"module":"","pin":"","slot":""},"kms":{"keyId":"","provider":"","region":""},"logLevel":"info","metricsPort":3001,"mnemonic":"","mode":"standalone","nonce":{"maxPending":10,"strategy":"sequential"},"port":3000,"privateKey":"","queue":{"maxSize":1000,"processingInterval":1000},"rateLimit":{"enabled":true,"maxRequestsPerHour":1000,"maxRequestsPerMinute":60},"rpcUrl":"http://erpc:4000","signingStrategy":"local"}` | TxSigner configuration |
 | config.allowedContracts | list | `[]` | Allowed contracts for interaction |
 | config.allowedMethods | list | `[]` | Allowed methods for execution |
 | config.audit | object | `{"enabled":true,"retentionDays":30}` | Audit logging |
@@ -103,11 +103,10 @@ The command removes all the Kubernetes components associated with the chart and 
 | config.cors.methods | list | `["GET","POST"]` | Allowed methods |
 | config.cors.origins | list | `[]` | Allowed origins |
 | config.debug | bool | `false` | Enable debug mode |
-| config.envSecret | object | `{"create":false,"data":{}}` | Environment secret configuration |
-| config.envSecret.create | bool | `false` | Create environment secret |
-| config.envSecret.data | object | `{}` | Additional secret data |
+| config.derivationPath | string | `""` | Derivation path to use for the private key |
 | config.existingSecret | string | `""` | Use existing secret for private key |
 | config.existingSecretKey | string | `"private-key"` | Key within the existing secret |
+| config.extraSecretEnv | object | `{}` | Additional secret environment variables to add to the txsigner |
 | config.gas | object | `{"fixedPrice":20,"limit":3000000,"multiplier":1.1,"priceStrategy":"estimator"}` | Gas configuration |
 | config.gas.fixedPrice | int | `20` | Fixed gas price in Gwei (if priceStrategy is fixed) |
 | config.gas.limit | int | `3000000` | Gas limit |
@@ -123,6 +122,8 @@ The command removes all the Kubernetes components associated with the chart and 
 | config.kms.region | string | `""` | KMS region |
 | config.logLevel | string | `"info"` | Log level for TxSigner |
 | config.metricsPort | int | `3001` | Port for the metrics server |
+| config.mnemonic | string | `""` | Mnemonic to use for the private key |
+| config.mode | string | `"standalone"` | Operation mode (standalone or integrated) |
 | config.nonce | object | `{"maxPending":10,"strategy":"sequential"}` | Nonce management |
 | config.nonce.maxPending | int | `10` | Maximum pending transactions |
 | config.nonce.strategy | string | `"sequential"` | Nonce management strategy (sequential, parallel) |
@@ -135,7 +136,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | config.rateLimit.enabled | bool | `true` | Enable rate limiting |
 | config.rateLimit.maxRequestsPerHour | int | `1000` | Maximum requests per hour |
 | config.rateLimit.maxRequestsPerMinute | int | `60` | Maximum requests per minute |
-| config.rpcUrl | string | `"http://besu-node-rpc-1:8545"` | RPC endpoint URL |
+| config.rpcUrl | string | `"http://erpc:4000"` | RPC endpoint URL |
 | config.signingStrategy | string | `"local"` | Signing strategy (local, kms, hsm) |
 | containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"enabled":true,"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
 | containerSecurityContext.allowPrivilegeEscalation | bool | `false` | Set container's Security Context allowPrivilegeEscalation |
@@ -151,20 +152,20 @@ The command removes all the Kubernetes components associated with the chart and 
 | extraEnvVars | list | `[]` | Array with extra environment variables to add to TxSigner nodes |
 | extraEnvVarsCM | string | `""` | Name of existing ConfigMap containing extra env vars for TxSigner nodes |
 | extraEnvVarsSecret | string | `""` | Name of existing Secret containing extra env vars for TxSigner nodes |
-| extraVolumeMounts | list | `[]` | Optionally specify extra list of additional volumeMounts for the TxSigner container(s) |
-| extraVolumes | list | `[]` | Optionally specify extra list of additional volumes for the TxSigner pod(s) |
+| extraVolumeMounts | list | `[{"mountPath":"/signer/.cache","name":"tx-signer-cache"}]` | Optionally specify extra list of additional volumeMounts for the TxSigner container(s) |
+| extraVolumes | list | `[{"emptyDir":{},"name":"tx-signer-cache"}]` | Optionally specify extra list of additional volumes for the TxSigner pod(s) |
 | fullnameOverride | string | `"txsigner"` | String to fully override common.names.fullname |
 | global | object | `{"imagePullSecrets":[],"imageRegistry":"","storageClass":""}` | Global Docker image registry |
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
-| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"","repository":"ghcr.io/settlemint/starterkit-asset-tokenization-txsigner","tag":"latest"}` | TxSigner image |
+| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-signer","tag":"7.13.0"}` | TxSigner image |
 | image.digest | string | `""` | TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag |
 | image.pullPolicy | string | `"IfNotPresent"` | TxSigner image pull policy |
 | image.pullSecrets | list | `[]` | TxSigner image pull secrets |
-| image.registry | string | `""` | TxSigner image registry |
-| image.repository | string | `"ghcr.io/settlemint/starterkit-asset-tokenization-txsigner"` | TxSigner image repository |
-| image.tag | string | `"latest"` | TxSigner image tag (immutable tags are recommended) |
+| image.registry | string | `"ghcr.io"` | TxSigner image registry |
+| image.repository | string | `"settlemint/btp-signer"` | TxSigner image repository |
+| image.tag | string | `"7.13.0"` | TxSigner image tag (immutable tags are recommended) |
 | ingress | object | `{"annotations":{},"apiVersion":"","enabled":false,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"txsigner.k8s.orb.local","ingressClassName":"settlemint-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. |
 | ingress.apiVersion | string | `""` | Force Ingress API version (automatically detected if not set) |
@@ -180,16 +181,16 @@ The command removes all the Kubernetes components associated with the chart and 
 | ingress.secrets | list | `[]` | Custom TLS certificates as secrets |
 | ingress.selfSigned | bool | `false` | Create a TLS secret for this ingress record using self-signed certificates generated by Helm |
 | ingress.tls | bool | `false` | Enable TLS configuration for the host defined at `ingress.hostname` parameter |
+| initContainers | list | `[{"command":["/usr/bin/wait-for-it","postgresql-pgpool:5432","-t","0"],"image":"ghcr.io/settlemint/btp-waitforit:v7.7.5","name":"wait-for-postgres"}]` | Init containers configuration |
 | lifecycleHooks | object | `{}` | lifecycleHooks for the TxSigner container(s) to automate configuration before or after startup |
-| livenessProbe | object | `{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/health","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Configure TxSigner containers' liveness probe |
+| livenessProbe | object | `{"enabled":true,"failureThreshold":30,"initialDelaySeconds":1,"periodSeconds":10,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure TxSigner containers' liveness probe |
 | livenessProbe.enabled | bool | `true` | Enable livenessProbe on TxSigner containers |
-| livenessProbe.failureThreshold | int | `3` | Failure threshold for livenessProbe |
-| livenessProbe.httpGet | object | `{"path":"/health","port":"http"}` | HTTP get parameters for livenessProbe |
-| livenessProbe.httpGet.path | string | `"/health"` | Path for httpGet livenessProbe |
-| livenessProbe.httpGet.port | string | `"http"` | Port for httpGet livenessProbe |
-| livenessProbe.initialDelaySeconds | int | `10` | Initial delay seconds for livenessProbe |
+| livenessProbe.failureThreshold | int | `30` | Failure threshold for livenessProbe |
+| livenessProbe.initialDelaySeconds | int | `1` | Initial delay seconds for livenessProbe |
 | livenessProbe.periodSeconds | int | `10` | Period seconds for livenessProbe |
 | livenessProbe.successThreshold | int | `1` | Success threshold for livenessProbe |
+| livenessProbe.tcpSocket | object | `{"port":"http"}` | TCP socket parameters for livenessProbe |
+| livenessProbe.tcpSocket.port | string | `"http"` | Port for tcpSocket livenessProbe |
 | livenessProbe.timeoutSeconds | int | `5` | Timeout seconds for livenessProbe |
 | networkPolicy | object | `{"addExternalClientAccess":true,"allowExternal":true,"allowExternalEgress":true,"enabled":false,"extraEgress":[{"ports":[{"port":53,"protocol":"UDP"}],"to":[{"namespaceSelector":{},"podSelector":{"matchLabels":{"k8s-app":"kube-dns"}}}]},{"ports":[{"port":8545,"protocol":"TCP"}],"to":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"besu-statefulset"}}}]},{"ports":[{"port":443,"protocol":"TCP"}],"to":[{"namespaceSelector":{}}]}],"extraIngress":[{"from":[{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"dapp"}}},{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"portal"}}},{"podSelector":{"matchLabels":{"app.kubernetes.io/name":"ingress-nginx"}}},{"podSelector":{}}],"ports":[{"port":3000,"protocol":"TCP"},{"port":3001,"protocol":"TCP"}]}],"ingressRules":{"accessOnlyFrom":{"enabled":false,"namespaceSelector":{},"podSelector":{}}}}` | Network policies configuration |
 | networkPolicy.addExternalClientAccess | bool | `true` | Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true. |
@@ -223,16 +224,16 @@ The command removes all the Kubernetes components associated with the chart and 
 | podSecurityContext.enabled | bool | `true` | Enabled TxSigner pods' Security Context |
 | podSecurityContext.fsGroup | int | `1001` | Set TxSigner pod's Security Context fsGroup |
 | podSecurityContext.sysctls | list | `[]` | Set kernel settings using the sysctl interface |
+| postgresql | string | `"postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable"` | PostgreSQL connection string |
 | priorityClassName | string | `""` | TxSigner pods' priority class name |
-| readinessProbe | object | `{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/health","port":"http"},"initialDelaySeconds":5,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":5}` | Configure TxSigner containers' readiness probe |
+| readinessProbe | object | `{"enabled":true,"failureThreshold":60,"initialDelaySeconds":1,"periodSeconds":5,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":5}` | Configure TxSigner containers' readiness probe |
 | readinessProbe.enabled | bool | `true` | Enable readinessProbe on TxSigner containers |
-| readinessProbe.failureThreshold | int | `3` | Failure threshold for readinessProbe |
-| readinessProbe.httpGet | object | `{"path":"/health","port":"http"}` | HTTP get parameters for readinessProbe |
-| readinessProbe.httpGet.path | string | `"/health"` | Path for httpGet readinessProbe |
-| readinessProbe.httpGet.port | string | `"http"` | Port for httpGet readinessProbe |
-| readinessProbe.initialDelaySeconds | int | `5` | Initial delay seconds for readinessProbe |
-| readinessProbe.periodSeconds | int | `10` | Period seconds for readinessProbe |
+| readinessProbe.failureThreshold | int | `60` | Failure threshold for readinessProbe |
+| readinessProbe.initialDelaySeconds | int | `1` | Initial delay seconds for readinessProbe |
+| readinessProbe.periodSeconds | int | `5` | Period seconds for readinessProbe |
 | readinessProbe.successThreshold | int | `1` | Success threshold for readinessProbe |
+| readinessProbe.tcpSocket | object | `{"port":"http"}` | TCP socket parameters for readinessProbe |
+| readinessProbe.tcpSocket.port | string | `"http"` | Port for tcpSocket readinessProbe |
 | readinessProbe.timeoutSeconds | int | `5` | Timeout seconds for readinessProbe |
 | replicaCount | int | `1` | Number of TxSigner replicas to deploy |
 | resources | object | `{}` | TxSigner containers resource requests and limits |
