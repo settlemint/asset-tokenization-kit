@@ -39,43 +39,59 @@ export const createPushAirdropFunction = async ({
   parsedInput: CreatePushAirdropInput;
   ctx: { user: User };
 }) => {
-  const result = await portalClient.request(AirdropFactoryDeployPushAirdrop, {
-    address: AIRDROP_FACTORY_ADDRESS,
-    from: user.wallet,
-    input: {
-      tokenAddress: asset.id,
-      merkleRoot: getMerkleRoot(distribution),
-      owner,
-      distributionCap: parseUnits(
-        distributionCap.toString(),
-        asset.decimals
-      ).toString(),
-    },
-    ...(await handleChallenge(
-      user,
-      user.wallet,
-      verificationCode,
-      verificationType
-    )),
-  });
+  console.log("distribution", distribution);
 
-  const createTxHash = result.AirdropFactoryDeployPushAirdrop?.transactionHash;
+  // To ensure atomicity, we first try to store the distribution data.
+  // If this fails, the airdrop contract (immutable!) is never created.
+  try {
+    await hasuraClient.request(AddAirdropDistribution, {
+      objects: distribution.map((d) => ({
+        airdrop_id: predictedAddress,
+        recipient: d.recipient,
+        amount: parseUnits(d.amount.toString(), asset.decimals).toString(),
+        amount_exact: d.amount.toString(),
+        index: d.index,
+      })),
+    });
+  } catch (error) {
+    throw new Error(
+      `Failed to store airdrop distribution in database: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
+  }
+
+  // Only if database operation succeeds, create the smart contract
+  const portalResult = await portalClient.request(
+    AirdropFactoryDeployPushAirdrop,
+    {
+      address: AIRDROP_FACTORY_ADDRESS,
+      from: user.wallet,
+      input: {
+        tokenAddress: asset.id,
+        merkleRoot: getMerkleRoot(distribution),
+        owner,
+        distributionCap: parseUnits(
+          distributionCap.toString(),
+          asset.decimals
+        ).toString(),
+      },
+      ...(await handleChallenge(
+        user,
+        user.wallet,
+        verificationCode,
+        verificationType
+      )),
+    }
+  );
+
+  const createTxHash =
+    portalResult.AirdropFactoryDeployPushAirdrop?.transactionHash;
   if (!createTxHash) {
     throw new Error(
       "Failed to create push airdrop: no transaction hash received"
     );
   }
+
   const hashes = safeParse(t.Hashes(), [createTxHash]);
   const block = await waitForIndexingTransactions(hashes);
-
-  await hasuraClient.request(AddAirdropDistribution, {
-    objects: distribution.map((d) => ({
-      airdrop_id: predictedAddress,
-      recipient: d.recipient,
-      amount: parseUnits(d.amount.toString(), asset.decimals).toString(),
-      index: d.index,
-    })),
-  });
-
   return block;
 };

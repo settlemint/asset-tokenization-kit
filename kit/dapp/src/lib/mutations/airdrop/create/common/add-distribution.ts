@@ -6,7 +6,7 @@ export const AddAirdropDistribution = hasuraGraphql(`
       objects: $objects
       on_conflict: {
         constraint: airdrop_distribution_unique_constraint
-        update_columns: [amount, index]
+        update_columns: [amount, amount_exact, index]
       }
     ) {
       affected_rows
@@ -15,6 +15,7 @@ export const AddAirdropDistribution = hasuraGraphql(`
         airdrop_id
         recipient
         amount
+        amount_exact
         index
       }
     }
