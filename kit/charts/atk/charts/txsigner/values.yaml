@@ -1,151 +1,344 @@
-# Default values for txsigner.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+# -- Global Docker image registry
+global:
+  # -- Global Docker image registry
+  imageRegistry: ""
+  # -- Global Docker registry secret names as an array
+  imagePullSecrets: []
+  # -- Global StorageClass for Persistent Volume(s)
+  storageClass: ""
 
-replicaCount: 1
-
-image:
-  repository: ghcr.io/settlemint/btp-signer
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "7.13.0" # Default tag from the example
-
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
-nameOverride: ""
+# -- String to fully override common.names.fullname
 fullnameOverride: "txsigner"
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Automatically mount a ServiceAccount's API credentials?
-  automount: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+# -- Labels to add to all deployed objects
+commonLabels: {}
 
-podAnnotations: {}
+# -- Annotations to add to all deployed objects
+commonAnnotations: {}
+
+# -- TxSigner image
+image:
+  # -- TxSigner image registry
+  registry: ""
+  # -- TxSigner image repository
+  repository: ghcr.io/settlemint/starterkit-asset-tokenization-txsigner
+  # -- TxSigner image tag (immutable tags are recommended)
+  tag: "latest"
+  # -- TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+  digest: ""
+  # -- TxSigner image pull policy
+  pullPolicy: IfNotPresent
+  # -- TxSigner image pull secrets
+  pullSecrets: []
+
+# -- Number of TxSigner replicas to deploy
+replicaCount: 1
+
+# -- Update strategy configuration for TxSigner deployment
+updateStrategy:
+  # -- TxSigner deployment strategy type
+  type: RollingUpdate
+  # -- TxSigner deployment rolling update configuration parameters
+  rollingUpdate: {}
+
+# -- Alternate scheduler
+schedulerName: ""
+
+# -- TxSigner pods' priority class name
+priorityClassName: ""
+
+# -- Topology Spread Constraints for pod assignment
+topologySpreadConstraints: []
+
+# -- Extra labels for TxSigner pods
 podLabels: {}
 
-podSecurityContext:
-  runAsNonRoot: true
-  runAsUser: 2016
-  fsGroup: 2016
+# -- Annotations for TxSigner pods
+podAnnotations:
+  # -- Enable prometheus scraping
+  prometheus.io/scrape: "true"
+  # -- Prometheus metrics port
+  prometheus.io/port: "3001"
+  # -- Prometheus metrics path
+  prometheus.io/path: "/metrics"
 
-securityContext:
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-    - ALL
-  readOnlyRootFilesystem: true
-  runAsNonRoot: true
-  runAsUser: 2016
+# -- Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+podAffinityPreset: ""
 
-service:
-  type: ClusterIP
-  port: 3000 # Default txsigner port
+# -- Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+podAntiAffinityPreset: soft
 
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local # Needs to be configured
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+# -- Node affinity preset configuration
+nodeAffinityPreset:
+  # -- Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+  type: ""
+  # -- Node label key to match. Ignored if `affinity` is set
+  key: ""
+  # -- Node label values to match. Ignored if `affinity` is set
+  values: []
 
-resources: {}
-
-livenessProbe:
-  tcpSocket:
-    port: txsigner
-  initialDelaySeconds: 1
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 30
-  successThreshold: 1
-
-readinessProbe:
-  tcpSocket:
-    port: txsigner
-  initialDelaySeconds: 1
-  periodSeconds: 5
-  timeoutSeconds: 5
-  failureThreshold: 60
-  successThreshold: 1
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
-# PodDisruptionBudget configuration
-podDisruptionBudget:
-  enabled: false
-  # Minimum number of pods that must be available during disruption
-  minAvailable: 1
-  # Maximum number of pods that can be unavailable during disruption
-  # maxUnavailable: 1
-
-# Additional volumes on the output Deployment definition.
-volumes:
-  - name: tx-signer-cache
-    emptyDir: {}
-
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts:
-  - name: tx-signer-cache
-    mountPath: /signer/.cache
-
-nodeSelector: {}
-
-tolerations: []
-
+# -- Affinity for pod assignment
 affinity: {}
 
-# NetworkPolicy configuration
-networkPolicy:
+# -- Node labels for pod assignment
+nodeSelector: {}
+
+# -- Tolerations for pod assignment
+tolerations: []
+
+# -- Pod Security Context configuration
+podSecurityContext:
+  # -- Enabled TxSigner pods' Security Context
+  enabled: true
+  # -- Set TxSigner pod's Security Context fsGroup
+  fsGroup: 1001
+  # -- Set kernel settings using the sysctl interface
+  sysctls: []
+
+# -- Container Security Context configuration
+containerSecurityContext:
+  # -- Enable container Security Context
+  enabled: true
+  # -- Set container's Security Context runAsUser
+  runAsUser: 1001
+  # -- Set container's Security Context runAsGroup
+  runAsGroup: 1001
+  # -- Set container's Security Context allowPrivilegeEscalation
+  allowPrivilegeEscalation: false
+  # -- Set container's Security Context readOnlyRootFilesystem
+  readOnlyRootFilesystem: false
+  # -- Set container's Security Context runAsNonRoot
+  runAsNonRoot: true
+  # -- Linux capabilities configuration
+  capabilities:
+    # -- Set container's Security Context drop capabilities
+    drop: ["ALL"]
+  # -- Seccomp profile configuration
+  seccompProfile:
+    # -- Set container's Security Context seccomp profile
+    type: "RuntimeDefault"
+
+# -- TxSigner containers resource requests and limits
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# -- Configure TxSigner containers' liveness probe
+livenessProbe:
+  # -- Enable livenessProbe on TxSigner containers
+  enabled: true
+  # -- Initial delay seconds for livenessProbe
+  initialDelaySeconds: 10
+  # -- Period seconds for livenessProbe
+  periodSeconds: 10
+  # -- Timeout seconds for livenessProbe
+  timeoutSeconds: 5
+  # -- Failure threshold for livenessProbe
+  failureThreshold: 3
+  # -- Success threshold for livenessProbe
+  successThreshold: 1
+  # -- HTTP get parameters for livenessProbe
+  httpGet:
+    # -- Path for httpGet livenessProbe
+    path: /health
+    # -- Port for httpGet livenessProbe
+    port: http
+
+# -- Configure TxSigner containers' readiness probe
+readinessProbe:
+  # -- Enable readinessProbe on TxSigner containers
+  enabled: true
+  # -- Initial delay seconds for readinessProbe
+  initialDelaySeconds: 5
+  # -- Period seconds for readinessProbe
+  periodSeconds: 10
+  # -- Timeout seconds for readinessProbe
+  timeoutSeconds: 5
+  # -- Failure threshold for readinessProbe
+  failureThreshold: 3
+  # -- Success threshold for readinessProbe
+  successThreshold: 1
+  # -- HTTP get parameters for readinessProbe
+  httpGet:
+    # -- Path for httpGet readinessProbe
+    path: /health
+    # -- Port for httpGet readinessProbe
+    port: http
+
+# -- Configure TxSigner containers' startup probe
+startupProbe:
+  # -- Enable startupProbe on TxSigner containers
   enabled: false
-  # Ingress rules
-  ingress:
-    # Allow from portal
-    - from:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/name: portal
-      ports:
-        - protocol: TCP
-          port: 3000
-    # Allow from dapp
+  # -- Initial delay seconds for startupProbe
+  initialDelaySeconds: 30
+  # -- Period seconds for startupProbe
+  periodSeconds: 10
+  # -- Timeout seconds for startupProbe
+  timeoutSeconds: 5
+  # -- Failure threshold for startupProbe
+  failureThreshold: 10
+  # -- Success threshold for startupProbe
+  successThreshold: 1
+
+# -- lifecycleHooks for the TxSigner container(s) to automate configuration before or after startup
+lifecycleHooks: {}
+
+# -- Optionally specify extra list of additional volumes for the TxSigner pod(s)
+extraVolumes: []
+
+# -- Optionally specify extra list of additional volumeMounts for the TxSigner container(s)
+extraVolumeMounts: []
+
+# -- Array with extra environment variables to add to TxSigner nodes
+extraEnvVars: []
+
+# -- Name of existing ConfigMap containing extra env vars for TxSigner nodes
+extraEnvVarsCM: ""
+
+# -- Name of existing Secret containing extra env vars for TxSigner nodes
+extraEnvVarsSecret: ""
+
+# -- Service parameters
+service:
+  # -- TxSigner service type
+  type: ClusterIP
+  # -- TxSigner service HTTP port
+  port: 3000
+  # -- TxSigner service metrics port
+  metricsPort: 3001
+  # -- Node port for HTTP
+  nodePort: ""
+  # -- Node port for metrics
+  metricsNodePort: ""
+  # -- TxSigner service Cluster IP
+  clusterIP: ""
+  # -- TxSigner service Load Balancer IP
+  loadBalancerIP: ""
+  # -- TxSigner service Load Balancer sources
+  loadBalancerSourceRanges: []
+  # -- TxSigner service external traffic policy
+  externalTrafficPolicy: Cluster
+  # -- Additional custom annotations for TxSigner service
+  annotations: {}
+  # -- Extra ports to expose in the TxSigner service (normally used with the `sidecar` value)
+  extraPorts: []
+  # -- Session Affinity for Kubernetes service, can be "None" or "ClientIP"
+  sessionAffinity: None
+  # -- Additional settings for the sessionAffinity
+  sessionAffinityConfig: {}
+
+# -- Ingress parameters
+ingress:
+  # -- Enable ingress record generation for TxSigner
+  enabled: false
+  # -- Ingress path type
+  pathType: ImplementationSpecific
+  # -- Force Ingress API version (automatically detected if not set)
+  apiVersion: ""
+  # -- Default host for the ingress record
+  hostname: txsigner.k8s.orb.local
+  # -- IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ingressClassName: "settlemint-nginx"
+  # -- Default path for the ingress record
+  path: /
+  # -- Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  annotations: {}
+  # -- Enable TLS configuration for the host defined at `ingress.hostname` parameter
+  tls: false
+  # -- Create a TLS secret for this ingress record using self-signed certificates generated by Helm
+  selfSigned: false
+  # -- An array with additional hostname(s) to be covered with the ingress record
+  extraHosts: []
+  # -- An array with additional arbitrary paths that may need to be added to the ingress under the main host
+  extraPaths: []
+  # -- TLS configuration for additional hostname(s) to be covered with this ingress record
+  extraTls: []
+  # -- Custom TLS certificates as secrets
+  secrets: []
+  # -- Additional rules to be covered with this ingress record
+  extraRules: []
+
+# -- Service account for TxSigner pods
+serviceAccount:
+  # -- Specifies whether a ServiceAccount should be created
+  create: true
+  # -- The name of the ServiceAccount to use.
+  name: ""
+  # -- Automount service account token for the deployment controller service account
+  automountServiceAccountToken: false
+  # -- Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
+  annotations: {}
+  # -- Extra labels to be added to the service account
+  labels: {}
+
+# -- Autoscaling configuration for TxSigner
+autoscaling:
+  # -- Enable autoscaling for TxSigner
+  enabled: false
+  # -- Maximum number of TxSigner replicas
+  maxReplicas: 3
+  # -- Minimum number of TxSigner replicas
+  minReplicas: 1
+  # -- Built-in metrics configuration
+  builtInMetrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  # -- Custom metrics configuration
+  customMetrics: []
+
+# -- Pod disruption budget configuration
+pdb:
+  # -- If true, create a pod disruption budget for pods.
+  enabled: false
+  # -- Minimum number/percentage of pods that should remain scheduled
+  minAvailable: ""
+  # -- Maximum number/percentage of pods that may be made unavailable. Defaults to 1 if both pdb.minAvailable and pdb.maxUnavailable are empty.
+  maxUnavailable: ""
+
+# -- Network policies configuration
+networkPolicy:
+  # -- Enable creation of NetworkPolicy resources
+  enabled: false
+  # -- The Policy model to apply
+  allowExternal: true
+  # -- Allow the pod to access any range of port and all destinations.
+  allowExternalEgress: true
+  # -- Allow access from pods with client label set to "true". Ignored if `networkPolicy.allowExternal` is true.
+  addExternalClientAccess: true
+  # -- Add extra ingress rules to the NetworkPolicy
+  extraIngress:
     - from:
         - podSelector:
             matchLabels:
               app.kubernetes.io/name: dapp
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: portal
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: ingress-nginx
+        - podSelector: {}  # Same namespace
       ports:
         - protocol: TCP
-          port: 3000
-    # Allow from same namespace
-    - from:
-        - podSelector: {}
-      ports:
+          port: 3000  # HTTP port
         - protocol: TCP
-          port: 3000
-
-  # Egress rules
-  egress:
+          port: 3001  # Metrics port
+  # -- Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
+  extraEgress:
     # Allow DNS resolution
     - to:
         - namespaceSelector: {}
@@ -155,14 +348,6 @@ networkPolicy:
       ports:
         - protocol: UDP
           port: 53
-    # Allow access to PostgreSQL
-    - to:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/name: postgresql-ha
-      ports:
-        - protocol: TCP
-          port: 5432
     # Allow access to Besu nodes
     - to:
         - podSelector:
@@ -171,36 +356,121 @@ networkPolicy:
       ports:
         - protocol: TCP
           port: 8545  # RPC
-        - protocol: TCP
-          port: 8546  # WebSocket
-    # Allow access to ERPC
+    # Allow access to external HTTPS APIs (for signing services)
     - to:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/name: erpc
+        - namespaceSelector: {}
       ports:
         - protocol: TCP
-          port: 4000
+          port: 443
+  # -- Ingress rules configuration
+  ingressRules:
+    # -- Access restrictions configuration
+    accessOnlyFrom:
+      # -- Enable ingress rule that makes TxSigner only accessible from a particular origin.
+      enabled: false
+      # -- Namespace selector label that is allowed to access TxSigner. This label will be used to identified allowed namespace(s).
+      namespaceSelector: {}
+      # -- Pods selector label that is allowed to access TxSigner. This label will be used to identified allowed pod(s).
+      podSelector: {}
 
+# -- Test parameters
 tests:
+  # -- Image for test pods
   image:
+    # -- Test image registry
     registry: docker.io
+    # -- Test image repository
     repository: busybox
+    # -- Test image tag
     tag: 1.37.0
+    # -- Test image pull policy
     pullPolicy: IfNotPresent
 
-initContainers:
-  - name: wait-for-postgres
-    image: ghcr.io/settlemint/btp-waitforit:v7.7.5
-    command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
-
-network:
-  nodeRpcUrl: http://erpc:4000
-
-privateKey:
-  existingSecret: "" # Set a value if you want to use an existing secret
-  mnemonic: "" # Mnemonic to use for the private key
-  derivationPath: "" # Derivation path to use for the private key
-
-postgresql: postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable
-
+# -- TxSigner configuration
+config:
+  # -- Enable debug mode
+  debug: false
+  # -- Log level for TxSigner
+  logLevel: info
+  # -- RPC endpoint URL
+  rpcUrl: "http://besu-node-rpc-1:8545"
+  # -- Chain ID for the network
+  chainId: "53771311147"
+  # -- Port for the HTTP server
+  port: 3000
+  # -- Port for the metrics server
+  metricsPort: 3001
+  # -- Signing strategy (local, kms, hsm)
+  signingStrategy: "local"
+  # -- Private key for local signing (use with caution, prefer secrets)
+  privateKey: ""
+  # -- Use existing secret for private key
+  existingSecret: ""
+  # -- Key within the existing secret
+  existingSecretKey: "private-key"
+  # -- KMS configuration (if signingStrategy is kms)
+  kms:
+    # -- KMS provider (aws, azure, gcp)
+    provider: ""
+    # -- KMS key ID
+    keyId: ""
+    # -- KMS region
+    region: ""
+  # -- HSM configuration (if signingStrategy is hsm)
+  hsm:
+    # -- HSM module path
+    module: ""
+    # -- HSM slot
+    slot: ""
+    # -- HSM PIN
+    pin: ""
+  # -- Rate limiting configuration
+  rateLimit:
+    # -- Enable rate limiting
+    enabled: true
+    # -- Maximum requests per minute
+    maxRequestsPerMinute: 60
+    # -- Maximum requests per hour
+    maxRequestsPerHour: 1000
+  # -- Transaction queue configuration
+  queue:
+    # -- Maximum queue size
+    maxSize: 1000
+    # -- Queue processing interval in milliseconds
+    processingInterval: 1000
+  # -- Gas configuration
+  gas:
+    # -- Gas price strategy (fixed, oracle, estimator)
+    priceStrategy: "estimator"
+    # -- Fixed gas price in Gwei (if priceStrategy is fixed)
+    fixedPrice: 20
+    # -- Gas limit
+    limit: 3000000
+    # -- Gas price multiplier for estimator strategy
+    multiplier: 1.1
+  # -- Nonce management
+  nonce:
+    # -- Nonce management strategy (sequential, parallel)
+    strategy: "sequential"
+    # -- Maximum pending transactions
+    maxPending: 10
+  # -- Audit logging
+  audit:
+    # -- Enable audit logging
+    enabled: true
+    # -- Audit log retention days
+    retentionDays: 30
+  # -- Allowed contracts for interaction
+  allowedContracts: []
+  # -- Allowed methods for execution
+  allowedMethods: []
+  # -- CORS configuration
+  cors:
+    # -- Enable CORS
+    enabled: false
+    # -- Allowed origins
+    origins: []
+    # -- Allowed methods
+    methods: ["GET", "POST"]
+    # -- Allowed headers
+    headers: ["Content-Type", "Authorization"]
