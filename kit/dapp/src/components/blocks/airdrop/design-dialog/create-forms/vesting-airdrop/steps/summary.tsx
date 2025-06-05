@@ -10,7 +10,7 @@ import {
   formatDuration,
   getTimeUnitSeconds,
 } from "@/lib/utils/date";
-import { Clock, Timer } from "lucide-react";
+import { Timer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { Summary as BaseSummary } from "../../common/summary";
@@ -24,28 +24,20 @@ export function Summary() {
       predictAddress={getPredictedAddress}
       isAddressAvailable={isAddressAvailable}
     >
-      {/* Time Configuration Card */}
-      <FormSummaryDetailCard
-        title={t("timing.title")}
-        description={t("timing.description")}
-        icon={<Clock className="size-3 text-primary-foreground" />}
-      >
-        <FormSummaryDetailItem
-          label={t("timing.end-time-label")}
-          value={
-            formValues.claimPeriodEnd
-              ? formatDate(formValues.claimPeriodEnd)
-              : "-"
-          }
-        />
-      </FormSummaryDetailCard>
-
       {/* Vesting Configuration Card */}
       <FormSummaryDetailCard
         title="Vesting Configuration"
         description="Vesting parameters for the airdrop distribution."
         icon={<Timer className="size-3 text-primary-foreground" />}
       >
+        <FormSummaryDetailItem
+          label="Claim Period End"
+          value={
+            formValues.claimPeriodEnd
+              ? formatDate(formValues.claimPeriodEnd)
+              : "-"
+          }
+        />
         <FormSummaryDetailItem
           label="Cliff Duration"
           value={

@@ -1611,10 +1611,10 @@
           "title": "Vesting Schedule",
           "description": "Configure the vesting parameters for the airdrop.",
           "claim-period-end-label": "Claim Period End",
-          "claim-period-end-description": "Deadline for users to claim their airdrop. After this date, unclaimed tokens are forfeited.",
+          "claim-period-end-description": "A user must initialize their claim before this date to receive their assets.",
           "claim-period-end-error": "Claim period end must be at least 1 hour in the future",
           "cliff-duration-label": "Cliff Duration",
-          "cliff-duration-description": "Waiting period after claiming before any tokens can be withdrawn.",
+          "cliff-duration-description": "Waiting period after initializing the claim before any tokens can be withdrawn.",
           "vesting-duration-label": "Vesting Duration",
           "vesting-duration-description": "Total time for all tokens to unlock gradually after claiming.",
           "time-units": {
