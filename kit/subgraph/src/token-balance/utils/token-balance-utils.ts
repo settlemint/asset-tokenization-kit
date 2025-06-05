@@ -4,7 +4,7 @@ import { fetchAccount } from "../../account/fetch/account";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchTokenBalance } from "../fetch/token-balance";
 
-export function updateTokenBalanceValue(
+export function increaseTokenBalanceValue(
   token: Token,
   account: Address,
   value: BigInt
@@ -15,6 +15,24 @@ export function updateTokenBalanceValue(
     balance,
     "value",
     balance.valueExact.plus(value),
+    token.decimals
+  );
+  updateAvailableAmount(balance, token.decimals);
+
+  balance.save();
+}
+
+export function decreaseTokenBalanceValue(
+  token: Token,
+  account: Address,
+  value: BigInt
+): void {
+  const balance = fetchTokenBalance(token, fetchAccount(account));
+
+  setBigNumber(
+    balance,
+    "value",
+    balance.valueExact.minus(value),
     token.decimals
   );
   updateAvailableAmount(balance, token.decimals);

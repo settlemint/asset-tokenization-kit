@@ -27,6 +27,26 @@ dataSources:
         - event: SMARTSystemCreated(indexed address,indexed address)
           handler: handleSMARTSystemCreated
       file: ./src/system-factory/system-factory.ts
+  - kind: ethereum
+    name: FixedYieldScheduleFactory
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000020089"
+      abi: FixedYieldScheduleFactory
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - SMARTFixedYieldScheduleCreated
+      abis:
+        - name: FixedYieldScheduleFactory
+          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json
+      eventHandlers:
+        - event: SMARTFixedYieldScheduleCreated(indexed address,indexed address)
+          handler: handleSMARTFixedYieldScheduleCreated
+      file: ./src/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
 templates:
   - kind: ethereum
     name: AccessControl
@@ -44,8 +64,7 @@ templates:
         - name: AccessControl
           file: ../contracts/artifacts/@openzeppelin/contracts/access/AccessControl.sol/AccessControl.json
       eventHandlers:
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
@@ -68,44 +87,30 @@ templates:
         - name: System
           file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
       eventHandlers:
-        - event:
-            Bootstrapped(indexed address,indexed address,indexed
+        - event: Bootstrapped(indexed address,indexed address,indexed
             address,address,address,address,address)
           handler: handleBootstrapped
-        - event:
-            ComplianceImplementationUpdated(indexed address,indexed address)
+        - event: ComplianceImplementationUpdated(indexed address,indexed address)
           handler: handleComplianceImplementationUpdated
-        - event:
-            IdentityFactoryImplementationUpdated(indexed address,indexed
-            address)
+        - event: IdentityFactoryImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityFactoryImplementationUpdated
         - event: IdentityImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityImplementationUpdated
-        - event:
-            IdentityRegistryImplementationUpdated(indexed address,indexed
-            address)
+        - event: IdentityRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleIdentityRegistryImplementationUpdated
-        - event:
-            IdentityRegistryStorageImplementationUpdated(indexed address,indexed
+        - event: IdentityRegistryStorageImplementationUpdated(indexed address,indexed
             address)
           handler: handleIdentityRegistryStorageImplementationUpdated
-        - event:
-            TokenAccessManagerImplementationUpdated(indexed address,indexed
-            address)
+        - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
           handler: handleTokenAccessManagerImplementationUpdated
-        - event:
-            TokenFactoryCreated(indexed address,string,address,address,uint256)
+        - event: TokenFactoryCreated(indexed address,string,address,address,uint256)
           handler: handleTokenFactoryCreated
-        - event:
-            TokenIdentityImplementationUpdated(indexed address,indexed address)
+        - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
           handler: handleTokenIdentityImplementationUpdated
-        - event:
-            TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
+        - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
             address)
           handler: handleTrustedIssuersRegistryImplementationUpdated
-        - event:
-            TopicSchemeRegistryImplementationUpdated(indexed address,indexed
-            address)
+        - event: TopicSchemeRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleTopicSchemeRegistryImplementationUpdated
       file: ./src/system/system.ts
   - kind: ethereum
@@ -126,12 +131,10 @@ templates:
         - name: Token
           file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event:
-            TokenAssetCreated(indexed address,indexed address,indexed
+        - event: TokenAssetCreated(indexed address,indexed address,indexed
             address,address)
           handler: handleTokenAssetCreated
-        - event:
-            TokenImplementationUpdated(indexed address,indexed address,indexed
+        - event: TokenImplementationUpdated(indexed address,indexed address,indexed
             address)
           handler: handleTokenImplementationUpdated
       file: ./src/token-factory/token-factory.ts
@@ -150,6 +153,8 @@ templates:
       abis:
         - name: Token
           file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
+        - name: FixedYieldSchedule
+          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -167,8 +172,7 @@ templates:
           handler: handleModuleParametersUpdated
         - event: RequiredClaimTopicsUpdated(indexed address,uint256[])
           handler: handleRequiredClaimTopicsUpdated
-        - event:
-            TransferCompleted(indexed address,indexed address,indexed
+        - event: TransferCompleted(indexed address,indexed address,indexed
             address,uint256)
           handler: handleTransferCompleted
         - event: UpdatedTokenInformation(indexed address,uint8,indexed address)
@@ -232,27 +236,20 @@ templates:
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
-        - event:
-            ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimAdded
-        - event:
-            ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimChanged
-        - event:
-            ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimRemoved
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
-        - event:
-            ExecutionFailed(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionFailed
-        - event:
-            ExecutionRequested(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionRequested
         - event: KeyAdded(indexed bytes32,indexed uint256,indexed uint256)
           handler: handleKeyAdded
@@ -277,12 +274,9 @@ templates:
         - name: Token
           file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event:
-            IdentityCreated(indexed address,indexed address,indexed address)
+        - event: IdentityCreated(indexed address,indexed address,indexed address)
           handler: handleIdentityCreated
-        - event:
-            TokenIdentityCreated(indexed address,indexed address,indexed
-            address)
+        - event: TokenIdentityCreated(indexed address,indexed address,indexed address)
           handler: handleTokenIdentityCreated
       file: ./src/identity-factory/identity-factory.ts
   - kind: ethereum
@@ -301,18 +295,13 @@ templates:
         - name: TopicSchemeRegistry
           file: ../contracts/artifacts/contracts/system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol/ISMARTTopicSchemeRegistry.json
       eventHandlers:
-        - event:
-            TopicSchemeRegistered(indexed address,indexed uint256,string,string)
+        - event: TopicSchemeRegistered(indexed address,indexed uint256,string,string)
           handler: handleTopicSchemeRegistered
         - event: TopicSchemeRemoved(indexed address,indexed uint256,string)
           handler: handleTopicSchemeRemoved
-        - event:
-            TopicSchemeUpdated(indexed address,indexed
-            uint256,string,string,string)
+        - event: TopicSchemeUpdated(indexed address,indexed uint256,string,string,string)
           handler: handleTopicSchemeUpdated
-        - event:
-            TopicSchemesBatchRegistered(indexed
-            address,uint256[],string[],string[])
+        - event: TopicSchemesBatchRegistered(indexed address,uint256[],string[],string[])
           handler: handleTopicSchemesBatchRegistered
       file: ./src/topic-scheme-registry/topic-scheme-registry.ts
   - kind: ethereum
@@ -333,17 +322,14 @@ templates:
       eventHandlers:
         - event: CountryUpdated(indexed address,indexed address,indexed uint16)
           handler: handleCountryUpdated
-        - event:
-            IdentityRegistered(indexed address,indexed address,indexed
+        - event: IdentityRegistered(indexed address,indexed address,indexed
             address,uint16)
           handler: handleIdentityRegistered
-        - event:
-            IdentityRemoved(indexed address,indexed address,indexed address)
+        - event: IdentityRemoved(indexed address,indexed address,indexed address)
           handler: handleIdentityRemoved
         - event: IdentityStorageSet(indexed address,indexed address)
           handler: handleIdentityStorageSet
-        - event:
-            IdentityUpdated(indexed address,indexed address,indexed address)
+        - event: IdentityUpdated(indexed address,indexed address,indexed address)
           handler: handleIdentityUpdated
         - event: TopicSchemeRegistrySet(indexed address,indexed address)
           handler: handleTopicSchemeRegistrySet
@@ -368,34 +354,13 @@ templates:
       eventHandlers:
         - event: AddressFrozen(indexed address,indexed address,indexed bool)
           handler: handleAddressFrozen
-        - event:
-            RecoverySuccess(indexed address,indexed address,indexed
-            address,address)
+        - event: RecoverySuccess(indexed address,indexed address,indexed address,address)
           handler: handleRecoverySuccess
         - event: TokensFrozen(indexed address,indexed address,uint256)
           handler: handleTokensFrozen
         - event: TokensUnfrozen(indexed address,indexed address,uint256)
           handler: handleTokensUnfrozen
       file: ./src/custodian/custodian.ts
-  - kind: ethereum
-    name: HistoricalBalances
-    network: settlemint
-    source:
-      abi: HistoricalBalances
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - CheckpointUpdated
-      abis:
-        - name: HistoricalBalances
-          file: ../contracts/artifacts/contracts/extensions/historical-balances/ISMARTHistoricalBalances.sol/ISMARTHistoricalBalances.json
-      eventHandlers:
-        - event:
-            CheckpointUpdated(indexed address,indexed address,uint256,uint256)
-          handler: handleCheckpointUpdated
-      file: ./src/historical-balances/historical-balances.ts
   - kind: ethereum
     name: Capped
     network: settlemint
@@ -414,3 +379,52 @@ templates:
         - event: CapSet(indexed address,uint256)
           handler: handleCapSet
       file: ./src/capped/capped.ts
+  - kind: ethereum
+    name: Yield
+    network: settlemint
+    source:
+      abi: Yield
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - CheckpointUpdated
+        - YieldScheduleSet
+      abis:
+        - name: Yield
+          file: ../contracts/artifacts/contracts/extensions/yield/ISMARTYield.sol/ISMARTYield.json
+      eventHandlers:
+        - event: CheckpointUpdated(indexed address,indexed address,uint256,uint256)
+          handler: handleCheckpointUpdated
+        - event: YieldScheduleSet(indexed address,indexed address)
+          handler: handleYieldScheduleSet
+      file: ./src/yield/yield.ts
+  - kind: ethereum
+    name: FixedYieldSchedule
+    network: settlemint
+    source:
+      abi: FixedYieldSchedule
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - FixedYieldScheduleSet
+        - UnderlyingAssetTopUp
+        - UnderlyingAssetWithdrawn
+        - YieldClaimed
+      abis:
+        - name: FixedYieldSchedule
+          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
+      eventHandlers:
+        - event: FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address,uint256)
+          handler: handleFixedYieldScheduleSet
+        - event: UnderlyingAssetTopUp(indexed address,uint256)
+          handler: handleUnderlyingAssetTopUp
+        - event: UnderlyingAssetWithdrawn(indexed address,uint256)
+          handler: handleUnderlyingAssetWithdrawn
+        - event: YieldClaimed(indexed
+            address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)
+          handler: handleYieldClaimed
+      file: ./src/fixed-yield-schedule/fixed-yield-schedule.ts

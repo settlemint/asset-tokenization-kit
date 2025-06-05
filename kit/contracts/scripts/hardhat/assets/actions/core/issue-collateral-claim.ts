@@ -5,6 +5,7 @@ import { owner } from "../../../entities/actors/owner";
 import { SMARTTopic } from "../../../constants/topics";
 import type { Asset } from "../../../entities/asset";
 import { encodeClaimData } from "../../../utils/claim-scheme-utils";
+import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { formatDecimals } from "../../../utils/format-decimals";
 import { toDecimals } from "../../../utils/to-decimals";
 import { waitForSuccess } from "../../../utils/wait-for-success";
@@ -61,14 +62,16 @@ export const issueCollateralClaim = async (
 
   // 5. The token owner adds the claim (signed by the claimIssuer) to the token's identity contract
   // Corresponds to clientIdentity.addClaim(...) in Solidity, called by the token owner
-  const transactionHash = await tokenIdentityContract.write.addClaim([
-    topicId,
-    BigInt(1), // ECDSA
-    claimIssuerIdentityAddress,
-    collateralClaimSignature,
-    collateralClaimData,
-    "",
-  ]);
+  const transactionHash = await withDecodedRevertReason(() =>
+    tokenIdentityContract.write.addClaim([
+      topicId,
+      BigInt(1), // ECDSA
+      claimIssuerIdentityAddress,
+      collateralClaimSignature,
+      collateralClaimData,
+      "",
+    ])
+  );
 
   await waitForSuccess(transactionHash);
 
