@@ -187,6 +187,8 @@ type TokenFixedYieldSchedule @entity(immutable: false) {
   underlyingAsset: Token!
   underlyingAssetBalanceAvailable: BigDecimal!
   underlyingAssetBalanceAvailableExact: BigInt!
+  currentPeriod: TokenFixedYieldSchedulePeriod
+  nextPeriod: TokenFixedYieldSchedulePeriod
   periods: [TokenFixedYieldSchedulePeriod!]! @derivedFrom(field: "schedule")
 }
 
