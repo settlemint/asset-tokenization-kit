@@ -58,7 +58,7 @@ export const action = createSafeActionClient({
 
     console.error(`\n${"=".repeat(80)}\n`);
 
-    return getErrorMessage(error);
+    throw new Error(getErrorMessage(error));
   },
 })
   .use(async ({ next, clientInput, metadata }) => {
