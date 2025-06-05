@@ -474,3 +474,9 @@ config:
     methods: ["GET", "POST"]
     # -- Allowed headers
     headers: ["Content-Type", "Authorization"]
+  # -- Environment secret configuration
+  envSecret:
+    # -- Create environment secret
+    create: false
+    # -- Additional secret data
+    data: {}

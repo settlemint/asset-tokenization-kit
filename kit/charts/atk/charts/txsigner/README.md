@@ -90,7 +90,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | autoscaling.minReplicas | int | `1` | Minimum number of TxSigner replicas |
 | commonAnnotations | object | `{}` | Annotations to add to all deployed objects |
 | commonLabels | object | `{}` | Labels to add to all deployed objects |
-| config | object | `{"allowedContracts":[],"allowedMethods":[],"audit":{"enabled":true,"retentionDays":30},"chainId":"53771311147","cors":{"enabled":false,"headers":["Content-Type","Authorization"],"methods":["GET","POST"],"origins":[]},"debug":false,"existingSecret":"","existingSecretKey":"private-key","gas":{"fixedPrice":20,"limit":3000000,"multiplier":1.1,"priceStrategy":"estimator"},"hsm":{"module":"","pin":"","slot":""},"kms":{"keyId":"","provider":"","region":""},"logLevel":"info","metricsPort":3001,"nonce":{"maxPending":10,"strategy":"sequential"},"port":3000,"privateKey":"","queue":{"maxSize":1000,"processingInterval":1000},"rateLimit":{"enabled":true,"maxRequestsPerHour":1000,"maxRequestsPerMinute":60},"rpcUrl":"http://besu-node-rpc-1:8545","signingStrategy":"local"}` | TxSigner configuration |
+| config | object | `{"allowedContracts":[],"allowedMethods":[],"audit":{"enabled":true,"retentionDays":30},"chainId":"53771311147","cors":{"enabled":false,"headers":["Content-Type","Authorization"],"methods":["GET","POST"],"origins":[]},"debug":false,"envSecret":{"create":false,"data":{}},"existingSecret":"","existingSecretKey":"private-key","gas":{"fixedPrice":20,"limit":3000000,"multiplier":1.1,"priceStrategy":"estimator"},"hsm":{"module":"","pin":"","slot":""},"kms":{"keyId":"","provider":"","region":""},"logLevel":"info","metricsPort":3001,"nonce":{"maxPending":10,"strategy":"sequential"},"port":3000,"privateKey":"","queue":{"maxSize":1000,"processingInterval":1000},"rateLimit":{"enabled":true,"maxRequestsPerHour":1000,"maxRequestsPerMinute":60},"rpcUrl":"http://besu-node-rpc-1:8545","signingStrategy":"local"}` | TxSigner configuration |
 | config.allowedContracts | list | `[]` | Allowed contracts for interaction |
 | config.allowedMethods | list | `[]` | Allowed methods for execution |
 | config.audit | object | `{"enabled":true,"retentionDays":30}` | Audit logging |
@@ -103,6 +103,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | config.cors.methods | list | `["GET","POST"]` | Allowed methods |
 | config.cors.origins | list | `[]` | Allowed origins |
 | config.debug | bool | `false` | Enable debug mode |
+| config.envSecret | object | `{"create":false,"data":{}}` | Environment secret configuration |
+| config.envSecret.create | bool | `false` | Create environment secret |
+| config.envSecret.data | object | `{}` | Additional secret data |
 | config.existingSecret | string | `""` | Use existing secret for private key |
 | config.existingSecretKey | string | `"private-key"` | Key within the existing secret |
 | config.gas | object | `{"fixedPrice":20,"limit":3000000,"multiplier":1.1,"priceStrategy":"estimator"}` | Gas configuration |
