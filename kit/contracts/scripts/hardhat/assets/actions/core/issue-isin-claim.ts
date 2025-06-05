@@ -4,6 +4,7 @@ import { claimIssuer } from "../../../entities/actors/claim-issuer";
 import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
 import { encodeClaimData } from "../../../utils/claim-scheme-utils";
+import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const issueIsinClaim = async (asset: Asset<any>, isin: string) => {
@@ -26,14 +27,16 @@ export const issueIsinClaim = async (asset: Asset<any>, isin: string) => {
 
   const claimIssuerIdentity = await claimIssuer.getIdentity();
 
-  const transactionHash = await tokenIdentityContract.write.addClaim([
-    topicId,
-    BigInt(1), // ECDSA
-    claimIssuerIdentity,
-    isinClaimSignature,
-    isinClaimData,
-    "",
-  ]);
+  const transactionHash = await withDecodedRevertReason(() =>
+    tokenIdentityContract.write.addClaim([
+      topicId,
+      BigInt(1), // ECDSA
+      claimIssuerIdentity,
+      isinClaimSignature,
+      isinClaimData,
+      "",
+    ])
+  );
 
   await waitForSuccess(transactionHash);
 

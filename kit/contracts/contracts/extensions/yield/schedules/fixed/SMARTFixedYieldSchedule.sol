@@ -156,8 +156,11 @@ contract SMARTFixedYieldSchedule is
         // This role typically controls pausing, unpausing, and withdrawing funds.
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
 
-        emit ISMARTFixedYieldSchedule.FixedYieldScheduleSet(
-            startDate_, endDate_, rate_, interval_, _periodEndTimestamps, _underlyingAsset
+        // Calculate the for the next period for the event.
+        uint256 yieldForNextPeriod = totalYieldForNextPeriod();
+
+        emit FixedYieldScheduleSet(
+            startDate_, endDate_, rate_, interval_, _periodEndTimestamps, _underlyingAsset, yieldForNextPeriod
         );
     }
 
@@ -418,8 +421,11 @@ contract SMARTFixedYieldSchedule is
         // Calculate the remaining total unclaimed yield in the contract for the event.
         uint256 remainingUnclaimed = totalUnclaimedYield();
 
-        emit ISMARTFixedYieldSchedule.YieldClaimed(
-            sender, totalAmountToClaim, fromPeriod, lastPeriod, periodAmounts, remainingUnclaimed
+        // Calculate the for the next period for the event.
+        uint256 yieldForNextPeriod = totalYieldForNextPeriod();
+
+        emit YieldClaimed(
+            sender, totalAmountToClaim, fromPeriod, lastPeriod, periodAmounts, remainingUnclaimed, yieldForNextPeriod
         );
     }
 
@@ -430,7 +436,7 @@ contract SMARTFixedYieldSchedule is
         // Transfer `_underlyingAsset` from the caller to this contract.
         _underlyingAsset.safeTransferFrom(_msgSender(), address(this), amount);
 
-        emit ISMARTFixedYieldSchedule.UnderlyingAssetTopUp(_msgSender(), amount);
+        emit UnderlyingAssetTopUp(_msgSender(), amount);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -455,7 +461,7 @@ contract SMARTFixedYieldSchedule is
 
         _underlyingAsset.safeTransfer(to, amount);
 
-        emit ISMARTFixedYieldSchedule.UnderlyingAssetWithdrawn(to, amount);
+        emit UnderlyingAssetWithdrawn(to, amount);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -475,7 +481,7 @@ contract SMARTFixedYieldSchedule is
 
         _underlyingAsset.safeTransfer(to, balance);
 
-        emit ISMARTFixedYieldSchedule.UnderlyingAssetWithdrawn(to, balance);
+        emit UnderlyingAssetWithdrawn(to, balance);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule

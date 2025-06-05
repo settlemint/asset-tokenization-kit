@@ -5,6 +5,7 @@ import { owner } from "../../../entities/actors/owner";
 import { SMARTTopic } from "../../../constants/topics";
 import { Asset } from "../../../entities/asset";
 import { encodeClaimData } from "../../../utils/claim-scheme-utils";
+import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 /**
@@ -42,14 +43,16 @@ export const issueAssetClassificationClaim = async (
 
   const claimIssuerIdentityAddress = await claimIssuer.getIdentity();
 
-  const transactionHash = await tokenIdentityContract.write.addClaim([
-    topicId,
-    BigInt(1), // ECDSA
-    claimIssuerIdentityAddress,
-    assetClassificationClaimSignature,
-    assetClassificationClaimData,
-    "",
-  ]);
+  const transactionHash = await withDecodedRevertReason(() =>
+    tokenIdentityContract.write.addClaim([
+      topicId,
+      BigInt(1), // ECDSA
+      claimIssuerIdentityAddress,
+      assetClassificationClaimSignature,
+      assetClassificationClaimData,
+      "",
+    ])
+  );
 
   await waitForSuccess(transactionHash);
 
