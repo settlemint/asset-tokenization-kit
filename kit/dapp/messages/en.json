@@ -1630,7 +1630,8 @@
             "description": "Configuration parameters for the airdrop distribution.",
             "distribution-cap-label": "Distribution Cap",
             "distribution-recipients-label": "Number of Recipients",
-            "total-distribution-amount-label": "Total Distribution Amount"
+            "total-distribution-amount-label": "Total Distribution Amount",
+            "distribution-limit-label": "Distribution Limit"
           },
           "recipients": {
             "title": "Distribution Recipients",

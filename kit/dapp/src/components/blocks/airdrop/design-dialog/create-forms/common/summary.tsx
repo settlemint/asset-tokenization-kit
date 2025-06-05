@@ -140,6 +140,20 @@ export function Summary({
                 : "-"
             }
           />
+          {"distributionCap" in formValues && (
+            <FormSummaryDetailItem
+              label={t("configuration.distribution-limit-label")}
+              value={
+                formValues.distributionCap
+                  ? formatNumber(formValues.distributionCap, {
+                      decimals: formValues.asset?.decimals,
+                      token: formValues.asset?.symbol,
+                      locale,
+                    })
+                  : "-"
+              }
+            />
+          )}
         </FormSummaryDetailCard>
 
         {/* Disclaimer */}
