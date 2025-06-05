@@ -355,11 +355,13 @@ export function Form<
           return successMessage;
         },
         error: (error) => {
-          let errorMessage = (error as Error).message;
+          let errorMessage = t("error.unexpected-error");
           if (error?.error?.serverError) {
             errorMessage = error.error.serverError as string;
           } else if (error?.error?.validationErrors) {
             errorMessage = "Validation error";
+          } else if (error instanceof Error) {
+            errorMessage = error.message;
           }
           return `Failed to submit: ${errorMessage}`;
         },
