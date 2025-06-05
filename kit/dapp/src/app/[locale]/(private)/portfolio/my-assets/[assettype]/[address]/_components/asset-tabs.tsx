@@ -1,6 +1,6 @@
-import { isMicaEnabledForAsset } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/features-enabled";
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
+import { isMicaEnabledForAsset } from "@/lib/utils/features-enabled";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -22,11 +22,11 @@ const tabs = async ({
     namespace: "private.assets.details",
   });
 
-  let isMicaEnabled = false; // Default to false to hide the tab in case of error
+  let isMicaEnabled = false;
   try {
     isMicaEnabled = await isMicaEnabledForAsset(assettype, address);
   } catch (error) {
-    console.error("Failed to check MICA availability:", error);
+    console.error("Failed to check MICA status:", error);
   }
 
   const tabItems = [

@@ -35,7 +35,7 @@
   gas_reports_ignore = []
   fuzz = { runs = 1_000 }
   auto_detect_solc = false
-  extra_output_files = [ "metadata" ]
+  extra_output = [ "devdoc", "userdoc" ]
   viaIR = true
   evm_version = "cancun"
   coverage = true
