@@ -14,8 +14,8 @@
     },
     "codegen:gql-tada": {
       "dependsOn": ["codegen:graph"],
-      "inputs": ["schema.graphql"],
-      "outputs": ["schema.d.ts", "schema-cache.d.ts"]
+      "inputs": ["the-graph-schema.graphql"],
+      "outputs": ["the-graph-env.d.ts", "the-graph-cache.d.ts"]
     },
     "compile": {
       "dependsOn": ["^compile", "codegen"],
