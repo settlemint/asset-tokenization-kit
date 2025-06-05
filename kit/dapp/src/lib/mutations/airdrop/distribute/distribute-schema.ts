@@ -1,7 +1,7 @@
 import { t } from "@/lib/utils/typebox";
 import type { Static } from "@sinclair/typebox";
 
-export const PushAirdropDistributeSchema = t.Object(
+export const distributeSchema = t.Object(
   {
     address: t.EthereumAddress({
       description: "The address of the push airdrop contract",
@@ -31,6 +31,4 @@ export const PushAirdropDistributeSchema = t.Object(
   }
 );
 
-export type PushAirdropDistributeInput = Static<
-  typeof PushAirdropDistributeSchema
->;
+export type DistributeInput = Static<typeof distributeSchema>;

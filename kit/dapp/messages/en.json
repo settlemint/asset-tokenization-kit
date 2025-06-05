@@ -1715,14 +1715,14 @@
       "detail": {
         "forms": {
           "manage": "Manage",
-          "push-batch": {
+          "distribute": {
             "title": "Push tokens",
-            "description": "Push tokens to all recipients in this airdrop.",
+            "description": "Push tokens to recipients of this airdrop.",
             "button-label": "Push tokens",
             "submitting": "Pushing tokens...",
             "summary": {
               "title": "Review and confirm pushing tokens",
-              "description": "Push tokens to all recipients in this airdrop.",
+              "description": "Push tokens to recipients of this airdrop.",
               "airdrop": "Airdrop",
               "recipients": "Recipients"
             }

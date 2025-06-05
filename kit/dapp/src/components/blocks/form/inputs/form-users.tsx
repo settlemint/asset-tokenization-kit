@@ -55,6 +55,8 @@ type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
     defaultValue?: string;
     /** Filter users by role */
     role?: "admin" | "issuer" | "user";
+    /** Filter users by allowed addresses */
+    allowedAddresses?: Address[];
   };
 
 export function FormUsers<T extends FieldValues>({
@@ -65,6 +67,7 @@ export function FormUsers<T extends FieldValues>({
   defaultValue,
   role,
   disabled,
+  allowedAddresses,
   ...props
 }: FormSearchSelectProps<T>) {
   const [open, setOpen] = useState(false);
@@ -127,6 +130,7 @@ export function FormUsers<T extends FieldValues>({
                     setOpen={setOpen}
                     value={field.value}
                     role={role}
+                    allowedAddresses={allowedAddresses}
                   />
                 </Command>
               </PopoverContent>
@@ -149,11 +153,13 @@ function FormUsersList({
   setOpen,
   value,
   role,
+  allowedAddresses,
 }: {
   onValueChange: (value: string) => void;
   setOpen: (open: boolean) => void;
   value: string;
   role?: "admin" | "issuer" | "user";
+  allowedAddresses?: Address[];
 }) {
   const search = useCommandState((state) => state.search) || "";
   const debounced = useDebounce<string>(search, 250);
@@ -211,14 +217,22 @@ function FormUsersList({
 
   // Handle selection of a user
   const handleSelect = (wallet: string) => {
-    onValueChange(wallet);
-    addToRecentUsers(getAddress(wallet));
-    setOpen(false);
+    // Check if the address is allowed before selecting it
+    if (!allowedAddresses || allowedAddresses.includes(getAddress(wallet))) {
+      onValueChange(wallet);
+      addToRecentUsers(getAddress(wallet));
+      setOpen(false);
+    }
   };
 
   // Prepare the heading text based on user role
   const recentHeading =
     userRole === "user" ? t("recent-contacts") : t("recent-users");
+
+  // Filter recent users based on allowedAddresses
+  const filteredRecentUsers = recentUsers.filter((user) =>
+    allowedAddresses ? allowedAddresses.includes(getAddress(user.wallet)) : true
+  );
 
   return (
     <CommandList>
@@ -238,9 +252,9 @@ function FormUsersList({
       </CommandEmpty>
 
       {/* Show recent users when no search is entered */}
-      {!debounced && recentUsers.length > 0 && (
+      {!debounced && filteredRecentUsers.length > 0 && (
         <CommandGroup heading={recentHeading}>
-          {recentUsers.map((user) => (
+          {filteredRecentUsers.map((user) => (
             <CommandItem
               key={user.wallet}
               value={user.wallet}
@@ -262,21 +276,27 @@ function FormUsersList({
       {/* Show search results */}
       {(debounced || (!debounced && recentUsers.length === 0)) && (
         <CommandGroup>
-          {users.map((user: User | Contact) => (
-            <CommandItem
-              key={user.wallet}
-              value={user.wallet}
-              onSelect={handleSelect}
-            >
-              <EvmAddress address={user.wallet} hoverCard={false} />
-              <Check
-                className={cn(
-                  "ml-auto",
-                  value === user.wallet ? "opacity-100" : "opacity-0"
-                )}
-              />
-            </CommandItem>
-          ))}
+          {users
+            .filter((user: User | Contact) =>
+              allowedAddresses
+                ? allowedAddresses.includes(getAddress(user.wallet))
+                : true
+            )
+            .map((user: User | Contact) => (
+              <CommandItem
+                key={user.wallet}
+                value={user.wallet}
+                onSelect={handleSelect}
+              >
+                <EvmAddress address={user.wallet} hoverCard={false} />
+                <Check
+                  className={cn(
+                    "ml-auto",
+                    value === user.wallet ? "opacity-100" : "opacity-0"
+                  )}
+                />
+              </CommandItem>
+            ))}
         </CommandGroup>
       )}
     </CommandList>

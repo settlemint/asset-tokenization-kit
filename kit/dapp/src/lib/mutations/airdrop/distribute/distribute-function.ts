@@ -5,23 +5,23 @@ import { handleChallenge } from "@/lib/challenge";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
-import type { PushAirdropDistributeInput } from "./push-schema";
+import type { DistributeInput } from "./distribute-schema";
 
 const PushAirdropDistribute = portalGraphql(`
 mutation PushAirdropDistribute($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: PushAirdropDistributeInput!) {
   PushAirdropDistribute(
     address: $address
     from: $from
-    input: $input
     challengeResponse: $challengeResponse
     verificationId: $verificationId
+    input: $input
   ) {
     transactionHash
   }
 }
 `);
 
-export const pushAirdropDistributeFunction = async ({
+export const distributeFunction = async ({
   parsedInput: {
     address,
     decimals,
@@ -33,16 +33,16 @@ export const pushAirdropDistributeFunction = async ({
   },
   ctx: { user },
 }: {
-  parsedInput: PushAirdropDistributeInput;
+  parsedInput: DistributeInput;
   ctx: { user: User };
 }) => {
   const result = await portalClient.request(PushAirdropDistribute, {
     address,
     from: user.wallet,
     input: {
-      amount: parseUnits(amount.toString(), decimals).toString(),
       recipient,
       merkleProof,
+      amount: parseUnits(amount.toString(), decimals).toString(),
     },
     ...(await handleChallenge(
       user,
