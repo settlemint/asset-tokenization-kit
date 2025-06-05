@@ -37,7 +37,6 @@ export function Columns() {
           token: row.original.airdrop.asset.symbol,
           locale: locale,
           decimals: row.original.airdrop.asset.decimals,
-          adjustDecimals: true,
         }),
     }),
     columnHelper.display({

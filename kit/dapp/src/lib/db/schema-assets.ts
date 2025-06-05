@@ -76,6 +76,7 @@ export const airdropDistribution = pgTable(
     airdropId: text("airdrop_id").notNull(),
     recipient: text("recipient").notNull(),
     amount: text("amount").notNull(),
+    amountExact: text("amount_exact").notNull(),
     index: integer("index").notNull(),
   },
   (table) => [

@@ -60,7 +60,6 @@ export function StandardAirdropDetails({
         {formatNumber(amount, {
           locale: locale,
           decimals: airdrop.asset.decimals,
-          adjustDecimals: true,
           token: airdrop.asset.symbol,
         })}
       </DetailGridItem>

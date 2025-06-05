@@ -8,6 +8,7 @@ import { formatDate, getTimeUnitSeconds } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { AddAirdropDistribution } from "../common/add-distribution";
+import { AirdropDistributionListSchema } from "../common/airdrop-distribution-schema";
 import { getMerkleRoot } from "../common/merkle-tree";
 import type { CreateVestingAirdropInput } from "./create-schema";
 
@@ -42,6 +43,7 @@ export const createVestingAirdropFunction = async ({
   parsedInput: CreateVestingAirdropInput;
   ctx: { user: User };
 }) => {
+  const leaves = safeParse(AirdropDistributionListSchema, distribution);
   const result = await portalClient.request(
     AirdropFactoryDeployLinearVestingAirdrop,
     {
@@ -49,7 +51,7 @@ export const createVestingAirdropFunction = async ({
       from: user.wallet,
       input: {
         tokenAddress: asset.id,
-        merkleRoot: getMerkleRoot(distribution),
+        merkleRoot: getMerkleRoot(leaves),
         owner,
         claimPeriodEnd: formatDate(claimPeriodEnd, {
           type: "unixSeconds",

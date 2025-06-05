@@ -16,17 +16,20 @@ const sampleLeaves: AirdropDistributionList = [
   {
     index: 0,
     recipient: "0x1111111111111111111111111111111111111111",
-    amount: "100",
+    amount: 100,
+    amountExact: BigInt("100000000000000000000"),
   },
   {
     index: 1,
     recipient: "0x2222222222222222222222222222222222222222",
-    amount: "200",
+    amount: 200,
+    amountExact: BigInt("200000000000000000000"),
   },
   {
     index: 2,
     recipient: "0x3333333333333333333333333333333333333333",
-    amount: "300",
+    amount: 300,
+    amountExact: BigInt("300000000000000000000"),
   },
 ];
 
@@ -34,12 +37,14 @@ const anotherLeafSet: AirdropDistributionList = [
   {
     index: 0,
     recipient: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    amount: "1000",
+    amount: 1000,
+    amountExact: BigInt("1000000000000000000000"),
   },
   {
     index: 1,
     recipient: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    amount: "2000",
+    amount: 2000,
+    amountExact: BigInt("2000000000000000000000"),
   },
 ];
 
@@ -50,7 +55,8 @@ const validLeafFromSample: AirdropDistribution = sampleLeaves[0];
 const invalidLeafForSample: AirdropDistribution = {
   index: 3,
   recipient: "0x4444444444444444444444444444444444444444",
-  amount: "400",
+  amount: 400,
+  amountExact: BigInt("4000000000000000000000"),
 };
 
 describe("Merkle Tree Utilities", () => {

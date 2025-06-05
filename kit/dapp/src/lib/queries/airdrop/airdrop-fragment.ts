@@ -32,8 +32,9 @@ export const AirdropFragment = theGraphGraphqlKit(`
  */
 export const OffchainAirdropFragment = hasuraGraphql(`
   fragment OffchainAirdropFragment on airdrop_distribution {
-    amount
-    recipient
     index
+    recipient
+    amount
+    amountExact: amount_exact
   }
 `);
