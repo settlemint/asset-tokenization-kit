@@ -1,47 +1,49 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity 0.8.28;
 
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
-import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 
-import { ISMARTFixedYieldSchedule } from "./ISMARTFixedYieldSchedule.sol";
 import { SMARTFixedYieldScheduleLogic } from "./internal/SMARTFixedYieldScheduleLogic.sol";
+import { ISMARTFixedYieldSchedule } from "./ISMARTFixedYieldSchedule.sol";
 
-contract SMARTFixedYieldSchedule is
+contract SMARTFixedYieldScheduleUpgradeable is
     SMARTFixedYieldScheduleLogic,
-    ERC165,
-    AccessControl,
-    Pausable,
-    ERC2771Context,
-    ReentrancyGuard
+    ERC165Upgradeable,
+    AccessControlUpgradeable,
+    PausableUpgradeable,
+    ERC2771ContextUpgradeable,
+    ReentrancyGuardUpgradeable
 {
-    /// @notice Constructor to deploy a new `SMARTFixedYieldSchedule` contract.
-    /// @dev If not a logic contract, initializes all parameters. Otherwise, defers to `initialize()`.
+    constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) { }
+
+    /// @notice Initializes the contract when used as an upgradeable proxy.
+    /// @dev This function should be called by the proxy contract after deployment to set all configuration.
+    /// @param initialOwner_ The address to be granted `DEFAULT_ADMIN_ROLE`.
     /// @param tokenAddress_ Address of the `ISMARTYield` token.
     /// @param startDate_ Start date of the yield schedule.
     /// @param endDate_ End date of the yield schedule.
     /// @param rate_ Yield rate in basis points.
     /// @param interval_ Duration of each yield interval.
-    /// @param initialOwner_ The address to be granted `DEFAULT_ADMIN_ROLE`.
-    /// @param forwarder The address of the trusted forwarder for ERC2771 meta-transactions.
-    constructor(
+    function initialize(
         address tokenAddress_,
         uint256 startDate_,
         uint256 endDate_,
         uint256 rate_,
         uint256 interval_,
-        address initialOwner_,
-        address forwarder
+        address initialOwner_
     )
-        ERC2771Context(forwarder)
-        AccessControl()
-        Pausable()
-        ReentrancyGuard()
+        external
+        virtual
+        initializer
     {
+        __Pausable_init();
+        __AccessControl_init();
+        __ReentrancyGuard_init();
         __SMARTFixedYieldSchedule_init_unchained(tokenAddress_, startDate_, endDate_, rate_, interval_);
 
         // Grant the `DEFAULT_ADMIN_ROLE` to the `initialOwner_`.
@@ -99,7 +101,7 @@ contract SMARTFixedYieldSchedule is
     function _msgSender()
         internal
         view
-        override(Context, ERC2771Context, SMARTFixedYieldScheduleLogic)
+        override(ContextUpgradeable, ERC2771ContextUpgradeable, SMARTFixedYieldScheduleLogic)
         returns (address)
     {
         return super._msgSender();
@@ -108,21 +110,31 @@ contract SMARTFixedYieldSchedule is
     /// @dev Overridden from `Context` and `ERC2771Context` to correctly retrieve the transaction data,
     /// accounting for meta-transactions.
     /// @return The actual transaction data (`msg.data` or the relayed data).
-    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
         return super._msgData();
     }
 
     /// @dev Overridden from `ERC2771Context` to define the length of the suffix appended to `msg.data` for relayed
     /// calls.
     /// @return The length of the context suffix (typically 20 bytes for the sender's address).
-    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+    function _contextSuffixLength()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
         return super._contextSuffixLength();
     }
 
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(SMARTFixedYieldScheduleLogic, AccessControl, ERC165)
+        override(SMARTFixedYieldScheduleLogic, AccessControlUpgradeable, ERC165Upgradeable)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);

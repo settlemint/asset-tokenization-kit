@@ -6,7 +6,8 @@ import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import { ISMARTFixedYieldScheduleFactory } from "./ISMARTFixedYieldScheduleFactory.sol"; // Assuming this interface
     // exists or will be created
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { SMARTFixedYieldSchedule } from "../../extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
+import { SMARTFixedYieldScheduleUpgradeable } from
+    "../../extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
 
 /// @notice Custom error when the provided factory address is invalid (e.g. zero address or does not support the
 /// required interface).
@@ -60,7 +61,13 @@ contract SMARTFixedYieldProxy is Proxy {
         address implementationAddress = _getImplementationAddressFromFactory();
 
         bytes memory initData = abi.encodeWithSelector(
-            SMARTFixedYieldSchedule.initialize.selector, tokenAddress, startDate, endDate, rate, interval, initialOwner
+            SMARTFixedYieldScheduleUpgradeable.initialize.selector,
+            tokenAddress,
+            startDate,
+            endDate,
+            rate,
+            interval,
+            initialOwner
         );
 
         _performInitializationDelegatecall(implementationAddress, initData);

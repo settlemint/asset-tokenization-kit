@@ -86,7 +86,7 @@ abstract contract AbstractSMARTTokenFactoryImplementation is
     /// @inheritdoc ISMARTTokenFactory
     /// @param systemAddress The address of the `ISMARTSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
-    /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and TOKEN_DEPLOYER_ROLE.
+    /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE.
     /// @param identityVerificationModule The address of the identity verification module.
     function initialize(
         address systemAddress,
@@ -115,7 +115,7 @@ abstract contract AbstractSMARTTokenFactoryImplementation is
             revert InvalidIdentityVerificationModuleAddress();
         }
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-        _grantRole(SMARTSystemRoles.TOKEN_DEPLOYER_ROLE, initialAdmin);
+        _grantRole(SMARTSystemRoles.DEPLOYER_ROLE, initialAdmin);
 
         _tokenImplementation = tokenImplementation_;
         _systemAddress = systemAddress;
@@ -295,7 +295,7 @@ abstract contract AbstractSMARTTokenFactoryImplementation is
     function _createAccessManager(bytes memory accessManagerSaltInputData)
         internal
         virtual
-        onlyRole(SMARTSystemRoles.TOKEN_DEPLOYER_ROLE)
+        onlyRole(SMARTSystemRoles.DEPLOYER_ROLE)
         returns (ISMARTTokenAccessManager)
     {
         // Calculate salt and creation code once
@@ -336,7 +336,7 @@ abstract contract AbstractSMARTTokenFactoryImplementation is
         address accessManager
     )
         internal
-        onlyRole(SMARTSystemRoles.TOKEN_DEPLOYER_ROLE)
+        onlyRole(SMARTSystemRoles.DEPLOYER_ROLE)
         returns (address deployedAddress, address deployedTokenIdentityAddress)
     {
         // Calculate salt and creation code once

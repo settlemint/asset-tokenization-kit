@@ -34,7 +34,7 @@ contract SMARTStableCoinFactoryImplementation is ISMARTStableCoinFactory, Abstra
     /// @inheritdoc ISMARTTokenFactory
     /// @param systemAddress The address of the `ISMARTSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
-    /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and TOKEN_DEPLOYER_ROLE.
+    /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE.
     /// @param identityVerificationModule_ The address of the identity verification module.
     function initialize(
         address systemAddress,

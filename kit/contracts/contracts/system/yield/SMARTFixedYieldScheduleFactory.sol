@@ -17,8 +17,12 @@ import { ISMARTSystem } from "../ISMARTSystem.sol";
 import { ISMARTComplianceAllowList } from "../compliance/ISMARTComplianceAllowList.sol";
 
 // Implementations
-import { SMARTFixedYieldSchedule } from "../../extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
+import { SMARTFixedYieldScheduleUpgradeable } from
+    "../../extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
 import { SMARTFixedYieldProxy } from "./SMARTFixedYieldProxy.sol";
+
+// Constants
+import { SMARTSystemRoles } from "../SMARTSystemRoles.sol";
 
 /// @title Factory for Creating SMARTFixedYieldSchedule Proxies
 /// @notice This contract serves as a factory to deploy new UUPS proxy instances of `SMARTFixedYieldSchedule` contracts.
@@ -50,13 +54,13 @@ contract SMARTFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl
     /// @param forwarder The address of the trusted forwarder contract for meta-transactions.
     constructor(address systemAddress_, address forwarder) ERC2771Context(forwarder) AccessControl() {
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _grantRole(SMARTSystemRoles.IMPLEMENTATION_MANAGER_ROLE, _msgSender());
 
         systemAddress = systemAddress_;
 
         // Deploy the initial implementation contract for SMARTFixedYieldSchedule.
         // The SMARTFixedYieldSchedule constructor now only calls _disableInitializers().
-        SMARTFixedYieldSchedule initialImplementation =
-            new SMARTFixedYieldSchedule(address(0), 0, 0, 0, 0, _msgSender(), forwarder, true);
+        SMARTFixedYieldScheduleUpgradeable initialImplementation = new SMARTFixedYieldScheduleUpgradeable(forwarder);
 
         smartFixedYieldScheduleImplementation = address(initialImplementation);
         emit ImplementationUpdated(address(0), smartFixedYieldScheduleImplementation);
@@ -66,7 +70,10 @@ contract SMARTFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl
     /// @dev Only callable by the factory owner. New proxies created after this call will use the new implementation.
     /// This does NOT automatically upgrade existing proxy instances.
     /// @param _newImplementation The address of the new `SMARTFixedYieldSchedule` logic contract.
-    function updateImplementation(address _newImplementation) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function updateImplementation(address _newImplementation)
+        external
+        onlyRole(SMARTSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (_newImplementation == address(0)) revert InvalidAddress(); // Added basic check
         if (_newImplementation == smartFixedYieldScheduleImplementation) revert SameAddress(); // Added basic check
         if (!IERC165(_newImplementation).supportsInterface(type(ISMARTFixedYieldSchedule).interfaceId)) {
@@ -102,6 +109,7 @@ contract SMARTFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl
     )
         external
         override(ISMARTFixedYieldScheduleFactory)
+        onlyRole(SMARTSystemRoles.DEPLOYER_ROLE)
         returns (address scheduleProxyAddress)
     {
         bytes32 salt = keccak256(abi.encode(address(this), address(token), startTime, endTime, rate, interval));

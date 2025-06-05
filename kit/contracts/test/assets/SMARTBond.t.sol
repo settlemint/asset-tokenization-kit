@@ -79,7 +79,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         );
 
         // Grant registrar role to owner so that he can create the bond
-        IAccessControl(address(bondFactory)).grantRole(SMARTSystemRoles.TOKEN_DEPLOYER_ROLE, owner);
+        IAccessControl(address(bondFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -753,9 +753,16 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         // Create a factory to create the FixedYield
         SMARTFixedYieldScheduleFactory factory =
             new SMARTFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
+        vm.label(address(factory), "Yield Schedule Factory");
+        IAccessControl(address(factory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+
+        vm.stopPrank();
+
+        vm.startPrank(platformAdmin);
         IAccessControl(address(systemUtils.compliance())).grantRole(
             SMARTSystemRoles.WHITELIST_MANAGER_ROLE, address(factory)
         );
+        vm.stopPrank();
 
         // Setup yield schedule parameters
         uint256 startDate = block.timestamp + 1 days;
@@ -763,9 +770,12 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         uint256 yieldRate = 500; // 5% in basis points
         uint256 interval = 30 days;
 
+        vm.startPrank(owner);
+
         // Create the yield schedule for our bond
         // Note: The factory automatically sets up the circular reference by calling bond.setYieldSchedule()
         address yieldScheduleAddr = factory.create(ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval);
+        vm.label(yieldScheduleAddr, "Yield Schedule");
 
         // We need to set the yield schedule manually
         bond.setYieldSchedule(yieldScheduleAddr);
@@ -789,15 +799,25 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         vm.startPrank(owner);
         SMARTFixedYieldScheduleFactory factory =
             new SMARTFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
+        vm.label(address(factory), "Yield Schedule Factory");
+
+        IAccessControl(address(factory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+        vm.stopPrank();
+
+        vm.startPrank(platformAdmin);
         IAccessControl(address(systemUtils.compliance())).grantRole(
             SMARTSystemRoles.WHITELIST_MANAGER_ROLE, address(factory)
         );
+        vm.stopPrank();
+
         uint256 startDate = block.timestamp + 1 days; // Schedule starts in the future
         uint256 endDate = startDate + 365 days;
         uint256 yieldRate = 500; // 5%
         uint256 interval = 30 days;
 
+        vm.startPrank(owner);
         address yieldScheduleAddr = factory.create(ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval);
+        vm.label(yieldScheduleAddr, "Yield Schedule");
 
         // We need to set the yield schedule manually
         bond.setYieldSchedule(yieldScheduleAddr);

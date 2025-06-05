@@ -23,10 +23,17 @@ abstract contract SMARTYieldBaseTest is AbstractSMARTTest, SMARTYieldHelpers {
         }
 
         // Deploy yield schedule factory
+        vm.startPrank(platformAdmin);
         yieldScheduleFactory = new SMARTFixedYieldScheduleFactory(address(systemUtils.system()), address(0));
+        vm.label(address(yieldScheduleFactory), "Yield Schedule Factory");
+
+        IAccessControl(yieldScheduleFactory).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, tokenIssuer);
+
+        // Grant whitelist manager role to yield schedule factory
         IAccessControl(address(systemUtils.compliance())).grantRole(
             SMARTSystemRoles.WHITELIST_MANAGER_ROLE, address(yieldScheduleFactory)
         );
+        vm.stopPrank();
 
         // Start at a high block number that can accommodate timestamps as block numbers
         _ensureBlockAlignment();
