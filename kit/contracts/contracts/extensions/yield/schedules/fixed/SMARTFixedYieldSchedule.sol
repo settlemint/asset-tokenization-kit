@@ -3,13 +3,14 @@ pragma solidity 0.8.28;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
-import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import { ISMARTFixedYieldSchedule } from "./ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../ISMARTYield.sol";
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
 /// @title SMART Fixed Yield Schedule Contract
 /// @notice This contract implements a fixed yield schedule for an associated SMART token (which must implement
@@ -35,11 +36,11 @@ import { ISMARTYield } from "../../ISMARTYield.sol";
 /// @custom:security-contact support@settlemint.com Ensure to review security practices for deploying and managing this
 /// contract.
 contract SMARTFixedYieldSchedule is
-    AccessControl, // For managing roles, e.g., who can pause or withdraw funds.
-    Pausable, // To allow pausing critical functions in emergencies.
-    ERC2771Context, // For meta-transaction support (gasless transactions via a forwarder).
-    ISMARTFixedYieldSchedule, // The interface this contract implements.
-    ReentrancyGuard // To prevent reentrancy attacks.
+    AccessControlUpgradeable,
+    PausableUpgradeable,
+    ERC2771ContextUpgradeable,
+    ISMARTFixedYieldSchedule,
+    ReentrancyGuardUpgradeable
 {
     using SafeERC20 for IERC20;
 
@@ -51,31 +52,31 @@ contract SMARTFixedYieldSchedule is
     /// @notice The SMART token contract (implementing `ISMARTYield`) for which this schedule distributes yield.
     /// @dev This is immutable, meaning it's set in the constructor and cannot be changed later.
     /// The schedule contract will call functions on this token (e.g., `balanceOfAt`, `yieldBasisPerUnit`).
-    ISMARTYield private immutable _token;
+    ISMARTYield private _token;
 
     /// @notice The ERC20 token used for making yield payments.
     /// @dev This is also immutable and is determined by calling `_token.yieldToken()` in the constructor.
     /// This is the token that will be transferred to holders when they claim yield.
-    IERC20 private immutable _underlyingAsset;
+    IERC20 private _underlyingAsset;
 
     /// @notice The Unix timestamp (seconds since epoch) when the yield schedule starts.
     /// @dev Immutable. Yield calculations and distributions begin from this point.
-    uint256 private immutable _startDate;
+    uint256 private _startDate;
 
     /// @notice The Unix timestamp when the yield schedule ends.
     /// @dev Immutable. No yield will accrue or be distributed by this schedule after this time.
-    uint256 private immutable _endDate;
+    uint256 private _endDate;
 
     /// @notice The yield rate in basis points (1 basis point = 0.01%).
     /// @dev Immutable. For example, a rate of 500 means 5% yield per `_interval` based on `_token.yieldBasisPerUnit()`.
-    uint256 private immutable _rate;
+    uint256 private _rate;
 
     /// @notice The duration of each yield distribution interval in seconds (e.g., 86400 for daily).
     /// @dev Immutable. This defines the frequency of yield periods.
-    uint256 private immutable _interval;
+    uint256 private _interval;
 
     /// @notice An array storing the Unix timestamps for the end of each yield distribution period.
-    /// @dev This is calculated and cached in the constructor to save gas on repeated period lookups.
+    /// @dev This is calculated and cached in the constructor or initializer to save gas on repeated period lookups.
     /// `_periodEndTimestamps[0]` is the end of period 1, `_periodEndTimestamps[i]` is end of period `i+1`.
     uint256[] private _periodEndTimestamps;
 
@@ -91,95 +92,139 @@ contract SMARTFixedYieldSchedule is
     /// @dev This helps in tracking the overall distribution progress and can be used with `totalUnclaimedYield`.
     uint256 private _totalClaimed;
 
+    bool private _initialized;
+    bool private _initializing;
+    // _isLogicContract remains immutable as it defines constructor behavior.
+    bool private immutable _isLogicContract;
+
     /// @notice Constructor to deploy a new `SMARTFixedYieldSchedule` contract.
-    /// @dev Initializes all immutable parameters of the yield schedule and sets up administrative roles.
-    /// It calculates and caches all period end timestamps for gas efficiency.
-    /// Emits `YieldSet` event.
-    /// @param tokenAddress The address of the `ISMARTYield`-compliant token this schedule is for.
-    /// @param initialOwner The address that will be granted `DEFAULT_ADMIN_ROLE`, giving control over pausable
-    /// functions and withdrawals.
-    /// @param startDate_ The Unix timestamp for when the yield schedule should start. Must be in the future.
-    /// @param endDate_ The Unix timestamp for when the yield schedule should end. Must be after `startDate_`.
-    /// @param rate_ The yield rate in basis points (e.g., 500 for 5%). Must be greater than 0.
-    /// @param interval_ The duration of each yield distribution interval in seconds. Must be greater than 0.
-    /// @param forwarder The address of the trusted forwarder for ERC2771 meta-transactions. Can be `address(0)` if not
-    /// used.
+    /// @dev If not a logic contract, initializes all parameters. Otherwise, defers to `initialize()`.
+    /// @param tokenAddress_ Address of the `ISMARTYield` token.
+    /// @param startDate_ Start date of the yield schedule.
+    /// @param endDate_ End date of the yield schedule.
+    /// @param rate_ Yield rate in basis points.
+    /// @param interval_ Duration of each yield interval.
+    /// @param initialOwner_ The address to be granted `DEFAULT_ADMIN_ROLE`.
+    /// @param forwarder The address of the trusted forwarder for ERC2771 meta-transactions.
     constructor(
-        address tokenAddress,
-        address initialOwner,
+        address tokenAddress_,
         uint256 startDate_,
         uint256 endDate_,
         uint256 rate_,
         uint256 interval_,
-        address forwarder
+        address initialOwner_,
+        address forwarder,
+        bool isLogicContract_
     )
-        ERC2771Context(forwarder)
+        ERC2771ContextUpgradeable(forwarder)
     {
-        // Initialize ERC2771Context with the trusted forwarder address.
-        // Input validations
-        if (tokenAddress == address(0)) revert ISMARTFixedYieldSchedule.InvalidToken();
-        if (startDate_ <= block.timestamp) revert ISMARTFixedYieldSchedule.InvalidStartDate(); // Start date must be in
-            // the future.
-        if (endDate_ <= startDate_) revert ISMARTFixedYieldSchedule.InvalidEndDate(); // End date must be after start
-            // date.
-        if (rate_ == 0) revert ISMARTFixedYieldSchedule.InvalidRate(); // Rate must be positive.
-        if (interval_ == 0) revert ISMARTFixedYieldSchedule.InvalidInterval(); // Interval must be positive.
+        _isLogicContract = isLogicContract_;
 
-        _token = ISMARTYield(tokenAddress); // Store the associated SMART token contract.
-        // aderyn-fp-next-line(reentrancy-state-change)
-        _underlyingAsset = _token.yieldToken(); // Determine the payment token from the SMART token.
-        if (address(_underlyingAsset) == address(0)) revert ISMARTFixedYieldSchedule.InvalidUnderlyingAsset(); // Payment
-            // token cannot be zero
-            // address.
+        if (!isLogicContract_) {
+            // For standalone deployment, initialize fully using constructor parameters.
+            __SMARTFixedYieldSchedule_init_unchained(
+                tokenAddress_, startDate_, endDate_, rate_, interval_, initialOwner_
+            );
+        } else {
+            // For the logic contract itself, mark its own storage as initialized.
+            // The proxy will call the external initialize() in its own storage context.
+            _initialized = true;
+        }
+    }
 
-        // Set immutable state variables.
+    /// @notice Initializes the contract when used as an upgradeable proxy.
+    /// @dev This function should be called by the proxy contract after deployment to set all configuration.
+    /// @param initialOwner_ The address to be granted `DEFAULT_ADMIN_ROLE`.
+    /// @param tokenAddress_ Address of the `ISMARTYield` token.
+    /// @param startDate_ Start date of the yield schedule.
+    /// @param endDate_ End date of the yield schedule.
+    /// @param rate_ Yield rate in basis points.
+    /// @param interval_ Duration of each yield interval.
+    function initialize(
+        address tokenAddress_,
+        uint256 startDate_,
+        uint256 endDate_,
+        uint256 rate_,
+        uint256 interval_,
+        address initialOwner_
+    )
+        external
+        virtual
+    {
+        if (_initialized) revert AlreadyInitialized();
+        if (!_isLogicContract && _initialized) revert CannotInitializeLogicContract();
+
+        __SMARTFixedYieldSchedule_init_unchained(tokenAddress_, startDate_, endDate_, rate_, interval_, initialOwner_);
+    }
+
+    /// @dev Internal function to initialize all mutable state and configuration.
+    /// @param tokenAddress_ Address of the `ISMARTYield` token.
+    /// @param startDate_ Start date of the yield schedule.
+    /// @param endDate_ End date of the yield schedule.
+    /// @param rate_ Yield rate in basis points.
+    /// @param interval_ Duration of each yield interval.
+    /// @param initialOwner_ The address to be granted `DEFAULT_ADMIN_ROLE`.
+    function __SMARTFixedYieldSchedule_init_unchained(
+        address tokenAddress_,
+        uint256 startDate_,
+        uint256 endDate_,
+        uint256 rate_,
+        uint256 interval_,
+        address initialOwner_
+    )
+        internal
+        virtual
+    {
+        // _initialized check protects against re-entrancy if called from constructor
+        // and direct re-call if called from external initialize.
+        if (_initialized) revert AlreadyInitialized();
+        if (_initializing) revert ReentrantInitialization();
+        _initializing = true;
+
+        __Pausable_init();
+        __AccessControl_init();
+        __ReentrancyGuard_init();
+
+        // Input validations for configuration parameters
+        if (tokenAddress_ == address(0)) revert InvalidToken();
+        // For new schedules, start date must generally be in the future.
+        // If this logic is used for re-initializing/modifying an existing schedule, this check might need adjustment.
+        if (startDate_ <= block.timestamp && (_startDate == 0)) {
+            // Only check if not already set (e.g. during a modification)
+            revert InvalidStartDate();
+        }
+        if (endDate_ <= startDate_) revert InvalidEndDate();
+        if (rate_ == 0) revert InvalidRate();
+        if (interval_ == 0) revert InvalidInterval();
+
+        // Set configuration state variables
+        _token = ISMARTYield(tokenAddress_);
+        _underlyingAsset = _token.yieldToken(); // Derive underlying asset
+        if (address(_underlyingAsset) == address(0)) revert InvalidUnderlyingAsset();
+
         _startDate = startDate_;
         _endDate = endDate_;
         _rate = rate_;
         _interval = interval_;
 
         // Calculate and cache all period end timestamps.
-        // This improves gas efficiency for functions that need to determine period boundaries.
-        uint256 totalPeriods = ((endDate_ - startDate_) / interval_) + 1; // Calculate total number of periods.
-        _periodEndTimestamps = new uint256[](totalPeriods); // Allocate memory for the array.
+        uint256 totalPeriods = ((_endDate - _startDate) / _interval) + 1;
+        _periodEndTimestamps = new uint256[](totalPeriods);
         for (uint256 i = 0; i < totalPeriods; ++i) {
-            uint256 timestamp = startDate_ + ((i + 1) * interval_); // Calculate end of current period `i+1`.
-            // If the calculated timestamp exceeds the schedule's `_endDate`,
-            // cap it at `_endDate` to ensure the last period doesn't overshoot.
-            if (timestamp > endDate_) {
-                timestamp = endDate_;
+            uint256 timestamp = _startDate + ((i + 1) * _interval);
+            if (timestamp > _endDate) {
+                timestamp = _endDate;
             }
-            _periodEndTimestamps[i] = timestamp; // Store the period end timestamp.
+            _periodEndTimestamps[i] = timestamp;
         }
 
-        // Grant the `DEFAULT_ADMIN_ROLE` to the `initialOwner`.
-        // This role typically controls pausing, unpausing, and withdrawing funds.
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
+        // Grant the `DEFAULT_ADMIN_ROLE` to the `initialOwner_`.
+        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
 
-        emit ISMARTFixedYieldSchedule.FixedYieldScheduleSet(
-            startDate_, endDate_, rate_, interval_, _periodEndTimestamps, _underlyingAsset
-        );
-    }
+        emit FixedYieldScheduleSet(_startDate, _endDate, _rate, _interval, _periodEndTimestamps, _underlyingAsset);
 
-    /// @dev Overridden from `Context` and `ERC2771Context` to correctly identify the transaction sender,
-    /// accounting for meta-transactions if a trusted forwarder is used.
-    /// @return The actual sender of the transaction (`msg.sender` or the relayed sender).
-    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
-        return super._msgSender();
-    }
-
-    /// @dev Overridden from `Context` and `ERC2771Context` to correctly retrieve the transaction data,
-    /// accounting for meta-transactions.
-    /// @return The actual transaction data (`msg.data` or the relayed data).
-    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
-        return super._msgData();
-    }
-
-    /// @dev Overridden from `ERC2771Context` to define the length of the suffix appended to `msg.data` for relayed
-    /// calls.
-    /// @return The length of the context suffix (typically 20 bytes for the sender's address).
-    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
-        return super._contextSuffixLength();
+        _initializing = false;
+        _initialized = true; // Mark as initialized
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -191,7 +236,7 @@ contract SMARTFixedYieldSchedule is
     /// @dev Periods are 1-indexed. Accessing `_periodEndTimestamps` requires 0-indexed access (`period - 1`).
     function periodEnd(uint256 period) public view override returns (uint256) {
         // Validate that the requested period number is within the valid range.
-        if (period == 0 || period > _periodEndTimestamps.length) revert ISMARTFixedYieldSchedule.InvalidPeriod();
+        if (period == 0 || period > _periodEndTimestamps.length) revert InvalidPeriod();
         return _periodEndTimestamps[period - 1]; // Adjust to 0-based index for array access.
     }
 
@@ -314,7 +359,7 @@ contract SMARTFixedYieldSchedule is
     /// elapsed in the period.
     function calculateAccruedYield(address holder) public view override returns (uint256) {
         uint256 currentPeriod_ = currentPeriod(); // Determine the current period number.
-        if (currentPeriod_ < 1 && block.timestamp < _startDate) revert ISMARTFixedYieldSchedule.ScheduleNotActive(); // If
+        if (currentPeriod_ < 1 && block.timestamp < _startDate) revert ScheduleNotActive(); // If
             // before start date and
             // not even in period 0 (edge case for exactly startDate)
 
@@ -378,11 +423,11 @@ contract SMARTFixedYieldSchedule is
     /// claimed after period completion or via `calculateAccruedYield` for view).
     function claimYield() external override nonReentrant whenNotPaused {
         uint256 lastPeriod = lastCompletedPeriod(); // Last period fully completed.
-        if (lastPeriod < 1) revert ISMARTFixedYieldSchedule.NoYieldAvailable(); // No completed periods.
+        if (lastPeriod < 1) revert NoYieldAvailable(); // No completed periods.
 
         address sender = _msgSender(); // Cache sender.
         uint256 fromPeriod = _lastClaimedPeriod[sender] + 1; // First period to claim for this user.
-        if (fromPeriod > lastPeriod) revert ISMARTFixedYieldSchedule.NoYieldAvailable(); // All completed periods
+        if (fromPeriod > lastPeriod) revert NoYieldAvailable(); // All completed periods
             // already claimed.
 
         // aderyn-fp-next-line(reentrancy-state-change)
@@ -405,7 +450,7 @@ contract SMARTFixedYieldSchedule is
             // If balance is 0 for a period, its corresponding entry in periodAmounts remains 0.
         }
 
-        if (totalAmountToClaim <= 0) revert ISMARTFixedYieldSchedule.NoYieldAvailable(); // No yield accrued in the
+        if (totalAmountToClaim <= 0) revert NoYieldAvailable(); // No yield accrued in the
             // claimable periods.
 
         // State updates *before* external call (transfer).
@@ -418,9 +463,7 @@ contract SMARTFixedYieldSchedule is
         // Calculate the remaining total unclaimed yield in the contract for the event.
         uint256 remainingUnclaimed = totalUnclaimedYield();
 
-        emit ISMARTFixedYieldSchedule.YieldClaimed(
-            sender, totalAmountToClaim, fromPeriod, lastPeriod, periodAmounts, remainingUnclaimed
-        );
+        emit YieldClaimed(sender, totalAmountToClaim, fromPeriod, lastPeriod, periodAmounts, remainingUnclaimed);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -430,7 +473,7 @@ contract SMARTFixedYieldSchedule is
         // Transfer `_underlyingAsset` from the caller to this contract.
         _underlyingAsset.safeTransferFrom(_msgSender(), address(this), amount);
 
-        emit ISMARTFixedYieldSchedule.UnderlyingAssetTopUp(_msgSender(), amount);
+        emit UnderlyingAssetTopUp(_msgSender(), amount);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -445,17 +488,17 @@ contract SMARTFixedYieldSchedule is
         onlyRole(DEFAULT_ADMIN_ROLE)
         whenNotPaused
     {
-        if (to == address(0)) revert ISMARTFixedYieldSchedule.InvalidUnderlyingAsset(); // Cannot withdraw to zero
+        if (to == address(0)) revert InvalidUnderlyingAsset(); // Cannot withdraw to zero
             // address.
-        if (amount == 0) revert ISMARTFixedYieldSchedule.InvalidAmount(); // Cannot withdraw zero amount.
+        if (amount == 0) revert InvalidAmount(); // Cannot withdraw zero amount.
 
         uint256 balance = _underlyingAsset.balanceOf(address(this));
-        if (amount > balance) revert ISMARTFixedYieldSchedule.InsufficientUnderlyingBalance(); // Not enough funds in
+        if (amount > balance) revert InsufficientUnderlyingBalance(); // Not enough funds in
             // contract.
 
         _underlyingAsset.safeTransfer(to, amount);
 
-        emit ISMARTFixedYieldSchedule.UnderlyingAssetWithdrawn(to, amount);
+        emit UnderlyingAssetWithdrawn(to, amount);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -467,15 +510,15 @@ contract SMARTFixedYieldSchedule is
         onlyRole(DEFAULT_ADMIN_ROLE)
         whenNotPaused
     {
-        if (to == address(0)) revert ISMARTFixedYieldSchedule.InvalidUnderlyingAsset(); // Cannot withdraw to zero
+        if (to == address(0)) revert InvalidUnderlyingAsset(); // Cannot withdraw to zero
             // address.
 
         uint256 balance = _underlyingAsset.balanceOf(address(this));
-        if (balance <= 0) revert ISMARTFixedYieldSchedule.InsufficientUnderlyingBalance(); // No funds to withdraw.
+        if (balance <= 0) revert InsufficientUnderlyingBalance(); // No funds to withdraw.
 
         _underlyingAsset.safeTransfer(to, balance);
 
-        emit ISMARTFixedYieldSchedule.UnderlyingAssetWithdrawn(to, balance);
+        emit UnderlyingAssetWithdrawn(to, balance);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -521,5 +564,46 @@ contract SMARTFixedYieldSchedule is
     /// @dev Requires `DEFAULT_ADMIN_ROLE` for the caller.
     function unpause() external override onlyRole(DEFAULT_ADMIN_ROLE) {
         _unpause(); // Internal OpenZeppelin Pausable function.
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AccessControlUpgradeable)
+        returns (bool)
+    {
+        return interfaceId == type(ISMARTFixedYieldSchedule).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    /// @dev Overridden from `Context` and `ERC2771Context` to correctly identify the transaction sender,
+    /// accounting for meta-transactions if a trusted forwarder is used.
+    /// @return The actual sender of the transaction (`msg.sender` or the relayed sender).
+    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
+        return super._msgSender();
+    }
+
+    /// @dev Overridden from `Context` and `ERC2771Context` to correctly retrieve the transaction data,
+    /// accounting for meta-transactions.
+    /// @return The actual transaction data (`msg.data` or the relayed data).
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
+        return super._msgData();
+    }
+
+    /// @dev Overridden from `ERC2771Context` to define the length of the suffix appended to `msg.data` for relayed
+    /// calls.
+    /// @return The length of the context suffix (typically 20 bytes for the sender's address).
+    function _contextSuffixLength()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
+        return super._contextSuffixLength();
     }
 }

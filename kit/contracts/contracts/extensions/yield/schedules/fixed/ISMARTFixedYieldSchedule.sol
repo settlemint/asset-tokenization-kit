@@ -48,6 +48,14 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule {
     /// @dev Reverted by `periodEnd` if an invalid period number (0 or out of bounds) is requested.
     error InvalidPeriod();
 
+    // Errors for UUPS/Initializable pattern
+    /// @dev Reverted if the `initialize` function is called more than once.
+    error AlreadyInitialized();
+    /// @dev Reverted if `initialize` is called directly on a logic contract that was configured via constructor.
+    error CannotInitializeLogicContract();
+    /// @dev Reverted if a re-entrant call occurs during the initialization process.
+    error ReentrantInitialization();
+
     /// @notice Emitted when a new fixed yield schedule is set.
     /// @param startDate The start date of the yield schedule.
     /// @param endDate The end date of the yield schedule.
