@@ -7,6 +7,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import { AddAirdropDistribution } from "../common/add-distribution";
+import { AirdropDistributionListSchema } from "../common/airdrop-distribution-schema";
 import { getMerkleRoot } from "../common/merkle-tree";
 import type { CreatePushAirdropInput } from "./create-schema";
 
@@ -39,8 +40,6 @@ export const createPushAirdropFunction = async ({
   parsedInput: CreatePushAirdropInput;
   ctx: { user: User };
 }) => {
-  console.log("distribution", distribution);
-
   // To ensure atomicity, we first try to store the distribution data.
   // If this fails, the airdrop contract (immutable!) is never created.
   try {
@@ -60,6 +59,7 @@ export const createPushAirdropFunction = async ({
   }
 
   // Only if database operation succeeds, create the smart contract
+  const leaves = safeParse(AirdropDistributionListSchema, distribution);
   const portalResult = await portalClient.request(
     AirdropFactoryDeployPushAirdrop,
     {
@@ -67,7 +67,7 @@ export const createPushAirdropFunction = async ({
       from: user.wallet,
       input: {
         tokenAddress: asset.id,
-        merkleRoot: getMerkleRoot(distribution),
+        merkleRoot: getMerkleRoot(leaves),
         owner,
         distributionCap: parseUnits(
           distributionCap.toString(),
@@ -92,6 +92,5 @@ export const createPushAirdropFunction = async ({
   }
 
   const hashes = safeParse(t.Hashes(), [createTxHash]);
-  const block = await waitForIndexingTransactions(hashes);
-  return block;
+  return await waitForIndexingTransactions(hashes);
 };

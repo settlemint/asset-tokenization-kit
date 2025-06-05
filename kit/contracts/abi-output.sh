@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+# Compile contracts first to ensure metadata files exist
+echo "Compiling contracts..."
+bun run compile:forge
+
 # Create portal directory if it doesn't exist
 mkdir -p portal
 

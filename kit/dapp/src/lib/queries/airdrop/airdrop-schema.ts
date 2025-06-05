@@ -68,39 +68,21 @@ export const OnChainAirdropSchema = t.Object(
 );
 export type OnChainAirdrop = StaticDecode<typeof OnChainAirdropSchema>;
 
-/**
- * TypeBox schema for off-chain airdrop distribution data
- */
-export const OffChainAirdropSchema = t.Object(
-  {
-    distribution: AirdropDistributionListSchema,
-  },
-  {
-    description: "Off-chain data for airdrop distributions",
-  }
-);
-
-export type OffChainAirdrop = StaticDecode<typeof OffChainAirdropSchema>;
-
-/**
- * TypeBox schema for calculated airdrop fields
- *
- * Provides validation for computed airdrop metrics
- */
-export const CalculatedAirdropSchema = t.Object(
-  {
-    claimPercentage: t.Number({
-      description: "Percentage of total airdrop that has been claimed",
-      minimum: 0,
-      maximum: 100,
-    }),
-  },
-  {
-    description: "Calculated fields for airdrop metrics",
-  }
-);
-export type CalculatedAirdrop = StaticDecode<typeof CalculatedAirdropSchema>;
-
 export const AirdropListItem = OnChainAirdropSchema;
 
 export type AirdropListItem = StaticDecode<typeof AirdropListItem>;
+
+export const AirdropClaimStatusSchema = t.Union([
+  t.Literal("READY"),
+  t.Literal("PENDING"),
+  t.Literal("CLAIMED"),
+  t.Literal("EXPIRED"),
+]);
+
+export type AirdropClaimStatus = StaticDecode<typeof AirdropClaimStatusSchema>;
+
+export const OffChainAirdropSchema = t.Object({
+  distribution: AirdropDistributionListSchema,
+});
+
+export type OffChainAirdrop = StaticDecode<typeof OffChainAirdropSchema>;

@@ -6,8 +6,8 @@ import { hasuraClient } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { parseUnits } from "viem";
 import { AddAirdropDistribution } from "../common/add-distribution";
+import { AirdropDistributionListSchema } from "../common/airdrop-distribution-schema";
 import { getMerkleRoot } from "../common/merkle-tree";
 import type { CreateStandardAirdropInput } from "./create-schema";
 
@@ -48,8 +48,8 @@ export const createStandardAirdropFunction = async ({
       objects: distribution.map((d) => ({
         airdrop_id: predictedAddress,
         recipient: d.recipient,
-        amount: parseUnits(d.amount.toString(), asset.decimals).toString(),
-        amount_exact: d.amount.toString(),
+        amount: d.amount.toString(),
+        amount_exact: d.amountExact,
         index: d.index,
       })),
     });
@@ -59,6 +59,8 @@ export const createStandardAirdropFunction = async ({
     );
   }
 
+  // Only if database operation succeeds, create the smart contract
+  const leaves = safeParse(AirdropDistributionListSchema, distribution);
   const result = await portalClient.request(
     AirdropFactoryDeployStandardAirdrop,
     {
@@ -66,7 +68,7 @@ export const createStandardAirdropFunction = async ({
       from: user.wallet,
       input: {
         tokenAddress: asset.id,
-        merkleRoot: getMerkleRoot(distribution),
+        merkleRoot: getMerkleRoot(leaves),
         owner,
         startTime: formatDate(startTime, {
           type: "unixSeconds",
@@ -92,6 +94,5 @@ export const createStandardAirdropFunction = async ({
     );
   }
   const hashes = safeParse(t.Hashes(), [createTxHash]);
-  const block = await waitForIndexingTransactions(hashes);
-  return block;
+  return await waitForIndexingTransactions(hashes);
 };
