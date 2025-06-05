@@ -3,15 +3,26 @@ import { handleChallenge } from "@/lib/challenge";
 import { getAirdropDistribution } from "@/lib/queries/airdrop/airdrop-distribution";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { safeParse, t } from "@/lib/utils/typebox";
+import type { VariablesOf } from "@settlemint/sdk-portal";
 import {
   createMerkleTree,
   getMerkleProof,
 } from "../../create/common/merkle-tree";
-import type { ClaimStandardAirdropInput } from "./claim-schema";
+import type { ClaimAirdropInput } from "./claim-schema";
 
+/**
+ * GraphQL mutation for claiming a standard airdrop
+ */
 const ClaimStandardAirdrop = portalGraphql(`
-  mutation ClaimStandardAirdrop($address: String!, $from: String!, $input: StandardAirdropClaimInput!, $challengeResponse: String!, $verificationId: String) {
+  mutation ClaimStandardAirdrop(
+    $address: String!
+    $from: String!
+    $input: StandardAirdropClaimInput!
+    $challengeResponse: String!
+    $verificationId: String
+  ) {
     StandardAirdropClaim(
       address: $address
       from: $from
@@ -24,9 +35,40 @@ const ClaimStandardAirdrop = portalGraphql(`
   }
 `);
 
-export const claimStandardAirdropFunction = async ({
+/**
+ * GraphQL mutation for claiming a vesting airdrop
+ */
+const ClaimVestingAirdrop = portalGraphql(`
+  mutation ClaimVestingAirdrop(
+    $address: String!
+    $from: String!
+    $input: VestingAirdropClaimInput!
+    $challengeResponse: String!
+    $verificationId: String
+  ) {
+    VestingAirdropClaim(
+      address: $address
+      from: $from
+      input: $input
+      challengeResponse: $challengeResponse
+      verificationId: $verificationId
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+/**
+ * Function to claim airdrop for both standard and vesting types
+ *
+ * @param input - Validated input containing airdrop details and type
+ * @param user - The user executing the claim operation
+ * @returns Array of transaction hashes
+ */
+export const claimAirdropFunction = async ({
   parsedInput: {
     airdrop,
+    airdropType,
     amount,
     index,
     recipient,
@@ -36,7 +78,7 @@ export const claimStandardAirdropFunction = async ({
   },
   ctx: { user },
 }: {
-  parsedInput: ClaimStandardAirdropInput;
+  parsedInput: ClaimAirdropInput;
   ctx: { user: User };
 }) => {
   // Get all distributions for this airdrop to build the merkle tree
@@ -56,7 +98,9 @@ export const claimStandardAirdropFunction = async ({
     tree
   );
 
-  const result = await portalClient.request(ClaimStandardAirdrop, {
+  const baseParams:
+    | VariablesOf<typeof ClaimStandardAirdrop>
+    | VariablesOf<typeof ClaimVestingAirdrop> = {
     address: airdrop,
     from: user.wallet,
     input: {
@@ -70,14 +114,32 @@ export const claimStandardAirdropFunction = async ({
       verificationCode,
       verificationType
     )),
-  });
+  };
 
-  const claimTxHash = result.StandardAirdropClaim?.transactionHash;
-  if (!claimTxHash) {
-    throw new Error("Failed to claim airdrop");
+  switch (airdropType) {
+    case "standard": {
+      const response = await portalClient.request(
+        ClaimStandardAirdrop,
+        baseParams
+      );
+
+      return await waitForIndexingTransactions(
+        safeParse(t.Hashes(), [response.StandardAirdropClaim?.transactionHash])
+      );
+    }
+    case "vesting": {
+      const response = await portalClient.request(
+        ClaimVestingAirdrop,
+        baseParams
+      );
+      return await waitForIndexingTransactions(
+        safeParse(t.Hashes(), [response.VestingAirdropClaim?.transactionHash])
+      );
+    }
+    case "push": {
+      throw new Error("Push airdrops do not support manual claiming");
+    }
+    default:
+      exhaustiveGuard(airdropType);
   }
-
-  return await waitForIndexingTransactions(
-    safeParse(t.Hashes(), [claimTxHash])
-  );
 };

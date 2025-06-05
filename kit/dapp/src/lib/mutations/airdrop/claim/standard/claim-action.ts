@@ -2,10 +2,10 @@
 
 import { action } from "@/lib/mutations/safe-action";
 import { t } from "@/lib/utils/typebox";
-import { claimStandardAirdropFunction } from "./claim-function";
-import { ClaimStandardAirdropSchema } from "./claim-schema";
+import { claimAirdropFunction } from "./claim-function";
+import { ClaimAirdropSchema } from "./claim-schema";
 
-export const claimStandardAirdrop = action
-  .schema(ClaimStandardAirdropSchema)
+export const claimAirdrop = action
+  .schema(ClaimAirdropSchema)
   .outputSchema(t.Number())
-  .action(claimStandardAirdropFunction);
+  .action(claimAirdropFunction);
