@@ -30,6 +30,17 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
     /// contract.
     uint256 private collateralProofTopic;
 
+    /// @notice Abstract internal function to get the current total supply of tokens.
+    /// @dev This function MUST be implemented by any concrete contract that inherits `_SMARTCappedLogic`
+    ///      (e.g., `SMARTCapped` or `SMARTCappedUpgradeable`). The implementation will typically
+    ///      call the `totalSupply()` function of the base ERC20 or ERC20Upgradeable contract.
+    ///      `internal view virtual` means:
+    ///      - `internal`: Callable only within this contract and derived contracts.
+    ///      - `view`: Does not modify state.
+    ///      - `virtual`: Signifies that this abstract function is intended to be implemented/overridden.
+    /// @return uint256 The current total number of tokens in existence.
+    function __collateral_totalSupply() internal view virtual returns (uint256);
+
     // -- Internal Setup Function --
 
     /// @notice Internal unchained initializer for the collateral logic.
@@ -292,9 +303,7 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         // Find the currently valid collateral amount from the token's own identity claim.
         (uint256 collateralAmountFromClaim,,) = findValidCollateralClaim();
 
-        // Determine the current total supply. Assumes `this.totalSupply()` is available from an inherited ERC20
-        // contract.
-        uint256 currentTotalSupply = this.totalSupply();
+        uint256 currentTotalSupply = __collateral_totalSupply();
         // Calculate what the total supply would be *after* the proposed mint operation.
         // Solidity ^0.8.x provides automatic overflow/underflow checks for arithmetic.
         uint256 requiredTotalSupply = currentTotalSupply + amountToMint;

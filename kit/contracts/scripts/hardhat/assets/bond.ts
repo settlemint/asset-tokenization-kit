@@ -95,7 +95,7 @@ export const createBond = async (depositToken: Asset<any>) => {
   // claim yield for 3 periods
   for (let i = 0; i < 3; i++) {
     await advanceToNextPeriod();
-    await claimYield(bond);
+    await claimYield(bond, depositToken, owner);
     // transfer some tokens to change the claimed yields for the next period
     await transfer(bond, owner, investorA, 6n);
     await transfer(bond, owner, investorB, 3n);
