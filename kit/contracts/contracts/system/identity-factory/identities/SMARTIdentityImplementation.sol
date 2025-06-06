@@ -132,7 +132,7 @@ contract SMARTIdentityImplementation is
         onlyManager
         returns (bool success)
     {
-        return super.addKey(_key, _purpose, _keyType);
+        return ERC734.addKey(_key, _purpose, _keyType);
     }
 
     /// @inheritdoc IERC734
@@ -148,7 +148,7 @@ contract SMARTIdentityImplementation is
         onlyManager
         returns (bool success)
     {
-        return super.removeKey(_key, _purpose);
+        return ERC734.removeKey(_key, _purpose);
     }
 
     /// @inheritdoc IERC734
@@ -170,7 +170,7 @@ contract SMARTIdentityImplementation is
                 revert SenderLacksActionKey();
             }
         }
-        return super.approve(_id, _toApprove);
+        return ERC734.approve(_id, _toApprove);
     }
 
     /// @inheritdoc IERC734
@@ -187,7 +187,7 @@ contract SMARTIdentityImplementation is
         override(ERC734, IERC734)
         returns (uint256 executionId)
     {
-        executionId = super.execute(_to, _value, _data);
+        executionId = ERC734.execute(_to, _value, _data);
 
         bytes32 senderKeyHash = keccak256(abi.encode(_msgSender()));
         bool autoApproved = false;
@@ -215,7 +215,7 @@ contract SMARTIdentityImplementation is
         override(ERC734, OnChainIdentity, IERC734)
         returns (bool exists)
     {
-        return super.keyHasPurpose(_key, _purpose);
+        return ERC734.keyHasPurpose(_key, _purpose);
     }
 
     // --- ERC735 (Claim Holder) Functions - Overridden for Access Control ---
@@ -236,7 +236,7 @@ contract SMARTIdentityImplementation is
         onlyClaimKey
         returns (bytes32 claimId)
     {
-        return super.addClaim(_topic, _scheme, _issuer, _signature, _data, _uri);
+        return ERC735.addClaim(_topic, _scheme, _issuer, _signature, _data, _uri);
     }
 
     /// @inheritdoc IERC735
@@ -248,7 +248,7 @@ contract SMARTIdentityImplementation is
         onlyClaimKey
         returns (bool success)
     {
-        return super.removeClaim(_claimId);
+        return ERC735.removeClaim(_claimId);
     }
 
     function getClaim(bytes32 _claimId)
