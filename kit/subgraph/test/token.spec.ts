@@ -5,7 +5,7 @@ describe("Tokens", () => {
   it("should fetch a list of all tokens", async () => {
     const query = theGraphGraphql(
       `query {
-        tokens {
+        tokens(orderBy: name) {
           name
           type
           totalSupply
@@ -23,10 +23,10 @@ describe("Tokens", () => {
         totalSupplyExact: "75000000000000000000",
       },
       {
-        name: "Euro Deposits",
-        type: "deposit",
-        totalSupply: "10750",
-        totalSupplyExact: "10750000000",
+        name: "Bens Bugs",
+        type: "fund",
+        totalSupply: "8",
+        totalSupplyExact: "800000000",
       },
       {
         name: "Euro Bonds",
@@ -35,10 +35,10 @@ describe("Tokens", () => {
         totalSupplyExact: "117000000",
       },
       {
-        name: "Tether",
-        type: "stablecoin",
-        totalSupply: "760",
-        totalSupplyExact: "760000000",
+        name: "Euro Deposits",
+        type: "deposit",
+        totalSupply: "10750",
+        totalSupplyExact: "10750000000",
       },
       {
         name: "Paused Stablecoin",
@@ -47,10 +47,10 @@ describe("Tokens", () => {
         totalSupplyExact: "0",
       },
       {
-        name: "Bens Bugs",
-        type: "fund",
-        totalSupply: "8",
-        totalSupplyExact: "800000000",
+        name: "Tether",
+        type: "stablecoin",
+        totalSupply: "760",
+        totalSupplyExact: "760000000",
       },
     ]);
   });

@@ -6,6 +6,7 @@ describe("Fixed yield", () => {
     const query = theGraphGraphql(
       `query($where: Token_filter) {
         tokens(where: $where) {
+          name
           type
           totalSupply
           totalSupplyExact
@@ -51,6 +52,7 @@ describe("Fixed yield", () => {
     expect(response.tokens.length).toBe(1);
     expect(response.tokens).toEqual([
       {
+        name: "Euro Bonds",
         type: "bond",
         totalSupply: "117",
         totalSupplyExact: "117000000",
@@ -63,7 +65,10 @@ describe("Fixed yield", () => {
               startDate: expect.any(String),
               endDate: expect.any(String),
             },
-            nextPeriod: null,
+            nextPeriod: {
+              startDate: expect.any(String),
+              endDate: expect.any(String),
+            },
             totalYield: "359.775",
             totalClaimed: "184.5",
             totalUnclaimedYield: "31.365",

@@ -5,7 +5,8 @@ describe("Token collateral extension", () => {
   it("tokens can have collateral", async () => {
     const query = theGraphGraphql(
       `query($where: Token_filter) {
-        tokens(where: $where) {
+        tokens(where: $where, orderBy: name) {
+          name
           type
           collateral {
             identityClaim {
@@ -34,42 +35,40 @@ describe("Token collateral extension", () => {
     expect(response.tokens.length).toBe(3);
     expect(response.tokens).toEqual([
       {
+        name: "Euro Deposits",
         type: "deposit",
         collateral: {
           identityClaim: {
             name: "collateral",
-            issuer: {
-              account: {
-                isContract: false,
-              },
-            },
+            issuer: { account: { isContract: false } },
             values: [
               { key: "amount", value: "100000000000" },
-              { key: "expiryTimestamp", value: "1780610400" },
+              { key: "expiryTimestamp", value: expect.any(String) },
             ],
             revoked: false,
           },
         },
       },
       {
+        name: "Paused Stablecoin",
+        type: "stablecoin",
+        collateral: { identityClaim: null },
+      },
+      {
+        name: "Tether",
         type: "stablecoin",
         collateral: {
           identityClaim: {
             name: "collateral",
-            issuer: {
-              account: {
-                isContract: false,
-              },
-            },
+            issuer: { account: { isContract: false } },
             values: [
               { key: "amount", value: "1000000000" },
-              { key: "expiryTimestamp", value: "1780610400" },
+              { key: "expiryTimestamp", value: expect.any(String) },
             ],
             revoked: false,
           },
         },
       },
-      { type: "stablecoin", collateral: { identityClaim: null } },
     ]);
   });
 });

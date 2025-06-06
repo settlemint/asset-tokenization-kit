@@ -5,7 +5,8 @@ describe("Token pausable extension", () => {
   it("tokens can be pausable", async () => {
     const query = theGraphGraphql(
       `query($where: Token_filter) {
-        tokens(where: $where) {
+        tokens(where: $where, orderBy: name) {
+          name
           type
           pausable {
             paused
@@ -21,12 +22,16 @@ describe("Token pausable extension", () => {
     });
     expect(response.tokens.length).toBe(6);
     expect(response.tokens).toEqual([
-      { type: "equity", pausable: { paused: false } },
-      { type: "deposit", pausable: { paused: false } },
-      { type: "bond", pausable: { paused: false } },
-      { type: "stablecoin", pausable: { paused: false } },
-      { type: "stablecoin", pausable: { paused: true } },
-      { type: "fund", pausable: { paused: false } },
+      { name: "Apple", type: "equity", pausable: { paused: false } },
+      { name: "Bens Bugs", type: "fund", pausable: { paused: false } },
+      { name: "Euro Bonds", type: "bond", pausable: { paused: false } },
+      { name: "Euro Deposits", type: "deposit", pausable: { paused: false } },
+      {
+        name: "Paused Stablecoin",
+        type: "stablecoin",
+        pausable: { paused: true },
+      },
+      { name: "Tether", type: "stablecoin", pausable: { paused: false } },
     ]);
   });
 });

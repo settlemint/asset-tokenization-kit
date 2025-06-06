@@ -5,7 +5,8 @@ describe("Token capped extension", () => {
   it("tokens can be capped", async () => {
     const query = theGraphGraphql(
       `query($where: Token_filter) {
-        tokens(where: $where) {
+        tokens(where: $where, orderBy: name) {
+          name
           type
           capped {
             capExact
@@ -21,12 +22,12 @@ describe("Token capped extension", () => {
       },
     });
     expect(response.tokens.length).toBe(1);
-    expect(response.tokens[0]).toEqual({
-      type: "bond",
-      capped: {
-        capExact: "1000000000000",
-        cap: "1000000",
+    expect(response.tokens).toEqual([
+      {
+        name: "Euro Bonds",
+        type: "bond",
+        capped: { capExact: "1000000000000", cap: "1000000" },
       },
-    });
+    ]);
   });
 });
