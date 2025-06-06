@@ -88,7 +88,7 @@ templates:
           file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
-            address,address,address,address,address)
+            address,address,address,address,address,address)
           handler: handleBootstrapped
         - event: ComplianceImplementationUpdated(indexed address,indexed address)
           handler: handleComplianceImplementationUpdated
