@@ -60,6 +60,7 @@ beforeAll(async () => {
         `Subgraph is not ready yet (blocks indexed: ${statusResponse._meta?.block.number}, latest block: ${latestBlockNumber}), waiting...`
       );
     } catch (error) {
+      console.log("Subgraph is not ready yet, retrying...", error);
       // Ignore errors during polling
     }
 
