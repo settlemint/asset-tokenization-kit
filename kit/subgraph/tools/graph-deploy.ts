@@ -27,6 +27,7 @@
 
 import { join, relative } from "path";
 import { parseArgs } from "util";
+import { parse, stringify } from "yaml";
 import { logger, LogLevel } from "../../../tools/logging";
 import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
 
@@ -54,6 +55,15 @@ interface GraphPaths {
 
 interface DeployedAddresses {
   [contractName: string]: string;
+}
+
+interface SubgraphYamlConfig {
+  dataSources: {
+    name: string;
+    source: {
+      address: string;
+    };
+  }[];
 }
 
 // ============================================================================
@@ -387,6 +397,62 @@ async function updateSubgraphConfig(
 }
 
 /**
+ * Update subgraph yaml with deployed addresses
+ */
+async function updateSubgraphYaml(addresses: DeployedAddresses): Promise<void> {
+  try {
+    logger.info("Updating subgraph yaml...");
+
+    const subgraphYaml = Bun.file(graphPaths!.subgraphYaml);
+
+    if (!(await subgraphYaml.exists())) {
+      logger.error("Subgraph yaml not found");
+      throw new Error("Missing subgraph yaml");
+    }
+
+    const subgraphYamlConfig = (await parse(
+      await subgraphYaml.text()
+    )) as SubgraphYamlConfig;
+
+    // Update contract addresses
+    const updatedSubgraphYamlConfig: typeof subgraphYamlConfig = {
+      ...subgraphYamlConfig,
+      dataSources: subgraphYamlConfig.dataSources.map((dataSource) => {
+        const addressKey = Object.keys(addresses).find(
+          (key) =>
+            key.endsWith(`#${dataSource.name}`) ||
+            key.endsWith(`#SMART${dataSource.name}`)
+        );
+        if (!addressKey) {
+          logger.warn(`No address found for '${dataSource.name}'`);
+        }
+        const address = addressKey
+          ? addresses[addressKey]!
+          : dataSource.source.address;
+        return {
+          ...dataSource,
+          source: {
+            ...dataSource.source,
+            address,
+          },
+        };
+      }),
+    };
+
+    // Write new configuration
+    await Bun.write(
+      graphPaths!.subgraphYaml,
+      stringify(updatedSubgraphYamlConfig)
+    );
+
+    logger.success("Subgraph yaml updated");
+  } catch (error) {
+    logger.error("Failed to update subgraph yaml:", error);
+    throw error;
+  }
+}
+
+/**
  * Generate TypeScript code from GraphQL schema
  */
 async function generateCode(): Promise<void> {
@@ -480,8 +546,9 @@ async function executeLocalWorkflow(): Promise<void> {
   try {
     const addresses = await readDeployedAddresses();
     await updateSubgraphConfig(addresses);
+    await updateSubgraphYaml(addresses);
     await generateCode();
-    await deployLocal();
+    //await deployLocal();
   } catch (error) {
     logger.error("Local deployment workflow failed:", error);
     throw error;
