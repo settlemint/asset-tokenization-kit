@@ -5,14 +5,13 @@ describe("Fixed yield", () => {
   it("should fetch a list of all fixed yield tokens", async () => {
     const query = theGraphGraphql(
       `query($where: Token_filter) {
-        tokens(where: $where) {
+        tokens(where: $where, orderBy: name) {
           name
           type
           totalSupply
           totalSupplyExact
           yield_ {
             schedule {
-              id
               startDate
               endDate
               currentPeriod {
@@ -34,7 +33,6 @@ describe("Fixed yield", () => {
                 totalUnclaimedYield
               }
               underlyingAsset {
-                id
                 name
               }
               underlyingAssetBalanceAvailable
@@ -58,7 +56,6 @@ describe("Fixed yield", () => {
         totalSupplyExact: "117000000",
         yield_: {
           schedule: {
-            id: expect.any(String),
             startDate: expect.any(String),
             endDate: expect.any(String),
             currentPeriod: {
@@ -124,7 +121,6 @@ describe("Fixed yield", () => {
               },
             ],
             underlyingAsset: {
-              id: expect.any(String),
               name: "Euro Deposits",
             },
             underlyingAssetBalanceAvailable: "9810.5",
@@ -197,6 +193,105 @@ describe("Fixed yield", () => {
       }
       expect(totalUnclaimedYieldPeriods.toFixed(3)).toBe(
         Number(token.yield_?.schedule.totalUnclaimedYield ?? "0").toFixed(3)
+      );
+    }
+  });
+
+  it("underlying asset balance should match with the balance of on the account for the scheduler contract", async () => {
+    const query = theGraphGraphql(
+      `query($where: Token_filter) {
+        tokenFixedYieldSchedules {
+          id
+          token {
+            id
+            name
+          }
+          account {
+            balances {
+              token {
+                id
+                name
+              }
+              value
+            }
+          }
+        }
+        tokens(where: $where, orderBy: name) {
+          id
+          name
+          type
+          yield_ {
+            schedule {
+              id
+              underlyingAsset {
+                id
+                name
+              }
+              underlyingAssetBalanceAvailable
+            }
+          }
+        }
+      }
+    `
+    );
+    const response = await theGraphClient.request(query, {
+      where: {
+        yield__not: null,
+      },
+    });
+    expect(response.tokens.length).toBe(1);
+    expect(response.tokens).toEqual([
+      {
+        id: expect.any(String),
+        name: "Euro Bonds",
+        type: "bond",
+        yield_: {
+          schedule: {
+            id: expect.any(String),
+            underlyingAsset: {
+              id: expect.any(String),
+              name: "Euro Deposits",
+            },
+            underlyingAssetBalanceAvailable: "9810.5",
+          },
+        },
+      },
+    ]);
+    expect(response.tokenFixedYieldSchedules.length).toBe(1);
+    expect(response.tokenFixedYieldSchedules).toEqual([
+      {
+        id: expect.any(String),
+        token: {
+          id: expect.any(String),
+          name: "Euro Bonds",
+        },
+        account: {
+          balances: [
+            {
+              token: {
+                id: expect.any(String),
+                name: "Euro Deposits",
+              },
+              value: "9810.5",
+            },
+          ],
+        },
+      },
+    ]);
+    for (const token of response.tokens) {
+      const fixedYieldSchedule = response.tokenFixedYieldSchedules.find(
+        (schedule) => schedule.id === token.yield_?.schedule.id
+      );
+      expect(fixedYieldSchedule).toBeDefined();
+      expect(fixedYieldSchedule?.token.id).toBe(token.id);
+      // Balance should be equal to the underlying asset balance available
+      const balance =
+        fixedYieldSchedule?.account.balances.find(
+          (balance) =>
+            balance.token.id === token.yield_?.schedule.underlyingAsset?.id
+        )?.value ?? "0";
+      expect(balance).toBe(
+        token.yield_?.schedule.underlyingAssetBalanceAvailable ?? "0"
       );
     }
   });
