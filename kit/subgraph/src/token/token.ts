@@ -6,7 +6,6 @@ import {
   IdentityRegistryAdded,
   MintCompleted,
   ModuleParametersUpdated,
-  RequiredClaimTopicsUpdated,
   TransferCompleted,
   UpdatedTokenInformation,
 } from "../../generated/templates/Token/Token";
@@ -56,12 +55,6 @@ export function handleModuleParametersUpdated(
   event: ModuleParametersUpdated
 ): void {
   fetchEvent(event, "ModuleParametersUpdated");
-}
-
-export function handleRequiredClaimTopicsUpdated(
-  event: RequiredClaimTopicsUpdated
-): void {
-  fetchEvent(event, "RequiredClaimTopicsUpdated");
 }
 
 export function handleTransferCompleted(event: TransferCompleted): void {

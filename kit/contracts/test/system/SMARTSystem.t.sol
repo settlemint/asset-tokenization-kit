@@ -24,7 +24,9 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 // Import system errors
-import { SystemAlreadyBootstrapped } from "../../contracts/system/SMARTSystemErrors.sol";
+import {
+    SystemAlreadyBootstrapped, IdentityVerificationModuleNotSet
+} from "../../contracts/system/SMARTSystemErrors.sol";
 
 // Import actual implementations
 import { SMARTComplianceImplementation } from "../../contracts/system/compliance/SMARTComplianceImplementation.sol";
@@ -44,6 +46,10 @@ import { SMARTTokenAccessManagerImplementation } from
     "../../contracts/system/access-manager/SMARTTokenAccessManagerImplementation.sol";
 import { SMARTTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/SMARTTopicSchemeRegistryImplementation.sol";
+
+// Import compliance module
+import { SMARTIdentityVerificationModule } from
+    "../../contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol";
 
 // Mock contracts for testing edge cases that require invalid contracts
 contract MockInvalidContract {
@@ -68,6 +74,7 @@ contract SMARTSystemTest is Test {
     SMARTIdentityImplementation public identityImpl;
     SMARTTokenIdentityImplementation public tokenIdentityImpl;
     SMARTTokenAccessManagerImplementation public tokenAccessManagerImpl;
+    SMARTIdentityVerificationModule public identityVerificationModule;
 
     address public forwarder = address(0x5);
 
@@ -86,6 +93,7 @@ contract SMARTSystemTest is Test {
         identityImpl = new SMARTIdentityImplementation(forwarder);
         tokenIdentityImpl = new SMARTTokenIdentityImplementation(forwarder);
         tokenAccessManagerImpl = new SMARTTokenAccessManagerImplementation(forwarder);
+        identityVerificationModule = new SMARTIdentityVerificationModule(forwarder);
     }
 
     function test_InitialState() public view {
@@ -108,6 +116,9 @@ contract SMARTSystemTest is Test {
         assertTrue(smartSystem.topicSchemeRegistryProxy() != address(0));
         assertTrue(smartSystem.identityFactoryProxy() != address(0));
 
+        // Compliance module should be set
+        assertTrue(smartSystem.identityVerificationModule() != address(0));
+
         // Admin should have default admin role
         assertTrue(IAccessControl(address(smartSystem)).hasRole(SMARTSystemRoles.DEFAULT_ADMIN_ROLE, admin));
     }
@@ -123,6 +134,7 @@ contract SMARTSystemTest is Test {
         address newIdentityImplAddr = address(new SMARTIdentityImplementation(forwarder));
         address newTokenIdentityImpl = address(new SMARTTokenIdentityImplementation(forwarder));
         address newTokenAccessManagerImpl = address(new SMARTTokenAccessManagerImplementation(forwarder));
+        address newIdentityVerificationModule = address(new SMARTIdentityVerificationModule(forwarder));
 
         SMARTSystem newSystem = new SMARTSystem(
             admin,
@@ -135,6 +147,7 @@ contract SMARTSystemTest is Test {
             newIdentityImplAddr,
             newTokenIdentityImpl,
             newTokenAccessManagerImpl,
+            address(newIdentityVerificationModule),
             forwarder
         );
 
@@ -291,6 +304,7 @@ contract SMARTSystemTest is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(tokenAccessManagerImpl),
+            address(identityVerificationModule),
             forwarder
         );
 
@@ -306,6 +320,7 @@ contract SMARTSystemTest is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(tokenAccessManagerImpl),
+            address(identityVerificationModule),
             forwarder
         );
     }
@@ -323,6 +338,7 @@ contract SMARTSystemTest is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(tokenAccessManagerImpl),
+            address(identityVerificationModule),
             forwarder
         );
     }
@@ -423,5 +439,153 @@ contract SMARTSystemTest is Test {
         vm.prank(admin);
         vm.expectRevert();
         smartSystem.setTopicSchemeRegistryImplementation(address(mockInvalidContract));
+    }
+
+    // --- Identity Verification Module Tests ---
+
+    function test_IdentityVerificationModule_InitialState() public view {
+        // Verify identity verification module is properly set during initialization
+        address moduleAddress = smartSystem.identityVerificationModule();
+        assertTrue(moduleAddress != address(0));
+        assertEq(moduleAddress, address(systemUtils.identityVerificationModule()));
+    }
+
+    function test_IdentityVerificationModule_GetterFunction() public view {
+        // Test the getter function returns the correct address
+        address expected = address(systemUtils.identityVerificationModule());
+        address actual = smartSystem.identityVerificationModule();
+        assertEq(actual, expected);
+    }
+
+    function test_Constructor_IdentityVerificationModule_ZeroAddress() public {
+        // Test constructor reverts with zero address for identity verification module
+        vm.expectRevert(IdentityVerificationModuleNotSet.selector);
+        new SMARTSystem(
+            admin,
+            address(complianceImpl),
+            address(identityRegistryImpl),
+            address(identityRegistryStorageImpl),
+            address(trustedIssuersRegistryImpl),
+            address(topicSchemeRegistryImpl),
+            address(identityFactoryImpl),
+            address(identityImpl),
+            address(tokenIdentityImpl),
+            address(tokenAccessManagerImpl),
+            address(0), // Zero address for identity verification module
+            forwarder
+        );
+    }
+
+    function test_Constructor_IdentityVerificationModule_ValidAddress() public {
+        // Test constructor succeeds with valid identity verification module address
+        SMARTIdentityVerificationModule newModule = new SMARTIdentityVerificationModule(forwarder);
+
+        SMARTSystem newSystem = new SMARTSystem(
+            admin,
+            address(complianceImpl),
+            address(identityRegistryImpl),
+            address(identityRegistryStorageImpl),
+            address(trustedIssuersRegistryImpl),
+            address(topicSchemeRegistryImpl),
+            address(identityFactoryImpl),
+            address(identityImpl),
+            address(tokenIdentityImpl),
+            address(tokenAccessManagerImpl),
+            address(newModule),
+            forwarder
+        );
+
+        assertEq(newSystem.identityVerificationModule(), address(newModule));
+    }
+
+    function test_IdentityVerificationModule_UsedInBootstrap() public {
+        // Create a new system that hasn't been bootstrapped yet to test bootstrap functionality
+        address newComplianceImpl = address(new SMARTComplianceImplementation(forwarder));
+        address newIdentityRegistryImpl = address(new SMARTIdentityRegistryImplementation(forwarder));
+        address newIdentityStorageImpl = address(new SMARTIdentityRegistryStorageImplementation(forwarder));
+        address newTrustedIssuersImpl = address(new SMARTTrustedIssuersRegistryImplementation(forwarder));
+        address newTopicSchemeRegistryImpl = address(new SMARTTopicSchemeRegistryImplementation(forwarder));
+        address newIdentityFactoryImpl = address(new SMARTIdentityFactoryImplementation(forwarder));
+        address newIdentityImplAddr = address(new SMARTIdentityImplementation(forwarder));
+        address newTokenIdentityImpl = address(new SMARTTokenIdentityImplementation(forwarder));
+        address newTokenAccessManagerImpl = address(new SMARTTokenAccessManagerImplementation(forwarder));
+        SMARTIdentityVerificationModule newModule = new SMARTIdentityVerificationModule(forwarder);
+
+        SMARTSystem newSystem = new SMARTSystem(
+            admin,
+            newComplianceImpl,
+            newIdentityRegistryImpl,
+            newIdentityStorageImpl,
+            newTrustedIssuersImpl,
+            newTopicSchemeRegistryImpl,
+            newIdentityFactoryImpl,
+            newIdentityImplAddr,
+            newTokenIdentityImpl,
+            newTokenAccessManagerImpl,
+            address(newModule),
+            forwarder
+        );
+
+        // Verify module is set before bootstrap
+        assertEq(newSystem.identityVerificationModule(), address(newModule));
+
+        // Bootstrap the system
+        vm.prank(admin);
+        newSystem.bootstrap();
+
+        // Verify module is still accessible after bootstrap
+        assertEq(newSystem.identityVerificationModule(), address(newModule));
+    }
+
+    function test_IdentityVerificationModule_ConsistencyAcrossSystemOperations() public {
+        // Test that the identity verification module address remains consistent
+        // across different system operations
+
+        address initialModuleAddress = smartSystem.identityVerificationModule();
+
+        // Perform various system operations
+        vm.startPrank(admin);
+
+        // Update some implementations
+        smartSystem.setComplianceImplementation(address(complianceImpl));
+        smartSystem.setIdentityRegistryImplementation(address(identityRegistryImpl));
+
+        vm.stopPrank();
+
+        // Verify identity verification module address hasn't changed
+        assertEq(smartSystem.identityVerificationModule(), initialModuleAddress);
+        assertEq(smartSystem.identityVerificationModule(), address(systemUtils.identityVerificationModule()));
+    }
+
+    function test_ConstructorWithAllValidParameters_IncludingIdentityVerificationModule() public {
+        // Test constructor with all valid parameters including identity verification module
+        SMARTIdentityVerificationModule newModule = new SMARTIdentityVerificationModule(forwarder);
+
+        SMARTSystem newSystem = new SMARTSystem(
+            admin,
+            address(new SMARTComplianceImplementation(forwarder)),
+            address(new SMARTIdentityRegistryImplementation(forwarder)),
+            address(new SMARTIdentityRegistryStorageImplementation(forwarder)),
+            address(new SMARTTrustedIssuersRegistryImplementation(forwarder)),
+            address(new SMARTTopicSchemeRegistryImplementation(forwarder)),
+            address(new SMARTIdentityFactoryImplementation(forwarder)),
+            address(new SMARTIdentityImplementation(forwarder)),
+            address(new SMARTTokenIdentityImplementation(forwarder)),
+            address(new SMARTTokenAccessManagerImplementation(forwarder)),
+            address(newModule),
+            forwarder
+        );
+
+        // Verify all components are properly set including identity verification module
+        assertTrue(newSystem.complianceImplementation() != address(0));
+        assertTrue(newSystem.identityRegistryImplementation() != address(0));
+        assertTrue(newSystem.identityRegistryStorageImplementation() != address(0));
+        assertTrue(newSystem.trustedIssuersRegistryImplementation() != address(0));
+        assertTrue(newSystem.topicSchemeRegistryImplementation() != address(0));
+        assertTrue(newSystem.identityFactoryImplementation() != address(0));
+        assertTrue(newSystem.identityImplementation() != address(0));
+        assertTrue(newSystem.tokenIdentityImplementation() != address(0));
+        assertTrue(newSystem.tokenAccessManagerImplementation() != address(0));
+        assertEq(newSystem.identityVerificationModule(), address(newModule));
     }
 }

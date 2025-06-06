@@ -36,6 +36,11 @@
       "groupName": "ORPC / Tanstack",
       "groupSlug": "orpc",
       "matchPackageNames": ["/^@orpc//", "/^@tanstack//"]
+    },
+    {
+      "groupName": "Next Safe Action",
+      "groupSlug": "next-safe-action",
+      "matchPackageNames": ["next-safe-action", "/^@next-safe-action//"]
     }
   ],
   "hostRules": [

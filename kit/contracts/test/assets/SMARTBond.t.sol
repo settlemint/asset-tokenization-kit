@@ -14,8 +14,7 @@ import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy
 import { ISMART } from "../../contracts/interface/ISMART.sol";
 import { ISMARTCapped } from "../../contracts/extensions/capped/ISMARTCapped.sol";
 
-import { SMARTFixedYieldScheduleFactory } from
-    "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol";
+import { SMARTFixedYieldScheduleFactory } from "../../contracts/system/yield/SMARTFixedYieldScheduleFactory.sol";
 import { SMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
 import { SMARTBondFactoryImplementation } from "../../contracts/assets/bond/SMARTBondFactoryImplementation.sol";
 import { SMARTBondImplementation } from "../../contracts/assets/bond/SMARTBondImplementation.sol";
@@ -80,7 +79,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         );
 
         // Grant registrar role to owner so that he can create the bond
-        IAccessControl(address(bondFactory)).grantRole(SMARTSystemRoles.TOKEN_DEPLOYER_ROLE, owner);
+        IAccessControl(address(bondFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -752,7 +751,18 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
 
         // Create a forwarder for the FixedYield (already in setup)
         // Create a factory to create the FixedYield
-        SMARTFixedYieldScheduleFactory factory = new SMARTFixedYieldScheduleFactory(address(forwarder));
+        SMARTFixedYieldScheduleFactory factory =
+            new SMARTFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
+        vm.label(address(factory), "Yield Schedule Factory");
+        IAccessControl(address(factory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+
+        vm.stopPrank();
+
+        vm.startPrank(platformAdmin);
+        IAccessControl(address(systemUtils.compliance())).grantRole(
+            SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(factory)
+        );
+        vm.stopPrank();
 
         // Setup yield schedule parameters
         uint256 startDate = block.timestamp + 1 days;
@@ -760,9 +770,12 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         uint256 yieldRate = 500; // 5% in basis points
         uint256 interval = 30 days;
 
+        vm.startPrank(owner);
+
         // Create the yield schedule for our bond
         // Note: The factory automatically sets up the circular reference by calling bond.setYieldSchedule()
         address yieldScheduleAddr = factory.create(ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval);
+        vm.label(yieldScheduleAddr, "Yield Schedule");
 
         // We need to set the yield schedule manually
         bond.setYieldSchedule(yieldScheduleAddr);
@@ -784,13 +797,27 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
     function test_CannotMintIfYieldScheduleStarted() public {
         // Setup: Deploy factory and create yield schedule linked to the bond
         vm.startPrank(owner);
-        SMARTFixedYieldScheduleFactory factory = new SMARTFixedYieldScheduleFactory(address(forwarder));
+        SMARTFixedYieldScheduleFactory factory =
+            new SMARTFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
+        vm.label(address(factory), "Yield Schedule Factory");
+
+        IAccessControl(address(factory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+        vm.stopPrank();
+
+        vm.startPrank(platformAdmin);
+        IAccessControl(address(systemUtils.compliance())).grantRole(
+            SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(factory)
+        );
+        vm.stopPrank();
+
         uint256 startDate = block.timestamp + 1 days; // Schedule starts in the future
         uint256 endDate = startDate + 365 days;
         uint256 yieldRate = 500; // 5%
         uint256 interval = 30 days;
 
+        vm.startPrank(owner);
         address yieldScheduleAddr = factory.create(ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval);
+        vm.label(yieldScheduleAddr, "Yield Schedule");
 
         // We need to set the yield schedule manually
         bond.setYieldSchedule(yieldScheduleAddr);

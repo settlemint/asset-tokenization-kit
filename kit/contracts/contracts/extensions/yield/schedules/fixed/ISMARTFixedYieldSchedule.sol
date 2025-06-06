@@ -4,6 +4,7 @@ pragma solidity 0.8.28;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ISMARTYield } from "../../ISMARTYield.sol";
 import { ISMARTYieldSchedule } from "../ISMARTYieldSchedule.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title Interface for a SMART Fixed Yield Schedule Contract
 /// @notice This interface defines the set of functions that a fixed yield schedule contract must implement.
@@ -17,7 +18,7 @@ import { ISMARTYieldSchedule } from "../ISMARTYieldSchedule.sol";
 /// payments.
 /// Functions are `external`, meaning they are designed to be called from other contracts or off-chain applications.
 /// Many are `view` functions, which read state but don't modify it.
-interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule {
+interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @notice Defines custom error types for more gas-efficient and descriptive error handling.
     /// @dev Using custom errors (Solidity 0.8.4+) saves gas compared to `require` with string messages.
 
@@ -47,6 +48,14 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule {
     error InvalidAmount();
     /// @dev Reverted by `periodEnd` if an invalid period number (0 or out of bounds) is requested.
     error InvalidPeriod();
+
+    // Errors for UUPS/Initializable pattern
+    /// @dev Reverted if the `initialize` function is called more than once.
+    error AlreadyInitialized();
+    /// @dev Reverted if `initialize` is called directly on a logic contract that was configured via constructor.
+    error CannotInitializeLogicContract();
+    /// @dev Reverted if a re-entrant call occurs during the initialization process.
+    error ReentrantInitialization();
 
     /// @notice Emitted when a new fixed yield schedule is set.
     /// @param startDate The start date of the yield schedule.
@@ -237,16 +246,4 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule {
     /// This, along with `startDate` and `endDate`, defines the periodicity of the schedule.
     /// @return durationSeconds The length of each yield period in seconds.
     function interval() external view returns (uint256 durationSeconds);
-
-    /// @notice Pauses certain operations within the yield schedule contract.
-    /// @dev This is an administrative function, typically callable only by an authorized role (e.g., admin or pauser
-    /// role).
-    /// When paused, functions like `claimYield` or `topUpUnderlyingAsset` might be blocked to prevent activity during
-    /// an emergency or maintenance.
-    /// Should implement a pausable mechanism (e.g., OpenZeppelin's Pausable).
-    function pause() external;
-
-    /// @notice Unpauses the yield schedule contract, resuming normal operations.
-    /// @dev Also an administrative function, callable by an authorized role to lift restrictions imposed by `pause()`.
-    function unpause() external;
 }

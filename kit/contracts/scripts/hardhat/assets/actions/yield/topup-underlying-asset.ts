@@ -2,6 +2,7 @@ import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
+import { formatDecimals } from "../../../utils/format-decimals";
 import { toDecimals } from "../../../utils/to-decimals";
 import { waitForEvent } from "../../../utils/wait-for-event";
 import { approve } from "../core/approve";
@@ -38,6 +39,6 @@ export const topupUnderlyingAsset = async (
   });
 
   console.log(
-    `[Topup underlying asset] ${asset.symbol} underlying asset topped up with amount ${amount}.`
+    `[Topup underlying asset] ${asset.symbol} underlying asset topped up with amount ${formatDecimals(topUpAmount, underlyingAsset.decimals)} ${underlyingAsset.symbol}.`
   );
 };

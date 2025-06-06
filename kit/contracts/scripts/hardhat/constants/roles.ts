@@ -16,6 +16,7 @@ const tokenIdentityIssuerAdminRole = keccak256(
 const tokenDeployerRole = keccak256(toBytes("TOKEN_DEPLOYER_ROLE"));
 const storageModifierRole = keccak256(toBytes("STORAGE_MODIFIER_ROLE"));
 const manageRegistriesRole = keccak256(toBytes("MANAGE_REGISTRIES_ROLE"));
+const allowListManagerRole = keccak256(toBytes("ALLOW_LIST_MANAGER_ROLE"));
 
 // Asset Roles (from SMARTRoles.sol)
 const tokenGovernanceRole = keccak256(toBytes("TOKEN_GOVERNANCE_ROLE"));
@@ -34,6 +35,7 @@ export const SMARTRoles = {
   tokenDeployerRole,
   storageModifierRole,
   manageRegistriesRole,
+  allowListManagerRole,
   // Asset Roles
   tokenGovernanceRole,
   supplyManagementRole,

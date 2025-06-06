@@ -25,8 +25,12 @@ import {
     InvalidTokenImplementationInterface,
     TokenAccessManagerImplementationNotSet,
     SystemAlreadyBootstrapped,
-    TopicSchemeRegistryImplementationNotSet
+    TopicSchemeRegistryImplementationNotSet,
+    IdentityVerificationModuleNotSet
 } from "./SMARTSystemErrors.sol";
+
+// Compliance modules
+import { SMARTIdentityVerificationModule } from "./compliance/modules/SMARTIdentityVerificationModule.sol";
 
 // Constants
 import { SMARTSystemRoles } from "./SMARTSystemRoles.sol";
@@ -82,49 +86,52 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
     // State variables store data persistently on the blockchain.
 
     // Addresses for the compliance module: one for the logic, one for the proxy.
-    address private _complianceImplementation;
     /// @dev Stores the address of the current compliance logic contract.
-    address private _complianceProxy;
+    address private _complianceImplementation;
     /// @dev Stores the address of the compliance module's proxy contract.
+    address private _complianceProxy;
 
     // Addresses for the identity registry module.
-    address private _identityRegistryImplementation;
     /// @dev Stores the address of the current identity registry logic contract.
-    address private _identityRegistryProxy;
+    address private _identityRegistryImplementation;
     /// @dev Stores the address of the identity registry module's proxy contract.
+    address private _identityRegistryProxy;
 
     // Addresses for the identity registry storage module.
-    address private _identityRegistryStorageImplementation;
     /// @dev Stores the address of the current identity registry storage logic contract.
-    address private _identityRegistryStorageProxy;
+    address private _identityRegistryStorageImplementation;
     /// @dev Stores the address of the identity registry storage module's proxy contract.
+    address private _identityRegistryStorageProxy;
 
     // Addresses for the trusted issuers registry module.
-    address private _trustedIssuersRegistryImplementation;
     /// @dev Stores the address of the current trusted issuers registry logic contract.
-    address private _trustedIssuersRegistryProxy;
+    address private _trustedIssuersRegistryImplementation;
     /// @dev Stores the address of the trusted issuers registry module's proxy contract.
+    address private _trustedIssuersRegistryProxy;
 
     // Addresses for the topic scheme registry module.
-    address private _topicSchemeRegistryImplementation;
     /// @dev Stores the address of the current topic scheme registry logic contract.
-    address private _topicSchemeRegistryProxy;
+    address private _topicSchemeRegistryImplementation;
     /// @dev Stores the address of the topic scheme registry module's proxy contract.
+    address private _topicSchemeRegistryProxy;
 
     // Addresses for the identity factory module.
-    address private _identityFactoryImplementation;
     /// @dev Stores the address of the current identity factory logic contract.
-    address private _identityFactoryProxy;
+    address private _identityFactoryImplementation;
     /// @dev Stores the address of the identity factory module's proxy contract.
+    address private _identityFactoryProxy;
 
     /// @dev Stores the address of the current token access manager logic contract.
     address private _tokenAccessManagerImplementation;
 
     // Addresses for the identity contract implementations (templates).
-    address private _identityImplementation;
     /// @dev Stores the address of the current standard identity logic contract (template).
-    address private _tokenIdentityImplementation;
+    address private _identityImplementation;
     /// @dev Stores the address of the current token identity logic contract (template).
+    address private _tokenIdentityImplementation;
+
+    /// @dev Stores the address of the current identity verification module instance.
+    address private _identityVerificationModule;
 
     // Token Factories by Type
     mapping(bytes32 typeHash => address tokenFactoryImplementationAddress) private tokenFactoryImplementationsByType;
@@ -179,6 +186,8 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
     /// be IERC734/IIdentity compliant.
     /// @param tokenAccessManagerImplementation_ The initial address of the token access manager contract's logic. Must
     /// be ISMARTTokenAccessManager compliant.
+    /// @param identityVerificationModule_ The initial address of the identity verification module
+    /// contract's logic.
     /// @param forwarder_ The address of the trusted forwarder contract for ERC2771 meta-transaction support.
     constructor(
         address initialAdmin_,
@@ -191,6 +200,7 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
         address identityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
+        address identityVerificationModule_,
         address forwarder_
     )
         ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
@@ -260,6 +270,12 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
             // IIdentity
         _tokenIdentityImplementation = tokenIdentityImplementation_;
         emit TokenIdentityImplementationUpdated(initialAdmin_, _tokenIdentityImplementation);
+
+        // Validate and set the identity verification module implementation address.
+        if (identityVerificationModule_ == address(0)) {
+            revert IdentityVerificationModuleNotSet();
+        }
+        _identityVerificationModule = identityVerificationModule_;
     }
 
     // --- Bootstrap Function ---
@@ -305,7 +321,11 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
         // This avoids reading from state that is being modified in the same transaction before it's fully updated.
 
         // Deploy the SMARTComplianceProxy, linking it to this SMARTSystem contract.
-        address localComplianceProxy = address(new SMARTComplianceProxy(address(this)));
+        address[] memory initialComplianceAdmins = new address[](2);
+        initialComplianceAdmins[0] = initialAdmin;
+        // This is needed to give the token factories the allow list manager role
+        initialComplianceAdmins[1] = address(this);
+        address localComplianceProxy = address(new SMARTComplianceProxy(address(this), initialComplianceAdmins));
 
         // Deploy the SMARTIdentityRegistryStorageProxy, linking it to this SMARTSystem and setting an initial admin.
         address localIdentityRegistryStorageProxy =
@@ -365,7 +385,8 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
             _identityRegistryStorageProxy,
             _trustedIssuersRegistryProxy,
             _topicSchemeRegistryProxy,
-            _identityFactoryProxy
+            _identityFactoryProxy,
+            _identityVerificationModule
         );
     }
 
@@ -397,14 +418,22 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
 
         tokenFactoryImplementationsByType[factoryTypeHash] = _factoryImplementation;
 
-        address _tokenFactoryProxy =
-            address(new SMARTTokenFactoryProxy(address(this), _msgSender(), factoryTypeHash, _tokenImplementation));
+        address _tokenFactoryProxy = address(
+            new SMARTTokenFactoryProxy(
+                address(this), _msgSender(), factoryTypeHash, _tokenImplementation, _identityVerificationModule
+            )
+        );
 
         tokenFactoryProxiesByType[factoryTypeHash] = _tokenFactoryProxy;
 
         // Make it possible that the token factory can issue token identities.
         IAccessControl(address(identityFactoryProxy())).grantRole(
             SMARTSystemRoles.TOKEN_IDENTITY_ISSUER_ROLE, _tokenFactoryProxy
+        );
+
+        // Make it possible that the token factory can add addresses to the compliance allow list
+        IAccessControl(address(complianceProxy())).grantRole(
+            SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, _tokenFactoryProxy
         );
 
         emit TokenFactoryCreated(_msgSender(), _typeName, _tokenFactoryProxy, _factoryImplementation, block.timestamp);
@@ -636,6 +665,14 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
     /// @return The address of the token factory proxy contract.
     function tokenFactoryProxy(bytes32 factoryTypeHash) public view override returns (address) {
         return tokenFactoryProxiesByType[factoryTypeHash];
+    }
+
+    // --- Identity Verification Module ---
+
+    /// @notice Gets the address of the identity verification module's proxy contract.
+    /// @return The address of the identity verification module proxy contract.
+    function identityVerificationModule() public view override returns (address) {
+        return _identityVerificationModule;
     }
 
     // --- Internal Functions (Overrides for ERC2771Context and ERC165/AccessControl) ---

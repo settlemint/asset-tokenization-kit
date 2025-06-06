@@ -57,7 +57,7 @@ const ABI_PATHS = {
   equityFactory: `${ARTIFACTS_DIR}/contracts/assets/equity/ISMARTEquityFactory.sol/ISMARTEquityFactory.json`,
   fundFactory: `${ARTIFACTS_DIR}/contracts/assets/fund/ISMARTFundFactory.sol/ISMARTFundFactory.json`,
   stablecoinFactory: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/ISMARTStableCoinFactory.sol/ISMARTStableCoinFactory.json`,
-  fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json`,
+  fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/system/yield/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json`,
   // token
   accessManager: `${ARTIFACTS_DIR}/contracts/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
   identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/SMARTIdentityImplementation.sol/SMARTIdentityImplementation.json`,
@@ -68,6 +68,8 @@ const ABI_PATHS = {
   fund: `${ARTIFACTS_DIR}/contracts/assets/fund/ISMARTFund.sol/ISMARTFund.json`,
   stablecoin: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/ISMARTStableCoin.sol/ISMARTStableCoin.json`,
   bond: `${ARTIFACTS_DIR}/contracts/assets/bond/ISMARTBond.sol/ISMARTBond.json`,
+  // Open Zeppelin
+  accessControl: `${ARTIFACTS_DIR}/@openzeppelin/contracts/access/IAccessControl.sol/IAccessControl.json`,
   // smart
   ismart: `${ARTIFACTS_DIR}/contracts/interface/ISMART.sol/ISMART.json`,
   ismartBurnable: `${ARTIFACTS_DIR}/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json`,
@@ -76,6 +78,7 @@ const ABI_PATHS = {
   ismartYield: `${ARTIFACTS_DIR}/contracts/extensions/yield/ISMARTYield.sol/ISMARTYield.json`,
   ismartFixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json`,
   // compliance modules
+  identityVerification: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol/SMARTIdentityVerificationModule.json`,
   countryAllowList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
   countryBlockList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
 } as const;
@@ -98,6 +101,7 @@ const AVAILABLE_ABIS = {
   ],
   tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
+  openZeppelin: ["accessControl"],
   coreSmart: [
     "ismart",
     "ismartBurnable",
@@ -106,13 +110,18 @@ const AVAILABLE_ABIS = {
     "ismartYield",
     "ismartFixedYieldSchedule",
   ],
-  complianceModules: ["countryAllowList", "countryBlockList"],
+  complianceModules: [
+    "identityVerification",
+    "countryAllowList",
+    "countryBlockList",
+  ],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 
 const ALL_ABIS = [
   ...AVAILABLE_ABIS.onboarding,
   ...AVAILABLE_ABIS.tokenInfrastructure,
   ...AVAILABLE_ABIS.assetTokens,
+  ...AVAILABLE_ABIS.openZeppelin,
   ...AVAILABLE_ABIS.coreSmart,
   ...AVAILABLE_ABIS.complianceModules,
 ];
@@ -183,6 +192,9 @@ AVAILABLE ABI NAMES:
 
     Core SMART:
       ${AVAILABLE_ABIS.coreSmart.join(", ")}
+
+    Open Zeppelin:
+      ${AVAILABLE_ABIS.openZeppelin.join(", ")}
 
     Compliance Modules:
       ${AVAILABLE_ABIS.complianceModules.join(", ")}
@@ -281,6 +293,9 @@ function listAbiNames(): void {
 
   console.log("\n🧠 Core SMART:");
   AVAILABLE_ABIS.coreSmart.forEach((name) => console.log(`  • ${name}`));
+
+  console.log("\n🔒 Open Zeppelin:");
+  AVAILABLE_ABIS.openZeppelin.forEach((name) => console.log(`  • ${name}`));
 
   console.log("\n🔒 Compliance Modules:");
   AVAILABLE_ABIS.complianceModules.forEach((name) =>

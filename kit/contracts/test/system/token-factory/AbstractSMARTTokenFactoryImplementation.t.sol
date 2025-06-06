@@ -60,7 +60,7 @@ contract AbstractSMARTTokenFactoryImplementationSimpleTest is Test {
     function testConstructorDisablesInitializers() public {
         // Test that the constructor properly disables initializers
         vm.expectRevert(abi.encodeWithSignature("InvalidInitialization()"));
-        factory.initialize(admin, admin, admin);
+        factory.initialize(admin, admin, admin, admin);
     }
 
     function testSupportsInterface() public view {

@@ -128,7 +128,7 @@ contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
             systemUtils.system().createTokenFactory("Bond", address(bondFactoryImpl), address(bondImpl))
         );
 
-        IAccessControl(address(bondFactory)).grantRole(SMARTSystemRoles.TOKEN_DEPLOYER_ROLE, owner);
+        IAccessControl(address(bondFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities

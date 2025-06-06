@@ -19,11 +19,11 @@ commonAnnotations: {}
 # -- TxSigner image
 image:
   # -- TxSigner image registry
-  registry: ""
+  registry: "ghcr.io"
   # -- TxSigner image repository
-  repository: ghcr.io/settlemint/starterkit-asset-tokenization-txsigner
+  repository: settlemint/btp-signer
   # -- TxSigner image tag (immutable tags are recommended)
-  tag: "latest"
+  tag: "7.13.0"
   # -- TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
   # -- TxSigner image pull policy
@@ -119,7 +119,8 @@ containerSecurityContext:
     type: "RuntimeDefault"
 
 # -- TxSigner containers resource requests and limits
-resources: {}
+resources:
+  {}
   # limits:
   #   cpu: 100m
   #   memory: 128Mi
@@ -132,20 +133,18 @@ livenessProbe:
   # -- Enable livenessProbe on TxSigner containers
   enabled: true
   # -- Initial delay seconds for livenessProbe
-  initialDelaySeconds: 10
+  initialDelaySeconds: 1
   # -- Period seconds for livenessProbe
   periodSeconds: 10
   # -- Timeout seconds for livenessProbe
   timeoutSeconds: 5
   # -- Failure threshold for livenessProbe
-  failureThreshold: 3
+  failureThreshold: 30
   # -- Success threshold for livenessProbe
   successThreshold: 1
-  # -- HTTP get parameters for livenessProbe
-  httpGet:
-    # -- Path for httpGet livenessProbe
-    path: /health
-    # -- Port for httpGet livenessProbe
+  # -- TCP socket parameters for livenessProbe
+  tcpSocket:
+    # -- Port for tcpSocket livenessProbe
     port: http
 
 # -- Configure TxSigner containers' readiness probe
@@ -153,20 +152,18 @@ readinessProbe:
   # -- Enable readinessProbe on TxSigner containers
   enabled: true
   # -- Initial delay seconds for readinessProbe
-  initialDelaySeconds: 5
+  initialDelaySeconds: 1
   # -- Period seconds for readinessProbe
-  periodSeconds: 10
+  periodSeconds: 5
   # -- Timeout seconds for readinessProbe
   timeoutSeconds: 5
   # -- Failure threshold for readinessProbe
-  failureThreshold: 3
+  failureThreshold: 60
   # -- Success threshold for readinessProbe
   successThreshold: 1
-  # -- HTTP get parameters for readinessProbe
-  httpGet:
-    # -- Path for httpGet readinessProbe
-    path: /health
-    # -- Port for httpGet readinessProbe
+  # -- TCP socket parameters for readinessProbe
+  tcpSocket:
+    # -- Port for tcpSocket readinessProbe
     port: http
 
 # -- Configure TxSigner containers' startup probe
@@ -188,10 +185,14 @@ startupProbe:
 lifecycleHooks: {}
 
 # -- Optionally specify extra list of additional volumes for the TxSigner pod(s)
-extraVolumes: []
+extraVolumes:
+  - name: tx-signer-cache
+    emptyDir: {}
 
 # -- Optionally specify extra list of additional volumeMounts for the TxSigner container(s)
-extraVolumeMounts: []
+extraVolumeMounts:
+  - name: tx-signer-cache
+    mountPath: /signer/.cache
 
 # -- Array with extra environment variables to add to TxSigner nodes
 extraEnvVars: []
@@ -331,12 +332,12 @@ networkPolicy:
         - podSelector:
             matchLabels:
               app.kubernetes.io/name: ingress-nginx
-        - podSelector: {}  # Same namespace
+        - podSelector: {} # Same namespace
       ports:
         - protocol: TCP
-          port: 3000  # HTTP port
+          port: 3000 # HTTP port
         - protocol: TCP
-          port: 3001  # Metrics port
+          port: 3001 # Metrics port
   # -- Add extra egress rules to the NetworkPolicy (ignored if allowExternalEgress=true)
   extraEgress:
     # Allow DNS resolution
@@ -355,7 +356,7 @@ networkPolicy:
               app.kubernetes.io/name: besu-statefulset
       ports:
         - protocol: TCP
-          port: 8545  # RPC
+          port: 8545 # RPC
     # Allow access to external HTTPS APIs (for signing services)
     - to:
         - namespaceSelector: {}
@@ -388,12 +389,14 @@ tests:
 
 # -- TxSigner configuration
 config:
+  # -- Operation mode (standalone or integrated)
+  mode: "standalone"
   # -- Enable debug mode
   debug: false
   # -- Log level for TxSigner
   logLevel: info
   # -- RPC endpoint URL
-  rpcUrl: "http://besu-node-rpc-1:8545"
+  rpcUrl: "http://erpc:4000"
   # -- Chain ID for the network
   chainId: "53771311147"
   # -- Port for the HTTP server
@@ -404,6 +407,10 @@ config:
   signingStrategy: "local"
   # -- Private key for local signing (use with caution, prefer secrets)
   privateKey: ""
+  # -- Mnemonic to use for the private key
+  mnemonic: ""
+  # -- Derivation path to use for the private key
+  derivationPath: ""
   # -- Use existing secret for private key
   existingSecret: ""
   # -- Key within the existing secret
@@ -474,9 +481,14 @@ config:
     methods: ["GET", "POST"]
     # -- Allowed headers
     headers: ["Content-Type", "Authorization"]
-  # -- Environment secret configuration
-  envSecret:
-    # -- Create environment secret
-    create: false
-    # -- Additional secret data
-    data: {}
+  # -- Additional secret environment variables to add to the txsigner
+  extraSecretEnv: {}
+
+# -- PostgreSQL connection string
+postgresql: "postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable"
+
+# -- Init containers configuration
+initContainers:
+  - name: wait-for-postgres
+    image: ghcr.io/settlemint/btp-waitforit:v7.7.5
+    command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]

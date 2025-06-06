@@ -19,6 +19,8 @@ import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.
 import { SMARTToken } from "../examples/SMARTToken.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
+import { SMARTIdentityVerificationModule } from
+    "../../contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol";
 
 abstract contract AbstractSMARTTest is Test {
     // --- State Variables ---
@@ -103,8 +105,12 @@ abstract contract AbstractSMARTTest is Test {
         // --- Setup Identities AFTER requiredClaimTopics is initialized ---
         _setupIdentities();
 
-        modulePairs = new SMARTComplianceModuleParamPair[](1);
-        modulePairs[0] =
+        modulePairs = new SMARTComplianceModuleParamPair[](2);
+        modulePairs[0] = SMARTComplianceModuleParamPair({
+            module: address(systemUtils.identityVerificationModule()),
+            params: abi.encode(requiredClaimTopics)
+        });
+        modulePairs[1] =
             SMARTComplianceModuleParamPair({ module: address(mockComplianceModule), params: abi.encode("") });
 
         _setupToken();

@@ -19,7 +19,7 @@ spec:
   {{- if .Values.service.loadBalancerSourceRanges }}
   loadBalancerSourceRanges: {{- include "common.tplvalues.render" (dict "value" .Values.service.loadBalancerSourceRanges "context" $) | nindent 4 }}
   {{- end }}
-  {{- if .Values.service.externalTrafficPolicy }}
+  {{- if and .Values.service.externalTrafficPolicy (or (eq .Values.service.type "LoadBalancer") (eq .Values.service.type "NodePort")) }}
   externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy | quote }}
   {{- end }}
   {{- if .Values.service.sessionAffinity }}

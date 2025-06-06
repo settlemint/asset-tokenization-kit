@@ -53,7 +53,7 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
         );
 
         // Grant registrar role to owner so that he can create the deposit
-        IAccessControl(address(depositFactory)).grantRole(SMARTSystemRoles.TOKEN_DEPLOYER_ROLE, owner);
+        IAccessControl(address(depositFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities

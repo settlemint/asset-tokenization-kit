@@ -1,0 +1,60 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+# Development Workflow
+
+This document outlines the standard development workflow, CI/CD pipeline, and
+other important development notes.
+
+## 1. Feature Development
+
+- Create a feature branch from `main`.
+- Run tests locally before pushing.
+- A pull request (PR) will trigger the full CI pipeline.
+
+## 2. Contract Changes
+
+- Modify contracts in
+  `[kit/contracts/contracts/](mdc:kit/contracts/contracts/)`.
+- Run `bun test` in the `kit/contracts` directory to verify changes.
+- If contract events change, the subgraph must be updated.
+- Regenerate TypeScript types with `bun codegen` in the root.
+
+## 3. Frontend Changes
+
+- Work in the `[kit/dapp/](mdc:kit/dapp/)` directory.
+- The application will hot reload with `bun dev`.
+- Test with E2E tests.
+
+## 4. Database Changes
+
+- Update schema in `[kit/dapp/src/lib/db/](mdc:kit/dapp/src/lib/db/)`.
+- Run `bun db:push` to apply changes.
+- Track changes with Hasura: `settlemint hasura track -a`.
+- Regenerate GraphQL types: `bun codegen --force`.
+
+## CI/CD Pipeline
+
+The GitHub Actions workflows are located in
+`[.github/workflows/](mdc:.github/workflows/)`.
+
+- **QA Workflow** (`[qa.yml](mdc:.github/workflows/qa.yml)`): Runs on all PRs
+  against `main`. It handles linting, building, testing, chart validation, and
+  security scanning.
+- **E2E Tests Workflow**
+  (`[e2e-playwright-tests.yml](mdc:.github/workflows/e2e-playwright-tests.yml)`):
+  Runs the Playwright end-to-end tests.
+- **Release Workflow** (`[v1.yml](mdc:.github/workflows/v1.yml)`): Runs on
+  pushes to the `main` branch to handle releases.
+
+## Important Notes
+
+- **Always run `bun codegen`** after contract changes to regenerate TypeScript
+  types for the frontend.
+- The project uses **Bun (v1.2.15)** as the primary package manager.
+- **Node.js v22.16.0** is required for TheGraph CLI.
+- **Foundry** is required for contract compilation and testing.
+- The **first user to sign up** in the dApp automatically gets admin privileges.

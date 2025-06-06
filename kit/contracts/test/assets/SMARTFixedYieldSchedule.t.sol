@@ -87,7 +87,7 @@ contract SMARTFixedYieldScheduleTest is Test {
 
         // Deploy yield schedule
         yieldSchedule =
-            new SMARTFixedYieldSchedule(address(smartToken), owner, startDate, endDate, RATE, INTERVAL, forwarder);
+            new SMARTFixedYieldSchedule(address(smartToken), startDate, endDate, RATE, INTERVAL, owner, forwarder);
 
         // Setup tokens
         underlyingToken.mint(address(this), INITIAL_SUPPLY);
@@ -469,19 +469,19 @@ contract SMARTFixedYieldScheduleTest is Test {
     function test_InvalidConstructorParameters() public {
         // Invalid start date (in the past)
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidStartDate.selector);
-        new SMARTFixedYieldSchedule(address(smartToken), owner, block.timestamp - 1, endDate, RATE, INTERVAL, forwarder);
+        new SMARTFixedYieldSchedule(address(smartToken), block.timestamp - 1, endDate, RATE, INTERVAL, owner, forwarder);
 
         // Invalid end date (before start)
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidEndDate.selector);
-        new SMARTFixedYieldSchedule(address(smartToken), owner, startDate, startDate - 1, RATE, INTERVAL, forwarder);
+        new SMARTFixedYieldSchedule(address(smartToken), startDate, startDate - 1, RATE, INTERVAL, owner, forwarder);
 
         // Invalid rate (zero)
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidRate.selector);
-        new SMARTFixedYieldSchedule(address(smartToken), owner, startDate, endDate, 0, INTERVAL, forwarder);
+        new SMARTFixedYieldSchedule(address(smartToken), startDate, endDate, 0, INTERVAL, owner, forwarder);
 
         // Invalid interval (zero)
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidInterval.selector);
-        new SMARTFixedYieldSchedule(address(smartToken), owner, startDate, endDate, RATE, 0, forwarder);
+        new SMARTFixedYieldSchedule(address(smartToken), startDate, endDate, RATE, 0, owner, forwarder);
     }
 
     function test_InvalidPeriod() public {

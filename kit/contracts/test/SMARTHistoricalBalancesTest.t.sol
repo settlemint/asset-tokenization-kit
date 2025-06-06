@@ -82,15 +82,10 @@ contract TestHistoricalBalancesToken is ERC20, _SMARTHistoricalBalancesLogic {
     function recoverERC20(address, address, uint256) external override { }
     function removeComplianceModule(address) external override { }
 
-    function requiredClaimTopics() external pure override returns (uint256[] memory) {
-        return new uint256[](0);
-    }
-
     function setCompliance(address) external override { }
     function setIdentityRegistry(address) external override { }
     function setOnchainID(address) external override { }
     function setParametersForComplianceModule(address, bytes calldata) external override { }
-    function setRequiredClaimTopics(uint256[] calldata) external override { }
 }
 
 contract SMARTHistoricalBalancesTest is Test {

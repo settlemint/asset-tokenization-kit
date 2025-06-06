@@ -16,7 +16,7 @@ struct SMARTComplianceModuleParamPair {
     address module;
     /// @notice The ABI-encoded configuration parameters for the specified compliance module.
     /// @dev These parameters are specific to each module. For instance, they could include settings like
-    ///      whitelisted addresses, country codes, or operational flags. The module itself is responsible for
+    ///      allow listed addresses, country codes, or operational flags. The module itself is responsible for
     ///      decoding and interpreting these parameters.
     bytes params;
 }

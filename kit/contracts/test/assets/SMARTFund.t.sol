@@ -59,7 +59,7 @@ contract SMARTFundTest is AbstractSMARTAssetTest {
         );
 
         // Grant registrar role to owner so that he can create the fund
-        IAccessControl(address(fundFactory)).grantRole(SMARTSystemRoles.TOKEN_DEPLOYER_ROLE, owner);
+        IAccessControl(address(fundFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities

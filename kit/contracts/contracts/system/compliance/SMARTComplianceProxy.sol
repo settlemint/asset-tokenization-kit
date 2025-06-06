@@ -27,14 +27,15 @@ contract SMARTComplianceProxy is SMARTSystemProxy {
     /// `SMARTComplianceImplementation` contract via `_performInitializationDelegatecall`.
     /// @param systemAddress The address of the `ISMARTSystem` contract. This system contract is responsible for
     /// providing the address of the actual compliance logic (implementation) contract.
-    constructor(address systemAddress) SMARTSystemProxy(systemAddress) {
+    /// @param initialAdmins The addresses of the initial admins.
+    constructor(address systemAddress, address[] memory initialAdmins) SMARTSystemProxy(systemAddress) {
         ISMARTSystem system_ = _getSystem();
 
         address implementation = _getSpecificImplementationAddress(system_);
 
         // Prepare the data for the delegatecall to the implementation's initialize function.
         // This calls SMARTComplianceImplementation.initialize().
-        bytes memory data = abi.encodeWithSelector(SMARTComplianceImplementation.initialize.selector);
+        bytes memory data = abi.encodeWithSelector(SMARTComplianceImplementation.initialize.selector, initialAdmins);
 
         _performInitializationDelegatecall(implementation, data);
     }

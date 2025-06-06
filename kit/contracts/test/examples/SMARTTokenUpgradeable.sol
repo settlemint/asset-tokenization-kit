@@ -103,7 +103,6 @@ contract SMARTTokenUpgradeable is
     /// @param onchainID_ The address of the OnchainID contract for identity verification.
     /// @param identityRegistry_ The address of the Identity Registry contract.
     /// @param compliance_ The address of the main compliance contract.
-    /// @param requiredClaimTopics_ Array of claim topics required for token interaction.
     /// @param initialModulePairs_ Initial compliance module configurations.
     /// @param collateralProofTopic_ A `uint256` topic identifier for claims related to collateral proof.
     /// @param accessManager_ The address of the AccessManager contract that will manage the token's access control.
@@ -114,7 +113,6 @@ contract SMARTTokenUpgradeable is
         address onchainID_,
         address identityRegistry_,
         address compliance_,
-        uint256[] calldata requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
         uint256 collateralProofTopic_,
         address accessManager_
@@ -124,15 +122,7 @@ contract SMARTTokenUpgradeable is
     {
         __ERC20_init(name_, symbol_); // Initializes ERC20 basic properties (name, symbol)
         __SMART_init( // Initializes core SMART logic (decimals, identity, compliance)
-            name_,
-            symbol_,
-            decimals_,
-            onchainID_,
-            identityRegistry_,
-            compliance_,
-            requiredClaimTopics_,
-            initialModulePairs_
-        );
+        name_, symbol_, decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_);
         __SMARTTokenAccessManaged_init(accessManager_);
         __SMARTCustodian_init(); // Initializes custodian features
         __SMARTBurnable_init(); // Initializes burnable token features
@@ -178,17 +168,6 @@ contract SMARTTokenUpgradeable is
         onlyAccessManagerRole(COMPLIANCE_ADMIN_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
-    }
-
-    /// @notice Updates the list of required claim topics.
-    /// @dev Only callable by `VERIFICATION_ADMIN_ROLE`.
-    /// @param _requiredClaimTopics An array of new required claim topics.
-    function setRequiredClaimTopics(uint256[] calldata _requiredClaimTopics)
-        external
-        override
-        onlyAccessManagerRole(VERIFICATION_ADMIN_ROLE)
-    {
-        _smart_setRequiredClaimTopics(_requiredClaimTopics);
     }
 
     /// @notice Mints new tokens to a specified address.

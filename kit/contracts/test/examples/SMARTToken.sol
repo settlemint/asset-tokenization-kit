@@ -100,8 +100,6 @@ contract SMARTToken is
     /// @param onchainID_ The address of the OnchainID contract used for identity verification.
     /// @param identityRegistry_ The address of the Identity Registry contract, which stores identity claims.
     /// @param compliance_ The address of the main compliance contract that enforces transfer restrictions.
-    /// @param requiredClaimTopics_ An array of unique identifiers (usually `uint256`) representing the types of claims
-    /// an investor must possess (e.g., KYC verified, accredited investor).
     /// @param initialModulePairs_ An array of `SMARTComplianceModuleParamPair` structs, configuring initial compliance
     /// modules and their parameters.
     /// @param collateralProofTopic_ A `uint256` topic identifier for claims related to collateral proof, used by the
@@ -114,21 +112,11 @@ contract SMARTToken is
         address onchainID_,
         address identityRegistry_,
         address compliance_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         uint256 collateralProofTopic_,
         address accessManager_
     )
-        SMART(
-            name_,
-            symbol_,
-            decimals_,
-            onchainID_,
-            identityRegistry_,
-            compliance_,
-            requiredClaimTopics_,
-            initialModulePairs_
-        )
+        SMART(name_, symbol_, decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_)
         SMARTTokenAccessManaged(accessManager_)
         SMARTCustodian()
         SMARTCollateral(collateralProofTopic_)
@@ -177,18 +165,6 @@ contract SMARTToken is
         onlyAccessManagerRole(COMPLIANCE_ADMIN_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
-    }
-
-    /// @notice Updates the list of required claim topics for token interactions.
-    /// @dev Investors must have claims with these topics in the Identity Registry to be eligible to hold or transfer
-    /// the token. Only callable by an address with `VERIFICATION_ADMIN_ROLE`.
-    /// @param _requiredClaimTopics An array of `uint256` representing the new set of required claim topics.
-    function setRequiredClaimTopics(uint256[] calldata _requiredClaimTopics)
-        external
-        override
-        onlyAccessManagerRole(VERIFICATION_ADMIN_ROLE)
-    {
-        _smart_setRequiredClaimTopics(_requiredClaimTopics);
     }
 
     /// @notice Mints new tokens and assigns them to a specified address.

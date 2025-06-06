@@ -52,6 +52,9 @@ spec:
       {{- if .Values.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
+      {{- if .Values.initContainers }}
+      initContainers: {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
+      {{- end }}
       containers:
       - name: txsigner
         image: {{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
@@ -77,6 +80,10 @@ spec:
           value: {{ .Values.config.debug | quote }}
         - name: TX_SIGNER_SIGNING_STRATEGY
           value: {{ .Values.config.signingStrategy | quote }}
+        {{- if .Values.postgresql }}
+        - name: DATABASE_URL
+          value: {{ .Values.postgresql | quote }}
+        {{- end }}
         {{- if eq .Values.config.signingStrategy "local" }}
         {{- if .Values.config.existingSecret }}
         - name: TX_SIGNER_PRIVATE_KEY
@@ -84,12 +91,28 @@ spec:
             secretKeyRef:
               name: {{ .Values.config.existingSecret }}
               key: {{ .Values.config.existingSecretKey }}
-        {{- else if .Values.config.privateKey }}
+        {{- else if or .Values.config.privateKey .Values.config.mnemonic }}
+        {{- if .Values.config.privateKey }}
         - name: TX_SIGNER_PRIVATE_KEY
           valueFrom:
             secretKeyRef:
               name: {{ include "common.names.fullname" . }}-private-key
               key: private-key
+        {{- end }}
+        {{- if .Values.config.mnemonic }}
+        - name: PRIVATE_KEY_MNEMONIC
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "common.names.fullname" . }}-private-key
+              key: PRIVATE_KEY_MNEMONIC
+        {{- end }}
+        {{- if .Values.config.derivationPath }}
+        - name: PRIVATE_KEY_DERIVATION_PATH
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "common.names.fullname" . }}-private-key
+              key: PRIVATE_KEY_DERIVATION_PATH
+        {{- end }}
         {{- end }}
         {{- end }}
         {{- if eq .Values.config.signingStrategy "kms" }}
@@ -159,8 +182,9 @@ spec:
         {{- if .Values.extraEnvVars }}
         {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 8 }}
         {{- end }}
-        {{- if or .Values.extraEnvVarsCM .Values.extraEnvVarsSecret }}
         envFrom:
+          - secretRef:
+              name: {{ include "common.names.fullname" . }}-env
           {{- if .Values.extraEnvVarsCM }}
           - configMapRef:
               name: {{ .Values.extraEnvVarsCM }}
@@ -169,7 +193,6 @@ spec:
           - secretRef:
               name: {{ .Values.extraEnvVarsSecret }}
           {{- end }}
-        {{- end }}
         ports:
         - name: http
           containerPort: {{ .Values.config.port }}
@@ -178,10 +201,24 @@ spec:
           containerPort: {{ .Values.config.metricsPort }}
           protocol: TCP
         {{- if .Values.livenessProbe.enabled }}
-        livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.livenessProbe "enabled") "context" $) | nindent 10 }}
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.livenessProbe.tcpSocket.port }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
         {{- end }}
         {{- if .Values.readinessProbe.enabled }}
-        readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.readinessProbe "enabled") "context" $) | nindent 10 }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.readinessProbe.tcpSocket.port }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          successThreshold: {{ .Values.readinessProbe.successThreshold }}
         {{- end }}
         {{- if .Values.startupProbe.enabled }}
         startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.startupProbe "enabled") "context" $) | nindent 10 }}
