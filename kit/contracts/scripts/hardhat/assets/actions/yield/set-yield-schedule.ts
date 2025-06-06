@@ -3,7 +3,7 @@ import { SMARTContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { smartProtocolDeployer } from "../../../services/deployer";
-import { mineAnvilBlock } from "../../../utils/anvil";
+import { increaseAnvilTime, mineAnvilBlock } from "../../../utils/anvil";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForEvent } from "../../../utils/wait-for-event";
 import { waitForSuccess } from "../../../utils/wait-for-success";
@@ -59,30 +59,40 @@ export const setYieldSchedule = async (
   );
 
   return {
-    advanceToNextPeriod: async () => {
+    advanceToNextPeriod: async (): Promise<boolean> => {
+      const totalPeriods = Math.floor(
+        (endTime.getTime() - startTime.getTime()) / (interval * 1000)
+      );
+      const lastCompletedPeriodBefore =
+        await scheduleContract.read.lastCompletedPeriod();
+
+      if (Number(lastCompletedPeriodBefore) >= totalPeriods) {
+        console.log(
+          `[Yield schedule] ${asset.symbol} schedule has already completed all ${totalPeriods} periods. Cannot advance further.`
+        );
+        return false;
+      }
+
       const currentPeriod = await scheduleContract.read.currentPeriod();
       const timeUntilNextPeriod =
         await scheduleContract.read.timeUntilNextPeriod();
-      await new Promise((resolve) =>
-        setTimeout(resolve, Number(timeUntilNextPeriod) * 1_000)
-      );
-      // Mine a block to advance the time
+
+      await increaseAnvilTime(owner, Number(timeUntilNextPeriod));
       await mineAnvilBlock(owner);
+
       if (currentPeriod.toString() === "0") {
         const timeToFirstPeriodCompleted =
           await scheduleContract.read.timeUntilNextPeriod();
-        await new Promise((resolve) =>
-          setTimeout(resolve, Number(timeToFirstPeriodCompleted) * 1_000)
-        );
-        // Mine a block to advance the time
+        await increaseAnvilTime(owner, Number(timeToFirstPeriodCompleted));
         await mineAnvilBlock(owner);
       }
       const lastCompletedPeriod =
         await scheduleContract.read.lastCompletedPeriod();
       const newPeriod = await scheduleContract.read.currentPeriod();
       console.log(
-        `[Yield schedule] ${asset.symbol} period advanced from ${currentPeriod} to ${newPeriod}, last completed period ${lastCompletedPeriod}`
+        `[Yield schedule] ${asset.symbol} period advanced from ${currentPeriod} to ${newPeriod}, last completed period is now ${lastCompletedPeriod}`
       );
+      return true;
     },
   };
 };

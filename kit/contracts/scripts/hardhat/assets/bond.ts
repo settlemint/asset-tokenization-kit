@@ -83,10 +83,10 @@ export const createBond = async (depositToken: Asset<any>) => {
   // yield
   const { advanceToNextPeriod } = await setYieldSchedule(
     bond,
-    new Date(Date.now() + 10_000), // 10 seconds from now
-    new Date(Date.now() + 40_000), // 40 seconds from now
+    new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day from now
+    new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days from now
     50, // 0.5%
-    5 // 5 seconds
+    12 * 60 * 60 // 12 hours in seconds
   );
   // do some mint/burns to change the yield
   await mint(bond, owner, 10n);
@@ -94,7 +94,13 @@ export const createBond = async (depositToken: Asset<any>) => {
   await topupUnderlyingAsset(bond, depositToken, 10000n);
   // claim yield for 3 periods
   for (let i = 0; i < 3; i++) {
-    await advanceToNextPeriod();
+    const didAdvance = await advanceToNextPeriod();
+    if (!didAdvance) {
+      console.log(
+        `[Bond] ${bond.symbol} schedule has already completed all periods. Cannot advance further.`
+      );
+      break;
+    }
     await claimYield(bond, depositToken, owner);
     // transfer some tokens to change the claimed yields for the next period
     await transfer(bond, owner, investorA, 6n);
