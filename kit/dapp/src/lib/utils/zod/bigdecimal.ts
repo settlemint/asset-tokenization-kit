@@ -70,29 +70,6 @@ export const bigDecimal = () =>
   z
     .string()
     .describe("A decimal number with arbitrary precision")
-    .openapi({
-      description: "A decimal number string with arbitrary precision",
-      example: "123.456789012345678901234567890",
-      examples: {
-        simple: {
-          value: "123.45",
-          summary: "Simple decimal",
-        },
-        large: {
-          value: "999999999999999999999999999999.99",
-          summary: "Very large number",
-        },
-        precise: {
-          value: "0.000000000000000001",
-          summary: "High precision",
-        },
-        scientific: {
-          value: "1.23e10",
-          summary: "Scientific notation",
-        },
-      },
-      pattern: "^-?[0-9]+(\\.[0-9]+)?(e[+-]?[0-9]+)?$",
-    })
     .transform((value, ctx) => {
       // Reject special values
       const upper = value.toUpperCase();
