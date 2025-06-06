@@ -43,6 +43,8 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
      * @param _claimStrategy The vesting strategy contract
      * @param _claimPeriodEnd When users can no longer initialize vesting
      * @param trustedForwarder The address of the trusted forwarder for ERC2771
+     * @param _name The name of the airdrop
+     * @param _distributionIpfsHash IPFS hash containing distribution details
      */
     constructor(
         address tokenAddress,
@@ -50,9 +52,11 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
         address initialOwner,
         address _claimStrategy,
         uint256 _claimPeriodEnd,
-        address trustedForwarder
+        address trustedForwarder,
+        string memory _name,
+        string memory _distributionIpfsHash
     )
-        AirdropBase(tokenAddress, root, initialOwner, trustedForwarder)
+        AirdropBase(tokenAddress, root, initialOwner, trustedForwarder, _name, _distributionIpfsHash)
     {
         require(_claimStrategy != address(0), "Invalid claim strategy");
         require(_claimPeriodEnd > block.timestamp, "Claim period must be in the future");

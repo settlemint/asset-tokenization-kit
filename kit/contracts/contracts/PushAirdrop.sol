@@ -23,6 +23,10 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
     // Merkle root of the distribution list
     bytes32 public merkleRoot;
 
+    // Airdrop metadata
+    string public name;
+    string public distributionIpfsHash;
+
     // Tracking distributed status (address => distributed)
     mapping(address => bool) public distributed;
 
@@ -59,13 +63,17 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
      * @param initialOwner The admin who can initiate distributions
      * @param _distributionCap Maximum tokens that can be distributed (0 for no cap)
      * @param trustedForwarder The address of the trusted forwarder for ERC2771
+     * @param _name The name of the airdrop
+     * @param _distributionIpfsHash IPFS hash containing distribution details
      */
     constructor(
         address tokenAddress,
         bytes32 root,
         address initialOwner,
         uint256 _distributionCap,
-        address trustedForwarder
+        address trustedForwarder,
+        string memory _name,
+        string memory _distributionIpfsHash
     )
         Ownable(initialOwner)
         ERC2771Context(trustedForwarder)
@@ -74,6 +82,8 @@ contract PushAirdrop is Ownable, ReentrancyGuard, ERC2771Context {
         token = IERC20(tokenAddress);
         merkleRoot = root;
         distributionCap = _distributionCap;
+        name = _name;
+        distributionIpfsHash = _distributionIpfsHash;
     }
 
     /**

@@ -28,6 +28,8 @@ contract StandardAirdrop is AirdropBase {
      * @param _startTime When claims can begin
      * @param _endTime When claims end
      * @param trustedForwarder The address of the trusted forwarder for ERC2771
+     * @param _name The name of the airdrop
+     * @param _distributionIpfsHash IPFS hash containing distribution details
      */
     constructor(
         address tokenAddress,
@@ -35,9 +37,11 @@ contract StandardAirdrop is AirdropBase {
         address initialOwner,
         uint256 _startTime,
         uint256 _endTime,
-        address trustedForwarder
+        address trustedForwarder,
+        string memory _name,
+        string memory _distributionIpfsHash
     )
-        AirdropBase(tokenAddress, root, initialOwner, trustedForwarder)
+        AirdropBase(tokenAddress, root, initialOwner, trustedForwarder, _name, _distributionIpfsHash)
     {
         require(_endTime > _startTime, "End time must be after start time");
         startTime = _startTime;
