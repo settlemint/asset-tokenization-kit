@@ -2,16 +2,21 @@ import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
 import { AIRDROP_FACTORY_ADDRESS } from "@/lib/contracts";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
+import { client } from "@/lib/settlemint/ipfs";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { AirdropDistributionListSchema } from "../common/airdrop-distribution-schema";
-import { getMerkleRoot } from "../common/merkle-tree";
+import {
+  createMerkleTree,
+  getMerkleProof,
+  getMerkleRoot,
+} from "../common/merkle-tree";
 import type { CreateStandardAirdropInput } from "./create-schema";
 
 const AirdropFactoryDeployStandardAirdrop = portalGraphql(`
-mutation AirdropFactoryDeployStandardAirdrop($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: AirdropFactoryDeployStandardAirdropInput!) {
-    AirdropFactoryDeployStandardAirdrop2(
+mutation AirdropFactoryDeployStandardAirdrop($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: AirdropFactory2DeployStandardAirdropInput!) {
+    AirdropFactory2DeployStandardAirdrop(
     address: $address
     from: $from
     input: $input
@@ -41,20 +46,26 @@ export const createStandardAirdropFunction = async ({
 }) => {
   const leaves = safeParse(AirdropDistributionListSchema, distribution);
 
-  // const ipfsHash = await client.add(
-  //   JSON.stringify({
-  //     "0x1234...": {
-  //       amount: "1000000000000000000",
-  //       proof: ["0xabc...", "0xdef...", "0x789..."],
-  //     },
-  //     "0x5678...": {
-  //       amount: "2000000000000000000",
-  //       proof: ["0x123...", "0x456...", "0x999..."],
-  //     },
-  //   })
-  // );
-  const ipfsHash = "QmRauxdYCwFKcTYALD7CxJ2EZNcVC8YPCZeTL4HfZEnGHG";
-  const name = "test1";
+  // Create merkle tree from the leaves
+  const tree = createMerkleTree(leaves);
+
+  // Create distribution object with merkle proofs for each recipient
+  const distributionWithProofs = leaves.reduce(
+    (acc, leaf) => {
+      const proof = getMerkleProof(leaf, tree);
+      acc[leaf.recipient] = {
+        amount: leaf.amountExact.toString(),
+        proof: proof,
+      };
+      return acc;
+    },
+    {} as Record<string, { amount: string; proof: string[] }>
+  );
+
+  const ipfs = await client.add(JSON.stringify(distributionWithProofs));
+
+  const ipfsHash = ipfs.cid.toString();
+  const name = "test2";
 
   const result = await portalClient.request(
     AirdropFactoryDeployStandardAirdrop,
@@ -84,7 +95,7 @@ export const createStandardAirdropFunction = async ({
   );
 
   const createTxHash =
-    result.AirdropFactoryDeployStandardAirdrop2?.transactionHash;
+    result.AirdropFactory2DeployStandardAirdrop?.transactionHash;
   if (!createTxHash) {
     throw new Error(
       "Failed to create standard airdrop: no transaction hash received"
@@ -92,16 +103,6 @@ export const createStandardAirdropFunction = async ({
   }
   const hashes = safeParse(t.Hashes(), [createTxHash]);
   const block = await waitForIndexingTransactions(hashes);
-
-  // await hasuraClient.request(AddAirdropDistribution, {
-  //   objects: distribution.map((d) => ({
-  //     airdrop_id: predictedAddress,
-  //     recipient: d.recipient,
-  //     amount: d.amount.toString(),
-  //     amount_exact: d.amountExact,
-  //     index: d.index,
-  //   })),
-  // });
 
   return block;
 };
