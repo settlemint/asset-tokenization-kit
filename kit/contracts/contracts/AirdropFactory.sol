@@ -50,9 +50,7 @@ contract AirdropFactory is ERC2771Context {
         external
         returns (address)
     {
-        bytes32 salt = _calculateStandardAirdropSalt(
-            tokenAddress, merkleRoot, owner, startTime, endTime, name, distributionIpfsHash
-        );
+        bytes32 salt = _calculateStandardAirdropSalt(tokenAddress, merkleRoot, owner, startTime, endTime, name);
 
         StandardAirdrop airdrop = new StandardAirdrop{ salt: salt }(
             tokenAddress, merkleRoot, owner, startTime, endTime, trustedForwarder(), name, distributionIpfsHash
@@ -98,9 +96,8 @@ contract AirdropFactory is ERC2771Context {
         );
         strategyAddress = address(strategy);
 
-        bytes32 airdropSalt = _calculateVestingAirdropSalt(
-            tokenAddress, merkleRoot, owner, strategyAddress, claimPeriodEnd, name, distributionIpfsHash
-        );
+        bytes32 airdropSalt =
+            _calculateVestingAirdropSalt(tokenAddress, merkleRoot, owner, strategyAddress, claimPeriodEnd, name);
 
         VestingAirdrop airdrop = new VestingAirdrop{ salt: airdropSalt }(
             tokenAddress,
@@ -123,21 +120,27 @@ contract AirdropFactory is ERC2771Context {
      * @param merkleRoot The Merkle root for verifying push distributions
      * @param owner The owner/admin who can push tokens
      * @param distributionCap Maximum tokens that can be distributed (0 for no cap)
+     * @param name The name of the airdrop
+     * @param distributionIpfsHash IPFS hash containing distribution details
      * @return The address of the deployed push airdrop contract
      */
     function deployPushAirdrop(
         address tokenAddress,
         bytes32 merkleRoot,
         address owner,
-        uint256 distributionCap
+        uint256 distributionCap,
+        string memory name,
+        string memory distributionIpfsHash
     )
         external
         returns (address)
     {
-        bytes32 salt = _calculatePushAirdropSalt(tokenAddress, merkleRoot, owner, distributionCap);
+        bytes32 salt =
+            _calculatePushAirdropSalt(tokenAddress, merkleRoot, owner, distributionCap, name, distributionIpfsHash);
 
-        PushAirdrop airdrop =
-            new PushAirdrop{ salt: salt }(tokenAddress, merkleRoot, owner, distributionCap, trustedForwarder());
+        PushAirdrop airdrop = new PushAirdrop{ salt: salt }(
+            tokenAddress, merkleRoot, owner, distributionCap, trustedForwarder(), name, distributionIpfsHash
+        );
 
         emit PushAirdropDeployed(address(airdrop), tokenAddress, owner);
         return address(airdrop);
@@ -168,9 +171,7 @@ contract AirdropFactory is ERC2771Context {
         view
         returns (address predictedAddress)
     {
-        bytes32 salt = _calculateStandardAirdropSalt(
-            tokenAddress, merkleRoot, owner, startTime, endTime, name, distributionIpfsHash
-        );
+        bytes32 salt = _calculateStandardAirdropSalt(tokenAddress, merkleRoot, owner, startTime, endTime, name);
         bytes32 bytecodeHash = keccak256(
             abi.encodePacked(
                 type(StandardAirdrop).creationCode,
@@ -225,7 +226,7 @@ contract AirdropFactory is ERC2771Context {
         );
 
         bytes32 airdropSalt = _calculateVestingAirdropSalt(
-            tokenAddress, merkleRoot, owner, predictedStrategyAddress, claimPeriodEnd, name, distributionIpfsHash
+            tokenAddress, merkleRoot, owner, predictedStrategyAddress, claimPeriodEnd, name
         );
         bytes32 airdropBytecodeHash = keccak256(
             abi.encodePacked(
@@ -254,23 +255,30 @@ contract AirdropFactory is ERC2771Context {
      * @param merkleRoot The Merkle root for verifying push distributions
      * @param owner The owner/admin who can push tokens
      * @param distributionCap Maximum tokens that can be distributed (0 for no cap)
+     * @param name The name of the airdrop
+     * @param distributionIpfsHash IPFS hash containing distribution details
      * @return predictedAddress The calculated CREATE2 address.
      */
     function predictPushAirdropAddress(
         address tokenAddress,
         bytes32 merkleRoot,
         address owner,
-        uint256 distributionCap
+        uint256 distributionCap,
+        string memory name,
+        string memory distributionIpfsHash
     )
         public
         view
         returns (address predictedAddress)
     {
-        bytes32 salt = _calculatePushAirdropSalt(tokenAddress, merkleRoot, owner, distributionCap);
+        bytes32 salt =
+            _calculatePushAirdropSalt(tokenAddress, merkleRoot, owner, distributionCap, name, distributionIpfsHash);
         bytes32 bytecodeHash = keccak256(
             abi.encodePacked(
                 type(PushAirdrop).creationCode,
-                abi.encode(tokenAddress, merkleRoot, owner, distributionCap, trustedForwarder())
+                abi.encode(
+                    tokenAddress, merkleRoot, owner, distributionCap, trustedForwarder(), name, distributionIpfsHash
+                )
             )
         );
         predictedAddress =
@@ -285,7 +293,6 @@ contract AirdropFactory is ERC2771Context {
      * @param startTime When claims can begin
      * @param endTime When claims end
      * @param name The name of the airdrop
-     * @param distributionIpfsHash IPFS hash containing distribution details
      * @return The calculated salt for CREATE2 deployment
      */
     function _calculateStandardAirdropSalt(
@@ -294,15 +301,13 @@ contract AirdropFactory is ERC2771Context {
         address owner,
         uint256 startTime,
         uint256 endTime,
-        string memory name,
-        string memory distributionIpfsHash
+        string memory name
     )
         internal
         pure
         returns (bytes32)
     {
-        return
-            keccak256(abi.encodePacked(tokenAddress, merkleRoot, owner, startTime, endTime, name, distributionIpfsHash));
+        return keccak256(abi.encodePacked(tokenAddress, merkleRoot, owner, startTime, endTime, name));
     }
 
     /**
@@ -332,7 +337,6 @@ contract AirdropFactory is ERC2771Context {
      * @param strategyAddress The address of the vesting strategy
      * @param claimPeriodEnd When users can no longer initialize vesting
      * @param name The name of the airdrop
-     * @param distributionIpfsHash IPFS hash containing distribution details
      * @return The calculated salt for CREATE2 deployment
      */
     function _calculateVestingAirdropSalt(
@@ -341,18 +345,13 @@ contract AirdropFactory is ERC2771Context {
         address owner,
         address strategyAddress,
         uint256 claimPeriodEnd,
-        string memory name,
-        string memory distributionIpfsHash
+        string memory name
     )
         internal
         pure
         returns (bytes32)
     {
-        return keccak256(
-            abi.encodePacked(
-                tokenAddress, merkleRoot, owner, strategyAddress, claimPeriodEnd, name, distributionIpfsHash
-            )
-        );
+        return keccak256(abi.encodePacked(tokenAddress, merkleRoot, owner, strategyAddress, claimPeriodEnd, name));
     }
 
     /**
@@ -361,18 +360,22 @@ contract AirdropFactory is ERC2771Context {
      * @param merkleRoot The Merkle root for verifying push distributions
      * @param owner The owner/admin who can push tokens
      * @param distributionCap Maximum tokens that can be distributed (0 for no cap)
+     * @param name The name of the airdrop
+     * @param distributionIpfsHash IPFS hash containing distribution details
      * @return The calculated salt for CREATE2 deployment
      */
     function _calculatePushAirdropSalt(
         address tokenAddress,
         bytes32 merkleRoot,
         address owner,
-        uint256 distributionCap
+        uint256 distributionCap,
+        string memory name,
+        string memory distributionIpfsHash
     )
         internal
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(tokenAddress, merkleRoot, owner, distributionCap));
+        return keccak256(abi.encodePacked(tokenAddress, merkleRoot, owner, distributionCap, name, distributionIpfsHash));
     }
 }

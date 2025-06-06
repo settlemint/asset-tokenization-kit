@@ -373,10 +373,14 @@ contract AirdropFactoryTest is Test {
         uint256 distributionCap = 1_000_000 * 10 ** 18; // 1M tokens cap
 
         // Predict the address before deployment
-        address predictedAddress = factory.predictPushAirdropAddress(address(token), merkleRoot, owner, distributionCap);
+        address predictedAddress = factory.predictPushAirdropAddress(
+            address(token), merkleRoot, owner, distributionCap, "Test Push Airdrop", "QmTestHash"
+        );
 
         // Deploy the push airdrop
-        address actualAddress = factory.deployPushAirdrop(address(token), merkleRoot, owner, distributionCap);
+        address actualAddress = factory.deployPushAirdrop(
+            address(token), merkleRoot, owner, distributionCap, "Test Push Airdrop", "QmTestHash"
+        );
 
         // Verify predicted address matches actual address
         assertEq(predictedAddress, actualAddress, "Predicted address should match actual address for push airdrop");
@@ -454,13 +458,17 @@ contract AirdropFactoryTest is Test {
         uint256 distributionCap = 1_000_000 * 10 ** 18; // 1M tokens cap
 
         // Deploy first push airdrop
-        address airdrop1 = factory.deployPushAirdrop(address(token), merkleRoot, owner, distributionCap);
+        address airdrop1 = factory.deployPushAirdrop(
+            address(token), merkleRoot, owner, distributionCap, "Test Push Airdrop", "QmTestHash"
+        );
 
         // Create a new factory instance with same forwarder
         AirdropFactory newFactory = new AirdropFactory(trustedForwarder);
 
         // Deploy push airdrop with same parameters using new factory
-        address airdrop2 = newFactory.deployPushAirdrop(address(token), merkleRoot, owner, distributionCap);
+        address airdrop2 = newFactory.deployPushAirdrop(
+            address(token), merkleRoot, owner, distributionCap, "Test Push Airdrop", "QmTestHash"
+        );
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(airdrop1, airdrop2, "Airdrops should have different addresses due to different factory addresses");
