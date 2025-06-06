@@ -32,21 +32,13 @@ describe("Identity", () => {
       }`
     );
     const response = await theGraphClient.request(query);
--    const allIdentitiesIds = response.identities.map((identity) => identity.id);
-+    const identityIds = response.identities.map((identity) => identity.id);
-+    const accountIds = response.identities
-+      .map((identity) => identity.account?.id)
-+      .filter((id): id is string => Boolean(id));
     expect(response.identities.length).toBe(12);
--    expect(
--      response.identities
--        .filter((identity) => identity.account)
--        .every(
--          (identity) =>
--            identity.account && !allIdentitiesIds.includes(identity.account.id)
--        )
--    ).toBe(true);
-+    // Ensure no account ID is also used as an identity ID
-+    expect(accountIds.every((id) => !identityIds.includes(id))).toBe(true);
+
+    const identityIds = response.identities.map((identity) => identity.id);
+    const accountIds = response.identities
+      .map((identity) => identity.account?.id)
+      .filter((id): id is string => Boolean(id));
+    // Ensure no account ID is also used as an identity ID
+    expect(accountIds.every((id) => !identityIds.includes(id))).toBe(true);
   });
 });
