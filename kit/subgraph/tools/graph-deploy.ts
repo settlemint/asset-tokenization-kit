@@ -482,9 +482,32 @@ async function createLocalSubgraph(
       graphPaths!.subgraphRoot
     );
     logger.success(`Created subgraph: ${graphName}`);
-  } catch (error) {
-    logger.warn("Failed to create subgraph (it may already exist)");
+  } catch (err) {
+    const error = err as Error;
+    logger.warn(
+      `Failed to create subgraph (it may already exist): ${error.message}`
+    );
     // Continue with deployment even if creation fails
+  }
+}
+
+/**
+ * Remove local subgraph
+ */
+async function removeLocalSubgraph(
+  graphName: string = GRAPH_NAME
+): Promise<void> {
+  try {
+    logger.info(`Removing local subgraph: ${graphName}`);
+    await Bun.$`bunx graph remove --node ${LOCAL_GRAPH_NODE} ${graphName}`.cwd(
+      graphPaths!.subgraphRoot
+    );
+    logger.success(`Removed subgraph: ${graphName}`);
+  } catch (err) {
+    const error = err as Error;
+    logger.warn(
+      `Failed to remove subgraph (it may not exist): ${error.message}`
+    );
   }
 }
 
@@ -501,6 +524,9 @@ async function deployLocal(): Promise<void> {
     logger.info(`  Version: ${versionLabel}`);
     logger.info(`  Graph Node: ${LOCAL_GRAPH_NODE}`);
     logger.info(`  IPFS: https://ipfs.console.settlemint.com`);
+
+    // Remove existing subgraph first
+    await removeLocalSubgraph(graphName);
 
     // Create subgraph first
     await createLocalSubgraph(graphName);
