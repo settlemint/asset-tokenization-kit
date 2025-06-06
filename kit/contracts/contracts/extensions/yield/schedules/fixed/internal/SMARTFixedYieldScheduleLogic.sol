@@ -136,7 +136,12 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             _periodEndTimestamps[i] = timestamp;
         }
 
-        emit FixedYieldScheduleSet(_startDate, _endDate, _rate, _interval, _periodEndTimestamps, _underlyingAsset);
+        // Calculate the for the next period for the event.
+        uint256 yieldForNextPeriod = totalYieldForNextPeriod();
+
+        emit FixedYieldScheduleSet(
+            startDate_, endDate_, rate_, interval_, _periodEndTimestamps, _underlyingAsset, yieldForNextPeriod
+        );
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -345,6 +350,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
 
         // Array to store yield amounts for each period being claimed. Useful for event emission.
         uint256[] memory periodAmounts = new uint256[](lastPeriod - fromPeriod + 1);
+        uint256[] memory periodYields = new uint256[](lastPeriod - fromPeriod + 1);
 
         // Calculate yield for each unclaimed, completed period.
         for (uint256 period = fromPeriod; period <= lastPeriod; ++period) {
@@ -355,6 +361,13 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
                 uint256 periodYield = (balance * basis * _rate) / RATE_BASIS_POINTS;
                 totalAmountToClaim += periodYield;
                 periodAmounts[period - fromPeriod] = periodYield; // Store amount for this specific period.
+            }
+            // Fetch the total supply of the token as it was at the end of this specific period.
+            // This is crucial for accuracy if the total supply changes over time.
+            uint256 historicalTotalSupply = _token.totalSupplyAt(_periodEndTimestamps[period - 1]);
+            if (historicalTotalSupply > 0) {
+                uint256 totalPeriodYield = (historicalTotalSupply * basis * _rate) / RATE_BASIS_POINTS;
+                periodYields[period - fromPeriod] = totalPeriodYield; // Store amount for this specific period.
             }
             // If balance is 0 for a period, its corresponding entry in periodAmounts remains 0.
         }
@@ -372,7 +385,19 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         // Calculate the remaining total unclaimed yield in the contract for the event.
         uint256 remainingUnclaimed = totalUnclaimedYield();
 
-        emit YieldClaimed(sender, totalAmountToClaim, fromPeriod, lastPeriod, periodAmounts, remainingUnclaimed);
+        // Calculate the for the next period for the event.
+        uint256 yieldForNextPeriod = totalYieldForNextPeriod();
+
+        emit YieldClaimed(
+            sender,
+            totalAmountToClaim,
+            fromPeriod,
+            lastPeriod,
+            periodAmounts,
+            periodYields,
+            remainingUnclaimed,
+            yieldForNextPeriod
+        );
     }
 
     /// @dev Implementation of `topUpUnderlyingAsset` from `ISMARTFixedYieldSchedule`.
