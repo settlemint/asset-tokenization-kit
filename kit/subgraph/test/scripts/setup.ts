@@ -30,7 +30,7 @@ beforeAll(async () => {
   // Wait for the subgraph to be ready by polling the indexing status
   let isReady = false;
   let attempts = 0;
-  const maxAttempts = 30; // 30 seconds timeout
+  const maxAttempts = 10;
 
   while (!isReady && attempts < maxAttempts) {
     try {
