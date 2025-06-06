@@ -197,7 +197,7 @@ describe("Fixed yield", () => {
     }
   });
 
-  it("underlying asset balance should match with the balance of on the account for the scheduler contract", async () => {
+  it("underlying asset balance should match with the balance of the account for the scheduler contract", async () => {
     const query = theGraphGraphql(
       `query($where: Token_filter) {
         tokenFixedYieldSchedules {
