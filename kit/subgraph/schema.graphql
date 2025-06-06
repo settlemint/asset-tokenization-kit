@@ -526,6 +526,8 @@ type StandardAirdrop implements Airdrop @entity(immutable: false) {
   id: Bytes! # Contract address
   factory: AirdropFactory!
   token: Asset! # Matches interface
+  name: String!
+  distributionIpfsHash: String!
   merkleRoot: Bytes!
   owner: Account!
   deployedOn: BigInt!
@@ -545,6 +547,8 @@ type VestingAirdrop implements Airdrop @entity(immutable: false) {
   id: Bytes! # Contract address
   factory: AirdropFactory!
   token: Asset! # Matches interface
+  name: String!
+  distributionIpfsHash: String!
   merkleRoot: Bytes!
   owner: Account!
   deployedOn: BigInt!

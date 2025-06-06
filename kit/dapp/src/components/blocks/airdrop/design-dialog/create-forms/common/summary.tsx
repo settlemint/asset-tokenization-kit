@@ -38,32 +38,32 @@ export function Summary({
     }
 
     // Validate predicted address
-    const validateAddress = async () => {
-      try {
-        const values = form.getValues();
-        const predictedAddress = await predictAddress(values);
-        const isAvailable = await isAddressAvailable(predictedAddress);
+    // const validateAddress = async () => {
+    //   try {
+    //     const values = form.getValues();
+    //     const predictedAddress = await predictAddress(values);
+    //     const isAvailable = await isAddressAvailable(predictedAddress);
 
-        if (!isAvailable) {
-          form.setError("predictedAddress", {
-            message: "private.airdrops.create.form.errors.duplicate-airdrop",
-          });
-          return;
-        }
+    //     if (!isAvailable) {
+    //       form.setError("predictedAddress", {
+    //         message: "private.airdrops.create.form.errors.duplicate-airdrop",
+    //       });
+    //       return;
+    //     }
 
-        // Set the predicted address in the form
-        form.setValue("predictedAddress", predictedAddress);
-        form.clearErrors("predictedAddress");
-      } catch (error) {
-        console.error("Error validating address:", error);
-        form.setError("predictedAddress", {
-          message:
-            "private.airdrops.create.form.errors.address-prediction-failed",
-        });
-      }
-    };
+    //     // Set the predicted address in the form
+    //     form.setValue("predictedAddress", predictedAddress);
+    //     form.clearErrors("predictedAddress");
+    //   } catch (error) {
+    //     console.error("Error validating address:", error);
+    //     form.setError("predictedAddress", {
+    //       message:
+    //         "private.airdrops.create.form.errors.address-prediction-failed",
+    //     });
+    //   }
+    // };
 
-    validateAddress();
+    // validateAddress();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

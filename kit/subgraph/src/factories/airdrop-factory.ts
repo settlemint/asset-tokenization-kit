@@ -6,6 +6,8 @@ import {
   log,
 } from "@graphprotocol/graph-ts";
 
+import { ipfs, json } from "@graphprotocol/graph-ts";
+
 import {
   AirdropFactory,
   LinearVestingStrategy,
@@ -95,6 +97,10 @@ export function handleStandardAirdropDeployed(
   let startTimeResult = airdropContract.try_startTime();
   let endTimeResult = airdropContract.try_endTime();
 
+  // Fetch name and distributionIpfsHash from the newly deployed StandardAirdrop contract
+  let nameResult = airdropContract.try_name();
+  let distributionIpfsHashResult = airdropContract.try_distributionIpfsHash();
+
   if (!merkleRootResult.reverted) {
     airdrop.merkleRoot = merkleRootResult.value;
   } else {
@@ -118,6 +124,129 @@ export function handleStandardAirdropDeployed(
       airdropAddress.toHex(),
     ]);
     airdrop.endTime = BigInt.fromI32(0);
+  }
+
+  if (!nameResult.reverted) {
+    airdrop.name = nameResult.value;
+  } else {
+    log.error("Failed to fetch name for StandardAirdrop {}", [
+      airdropAddress.toHex(),
+    ]);
+  }
+  if (!distributionIpfsHashResult.reverted) {
+    airdrop.distributionIpfsHash = distributionIpfsHashResult.value;
+
+    // Fetch and log IPFS content
+    let ipfsHash = distributionIpfsHashResult.value;
+    log.info("Attempting to fetch IPFS content for hash: {}", [ipfsHash]);
+
+    let ipfsData = ipfs.cat(ipfsHash);
+    if (ipfsData) {
+      log.info("Successfully fetched IPFS data. Raw bytes length: {}", [
+        ipfsData.length.toString(),
+      ]);
+
+      // Try to parse as JSON
+      let jsonData = json.fromBytes(ipfsData);
+      if (jsonData.isNull()) {
+        log.warning("IPFS data is not valid JSON for hash: {}", [ipfsHash]);
+        // Log as string if not JSON
+        let stringData = ipfsData.toString();
+        log.info("IPFS content as string: {}", [stringData]);
+      } else {
+        log.info("IPFS data parsed successfully as JSON for hash: {}", [
+          ipfsHash,
+        ]);
+
+        // Log the JSON object - specific to airdrop distribution format
+        let jsonObject = jsonData.toObject();
+        if (jsonObject) {
+          let totalRecipients = jsonObject.entries.length;
+          log.info("IPFS airdrop distribution data contains {} recipients", [
+            totalRecipients.toString(),
+          ]);
+
+          // Log first few recipients as examples (limit to 5 to avoid log spam)
+          let maxToLog = totalRecipients > 5 ? 5 : totalRecipients;
+          log.info("Showing first {} recipients:", [maxToLog.toString()]);
+
+          for (let i = 0; i < maxToLog; i++) {
+            let entry = jsonObject.entries[i];
+            let address = entry.key;
+            let recipientData = entry.value;
+
+            if (recipientData.kind == 5) {
+              // OBJECT
+              let recipientObject = recipientData.toObject();
+              if (recipientObject) {
+                let amount = "";
+                let proofLength = 0;
+
+                // Extract amount
+                let amountValue = recipientObject.get("amount");
+                if (amountValue && amountValue.kind == 0) {
+                  // STRING
+                  amount = amountValue.toString();
+                }
+
+                // Extract proof array length
+                let proofValue = recipientObject.get("proof");
+                if (proofValue && proofValue.kind == 4) {
+                  // ARRAY
+                  proofLength = proofValue.toArray().length;
+                }
+
+                log.info(
+                  "Recipient {}: address={}, amount={}, proof_length={}",
+                  [(i + 1).toString(), address, amount, proofLength.toString()]
+                );
+              }
+            }
+          }
+
+          if (totalRecipients > 5) {
+            log.info("... and {} more recipients", [
+              (totalRecipients - 5).toString(),
+            ]);
+          }
+
+          // Calculate total amount being distributed
+          let totalAmount = BigInt.fromI32(0);
+          let validRecipients = 0;
+
+          for (let i = 0; i < totalRecipients; i++) {
+            let entry = jsonObject.entries[i];
+            let recipientData = entry.value;
+
+            if (recipientData.kind == 5) {
+              // OBJECT
+              let recipientObject = recipientData.toObject();
+              if (recipientObject) {
+                let amountValue = recipientObject.get("amount");
+                if (amountValue && amountValue.kind == 0) {
+                  // STRING
+                  let amountStr = amountValue.toString();
+                  let amount = BigInt.fromString(amountStr);
+                  totalAmount = totalAmount.plus(amount);
+                  validRecipients++;
+                }
+              }
+            }
+          }
+
+          log.info(
+            "Distribution summary: {} valid recipients, total amount: {} wei",
+            [validRecipients.toString(), totalAmount.toString()]
+          );
+        }
+      }
+    } else {
+      log.error("Failed to fetch IPFS data for hash: {}", [ipfsHash]);
+    }
+  } else {
+    log.error("Failed to fetch distributionIpfsHash for StandardAirdrop {}", [
+      airdropAddress.toHex(),
+    ]);
   }
   // ---------------------------- //
 
