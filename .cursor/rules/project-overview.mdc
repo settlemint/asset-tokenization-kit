@@ -1,0 +1,59 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+# Project Overview
+
+This is the SettleMint Asset Tokenization Kit - a full-stack monorepo solution
+for building digital asset platforms. It is managed by TurboRepo.
+
+The project consists of:
+
+- Smart contracts for various tokenized assets (bonds, equity, stablecoins,
+  funds, deposits)
+- A Next.js dApp with TypeScript
+- A TheGraph subgraph for blockchain indexing
+- Kubernetes deployment via Helm charts
+- End-to-end tests using Playwright
+
+## Key Directories
+
+The main application code is located within the `kit` directory.
+
+- `kit/charts/`: Contains Helm charts for deploying the application stack on
+  Kubernetes. The main chart is in `[kit/charts/atk/](mdc:kit/charts/atk)`.
+- `kit/contracts/`: Holds all Solidity smart contracts. This is a Hardhat
+  project. Key contracts are in
+  `[kit/contracts/contracts/](mdc:kit/contracts/contracts)`. Deployment scripts
+  are in
+  `[kit/contracts/ignition/modules/](mdc:kit/contracts/ignition/modules)`. See
+  [contracts-architecture.mdc](mdc:.cursor/rules/contracts-architecture.mdc) for
+  more details.
+- `kit/dapp/`: A Next.js application that serves as the main frontend. See
+  [frontend-architecture.mdc](mdc:.cursor/rules/frontend-architecture.mdc) for
+  more details.
+- `kit/subgraph/`: Contains configuration and mappings for The Graph protocol.
+  The schema is defined in
+  `[kit/subgraph/schema.graphql](mdc:kit/subgraph/schema.graphql)`.
+- `kit/e2e/`: End-to-end tests for the platform using Playwright.
+- `tools/`: Contains various utility scripts.
+
+## Tech Stack
+
+- **Monorepo:** [Turborepo](mdc:https:/turbo.build/repo)
+- **Package Manager:** [Bun](mdc:https:/bun.sh)
+- **Frontend:** [Next.js](mdc:https:/nextjs.org), [React](mdc:https:/react.dev),
+  [TypeScript](mdc:https:/www.typescriptlang.org),
+  [Tailwind CSS](mdc:https:/tailwindcss.com)
+- **Smart Contracts:** [Solidity](mdc:https:/soliditylang.org),
+  [Hardhat](mdc:https:/hardhat.org), [Foundry](mdc:https:/book.getfoundry.sh)
+- **Deployment:** [Docker](mdc:https:/www.docker.com),
+  [Kubernetes](mdc:https:/kubernetes.io), [Helm](mdc:https:/helm.sh)
+- **Subgraph:** [The Graph Protocol](mdc:https:/thegraph.com)
+- **Testing:** [Playwright](mdc:https:/playwright.dev) for E2E tests.
+
+For development commands and workflow, see
+[common-commands.mdc](mdc:.cursor/rules/common-commands.mdc) and
+[development-workflow.mdc](mdc:.cursor/rules/development-workflow.mdc).

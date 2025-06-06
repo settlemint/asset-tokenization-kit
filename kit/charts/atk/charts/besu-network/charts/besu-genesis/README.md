@@ -1,65 +1,65 @@
-# Besu Genesis
+# besu-genesis
 
-The source of this chart is
-https://github.com/Consensys/quorum-kubernetes/tree/master/helm/charts/besu-genesis
-As it is not published in any Helm repository, we have to copy it here.
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
-It has been adjusted to work with the SettleMint Asset Tokenization Kit.
+Besu Genesis generator with Helm chart in Kubernetes
 
-## Genesis File Storage
+**Homepage:** <https://besu.hyperledger.org>
 
-This chart stores genesis files in a PersistentVolumeClaim to handle files of any size, including large genesis files that exceed Kubernetes ConfigMap size limits.
+## Maintainers
 
-### Universal Storage Approach
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Joshua Fernandes | <joshua.fernandes@consensys.net> |  |
 
-This chart automatically adapts to any Kubernetes environment without requiring manual configuration:
+## Source Code
 
-- **Genesis Storage**: Stored in PersistentVolumeClaim `besu-genesis-pvc` with ReadWriteOnce access (compatible with all storage classes)
-- **Genesis Server**: HTTP server (`besu-genesis-server`) serves the genesis file to multiple nodes
-- **Automatic Fallback**: Besu nodes use intelligent retrieval with multiple fallback methods
-- **Zero Configuration**: Works with any storage class (local-path, EBS, Azure Disk, etc.) without manual setup
+* <https://github.com/hyperledger/besu>
 
-### Storage Configuration
+## Values
 
-Configure storage settings in values.yaml:
-
-```yaml
-storage:
-  storageClassName: "fast-ssd"  # Optional: specify storage class
-  size: "1Gi"                   # Size for PVC
-```
-
-### How It Works
-
-1. **Genesis Creation**: The genesis job creates the genesis file and stores it in the PVC (ReadWriteOnce)
-2. **Genesis Server**: A dedicated HTTP server mounts the PVC and serves the genesis file
-3. **Smart Retrieval**: Each Besu node uses an init container with intelligent fallback:
-   - **Method 1**: HTTP download from genesis server (fastest, works universally)
-   - **Method 2**: Direct PVC access via temporary pod (fallback)
-   - **Method 3**: Extended retry with HTTP server (for slow environments)
-4. **Shared Access**: Multiple Besu nodes can access the same genesis file via the HTTP server
-
-### Automatic Compatibility
-
-The chart automatically works with:
-- ✅ **Local development** (local-path, hostPath storage)
-- ✅ **Cloud providers** (EBS, Azure Disk, GCE PD)
-- ✅ **Network storage** (NFS, Ceph, etc.)
-- ✅ **Any storage class** that supports ReadWriteOnce
-
-### Integration with Besu Nodes
-
-The besu-node chart automatically includes the necessary init container to retrieve the genesis file using intelligent fallback methods. No additional configuration is required - the genesis file is available at `/shared/genesis.json` in the Besu container.
-
-### Benefits
-
-- 🚀 **Zero Configuration**: Works out-of-the-box with any Kubernetes environment
-- 🔄 **Intelligent Fallback**: Multiple retrieval methods ensure reliability
-- 📦 **Universal Compatibility**: Supports all storage classes and providers
-- ⚡ **Optimized Performance**: HTTP delivery is fastest for most scenarios
-- 🛡️ **Robust Error Handling**: Detailed logging and graceful degradation
-
-## License
-
-This chart is licensed under the Apache License 2.0 - see the LICENSE file for
-details.
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| aws.region | string | `"ap-southeast-2"` |  |
+| aws.serviceAccountName | string | `"quorum-sa"` |  |
+| azure.identityClientId | string | `"azure-clientId"` |  |
+| azure.keyvaultName | string | `"azure-keyvault"` |  |
+| azure.serviceAccountName | string | `"quorum-sa"` |  |
+| azure.subscriptionId | string | `"azure-subscriptionId"` |  |
+| azure.tenantId | string | `"azure-tenantId"` |  |
+| cluster.cloudNativeServices | bool | `false` |  |
+| cluster.provider | string | `"local"` |  |
+| genesisServer.image.pullPolicy | string | `"IfNotPresent"` |  |
+| genesisServer.image.registry | string | `"docker.io"` |  |
+| genesisServer.image.repository | string | `"nginx"` |  |
+| genesisServer.image.tag | string | `"1.28.0-alpine"` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
+| image.tag | string | `"sha-49c40f5"` |  |
+| imagePullSecrets[0] | string | `"image-pull-secret-harbor"` |  |
+| imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
+| imagePullSecrets[2] | string | `"image-pull-secret-docker"` |  |
+| initJob.annotations."helm.sh/hook" | string | `"pre-install"` |  |
+| initJob.annotations."helm.sh/hook-delete-policy" | string | `"hook-succeeded"` |  |
+| initJob.annotations."helm.sh/hook-weight" | string | `"-10"` |  |
+| quorumFlags.removeGenesisOnDelete | bool | `true` |  |
+| rawGenesisConfig.blockchain.accountPassword | string | `"password"` |  |
+| rawGenesisConfig.blockchain.nodes.count | int | `1` |  |
+| rawGenesisConfig.blockchain.nodes.generate | bool | `true` |  |
+| rawGenesisConfig.genesis.coinbase | string | `"0x0000000000000000000000000000000000000000"` |  |
+| rawGenesisConfig.genesis.config.algorithm.blockperiodseconds | int | `2` |  |
+| rawGenesisConfig.genesis.config.algorithm.consensus | string | `"qbft"` |  |
+| rawGenesisConfig.genesis.config.algorithm.epochlength | int | `30000` |  |
+| rawGenesisConfig.genesis.config.algorithm.requesttimeoutseconds | int | `65` |  |
+| rawGenesisConfig.genesis.config.chainId | int | `53771311147` |  |
+| rawGenesisConfig.genesis.difficulty | string | `"0x1"` |  |
+| rawGenesisConfig.genesis.gasLimit | string | `"9007199254740991"` |  |
+| rawGenesisConfig.genesis.includeQuickStartAccounts | bool | `false` |  |
+| serviceAccount.annotations."helm.sh/hook" | string | `"pre-install,pre-delete,post-delete"` |  |
+| serviceAccount.annotations."helm.sh/hook-weight" | string | `"-11"` |  |
+| serviceAccountRole.annotations."helm.sh/hook" | string | `"pre-install,pre-delete,post-delete"` |  |
+| serviceAccountRole.annotations."helm.sh/hook-weight" | string | `"-12"` |  |
+| serviceAccountRoleBinding.annotations."helm.sh/hook" | string | `"pre-install,pre-delete,post-delete"` |  |
+| serviceAccountRoleBinding.annotations."helm.sh/hook-weight" | string | `"-11"` |  |
+| storage.size | string | `"1Gi"` |  |
+| storage.storageClassName | string | `""` |  |

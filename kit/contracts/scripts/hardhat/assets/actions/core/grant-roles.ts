@@ -3,6 +3,7 @@ import { SMARTRoles } from "../../../constants/roles";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
+import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 // The issuer doesn't need to have a claim manager role, it can be anyone that adds the claim.
@@ -12,15 +13,14 @@ export const grantRoles = async (
   targetActor: AbstractActor,
   roles: (typeof SMARTRoles)[keyof typeof SMARTRoles][]
 ) => {
-  const accessManagerContract = await owner.getContractInstance({
+  const accessManagerContract = owner.getContractInstance({
     address: asset.accessManager,
     abi: SMARTContracts.accessManager,
   });
 
-  const transactionHash = await accessManagerContract.write.grantMultipleRoles([
-    targetActor.address,
-    roles,
-  ]);
+  const transactionHash = await withDecodedRevertReason(() =>
+    accessManagerContract.write.grantMultipleRoles([targetActor.address, roles])
+  );
 
   await waitForSuccess(transactionHash);
 

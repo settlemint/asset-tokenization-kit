@@ -64,13 +64,15 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     /// @param interval The interval of the yield schedule.
     /// @param periodEndTimestamps The timestamps of the end of each period.
     /// @param underlyingAsset The underlying asset of the yield schedule.
+    /// @param yieldForNextPeriod The yield for the next period.
     event FixedYieldScheduleSet(
         uint256 startDate,
         uint256 endDate,
         uint256 rate,
         uint256 interval,
         uint256[] periodEndTimestamps,
-        IERC20 underlyingAsset
+        IERC20 underlyingAsset,
+        uint256 yieldForNextPeriod
     );
 
     /// @notice Emitted when an administrator or funder successfully deposits `_underlyingAsset` into the contract to
@@ -86,21 +88,27 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
 
     /// @notice Emitted when a token holder successfully claims their accrued yield.
     /// @param holder The address of the token holder who claimed the yield.
-    /// @param totalAmount The total quantity of `_underlyingAsset` transferred to the holder in this claim.
+    /// @param claimedAmount The total quantity of `_underlyingAsset` transferred to the holder in this claim.
     /// @param fromPeriod The first period number (1-indexed) included in this claim.
     /// @param toPeriod The last period number (1-indexed) included in this claim.
     /// @param periodAmounts An array containing the amount of yield claimed for each specific period within the
     /// `fromPeriod` to `toPeriod` range.
     /// The length of this array is `toPeriod - fromPeriod + 1`.
-    /// @param unclaimedYield The total amount of unclaimed yield remaining in the contract across all holders after
-    /// this claim.
+    /// @param periodYields An array containing the total yield for each specific period within the
+    /// `fromPeriod` to `toPeriod` range.
+    /// The length of this array is `toPeriod - fromPeriod + 1`.
+    /// @param totalUnclaimedYield The total amount of unclaimed yield remaining in the contract across all holders
+    /// after this claim.
+    /// @param yieldForNextPeriod The yield for the next period.
     event YieldClaimed( // Amounts per period, matches the range fromPeriod to toPeriod
         address indexed holder,
-        uint256 totalAmount,
+        uint256 claimedAmount,
         uint256 fromPeriod,
         uint256 toPeriod,
         uint256[] periodAmounts,
-        uint256 unclaimedYield
+        uint256[] periodYields,
+        uint256 totalUnclaimedYield,
+        uint256 yieldForNextPeriod
     );
 
     /// @notice Returns an array of all period end timestamps for this yield schedule.

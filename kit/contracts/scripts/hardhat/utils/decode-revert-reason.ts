@@ -23,7 +23,7 @@ export const withDecodedRevertReason = async <ReturnType>(
   }
 };
 
-export async function tryDecodeRevertReason(error: Error): Promise<never> {
+async function tryDecodeRevertReason(error: Error): Promise<never> {
   if (
     error instanceof ContractFunctionExecutionError &&
     error.cause instanceof ContractFunctionRevertedError
@@ -33,6 +33,9 @@ export async function tryDecodeRevertReason(error: Error): Promise<never> {
     if (parsedRevertReason) {
       throw parsedRevertReason;
     }
+    console.log("Failed to decode revert reason");
+  } else {
+    console.log("Unknown error, cannot parse revert reason", error);
   }
   throw error;
 }
@@ -46,7 +49,6 @@ async function parseRevertReason(revertReason: Hex | undefined) {
   }
 
   const allAbis = await getAllAbis();
-  console.log(`allAbis`, allAbis.length);
   for (const abi of allAbis) {
     const decoded = decodeRevertReason(revertReason, abi);
     if (decoded) {
@@ -109,6 +111,7 @@ async function getAllAbis() {
       })
     )
   ).filter((item) => !!item);
+  console.log(`Found ${result.length} abis in ${ARTIFACTS_DIR}`);
   allAbisCache = result;
   return result;
 }

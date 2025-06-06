@@ -38,6 +38,7 @@
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
     "build": "turbo build",
+    "docs": "turbo run docs",
     "ci:gha": "turbo run ci:gha",
     "ci": "turbo run ci",
     "ci:publish": "turbo run ci:publish",
@@ -53,11 +54,13 @@
     "test:e2e:ui:debug": "bun run --cwd kit/e2e playwright test --config=playwright.ui.config.ts --project=ui-tests --ui",
     "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
     "test:e2e:api:debug": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests --ui",
-    "helm": "turbo run helm"
+    "helm": "turbo run helm",
+    "extract-env": "bun run tools/extract-env.ts"
   },
   "dependencies": {},
   "devDependencies": {
     "@settlemint/sdk-cli": "2.3.5",
+    "lefthook": "1.11.13",
     "prettier": "3.5.3",
     "turbo": "2.5.4",
     "typescript": "5.8.3"

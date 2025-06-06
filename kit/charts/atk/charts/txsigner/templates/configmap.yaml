@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  txsigner.yaml: |
+    debug: {{ .Values.config.debug }}
+    logLevel: {{ .Values.config.logLevel }}
+    rpcUrl: {{ .Values.config.rpcUrl }}
+    chainId: {{ .Values.config.chainId }}
+    port: {{ .Values.config.port }}
+    metricsPort: {{ .Values.config.metricsPort }}
+    signingStrategy: {{ .Values.config.signingStrategy }}
+    {{- if eq .Values.config.signingStrategy "kms" }}
+    kms:
+      provider: {{ .Values.config.kms.provider }}
+      keyId: {{ .Values.config.kms.keyId }}
+      region: {{ .Values.config.kms.region }}
+    {{- end }}
+    {{- if eq .Values.config.signingStrategy "hsm" }}
+    hsm:
+      module: {{ .Values.config.hsm.module }}
+      slot: {{ .Values.config.hsm.slot }}
+    {{- end }}
+    rateLimit:
+      enabled: {{ .Values.config.rateLimit.enabled }}
+      maxRequestsPerMinute: {{ .Values.config.rateLimit.maxRequestsPerMinute }}
+      maxRequestsPerHour: {{ .Values.config.rateLimit.maxRequestsPerHour }}
+    queue:
+      maxSize: {{ .Values.config.queue.maxSize }}
+      processingInterval: {{ .Values.config.queue.processingInterval }}
+    gas:
+      priceStrategy: {{ .Values.config.gas.priceStrategy }}
+      {{- if eq .Values.config.gas.priceStrategy "fixed" }}
+      fixedPrice: {{ .Values.config.gas.fixedPrice }}
+      {{- end }}
+      limit: {{ .Values.config.gas.limit }}
+      multiplier: {{ .Values.config.gas.multiplier }}
+    nonce:
+      strategy: {{ .Values.config.nonce.strategy }}
+      maxPending: {{ .Values.config.nonce.maxPending }}
+    audit:
+      enabled: {{ .Values.config.audit.enabled }}
+      retentionDays: {{ .Values.config.audit.retentionDays }}
+    {{- if .Values.config.allowedContracts }}
+    allowedContracts:
+      {{- toYaml .Values.config.allowedContracts | nindent 6 }}
+    {{- end }}
+    {{- if .Values.config.allowedMethods }}
+    allowedMethods:
+      {{- toYaml .Values.config.allowedMethods | nindent 6 }}
+    {{- end }}
+    cors:
+      enabled: {{ .Values.config.cors.enabled }}
+      {{- if .Values.config.cors.origins }}
+      origins:
+        {{- toYaml .Values.config.cors.origins | nindent 8 }}
+      {{- end }}
+      {{- if .Values.config.cors.methods }}
+      methods:
+        {{- toYaml .Values.config.cors.methods | nindent 8 }}
+      {{- end }}
+      {{- if .Values.config.cors.headers }}
+      headers:
+        {{- toYaml .Values.config.cors.headers | nindent 8 }}
+      {{- end }}

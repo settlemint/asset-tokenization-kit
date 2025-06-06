@@ -121,7 +121,7 @@ The contracts follow the SMART protocol (v8.0.15) and implement:
 
 3. **Authentication**: Better Auth library
 
-   - Configuration in `/kit/dapp/src/lib/auth/`
+   - Configuration in `/kit/dapp/src/lib/auth/auth.ts`
 
 4. **Blockchain Integration**:
 

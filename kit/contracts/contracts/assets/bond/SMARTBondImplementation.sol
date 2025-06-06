@@ -79,17 +79,6 @@ contract SMARTBondImplementation is
     /// @dev Maps holder address to amount of bonds redeemed
     mapping(address holder => uint256 redeemed) public bondRedeemed;
 
-    /// @notice Emitted when the bond reaches maturity and is closed
-    /// @param timestamp The block timestamp when the bond matured
-    event BondMatured(uint256 indexed timestamp);
-
-    /// @notice Emitted when a bond is redeemed for underlying assets
-    /// @param sender The address that initiated the redemption
-    /// @param holder The address redeeming the bonds
-    /// @param bondAmount The amount of bonds redeemed
-    /// @param underlyingAmount The amount of underlying assets received
-    event BondRedeemed(address indexed sender, address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
-
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {

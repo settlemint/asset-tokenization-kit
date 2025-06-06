@@ -51,3 +51,9 @@ observability:
 
 blockscout:
   enabled: false
+
+txsigner:
+  ingress:
+    enabled: true
+    hostname: txsigner.k8s.orb.local
+

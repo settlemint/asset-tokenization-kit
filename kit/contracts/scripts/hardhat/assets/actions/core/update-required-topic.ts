@@ -27,10 +27,11 @@ export const updateRequiredTopics = async (
   ]);
 
   const transactionHash =
-    await tokenContract.write.setParametersForComplianceModule([
+    await withDecodedRevertReason(() => tokenContract.write.setParametersForComplianceModule([
       identityVerificationModuleAddress,
       encodedTopicIds,
-    ]);
+    ])
+                                  );
 
   await waitForSuccess(transactionHash);
 

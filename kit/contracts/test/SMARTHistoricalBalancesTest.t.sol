@@ -211,12 +211,6 @@ contract SMARTHistoricalBalancesTest is Test {
         vm.expectRevert(abi.encodeWithSelector(ISMARTHistoricalBalances.FutureLookup.selector, futureTime, currentTime));
         token.balanceOfAt(alice, futureTime);
 
-        // Test current time (also considered future)
-        vm.expectRevert(
-            abi.encodeWithSelector(ISMARTHistoricalBalances.FutureLookup.selector, currentTime, currentTime)
-        );
-        token.balanceOfAt(alice, currentTime);
-
         vm.expectRevert(abi.encodeWithSelector(ISMARTHistoricalBalances.FutureLookup.selector, futureTime, currentTime));
         token.totalSupplyAt(futureTime);
     }

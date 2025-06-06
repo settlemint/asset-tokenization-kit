@@ -1,0 +1,50 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+# Smart Contract Architecture
+
+The contracts follow the SMART protocol (v8.0.15) and are located in
+`[kit/contracts/contracts/](mdc:kit/contracts/contracts)`.
+
+### 1. Factory Pattern
+
+Each asset type has a factory contract that deploys asset instances.
+
+- `SMARTBondFactory`, `SMARTEquityFactory`, `SMARTStableCoinFactory`, etc.
+- Located in
+  `[kit/contracts/contracts/assets/](mdc:kit/contracts/contracts/assets)`
+
+### 2. Proxy Pattern
+
+All assets use upgradeable proxies, allowing for implementation upgrades while
+maintaining state.
+
+### 3. Extension System
+
+Modular features are implemented via extensions.
+
+- `SMARTBurnable`, `SMARTCapped`, `SMARTCollateral`, `SMARTPausable`, etc.
+- Located in
+  `[kit/contracts/contracts/extensions/](mdc:kit/contracts/contracts/extensions)`
+
+### 4. Compliance System
+
+The system uses ERC-3643 for compliance.
+
+- Features include an identity registry, trusted issuers, and claim topics.
+- Located in
+  `[kit/contracts/contracts/system/](mdc:kit/contracts/contracts/system)`
+
+## Contract Addresses
+
+The system uses deterministic addresses for factory contracts:
+
+- **Bond Factory**: `0x5e771e1417100000000000000000000000000004`
+- **Cryptocurrency Factory**: `0x5e771e1417100000000000000000000000000001`
+- **Equity Factory**: `0x5e771e1417100000000000000000000000000003`
+- **Stable Coin Factory**: `0x5e771e1417100000000000000000000000000002`
+- **Fund Factory**: `0x5e771e1417100000000000000000000000000005`
+- **Deposit Factory**: `0x5e771e1417100000000000000000000000000007`
