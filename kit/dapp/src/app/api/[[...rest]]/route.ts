@@ -4,7 +4,10 @@ import { router } from "@/lib/orpc/routes/router";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { CORSPlugin } from "@orpc/server/plugins";
-import { ZodSmartCoercionPlugin, ZodToJsonSchemaConverter } from "@orpc/zod";
+import {
+  experimental_ZodSmartCoercionPlugin as ZodSmartCoercionPlugin,
+  experimental_ZodToJsonSchemaConverter as ZodToJsonSchemaConverter,
+} from "@orpc/zod/zod4";
 import { NextRequest } from "next/server";
 import pkgjson from "../../../../package.json";
 

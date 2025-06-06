@@ -3,7 +3,7 @@ import type { ORPCErrorCode } from "@orpc/client";
 import { ORPCError, ValidationError } from "@orpc/server";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { APIError } from "better-auth/api";
-import { ZodError, type ZodIssue } from "zod";
+import { ZodError, type ZodIssue } from "zod/v4";
 
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,

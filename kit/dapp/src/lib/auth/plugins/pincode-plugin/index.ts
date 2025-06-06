@@ -5,7 +5,7 @@ import { updatePincodeFunction } from "@/lib/mutations/user/pincode/update-pinco
 import type { BetterAuthPlugin } from "better-auth";
 import { createAuthEndpoint, sessionMiddleware } from "better-auth/api";
 import { APIError } from "better-call";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { revokeSession, validatePassword } from "../utils";
 
 export const pincode = () => {

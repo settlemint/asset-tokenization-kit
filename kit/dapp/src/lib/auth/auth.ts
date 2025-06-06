@@ -13,7 +13,7 @@ import { nextCookies } from "better-auth/next-js";
 import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { getServerEnvironment } from "../config/environment";
 import { metadata } from "../config/metadata";
 import { accessControl, adminRole, issuerRole, userRole } from "./permissions";

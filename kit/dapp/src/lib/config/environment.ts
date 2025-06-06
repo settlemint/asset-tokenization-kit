@@ -1,40 +1,38 @@
-import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
+import { safeParse } from "@/lib/utils/zod";
+import { z } from "zod/v4";
 
-const serverEnvironmentSchema = t.Object(
-  {
-    BETTER_AUTH_URL: t.Optional(t.String({ format: "uri" })),
-    NEXT_PUBLIC_APP_URL: t.Optional(t.String({ format: "uri" })),
-    NEXTAUTH_URL: t.Optional(t.String({ format: "uri" })),
-    SETTLEMINT_HASURA_ADMIN_SECRET: t.String({ minLength: 1 }),
-    RESEND_API_KEY: t.Optional(t.String()),
-    GOOGLE_CLIENT_ID: t.Optional(t.String()),
-    GOOGLE_CLIENT_SECRET: t.Optional(t.String()),
-    GITHUB_CLIENT_ID: t.Optional(t.String()),
-    GITHUB_CLIENT_SECRET: t.Optional(t.String()),
+const serverEnvironmentSchema = z.object({
+  BETTER_AUTH_URL: z.string().url().optional(),
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  NEXTAUTH_URL: z.string().url().optional(),
+  SETTLEMINT_HASURA_ADMIN_SECRET: z
+    .string()
+    .min(1, "SETTLEMINT_HASURA_ADMIN_SECRET is required"),
+  RESEND_API_KEY: z.string().optional(),
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  GITHUB_CLIENT_ID: z.string().optional(),
+  GITHUB_CLIENT_SECRET: z.string().optional(),
 
-    // Wallet related
-    SETTLEMINT_HD_PRIVATE_KEY: t.String({
-      pattern: "^[a-z0-9-]+$",
-      error:
-        "SETTLEMINT_HD_PRIVATE_KEY can only contain lowercase letters, digits, and hyphens with no spaces",
-    }),
+  // Wallet related
+  SETTLEMINT_HD_PRIVATE_KEY: z
+    .string()
+    .regex(
+      /^[a-z0-9-]+$/,
+      "SETTLEMINT_HD_PRIVATE_KEY can only contain lowercase letters, digits, and hyphens with no spaces"
+    ),
 
-    // Define APP_URL as part of the schema with a default value
-    APP_URL: t.String({ format: "uri" }),
-  },
-  { $id: "ServerEnvironment" }
-);
+  // Define APP_URL as part of the schema with a default value
+  APP_URL: z.string().url(),
+});
 
-type ServerEnvironment = StaticDecode<typeof serverEnvironmentSchema>;
+type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 
-const clientEnvironmentSchema = t.Object(
-  {
-    NEXT_PUBLIC_EXPLORER_URL: t.Optional(t.String({ format: "uri" })),
-  },
-  { $id: "ClientEnvironment" }
-);
+const clientEnvironmentSchema = z.object({
+  NEXT_PUBLIC_EXPLORER_URL: z.string().url().optional(),
+});
 
-type ClientEnvironment = StaticDecode<typeof clientEnvironmentSchema>;
+type ClientEnvironment = z.infer<typeof clientEnvironmentSchema>;
 
 /**
  * Validates and returns typed environment variables

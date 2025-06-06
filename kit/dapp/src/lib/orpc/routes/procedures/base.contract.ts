@@ -1,5 +1,5 @@
 import { oc } from "@orpc/contract";
-import z from "zod";
+import z from "zod/v4";
 
 /**
  * Base ORPC contract with common error definitions.
