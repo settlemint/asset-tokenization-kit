@@ -47,13 +47,15 @@ export const Roles = [
     "TOKEN_IDENTITY_ISSUER_ADMIN_ROLE",
     "tokenIdentityIssuerAdmin"
   ),
-  new RoleConfig("TOKEN_DEPLOYER_ROLE", "tokenDeployer"),
+  new RoleConfig("DEPLOYER_ROLE", "deployer"),
   new RoleConfig("STORAGE_MODIFIER_ROLE", "storageModifier"),
   new RoleConfig("MANAGE_REGISTRIES_ROLE", "manageRegistries"),
   new RoleConfig("TOKEN_GOVERNANCE_ROLE", "tokenGovernance"),
   new RoleConfig("SUPPLY_MANAGEMENT_ROLE", "supplyManagement"),
   new RoleConfig("CUSTODIAN_ROLE", "custodian"),
   new RoleConfig("EMERGENCY_ROLE", "emergency"),
+  new RoleConfig("IMPLEMENTATION_MANAGER_ROLE", "implementationManager"),
+  new RoleConfig("ALLOW_LIST_MANAGER_ROLE", "allowListManager"),
 ];
 
 export function getRoleConfigFromBytes(bytes: Bytes): RoleConfig {

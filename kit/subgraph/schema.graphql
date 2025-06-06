@@ -38,13 +38,15 @@ type AccessControl @entity(immutable: false) {
   identityIssuer: [Account!]!
   tokenIdentityIssuer: [Account!]!
   tokenIdentityIssuerAdmin: [Account!]!
-  tokenDeployer: [Account!]!
+  deployer: [Account!]!
   storageModifier: [Account!]!
   manageRegistries: [Account!]!
   tokenGovernance: [Account!]!
   supplyManagement: [Account!]!
   custodian: [Account!]!
   emergency: [Account!]!
+  implementationManager: [Account!]!
+  allowListManager: [Account!]!
 }
 
 type System @entity(immutable: false) {
