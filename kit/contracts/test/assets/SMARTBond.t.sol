@@ -760,7 +760,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
 
         vm.startPrank(platformAdmin);
         IAccessControl(address(systemUtils.compliance())).grantRole(
-            SMARTSystemRoles.WHITELIST_MANAGER_ROLE, address(factory)
+            SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(factory)
         );
         vm.stopPrank();
 
@@ -806,7 +806,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
 
         vm.startPrank(platformAdmin);
         IAccessControl(address(systemUtils.compliance())).grantRole(
-            SMARTSystemRoles.WHITELIST_MANAGER_ROLE, address(factory)
+            SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(factory)
         );
         vm.stopPrank();
 

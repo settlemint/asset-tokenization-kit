@@ -26,24 +26,24 @@ interface ISMARTComplianceAllowList {
 
     // --- Functions ---
     /// @notice Adds an address to the compliance allowlist
-    /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
     /// AllowListed addresses can bypass compliance checks in canTransfer function.
     /// @param account The address to add to the allowlist
     function addToAllowList(address account) external;
 
     /// @notice Removes an address from the compliance allowlist
-    /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
     /// @param account The address to remove from the allowlist
     function removeFromAllowList(address account) external;
 
     /// @notice Adds multiple addresses to the compliance allowlist in a single transaction
-    /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
     /// This is a gas-efficient way to allowlist multiple addresses at once.
     /// @param accounts Array of addresses to add to the allowlist
     function addMultipleToAllowList(address[] calldata accounts) external;
 
     /// @notice Removes multiple addresses from the compliance allowlist in a single transaction
-    /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
     /// @param accounts Array of addresses to remove from the allowlist
     function removeMultipleFromAllowList(address[] calldata accounts) external;
 

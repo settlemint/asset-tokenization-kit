@@ -433,7 +433,7 @@ contract SMARTSystem is ISMARTSystem, ERC165, ERC2771Context, AccessControl, Ree
 
         // Make it possible that the token factory can add addresses to the compliance whitelist
         IAccessControl(address(complianceProxy())).grantRole(
-            SMARTSystemRoles.WHITELIST_MANAGER_ROLE, _tokenFactoryProxy
+            SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, _tokenFactoryProxy
         );
 
         emit TokenFactoryCreated(_msgSender(), _typeName, _tokenFactoryProxy, _factoryImplementation, block.timestamp);

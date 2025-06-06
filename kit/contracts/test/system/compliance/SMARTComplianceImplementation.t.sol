@@ -126,7 +126,7 @@ contract SMARTComplianceImplementationTest is Test {
 
         // Grant whitelist manager role
         vm.prank(admin);
-        compliance.grantRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE, whitelistManager);
+        compliance.grantRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, whitelistManager);
 
         // Deploy mock token
         token = new MockSMARTToken(address(compliance));
@@ -361,7 +361,7 @@ contract SMARTComplianceImplementationTest is Test {
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector,
                 unauthorizedUser,
-                SMARTSystemRoles.WHITELIST_MANAGER_ROLE
+                SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE
             )
         );
         compliance.addToAllowList(alice);
@@ -406,7 +406,7 @@ contract SMARTComplianceImplementationTest is Test {
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector,
                 unauthorizedUser,
-                SMARTSystemRoles.WHITELIST_MANAGER_ROLE
+                SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE
             )
         );
         compliance.removeFromAllowList(alice);

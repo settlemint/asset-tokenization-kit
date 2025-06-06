@@ -121,7 +121,7 @@ contract SMARTFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl
         scheduleProxyAddress = address(newScheduleProxy);
 
         // Emit an event to log the creation of the new schedule proxy.
-        emit SMARTFixedYieldScheduleProxyCreated(scheduleProxyAddress, _msgSender());
+        emit SMARTFixedYieldScheduleCreated(scheduleProxyAddress, _msgSender());
         // Add the new schedule proxy to the list of all schedules created by this factory.
         // Cast the proxy to ISMARTFixedYieldSchedule for storage, as the proxy behaves like one.
         allSchedules.push(ISMARTFixedYieldSchedule(payable(scheduleProxyAddress)));

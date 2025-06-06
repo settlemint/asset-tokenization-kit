@@ -80,10 +80,10 @@ contract SMARTComplianceImplementation is
     // --- AllowList Management Functions ---
 
     /// @notice Adds an address to the compliance whitelist
-    /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
     /// AllowListed addresses can bypass compliance checks in canTransfer function.
     /// @param account The address to add to the whitelist
-    function addToAllowList(address account) external onlyRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE) {
+    function addToAllowList(address account) external onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE) {
         if (account == address(0)) revert ZeroAddressNotAllowed();
         if (_whitelistedAddresses[account]) revert AddressAlreadyAllowListed(account);
 
@@ -92,9 +92,9 @@ contract SMARTComplianceImplementation is
     }
 
     /// @notice Removes an address from the compliance whitelist
-    /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
     /// @param account The address to remove from the whitelist
-    function removeFromAllowList(address account) external onlyRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE) {
+    function removeFromAllowList(address account) external onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE) {
         if (!_whitelistedAddresses[account]) revert AddressNotAllowListed(account);
 
         _whitelistedAddresses[account] = false;
@@ -102,12 +102,12 @@ contract SMARTComplianceImplementation is
     }
 
     /// @notice Adds multiple addresses to the compliance whitelist in a single transaction
-    /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
     /// This is a gas-efficient way to whitelist multiple addresses at once.
     /// @param accounts Array of addresses to add to the whitelist
     function addMultipleToAllowList(address[] calldata accounts)
         external
-        onlyRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE)
+        onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE)
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
@@ -125,11 +125,11 @@ contract SMARTComplianceImplementation is
     }
 
     /// @notice Removes multiple addresses from the compliance whitelist in a single transaction
-    /// @dev Only addresses with WHITELIST_MANAGER_ROLE can call this function.
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
     /// @param accounts Array of addresses to remove from the whitelist
     function removeMultipleFromAllowList(address[] calldata accounts)
         external
-        onlyRole(SMARTSystemRoles.WHITELIST_MANAGER_ROLE)
+        onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE)
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {

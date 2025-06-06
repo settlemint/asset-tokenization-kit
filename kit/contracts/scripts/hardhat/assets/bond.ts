@@ -19,6 +19,10 @@ import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
+import { claimYield } from "./actions/yield/claim-yield";
+import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
+import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
+import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
 /* Blocked by https://linear.app/settlemint/issue/ENG-3214/fixed-yield-extension-should-not-verify-required-claims-for
 import { claimYield } from "./actions/yield/claim-yield";
 import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
@@ -82,7 +86,6 @@ export const createBond = async (depositToken: Asset<any>) => {
   await unfreezePartialTokens(bond, owner, investorB, 2n);
 
   // yield
-  /* Blocked by https://linear.app/settlemint/issue/ENG-3214/fixed-yield-extension-should-not-verify-required-claims-for
   const { advanceToNextPeriod } = await setYieldSchedule(
     bond,
     new Date(Date.now() + 10_000), // 10 seconds from now
@@ -102,7 +105,7 @@ export const createBond = async (depositToken: Asset<any>) => {
     await transfer(bond, owner, investorA, 6n);
     await transfer(bond, owner, investorB, 3n);
   }
-  await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);*/
+  await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);
 
   // TODO: execute all other functions of the bond
 
