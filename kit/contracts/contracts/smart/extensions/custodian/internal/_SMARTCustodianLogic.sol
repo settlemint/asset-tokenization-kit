@@ -5,10 +5,10 @@ pragma solidity ^0.8.28;
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 // OnchainID imports
-import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // Interface imports
-import { ISMARTIdentityRegistry } from "../../../smart/interface/ISMARTIdentityRegistry.sol";
+import { ISMARTIdentityRegistry } from "../../../interface/ISMARTIdentityRegistry.sol";
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 
 import { ISMARTCustodian } from "../ISMARTCustodian.sol";

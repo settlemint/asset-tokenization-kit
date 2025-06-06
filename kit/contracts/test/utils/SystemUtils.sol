@@ -40,7 +40,7 @@ import { IERC3643TrustedIssuersRegistry } from
     "../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { ISMARTIdentityRegistryStorage } from "../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { ISMARTTopicSchemeRegistry } from "../../contracts/system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol";
+import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 
 // Compliance Modules
 import { CountryAllowListComplianceModule } from

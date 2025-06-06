@@ -2,10 +2,10 @@
 pragma solidity ^0.8.28;
 
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
-import { ISMARTIdentityRegistry } from "../../../smart/interface/ISMARTIdentityRegistry.sol";
-import { IERC3643TrustedIssuersRegistry } from "../../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
-import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol";
-import { IClaimIssuer } from "@onchainid/contracts/smart/interface/IClaimIssuer.sol";
+import { ISMARTIdentityRegistry } from "../../../interface/ISMARTIdentityRegistry.sol";
+import { IERC3643TrustedIssuersRegistry } from "../../../interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { ISMARTCollateral } from "../ISMARTCollateral.sol";
 
 /// @title Internal Logic for SMART Collateral Extension

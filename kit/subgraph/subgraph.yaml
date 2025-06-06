@@ -230,7 +230,7 @@ templates:
         - Event
       abis:
         - name: Identity
-          file: ../contracts/artifacts/@onchainid/contracts/smart/interface/IIdentity.sol/IIdentity.json
+          file: ../contracts/artifacts/@onchainid/contracts/interface/IIdentity.sol/IIdentity.json
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
@@ -291,7 +291,7 @@ templates:
         - Event
       abis:
         - name: TopicSchemeRegistry
-          file: ../contracts/artifacts/contracts/system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol/ISMARTTopicSchemeRegistry.json
+          file: ../contracts/artifacts/contracts/smart/interface/ISMARTTopicSchemeRegistry.sol/ISMARTTopicSchemeRegistry.json
       eventHandlers:
         - event: TopicSchemeRegistered(indexed address,indexed uint256,string,string)
           handler: handleTopicSchemeRegistered

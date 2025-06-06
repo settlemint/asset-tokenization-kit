@@ -2,18 +2,18 @@
 pragma solidity ^0.8.28;
 
 import { ISMARTIdentity } from "./ISMARTIdentity.sol";
-import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol";
-import { IERC735 } from "@onchainid/contracts/smart/interface/IERC735.sol";
-import { IERC734 } from "@onchainid/contracts/smart/interface/IERC734.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
+import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 
 // Import local extensions
-import { ERC734 } from "./smart/extensions/ERC734.sol";
-import { ERC735 } from "./smart/extensions/ERC735.sol";
-import { OnChainIdentity } from "./smart/extensions/OnChainIdentity.sol";
-import { OnChainIdentityWithRevocation } from "./smart/extensions/OnChainIdentityWithRevocation.sol";
+import { ERC734 } from "./extensions/ERC734.sol";
+import { ERC735 } from "./extensions/ERC735.sol";
+import { OnChainIdentity } from "./extensions/OnChainIdentity.sol";
+import { OnChainIdentityWithRevocation } from "./extensions/OnChainIdentityWithRevocation.sol";
 
 /// @title SMART Identity Implementation Contract (Logic for Wallet Identities)
 /// @author SettleMint Tokenization Services

@@ -13,7 +13,7 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 import { ISMARTDepositFactory } from "./ISMARTDepositFactory.sol";
 import { ISMARTTokenFactory } from "../../system/token-factory/ISMARTTokenFactory.sol";
 import { ISMARTSystem } from "../../system/ISMARTSystem.sol";
-import { ISMARTTopicSchemeRegistry } from "../../system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol";
+import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 
 // Constants
 import { SMARTTopics } from "../../system/SMARTTopics.sol";

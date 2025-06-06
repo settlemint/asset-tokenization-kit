@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.28;
 
-import { IERC734 } from "@onchainid/contracts/smart/interface/IERC734.sol";
+import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 // Example: error MissingApprovalPermission(bytes32 key, uint256 requiredPurpose);

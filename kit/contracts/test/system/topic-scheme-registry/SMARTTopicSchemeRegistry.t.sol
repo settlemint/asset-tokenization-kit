@@ -4,8 +4,7 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";
-import { ISMARTTopicSchemeRegistry } from
-    "../../../contracts/system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol";
+import { ISMARTTopicSchemeRegistry } from "../../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { SMARTTopicSchemeRegistryImplementation } from
     "../../../contracts/system/topic-scheme-registry/SMARTTopicSchemeRegistryImplementation.sol";
 import { SMARTSystemRoles } from "../../../contracts/system/SMARTSystemRoles.sol";

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.28;
 
-import { IERC735 } from "@onchainid/contracts/smart/interface/IERC735.sol";
-import { IClaimIssuer } from "@onchainid/contracts/smart/interface/IClaimIssuer.sol"; // Required for addClaim's issuer
+import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
+import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol"; // Required for addClaim's issuer
     // validation
-import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol"; // Required for IClaimIssuer interface
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol"; // Required for IClaimIssuer interface
 
 /// @title ERC735 Claim Holder Standard Implementation
 /// @dev Implementation of the IERC735 (Claim Holder) standard.

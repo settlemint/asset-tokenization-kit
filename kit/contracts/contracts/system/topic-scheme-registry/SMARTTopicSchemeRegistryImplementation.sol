@@ -10,7 +10,7 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interface imports
-import { ISMARTTopicSchemeRegistry } from "./ISMARTTopicSchemeRegistry.sol";
+import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 
 // Constants
 import { SMARTSystemRoles } from "../SMARTSystemRoles.sol";

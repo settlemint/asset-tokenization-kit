@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 // OnchainID imports
-import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // Interface imports
 import { IERC3643IdentityRegistryStorage } from "./IERC3643IdentityRegistryStorage.sol";

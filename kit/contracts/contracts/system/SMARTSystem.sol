@@ -5,7 +5,7 @@ import { ERC2771Context, Context } from "@openzeppelin/contracts/metatx/ERC2771C
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
@@ -44,7 +44,7 @@ import { IERC3643TrustedIssuersRegistry } from "../smart/interface/ERC-3643/IERC
 import { ISMARTIdentityRegistryStorage } from "../smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { ISMARTIdentityRegistry } from "../smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTTokenAccessManager } from "../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { ISMARTTopicSchemeRegistry } from "./topic-scheme-registry/ISMARTTopicSchemeRegistry.sol";
+import { ISMARTTopicSchemeRegistry } from "../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { SMARTComplianceProxy } from "./compliance/SMARTComplianceProxy.sol";
 import { SMARTIdentityRegistryProxy } from "./identity-registry/SMARTIdentityRegistryProxy.sol";
 import { SMARTIdentityRegistryStorageProxy } from "./identity-registry-storage/SMARTIdentityRegistryStorageProxy.sol";

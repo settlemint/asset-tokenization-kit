@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { ISMART } from "../../smart/interface/ISMART.sol";
+import { ISMART } from "../../interface/ISMART.sol";
 import { SMARTHooks } from "../common/SMARTHooks.sol";
 import { SMARTContext } from "../common/SMARTContext.sol";
 

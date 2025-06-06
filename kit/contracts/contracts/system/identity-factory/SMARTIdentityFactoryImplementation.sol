@@ -12,7 +12,7 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interface imports
-import { IERC734 } from "@onchainid/contracts/smart/interface/IERC734.sol";
+import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { ISMARTIdentityFactory } from "./ISMARTIdentityFactory.sol";
 import { ISMARTIdentity } from "./identities/ISMARTIdentity.sol";
 import { ISMARTTokenIdentity } from "./identities/ISMARTTokenIdentity.sol";

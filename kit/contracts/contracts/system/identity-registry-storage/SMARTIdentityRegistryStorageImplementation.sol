@@ -10,7 +10,7 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // OnchainID imports
-import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // Constants
 import { SMARTSystemRoles } from "../SMARTSystemRoles.sol";

@@ -12,7 +12,7 @@ import { ISMARTStableCoinFactory } from "./ISMARTStableCoinFactory.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMARTTokenFactory } from "../../system/token-factory/ISMARTTokenFactory.sol";
 import { ISMARTSystem } from "../../system/ISMARTSystem.sol";
-import { ISMARTTopicSchemeRegistry } from "../../system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol";
+import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 // Constants

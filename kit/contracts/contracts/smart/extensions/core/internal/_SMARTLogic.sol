@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { ISMART } from "../../../smart/interface/ISMART.sol";
-import { ISMARTIdentityRegistry } from "../../../smart/interface/ISMARTIdentityRegistry.sol";
-import { ISMARTCompliance } from "../../../smart/interface/ISMARTCompliance.sol";
-import { SMARTComplianceModuleParamPair } from "../../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMART } from "../../../interface/ISMART.sol";
+import { ISMARTIdentityRegistry } from "../../../interface/ISMARTIdentityRegistry.sol";
+import { ISMARTCompliance } from "../../../interface/ISMARTCompliance.sol";
+import { SMARTComplianceModuleParamPair } from "../../../interface/structs/SMARTComplianceModuleParamPair.sol";
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
-import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 /// @title Internal Core Logic for SMART Tokens
 /// @notice This abstract contract serves as the central repository for shared state, core business logic,
