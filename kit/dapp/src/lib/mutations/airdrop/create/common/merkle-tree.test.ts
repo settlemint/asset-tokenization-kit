@@ -59,7 +59,7 @@ const invalidLeafForSample: AirdropDistribution = {
 };
 
 describe("Merkle Tree Utilities", () => {
-  describe.skip("createMerkleTree and getMerkleRoot", () => {
+  describe("createMerkleTree and getMerkleRoot", () => {
     test("should produce consistent root for the same ordered set of leaves", () => {
       const root1 = getMerkleRoot(sampleLeaves);
       const root2 = getMerkleRoot([...sampleLeaves]); // Same leaves, same order
@@ -73,7 +73,7 @@ describe("Merkle Tree Utilities", () => {
     });
   });
 
-  describe.skip("getMerkleProof", () => {
+  describe("getMerkleProof", () => {
     test("should return a valid proof for a leaf in the tree", () => {
       const tree = createMerkleTree(sampleLeaves);
       const proofs = sampleLeaves.map((leaf) => getMerkleProof(leaf, tree));
