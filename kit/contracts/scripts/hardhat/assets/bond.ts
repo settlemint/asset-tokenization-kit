@@ -11,6 +11,7 @@ import {
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
+import { toDecimals } from "../utils/to-decimals";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
@@ -19,12 +20,10 @@ import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
-/* Blocked by https://linear.app/settlemint/issue/ENG-3214/fixed-yield-extension-should-not-verify-required-claims-for
 import { claimYield } from "./actions/yield/claim-yield";
 import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
 import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
 import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
-*/
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
@@ -48,7 +47,7 @@ export const createBond = async (depositToken: Asset<any>) => {
     bond.name,
     bond.symbol,
     bond.decimals,
-    BigInt(1000000 * 10 ** 6),
+    toDecimals(1000000, bond.decimals),
     BigInt(Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60), // 1 year
     BigInt(123),
     depositToken.address!,
@@ -82,13 +81,12 @@ export const createBond = async (depositToken: Asset<any>) => {
   await unfreezePartialTokens(bond, owner, investorB, 2n);
 
   // yield
-  /* Blocked by https://linear.app/settlemint/issue/ENG-3214/fixed-yield-extension-should-not-verify-required-claims-for
   const { advanceToNextPeriod } = await setYieldSchedule(
     bond,
-    new Date(Date.now() + 10_000), // 10 seconds from now
-    new Date(Date.now() + 40_000), // 40 seconds from now
+    new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day from now
+    new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days from now
     50, // 0.5%
-    5 // 5 seconds
+    12 * 60 * 60 // 12 hours in seconds
   );
   // do some mint/burns to change the yield
   await mint(bond, owner, 10n);
@@ -96,13 +94,19 @@ export const createBond = async (depositToken: Asset<any>) => {
   await topupUnderlyingAsset(bond, depositToken, 10000n);
   // claim yield for 3 periods
   for (let i = 0; i < 3; i++) {
-    await advanceToNextPeriod();
-    await claimYield(bond);
+    const didAdvance = await advanceToNextPeriod();
+    if (!didAdvance) {
+      console.log(
+        `[Bond] ${bond.symbol} schedule has already completed all periods. Cannot advance further.`
+      );
+      break;
+    }
+    await claimYield(bond, depositToken, owner);
     // transfer some tokens to change the claimed yields for the next period
     await transfer(bond, owner, investorA, 6n);
     await transfer(bond, owner, investorB, 3n);
   }
-  await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);*/
+  await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);
 
   // TODO: execute all other functions of the bond
 

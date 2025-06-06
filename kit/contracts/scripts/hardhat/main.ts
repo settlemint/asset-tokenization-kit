@@ -1,5 +1,6 @@
 import { batchAddToRegistry } from "./actions/add-to-registry";
 import { addTrustedIssuer } from "./actions/add-trusted-issuer";
+import { grantRole } from "./actions/grant-role";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
@@ -58,6 +59,15 @@ async function main() {
   // Add the actors to the registry
   await batchAddToRegistry([owner, investorA, investorB, frozenInvestor]);
 
+  // Grant fixed yield schedule factory to allow list manager
+  // TODO: this is a temporary solution, will be fixed in the future
+  await grantRole(
+    smartProtocolDeployer.getComplianceContract().address,
+    owner,
+    SMARTRoles.allowListManagerRole,
+    smartProtocolDeployer.getFixedYieldScheduleFactoryContract().address
+  );
+
   console.log("\n=== Setting up topics and trusted issuers... ===\n");
 
   // Initialize the TopicManager with the deployed topic registry
@@ -89,8 +99,8 @@ async function main() {
 
   // Create the assets
   const deposit = await createDeposit();
-  const equity = await createEquity();
   const bond = await createBond(deposit);
+  const equity = await createEquity();
   const fund = await createFund();
   const stableCoin = await createStableCoin();
 

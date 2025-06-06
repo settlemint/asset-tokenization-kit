@@ -4,7 +4,6 @@ import SMARTOnboardingDepositModule from "./onboarding/assets/deposit";
 import SMARTOnboardingEquityModule from "./onboarding/assets/equity";
 import SMARTOnboardingFundModule from "./onboarding/assets/fund";
 import SMARTOnboardingStableCoinModule from "./onboarding/assets/stablecoin";
-import SMARTOnboardingFixedYieldScheduleFactoryModule from "./onboarding/fixed-yield-schedule-factory";
 import SMARTOnboardingSystemModule from "./onboarding/system";
 import CountryAllowListModule from "./predeployed/modules/country-allow-list-module";
 import CountryBlockListModule from "./predeployed/modules/country-block-list-module";
@@ -23,6 +22,7 @@ const SMARTOnboardingModule = buildModule("SMARTOnboardingModule", (m) => {
     trustedIssuersRegistry,
     topicSchemeRegistry,
     identityFactory,
+    fixedYieldScheduleFactory,
   } = m.useModule(SMARTOnboardingSystemModule);
 
   // This can be setup based out of configuration in the onboarding wizard at some point
@@ -31,9 +31,6 @@ const SMARTOnboardingModule = buildModule("SMARTOnboardingModule", (m) => {
   const { equityFactory } = m.useModule(SMARTOnboardingEquityModule);
   const { fundFactory } = m.useModule(SMARTOnboardingFundModule);
   const { stablecoinFactory } = m.useModule(SMARTOnboardingStableCoinModule);
-  const { fixedYieldScheduleFactory } = m.useModule(
-    SMARTOnboardingFixedYieldScheduleFactoryModule
-  );
 
   const { countryAllowListModule } = m.useModule(CountryAllowListModule);
   const { countryBlockListModule } = m.useModule(CountryBlockListModule);

@@ -32,13 +32,6 @@ import { SMARTComplianceModuleParamPair } from "./structs/SMARTComplianceModuleP
 /// This interface extends IERC165 for interface detection support.
 interface ISMART is IERC20, IERC20Metadata, IERC165 {
     // --- Custom Errors ---
-    /// @notice Reverted when a token operation (like transfer or mint) is attempted, but the recipient
-    ///         (or potentially sender, depending on the operation) does not meet the required identity verification
-    /// status.
-    /// @dev Verification status is typically checked against the `ISMARTIdentityRegistry` and the token's
-    /// `requiredClaimTopics`.
-    ///      For example, a recipient might need to have specific claims (like KYC) issued by trusted parties.
-    error RecipientNotVerified();
 
     /// @notice Error indicating that the provided decimals value is invalid.
     /// @param decimals The invalid decimals value that was provided.
@@ -148,12 +141,6 @@ interface ISMART is IERC20, IERC20Metadata, IERC165 {
     /// @param _params The new ABI-encoded configuration parameters for the module.
     event ModuleParametersUpdated(address indexed sender, address indexed _module, bytes _params);
 
-    /// @notice Emitted when the list of required claim topics for identity verification is successfully updated.
-    /// @dev Claim topics (e.g., KYC, accreditation) are identifiers for specific attestations an identity must hold.
-    /// @param sender The address of the account (e.g., admin) that updated the list.
-    /// @param _requiredClaimTopics An array of `uint256` values representing the new set of required claim topic IDs.
-    event RequiredClaimTopicsUpdated(address indexed sender, uint256[] _requiredClaimTopics);
-
     /// @notice Emitted after a token transfer operation (e.g., via `transfer` or `transferFrom`) has successfully
     /// completed,
     ///         passing all identity and compliance checks.
@@ -217,16 +204,6 @@ interface ISMART is IERC20, IERC20Metadata, IERC165 {
     /// @param _module The address of the compliance module (must be an active module for this token).
     /// @param _params The new ABI-encoded configuration parameters for the module.
     function setParametersForComplianceModule(address _module, bytes calldata _params) external;
-
-    /// @notice Defines the set of claim topics that an investor's on-chain identity must possess (and be valid) to be
-    /// considered verified.
-    /// @dev These numeric IDs correspond to specific attestations (e.g., KYC, accreditation status) an identity must
-    /// hold.
-    ///      The verification is typically performed by the `ISMARTIdentityRegistry`.
-    ///      Typically restricted to an administrative role. Emits `RequiredClaimTopicsUpdated`.
-    /// @param _requiredClaimTopics An array of `uint256` claim topic IDs. An empty array might signify no specific
-    /// claims are required beyond basic registration.
-    function setRequiredClaimTopics(uint256[] calldata _requiredClaimTopics) external;
 
     // --- Core Token Functions ---
 
@@ -325,12 +302,6 @@ interface ISMART is IERC20, IERC20Metadata, IERC165 {
     /// @dev The Compliance contract is responsible for orchestrating compliance checks for token operations.
     /// @return complianceContract The `ISMARTCompliance` contract instance currently in use.
     function compliance() external view returns (ISMARTCompliance complianceContract);
-
-    /// @notice Retrieves the list of currently required claim topics for an identity to be considered verified for this
-    /// token.
-    /// @dev These are numeric IDs representing specific attestations an identity must hold from trusted issuers.
-    /// @return topics An array of `uint256` claim topic IDs.
-    function requiredClaimTopics() external view returns (uint256[] memory topics);
 
     /// @notice Retrieves a list of all currently active compliance modules for this token, along with their
     /// configuration parameters.

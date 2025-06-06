@@ -13,6 +13,8 @@ import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { TestConstants } from "../Constants.sol";
+import { SMARTIdentityVerificationModule } from
+    "../../contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol";
 
 abstract contract SMARTCoreTest is AbstractSMARTTest {
     using SafeERC20 for IERC20;
@@ -96,7 +98,7 @@ abstract contract SMARTCoreTest is AbstractSMARTTest {
         uint256 transferAmount = 100 ether;
         uint256 hookCountSnap = mockComplianceModule.transferredCallCount();
 
-        vm.expectRevert(abi.encodeWithSelector(ISMART.RecipientNotVerified.selector));
+        vm.expectRevert(abi.encodeWithSelector(SMARTIdentityVerificationModule.RecipientNotVerified.selector));
         tokenUtils.transferToken(address(token), clientBE, clientUnverified, transferAmount);
         assertEq(mockComplianceModule.transferredCallCount(), hookCountSnap, "Hook count changed on verification fail");
     }

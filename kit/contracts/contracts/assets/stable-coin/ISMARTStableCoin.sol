@@ -28,7 +28,6 @@ interface ISMARTStableCoin is
     /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
     /// one.
     /// @param collateralTopicId_ The topic ID of the collateral claim.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the stable coin.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
     /// @param compliance_ The address of the compliance contract.
@@ -39,7 +38,6 @@ interface ISMARTStableCoin is
         uint8 decimals_,
         address onchainID_,
         uint256 collateralTopicId_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,

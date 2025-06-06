@@ -59,7 +59,7 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
         );
 
         // Grant registrar role to owner so that he can create the stable coin
-        IAccessControl(address(stableCoinFactory)).grantRole(SMARTSystemRoles.TOKEN_DEPLOYER_ROLE, owner);
+        IAccessControl(address(stableCoinFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities

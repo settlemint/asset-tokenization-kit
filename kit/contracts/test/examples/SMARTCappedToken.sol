@@ -62,7 +62,6 @@ contract SMARTCappedToken is
     /// @param onchainID_ The address of the OnchainID contract.
     /// @param identityRegistry_ The address of the Identity Registry contract.
     /// @param compliance_ The address of the main compliance contract.
-    /// @param requiredClaimTopics_ Required claim topics for verification.
     /// @param initialModulePairs_ Initial compliance modules configuration.
     /// @param collateralProofTopic_ Topic ID for collateral proof claims.
     /// @param accessManager_ The address of the AccessManager contract.
@@ -74,22 +73,12 @@ contract SMARTCappedToken is
         address onchainID_,
         address identityRegistry_,
         address compliance_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         uint256 collateralProofTopic_,
         address accessManager_,
         uint256 cap_
     )
-        SMART(
-            name_,
-            symbol_,
-            decimals_,
-            onchainID_,
-            identityRegistry_,
-            compliance_,
-            requiredClaimTopics_,
-            initialModulePairs_
-        )
+        SMART(name_, symbol_, decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_)
         SMARTTokenAccessManaged(accessManager_)
         SMARTCustodian()
         SMARTCollateral(collateralProofTopic_)
@@ -123,14 +112,6 @@ contract SMARTCappedToken is
         onlyAccessManagerRole(COMPLIANCE_ADMIN_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
-    }
-
-    function setRequiredClaimTopics(uint256[] calldata _requiredClaimTopics)
-        external
-        override
-        onlyAccessManagerRole(VERIFICATION_ADMIN_ROLE)
-    {
-        _smart_setRequiredClaimTopics(_requiredClaimTopics);
     }
 
     function mint(address _to, uint256 _amount) external override onlyAccessManagerRole(MINTER_ROLE) {

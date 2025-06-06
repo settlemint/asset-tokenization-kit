@@ -10,6 +10,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ISMARTBond } from "./ISMARTBond.sol";
 import { ISMARTBondFactory } from "./ISMARTBondFactory.sol";
 import { ISMARTTokenAccessManager } from "../../extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMARTComplianceAllowList } from "../../system/compliance/ISMARTComplianceAllowList.sol";
 import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
 
 // Local imports
@@ -65,8 +66,7 @@ contract SMARTBondFactoryImplementation is ISMARTBondFactory, AbstractSMARTToken
             maturityDate_,
             faceValue_,
             underlyingAsset_,
-            requiredClaimTopics_,
-            initialModulePairs_,
+            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -83,6 +83,9 @@ contract SMARTBondFactoryImplementation is ISMARTBondFactory, AbstractSMARTToken
         if (deployedTokenIdentityAddress != tokenIdentityAddress) {
             revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
         }
+
+        // Add the bond to the compliance allow list, because it needs to be able to hold other tokens
+        ISMARTComplianceAllowList(address(_compliance())).addToAllowList(deployedBondAddress);
 
         return deployedBondAddress;
     }
@@ -124,6 +127,7 @@ contract SMARTBondFactoryImplementation is ISMARTBondFactory, AbstractSMARTToken
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
         address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
+
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
@@ -134,8 +138,7 @@ contract SMARTBondFactoryImplementation is ISMARTBondFactory, AbstractSMARTToken
             maturityDate_,
             faceValue_,
             underlyingAsset_,
-            requiredClaimTopics_,
-            initialModulePairs_,
+            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_

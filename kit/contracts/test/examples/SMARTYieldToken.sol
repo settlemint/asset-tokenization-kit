@@ -21,7 +21,6 @@ contract SMARTYieldToken is SMARTToken, ISMARTYield {
         address forwarder_,
         address identityRegistry_,
         address compliance_,
-        uint256[] memory requiredClaims_,
         SMARTComplianceModuleParamPair[] memory modulePairs_,
         uint256 collateralTopicSchemeId_,
         address accessManager_,
@@ -34,7 +33,6 @@ contract SMARTYieldToken is SMARTToken, ISMARTYield {
             forwarder_,
             identityRegistry_,
             compliance_,
-            requiredClaims_,
             modulePairs_,
             collateralTopicSchemeId_,
             accessManager_

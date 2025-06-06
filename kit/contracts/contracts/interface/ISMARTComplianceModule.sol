@@ -20,7 +20,7 @@ interface ISMARTComplianceModule is IERC165 {
     /// @notice Emitted when a compliance check performed by the `canTransfer` function fails.
     /// @dev This error indicates that a proposed token transfer, mint, or burn operation violates
     ///      the rules enforced by this specific compliance module.
-    /// @param reason A descriptive string explaining why the compliance check failed (e.g., "Sender not whitelisted",
+    /// @param reason A descriptive string explaining why the compliance check failed (e.g., "Sender not allow listed",
     /// "Transfer exceeds daily limit").
     error ComplianceCheckFailed(string reason);
 

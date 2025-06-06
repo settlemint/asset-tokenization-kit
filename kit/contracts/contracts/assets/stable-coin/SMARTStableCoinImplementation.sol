@@ -58,7 +58,6 @@ contract SMARTStableCoinImplementation is
     /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
     /// one.
     /// @param collateralTopicId_ The topic ID of the collateral claim.
-    /// @param requiredClaimTopics_ An array of claim topics required for token interaction.
     /// @param initialModulePairs_ Initial compliance module configurations.
     /// @param identityRegistry_ The address of the Identity Registry contract.
     /// @param compliance_ The address of the main compliance contract.
@@ -69,7 +68,6 @@ contract SMARTStableCoinImplementation is
         uint8 decimals_,
         address onchainID_,
         uint256 collateralTopicId_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
@@ -79,16 +77,7 @@ contract SMARTStableCoinImplementation is
         override
         initializer
     {
-        __SMART_init(
-            name_,
-            symbol_,
-            decimals_,
-            onchainID_,
-            identityRegistry_,
-            compliance_,
-            requiredClaimTopics_,
-            initialModulePairs_
-        );
+        __SMART_init(name_, symbol_, decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_);
         __SMARTCustodian_init();
         __SMARTBurnable_init();
         __SMARTPausable_init();
@@ -131,14 +120,6 @@ contract SMARTStableCoinImplementation is
         onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
-    }
-
-    function setRequiredClaimTopics(uint256[] calldata _requiredClaimTopics)
-        external
-        override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
-    {
-        _smart_setRequiredClaimTopics(_requiredClaimTopics);
     }
 
     function mint(

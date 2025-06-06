@@ -1,5 +1,6 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import SMARTModule from "../main";
+import ForwarderModule from "../predeployed/forwarder";
 
 const SMARTOnboardingSystemModule = buildModule(
   "SMARTOnboardingSystemModule",
@@ -94,6 +95,14 @@ const SMARTOnboardingSystemModule = buildModule(
       identityFactoryAddress,
       { id: "identityFactory" }
     );
+
+    const { forwarder } = m.useModule(ForwarderModule);
+    // For now do it this way, will be integrated into system completely
+    const fixedYieldScheduleFactory = m.contract(
+      "SMARTFixedYieldScheduleFactory",
+      [system.address, forwarder]
+    );
+
     return {
       system,
       compliance,
@@ -102,6 +111,7 @@ const SMARTOnboardingSystemModule = buildModule(
       trustedIssuersRegistry,
       topicSchemeRegistry,
       identityFactory,
+      fixedYieldScheduleFactory,
     };
   }
 );

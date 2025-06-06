@@ -42,7 +42,7 @@ dataSources:
         - SMARTFixedYieldScheduleCreated
       abis:
         - name: FixedYieldScheduleFactory
-          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json
+          file: ../contracts/artifacts/contracts/system/yield/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json
       eventHandlers:
         - event: SMARTFixedYieldScheduleCreated(indexed address,indexed address)
           handler: handleSMARTFixedYieldScheduleCreated
@@ -88,7 +88,7 @@ templates:
           file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
-            address,address,address,address,address)
+            address,address,address,address,address,address)
           handler: handleBootstrapped
         - event: ComplianceImplementationUpdated(indexed address,indexed address)
           handler: handleComplianceImplementationUpdated
@@ -170,8 +170,6 @@ templates:
           handler: handleMintCompleted
         - event: ModuleParametersUpdated(indexed address,indexed address,bytes)
           handler: handleModuleParametersUpdated
-        - event: RequiredClaimTopicsUpdated(indexed address,uint256[])
-          handler: handleRequiredClaimTopicsUpdated
         - event: TransferCompleted(indexed address,indexed address,indexed
             address,uint256)
           handler: handleTransferCompleted

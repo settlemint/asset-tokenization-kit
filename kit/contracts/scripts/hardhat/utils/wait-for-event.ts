@@ -2,7 +2,6 @@ import type { ExtractAbiEventNames } from "abitype";
 import {
   Account,
   Chain,
-  ContractEventName,
   Hex,
   PublicClient,
   TransactionReceipt,
@@ -22,10 +21,13 @@ type Contracts = {
 };
 
 // Utility function to find specific event arguments from a transaction
-export async function waitForEvent<Key extends keyof Contracts>(params: {
+export async function waitForEvent<
+  Key extends keyof Contracts,
+  EventName extends ExtractAbiEventNames<Contracts[Key]["abi"]>,
+>(params: {
   contract: Contracts[Key];
   transactionHash: Hex;
-  eventName: ExtractAbiEventNames<Contracts[Key]["abi"]>;
+  eventName: EventName;
 }) {
   const { transactionHash, contract, eventName } = params;
   const contractAddress = contract.address;
@@ -40,11 +42,13 @@ export async function waitForEvent<Key extends keyof Contracts>(params: {
           abi: abi,
           data: log.data,
           topics: log.topics,
-          eventName: eventName as ContractEventName<Contracts[Key]["abi"]>,
         });
-        // If decodeEventLog doesn't throw and finds the event, it means topics matched for the specific eventName.
-        console.log(`Decoded ${eventName} event args:`, decodedEvent.args);
-        return decodedEvent.args;
+
+        // Check if this is the event we're looking for
+        if (decodedEvent.eventName === eventName) {
+          console.log(`Decoded ${eventName} event args:`, decodedEvent.args);
+          return decodedEvent.args;
+        }
       } catch (e) {
         // This log is from the correct contract but not the specific event we're looking for,
         // or it was not decodable as such. We can safely ignore this error and continue checking other logs.

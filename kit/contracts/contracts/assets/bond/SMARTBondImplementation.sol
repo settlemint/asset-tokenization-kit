@@ -95,7 +95,6 @@ contract SMARTBondImplementation is
     /// @param maturityDate_ Bond maturity date
     /// @param faceValue_ Bond face value
     /// @param underlyingAsset_ Underlying asset contract address
-    /// @param requiredClaimTopics_ An array of claim topics required for token interaction.
     /// @param initialModulePairs_ Initial compliance module configurations.
     /// @param identityRegistry_ The address of the Identity Registry contract.
     /// @param compliance_ The address of the main compliance contract.
@@ -109,7 +108,6 @@ contract SMARTBondImplementation is
         uint256 maturityDate_,
         uint256 faceValue_,
         address underlyingAsset_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
@@ -130,16 +128,7 @@ contract SMARTBondImplementation is
             revert InvalidUnderlyingAsset();
         }
 
-        __SMART_init(
-            name_,
-            symbol_,
-            decimals_,
-            onchainID_,
-            identityRegistry_,
-            compliance_,
-            requiredClaimTopics_,
-            initialModulePairs_
-        );
+        __SMART_init(name_, symbol_, decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_);
         __SMARTTokenAccessManaged_init(accessManager_);
         __SMARTCustodian_init();
         __SMARTBurnable_init();
@@ -255,14 +244,6 @@ contract SMARTBondImplementation is
         onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
-    }
-
-    function setRequiredClaimTopics(uint256[] calldata _requiredClaimTopics)
-        external
-        override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
-    {
-        _smart_setRequiredClaimTopics(_requiredClaimTopics);
     }
 
     function mint(

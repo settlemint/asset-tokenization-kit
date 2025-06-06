@@ -22,7 +22,6 @@ contract SMARTCappedStandardTest is SMARTCappedTest {
             address(0),
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
-            requiredClaimTopics,
             modulePairs,
             systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
             address(accessManager),

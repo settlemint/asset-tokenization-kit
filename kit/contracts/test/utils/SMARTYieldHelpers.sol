@@ -5,8 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ISMARTYield } from "../../contracts/extensions/yield/ISMARTYield.sol";
 import { ISMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
-import { SMARTFixedYieldScheduleFactory } from
-    "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol";
+import { ISMARTFixedYieldScheduleFactory } from "../../contracts/system/yield/ISMARTFixedYieldScheduleFactory.sol";
 
 /// @title Helper utilities for SMART Yield tests
 /// @notice Provides common helper functions and utilities for testing yield functionality
@@ -39,7 +38,7 @@ abstract contract SMARTYieldHelpers is Test {
     /// @param tokenIssuer The address that will create the schedule
     /// @return The address of the created yield schedule
     function _createYieldSchedule(
-        SMARTFixedYieldScheduleFactory yieldScheduleFactory,
+        ISMARTFixedYieldScheduleFactory yieldScheduleFactory,
         ISMARTYield token,
         address tokenIssuer
     )
@@ -56,7 +55,7 @@ abstract contract SMARTYieldHelpers is Test {
     /// @param startDate The start date for the yield schedule
     /// @return The address of the created yield schedule
     function _createYieldSchedule(
-        SMARTFixedYieldScheduleFactory yieldScheduleFactory,
+        ISMARTFixedYieldScheduleFactory yieldScheduleFactory,
         ISMARTYield token,
         address tokenIssuer,
         uint256 startDate

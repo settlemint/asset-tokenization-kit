@@ -54,6 +54,7 @@ interface ISMARTSystem {
     /// @param sender The address that called the `updateTokenAccessManagerImplementation` function.
     /// @param newImplementation The address of the new token access manager module implementation contract.
     event TokenAccessManagerImplementationUpdated(address indexed sender, address indexed newImplementation);
+
     /// @notice Emitted when the `bootstrap` function has been successfully executed, creating and linking proxy
     /// contracts
     /// for all core modules of the SMARTSystem.
@@ -64,6 +65,7 @@ interface ISMARTSystem {
     /// @param trustedIssuersRegistryProxy The address of the deployed SMARTTrustedIssuersRegistryProxy contract.
     /// @param topicSchemeRegistryProxy The address of the deployed SMARTTopicSchemeRegistryProxy contract.
     /// @param identityFactoryProxy The address of the deployed SMARTIdentityFactoryProxy contract.
+    /// @param identityVerificationModule The address of the deployed IdentityVerificationModule contract.
     event Bootstrapped(
         address indexed sender,
         address indexed complianceProxy,
@@ -71,7 +73,8 @@ interface ISMARTSystem {
         address identityRegistryStorageProxy,
         address trustedIssuersRegistryProxy,
         address topicSchemeRegistryProxy,
-        address identityFactoryProxy
+        address identityFactoryProxy,
+        address identityVerificationModule
     );
 
     /// @notice Emitted when a SMARTTokenFactory is registered.
@@ -280,4 +283,11 @@ interface ISMARTSystem {
     /// you should use this proxy address. It will forward calls to the current logic implementation.
     /// @return topicSchemeRegistryProxyAddress The blockchain address of the topic scheme registry module's proxy.
     function topicSchemeRegistryProxy() external view returns (address topicSchemeRegistryProxyAddress);
+
+    /// @notice Retrieves the smart contract address of the proxy for the identity verification module.
+    /// @dev This function returns the stable, unchanging address of the identity verification module's proxy contract.
+    /// To interact with the identity verification module (e.g., to verify an identity or check verification status),
+    /// you should use this proxy address. It will forward calls to the current logic implementation.
+    /// @return identityVerificationModuleAddress The blockchain address of the identity verification module's proxy.
+    function identityVerificationModule() external view returns (address identityVerificationModuleAddress);
 }
