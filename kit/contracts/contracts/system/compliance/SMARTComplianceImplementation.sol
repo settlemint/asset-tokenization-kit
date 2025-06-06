@@ -79,10 +79,10 @@ contract SMARTComplianceImplementation is
 
     // --- AllowList Management Functions ---
 
-    /// @notice Adds an address to the compliance whitelist
+    /// @notice Adds an address to the compliance allow list
     /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
     /// AllowListed addresses can bypass compliance checks in canTransfer function.
-    /// @param account The address to add to the whitelist
+    /// @param account The address to add to the allow list
     function addToAllowList(address account) external onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE) {
         if (account == address(0)) revert ZeroAddressNotAllowed();
         if (_allowListedAddresses[account]) revert AddressAlreadyAllowListed(account);
@@ -91,9 +91,9 @@ contract SMARTComplianceImplementation is
         emit AddressAllowListed(account, _msgSender());
     }
 
-    /// @notice Removes an address from the compliance whitelist
+    /// @notice Removes an address from the compliance allow list
     /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
-    /// @param account The address to remove from the whitelist
+    /// @param account The address to remove from the allow list
     function removeFromAllowList(address account) external onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE) {
         if (!_allowListedAddresses[account]) revert AddressNotAllowListed(account);
 
@@ -101,10 +101,10 @@ contract SMARTComplianceImplementation is
         emit AddressRemovedFromAllowList(account, _msgSender());
     }
 
-    /// @notice Adds multiple addresses to the compliance whitelist in a single transaction
+    /// @notice Adds multiple addresses to the compliance allow list in a single transaction
     /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
-    /// This is a gas-efficient way to whitelist multiple addresses at once.
-    /// @param accounts Array of addresses to add to the whitelist
+    /// This is a gas-efficient way to allow list multiple addresses at once.
+    /// @param accounts Array of addresses to add to the allow list
     function addMultipleToAllowList(address[] calldata accounts)
         external
         onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE)
@@ -124,9 +124,9 @@ contract SMARTComplianceImplementation is
         }
     }
 
-    /// @notice Removes multiple addresses from the compliance whitelist in a single transaction
+    /// @notice Removes multiple addresses from the compliance allow list in a single transaction
     /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
-    /// @param accounts Array of addresses to remove from the whitelist
+    /// @param accounts Array of addresses to remove from the allow list
     function removeMultipleFromAllowList(address[] calldata accounts)
         external
         onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE)
@@ -145,9 +145,9 @@ contract SMARTComplianceImplementation is
         }
     }
 
-    /// @notice Checks if an address is whitelisted
+    /// @notice Checks if an address is allow listed
     /// @param account The address to check
-    /// @return True if the address is whitelisted, false otherwise
+    /// @return True if the address is allow listed, false otherwise
     function isAllowListed(address account) external view returns (bool) {
         return _allowListedAddresses[account];
     }
@@ -271,7 +271,7 @@ contract SMARTComplianceImplementation is
     /// @inheritdoc ISMARTCompliance
     /// @notice Checks if a proposed token transfer is compliant with all registered modules for a given token.
     /// @dev This function is typically called by an `ISMART` token contract *before* a transfer is executed.
-    /// It first checks if either the sender or receiver is whitelisted - if so, the transfer is automatically allowed.
+    /// It first checks if either the sender or receiver is allow listed - if so, the transfer is automatically allowed.
     /// Otherwise, it retrieves all compliance modules registered for the `_token` and calls the `canTransfer` view
     /// function on
     /// each module.
@@ -296,12 +296,12 @@ contract SMARTComplianceImplementation is
         override
         returns (bool)
     {
-        // Check if receiver is whitelisted - if so, bypass all compliance checks
+        // Check if receiver is allow listed - if so, bypass all compliance checks
         if (_allowListedAddresses[_to]) {
             return true;
         }
 
-        // If neither address is whitelisted, proceed with normal compliance module checks
+        // If neither address is allow listed, proceed with normal compliance module checks
         SMARTComplianceModuleParamPair[] memory modulePairs = ISMART(_token).complianceModules();
         uint256 modulePairsLength = modulePairs.length;
         for (uint256 i = 0; i < modulePairsLength;) {

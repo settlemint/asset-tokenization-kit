@@ -67,9 +67,6 @@ const CONTRACT_ADDRESSES = {
   // System factory
   SMARTSystemFactory: "0x5e771e1417100000000000000000000000020088",
 
-  // Fixed yield
-  SMARTFixedYieldScheduleFactory: "0x5e771e1417100000000000000000000000020089",
-
   // Asset implementations
   SMARTBondImplementation: "0x5e771e1417100000000000000000000000020010",
   SMARTBondFactoryImplementation: "0x5e771e1417100000000000000000000000020011",
@@ -115,10 +112,6 @@ const CONTRACT_FILES = {
 
   // System factory
   SMARTSystemFactory: "contracts/system/SMARTSystemFactory.sol",
-
-  // Fixed yield
-  SMARTFixedYieldScheduleFactory:
-    "contracts/system/yield/SMARTFixedYieldScheduleFactory.sol",
 
   // Asset implementations
   SMARTBondImplementation: "contracts/assets/bond/SMARTBondImplementation.sol",
