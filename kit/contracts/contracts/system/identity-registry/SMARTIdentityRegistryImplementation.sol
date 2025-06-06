@@ -11,15 +11,15 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // OnchainID imports
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
+import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol";
+import { IClaimIssuer } from "@onchainid/contracts/smart/interface/IClaimIssuer.sol";
 
 // Interface imports
-import { ISMARTIdentityRegistry } from "../../interface/ISMARTIdentityRegistry.sol";
-import { ISMART } from "../../interface/ISMART.sol";
+import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
 
-import { ISMARTIdentityRegistryStorage } from "./../../interface/ISMARTIdentityRegistryStorage.sol";
-import { IERC3643TrustedIssuersRegistry } from "./../../interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
+import { IERC3643TrustedIssuersRegistry } from "./../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../topic-scheme-registry/ISMARTTopicSchemeRegistry.sol";
 
 // Constants

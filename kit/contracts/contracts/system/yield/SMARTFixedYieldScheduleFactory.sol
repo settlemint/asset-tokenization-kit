@@ -11,14 +11,14 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 
 // Interfaces
 import { ISMARTFixedYieldScheduleFactory } from "./ISMARTFixedYieldScheduleFactory.sol";
-import { ISMARTFixedYieldSchedule } from "../../extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
-import { ISMARTYield } from "../../extensions/yield/ISMARTYield.sol";
+import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
+import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 import { ISMARTSystem } from "../ISMARTSystem.sol";
 import { ISMARTComplianceAllowList } from "../compliance/ISMARTComplianceAllowList.sol";
 
 // Implementations
 import { SMARTFixedYieldScheduleUpgradeable } from
-    "../../extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
+    "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
 import { SMARTFixedYieldProxy } from "./SMARTFixedYieldProxy.sol";
 
 // Constants

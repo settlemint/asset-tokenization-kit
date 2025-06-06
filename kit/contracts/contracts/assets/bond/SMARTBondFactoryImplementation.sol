@@ -9,9 +9,9 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 // Interface imports
 import { ISMARTBond } from "./ISMARTBond.sol";
 import { ISMARTBondFactory } from "./ISMARTBondFactory.sol";
-import { ISMARTTokenAccessManager } from "../../extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMARTComplianceAllowList } from "../../system/compliance/ISMARTComplianceAllowList.sol";
-import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 // Local imports
 import { SMARTBondProxy } from "./SMARTBondProxy.sol";

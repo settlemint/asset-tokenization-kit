@@ -7,7 +7,7 @@ import { ISMARTFixedYieldScheduleFactory } from "./ISMARTFixedYieldScheduleFacto
     // exists or will be created
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { SMARTFixedYieldScheduleUpgradeable } from
-    "../../extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
+    "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
 
 /// @notice Custom error when the provided factory address is invalid (e.g. zero address or does not support the
 /// required interface).

@@ -5,9 +5,9 @@ pragma solidity ^0.8.28;
 // AccessControl is inherited from AbstractComplianceModule
 
 // Interface imports
-import { ISMART } from "../../../interface/ISMART.sol";
-import { ISMARTIdentityRegistry } from "../../../interface/ISMARTIdentityRegistry.sol";
-import { ISMARTComplianceModule } from "../../../interface/ISMARTComplianceModule.sol"; // Needed for @inheritdoc
+import { ISMART } from "../../../smart/interface/ISMART.sol";
+import { ISMARTIdentityRegistry } from "../../../smart/interface/ISMARTIdentityRegistry.sol";
+import { ISMARTComplianceModule } from "../../../smart/interface/ISMARTComplianceModule.sol"; // Needed for @inheritdoc
 
 // Base modules
 import { AbstractComplianceModule } from "./AbstractComplianceModule.sol";

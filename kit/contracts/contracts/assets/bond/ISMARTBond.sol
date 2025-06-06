@@ -5,17 +5,17 @@ pragma solidity 0.8.28;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 // Interface imports
-import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMART } from "../../interface/ISMART.sol";
+import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
 
-import { ISMARTTokenAccessManaged } from "../../extensions/access-managed/ISMARTTokenAccessManaged.sol";
-import { ISMARTCustodian } from "../../extensions/custodian/ISMARTCustodian.sol";
-import { ISMARTPausable } from "../../extensions/pausable/ISMARTPausable.sol";
-import { ISMARTBurnable } from "../../extensions/burnable/ISMARTBurnable.sol";
-import { ISMARTRedeemable } from "../../extensions/redeemable/ISMARTRedeemable.sol";
-import { ISMARTHistoricalBalances } from "../../extensions/historical-balances/ISMARTHistoricalBalances.sol";
-import { ISMARTYield } from "../../extensions/yield/ISMARTYield.sol";
-import { ISMARTCapped } from "../../extensions/capped/ISMARTCapped.sol";
+import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
+import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
+import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
+import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
+import { ISMARTRedeemable } from "../../smart/extensions/redeemable/ISMARTRedeemable.sol";
+import { ISMARTHistoricalBalances } from "../../smart/extensions/historical-balances/ISMARTHistoricalBalances.sol";
+import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
+import { ISMARTCapped } from "../../smart/extensions/capped/ISMARTCapped.sol";
 
 /// @title Interface for a SMART Bond
 /// @notice Defines the core functionality and extensions for a SMART Bond, including features like redeemability,

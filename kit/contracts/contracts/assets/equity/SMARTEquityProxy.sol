@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { SMARTAssetProxy } from "../SMARTAssetProxy.sol";
 import { ISMARTEquity } from "./ISMARTEquity.sol";
 
-import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ISMARTTokenFactory } from "../../system/token-factory/ISMARTTokenFactory.sol";
 
 import { TokenImplementationNotSet } from "../../system/SMARTSystemErrors.sol";

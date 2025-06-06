@@ -17,19 +17,19 @@ import { NoncesUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Non
 import { SMARTRoles } from "../SMARTRoles.sol";
 
 // Interface imports
-import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ISMARTEquity } from "./ISMARTEquity.sol";
 
 // Core extensions
-import { SMARTUpgradeable } from "../../extensions/core/SMARTUpgradeable.sol"; // Base SMART logic + ERC20
-import { SMARTHooks } from "../../extensions/common/SMARTHooks.sol";
+import { SMARTUpgradeable } from "../../smart/extensions/core/SMARTUpgradeable.sol"; // Base SMART logic + ERC20
+import { SMARTHooks } from "../../smart/extensions/common/SMARTHooks.sol";
 
 // Feature extensions
-import { SMARTPausableUpgradeable } from "../../extensions/pausable/SMARTPausableUpgradeable.sol";
-import { SMARTBurnableUpgradeable } from "../../extensions/burnable/SMARTBurnableUpgradeable.sol";
-import { SMARTCustodianUpgradeable } from "../../extensions/custodian/SMARTCustodianUpgradeable.sol";
+import { SMARTPausableUpgradeable } from "../../smart/extensions/pausable/SMARTPausableUpgradeable.sol";
+import { SMARTBurnableUpgradeable } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
+import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMARTCustodianUpgradeable.sol";
 import { SMARTTokenAccessManagedUpgradeable } from
-    "../../extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
+    "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 
 contract SMARTEquityImplementation is
     Initializable,

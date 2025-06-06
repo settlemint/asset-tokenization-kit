@@ -2,13 +2,13 @@
 pragma solidity ^0.8.28;
 
 import { ISMARTTokenIdentity } from "./ISMARTTokenIdentity.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
+import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol";
+import { IERC735 } from "@onchainid/contracts/smart/interface/IERC735.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { ISMARTTokenAccessManaged } from "../../../extensions/access-managed/ISMARTTokenAccessManaged.sol";
-import { ISMARTTokenAccessManager } from "../../../extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { ERC735 } from "./extensions/ERC735.sol";
+import { ISMARTTokenAccessManaged } from "../../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
+import { ISMARTTokenAccessManager } from "../../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ERC735 } from "./smart/extensions/ERC735.sol";
 import { SMARTSystemRoles } from "../../SMARTSystemRoles.sol";
 /// @title SMART Token Identity Implementation Contract
 /// @author SettleMint Tokenization Services

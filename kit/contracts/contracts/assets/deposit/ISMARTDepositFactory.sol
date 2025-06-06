@@ -2,7 +2,7 @@
 pragma solidity 0.8.28;
 
 import { ISMARTTokenFactory } from "../../system/token-factory/ISMARTTokenFactory.sol";
-import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 /// @title Interface for the SMART Deposit Factory
 /// @notice Defines the functions for creating and predicting addresses of SMART Deposit token instances.

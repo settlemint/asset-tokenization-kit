@@ -12,8 +12,10 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { SMARTTokenAccessManagerImplementation } from
     "../../../../contracts/system/access-manager/SMARTTokenAccessManagerImplementation.sol";
-import { ISMARTTokenAccessManager } from "../../../../contracts/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { ISMARTTokenAccessManaged } from "../../../../contracts/extensions/access-managed/ISMARTTokenAccessManaged.sol";
+import { ISMARTTokenAccessManager } from
+    "../../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMARTTokenAccessManaged } from
+    "../../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
 import { SMARTSystemRoles } from "../../../../contracts/system/SMARTSystemRoles.sol";
 
 contract SMARTTokenIdentityImplementationTest is Test {

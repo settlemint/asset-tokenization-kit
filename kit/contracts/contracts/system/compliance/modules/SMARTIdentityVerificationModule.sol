@@ -2,8 +2,8 @@
 pragma solidity ^0.8.28;
 
 import { AbstractComplianceModule } from "./AbstractComplianceModule.sol";
-import { ISMARTIdentityRegistry } from "../../../interface/ISMARTIdentityRegistry.sol";
-import { ISMART } from "../../../interface/ISMART.sol";
+import { ISMARTIdentityRegistry } from "../../../smart/interface/ISMARTIdentityRegistry.sol";
+import { ISMART } from "../../../smart/interface/ISMART.sol";
 
 /// @title Identity Verification Module
 /// @author SettleMint Tokenization Services

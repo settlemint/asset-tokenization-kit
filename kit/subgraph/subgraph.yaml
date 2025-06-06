@@ -129,7 +129,7 @@ templates:
         - name: TokenFactory
           file: ../contracts/artifacts/contracts/system/token-factory/ISMARTTokenFactory.sol/ISMARTTokenFactory.json
         - name: Token
-          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
+          file: ../contracts/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
         - event: TokenAssetCreated(indexed address,indexed address,indexed
             address,address)
@@ -152,9 +152,9 @@ templates:
         - Event
       abis:
         - name: Token
-          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
+          file: ../contracts/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
         - name: FixedYieldSchedule
-          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
+          file: ../contracts/artifacts/contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -190,7 +190,7 @@ templates:
         - Event
       abis:
         - name: Pausable
-          file: ../contracts/artifacts/contracts/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json
+          file: ../contracts/artifacts/contracts/smart/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json
       eventHandlers:
         - event: Paused(indexed address)
           handler: handlePaused
@@ -211,7 +211,7 @@ templates:
         - Event
       abis:
         - name: Burnable
-          file: ../contracts/artifacts/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json
+          file: ../contracts/artifacts/contracts/smart/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json
       eventHandlers:
         - event: BurnCompleted(indexed address,indexed address,uint256)
           handler: handleBurnCompleted
@@ -230,7 +230,7 @@ templates:
         - Event
       abis:
         - name: Identity
-          file: ../contracts/artifacts/@onchainid/contracts/interface/IIdentity.sol/IIdentity.json
+          file: ../contracts/artifacts/@onchainid/contracts/smart/interface/IIdentity.sol/IIdentity.json
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
@@ -270,7 +270,7 @@ templates:
         - name: IdentityFactory
           file: ../contracts/artifacts/contracts/system/identity-factory/ISMARTIdentityFactory.sol/ISMARTIdentityFactory.json
         - name: Token
-          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
+          file: ../contracts/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
         - event: IdentityCreated(indexed address,indexed address,indexed address)
           handler: handleIdentityCreated
@@ -316,7 +316,7 @@ templates:
         - Event
       abis:
         - name: IdentityRegistry
-          file: ../contracts/artifacts/contracts/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json
+          file: ../contracts/artifacts/contracts/smart/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json
       eventHandlers:
         - event: CountryUpdated(indexed address,indexed address,indexed uint16)
           handler: handleCountryUpdated
@@ -348,7 +348,7 @@ templates:
         - Event
       abis:
         - name: Custodian
-          file: ../contracts/artifacts/contracts/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json
+          file: ../contracts/artifacts/contracts/smart/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json
       eventHandlers:
         - event: AddressFrozen(indexed address,indexed address,indexed bool)
           handler: handleAddressFrozen
@@ -372,7 +372,7 @@ templates:
         - CapSet
       abis:
         - name: Capped
-          file: ../contracts/artifacts/contracts/extensions/capped/ISMARTCapped.sol/ISMARTCapped.json
+          file: ../contracts/artifacts/contracts/smart/extensions/capped/ISMARTCapped.sol/ISMARTCapped.json
       eventHandlers:
         - event: CapSet(indexed address,uint256)
           handler: handleCapSet
@@ -391,7 +391,7 @@ templates:
         - YieldScheduleSet
       abis:
         - name: Yield
-          file: ../contracts/artifacts/contracts/extensions/yield/ISMARTYield.sol/ISMARTYield.json
+          file: ../contracts/artifacts/contracts/smart/extensions/yield/ISMARTYield.sol/ISMARTYield.json
       eventHandlers:
         - event: CheckpointUpdated(indexed address,indexed address,uint256,uint256)
           handler: handleCheckpointUpdated
@@ -414,7 +414,7 @@ templates:
         - YieldClaimed
       abis:
         - name: FixedYieldSchedule
-          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
+          file: ../contracts/artifacts/contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
       eventHandlers:
         - event: FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address,uint256)
           handler: handleFixedYieldScheduleSet

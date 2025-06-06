@@ -10,11 +10,11 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
 // Interface imports
-import { ISMARTCompliance } from "../../interface/ISMARTCompliance.sol";
+import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
 import { ISMARTComplianceAllowList } from "./ISMARTComplianceAllowList.sol";
-import { ISMARTComplianceModule } from "../../interface/ISMARTComplianceModule.sol";
-import { ISMART } from "../../interface/ISMART.sol";
-import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
+import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { SMARTSystemRoles } from "../SMARTSystemRoles.sol";
 
 /// @title SMART Compliance Contract Implementation

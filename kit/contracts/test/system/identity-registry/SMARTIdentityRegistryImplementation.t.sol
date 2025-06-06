@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "forge-std/Test.sol";
-import "../../../contracts/interface/ISMARTIdentityRegistry.sol";
+import "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import "../../../contracts/system/identity-registry/SMARTIdentityRegistryImplementation.sol";
 import "../../utils/SystemUtils.sol";
 import "../../utils/IdentityUtils.sol";
@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC3643TrustedIssuersRegistry } from
-    "../../../contracts/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+    "../../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 
 contract SMARTIdentityRegistryImplementationTest is Test {
     SystemUtils public systemUtils;

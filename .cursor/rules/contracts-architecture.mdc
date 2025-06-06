@@ -28,7 +28,7 @@ Modular features are implemented via extensions.
 
 - `SMARTBurnable`, `SMARTCapped`, `SMARTCollateral`, `SMARTPausable`, etc.
 - Located in
-  `[kit/contracts/contracts/extensions/](mdc:kit/contracts/contracts/extensions)`
+  `[kit/contracts/contracts/smart/extensions/](mdc:kit/contracts/contracts/extensions)`
 
 ### 4. Compliance System
 

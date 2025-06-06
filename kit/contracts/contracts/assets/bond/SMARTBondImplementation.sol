@@ -17,25 +17,25 @@ import { SMARTRoles } from "../SMARTRoles.sol";
 
 // Interface imports
 import { ISMARTBond } from "./ISMARTBond.sol";
-import { ISMARTBurnable } from "../../extensions/burnable/ISMARTBurnable.sol";
-import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
+import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 // Core extensions
-import { SMARTUpgradeable } from "../../extensions/core/SMARTUpgradeable.sol"; // Base SMART logic + ERC20
-import { SMARTHooks } from "../../extensions/common/SMARTHooks.sol";
+import { SMARTUpgradeable } from "../../smart/extensions/core/SMARTUpgradeable.sol"; // Base SMART logic + ERC20
+import { SMARTHooks } from "../../smart/extensions/common/SMARTHooks.sol";
 
 // Feature extensions
-import { SMARTPausableUpgradeable } from "../../extensions/pausable/SMARTPausableUpgradeable.sol";
-import { SMARTBurnableUpgradeable } from "../../extensions/burnable/SMARTBurnableUpgradeable.sol";
-import { _SMARTBurnableLogic } from "../../extensions/burnable/SMARTBurnableUpgradeable.sol";
-import { SMARTCustodianUpgradeable } from "../../extensions/custodian/SMARTCustodianUpgradeable.sol";
-import { SMARTRedeemableUpgradeable } from "../../extensions/redeemable/SMARTRedeemableUpgradeable.sol";
+import { SMARTPausableUpgradeable } from "../../smart/extensions/pausable/SMARTPausableUpgradeable.sol";
+import { SMARTBurnableUpgradeable } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
+import { _SMARTBurnableLogic } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
+import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMARTCustodianUpgradeable.sol";
+import { SMARTRedeemableUpgradeable } from "../../smart/extensions/redeemable/SMARTRedeemableUpgradeable.sol";
 import { SMARTHistoricalBalancesUpgradeable } from
-    "../../extensions/historical-balances/SMARTHistoricalBalancesUpgradeable.sol";
-import { SMARTYieldUpgradeable } from "../../extensions/yield/SMARTYieldUpgradeable.sol";
+    "../../smart/extensions/historical-balances/SMARTHistoricalBalancesUpgradeable.sol";
+import { SMARTYieldUpgradeable } from "../../smart/extensions/yield/SMARTYieldUpgradeable.sol";
 import { SMARTTokenAccessManagedUpgradeable } from
-    "../../extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
-import { SMARTCappedUpgradeable } from "../../extensions/capped/SMARTCappedUpgradeable.sol";
+    "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
+import { SMARTCappedUpgradeable } from "../../smart/extensions/capped/SMARTCappedUpgradeable.sol";
 /// @title SMARTBond
 /// @notice An implementation of a bond using the SMART extension framework,
 ///         backed by collateral and using custom roles.

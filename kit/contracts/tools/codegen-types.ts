@@ -46,10 +46,10 @@ const OUTPUT_DIR = join(CONTRACTS_ROOT, "scripts/hardhat/abi");
 const ABI_PATHS = {
   // onboarding
   system: `${ARTIFACTS_DIR}/contracts/system/ISMARTSystem.sol/ISMARTSystem.json`,
-  compliance: `${ARTIFACTS_DIR}/contracts/interface/ISMARTCompliance.sol/ISMARTCompliance.json`,
-  identityRegistry: `${ARTIFACTS_DIR}/contracts/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json`,
-  identityRegistryStorage: `${ARTIFACTS_DIR}/contracts/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol/IERC3643IdentityRegistryStorage.json`,
-  trustedIssuersRegistry: `${ARTIFACTS_DIR}/contracts/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol/IERC3643TrustedIssuersRegistry.json`,
+  compliance: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMARTCompliance.sol/ISMARTCompliance.json`,
+  identityRegistry: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json`,
+  identityRegistryStorage: `${ARTIFACTS_DIR}/contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol/IERC3643IdentityRegistryStorage.json`,
+  trustedIssuersRegistry: `${ARTIFACTS_DIR}/contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol/IERC3643TrustedIssuersRegistry.json`,
   topicSchemeRegistry: `${ARTIFACTS_DIR}/contracts/system/topic-scheme-registry/SMARTTopicSchemeRegistryImplementation.sol/SMARTTopicSchemeRegistryImplementation.json`,
   identityFactory: `${ARTIFACTS_DIR}/contracts/system/identity-factory/ISMARTIdentityFactory.sol/ISMARTIdentityFactory.json`,
   bondFactory: `${ARTIFACTS_DIR}/contracts/assets/bond/ISMARTBondFactory.sol/ISMARTBondFactory.json`,
@@ -59,7 +59,7 @@ const ABI_PATHS = {
   stablecoinFactory: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/ISMARTStableCoinFactory.sol/ISMARTStableCoinFactory.json`,
   fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/system/yield/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json`,
   // token
-  accessManager: `${ARTIFACTS_DIR}/contracts/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
+  accessManager: `${ARTIFACTS_DIR}/contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
   identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/SMARTIdentityImplementation.sol/SMARTIdentityImplementation.json`,
   tokenIdentity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/SMARTTokenIdentityImplementation.sol/SMARTTokenIdentityImplementation.json`,
   // tokens
@@ -71,12 +71,12 @@ const ABI_PATHS = {
   // Open Zeppelin
   accessControl: `${ARTIFACTS_DIR}/@openzeppelin/contracts/access/IAccessControl.sol/IAccessControl.json`,
   // smart
-  ismart: `${ARTIFACTS_DIR}/contracts/interface/ISMART.sol/ISMART.json`,
-  ismartBurnable: `${ARTIFACTS_DIR}/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json`,
-  ismartCustodian: `${ARTIFACTS_DIR}/contracts/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json`,
-  ismartPausable: `${ARTIFACTS_DIR}/contracts/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json`,
-  ismartYield: `${ARTIFACTS_DIR}/contracts/extensions/yield/ISMARTYield.sol/ISMARTYield.json`,
-  ismartFixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json`,
+  ismart: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMART.sol/ISMART.json`,
+  ismartBurnable: `${ARTIFACTS_DIR}/contracts/smart/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json`,
+  ismartCustodian: `${ARTIFACTS_DIR}/contracts/smart/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json`,
+  ismartPausable: `${ARTIFACTS_DIR}/contracts/smart/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json`,
+  ismartYield: `${ARTIFACTS_DIR}/contracts/smart/extensions/yield/ISMARTYield.sol/ISMARTYield.json`,
+  ismartFixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json`,
   // compliance modules
   identityVerification: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol/SMARTIdentityVerificationModule.json`,
   countryAllowList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,

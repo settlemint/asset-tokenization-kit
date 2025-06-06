@@ -3,8 +3,9 @@ pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { ISMARTYield } from "../../contracts/extensions/yield/ISMARTYield.sol";
-import { ISMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
+import { ISMARTYield } from "../../contracts/smart/extensions/yield/ISMARTYield.sol";
+import { ISMARTFixedYieldSchedule } from
+    "../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTFixedYieldScheduleFactory } from "../../contracts/system/yield/ISMARTFixedYieldScheduleFactory.sol";
 
 /// @title Helper utilities for SMART Yield tests

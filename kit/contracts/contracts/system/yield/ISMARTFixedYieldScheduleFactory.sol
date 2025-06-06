@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { ISMARTYield } from "../../extensions/yield/ISMARTYield.sol";
+import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 
 interface ISMARTFixedYieldScheduleFactory {
     /// @notice Emitted when the `smartFixedYieldScheduleImplementation` is updated.

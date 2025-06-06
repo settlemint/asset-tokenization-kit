@@ -3,22 +3,24 @@ pragma solidity 0.8.28;
 
 import { AbstractSMARTAssetTest } from "./AbstractSMARTAssetTest.sol";
 import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
-import { ISMARTYield } from "../../contracts/extensions/yield/ISMARTYield.sol";
-import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMARTYield } from "../../contracts/smart/extensions/yield/ISMARTYield.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ISMARTBond } from "../../contracts/assets/bond/ISMARTBond.sol";
 import { ISMARTBondFactory } from "../../contracts/assets/bond/ISMARTBondFactory.sol";
 import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
 import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { ISMART } from "../../contracts/interface/ISMART.sol";
-import { ISMARTCapped } from "../../contracts/extensions/capped/ISMARTCapped.sol";
+import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
+import { ISMARTCapped } from "../../contracts/smart/extensions/capped/ISMARTCapped.sol";
 
 import { SMARTFixedYieldScheduleFactory } from "../../contracts/system/yield/SMARTFixedYieldScheduleFactory.sol";
-import { SMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
+import { SMARTFixedYieldSchedule } from
+    "../../contracts/smart/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
 import { SMARTBondFactoryImplementation } from "../../contracts/assets/bond/SMARTBondFactoryImplementation.sol";
 import { SMARTBondImplementation } from "../../contracts/assets/bond/SMARTBondImplementation.sol";
-import { ISMARTTokenAccessManager } from "../../contracts/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract SMARTBondTest is AbstractSMARTAssetTest {

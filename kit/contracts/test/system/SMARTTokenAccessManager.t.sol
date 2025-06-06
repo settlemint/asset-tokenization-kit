@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import { Test, console } from "forge-std/Test.sol";
 import { SystemUtils } from "../utils/SystemUtils.sol";
-import { ISMARTTokenAccessManager } from "../../contracts/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { SMARTTokenAccessManagerImplementation } from
     "../../contracts/system/access-manager/SMARTTokenAccessManagerImplementation.sol";
 import { SMARTTokenAccessManagerProxy } from "../../contracts/system/access-manager/SMARTTokenAccessManagerProxy.sol";

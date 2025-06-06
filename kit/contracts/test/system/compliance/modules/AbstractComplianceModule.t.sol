@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { AbstractComplianceModule } from "../../../../contracts/system/compliance/modules/AbstractComplianceModule.sol";
-import { ISMARTComplianceModule } from "../../../../contracts/interface/ISMARTComplianceModule.sol";
+import { ISMARTComplianceModule } from "../../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 

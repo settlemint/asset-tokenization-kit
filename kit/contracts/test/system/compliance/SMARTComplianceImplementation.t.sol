@@ -6,11 +6,12 @@ import { console2 } from "forge-std/console2.sol";
 
 import { SMARTComplianceImplementation } from "../../../contracts/system/compliance/SMARTComplianceImplementation.sol";
 import { SMARTComplianceProxy } from "../../../contracts/system/compliance/SMARTComplianceProxy.sol";
-import { ISMARTCompliance } from "../../../contracts/interface/ISMARTCompliance.sol";
-import { ISMARTComplianceModule } from "../../../contracts/interface/ISMARTComplianceModule.sol";
+import { ISMARTCompliance } from "../../../contracts/smart/interface/ISMARTCompliance.sol";
+import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { ISMARTComplianceAllowList } from "../../../contracts/system/compliance/ISMARTComplianceAllowList.sol";
-import { ISMART } from "../../../contracts/interface/ISMART.sol";
-import { SMARTComplianceModuleParamPair } from "../../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { SMARTSystemRoles } from "../../../contracts/system/SMARTSystemRoles.sol";
 
 import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule.sol";

@@ -15,10 +15,11 @@ import { ClaimUtils } from "../../test/utils/ClaimUtils.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
-import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMARTTokenAccessManager } from "../../contracts/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { ISMART } from "../../contracts/interface/ISMART.sol";
-import { ISMARTCollateral } from "../../contracts/extensions/collateral/ISMARTCollateral.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
+import { ISMARTCollateral } from "../../contracts/smart/extensions/collateral/ISMARTCollateral.sol";
 
 contract SMARTStableCoinTest is AbstractSMARTAssetTest {
     ISMARTStableCoinFactory public stableCoinFactory;

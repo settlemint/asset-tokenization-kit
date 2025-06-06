@@ -7,7 +7,7 @@ import { SMARTIdentityRegistryStorageImplementation } from
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ISMARTIdentityRegistryStorage } from "../../../contracts/interface/ISMARTIdentityRegistryStorage.sol";
+import { ISMARTIdentityRegistryStorage } from "../../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";

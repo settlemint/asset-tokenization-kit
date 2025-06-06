@@ -12,11 +12,11 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interface imports
-import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
+import { IERC734 } from "@onchainid/contracts/smart/interface/IERC734.sol";
 import { ISMARTIdentityFactory } from "./ISMARTIdentityFactory.sol";
 import { ISMARTIdentity } from "./identities/ISMARTIdentity.sol";
 import { ISMARTTokenIdentity } from "./identities/ISMARTTokenIdentity.sol";
-import { ISMART } from "../../interface/ISMART.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
 
 // System imports
 import { InvalidSystemAddress } from "../SMARTSystemErrors.sol"; // Assuming this is correctly placed

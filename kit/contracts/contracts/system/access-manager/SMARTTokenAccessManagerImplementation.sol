@@ -9,7 +9,7 @@ import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/ac
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Interface import
-import { ISMARTTokenAccessManager } from "../../extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 
 /// @title Centralized Access Control Manager for SMART Tokens (Upgradeable)
 /// @notice This contract is a dedicated manager for handling roles and permissions across multiple

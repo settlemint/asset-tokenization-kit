@@ -5,7 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { SMARTTrustedIssuersRegistryImplementation } from
     "../../../contracts/system/trusted-issuers-registry/SMARTTrustedIssuersRegistryImplementation.sol";
 import { IERC3643TrustedIssuersRegistry } from
-    "../../../contracts/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+    "../../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";

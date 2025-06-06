@@ -10,14 +10,14 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // OnchainID imports
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol";
 
 // Constants
 import { SMARTSystemRoles } from "../SMARTSystemRoles.sol";
 
 // Interface imports
-import { IERC3643IdentityRegistryStorage } from "./../../interface/ERC-3643/IERC3643IdentityRegistryStorage.sol";
-import { ISMARTIdentityRegistryStorage } from "./../../interface/ISMARTIdentityRegistryStorage.sol";
+import { IERC3643IdentityRegistryStorage } from "./../../smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol";
+import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
 
 // --- Custom Errors for Lost Wallet Management ---
 // It's good practice to define specific errors if not already available for clarity.

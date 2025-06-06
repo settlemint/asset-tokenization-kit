@@ -4,9 +4,11 @@ pragma solidity 0.8.28;
 import { Test, console } from "forge-std/Test.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
-import { ISMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
-import { SMARTFixedYieldSchedule } from "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
-import { ISMARTYield } from "../../contracts/extensions/yield/ISMARTYield.sol";
+import { ISMARTFixedYieldSchedule } from
+    "../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
+import { SMARTFixedYieldSchedule } from
+    "../../contracts/smart/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
+import { ISMARTYield } from "../../contracts/smart/extensions/yield/ISMARTYield.sol";
 
 contract MockSMARTToken is MockedERC20Token {
     mapping(address => uint256) private _yieldBasisPerUnit;

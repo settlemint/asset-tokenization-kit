@@ -8,8 +8,8 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 
 // Interface imports
 import { ISMARTEquity } from "./ISMARTEquity.sol";
-import { ISMARTTokenAccessManager } from "../../extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ISMARTEquityFactory } from "./ISMARTEquityFactory.sol";
 // Local imports
 import { SMARTEquityProxy } from "./SMARTEquityProxy.sol";

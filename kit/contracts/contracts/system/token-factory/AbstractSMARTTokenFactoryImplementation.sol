@@ -7,20 +7,20 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ISMARTTokenFactory } from "./ISMARTTokenFactory.sol";
-import { ISMART } from "../../interface/ISMART.sol";
-import { ISMARTCustodian } from "../../extensions/custodian/ISMARTCustodian.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
+import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
 import { SMARTTokenAccessManagerProxy } from "../access-manager/SMARTTokenAccessManagerProxy.sol";
-import { ISMARTTokenAccessManager } from "../../extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { ISMARTIdentityRegistry } from "../../interface/ISMARTIdentityRegistry.sol";
-import { ISMARTCompliance } from "../../interface/ISMARTCompliance.sol";
+import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
+import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
 import { ISMARTSystem } from "../ISMARTSystem.sol";
 import { ISMARTIdentityFactory } from "../identity-factory/ISMARTIdentityFactory.sol";
 import { SMARTSystemRoles } from "../SMARTSystemRoles.sol";
 import { SMARTRoles } from "../../assets/SMARTRoles.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
-import { ISMARTComplianceModule } from "../../interface/ISMARTComplianceModule.sol";
-import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
+import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 /// @title SMARTTokenFactory - Contract for managing token registries with role-based access control
 /// @notice This contract provides functionality for registering tokens and checking their registration status,

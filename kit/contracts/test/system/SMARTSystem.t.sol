@@ -12,16 +12,18 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { SystemUtils } from "../utils/SystemUtils.sol";
 
 // Import required interfaces
-import { ISMARTCompliance } from "../../contracts/interface/ISMARTCompliance.sol";
+import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ISMARTIdentityFactory } from "../../contracts/system/identity-factory/ISMARTIdentityFactory.sol";
-import { IERC3643TrustedIssuersRegistry } from "../../contracts/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
-import { ISMARTIdentityRegistryStorage } from "../../contracts/interface/ISMARTIdentityRegistryStorage.sol";
-import { ISMARTIdentityRegistry } from "../../contracts/interface/ISMARTIdentityRegistry.sol";
+import { IERC3643TrustedIssuersRegistry } from
+    "../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { ISMARTIdentityRegistryStorage } from "../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
+import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../contracts/system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol";
-import { ISMARTTokenAccessManager } from "../../contracts/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMARTTokenFactory } from "../../contracts/system/token-factory/ISMARTTokenFactory.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 // Import system errors
 import {

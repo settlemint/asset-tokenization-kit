@@ -2,8 +2,8 @@
 pragma solidity ^0.8.28;
 
 import { OnChainIdentity } from "./OnChainIdentity.sol";
-import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { IClaimIssuer } from "@onchainid/contracts/smart/interface/IClaimIssuer.sol";
+import { IIdentity } from "@onchainid/contracts/smart/interface/IIdentity.sol";
 
 abstract contract OnChainIdentityWithRevocation is OnChainIdentity {
     // Mapping to track revoked claims by their signature hash

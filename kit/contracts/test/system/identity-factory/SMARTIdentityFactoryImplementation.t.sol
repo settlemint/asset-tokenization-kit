@@ -5,8 +5,9 @@ import "forge-std/Test.sol";
 import "../../../contracts/system/identity-factory/ISMARTIdentityFactory.sol";
 import "../../utils/SystemUtils.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { SMARTToken } from "../../examples/SMARTToken.sol";
-import { SMARTComplianceModuleParamPair } from "../../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTToken } from "../../smart/examples/SMARTToken.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { SMARTTopics } from "../../../contracts/system/SMARTTopics.sol";
 
 contract SMARTIdentityFactoryImplementationTest is Test {

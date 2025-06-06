@@ -11,12 +11,13 @@ import { ISMARTFundFactory } from "../../contracts/assets/fund/ISMARTFundFactory
 import { SMARTFundFactoryImplementation } from "../../contracts/assets/fund/SMARTFundFactoryImplementation.sol";
 import { SMARTFundImplementation } from "../../contracts/assets/fund/SMARTFundImplementation.sol";
 
-import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
 import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
-import { ISMART } from "../../contracts/interface/ISMART.sol";
+import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { ISMARTPausable } from "../../contracts/extensions/pausable/ISMARTPausable.sol";
+import { ISMARTPausable } from "../../contracts/smart/extensions/pausable/ISMARTPausable.sol";
 
 contract SMARTFundTest is AbstractSMARTAssetTest {
     ISMARTFundFactory public fundFactory;
