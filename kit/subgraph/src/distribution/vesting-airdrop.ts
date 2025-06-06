@@ -7,7 +7,6 @@ import {
 } from "@graphprotocol/graph-ts";
 import {
   AirdropClaimIndex,
-  AirdropRecipient,
   AirdropStatsData,
   Bond,
   CryptoCurrency,
@@ -31,6 +30,7 @@ import {
 
 import { fetchAccount } from "../utils/account";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
+import { fetchAirdropRecipient } from "../utils/airdrop";
 import { toDecimals } from "../utils/decimals";
 
 // Helper function to get token decimals from any asset type
@@ -195,18 +195,11 @@ export function handleClaimed(event: Claimed): void {
   );
 
   // Check if this is a new recipient
-  let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
-  let recipient = AirdropRecipient.load(recipientId);
-  let isNewClaimant = recipient == null;
+  let recipient = fetchAirdropRecipient(airdrop.id, claimantAccount.id);
+  let isNewClaimant = recipient.firstClaimedTimestamp === null;
 
-  if (!recipient) {
-    recipient = new AirdropRecipient(recipientId);
-    recipient.airdrop = airdrop.id;
-    recipient.recipient = claimantAccount.id;
+  if (isNewClaimant) {
     recipient.firstClaimedTimestamp = event.block.timestamp;
-    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
-    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
-    airdrop.totalRecipients = airdrop.totalRecipients + 1;
   }
   recipient.lastClaimedTimestamp = event.block.timestamp;
   recipient.totalClaimedByRecipient =
@@ -306,10 +299,8 @@ export function handleBatchClaimed(event: BatchClaimed): void {
   statsData.claimVolumeExact = totalAmount;
 
   // Check if this is a new claimant (should be determined in processBatchClaim)
-  const recipientId = airdrop.id
-    .concat(fetchAccount(claimantAddress).id)
-    .toHex();
-  const isNewClaimant = !AirdropRecipient.load(recipientId);
+  let recipient = fetchAirdropRecipient(airdrop.id, claimantAddress);
+  const isNewClaimant = recipient.firstClaimedTimestamp === null;
   statsData.uniqueClaimants = isNewClaimant ? 1 : 0;
 
   // Set PushAirdrop fields to 0
@@ -386,16 +377,12 @@ export function handleClaimInitialized(event: ClaimInitialized): void {
   let decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
   let allocatedAmountBD = toDecimals(allocatedAmount, decimals);
 
-  // Update AirdropRecipient to track the initial allocation
-  let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
-  let recipient = AirdropRecipient.load(recipientId);
-  if (!recipient) {
-    recipient = new AirdropRecipient(recipientId);
-    recipient.airdrop = airdrop.id;
-    recipient.recipient = claimantAccount.id;
+  // Get or create AirdropRecipient using utility function
+  let recipient = fetchAirdropRecipient(airdrop.id, claimantAccount.id);
+
+  // Update recipient for allocation initialization
+  if (recipient.firstClaimedTimestamp === null) {
     recipient.firstClaimedTimestamp = event.block.timestamp;
-    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
-    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
     airdrop.totalRecipients = airdrop.totalRecipients + 1;
   }
   recipient.lastClaimedTimestamp = event.block.timestamp;
@@ -467,16 +454,9 @@ function processBatchClaim(
   );
 
   // Update or create AirdropRecipient
-  const recipientId = airdrop.id.concat(claimantAccount.id).toHex();
-  let recipient = AirdropRecipient.load(recipientId);
-  if (!recipient) {
-    recipient = new AirdropRecipient(recipientId);
-    recipient.airdrop = airdrop.id;
-    recipient.recipient = claimantAccount.id;
+  let recipient = fetchAirdropRecipient(airdrop.id, claimantAccount.id);
+  if (recipient.firstClaimedTimestamp === null) {
     recipient.firstClaimedTimestamp = event.block.timestamp;
-    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
-    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
-    // Increment unique recipient count on airdrop
     airdrop.totalRecipients = airdrop.totalRecipients + 1;
   }
   recipient.lastClaimedTimestamp = event.block.timestamp;

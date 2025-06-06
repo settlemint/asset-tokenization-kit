@@ -6,7 +6,7 @@ import {
   log,
 } from "@graphprotocol/graph-ts";
 
-import { ipfs, json } from "@graphprotocol/graph-ts";
+import { ipfs, json, JSONValueKind } from "@graphprotocol/graph-ts";
 
 import {
   AirdropFactory,
@@ -22,21 +22,164 @@ import {
   StandardAirdropDeployed,
   VestingAirdropDeployed,
 } from "../../generated/AirdropFactory/AirdropFactory";
-
 import {
   PushAirdropTemplate,
   StandardAirdropTemplate,
   VestingAirdropTemplate,
 } from "../../generated/templates";
-
-// Import contract bindings for fetching state
 import { PushAirdrop as PushAirdropContract } from "../../generated/templates/PushAirdropTemplate/PushAirdrop";
 import { StandardAirdrop as StandardAirdropContract } from "../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
 import { LinearVestingStrategy as LinearVestingStrategyContract } from "../../generated/templates/VestingAirdropTemplate/LinearVestingStrategy";
 import { VestingAirdrop as VestingAirdropContract } from "../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
-
-// Use fetchAccount instead of loadOrCreateAccount
+import { fetchAssetDecimals } from "../assets/fetch/asset";
 import { fetchAccount } from "../utils/account";
+import { fetchAirdropRecipient } from "../utils/airdrop";
+import { toDecimals } from "../utils/decimals";
+
+function updateAirdropAllocations(
+  ipfsHash: string,
+  airdropAddress: Address,
+  tokenDecimals: i32
+): void {
+  if (!ipfsHash) {
+    log.warning("No IPFS hash provided for airdrop {}", [
+      airdropAddress.toHex(),
+    ]);
+    return;
+  }
+
+  log.info("Fetching IPFS distribution data for airdrop {} with hash: {}", [
+    airdropAddress.toHex(),
+    ipfsHash,
+  ]);
+
+  let ipfsData = ipfs.cat(ipfsHash);
+  if (!ipfsData) {
+    log.error(
+      "Failed to fetch IPFS data for hash: {} - continuing without allocation data",
+      [ipfsHash]
+    );
+    return;
+  }
+
+  log.info("Successfully fetched IPFS data. Raw bytes length: {}", [
+    ipfsData.length.toString(),
+  ]);
+
+  let jsonData = json.fromBytes(ipfsData);
+  if (jsonData.isNull()) {
+    log.warning(
+      "IPFS data is not valid JSON for hash: {} - continuing without allocation data",
+      [ipfsHash]
+    );
+    let stringData = ipfsData.toString();
+    log.info("IPFS content as string: {}", [stringData]);
+    return;
+  }
+
+  log.info("IPFS data parsed successfully as JSON for hash: {}", [ipfsHash]);
+
+  let jsonObject = jsonData.toObject();
+  if (!jsonObject) {
+    log.warning(
+      "IPFS JSON data is not an object for hash: {} - continuing without allocation data",
+      [ipfsHash]
+    );
+    return;
+  }
+
+  let totalRecipients = jsonObject.entries.length;
+  log.info("IPFS airdrop distribution data contains {} recipients", [
+    totalRecipients.toString(),
+  ]);
+
+  if (totalRecipients == 0) {
+    log.info("No recipients found in distribution data", []);
+    return;
+  }
+
+  // Process recipients and create AirdropRecipient entities
+  let totalAmount = BigInt.zero();
+  let validRecipients = 0;
+
+  for (let i = 0; i < totalRecipients; i++) {
+    let entry = jsonObject.entries[i];
+    let addressStr = entry.key;
+    let recipientData = entry.value;
+
+    if (recipientData.kind !== JSONValueKind.OBJECT) {
+      log.warning(
+        "Invalid recipient data type for address {}: kind {} - skipping",
+        [addressStr, recipientData.kind.toString()]
+      );
+      continue;
+    }
+
+    let recipientObject = recipientData.toObject();
+    if (!recipientObject) {
+      log.warning(
+        "Invalid recipient data type for address {}: kind {} - skipping",
+        [addressStr, recipientData.kind.toString()]
+      );
+      continue;
+    }
+
+    let amountValue = recipientObject.get("amount");
+    if (!amountValue) {
+      log.warning("No 'amount' field found for address: {} - skipping", [
+        addressStr,
+      ]);
+      continue;
+    }
+
+    let amount = BigInt.fromI32(0);
+    if (amountValue.kind !== JSONValueKind.STRING) {
+      log.warning("Invalid amount type for address {}: kind {} - skipping", [
+        addressStr,
+        amountValue.kind.toString(),
+      ]);
+      continue;
+    }
+
+    // Handle potential BigInt parsing errors by checking for valid string format
+    let amountString = amountValue.toString();
+    if (amountString.length == 0) {
+      log.warning("Empty amount string for address: {} - skipping", [
+        addressStr,
+      ]);
+      continue;
+    }
+
+    amount = BigInt.fromString(amountString);
+
+    // Validate address format before processing
+    if (addressStr.length != 42 || !addressStr.startsWith("0x")) {
+      log.warning("Invalid address format: {} - skipping", [addressStr]);
+      continue;
+    }
+
+    let recipientAddress = Address.fromString(addressStr);
+    let recipientAccount = fetchAccount(recipientAddress);
+
+    let airdropRecipient = fetchAirdropRecipient(
+      airdropAddress,
+      recipientAccount.id
+    );
+
+    airdropRecipient.allocatedAmountExact = amount;
+    airdropRecipient.allocatedAmount = toDecimals(amount, tokenDecimals);
+
+    airdropRecipient.save();
+
+    totalAmount = totalAmount.plus(amount);
+    validRecipients++;
+  }
+
+  log.info(
+    "Created AirdropRecipient entities for airdrop {}: {} valid recipients, total amount: {} wei",
+    [airdropAddress.toHex(), validRecipients.toString(), totalAmount.toString()]
+  );
+}
 
 export function handleStandardAirdropDeployed(
   event: StandardAirdropDeployed
@@ -45,7 +188,7 @@ export function handleStandardAirdropDeployed(
   let factoryContract = AirdropFactoryContract.bind(factoryAddress);
   let factoryEntity = loadOrCreateAirdropFactory(factoryAddress);
 
-  factoryEntity.totalAirdropsDeployed = factoryEntity.totalAirdropsDeployed + 1; // Use standard integer increment
+  factoryEntity.totalAirdropsDeployed = factoryEntity.totalAirdropsDeployed + 1;
   factoryEntity.save();
 
   let airdropAddress = event.params.airdropContract;
@@ -77,8 +220,6 @@ export function handleStandardAirdropDeployed(
   airdrop.totalClaims = 0;
   airdrop.isWithdrawn = false;
 
-  // --- Fetch contract state --- //
-
   // Fetch TrustedForwarder from Factory state
   let trustedForwarderResult = factoryContract.try_trustedForwarder();
   if (!trustedForwarderResult.reverted) {
@@ -88,7 +229,7 @@ export function handleStandardAirdropDeployed(
       "Failed to fetch trustedForwarder for Factory {} while creating StandardAirdrop {}",
       [factoryAddress.toHex(), airdropAddress.toHex()]
     );
-    airdrop.trustedForwarder = fetchAccount(Address.zero()).id; // Default/Placeholder
+    airdrop.trustedForwarder = fetchAccount(Address.zero()).id;
   }
 
   // Fetch details from the newly deployed StandardAirdrop contract
@@ -96,8 +237,6 @@ export function handleStandardAirdropDeployed(
   let merkleRootResult = airdropContract.try_merkleRoot();
   let startTimeResult = airdropContract.try_startTime();
   let endTimeResult = airdropContract.try_endTime();
-
-  // Fetch name and distributionIpfsHash from the newly deployed StandardAirdrop contract
   let nameResult = airdropContract.try_name();
   let distributionIpfsHashResult = airdropContract.try_distributionIpfsHash();
 
@@ -107,8 +246,9 @@ export function handleStandardAirdropDeployed(
     log.error("Failed to fetch merkleRoot for StandardAirdrop {}", [
       airdropAddress.toHex(),
     ]);
-    airdrop.merkleRoot = Bytes.fromHexString("0x00"); // Placeholder
+    airdrop.merkleRoot = Bytes.fromHexString("0x00");
   }
+
   if (!startTimeResult.reverted) {
     airdrop.startTime = startTimeResult.value;
   } else {
@@ -117,6 +257,7 @@ export function handleStandardAirdropDeployed(
     ]);
     airdrop.startTime = BigInt.fromI32(0);
   }
+
   if (!endTimeResult.reverted) {
     airdrop.endTime = endTimeResult.value;
   } else {
@@ -133,161 +274,20 @@ export function handleStandardAirdropDeployed(
       airdropAddress.toHex(),
     ]);
   }
+
   if (!distributionIpfsHashResult.reverted) {
     airdrop.distributionIpfsHash = distributionIpfsHashResult.value;
-
-    // Fetch and log IPFS content
-    let ipfsHash = distributionIpfsHashResult.value;
-    log.info("Attempting to fetch IPFS content for hash: {}", [ipfsHash]);
-
-    let ipfsData = ipfs.cat(ipfsHash);
-    if (ipfsData) {
-      log.info("Successfully fetched IPFS data. Raw bytes length: {}", [
-        ipfsData.length.toString(),
-      ]);
-
-      // Try to parse as JSON
-      let jsonData = json.fromBytes(ipfsData);
-      if (jsonData.isNull()) {
-        log.warning("IPFS data is not valid JSON for hash: {}", [ipfsHash]);
-        // Log as string if not JSON
-        let stringData = ipfsData.toString();
-        log.info("IPFS content as string: {}", [stringData]);
-      } else {
-        log.info("IPFS data parsed successfully as JSON for hash: {}", [
-          ipfsHash,
-        ]);
-
-        // Log the JSON object - specific to airdrop distribution format
-        let jsonObject = jsonData.toObject();
-        if (jsonObject) {
-          let totalRecipients = jsonObject.entries.length;
-          log.info("IPFS airdrop distribution data contains {} recipients", [
-            totalRecipients.toString(),
-          ]);
-
-          // Log first few recipients as examples (limit to 5 to avoid log spam)
-          let maxToLog = totalRecipients > 5 ? 5 : totalRecipients;
-          log.info("Showing first {} recipients:", [maxToLog.toString()]);
-
-          for (let i = 0; i < maxToLog; i++) {
-            let entry = jsonObject.entries[i];
-            let address = entry.key;
-            let recipientData = entry.value;
-
-            if (recipientData.kind == 5) {
-              // OBJECT
-              let recipientObject = recipientData.toObject();
-              if (recipientObject) {
-                let amount = "";
-                let proofLength = 0;
-
-                // Debug: Log all keys in the recipient object
-                let keys: string[] = [];
-                for (let j = 0; j < recipientObject.entries.length; j++) {
-                  keys.push(recipientObject.entries[j].key);
-                }
-                log.info("Recipient object keys for address {}: [{}]", [
-                  address,
-                  keys.join(", "),
-                ]);
-
-                // Extract amount
-                let amountValue = recipientObject.get("amount");
-                if (amountValue) {
-                  log.info(
-                    "Amount value kind: {} (0=NULL, 1=BOOL, 2=NUMBER, 3=STRING, 4=ARRAY, 5=OBJECT)",
-                    [amountValue.kind.toString()]
-                  );
-                  if (amountValue.kind == 3) {
-                    // STRING
-                    amount = amountValue.toString();
-                  } else if (amountValue.kind == 2) {
-                    // NUMBER
-                    amount = amountValue.toBigInt().toString();
-                  } else if (amountValue.kind == 0) {
-                    // NULL
-                    log.warning("Amount is NULL for address: {}", [address]);
-                    amount = "NULL";
-                  } else {
-                    log.warning("Unknown amount value kind: {}", [
-                      amountValue.kind.toString(),
-                    ]);
-                  }
-                } else {
-                  log.warning("No 'amount' field found for address: {}", [
-                    address,
-                  ]);
-                }
-
-                // Extract proof array length
-                let proofValue = recipientObject.get("proof");
-                if (proofValue && proofValue.kind == 4) {
-                  // ARRAY
-                  proofLength = proofValue.toArray().length;
-                }
-
-                log.info(
-                  "Recipient {}: address={}, amount={}, proof_length={}",
-                  [(i + 1).toString(), address, amount, proofLength.toString()]
-                );
-              }
-            }
-          }
-
-          if (totalRecipients > 5) {
-            log.info("... and {} more recipients", [
-              (totalRecipients - 5).toString(),
-            ]);
-          }
-
-          // Calculate total amount being distributed
-          let totalAmount = BigInt.fromI32(0);
-          let validRecipients = 0;
-
-          for (let i = 0; i < totalRecipients; i++) {
-            let entry = jsonObject.entries[i];
-            let recipientData = entry.value;
-
-            if (recipientData.kind == 5) {
-              // OBJECT
-              let recipientObject = recipientData.toObject();
-              if (recipientObject) {
-                let amountValue = recipientObject.get("amount");
-                if (amountValue) {
-                  let amount: BigInt;
-                  if (amountValue.kind == 3) {
-                    // STRING
-                    let amountStr = amountValue.toString();
-                    amount = BigInt.fromString(amountStr);
-                  } else if (amountValue.kind == 2) {
-                    // NUMBER
-                    amount = amountValue.toBigInt();
-                  } else {
-                    continue; // Skip invalid amount types
-                  }
-                  totalAmount = totalAmount.plus(amount);
-                  validRecipients++;
-                }
-              }
-            }
-          }
-
-          log.info(
-            "Distribution summary: {} valid recipients, total amount: {} wei",
-            [validRecipients.toString(), totalAmount.toString()]
-          );
-        }
-      }
-    } else {
-      log.error("Failed to fetch IPFS data for hash: {}", [ipfsHash]);
-    }
+    let tokenDecimals = fetchAssetDecimals(tokenAddress);
+    updateAirdropAllocations(
+      distributionIpfsHashResult.value,
+      airdropAddress,
+      tokenDecimals
+    );
   } else {
     log.error("Failed to fetch distributionIpfsHash for StandardAirdrop {}", [
       airdropAddress.toHex(),
     ]);
   }
-  // ---------------------------- //
 
   airdrop.save();
 
@@ -306,7 +306,7 @@ export function handleVestingAirdropDeployed(
   let factoryContract = AirdropFactoryContract.bind(factoryAddress);
   let factoryEntity = loadOrCreateAirdropFactory(factoryAddress);
 
-  factoryEntity.totalAirdropsDeployed = factoryEntity.totalAirdropsDeployed + 1; // Use standard integer increment
+  factoryEntity.totalAirdropsDeployed = factoryEntity.totalAirdropsDeployed + 1;
   factoryEntity.save();
 
   let airdropAddress = event.params.airdropContract;
@@ -328,9 +328,7 @@ export function handleVestingAirdropDeployed(
   // Create entities
   let airdrop = new VestingAirdrop(airdropAddress);
   let owner = fetchAccount(ownerAddress);
-  let strategy = new LinearVestingStrategy(strategyAddress); // Assuming Linear for now
-
-  // --- Fetch contract state --- //
+  let strategy = new LinearVestingStrategy(strategyAddress);
 
   // Fetch TrustedForwarder from Factory state
   let trustedForwarderResult = factoryContract.try_trustedForwarder();
@@ -342,7 +340,6 @@ export function handleVestingAirdropDeployed(
       "Failed to fetch trustedForwarder for Factory {} while creating VestingAirdrop {}",
       [factoryAddress.toHex(), airdropAddress.toHex()]
     );
-    // Keep trustedForwarderAccountAddress as Address.zero()
   }
 
   // Fetch details from the newly deployed LinearVestingStrategy contract
@@ -352,7 +349,7 @@ export function handleVestingAirdropDeployed(
   let strategyOwnerResult = strategyContract.try_owner();
 
   strategy.type = "Linear";
-  strategy.airdropRef = airdropAddress; // Add direct reference to airdrop
+  strategy.airdropRef = airdropAddress;
 
   if (!strategyOwnerResult.reverted) {
     strategy.owner = fetchAccount(strategyOwnerResult.value).id;
@@ -361,8 +358,9 @@ export function handleVestingAirdropDeployed(
       "Failed to fetch owner for Strategy {}. Using airdrop owner as fallback.",
       [strategyAddress.toHex()]
     );
-    strategy.owner = owner.id; // Fallback to airdrop owner
+    strategy.owner = owner.id;
   }
+
   if (!vestingDurationResult.reverted) {
     strategy.vestingDuration = vestingDurationResult.value;
   } else {
@@ -371,6 +369,7 @@ export function handleVestingAirdropDeployed(
     ]);
     strategy.vestingDuration = BigInt.fromI32(0);
   }
+
   if (!cliffDurationResult.reverted) {
     strategy.cliffDuration = cliffDurationResult.value;
   } else {
@@ -379,15 +378,17 @@ export function handleVestingAirdropDeployed(
     ]);
     strategy.cliffDuration = BigInt.fromI32(0);
   }
+
   strategy.save();
 
   // Fetch details from the newly deployed VestingAirdrop contract
   let airdropContract = VestingAirdropContract.bind(airdropAddress);
   let merkleRootResult = airdropContract.try_merkleRoot();
   let claimPeriodEndResult = airdropContract.try_claimPeriodEnd();
+  let distributionIpfsHashResult = airdropContract.try_distributionIpfsHash();
 
   airdrop.factory = factoryEntity.id;
-  airdrop.token = tokenAddress; // Store token address directly (Bytes)
+  airdrop.token = tokenAddress;
   airdrop.owner = owner.id;
   airdrop.deployedOn = event.block.timestamp;
   airdrop.deploymentTx = event.transaction.hash;
@@ -405,8 +406,9 @@ export function handleVestingAirdropDeployed(
     log.error("Failed to fetch merkleRoot for VestingAirdrop {}", [
       airdropAddress.toHex(),
     ]);
-    airdrop.merkleRoot = Bytes.fromHexString("0x00"); // Placeholder
+    airdrop.merkleRoot = Bytes.fromHexString("0x00");
   }
+
   if (!claimPeriodEndResult.reverted) {
     airdrop.claimPeriodEnd = claimPeriodEndResult.value;
   } else {
@@ -415,7 +417,19 @@ export function handleVestingAirdropDeployed(
     ]);
     airdrop.claimPeriodEnd = BigInt.fromI32(0);
   }
-  // ---------------------------- //
+
+  if (!distributionIpfsHashResult.reverted) {
+    let tokenDecimals = fetchAssetDecimals(tokenAddress);
+    updateAirdropAllocations(
+      distributionIpfsHashResult.value,
+      airdropAddress,
+      tokenDecimals
+    );
+  } else {
+    log.error("Failed to fetch distributionIpfsHash for VestingAirdrop {}", [
+      airdropAddress.toHex(),
+    ]);
+  }
 
   airdrop.save();
 
@@ -455,7 +469,7 @@ export function handlePushAirdropDeployed(event: PushAirdropDeployed): void {
   let owner = fetchAccount(ownerAddress);
 
   airdrop.factory = factoryEntity.id;
-  airdrop.token = tokenAddress; // Store token address directly (Bytes)
+  airdrop.token = tokenAddress;
   airdrop.owner = owner.id;
   airdrop.deployedOn = event.block.timestamp;
   airdrop.deploymentTx = event.transaction.hash;
@@ -464,10 +478,8 @@ export function handlePushAirdropDeployed(event: PushAirdropDeployed): void {
   airdrop.totalRecipients = 0;
   airdrop.totalClaims = 0;
   airdrop.isWithdrawn = false;
-  airdrop.distributionCap = BigInt.fromI32(0); // Default, will be updated from contract
+  airdrop.distributionCap = BigInt.fromI32(0);
   airdrop.totalDistributed = BigInt.fromI32(0);
-
-  // --- Fetch contract state --- //
 
   // Fetch TrustedForwarder from Factory state
   let trustedForwarderResult = factoryContract.try_trustedForwarder();
@@ -478,7 +490,7 @@ export function handlePushAirdropDeployed(event: PushAirdropDeployed): void {
       "Failed to fetch trustedForwarder for Factory {} while creating PushAirdrop {}",
       [factoryAddress.toHex(), airdropAddress.toHex()]
     );
-    airdrop.trustedForwarder = fetchAccount(Address.zero()).id; // Default/Placeholder
+    airdrop.trustedForwarder = fetchAccount(Address.zero()).id;
   }
 
   // Fetch details from the newly deployed PushAirdrop contract
@@ -486,6 +498,8 @@ export function handlePushAirdropDeployed(event: PushAirdropDeployed): void {
   let merkleRootResult = airdropContract.try_merkleRoot();
   let distributionCapResult = airdropContract.try_distributionCap();
   let totalDistributedResult = airdropContract.try_totalDistributed();
+  let nameResult = airdropContract.try_name();
+  let distributionIpfsHashResult = airdropContract.try_distributionIpfsHash();
 
   if (!merkleRootResult.reverted) {
     airdrop.merkleRoot = merkleRootResult.value;
@@ -493,7 +507,7 @@ export function handlePushAirdropDeployed(event: PushAirdropDeployed): void {
     log.error("Failed to fetch merkleRoot for PushAirdrop {}", [
       airdropAddress.toHex(),
     ]);
-    airdrop.merkleRoot = Bytes.fromHexString("0x00"); // Placeholder
+    airdrop.merkleRoot = Bytes.fromHexString("0x00");
   }
 
   if (!distributionCapResult.reverted) {
@@ -502,7 +516,6 @@ export function handlePushAirdropDeployed(event: PushAirdropDeployed): void {
     log.error("Failed to fetch distributionCap for PushAirdrop {}", [
       airdropAddress.toHex(),
     ]);
-    // Keep default zero value
   }
 
   if (!totalDistributedResult.reverted) {
@@ -511,9 +524,29 @@ export function handlePushAirdropDeployed(event: PushAirdropDeployed): void {
     log.error("Failed to fetch totalDistributed for PushAirdrop {}", [
       airdropAddress.toHex(),
     ]);
-    // Keep default zero value
   }
-  // ---------------------------- //
+
+  if (!nameResult.reverted) {
+    airdrop.name = nameResult.value;
+  } else {
+    log.error("Failed to fetch name for PushAirdrop {}", [
+      airdropAddress.toHex(),
+    ]);
+  }
+
+  if (!distributionIpfsHashResult.reverted) {
+    airdrop.distributionIpfsHash = distributionIpfsHashResult.value;
+    let tokenDecimals = fetchAssetDecimals(tokenAddress);
+    updateAirdropAllocations(
+      distributionIpfsHashResult.value,
+      airdropAddress,
+      tokenDecimals
+    );
+  } else {
+    log.error("Failed to fetch distributionIpfsHash for PushAirdrop {}", [
+      airdropAddress.toHex(),
+    ]);
+  }
 
   airdrop.save();
 
@@ -526,12 +559,11 @@ export function handlePushAirdropDeployed(event: PushAirdropDeployed): void {
 }
 
 // Helper function to ensure AirdropFactory entity exists
-// This one is local to this file as it's specific to the factory itself
 function loadOrCreateAirdropFactory(factoryAddress: Address): AirdropFactory {
   let factory = AirdropFactory.load(factoryAddress);
   if (!factory) {
     factory = new AirdropFactory(factoryAddress);
-    factory.totalAirdropsDeployed = 0; // Use standard integer 0
+    factory.totalAirdropsDeployed = 0;
     factory.save();
   }
   return factory;
