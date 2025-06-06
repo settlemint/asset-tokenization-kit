@@ -10,8 +10,8 @@ import { TopicSchemeRegistryImplementationNotSet } from "../ATKSystemErrors.sol"
 /// @author SettleMint Tokenization Services
 /// @notice UUPS proxy for the `SMARTTopicSchemeRegistryImplementation`.
 /// Enables upgrading the topic scheme registry logic without changing the contract address or losing data.
-/// @dev Delegates calls to an implementation contract whose address is retrieved from the `ISMARTSystem` contract.
-/// The `ISMARTSystem` contract serves as a central registry for SMART Protocol component addresses.
+/// @dev Delegates calls to an implementation contract whose address is retrieved from the `IATKSystem` contract.
+/// The `IATKSystem` contract serves as a central registry for SMART Protocol component addresses.
 /// Initializes the implementation contract via a delegatecall to its `initialize` function during construction.
 /// Upgrade logic resides in the implementation contract (UUPS pattern).
 /// This proxy primarily forwards calls and prevents accidental Ether transfers.
@@ -32,7 +32,7 @@ contract ATKTopicSchemeRegistryProxy is ATKSystemProxy {
         _performInitializationDelegatecall(implementation, data);
     }
 
-    /// @dev Retrieves the implementation address for the Topic Scheme Registry from the `ISMARTSystem` contract.
+    /// @dev Retrieves the implementation address for the Topic Scheme Registry from the `IATKSystem` contract.
     /// @dev Reverts with `TopicSchemeRegistryImplementationNotSet` if the implementation address is zero.
     /// @param system The `IATKSystem` contract instance.
     /// @return The address of the `ATKTopicSchemeRegistryImplementation` contract.

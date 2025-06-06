@@ -16,7 +16,7 @@ import {
 /// @title Proxy contract for ATK Token Factory.
 /// @notice This contract serves as a proxy to the ATK Token Factory implementation,
 /// allowing for upgradeability of the token factory logic.
-/// It retrieves the implementation address from the ISMARTSystem contract.
+/// It retrieves the implementation address from the IATKSystem contract.
 contract ATKTokenFactoryProxy is Proxy {
     // keccak256("org.atk.contracts.proxy.ATKTokenFactoryProxy.system")
     bytes32 private constant _SYSTEM_SLOT = 0xe8884080cc51c5c292bf466c34183fc7b6d97a0de789d28a4fa18c91a467e8f3;

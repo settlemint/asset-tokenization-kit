@@ -27,7 +27,7 @@ contract ATKTrustedIssuersRegistryProxy is ATKSystemProxy {
         _performInitializationDelegatecall(implementation, data);
     }
 
-    /// @dev Retrieves the implementation address for the Trusted Issuers Registry from the `ISMARTSystem` contract.
+    /// @dev Retrieves the implementation address for the Trusted Issuers Registry from the `IATKSystem` contract.
     /// @dev Reverts with `TrustedIssuersRegistryImplementationNotSet` if the implementation address is zero.
     /// @param system The `IATKSystem` contract instance.
     /// @return The address of the `ATKTrustedIssuersRegistryImplementation` contract.

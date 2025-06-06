@@ -66,7 +66,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
     // --- State Variables ---
 
-    /// @dev The address of the `ISMARTSystem` contract.
+    /// @dev The address of the `IATKSystem` contract.
     address internal _systemAddress;
 
     /// @notice Address of the underlying token implementation contract.

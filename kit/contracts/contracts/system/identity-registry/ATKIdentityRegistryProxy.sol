@@ -55,7 +55,7 @@ contract ATKIdentityRegistryProxy is ATKSystemProxy {
         _performInitializationDelegatecall(implementation, data);
     }
 
-    /// @dev Retrieves the implementation address for the Identity Registry module from the `ISMARTSystem` contract.
+    /// @dev Retrieves the implementation address for the Identity Registry module from the `IATKSystem` contract.
     /// @dev Reverts with `IdentityRegistryImplementationNotSet` if the implementation address is zero.
     /// @param system The `IATKSystem` contract instance.
     /// @return The address of the `ATKIdentityRegistryImplementation` contract.

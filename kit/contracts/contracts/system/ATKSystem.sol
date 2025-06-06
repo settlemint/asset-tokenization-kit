@@ -77,9 +77,9 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     bytes4 private constant _ISMART_IDENTITY_REGISTRY_STORAGE_ID = type(ISMARTIdentityRegistryStorage).interfaceId;
     bytes4 private constant _IERC3643_TRUSTED_ISSUERS_REGISTRY_ID = type(IERC3643TrustedIssuersRegistry).interfaceId;
     bytes4 private constant _ISMART_TOPIC_SCHEME_REGISTRY_ID = type(ISMARTTopicSchemeRegistry).interfaceId;
-    bytes4 private constant _ISMART_IDENTITY_FACTORY_ID = type(ISMARTIdentityFactory).interfaceId;
+    bytes4 private constant _IATK_IDENTITY_FACTORY_ID = type(IATKIdentityFactory).interfaceId;
     bytes4 private constant _IIDENTITY_ID = type(IIdentity).interfaceId;
-    bytes4 private constant _ISMART_TOKEN_FACTORY_ID = type(ISMARTTokenFactory).interfaceId;
+    bytes4 private constant _IATK_TOKEN_FACTORY_ID = type(IATKTokenFactory).interfaceId;
     bytes4 private constant _ISMART_TOKEN_ACCESS_MANAGER_ID = type(ISMARTTokenAccessManager).interfaceId;
 
     // --- State Variables ---
@@ -245,8 +245,8 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
 
         // Validate and set the identity factory implementation address.
         if (identityFactoryImplementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
-        _checkInterface(identityFactoryImplementation_, _ISMART_IDENTITY_FACTORY_ID); // Ensure it supports
-            // ISMARTIdentityFactory
+        _checkInterface(identityFactoryImplementation_, _IATK_IDENTITY_FACTORY_ID); // Ensure it supports
+            // IATKIdentityFactory
         _identityFactoryImplementation = identityFactoryImplementation_;
         emit IdentityFactoryImplementationUpdated(initialAdmin_, _identityFactoryImplementation);
 
@@ -329,7 +329,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
 
         // Deploy the ATKIdentityRegistryStorageProxy, linking it to this ATKSystem and setting an initial admin.
         address localIdentityRegistryStorageProxy =
-            address(new SMARTIdentityRegistryStorageProxy(address(this), initialAdmin));
+            address(new ATKIdentityRegistryStorageProxy(address(this), initialAdmin));
 
         // Deploy the ATKTrustedIssuersRegistryProxy, linking it to this ATKSystem and setting an initial admin.
         address localTrustedIssuersRegistryProxy =
@@ -402,7 +402,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         returns (address)
     {
         if (address(_factoryImplementation) == address(0)) revert InvalidTokenFactoryAddress();
-        _checkInterface(_factoryImplementation, _ISMART_TOKEN_FACTORY_ID);
+        _checkInterface(_factoryImplementation, _IATK_TOKEN_FACTORY_ID);
 
         if (address(_tokenImplementation) == address(0)) revert InvalidTokenImplementationAddress();
         // aderyn-fp-next-line(reentrancy-state-change)
@@ -508,12 +508,12 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
 
     /// @notice Sets (updates) the address of the identity factory module's implementation (logic) contract.
     /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
-    /// Reverts if `implementation` is zero or doesn't support `ISMARTIdentityFactory`.
+    /// Reverts if `implementation` is zero or doesn't support `IATKIdentityFactory`.
     /// Emits an `IdentityFactoryImplementationUpdated` event.
     /// @param implementation The new address for the identity factory logic contract.
     function setIdentityFactoryImplementation(address implementation) public onlyRole(DEFAULT_ADMIN_ROLE) {
         if (implementation == address(0)) revert IdentityFactoryImplementationNotSet();
-        _checkInterface(implementation, _ISMART_IDENTITY_FACTORY_ID);
+        _checkInterface(implementation, _IATK_IDENTITY_FACTORY_ID);
         _identityFactoryImplementation = implementation;
         emit IdentityFactoryImplementationUpdated(_msgSender(), implementation);
     }
@@ -613,7 +613,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         return _tokenAccessManagerImplementation;
     }
 
-    /// @inheritdoc ISMARTSystem
+    /// @inheritdoc IATKSystem
     function tokenFactoryImplementation(bytes32 factoryTypeHash) public view returns (address) {
         return tokenFactoryImplementationsByType[factoryTypeHash];
     }
@@ -706,11 +706,11 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// @notice Checks if the contract supports a given interface ID, according to ERC165.
     /// @dev This function is part of the ERC165 standard for interface detection.
     /// It returns `true` if this contract implements the interface specified by `interfaceId`.
-    /// It explicitly supports the `ISMARTSystem` interface and inherits support for other interfaces
+    /// It explicitly supports the `IATKSystem` interface and inherits support for other interfaces
     /// like `IERC165` (from `ERC165`) and `IAccessControl` (from `AccessControl`).
     /// @param interfaceId The 4-byte interface identifier to check.
     /// @return `true` if the contract supports the interface, `false` otherwise.
     function supportsInterface(bytes4 interfaceId) public view override(ERC165, AccessControl) returns (bool) {
-        return interfaceId == _ISMART_SYSTEM_ID || super.supportsInterface(interfaceId);
+        return interfaceId == _IATK_SYSTEM_ID || super.supportsInterface(interfaceId);
     }
 }

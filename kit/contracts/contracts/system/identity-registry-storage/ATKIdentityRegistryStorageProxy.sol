@@ -12,13 +12,13 @@ import { IdentityRegistryStorageImplementationNotSet } from "../ATKSystemErrors.
 /// contract.
 /// It allows the underlying storage logic for the identity registry to be upgraded without changing the publicly-facing
 /// contract address.
-/// The address of the current storage implementation is dynamically fetched from a central `ISMARTSystem` contract.
+/// The address of the current storage implementation is dynamically fetched from a central `IATKSystem` contract.
 /// @dev This proxy inherits from `ATKSystemProxy`.
 /// During its construction, the proxy initializes the first version of the storage implementation by performing a
 /// `delegatecall`
 /// to its `initialize` function. All subsequent calls to this proxy are then delegated to the current implementation
 /// address
-/// as specified by the `ISMARTSystem` contract.
+/// as specified by the `IATKSystem` contract.
 contract ATKIdentityRegistryStorageProxy is ATKSystemProxy {
     /// @notice Constructs the `ATKIdentityRegistryStorageProxy`.
     /// @dev The constructor performs the following critical initialization steps:
@@ -42,7 +42,7 @@ contract ATKIdentityRegistryStorageProxy is ATKSystemProxy {
         _performInitializationDelegatecall(implementation, data);
     }
 
-    /// @dev Retrieves the implementation address for the Identity Registry Storage module from the `ISMARTSystem`
+    /// @dev Retrieves the implementation address for the Identity Registry Storage module from the `IATKSystem`
     /// contract.
     /// @dev Reverts with `IdentityRegistryStorageImplementationNotSet` if the implementation address is zero.
     /// @param system The `IATKSystem` contract instance.

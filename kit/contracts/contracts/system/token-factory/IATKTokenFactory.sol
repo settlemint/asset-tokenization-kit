@@ -25,7 +25,7 @@ interface IATKTokenFactory is IERC165 {
     );
 
     /// @notice Initializes the token registry.
-    /// @param systemAddress The address of the `ISMARTSystem` contract.
+    /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The address of the token implementation contract.
     /// @param initialAdmin The address of the initial admin for the token registry.
     /// @param identityVerificationModule The address of the identity verification module.

@@ -13,7 +13,7 @@ import { ComplianceImplementationNotSet } from "../ATKSystemErrors.sol";
 /// the address that users and other contracts interact with. This is crucial for fixing bugs or adding features
 /// to the compliance system post-deployment.
 /// The address of the actual logic contract (`SMARTComplianceImplementation`) is retrieved from a central
-/// `ISMARTSystem` contract. This means the `ISMARTSystem` contract governs which version of the compliance logic is
+/// `IATKSystem` contract. This means the `IATKSystem` contract governs which version of the compliance logic is
 /// active.
 /// This proxy inherits from `SMARTSystemProxy`.
 contract ATKComplianceProxy is ATKSystemProxy {
