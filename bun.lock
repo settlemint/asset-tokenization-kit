@@ -177,6 +177,7 @@
         "@settlemint/sdk-thegraph": "2.3.5",
         "contracts": "workspace:*",
         "matchstick-as": "0.6.0",
+        "yaml": "2.8.0",
       },
     },
   },
