@@ -182,11 +182,42 @@ export function handleStandardAirdropDeployed(
                 let amount = "";
                 let proofLength = 0;
 
+                // Debug: Log all keys in the recipient object
+                let keys: string[] = [];
+                for (let j = 0; j < recipientObject.entries.length; j++) {
+                  keys.push(recipientObject.entries[j].key);
+                }
+                log.info("Recipient object keys for address {}: [{}]", [
+                  address,
+                  keys.join(", "),
+                ]);
+
                 // Extract amount
                 let amountValue = recipientObject.get("amount");
-                if (amountValue && amountValue.kind == 0) {
-                  // STRING
-                  amount = amountValue.toString();
+                if (amountValue) {
+                  log.info(
+                    "Amount value kind: {} (0=NULL, 1=BOOL, 2=NUMBER, 3=STRING, 4=ARRAY, 5=OBJECT)",
+                    [amountValue.kind.toString()]
+                  );
+                  if (amountValue.kind == 3) {
+                    // STRING
+                    amount = amountValue.toString();
+                  } else if (amountValue.kind == 2) {
+                    // NUMBER
+                    amount = amountValue.toBigInt().toString();
+                  } else if (amountValue.kind == 0) {
+                    // NULL
+                    log.warning("Amount is NULL for address: {}", [address]);
+                    amount = "NULL";
+                  } else {
+                    log.warning("Unknown amount value kind: {}", [
+                      amountValue.kind.toString(),
+                    ]);
+                  }
+                } else {
+                  log.warning("No 'amount' field found for address: {}", [
+                    address,
+                  ]);
                 }
 
                 // Extract proof array length
@@ -223,10 +254,18 @@ export function handleStandardAirdropDeployed(
               let recipientObject = recipientData.toObject();
               if (recipientObject) {
                 let amountValue = recipientObject.get("amount");
-                if (amountValue && amountValue.kind == 0) {
-                  // STRING
-                  let amountStr = amountValue.toString();
-                  let amount = BigInt.fromString(amountStr);
+                if (amountValue) {
+                  let amount: BigInt;
+                  if (amountValue.kind == 3) {
+                    // STRING
+                    let amountStr = amountValue.toString();
+                    amount = BigInt.fromString(amountStr);
+                  } else if (amountValue.kind == 2) {
+                    // NUMBER
+                    amount = amountValue.toBigInt();
+                  } else {
+                    continue; // Skip invalid amount types
+                  }
                   totalAmount = totalAmount.plus(amount);
                   validRecipients++;
                 }
