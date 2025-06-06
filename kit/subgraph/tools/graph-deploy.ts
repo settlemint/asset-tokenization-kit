@@ -548,7 +548,7 @@ async function executeLocalWorkflow(): Promise<void> {
     await updateSubgraphConfig(addresses);
     await updateSubgraphYaml(addresses);
     await generateCode();
-    //await deployLocal();
+    await deployLocal();
   } catch (error) {
     logger.error("Local deployment workflow failed:", error);
     throw error;
