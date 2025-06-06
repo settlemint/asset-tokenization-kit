@@ -882,7 +882,8 @@
     "amount-required": "Amount is required",
     "from-address-required": "From address is required and must be a valid EVM address",
     "to-address-required": "To address is required and must be a valid EVM address",
-    "expiry-required": "Expiry is required"
+    "expiry-required": "Expiry is required",
+    "unexpected-error": "An unexpected error occurred"
   },
   "error-pages": {
     "forbidden": {
