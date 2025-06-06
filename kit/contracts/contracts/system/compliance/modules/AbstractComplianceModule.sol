@@ -10,12 +10,11 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 
 // Interface imports
 import { ISMARTComplianceModule } from "../../../smart/interface/ISMARTComplianceModule.sol";
-// Unused imports: ISMART, ISMARTIdentityRegistry
 
-/// @title Abstract Base for SMART Compliance Modules
+/// @title Abstract Base for ATK Compliance Modules
 /// @author SettleMint Tokenization Services
-/// @notice This abstract contract serves as a foundational building block for creating custom SMART compliance modules.
-/// @dev It implements the `ISMARTComplianceModule` interface and integrates OpenZeppelin's `AccessControl` for managing
+/// @notice This abstract contract serves as a foundational building block for creating custom ATK compliance modules.
+/// @dev It implements the `IATKComplianceModule` interface and integrates OpenZeppelin's `AccessControl` for managing
 /// permissions within the module itself.
 /// Key characteristics:
 /// - **Abstract Functions**: Child contracts (concrete compliance modules) *must* implement `canTransfer`,
@@ -24,7 +23,7 @@ import { ISMARTComplianceModule } from "../../../smart/interface/ISMARTComplianc
 /// contracts can override these to react to token lifecycle events if needed.
 /// - **Access Control**: The deployer of a module instance automatically receives the `DEFAULT_ADMIN_ROLE`, allowing
 /// them to manage roles for that specific module instance.
-/// - **ERC165 Support**: It correctly reports support for the `ISMARTComplianceModule` interface.
+/// - **ERC165 Support**: It correctly reports support for the `IATKComplianceModule` interface.
 /// Developers should inherit from this contract to create specific compliance rule sets.
 abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISMARTComplianceModule {
     // --- Constructor ---
@@ -43,7 +42,7 @@ abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISM
     // --- ISMARTComplianceModule State-Changing Hooks (Empty Virtual Implementations) ---
 
     /// @inheritdoc ISMARTComplianceModule
-    /// @notice This function is a hook called by the main `SMARTComplianceImplementation` contract *after* a token
+    /// @notice This function is a hook called by the main `ATKComplianceImplementation` contract *after* a token
     /// transfer has occurred.
     /// @dev This is an empty `virtual` implementation. Inheriting contracts can `override` this function
     /// if they need to perform actions or update state based on a successful transfer.
