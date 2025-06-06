@@ -11,6 +11,7 @@ import {
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
+import { toDecimals } from "../utils/to-decimals";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
@@ -23,12 +24,6 @@ import { claimYield } from "./actions/yield/claim-yield";
 import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
 import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
 import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
-/* Blocked by https://linear.app/settlemint/issue/ENG-3214/fixed-yield-extension-should-not-verify-required-claims-for
-import { claimYield } from "./actions/yield/claim-yield";
-import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
-import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
-import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
-*/
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
@@ -52,7 +47,7 @@ export const createBond = async (depositToken: Asset<any>) => {
     bond.name,
     bond.symbol,
     bond.decimals,
-    BigInt(1000000 * 10 ** 6),
+    toDecimals(1000000, bond.decimals),
     BigInt(Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60), // 1 year
     BigInt(123),
     depositToken.address!,

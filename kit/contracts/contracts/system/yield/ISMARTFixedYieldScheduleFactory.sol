@@ -10,9 +10,9 @@ interface ISMARTFixedYieldScheduleFactory {
     event ImplementationUpdated(address indexed oldImplementation, address indexed newImplementation);
 
     /// @notice Emitted when a new `SMARTFixedYieldSchedule` proxy contract is successfully created and deployed.
-    /// @param scheduleProxy The address of the newly deployed `SMARTFixedYieldProxy` contract.
+    /// @param schedule The address of the newly deployed `SMARTFixedYieldProxy` contract.
     /// @param creator The address that initiated the creation of the yield schedule proxy.
-    event SMARTFixedYieldScheduleCreated(address indexed scheduleProxy, address indexed creator);
+    event SMARTFixedYieldScheduleCreated(address indexed schedule, address indexed creator);
 
     /// @notice Custom error for invalid address parameter.
     error InvalidAddress();

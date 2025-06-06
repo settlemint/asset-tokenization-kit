@@ -55,6 +55,7 @@ contract SMARTFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl
     constructor(address systemAddress_, address forwarder) ERC2771Context(forwarder) AccessControl() {
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _grantRole(SMARTSystemRoles.IMPLEMENTATION_MANAGER_ROLE, _msgSender());
+        _grantRole(SMARTSystemRoles.DEPLOYER_ROLE, _msgSender());
 
         systemAddress = systemAddress_;
 
