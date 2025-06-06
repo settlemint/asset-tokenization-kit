@@ -18,7 +18,7 @@ export function columns() {
   return [
     columnHelper.accessor("asset", {
       header: t("columns.asset"),
-      cell: ({ getValue, row }) => {
+      cell: ({ getValue }) => {
         const asset = getValue();
         return (
           <EvmAddress address={asset.id} symbol={asset.symbol} showAssetType />

@@ -6,13 +6,13 @@ import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 export function Recipients({ airdrop }: { airdrop: PushAirdrop }) {
-  const t = useTranslations("private.assets.details.forms.account");
+  const t = useTranslations(
+    "private.airdrops.detail.forms.distribute.recipients"
+  );
   const { control } = useFormContext<DistributeInput>();
 
-  console.log(airdrop);
-
   return (
-    <FormStep title={t("title.mint")} description={t("description.mint")}>
+    <FormStep title={t("title")} description={t("description")}>
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-1">
           <FormUsers

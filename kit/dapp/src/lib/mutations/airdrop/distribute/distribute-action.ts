@@ -7,5 +7,5 @@ import { distributeSchema } from "./distribute-schema";
 
 export const distribute = action
   .schema(distributeSchema)
-  .outputSchema(t.Hashes())
+  .outputSchema(t.Number())
   .action(distributeFunction);
