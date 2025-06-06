@@ -98,7 +98,16 @@ contract StandardAirdropTest is Test {
         user3Proof[1] = nextLevel[0]; // Next level node
 
         // Deploy airdrop contract
-        airdrop = new StandardAirdrop(address(token), merkleRoot, owner, startTime, endTime, trustedForwarder);
+        airdrop = new StandardAirdrop(
+            address(token),
+            merkleRoot,
+            owner,
+            startTime,
+            endTime,
+            trustedForwarder,
+            "Test Standard Airdrop",
+            "QmTestHash"
+        );
 
         // Fund the airdrop contract
         token.transfer(address(airdrop), 1000 * 10 ** 18);
@@ -116,7 +125,9 @@ contract StandardAirdropTest is Test {
             owner,
             10, // startTime
             5, // endTime < startTime, should revert
-            trustedForwarder
+            trustedForwarder,
+            "Test Standard Airdrop",
+            "QmTestHash"
         );
         vm.stopPrank();
     }
@@ -131,7 +142,9 @@ contract StandardAirdropTest is Test {
             owner,
             block.timestamp + 1 days, // Start in the future
             block.timestamp + 2 days,
-            trustedForwarder
+            trustedForwarder,
+            "Future Standard Airdrop",
+            "QmTestHash"
         );
         token.transfer(address(futureAirdrop), 500 * 10 ** 18);
         vm.stopPrank();
@@ -380,7 +393,9 @@ contract StandardAirdropTest is Test {
             owner,
             block.timestamp + 1 days, // Start in the future
             block.timestamp + 2 days,
-            trustedForwarder
+            trustedForwarder,
+            "Future Standard Airdrop",
+            "QmTestHash"
         );
         token.transfer(address(futureAirdrop), 500 * 10 ** 18);
         vm.stopPrank();

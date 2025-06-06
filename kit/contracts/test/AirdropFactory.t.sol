@@ -66,7 +66,9 @@ contract AirdropFactoryTest is Test {
         vm.recordLogs();
 
         // Deploy the standard airdrop (remove trustedForwarder argument)
-        address airdropAddress = factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime);
+        address airdropAddress = factory.deployStandardAirdrop(
+            address(token), merkleRoot, owner, startTime, endTime, "Test Standard Airdrop", "QmTestHash"
+        );
 
         // Get the recorded logs
         Vm.Log[] memory logs = vm.getRecordedLogs();
@@ -117,7 +119,14 @@ contract AirdropFactoryTest is Test {
 
         // Deploy the linear vesting airdrop (remove trustedForwarder argument)
         (address airdropAddress, address strategyAddress) = factory.deployLinearVestingAirdrop(
-            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
+            address(token),
+            merkleRoot,
+            owner,
+            vestingDuration,
+            cliffDuration,
+            claimPeriodEnd,
+            "Test Linear Vesting Airdrop",
+            "QmTestHash"
         );
 
         // Get the recorded logs
@@ -177,7 +186,9 @@ contract AirdropFactoryTest is Test {
 
         vm.expectRevert("End time must be after start time");
         // Remove trustedForwarder argument
-        factory.deployStandardAirdrop(address(token), merkleRoot, owner, endTime, startTime);
+        factory.deployStandardAirdrop(
+            address(token), merkleRoot, owner, endTime, startTime, "Test Standard Airdrop", "QmTestHash"
+        );
 
         vm.stopPrank();
     }
@@ -189,7 +200,14 @@ contract AirdropFactoryTest is Test {
         vm.expectRevert("Claim period must be in the future");
         // Remove trustedForwarder argument
         factory.deployLinearVestingAirdrop(
-            address(token), merkleRoot, owner, vestingDuration, cliffDuration, block.timestamp
+            address(token),
+            merkleRoot,
+            owner,
+            vestingDuration,
+            cliffDuration,
+            block.timestamp,
+            "Test Linear Vesting Airdrop",
+            "QmTestHash"
         );
 
         vm.stopPrank();
@@ -201,7 +219,9 @@ contract AirdropFactoryTest is Test {
 
         vm.expectRevert("Cliff cannot exceed duration");
         // Remove trustedForwarder argument
-        factory.deployLinearVestingAirdrop(address(token), merkleRoot, owner, 100, 200, claimPeriodEnd);
+        factory.deployLinearVestingAirdrop(
+            address(token), merkleRoot, owner, 100, 200, claimPeriodEnd, "Test Linear Vesting Airdrop", "QmTestHash"
+        );
 
         vm.stopPrank();
     }
@@ -211,7 +231,9 @@ contract AirdropFactoryTest is Test {
         vm.startPrank(deployer);
         vm.expectRevert(AirdropBase.ZeroAddress.selector);
         // Remove trustedForwarder argument
-        factory.deployStandardAirdrop(address(0), merkleRoot, owner, startTime, endTime);
+        factory.deployStandardAirdrop(
+            address(0), merkleRoot, owner, startTime, endTime, "Test Standard Airdrop", "QmTestHash"
+        );
         vm.stopPrank();
     }
 
@@ -221,7 +243,14 @@ contract AirdropFactoryTest is Test {
         vm.expectRevert(AirdropBase.ZeroAddress.selector);
         // Remove trustedForwarder argument
         factory.deployLinearVestingAirdrop(
-            address(0), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
+            address(0),
+            merkleRoot,
+            owner,
+            vestingDuration,
+            cliffDuration,
+            claimPeriodEnd,
+            "Test Linear Vesting Airdrop",
+            "QmTestHash"
         );
         vm.stopPrank();
     }
@@ -240,7 +269,9 @@ contract AirdropFactoryTest is Test {
             address(0), // Zero owner - should cause Ownable revert
             vestingDuration,
             cliffDuration,
-            claimPeriodEnd
+            claimPeriodEnd,
+            "Test Linear Vesting Airdrop",
+            "QmTestHash"
         );
 
         vm.stopPrank();
@@ -255,10 +286,19 @@ contract AirdropFactoryTest is Test {
         vm.startPrank(deployer);
 
         // Deploy first (standard) - remove trustedForwarder argument
-        address standardAirdrop = factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime);
+        address standardAirdrop = factory.deployStandardAirdrop(
+            address(token), merkleRoot, owner, startTime, endTime, "Test Standard Airdrop", "QmTestHash"
+        );
         // Deploy second (vesting) - remove trustedForwarder argument
         (address vestingAirdrop, address vestingStrategy) = factory.deployLinearVestingAirdrop(
-            address(token), keccak256("root2"), owner, vestingDuration + 1, cliffDuration + 1, claimPeriodEnd + 1
+            address(token),
+            keccak256("root2"),
+            owner,
+            vestingDuration + 1,
+            cliffDuration + 1,
+            claimPeriodEnd + 1,
+            "Test Linear Vesting Airdrop",
+            "QmTestHash"
         );
 
         assertTrue(standardAirdrop != address(0), "Standard airdrop address should not be zero");
@@ -274,11 +314,14 @@ contract AirdropFactoryTest is Test {
         vm.startPrank(deployer);
 
         // Predict the address before deployment
-        address predictedAddress =
-            factory.predictStandardAirdropAddress(address(token), merkleRoot, owner, startTime, endTime);
+        address predictedAddress = factory.predictStandardAirdropAddress(
+            address(token), merkleRoot, owner, startTime, endTime, "Test Standard Airdrop", "QmTestHash"
+        );
 
         // Deploy the standard airdrop
-        address actualAddress = factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime);
+        address actualAddress = factory.deployStandardAirdrop(
+            address(token), merkleRoot, owner, startTime, endTime, "Test Standard Airdrop", "QmTestHash"
+        );
 
         // Verify predicted address matches actual address
         assertEq(predictedAddress, actualAddress, "Predicted address should match actual address for standard airdrop");
@@ -292,12 +335,26 @@ contract AirdropFactoryTest is Test {
 
         // Predict the addresses before deployment
         (address predictedAirdropAddress, address predictedStrategyAddress) = factory.predictLinearVestingAirdropAddress(
-            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
+            address(token),
+            merkleRoot,
+            owner,
+            vestingDuration,
+            cliffDuration,
+            claimPeriodEnd,
+            "Test Linear Vesting Airdrop",
+            "QmTestHash"
         );
 
         // Deploy the linear vesting airdrop
         (address actualAirdropAddress, address actualStrategyAddress) = factory.deployLinearVestingAirdrop(
-            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
+            address(token),
+            merkleRoot,
+            owner,
+            vestingDuration,
+            cliffDuration,
+            claimPeriodEnd,
+            "Test Linear Vesting Airdrop",
+            "QmTestHash"
         );
 
         // Verify predicted addresses match actual addresses
@@ -332,13 +389,17 @@ contract AirdropFactoryTest is Test {
         vm.startPrank(deployer);
 
         // Deploy first airdrop
-        address airdrop1 = factory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime);
+        address airdrop1 = factory.deployStandardAirdrop(
+            address(token), merkleRoot, owner, startTime, endTime, "Test Standard Airdrop", "QmTestHash"
+        );
 
         // Create a new factory instance with same forwarder
         AirdropFactory newFactory = new AirdropFactory(trustedForwarder);
 
         // Deploy airdrop with same parameters using new factory
-        address airdrop2 = newFactory.deployStandardAirdrop(address(token), merkleRoot, owner, startTime, endTime);
+        address airdrop2 = newFactory.deployStandardAirdrop(
+            address(token), merkleRoot, owner, startTime, endTime, "Test Standard Airdrop", "QmTestHash"
+        );
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(airdrop1, airdrop2, "Airdrops should have different addresses due to different factory addresses");
@@ -352,7 +413,14 @@ contract AirdropFactoryTest is Test {
 
         // Deploy first vesting airdrop
         (address airdrop1, address strategy1) = factory.deployLinearVestingAirdrop(
-            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
+            address(token),
+            merkleRoot,
+            owner,
+            vestingDuration,
+            cliffDuration,
+            claimPeriodEnd,
+            "Test Linear Vesting Airdrop",
+            "QmTestHash"
         );
 
         // Create a new factory instance with same forwarder
@@ -360,7 +428,14 @@ contract AirdropFactoryTest is Test {
 
         // Deploy vesting airdrop with same parameters using new factory
         (address airdrop2, address strategy2) = newFactory.deployLinearVestingAirdrop(
-            address(token), merkleRoot, owner, vestingDuration, cliffDuration, claimPeriodEnd
+            address(token),
+            merkleRoot,
+            owner,
+            vestingDuration,
+            cliffDuration,
+            claimPeriodEnd,
+            "Test Linear Vesting Airdrop",
+            "QmTestHash"
         );
 
         // The addresses should be different because the factory addresses are different
