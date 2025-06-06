@@ -84,7 +84,7 @@ contract SMARTBondFactoryImplementation is ISMARTBondFactory, AbstractSMARTToken
             revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
         }
 
-        // Add the bond to the compliance whitelist, because it needs to be able to hold other tokens
+        // Add the bond to the compliance allow list, because it needs to be able to hold other tokens
         ISMARTComplianceAllowList(address(_compliance())).addToAllowList(deployedBondAddress);
 
         return deployedBondAddress;

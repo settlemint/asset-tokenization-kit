@@ -30,7 +30,7 @@ import { SMARTSystemRoles } from "../SMARTSystemRoles.sol";
 /// This contract is designed to be used behind a proxy (like `SMARTComplianceProxy`) to allow its logic to be upgraded.
 /// It supports meta-transactions via `ERC2771ContextUpgradeable` allowing a trusted forwarder to pay for gas fees.
 /// It also implements `ERC165Upgradeable` for interface detection.
-/// Additionally, it implements a whitelist functionality that allows certain addresses (mainly contracts) to bypass
+/// Additionally, it implements a allow list functionality that allows certain addresses (mainly contracts) to bypass
 /// compliance checks when they are the sender or receiver of a transfer.
 contract SMARTComplianceImplementation is
     Initializable,
@@ -40,10 +40,10 @@ contract SMARTComplianceImplementation is
     ISMARTComplianceAllowList
 {
     // --- Storage ---
-    /// @notice Mapping of addresses that are whitelisted to bypass compliance checks
-    /// @dev When an address is whitelisted, transfers involving this address (as sender or receiver) will skip
+    /// @notice Mapping of addresses that are allow listed to bypass compliance checks
+    /// @dev When an address is allow listed, transfers involving this address (as sender or receiver) will skip
     /// compliance module checks in the `canTransfer` function
-    mapping(address => bool) private _whitelistedAddresses;
+    mapping(address => bool) private _allowListedAddresses;
 
     // --- Constructor ---
     /// @notice Constructor for the compliance implementation contract.
@@ -85,9 +85,9 @@ contract SMARTComplianceImplementation is
     /// @param account The address to add to the whitelist
     function addToAllowList(address account) external onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE) {
         if (account == address(0)) revert ZeroAddressNotAllowed();
-        if (_whitelistedAddresses[account]) revert AddressAlreadyAllowListed(account);
+        if (_allowListedAddresses[account]) revert AddressAlreadyAllowListed(account);
 
-        _whitelistedAddresses[account] = true;
+        _allowListedAddresses[account] = true;
         emit AddressAllowListed(account, _msgSender());
     }
 
@@ -95,9 +95,9 @@ contract SMARTComplianceImplementation is
     /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
     /// @param account The address to remove from the whitelist
     function removeFromAllowList(address account) external onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE) {
-        if (!_whitelistedAddresses[account]) revert AddressNotAllowListed(account);
+        if (!_allowListedAddresses[account]) revert AddressNotAllowListed(account);
 
-        _whitelistedAddresses[account] = false;
+        _allowListedAddresses[account] = false;
         emit AddressRemovedFromAllowList(account, _msgSender());
     }
 
@@ -113,9 +113,9 @@ contract SMARTComplianceImplementation is
         for (uint256 i = 0; i < accountsLength;) {
             address account = accounts[i];
             if (account == address(0)) revert ZeroAddressNotAllowed();
-            if (_whitelistedAddresses[account]) revert AddressAlreadyAllowListed(account);
+            if (_allowListedAddresses[account]) revert AddressAlreadyAllowListed(account);
 
-            _whitelistedAddresses[account] = true;
+            _allowListedAddresses[account] = true;
             emit AddressAllowListed(account, _msgSender());
 
             unchecked {
@@ -134,9 +134,9 @@ contract SMARTComplianceImplementation is
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
             address account = accounts[i];
-            if (!_whitelistedAddresses[account]) revert AddressNotAllowListed(account);
+            if (!_allowListedAddresses[account]) revert AddressNotAllowListed(account);
 
-            _whitelistedAddresses[account] = false;
+            _allowListedAddresses[account] = false;
             emit AddressRemovedFromAllowList(account, _msgSender());
 
             unchecked {
@@ -149,7 +149,7 @@ contract SMARTComplianceImplementation is
     /// @param account The address to check
     /// @return True if the address is whitelisted, false otherwise
     function isAllowListed(address account) external view returns (bool) {
-        return _whitelistedAddresses[account];
+        return _allowListedAddresses[account];
     }
 
     // --- ISMARTCompliance Implementation (State-Changing) ---
@@ -297,7 +297,7 @@ contract SMARTComplianceImplementation is
         returns (bool)
     {
         // Check if receiver is whitelisted - if so, bypass all compliance checks
-        if (_whitelistedAddresses[_to]) {
+        if (_allowListedAddresses[_to]) {
             return true;
         }
 

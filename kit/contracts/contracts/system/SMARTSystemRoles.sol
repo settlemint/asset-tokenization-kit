@@ -56,7 +56,7 @@ library SMARTSystemRoles {
     bytes32 public constant MANAGE_REGISTRIES_ROLE = keccak256("MANAGE_REGISTRIES_ROLE");
 
     // --- Access Control Roles ---
-    /// @notice Role identifier for addresses that can manage the compliance whitelist
-    /// @dev This role allows adding/removing addresses from the whitelist that can bypass compliance checks
+    /// @notice Role identifier for addresses that can manage the compliance allow list
+    /// @dev This role allows adding/removing addresses from the allow list that can bypass compliance checks
     bytes32 public constant ALLOW_LIST_MANAGER_ROLE = keccak256("ALLOW_LIST_MANAGER_ROLE");
 }

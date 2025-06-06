@@ -42,7 +42,7 @@ dataSources:
         - SMARTFixedYieldScheduleCreated
       abis:
         - name: FixedYieldScheduleFactory
-          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json
+          file: ../contracts/artifacts/contracts/system/yield/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json
       eventHandlers:
         - event: SMARTFixedYieldScheduleCreated(indexed address,indexed address)
           handler: handleSMARTFixedYieldScheduleCreated

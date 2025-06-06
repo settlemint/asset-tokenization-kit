@@ -118,7 +118,7 @@ const CONTRACT_FILES = {
 
   // Fixed yield
   SMARTFixedYieldScheduleFactory:
-    "contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol",
+    "contracts/system/yield/SMARTFixedYieldScheduleFactory.sol",
 
   // Asset implementations
   SMARTBondImplementation: "contracts/assets/bond/SMARTBondImplementation.sol",
