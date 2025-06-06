@@ -170,8 +170,6 @@ templates:
           handler: handleMintCompleted
         - event: ModuleParametersUpdated(indexed address,indexed address,bytes)
           handler: handleModuleParametersUpdated
-        - event: RequiredClaimTopicsUpdated(indexed address,uint256[])
-          handler: handleRequiredClaimTopicsUpdated
         - event: TransferCompleted(indexed address,indexed address,indexed
             address,uint256)
           handler: handleTransferCompleted
