@@ -220,6 +220,18 @@ describe("bigIntInput", () => {
     expect(() => getBigIntInput(123)).toThrow("Invalid bigint input");
     expect(() => getBigIntInput(null)).toThrow("Invalid bigint input");
   });
+
+  it("should handle safeParse throwing an error in isBigIntInput", () => {
+    // Create a proxy that throws when accessed
+    const errorProxy = new Proxy({}, {
+      get() {
+        throw new Error("Proxy error");
+      }
+    });
+    
+    // This should return false when safeParse encounters an error
+    expect(isBigIntInput(errorProxy)).toBe(false);
+  });
 });
 
 describe("positiveBigInt", () => {
@@ -255,6 +267,18 @@ describe("positiveBigInt", () => {
 
     expect(() => getPositiveBigInt("-1")).toThrow("Invalid positive bigint");
     expect(() => getPositiveBigInt("-999")).toThrow("Invalid positive bigint");
+  });
+
+  it("should handle safeParse throwing an error in isPositiveBigInt", () => {
+    // Create a proxy that throws when accessed
+    const errorProxy = new Proxy({}, {
+      get() {
+        throw new Error("Proxy error");
+      }
+    });
+    
+    // This should return false when safeParse encounters an error
+    expect(isPositiveBigInt(errorProxy)).toBe(false);
   });
 });
 
@@ -297,6 +321,18 @@ describe("nonNegativeBigInt", () => {
     expect(() => getNonNegativeBigInt("-999")).toThrow(
       "Invalid non-negative bigint"
     );
+  });
+
+  it("should handle safeParse throwing an error in isNonNegativeBigInt", () => {
+    // Create a proxy that throws when accessed
+    const errorProxy = new Proxy({}, {
+      get() {
+        throw new Error("Proxy error");
+      }
+    });
+    
+    // This should return false when safeParse encounters an error
+    expect(isNonNegativeBigInt(errorProxy)).toBe(false);
   });
 });
 

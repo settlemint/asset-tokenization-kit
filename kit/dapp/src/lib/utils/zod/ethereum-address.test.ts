@@ -1,4 +1,5 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it, mock, spyOn } from "bun:test";
+import * as viem from "viem";
 import {
   ethereumAddress,
   getEthereumAddress,
@@ -154,6 +155,24 @@ describe("ethereumAddress", () => {
       expect(() => getEthereumAddress(123456)).toThrow();
       expect(() => getEthereumAddress(null)).toThrow();
       expect(() => getEthereumAddress(undefined)).toThrow();
+    });
+  });
+
+  describe("edge cases", () => {
+    it("should handle the catch block in transform when getAddress fails", () => {
+      // Create a spy that throws an error when getAddress is called
+      const getAddressSpy = spyOn(viem, "getAddress");
+      getAddressSpy.mockImplementation(() => {
+        throw new Error("getAddress failed");
+      });
+
+      // This should still work and return the value as-is
+      const address = "0x71c7656ec7ab88b098defb751b7401b5f6d8976f";
+      const result = ethereumAddress.parse(address);
+      expect(result).toBe(address);
+
+      // Restore the spy
+      getAddressSpy.mockRestore();
     });
   });
 });

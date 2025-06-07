@@ -57,5 +57,13 @@ describe("fundClass", () => {
       const _typeCheck: FundClass = result;
       expect(result).toBe(getFundClass("institutional"));
     });
+
+    it("getFundClass should throw error for invalid fund class", () => {
+      expect(() => getFundClass("invalid")).toThrow("Invalid fund class: invalid");
+      expect(() => getFundClass(null)).toThrow("Invalid fund class: null");
+      expect(() => getFundClass(undefined)).toThrow("Invalid fund class: undefined");
+      expect(() => getFundClass(123)).toThrow("Invalid fund class: 123");
+      expect(() => getFundClass({})).toThrow("Invalid fund class: [object Object]");
+    });
   });
 });
