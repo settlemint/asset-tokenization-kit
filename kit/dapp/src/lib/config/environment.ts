@@ -18,8 +18,8 @@ const serverEnvironmentSchema = z.object({
   SETTLEMINT_HD_PRIVATE_KEY: z
     .string()
     .regex(
-      /^(0x[a-fA-F0-9]{64}|([a-z]+\s){11}[a-z]+)$/,
-      "SETTLEMINT_HD_PRIVATE_KEY must be a valid hex private key (0x...) or BIP39 mnemonic phrase"
+      /^[a-z0-9-]+$/,
+      "SETTLEMINT_HD_PRIVATE_KEY can only contain lowercase letters, digits, and hyphens with no spaces"
     ),
   // Define APP_URL as part of the schema with a default value
   APP_URL: z.string().url(),
