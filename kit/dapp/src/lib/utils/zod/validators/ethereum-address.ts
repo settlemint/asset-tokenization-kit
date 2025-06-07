@@ -9,7 +9,7 @@
  */
 import { type Address, getAddress, isAddress } from "viem";
 import { z } from "zod";
-import { customErrorKey } from "./error-map";
+import { customErrorKey } from "../error-map";
 
 /**
  * Zod schema for validating and normalizing Ethereum addresses

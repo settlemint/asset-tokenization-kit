@@ -1,41 +1,42 @@
 /**
  * Price Validation Utilities
- * 
+ *
  * This module provides Zod schemas for validating monetary price values,
  * commonly used in financial applications for asset pricing, order books,
  * and trading systems. Ensures precision and format consistency.
- * 
+ *
  * @module PriceValidation
  */
 import { z } from "zod";
+import { customErrorKey } from "../error-map";
 
 /**
  * Creates a Zod schema that validates price values.
- * 
+ *
  * @remarks
  * Price validation requirements:
  * - Must be positive (greater than 0)
  * - Must be a finite number (no Infinity or -Infinity)
  * - Maximum 4 decimal places for precision control
  * - Suitable for most financial markets (stocks, bonds, commodities)
- * 
+ *
  * The 4 decimal place limit aligns with:
  * - Traditional stock markets (2-4 decimals)
  * - Forex markets (4-5 pips)
  * - Most cryptocurrency exchanges
- * 
+ *
  * @returns A branded Zod schema for price validation
- * 
+ *
  * @example
  * ```typescript
  * const schema = price();
- * 
+ *
  * // Valid prices
  * schema.parse(100);      // $100.00
  * schema.parse(99.99);    // $99.99
  * schema.parse(0.0001);   // $0.0001 (minimum precision)
  * schema.parse(1234.5678); // $1,234.5678
- * 
+ *
  * // Invalid prices
  * schema.parse(0);         // Throws - not positive
  * schema.parse(-10);       // Throws - negative
@@ -48,12 +49,15 @@ export const price = () =>
     .number()
     .positive(customErrorKey("price", "notPositive"))
     .finite(customErrorKey("price", "notFinite"))
-    .refine((value) => {
-      // Check decimal places by converting to string
-      // This handles both integer and decimal prices correctly
-      const decimalPlaces = (value.toString().split(".")[1] || "").length;
-      return decimalPlaces <= 4;
-    }, customErrorKey("price", "tooManyDecimals"))
+    .refine(
+      (value) => {
+        // Check decimal places by converting to string
+        // This handles both integer and decimal prices correctly
+        const decimalPlaces = (value.toString().split(".")[1] || "").length;
+        return decimalPlaces <= 4;
+      },
+      customErrorKey("price", "tooManyDecimals")
+    )
     .describe("Asset price")
     .brand<"Price">();
 
@@ -65,21 +69,21 @@ export type Price = z.infer<ReturnType<typeof price>>;
 
 /**
  * Type guard to check if a value is a valid price.
- * 
+ *
  * @param value - The value to check
  * @returns `true` if the value is a valid price, `false` otherwise
- * 
+ *
  * @example
  * ```typescript
  * const userInput: unknown = 99.99;
  * if (isPrice(userInput)) {
  *   // TypeScript knows userInput is Price
  *   console.log(`Valid price: $${userInput}`);
- *   
+ *
  *   // Safe to use in calculations
  *   const total = userInput * quantity;
  * }
- * 
+ *
  * // Validation in trading logic
  * if (isPrice(bidPrice) && isPrice(askPrice)) {
  *   const spread = askPrice - bidPrice;
@@ -92,11 +96,11 @@ export function isPrice(value: unknown): value is Price {
 
 /**
  * Safely parse and return a price or throw an error.
- * 
+ *
  * @param value - The value to parse as a price
  * @returns The validated price value
  * @throws {Error} If the value is not a valid price
- * 
+ *
  * @example
  * ```typescript
  * try {
@@ -105,11 +109,11 @@ export function isPrice(value: unknown): value is Price {
  * } catch (error) {
  *   console.error("Invalid price provided");
  * }
- * 
+ *
  * // Use in order creation
  * const orderPrice = getPrice(request.price);
  * createLimitOrder(asset, orderPrice, quantity);
- * 
+ *
  * // Price updates
  * const newPrice = getPrice(marketData.lastPrice);
  * updateAssetPrice(assetId, newPrice);

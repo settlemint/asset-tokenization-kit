@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { customErrorKey } from "./error-map";
+import { customErrorKey } from "../error-map";
 
 /**
  * Available airdrop distribution mechanisms.
- * 
+ *
  * @remarks
  * These types define different methods for distributing tokens:
  * - `whitelist`: Direct distribution to pre-approved addresses
@@ -14,9 +14,9 @@ export const airdropTypes = ["whitelist", "merkle", "claim"] as const;
 
 /**
  * Creates a Zod schema for validating airdrop types.
- * 
+ *
  * @returns A branded Zod enum schema that validates airdrop type values
- * 
+ *
  * @example
  * ```typescript
  * const schema = airdropType();
@@ -38,10 +38,10 @@ export type AirdropType = z.infer<ReturnType<typeof airdropType>>;
 
 /**
  * Type guard to check if a value is a valid airdrop type.
- * 
+ *
  * @param value - The value to check
  * @returns `true` if the value is a valid airdrop type, `false` otherwise
- * 
+ *
  * @example
  * ```typescript
  * if (isAirdropType("whitelist")) {
@@ -57,11 +57,11 @@ export function isAirdropType(value: unknown): value is AirdropType {
 
 /**
  * Safely parse and return an airdrop type or throw an error.
- * 
+ *
  * @param value - The value to parse as an airdrop type
  * @returns The validated airdrop type
  * @throws {Error} If the value is not a valid airdrop type
- * 
+ *
  * @example
  * ```typescript
  * try {

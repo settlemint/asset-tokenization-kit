@@ -1,17 +1,18 @@
 /**
  * System Role Validation Utilities
- * 
+ *
  * This module provides Zod schemas for validating system roles and role mappings,
  * essential for access control and permission management in the asset tokenization
  * platform. Supports role-based access control (RBAC) patterns.
- * 
+ *
  * @module RoleValidation
  */
 import { z } from "zod";
+import { customErrorKey } from "../error-map";
 
 /**
  * Available system roles with different permission levels.
- * 
+ *
  * @remarks
  * Role hierarchy and responsibilities:
  * - `admin`: Full system access, user management, configuration
@@ -32,19 +33,19 @@ export const roleNames = [
 
 /**
  * Creates a Zod schema that validates system roles.
- * 
+ *
  * @returns A branded Zod enum schema for role validation
- * 
+ *
  * @example
  * ```typescript
  * const schema = roles();
- * 
+ *
  * // Valid roles
  * schema.parse("admin");      // System administrator
  * schema.parse("issuer");     // Token issuer
  * schema.parse("compliance"); // Compliance officer
  * schema.parse("investor");   // Regular investor
- * 
+ *
  * // Invalid role
  * schema.parse("superuser"); // Throws ZodError
  * ```
@@ -55,20 +56,20 @@ export const roles = () =>
 /**
  * Creates a Zod schema for validating role mappings.
  * Maps addresses (or identifiers) to their assigned roles.
- * 
+ *
  * @returns A Zod record schema mapping strings to roles
- * 
+ *
  * @example
  * ```typescript
  * const schema = roleMap();
- * 
+ *
  * // Valid role mapping
  * schema.parse({
  *   "0x123...": "admin",
  *   "0x456...": "issuer",
  *   "0x789...": "investor"
  * });
- * 
+ *
  * // Invalid - contains invalid role
  * schema.parse({
  *   "0x123...": "superadmin" // Throws - invalid role
@@ -92,17 +93,17 @@ export type RoleMap = z.infer<ReturnType<typeof roleMap>>;
 
 /**
  * Type guard to check if a value is a valid role.
- * 
+ *
  * @param value - The value to check
  * @returns `true` if the value is a valid role, `false` otherwise
- * 
+ *
  * @example
  * ```typescript
  * const userRole: unknown = "issuer";
  * if (isRole(userRole)) {
  *   // TypeScript knows userRole is Role
  *   console.log(`Valid role: ${userRole}`);
- *   
+ *
  *   // Apply role-based logic
  *   if (userRole === "admin") {
  *     enableAdminFeatures();
@@ -118,11 +119,11 @@ export function isRole(value: unknown): value is Role {
 
 /**
  * Safely parse and return a role or throw an error.
- * 
+ *
  * @param value - The value to parse as a role
  * @returns The validated role
  * @throws {Error} If the value is not a valid role
- * 
+ *
  * @example
  * ```typescript
  * try {
@@ -131,7 +132,7 @@ export function isRole(value: unknown): value is Role {
  * } catch (error) {
  *   console.error("Invalid role provided");
  * }
- * 
+ *
  * // Use in permission checks
  * const userRole = getRole(session.role);
  * if (userRole === "admin" || userRole === "issuer") {
@@ -148,10 +149,10 @@ export function getRole(value: unknown): Role {
 
 /**
  * Type guard to check if a value is a valid role map.
- * 
+ *
  * @param value - The value to check
  * @returns `true` if the value is a valid role map, `false` otherwise
- * 
+ *
  * @example
  * ```typescript
  * const mapping: unknown = { "user123": "investor" };
@@ -169,11 +170,11 @@ export function isRoleMap(value: unknown): value is RoleMap {
 
 /**
  * Safely parse and return a role map or throw an error.
- * 
+ *
  * @param value - The value to parse as a role map
  * @returns The validated role mapping
  * @throws {Error} If the value is not a valid role map
- * 
+ *
  * @example
  * ```typescript
  * try {

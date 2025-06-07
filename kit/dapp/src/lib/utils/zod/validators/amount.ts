@@ -9,11 +9,11 @@
  * @module AmountValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "./error-map";
+import { customErrorKey } from "../error-map";
 
 /**
  * Configuration options for amount validation.
- * 
+ *
  * @interface AmountOptions
  * @property {number} [min] - Minimum allowed value (defaults based on decimals or 0)
  * @property {number} [max] - Maximum allowed value (defaults to Number.MAX_SAFE_INTEGER)
@@ -36,19 +36,19 @@ export interface AmountOptions {
  * @param options.decimals - Used to calculate minimum if min not provided and limits decimal places
  * @param options.allowZero - Whether to allow zero values (default: false)
  * @returns A Zod schema that validates positive amounts with specific boundaries
- * 
+ *
  * @example
  * ```typescript
  * // Basic amount validation (no zero allowed)
  * const schema = amount();
  * schema.parse(100); // Valid
  * schema.parse(0); // Invalid
- * 
+ *
  * // Amount with 2 decimal places (e.g., for USD)
  * const usdAmount = amount({ decimals: 2 });
  * usdAmount.parse(99.99); // Valid
  * usdAmount.parse(99.999); // Invalid - too many decimals
- * 
+ *
  * // Amount that allows zero
  * const withdrawAmount = amount({ allowZero: true });
  * withdrawAmount.parse(0); // Valid
@@ -74,7 +74,12 @@ export const amount = ({
   // Build the base schema with min/max validation
   const baseSchema = z
     .number()
-    .min(minimum, minimum === 0 ? customErrorKey("amount", "required") : customErrorKey("amount", "tooSmall"))
+    .min(
+      minimum,
+      minimum === 0
+        ? customErrorKey("amount", "required")
+        : customErrorKey("amount", "tooSmall")
+    )
     .max(max, customErrorKey("amount", "tooLarge"));
 
   // Add decimal place validation if decimals is specified
@@ -108,18 +113,18 @@ export type Amount = z.infer<ReturnType<typeof amount>>;
 
 /**
  * Type guard function to check if a value is a valid amount.
- * 
+ *
  * @param value - The value to check
  * @param options - Optional configuration for amount validation
  * @returns `true` if the value is a valid amount according to the options, `false` otherwise
- * 
+ *
  * @example
  * ```typescript
  * if (isAmount(100.50, { decimals: 2 })) {
  *   // TypeScript knows this is a valid Amount
  *   console.log("Valid monetary amount");
  * }
- * 
+ *
  * // Check without options
  * isAmount(0); // false (zero not allowed by default)
  * isAmount(0, { allowZero: true }); // true
@@ -136,12 +141,12 @@ export function isAmount(
 /**
  * Safely parse and validate an amount with error throwing.
  * Handles the special case where zero is provided without explicit options.
- * 
+ *
  * @param value - The value to parse as an amount
  * @param options - Optional configuration for amount validation
  * @returns The validated amount value
  * @throws {Error} If the value is not a valid amount according to the options
- * 
+ *
  * @example
  * ```typescript
  * try {
@@ -162,7 +167,7 @@ export function getAmount(value: unknown, options?: AmountOptions): Amount {
   ) {
     return amount({ allowZero: true }).parse(value);
   }
-  
+
   // Attempt to parse the value with the provided options
   const result = amount(options).safeParse(value);
   if (!result.success) {

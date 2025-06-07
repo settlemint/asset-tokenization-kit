@@ -46,136 +46,149 @@ import { z } from "zod";
  */
 export const zodErrorMap: z.ZodErrorMap = (issue, ctx) => {
   // Handle different error types and return appropriate translation keys
+  let message: string;
+
   switch (issue.code) {
     case z.ZodIssueCode.invalid_type:
       if (issue.received === "undefined") {
-        return "validation.required";
+        message = "validation.required";
+      } else {
+        message = `validation.invalidType.${issue.expected}`;
       }
-      return `validation.invalidType.${issue.expected}`;
+      break;
 
     case z.ZodIssueCode.invalid_literal:
-      return "validation.invalidLiteral";
+      message = "validation.invalidLiteral";
+      break;
 
     case z.ZodIssueCode.unrecognized_keys:
-      return "validation.unrecognizedKeys";
+      message = "validation.unrecognizedKeys";
+      break;
 
     case z.ZodIssueCode.invalid_union:
-      return "validation.invalidUnion";
+      message = "validation.invalidUnion";
+      break;
 
     case z.ZodIssueCode.invalid_union_discriminator:
-      return "validation.invalidUnionDiscriminator";
+      message = "validation.invalidUnionDiscriminator";
+      break;
 
     case z.ZodIssueCode.invalid_enum_value:
-      return "validation.invalidEnumValue";
+      message = "validation.invalidEnumValue";
+      break;
 
     case z.ZodIssueCode.invalid_arguments:
-      return "validation.invalidArguments";
+      message = "validation.invalidArguments";
+      break;
 
     case z.ZodIssueCode.invalid_return_type:
-      return "validation.invalidReturnType";
+      message = "validation.invalidReturnType";
+      break;
 
     case z.ZodIssueCode.invalid_date:
-      return "validation.invalidDate";
+      message = "validation.invalidDate";
+      break;
 
     case z.ZodIssueCode.invalid_string:
       if (issue.validation === "email") {
-        return "validation.invalidEmail";
+        message = "validation.invalidEmail";
+      } else if (issue.validation === "url") {
+        message = "validation.invalidUrl";
+      } else if (issue.validation === "uuid") {
+        message = "validation.invalidUuid";
+      } else if (issue.validation === "regex") {
+        message = "validation.invalidPattern";
+      } else if (issue.validation === "cuid") {
+        message = "validation.invalidCuid";
+      } else if (issue.validation === "datetime") {
+        message = "validation.invalidDatetime";
+      } else {
+        message = `validation.invalidString.${issue.validation}`;
       }
-      if (issue.validation === "url") {
-        return "validation.invalidUrl";
-      }
-      if (issue.validation === "uuid") {
-        return "validation.invalidUuid";
-      }
-      if (issue.validation === "regex") {
-        return "validation.invalidPattern";
-      }
-      if (issue.validation === "cuid") {
-        return "validation.invalidCuid";
-      }
-      if (issue.validation === "datetime") {
-        return "validation.invalidDatetime";
-      }
-      return `validation.invalidString.${issue.validation}`;
+      break;
 
     case z.ZodIssueCode.too_small:
       if (issue.type === "array") {
-        return issue.exact
+        message = issue.exact
           ? "validation.array.exactLength"
           : issue.inclusive
             ? "validation.array.minLength"
             : "validation.array.minLengthExclusive";
-      }
-      if (issue.type === "string") {
-        return issue.exact
+      } else if (issue.type === "string") {
+        message = issue.exact
           ? "validation.string.exactLength"
           : issue.inclusive
             ? "validation.string.minLength"
             : "validation.string.minLengthExclusive";
-      }
-      if (issue.type === "number") {
-        return issue.exact
+      } else if (issue.type === "number") {
+        message = issue.exact
           ? "validation.number.exact"
           : issue.inclusive
             ? "validation.number.min"
             : "validation.number.minExclusive";
-      }
-      if (issue.type === "date") {
-        return issue.exact
+      } else if (issue.type === "date") {
+        message = issue.exact
           ? "validation.date.exact"
           : issue.inclusive
             ? "validation.date.min"
             : "validation.date.minExclusive";
+      } else {
+        message = "validation.tooSmall";
       }
-      return "validation.tooSmall";
+      break;
 
     case z.ZodIssueCode.too_big:
       if (issue.type === "array") {
-        return issue.exact
+        message = issue.exact
           ? "validation.array.exactLength"
           : issue.inclusive
             ? "validation.array.maxLength"
             : "validation.array.maxLengthExclusive";
-      }
-      if (issue.type === "string") {
-        return issue.exact
+      } else if (issue.type === "string") {
+        message = issue.exact
           ? "validation.string.exactLength"
           : issue.inclusive
             ? "validation.string.maxLength"
             : "validation.string.maxLengthExclusive";
-      }
-      if (issue.type === "number") {
-        return issue.exact
+      } else if (issue.type === "number") {
+        message = issue.exact
           ? "validation.number.exact"
           : issue.inclusive
             ? "validation.number.max"
             : "validation.number.maxExclusive";
-      }
-      if (issue.type === "date") {
-        return issue.exact
+      } else if (issue.type === "date") {
+        message = issue.exact
           ? "validation.date.exact"
           : issue.inclusive
             ? "validation.date.max"
             : "validation.date.maxExclusive";
+      } else {
+        message = "validation.tooBig";
       }
-      return "validation.tooBig";
+      break;
 
     case z.ZodIssueCode.custom:
       // For custom errors, we expect the message to already be a translation key
-      return issue.message || "validation.custom.default";
+      message = issue.message || "validation.custom.default";
+      break;
 
     case z.ZodIssueCode.invalid_intersection_types:
-      return "validation.invalidIntersection";
+      message = "validation.invalidIntersection";
+      break;
 
     case z.ZodIssueCode.not_multiple_of:
-      return "validation.notMultipleOf";
+      message = "validation.notMultipleOf";
+      break;
 
     case z.ZodIssueCode.not_finite:
-      return "validation.notFinite";
+      message = "validation.notFinite";
+      break;
 
     default:
-      return "validation.default";
+      message = "validation.default";
   }
+
+  return { message };
 };
 
 /**

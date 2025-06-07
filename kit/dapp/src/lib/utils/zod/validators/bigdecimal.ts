@@ -9,7 +9,7 @@
  */
 import { from } from "dnum";
 import { z } from "zod";
-import { customErrorKey } from "./error-map";
+import { customErrorKey } from "../error-map";
 
 /**
  * Zod schema for validating and transforming arbitrary precision decimal numbers

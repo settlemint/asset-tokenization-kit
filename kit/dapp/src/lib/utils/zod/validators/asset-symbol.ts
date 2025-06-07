@@ -8,7 +8,7 @@
  * @module AssetSymbolValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "./error-map";
+import { customErrorKey } from "../error-map";
 
 /**
  * Zod schema for validating trading symbols for financial assets
@@ -72,10 +72,7 @@ export const assetSymbol = () =>
     .string()
     .min(1, customErrorKey("assetSymbol", "required"))
     .max(12, customErrorKey("assetSymbol", "tooLong"))
-    .regex(
-      /^[A-Z0-9]+$/,
-      customErrorKey("assetSymbol", "invalidFormat")
-    )
+    .regex(/^[A-Z0-9]+$/, customErrorKey("assetSymbol", "invalidFormat"))
     .describe("Trading symbol for the asset")
     .brand<"AssetSymbol">();
 

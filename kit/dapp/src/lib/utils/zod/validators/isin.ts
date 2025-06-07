@@ -8,7 +8,7 @@
  * @module ISINValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "./error-map";
+import { customErrorKey } from "../error-map";
 
 /**
  * Zod schema for validating International Securities Identification Numbers (ISIN)
@@ -68,7 +68,10 @@ export const isin = () =>
   z
     .string()
     .length(12, customErrorKey("isin", "invalidLength"))
-    .regex(/^[A-Za-z]{2}[A-Za-z0-9]{9}[0-9]$/, customErrorKey("isin", "invalidFormat"))
+    .regex(
+      /^[A-Za-z]{2}[A-Za-z0-9]{9}[0-9]$/,
+      customErrorKey("isin", "invalidFormat")
+    )
     .transform((val) => val.toUpperCase())
     .describe("International Securities Identification Number")
     .brand<"ISIN">();

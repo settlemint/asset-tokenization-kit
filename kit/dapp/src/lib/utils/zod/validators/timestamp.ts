@@ -5,11 +5,11 @@
  * in various formats (ISO string, milliseconds, seconds, or Date objects). It's designed
  * to handle the complexity of timestamp formats commonly encountered in APIs, databases,
  * and blockchain applications.
- * 
+ *
  * @module TimestampValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "./error-map";
+import { customErrorKey } from "../error-map";
 
 /**
  * Creates a Zod schema that validates and normalizes timestamps in various formats.
@@ -23,34 +23,34 @@ import { customErrorKey } from "./error-map";
  * - Automatically detects timestamp precision (seconds, milliseconds, microseconds, nanoseconds)
  * - Validates date ranges to prevent invalid dates (1970-9999)
  * - Normalizes all inputs to Date objects for consistency
- * 
+ *
  * Common timestamp formats:
  * - Unix seconds: 10 digits (e.g., 1680354000)
  * - Unix milliseconds: 13 digits (e.g., 1680354000000)
  * - Microseconds: 16 digits (converted to milliseconds)
  * - Nanoseconds: 19 digits (converted to milliseconds)
- * 
+ *
  * @returns A branded Zod schema that transforms various inputs to Date objects
  *
  * @example
  * ```typescript
  * const schema = timestamp();
- * 
+ *
  * // ISO string formats
  * schema.parse("2023-04-01T12:00:00Z");     // UTC time
  * schema.parse("2023-04-01T12:00:00+00:00"); // With timezone
- * 
+ *
  * // Unix timestamps
  * schema.parse(1680354000);     // Seconds (auto-detected)
  * schema.parse(1680354000000);  // Milliseconds
- * 
+ *
  * // String timestamps
  * schema.parse("1680354000");    // String seconds
  * schema.parse("1680354000000"); // String milliseconds
- * 
+ *
  * // Date objects
  * schema.parse(new Date());      // Pass-through
- * 
+ *
  * // Invalid inputs
  * schema.parse("invalid-date");  // Throws ZodError
  * schema.parse(-1000);          // Throws - negative timestamp
@@ -152,10 +152,10 @@ export type Timestamp = z.infer<ReturnType<typeof timestamp>>;
 
 /**
  * Type guard to check if a value is a valid timestamp.
- * 
+ *
  * @param value - The value to check
  * @returns `true` if the value can be parsed as a valid timestamp, `false` otherwise
- * 
+ *
  * @example
  * ```typescript
  * const input: unknown = "2023-04-01T12:00:00Z";
@@ -163,7 +163,7 @@ export type Timestamp = z.infer<ReturnType<typeof timestamp>>;
  *   // TypeScript knows input will parse to a valid Date
  *   console.log("Valid timestamp");
  * }
- * 
+ *
  * // Check various formats
  * isTimestamp(1680354000);      // true - Unix seconds
  * isTimestamp("1680354000000"); // true - String milliseconds
@@ -182,11 +182,11 @@ export function isTimestamp(value: unknown): value is Timestamp {
 
 /**
  * Safely parse and return a timestamp or throw an error.
- * 
+ *
  * @param value - The value to parse as a timestamp
  * @returns The normalized Date object
  * @throws {Error} If the value cannot be parsed as a valid timestamp
- * 
+ *
  * @example
  * ```typescript
  * try {
@@ -194,13 +194,13 @@ export function isTimestamp(value: unknown): value is Timestamp {
  *   const date1 = getTimestamp("2023-04-01T12:00:00Z");
  *   const date2 = getTimestamp(1680354000);
  *   const date3 = getTimestamp("1680354000000");
- *   
+ *
  *   // All return Date objects
  *   console.log(date1.toISOString());
  * } catch (error) {
  *   console.error("Invalid timestamp format");
  * }
- * 
+ *
  * // Use in data processing
  * const createdAt = getTimestamp(apiResponse.created_at);
  * const expiresAt = getTimestamp(tokenData.exp);

@@ -1,17 +1,18 @@
 /**
  * Time Unit Validation Utilities
- * 
+ *
  * This module provides Zod schemas for validating time measurement units,
  * essential for scheduling, vesting periods, lock durations, and other
  * time-based operations in financial applications.
- * 
+ *
  * @module TimeUnitValidation
  */
 import { z } from "zod";
+import { customErrorKey } from "../error-map";
 
 /**
  * Available time measurement units from seconds to years.
- * 
+ *
  * @remarks
  * Standard time units for various use cases:
  * - `seconds`: Precise timing, short intervals
@@ -34,19 +35,19 @@ export const timeUnits = [
 
 /**
  * Creates a Zod schema that validates time measurement units.
- * 
+ *
  * @returns A branded Zod enum schema for time unit validation
- * 
+ *
  * @example
  * ```typescript
  * const schema = timeUnit();
- * 
+ *
  * // Valid time units
  * schema.parse("seconds"); // For precise timing
  * schema.parse("days");    // For daily periods
  * schema.parse("months");  // For monthly cycles
  * schema.parse("years");   // For annual periods
- * 
+ *
  * // Invalid unit
  * schema.parse("decades"); // Throws ZodError
  * ```
@@ -62,21 +63,21 @@ export type TimeUnit = z.infer<ReturnType<typeof timeUnit>>;
 
 /**
  * Type guard to check if a value is a valid time unit.
- * 
+ *
  * @param value - The value to check
  * @returns `true` if the value is a valid time unit, `false` otherwise
- * 
+ *
  * @example
  * ```typescript
  * const unit: unknown = "days";
  * if (isTimeUnit(unit)) {
  *   // TypeScript knows unit is TimeUnit
  *   console.log(`Valid time unit: ${unit}`);
- *   
+ *
  *   // Use in calculations
  *   const duration = convertToSeconds(amount, unit);
  * }
- * 
+ *
  * // Vesting period validation
  * if (isTimeUnit(vestingUnit)) {
  *   calculateVestingSchedule(vestingAmount, vestingUnit);
@@ -89,11 +90,11 @@ export function isTimeUnit(value: unknown): value is TimeUnit {
 
 /**
  * Safely parse and return a time unit or throw an error.
- * 
+ *
  * @param value - The value to parse as a time unit
  * @returns The validated time unit
  * @throws {Error} If the value is not a valid time unit
- * 
+ *
  * @example
  * ```typescript
  * try {
@@ -102,11 +103,11 @@ export function isTimeUnit(value: unknown): value is TimeUnit {
  * } catch (error) {
  *   console.error("Invalid time unit provided");
  * }
- * 
+ *
  * // Use in lock period configuration
  * const lockUnit = getTimeUnit(config.lockPeriodUnit);
  * const lockDuration = createLockPeriod(config.lockPeriodValue, lockUnit);
- * 
+ *
  * // Token vesting setup
  * const vestingUnit = getTimeUnit(request.vestingUnit);
  * setupVesting(tokens, vestingPeriods, vestingUnit);

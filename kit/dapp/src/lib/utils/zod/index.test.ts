@@ -1,4 +1,4 @@
-import { describe, expect, it, mock, spyOn } from "bun:test";
+import { describe, expect, it, mock } from "bun:test";
 import { z } from "zod";
 import { safeParse } from "./index";
 
@@ -66,7 +66,7 @@ describe("safeParse", () => {
 
     it("should work with union types", () => {
       const schema = z.union([z.string(), z.number()]);
-      
+
       expect(safeParse(schema, "test")).toBe("test");
       expect(safeParse(schema, 123)).toBe(123);
     });
@@ -377,8 +377,13 @@ describe("safeParse", () => {
 
     it("should handle branded types", () => {
       const schema = z.string().brand<"UserId">();
-      const result = safeParse(schema, "user123");
-      expect(result).toBe("user123");
+      // Test that safeParse accepts unknown values and returns the branded type
+      const input: unknown = "user123";
+      const result = safeParse(schema, input);
+      // Cast expected value to match the branded type
+      expect(result).toBe("user123" as z.infer<typeof schema>);
+      // Verify the result has the correct type at runtime
+      expect(typeof result).toBe("string");
     });
 
     it("should handle catch with default value", () => {
@@ -415,11 +420,11 @@ describe("safeParse", () => {
       const options = {
         errorFormatter: (error: z.ZodError) => "Custom error",
       };
-      
+
       // Valid case - options are accepted but not used
       const result = safeParse(schema, "valid", options);
       expect(result).toBe("valid");
-      
+
       // Invalid case - options are accepted but not used
       expect(() => safeParse(schema, 123, options)).toThrow(
         "Validation failed with error(s). Check logs for details."

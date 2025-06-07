@@ -8,6 +8,7 @@
  * @module PincodeValidation
  */
 import { z } from "zod";
+import { customErrorKey } from "../error-map";
 
 /**
  * Zod schema for validating 6-digit PIN codes

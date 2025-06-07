@@ -1,41 +1,42 @@
 /**
  * Two-Factor Authentication Code Validation Utilities
- * 
+ *
  * This module provides Zod schemas for validating 6-digit two-factor authentication (2FA)
  * codes, commonly used in time-based one-time password (TOTP) systems like Google
  * Authenticator, Authy, and similar security applications.
- * 
+ *
  * @module TwoFactorCodeValidation
  */
 import { z } from "zod";
+import { customErrorKey } from "../error-map";
 
 /**
  * Creates a Zod schema that validates 6-digit two-factor authentication codes.
- * 
+ *
  * @remarks
  * 2FA code requirements:
  * - Exactly 6 digits (standard TOTP length)
  * - Numeric only (0-9)
  * - No spaces or special characters
  * - Leading zeros preserved (e.g., "000123")
- * 
+ *
  * Compatible with:
  * - Google Authenticator
  * - Microsoft Authenticator
  * - Authy
  * - Most TOTP-based 2FA systems
- * 
+ *
  * @returns A branded Zod schema for 2FA code validation
- * 
+ *
  * @example
  * ```typescript
  * const schema = twoFactorCode();
- * 
+ *
  * // Valid 2FA codes
  * schema.parse("123456"); // Standard code
  * schema.parse("000001"); // With leading zeros
  * schema.parse("999999"); // Maximum value
- * 
+ *
  * // Invalid codes
  * schema.parse("12345");   // Throws - too short
  * schema.parse("1234567"); // Throws - too long
@@ -59,10 +60,10 @@ export type TwoFactorCode = z.infer<ReturnType<typeof twoFactorCode>>;
 
 /**
  * Type guard to check if a value is a valid two-factor code.
- * 
+ *
  * @param value - The value to check
  * @returns `true` if the value is a valid 2FA code, `false` otherwise
- * 
+ *
  * @example
  * ```typescript
  * const userInput: unknown = "123456";
@@ -73,7 +74,7 @@ export type TwoFactorCode = z.infer<ReturnType<typeof twoFactorCode>>;
  * } else {
  *   console.error("Invalid 2FA code format");
  * }
- * 
+ *
  * // Validation in auth flow
  * if (isTwoFactorCode(authCode)) {
  *   const isValid = await validateTOTP(user.secret, authCode);
@@ -86,11 +87,11 @@ export function isTwoFactorCode(value: unknown): value is TwoFactorCode {
 
 /**
  * Safely parse and return a two-factor code or throw an error.
- * 
+ *
  * @param value - The value to parse as a 2FA code
  * @returns The validated 2FA code
  * @throws {Error} If the value is not a valid 2FA code
- * 
+ *
  * @example
  * ```typescript
  * try {
@@ -100,11 +101,11 @@ export function isTwoFactorCode(value: unknown): value is TwoFactorCode {
  *   console.error("Invalid 2FA code provided");
  *   showErrorMessage(customErrorKey("twoFactorCode", "invalid"));
  * }
- * 
+ *
  * // Use in authentication
  * const twoFACode = getTwoFactorCode(request.code);
  * const authenticated = await verifyTOTP(user.secret, twoFACode);
- * 
+ *
  * // Login flow
  * const code = getTwoFactorCode(formData.twoFactorCode);
  * completeLogin(username, password, code);

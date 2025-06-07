@@ -9,7 +9,7 @@
  */
 import { isHash } from "viem";
 import { z } from "zod";
-import { customErrorKey } from "./error-map";
+import { customErrorKey } from "../error-map";
 
 /**
  * Zod schema for validating and normalizing Ethereum hashes (32 bytes)
@@ -49,10 +49,7 @@ export const ethereumHash = z
   .describe("A valid Ethereum hash (66 characters, starting with 0x)")
   .min(66, customErrorKey("ethereumHash", "invalidLength"))
   .max(66, customErrorKey("ethereumHash", "invalidLength"))
-  .regex(
-    /^0x[a-fA-F0-9]{64}$/,
-    customErrorKey("ethereumHash", "invalidFormat")
-  )
+  .regex(/^0x[a-fA-F0-9]{64}$/, customErrorKey("ethereumHash", "invalidFormat"))
   .refine(isHash, {
     message: customErrorKey("ethereumHash", "invalid"),
   })
