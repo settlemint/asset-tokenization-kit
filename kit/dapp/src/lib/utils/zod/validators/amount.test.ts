@@ -6,29 +6,29 @@ describe("amount", () => {
     const validator = amount();
 
     it("should accept positive numbers", () => {
-      expect(validator.parse(1)).toBe(getAmount(1));
-      expect(validator.parse(100)).toBe(getAmount(100));
-      expect(validator.parse(999.99)).toBe(getAmount(999.99));
+      expect(validator.parse(1)).toBe(1);
+      expect(validator.parse(100)).toBe(100);
+      expect(validator.parse(999.99)).toBe(999.99);
+      expect(getAmount(1)).toBe(1);
+      expect(getAmount(100)).toBe(100);
+      expect(getAmount(999.99)).toBe(999.99);
     });
 
     it("should accept very small positive numbers", () => {
-      expect(validator.parse(0.000001)).toBe(getAmount(0.000001));
-      expect(validator.parse(Number.EPSILON)).toBe(getAmount(Number.EPSILON));
+      expect(validator.parse(0.000001)).toBe(0.000001);
+      expect(validator.parse(Number.EPSILON)).toBe(Number.EPSILON);
+      expect(getAmount(0.000001)).toBe(0.000001);
+      expect(getAmount(Number.EPSILON)).toBe(Number.EPSILON);
     });
 
-    it("should reject zero by default", () => {
-      expect(() => validator.parse(0)).toThrow(
-        `Amount must be at least ${Number.EPSILON}`
-      );
+    it("should accept zero by default", () => {
+      expect(validator.parse(0)).toBe(0);
+      expect(getAmount(0)).toBe(0);
     });
 
     it("should reject negative numbers", () => {
-      expect(() => validator.parse(-1)).toThrow(
-        `Amount must be at least ${Number.EPSILON}`
-      );
-      expect(() => validator.parse(-0.01)).toThrow(
-        `Amount must be at least ${Number.EPSILON}`
-      );
+      expect(() => validator.parse(-1)).toThrow("Amount must be at least 0");
+      expect(() => validator.parse(-0.01)).toThrow("Amount must be at least 0");
     });
 
     it("should reject non-numeric types", () => {
@@ -52,9 +52,12 @@ describe("amount", () => {
     const validator = amount({ min: 10, max: 1000 });
 
     it("should accept values within range", () => {
-      expect(validator.parse(10)).toBe(getAmount(10));
-      expect(validator.parse(500)).toBe(getAmount(500));
-      expect(validator.parse(1000)).toBe(getAmount(1000));
+      expect(validator.parse(10)).toBe(10);
+      expect(validator.parse(500)).toBe(500);
+      expect(validator.parse(1000)).toBe(1000);
+      expect(getAmount(10, { min: 10, max: 1000 })).toBe(10);
+      expect(getAmount(500, { min: 10, max: 1000 })).toBe(500);
+      expect(getAmount(1000, { min: 10, max: 1000 })).toBe(1000);
     });
 
     it("should reject values below minimum", () => {
@@ -72,48 +75,30 @@ describe("amount", () => {
     });
   });
 
-  describe("with decimal precision", () => {
+  describe("with decimals option", () => {
     const validator = amount({ decimals: 2 });
 
-    it("should accept values with valid decimal places", () => {
-      expect(validator.parse(10)).toBe(getAmount(10));
-      expect(validator.parse(10.5)).toBe(getAmount(10.5));
-      expect(validator.parse(10.99)).toBe(getAmount(10.99));
+    it("should set minimum based on decimals", () => {
+      expect(validator.parse(0.01)).toBe(0.01);
+      expect(validator.parse(10.99)).toBe(10.99);
+      expect(getAmount(0.01, { decimals: 2 })).toBe(0.01);
     });
 
-    it("should reject values with too many decimal places", () => {
-      expect(() => validator.parse(10.999)).toThrow(
-        "Amount cannot have more than 2 decimal places"
-      );
-      expect(() => validator.parse(10.12345)).toThrow(
-        "Amount cannot have more than 2 decimal places"
-      );
-    });
-
-    it("should handle minimum based on decimals", () => {
-      expect(validator.parse(0.01)).toBe(getAmount(0.01));
+    it("should reject values below decimal-based minimum", () => {
       expect(() => validator.parse(0.009)).toThrow(
         "Amount must be at least 0.01"
       );
+      expect(() => validator.parse(0)).toThrow(
+        "Amount must be at least 0.01"
+      );
+    });
+
+    it("should accept any number of decimal places above minimum", () => {
+      expect(validator.parse(10.999)).toBe(10.999);
+      expect(validator.parse(10.12345)).toBe(10.12345);
     });
   });
 
-  describe("with allowZero option", () => {
-    const validator = amount({ allowZero: true });
-
-    it("should accept zero", () => {
-      expect(validator.parse(0)).toBe(getAmount(0));
-    });
-
-    it("should still accept positive numbers", () => {
-      expect(validator.parse(1)).toBe(getAmount(1));
-      expect(validator.parse(100)).toBe(getAmount(100));
-    });
-
-    it("should still reject negative numbers", () => {
-      expect(() => validator.parse(-1)).toThrow("Amount must be at least 0");
-    });
-  });
 });
 
 describe("helper functions", () => {
@@ -140,5 +125,6 @@ describe("helper functions", () => {
       );
       expect(getAmount(15, { min: 10 })).toBe(15);
     });
+
   });
 });

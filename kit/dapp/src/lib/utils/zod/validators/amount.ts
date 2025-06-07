@@ -16,14 +16,12 @@ import { z } from "zod";
  * @interface AmountOptions
  * @property {number} [min] - Minimum allowed value (defaults based on decimals or 0)
  * @property {number} [max] - Maximum allowed value (defaults to Number.MAX_SAFE_INTEGER)
- * @property {number} [decimals] - Maximum number of decimal places allowed
- * @property {boolean} [allowZero] - Whether to allow zero values (default: false)
+ * @property {number} [decimals] - Used to calculate minimum if min not provided
  */
 export interface AmountOptions {
   min?: number;
   max?: number;
   decimals?: number;
-  allowZero?: boolean;
 }
 
 /**
@@ -32,69 +30,46 @@ export interface AmountOptions {
  * @param options - Configuration options for amount validation
  * @param options.min - Minimum allowed value (defaults based on decimals or 0)
  * @param options.max - Maximum allowed value (defaults to Number.MAX_SAFE_INTEGER)
- * @param options.decimals - Used to calculate minimum if min not provided and limits decimal places
- * @param options.allowZero - Whether to allow zero values (default: false)
+ * @param options.decimals - Used to calculate minimum if min not provided
  * @returns A Zod schema that validates positive amounts with specific boundaries
  *
  * @example
  * ```typescript
- * // Basic amount validation (no zero allowed)
+ * // Basic amount validation (allows zero by default)
  * const schema = amount();
  * schema.parse(100); // Valid
- * schema.parse(0); // Invalid
+ * schema.parse(0); // Valid
  *
- * // Amount with 2 decimal places (e.g., for USD)
+ * // Amount with 2 decimal places minimum
  * const usdAmount = amount({ decimals: 2 });
- * usdAmount.parse(99.99); // Valid
- * usdAmount.parse(99.999); // Invalid - too many decimals
+ * usdAmount.parse(0.01); // Valid (minimum is 0.01)
+ * usdAmount.parse(0.009); // Invalid - below minimum
  *
- * // Amount that allows zero
- * const withdrawAmount = amount({ allowZero: true });
- * withdrawAmount.parse(0); // Valid
+ * // Amount with explicit minimum
+ * const minAmount = amount({ min: 10 });
+ * minAmount.parse(10); // Valid
+ * minAmount.parse(5); // Invalid
  * ```
  */
 export const amount = ({
   max = Number.MAX_SAFE_INTEGER,
   min,
   decimals,
-  allowZero = false,
 }: AmountOptions = {}) => {
   // Calculate the minimum value based on provided options
-  // Priority: explicit min > decimals-based min > allowZero check > epsilon
+  // Priority: explicit min > decimals-based min > 0
   const minimum =
     typeof min === "number"
       ? min
       : typeof decimals === "number"
         ? 10 ** -decimals // e.g., 0.01 for 2 decimals
-        : allowZero
-          ? 0
-          : Number.EPSILON; // Smallest positive number
+        : 0;
 
-  // Build the base schema with min/max validation
-  const baseSchema = z
+  return z
     .number()
     .min(minimum, { message: `Amount must be at least ${minimum}` })
-    .max(max, `Amount must not exceed ${max}`);
-
-  // Add decimal place validation if decimals is specified
-  if (typeof decimals === "number") {
-    return baseSchema
-      .refine(
-        (value) => {
-          // Check the number of decimal places
-          const decimalPart = value.toString().split(".")[1];
-          return !decimalPart || decimalPart.length <= decimals;
-        },
-        {
-          message: `Amount cannot have more than ${decimals} decimal places`,
-        }
-      )
-      .describe(`A positive numerical amount between ${minimum} and ${max}`);
-  }
-
-  return baseSchema.describe(
-    `A positive numerical amount between ${minimum} and ${max}`
-  );
+    .max(max, { message: `Amount must not exceed ${max}` })
+    .describe(`A positive numerical amount between ${minimum} and ${max}`);
 };
 
 /**
@@ -134,7 +109,6 @@ export function isAmount(
 
 /**
  * Safely parse and validate an amount with error throwing.
- * Handles the special case where zero is provided without explicit options.
  *
  * @param value - The value to parse as an amount
  * @param options - Optional configuration for amount validation
@@ -145,7 +119,7 @@ export function isAmount(
  * ```typescript
  * try {
  *   const validAmount = getAmount(99.99, { decimals: 2 }); // Returns 99.99
- *   const zeroAmount = getAmount(0); // Automatically allows zero
+ *   const zeroAmount = getAmount(0, { allowZero: true }); // Explicitly allow zero
  *   const invalid = getAmount(-10); // Throws Error
  * } catch (error) {
  *   console.error("Invalid amount provided");
@@ -153,14 +127,5 @@ export function isAmount(
  * ```
  */
 export function getAmount(value: unknown, options?: AmountOptions): Amount {
-  // Special case: when zero is provided without explicit options,
-  // automatically allow it (common use case for initial values)
-  if (
-    value === 0 &&
-    (!options || (options.allowZero === undefined && options.min === undefined))
-  ) {
-    return amount({ allowZero: true }).parse(value);
-  }
-
   return amount(options).parse(value);
 }
