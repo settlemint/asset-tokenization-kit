@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/routing";
 import { AlertCircle } from "lucide-react";
-import { useTranslations } from "next-intl";
 import posthog from "posthog-js";
 import { useEffect } from "react";
 
@@ -14,7 +13,6 @@ interface ErrorPageProps {
 
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
   const router = useRouter();
-  const t = useTranslations("error");
 
   useEffect(() => {
     posthog.captureException(error);
@@ -25,18 +23,20 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
       <div className="rounded-full bg-destructive/15 p-3">
         <AlertCircle className="size-6 text-destructive" />
       </div>
-      <h1 className="font-semibold text-2xl tracking-tight">{t("title")}</h1>
+      <h1 className="font-semibold text-2xl tracking-tight">
+        Something went wrong
+      </h1>
       {error.digest && (
         <p className="text-muted-foreground text-sm">
-          {t("error-id")}: {error.digest}
+          Error ID: {error.digest}
         </p>
       )}
       <div className="flex gap-4">
         <Button onClick={() => reset()} variant="default">
-          {t("try-again")}
+          Try again
         </Button>
         <Button onClick={() => router.push("/")} variant="outline">
-          {t("go-home")}
+          Go home
         </Button>
       </div>
     </div>

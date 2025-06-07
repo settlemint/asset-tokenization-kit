@@ -206,3 +206,7 @@ GitHub Actions workflows:
 - Node.js v22.16.0 is required for TheGraph CLI
 - Foundry is required for contract compilation and testing
 - First user signup gets admin privileges in the dApp
+
+## Memories
+
+- Importing Zod: `import zod from zod`
