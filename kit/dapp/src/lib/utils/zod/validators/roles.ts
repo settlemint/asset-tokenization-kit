@@ -8,7 +8,6 @@
  * @module RoleValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Available system roles with different permission levels.
@@ -142,7 +141,7 @@ export function isRole(value: unknown): value is Role {
  */
 export function getRole(value: unknown): Role {
   if (!isRole(value)) {
-    throw new Error(customErrorKey("role", "invalid"));
+    throw new Error("Invalid role. Must be one of: admin, issuer, manager, compliance, auditor, or investor");
   }
   return value;
 }
@@ -190,7 +189,7 @@ export function isRoleMap(value: unknown): value is RoleMap {
  */
 export function getRoleMap(value: unknown): RoleMap {
   if (!isRoleMap(value)) {
-    throw new Error(customErrorKey("role", "invalidMap"));
+    throw new Error("Invalid role mapping. All values must be valid system roles");
   }
   return value;
 }

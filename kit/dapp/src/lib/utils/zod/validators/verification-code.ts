@@ -8,7 +8,6 @@
  * @module VerificationCodeValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Creates a Zod schema that validates 8-character alphanumeric verification codes.
@@ -48,8 +47,8 @@ import { customErrorKey } from "../error-map";
 export const verificationCode = () =>
   z
     .string()
-    .length(8, customErrorKey("verificationCode", "invalidLength"))
-    .regex(/^[A-Z0-9]{8}$/, customErrorKey("verificationCode", "invalidFormat"))
+    .length(8, "Verification code must be exactly 8 characters")
+    .regex(/^[A-Z0-9]{8}$/, "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)")
     .describe("Email verification code")
     .brand<"VerificationCode">();
 
@@ -114,7 +113,7 @@ export function isVerificationCode(value: unknown): value is VerificationCode {
  */
 export function getVerificationCode(value: unknown): VerificationCode {
   if (!isVerificationCode(value)) {
-    throw new Error(customErrorKey("verificationCode", "invalid"));
+    throw new Error("Invalid verification code. Must be exactly 8 characters containing only uppercase letters and numbers");
   }
   return value;
 }

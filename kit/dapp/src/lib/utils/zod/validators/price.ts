@@ -8,7 +8,6 @@
  * @module PriceValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Creates a Zod schema that validates price values.
@@ -47,8 +46,8 @@ import { customErrorKey } from "../error-map";
 export const price = () =>
   z
     .number()
-    .positive(customErrorKey("price", "notPositive"))
-    .finite(customErrorKey("price", "notFinite"))
+    .positive("Price must be greater than zero")
+    .finite("Price must be a finite number (not Infinity)")
     .refine(
       (value) => {
         // Check decimal places by converting to string
@@ -56,7 +55,7 @@ export const price = () =>
         const decimalPlaces = (value.toString().split(".")[1] || "").length;
         return decimalPlaces <= 4;
       },
-      customErrorKey("price", "tooManyDecimals")
+      "Price cannot have more than 4 decimal places"
     )
     .describe("Asset price")
     .brand<"Price">();
@@ -121,7 +120,7 @@ export function isPrice(value: unknown): value is Price {
  */
 export function getPrice(value: unknown): Price {
   if (!isPrice(value)) {
-    throw new Error(customErrorKey("price", "invalid"));
+    throw new Error("Invalid price. Must be a positive number with maximum 4 decimal places");
   }
   return value;
 }

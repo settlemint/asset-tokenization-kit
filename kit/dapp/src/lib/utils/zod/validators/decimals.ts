@@ -8,7 +8,6 @@
  * @module DecimalsValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Creates a Zod schema that validates decimal precision values.
@@ -41,9 +40,9 @@ import { customErrorKey } from "../error-map";
 export const decimals = () =>
   z
     .number()
-    .int(customErrorKey("decimals", "notInteger"))
-    .min(0, customErrorKey("decimals", "negative"))
-    .max(18, customErrorKey("decimals", "tooLarge")) // Standard ERC20 maximum
+    .int("Decimals must be a whole number (integer)")
+    .min(0, "Decimals cannot be negative")
+    .max(18, "Decimals cannot exceed 18 (ERC20 standard maximum)") // Standard ERC20 maximum
     .describe("Number of decimal places for the asset")
     .brand<"Decimals">();
 
@@ -101,7 +100,7 @@ export function isDecimals(value: unknown): value is Decimals {
  */
 export function getDecimals(value: unknown): Decimals {
   if (!isDecimals(value)) {
-    throw new Error(customErrorKey("decimals", "invalid"));
+    throw new Error("Invalid decimals. Must be an integer between 0 and 18");
   }
   return value;
 }

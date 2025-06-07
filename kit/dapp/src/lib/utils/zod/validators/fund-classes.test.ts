@@ -59,11 +59,11 @@ describe("fundClass", () => {
     });
 
     it("getFundClass should throw error for invalid fund class", () => {
-      expect(() => getFundClass("invalid")).toThrow("Invalid fund class: invalid");
-      expect(() => getFundClass(null)).toThrow("Invalid fund class: null");
-      expect(() => getFundClass(undefined)).toThrow("Invalid fund class: undefined");
-      expect(() => getFundClass(123)).toThrow("Invalid fund class: 123");
-      expect(() => getFundClass({})).toThrow("Invalid fund class: [object Object]");
+      expect(() => getFundClass("invalid")).toThrow("Invalid fund class - must be 'institutional', 'retail', or 'accredited'");
+      expect(() => getFundClass(null)).toThrow("Invalid fund class - must be 'institutional', 'retail', or 'accredited'");
+      expect(() => getFundClass(undefined)).toThrow("Invalid fund class - must be 'institutional', 'retail', or 'accredited'");
+      expect(() => getFundClass(123)).toThrow("Invalid fund class - must be 'institutional', 'retail', or 'accredited'");
+      expect(() => getFundClass({})).toThrow("Invalid fund class - must be 'institutional', 'retail', or 'accredited'");
     });
   });
 });

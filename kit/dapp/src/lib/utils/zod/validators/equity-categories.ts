@@ -8,7 +8,6 @@
  * @module EquityCategoryValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Available equity categories in corporate share structures.
@@ -97,7 +96,7 @@ export function isEquityCategory(value: unknown): value is EquityCategory {
  */
 export function getEquityCategory(value: unknown): EquityCategory {
   if (!isEquityCategory(value)) {
-    throw new Error(customErrorKey("equityCategory", "invalid"));
+    throw new Error("Invalid equity category. Must be one of: common, preferred, or restricted");
   }
   return value;
 }

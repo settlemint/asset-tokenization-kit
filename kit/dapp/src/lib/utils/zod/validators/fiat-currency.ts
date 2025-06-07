@@ -8,7 +8,6 @@
  * @module FiatCurrencyValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Supported fiat currency codes (ISO 4217).
@@ -117,7 +116,7 @@ export function isFiatCurrency(value: unknown): value is FiatCurrency {
 export function getFiatCurrency(value: unknown): FiatCurrency {
   const result = fiatCurrency().safeParse(value);
   if (!result.success) {
-    throw new Error(customErrorKey("fiatCurrency", "invalid"));
+    throw new Error("Invalid fiat currency. Must be one of: USD, EUR, GBP, JPY, CHF, CAD, or AUD");
   }
   return result.data;
 }

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Available airdrop distribution mechanisms.
@@ -75,7 +74,7 @@ export function isAirdropType(value: unknown): value is AirdropType {
 export function getAirdropType(value: unknown): AirdropType {
   // First check if the value is valid using the type guard
   if (!isAirdropType(value)) {
-    throw new Error(customErrorKey("airdropType", "invalid"));
+    throw new Error("Invalid airdrop type. Must be one of: whitelist, merkle, or claim");
   }
   return value;
 }

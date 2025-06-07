@@ -8,7 +8,6 @@
  * @module FundCategoryValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Available investment fund categories.
@@ -100,7 +99,7 @@ export function isFundCategory(value: unknown): value is FundCategory {
  */
 export function getFundCategory(value: unknown): FundCategory {
   if (!isFundCategory(value)) {
-    throw new Error(customErrorKey("fundCategory", "invalid"));
+    throw new Error("Invalid fund category. Must be one of: mutual, hedge, etf, or index");
   }
   return value;
 }

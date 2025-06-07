@@ -8,7 +8,6 @@
  * @module SecretCodeValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Creates a Zod schema that validates secret authentication codes.
@@ -46,8 +45,8 @@ import { customErrorKey } from "../error-map";
 export const secretCode = () =>
   z
     .string()
-    .min(8, customErrorKey("secretCode", "tooShort"))
-    .max(64, customErrorKey("secretCode", "tooLong"))
+    .min(8, "Secret code must be at least 8 characters long")
+    .max(64, "Secret code must not exceed 64 characters")
     .describe("Secret authentication code")
     .brand<"SecretCode">();
 
@@ -109,7 +108,7 @@ export function isSecretCode(value: unknown): value is SecretCode {
  */
 export function getSecretCode(value: unknown): SecretCode {
   if (!isSecretCode(value)) {
-    throw new Error(customErrorKey("secretCode", "invalid"));
+    throw new Error("Invalid secret code. Must be between 8 and 64 characters");
   }
   return value;
 }

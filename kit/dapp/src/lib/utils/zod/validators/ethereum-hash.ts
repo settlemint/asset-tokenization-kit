@@ -9,7 +9,6 @@
  */
 import { isHash } from "viem";
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Zod schema for validating and normalizing Ethereum hashes (32 bytes)
@@ -47,11 +46,11 @@ import { customErrorKey } from "../error-map";
 export const ethereumHash = z
   .string()
   .describe("A valid Ethereum hash (66 characters, starting with 0x)")
-  .min(66, customErrorKey("ethereumHash", "invalidLength"))
-  .max(66, customErrorKey("ethereumHash", "invalidLength"))
-  .regex(/^0x[a-fA-F0-9]{64}$/, customErrorKey("ethereumHash", "invalidFormat"))
+  .min(66, "Ethereum hash must be exactly 66 characters long")
+  .max(66, "Ethereum hash must be exactly 66 characters long")
+  .regex(/^0x[a-fA-F0-9]{64}$/, "Ethereum hash must start with '0x' followed by 64 hexadecimal characters")
   .refine(isHash, {
-    message: customErrorKey("ethereumHash", "invalid"),
+    message: "Invalid Ethereum hash format",
   })
   .brand<"Hash">();
 

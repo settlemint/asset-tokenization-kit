@@ -9,7 +9,6 @@
  * @module AmountValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Configuration options for amount validation.
@@ -77,10 +76,10 @@ export const amount = ({
     .min(
       minimum,
       minimum === 0
-        ? customErrorKey("amount", "required")
-        : customErrorKey("amount", "tooSmall")
+        ? "Amount is required"
+        : `Amount must be at least ${minimum}`
     )
-    .max(max, customErrorKey("amount", "tooLarge"));
+    .max(max, `Amount must not exceed ${max}`);
 
   // Add decimal place validation if decimals is specified
   if (typeof decimals === "number") {
@@ -92,7 +91,7 @@ export const amount = ({
           return !decimalPart || decimalPart.length <= decimals;
         },
         {
-          message: customErrorKey("amount", "tooManyDecimals"),
+          message: `Amount cannot have more than ${decimals} decimal places`,
         }
       )
       .describe(`A positive numerical amount between ${minimum} and ${max}`);
@@ -171,7 +170,7 @@ export function getAmount(value: unknown, options?: AmountOptions): Amount {
   // Attempt to parse the value with the provided options
   const result = amount(options).safeParse(value);
   if (!result.success) {
-    throw new Error(customErrorKey("amount", "invalid"));
+    throw new Error("Invalid amount. Must be a positive number");
   }
   return result.data;
 }

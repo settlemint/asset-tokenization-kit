@@ -8,7 +8,6 @@
  * @module UserRoleValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Available user roles with different permission levels.
@@ -108,7 +107,7 @@ export function isUserRole(value: unknown): value is UserRole {
  */
 export function getUserRole(value: unknown): UserRole {
   if (!isUserRole(value)) {
-    throw new Error(customErrorKey("userRole", "invalid"));
+    throw new Error("Invalid user role. Must be one of: admin, user, or viewer");
   }
   return value;
 }

@@ -147,7 +147,7 @@ describe("timestamp", () => {
       } as any;
 
       expect(() => validator.parse("999999999999999999999")).toThrow(
-        "Invalid numeric timestamp string: 999999999999999999999"
+        "Invalid numeric timestamp string"
       );
 
       global.Number = originalNumber;
@@ -167,7 +167,7 @@ describe("timestamp", () => {
       
       // Test date after year 9999 using a string to avoid microsecond conversion
       const afterYear9999 = new Date(253402300800000);
-      expect(() => validator.parse(afterYear9999)).toThrow("Date must be between 1970 and 9999");
+      expect(() => validator.parse(afterYear9999)).toThrow("Timestamp is out of valid range (must be between 1970 and 9999)");
     });
   });
 

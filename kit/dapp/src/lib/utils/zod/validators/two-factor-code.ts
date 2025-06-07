@@ -8,7 +8,6 @@
  * @module TwoFactorCodeValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Creates a Zod schema that validates 6-digit two-factor authentication codes.
@@ -47,8 +46,8 @@ import { customErrorKey } from "../error-map";
 export const twoFactorCode = () =>
   z
     .string()
-    .length(6, customErrorKey("twoFactorCode", "invalidLength"))
-    .regex(/^\d{6}$/, customErrorKey("twoFactorCode", "invalidFormat"))
+    .length(6, "Two-factor code must be exactly 6 digits")
+    .regex(/^\d{6}$/, "Two-factor code must contain only numeric digits (0-9)")
     .describe("Two-factor authentication code")
     .brand<"TwoFactorCode">();
 
@@ -99,7 +98,6 @@ export function isTwoFactorCode(value: unknown): value is TwoFactorCode {
  *   const invalid = getTwoFactorCode("abc123"); // Throws Error
  * } catch (error) {
  *   console.error("Invalid 2FA code provided");
- *   showErrorMessage(customErrorKey("twoFactorCode", "invalid"));
  * }
  *
  * // Use in authentication
@@ -113,7 +111,7 @@ export function isTwoFactorCode(value: unknown): value is TwoFactorCode {
  */
 export function getTwoFactorCode(value: unknown): TwoFactorCode {
   if (!isTwoFactorCode(value)) {
-    throw new Error(customErrorKey("twoFactorCode", "invalid"));
+    throw new Error("Invalid two-factor authentication code. Must be exactly 6 numeric digits");
   }
   return value;
 }

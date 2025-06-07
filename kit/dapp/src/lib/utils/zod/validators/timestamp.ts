@@ -9,7 +9,6 @@
  * @module TimestampValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Creates a Zod schema that validates and normalizes timestamps in various formats.
@@ -72,7 +71,7 @@ export const timestamp = () =>
         if (/^\d+$/.test(value)) {
           const num = Number(value);
           if (isNaN(num)) {
-            throw new Error(customErrorKey("timestamp", "invalidNumeric"));
+            throw new Error("Invalid numeric timestamp string");
           }
 
           // Detect timestamp precision based on length
@@ -103,7 +102,7 @@ export const timestamp = () =>
         // Try parsing as ISO string or other date format
         const date = new Date(value);
         if (isNaN(date.getTime())) {
-          throw new Error(customErrorKey("timestamp", "invalidDate"));
+          throw new Error("Invalid date string format");
         }
         return date;
       }
@@ -112,7 +111,7 @@ export const timestamp = () =>
       if (typeof value === "number") {
         // Check for valid range (JavaScript Date can safely handle dates up to year 275760)
         if (value < 0) {
-          throw new Error(customErrorKey("timestamp", "negative"));
+          throw new Error("Timestamp cannot be negative");
         }
 
         // Detect if the number is in seconds or milliseconds
@@ -126,7 +125,7 @@ export const timestamp = () =>
       }
 
       // This should never be reached due to the union type, but TypeScript needs it
-      throw new Error(customErrorKey("timestamp", "invalidType"));
+      throw new Error("Invalid timestamp type - must be string, number, or Date");
     })
     .refine(
       (date) => {
@@ -137,7 +136,7 @@ export const timestamp = () =>
         return time >= 0 && time <= 253402300799999;
       },
       {
-        message: customErrorKey("timestamp", "outOfRange"),
+        message: "Timestamp is out of valid range (must be between 1970 and 9999)",
       }
     )
     .brand<"Timestamp">();
@@ -209,7 +208,7 @@ export function isTimestamp(value: unknown): value is Timestamp {
 export function getTimestamp(value: unknown): Timestamp {
   const result = timestamp().safeParse(value);
   if (!result.success) {
-    throw new Error(customErrorKey("timestamp", "invalid"));
+    throw new Error("Invalid timestamp format");
   }
   return result.data;
 }

@@ -9,7 +9,6 @@
  */
 import { type Address, getAddress, isAddress } from "viem";
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Zod schema for validating and normalizing Ethereum addresses
@@ -50,14 +49,14 @@ import { customErrorKey } from "../error-map";
 export const ethereumAddress = z
   .string()
   .describe("A valid Ethereum address (42 characters, starting with 0x)")
-  .min(42, customErrorKey("ethereumAddress", "tooShort"))
-  .max(42, customErrorKey("ethereumAddress", "tooLong"))
+  .min(42, "Ethereum address must be at least 42 characters long")
+  .max(42, "Ethereum address must be at most 42 characters long")
   .regex(
     /^0x[a-fA-F0-9]{40}$/,
-    customErrorKey("ethereumAddress", "invalidFormat")
+    "Ethereum address must start with 0x followed by 40 hexadecimal characters"
   )
   .refine(isAddress, {
-    message: customErrorKey("ethereumAddress", "invalid"),
+    message: "Invalid Ethereum address format or checksum",
   })
   .transform((value): Address => {
     try {

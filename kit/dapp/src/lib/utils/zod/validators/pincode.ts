@@ -8,7 +8,6 @@
  * @module PincodeValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Zod schema for validating 6-digit PIN codes
@@ -72,8 +71,8 @@ import { customErrorKey } from "../error-map";
 export const pincode = () =>
   z
     .string()
-    .length(6, customErrorKey("pincode", "invalidLength"))
-    .regex(/^\d{6}$/, customErrorKey("pincode", "invalidFormat"))
+    .length(6, "PIN code must be exactly 6 digits")
+    .regex(/^\d{6}$/, "PIN code must contain only numeric digits (0-9)")
     .describe("6-digit PIN code")
     .brand<"Pincode">();
 
@@ -135,7 +134,7 @@ export function isPincode(value: unknown): value is Pincode {
  */
 export function getPincode(value: unknown): Pincode {
   if (!isPincode(value)) {
-    throw new Error(customErrorKey("pincode", "invalid"));
+    throw new Error("Invalid PIN code. Must be exactly 6 numeric digits");
   }
   return value;
 }

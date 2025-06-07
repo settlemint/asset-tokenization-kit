@@ -8,7 +8,6 @@
  * @module FundClassValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Available fund share classes based on investor qualification.
@@ -97,7 +96,7 @@ export function isFundClass(value: unknown): value is FundClass {
  */
 export function getFundClass(value: unknown): FundClass {
   if (!isFundClass(value)) {
-    throw new Error(customErrorKey("fundClass", "invalid"));
+    throw new Error("Invalid fund class - must be 'institutional', 'retail', or 'accredited'");
   }
   return value;
 }

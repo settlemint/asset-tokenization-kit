@@ -8,7 +8,6 @@
  * @module AssetTypeValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Tuple of valid asset types for type-safe iteration.
@@ -107,7 +106,7 @@ export const assetType = () =>
 export const assetTypeArray = () =>
   z
     .array(assetType())
-    .min(1, customErrorKey("assetType", "minSelection"))
+    .min(1, "At least one asset type must be selected")
     .describe("List of asset types");
 
 /**
@@ -127,7 +126,7 @@ export const assetTypeArray = () =>
 export const assetTypeSet = () =>
   z
     .set(assetType())
-    .min(1, customErrorKey("assetType", "minSelection"))
+    .min(1, "At least one asset type must be selected")
     .describe("Set of unique asset types");
 
 /**
@@ -241,7 +240,7 @@ export function isAssetType(value: unknown): value is AssetType {
  */
 export function getAssetType(value: unknown): AssetType {
   if (!isAssetType(value)) {
-    throw new Error(customErrorKey("assetType", "invalid"));
+    throw new Error("Invalid asset type. Must be one of: bond, cryptocurrency, equity, fund, stablecoin, or deposit");
   }
   return value;
 }
@@ -279,7 +278,7 @@ export function isAssetTypeArray(value: unknown): value is AssetTypeArray {
 export function getAssetTypeArray(value: unknown): AssetTypeArray {
   const result = assetTypeArray().safeParse(value);
   if (!result.success) {
-    throw new Error(customErrorKey("assetType", "invalidArray"));
+    throw new Error("Invalid asset type array. Must contain at least one valid asset type");
   }
   return result.data;
 }
@@ -318,7 +317,7 @@ export function isAssetTypeSet(value: unknown): value is AssetTypeSet {
 export function getAssetTypeSet(value: unknown): AssetTypeSet {
   const result = assetTypeSet().safeParse(value);
   if (!result.success) {
-    throw new Error(customErrorKey("assetType", "invalidSet"));
+    throw new Error("Invalid asset type set. Must contain at least one valid asset type");
   }
   return result.data;
 }

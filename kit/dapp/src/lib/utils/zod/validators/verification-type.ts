@@ -8,7 +8,6 @@
  * @module VerificationTypeValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Available verification method types.
@@ -112,7 +111,7 @@ export function isVerificationType(value: unknown): value is VerificationType {
  */
 export function getVerificationType(value: unknown): VerificationType {
   if (!isVerificationType(value)) {
-    throw new Error(customErrorKey("verificationType", "invalid"));
+    throw new Error("Invalid verification type. Must be one of: email, phone, or identity");
   }
   return value;
 }

@@ -8,7 +8,6 @@
  * @module TimeUnitValidation
  */
 import { z } from "zod";
-import { customErrorKey } from "../error-map";
 
 /**
  * Available time measurement units from seconds to years.
@@ -115,7 +114,7 @@ export function isTimeUnit(value: unknown): value is TimeUnit {
  */
 export function getTimeUnit(value: unknown): TimeUnit {
   if (!isTimeUnit(value)) {
-    throw new Error(customErrorKey("timeUnit", "invalid"));
+    throw new Error("Invalid time unit. Must be one of: seconds, minutes, hours, days, weeks, months, or years");
   }
   return value;
 }
