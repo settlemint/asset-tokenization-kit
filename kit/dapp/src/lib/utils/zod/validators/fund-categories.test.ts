@@ -50,10 +50,16 @@ describe("fundCategory", () => {
       expect(isFundCategory(undefined)).toBe(false);
       expect(isFundCategory({})).toBe(false);
 
-      expect(() => getFundCategory(123)).toThrow("Expected 'mutual' | 'hedge' | 'etf' | 'index', received number");
-      expect(() => getFundCategory(null)).toThrow("Expected 'mutual' | 'hedge' | 'etf' | 'index', received null");
+      expect(() => getFundCategory(123)).toThrow(
+        "Expected 'mutual' | 'hedge' | 'etf' | 'index', received number"
+      );
+      expect(() => getFundCategory(null)).toThrow(
+        "Expected 'mutual' | 'hedge' | 'etf' | 'index', received null"
+      );
       expect(() => getFundCategory(undefined)).toThrow("Required");
-      expect(() => getFundCategory({})).toThrow("Expected 'mutual' | 'hedge' | 'etf' | 'index', received object");
+      expect(() => getFundCategory({})).toThrow(
+        "Expected 'mutual' | 'hedge' | 'etf' | 'index', received object"
+      );
     });
 
     it("should be case-sensitive", () => {

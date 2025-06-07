@@ -45,20 +45,32 @@ describe("duration", () => {
 
   describe("invalid durations", () => {
     it("should reject zero", () => {
-      expect(() => validator.parse(0)).toThrow("Duration must be greater than zero");
+      expect(() => validator.parse(0)).toThrow(
+        "Duration must be greater than zero"
+      );
       expect(isDuration(0)).toBe(false);
-      expect(() => getDuration(0)).toThrow("Duration must be greater than zero");
+      expect(() => getDuration(0)).toThrow(
+        "Duration must be greater than zero"
+      );
     });
 
     it("should reject negative numbers", () => {
-      expect(() => validator.parse(-1)).toThrow("Duration must be greater than zero");
-      expect(() => validator.parse(-1000)).toThrow("Duration must be greater than zero");
+      expect(() => validator.parse(-1)).toThrow(
+        "Duration must be greater than zero"
+      );
+      expect(() => validator.parse(-1000)).toThrow(
+        "Duration must be greater than zero"
+      );
 
       expect(isDuration(-1)).toBe(false);
       expect(isDuration(-1000)).toBe(false);
 
-      expect(() => getDuration(-1)).toThrow("Duration must be greater than zero");
-      expect(() => getDuration(-1000)).toThrow("Duration must be greater than zero");
+      expect(() => getDuration(-1)).toThrow(
+        "Duration must be greater than zero"
+      );
+      expect(() => getDuration(-1000)).toThrow(
+        "Duration must be greater than zero"
+      );
     });
 
     it("should reject non-integer values", () => {
@@ -76,9 +88,15 @@ describe("duration", () => {
       expect(isDuration(1000.1)).toBe(false);
       expect(isDuration(999.999)).toBe(false);
 
-      expect(() => getDuration(1.5)).toThrow("Duration must be a whole number of milliseconds");
-      expect(() => getDuration(1000.1)).toThrow("Duration must be a whole number of milliseconds");
-      expect(() => getDuration(999.999)).toThrow("Duration must be a whole number of milliseconds");
+      expect(() => getDuration(1.5)).toThrow(
+        "Duration must be a whole number of milliseconds"
+      );
+      expect(() => getDuration(1000.1)).toThrow(
+        "Duration must be a whole number of milliseconds"
+      );
+      expect(() => getDuration(999.999)).toThrow(
+        "Duration must be a whole number of milliseconds"
+      );
     });
 
     it("should reject non-numeric types", () => {

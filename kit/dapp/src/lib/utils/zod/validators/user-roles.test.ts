@@ -116,10 +116,16 @@ describe("helper functions", () => {
       expect(() => getUserRole("moderator")).toThrow();
       expect(() => getUserRole("guest")).toThrow();
       expect(() => getUserRole("")).toThrow();
-      expect(() => getUserRole(123)).toThrow("Expected 'admin' | 'user' | 'viewer', received number");
-      expect(() => getUserRole(null)).toThrow("Expected 'admin' | 'user' | 'viewer', received null");
+      expect(() => getUserRole(123)).toThrow(
+        "Expected 'admin' | 'user' | 'viewer', received number"
+      );
+      expect(() => getUserRole(null)).toThrow(
+        "Expected 'admin' | 'user' | 'viewer', received null"
+      );
       expect(() => getUserRole(undefined)).toThrow("Required");
-      expect(() => getUserRole({})).toThrow("Expected 'admin' | 'user' | 'viewer', received object");
+      expect(() => getUserRole({})).toThrow(
+        "Expected 'admin' | 'user' | 'viewer', received object"
+      );
       expect(() => getUserRole("Admin")).toThrow();
       expect(() => getUserRole("USER")).toThrow();
     });

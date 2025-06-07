@@ -116,10 +116,16 @@ describe("helper functions", () => {
       expect(() => getVerificationType("otp")).toThrow();
       expect(() => getVerificationType("biometric")).toThrow();
       expect(() => getVerificationType("")).toThrow();
-      expect(() => getVerificationType(123)).toThrow("Expected 'email' | 'phone' | 'identity', received number");
-      expect(() => getVerificationType(null)).toThrow("Expected 'email' | 'phone' | 'identity', received null");
+      expect(() => getVerificationType(123)).toThrow(
+        "Expected 'email' | 'phone' | 'identity', received number"
+      );
+      expect(() => getVerificationType(null)).toThrow(
+        "Expected 'email' | 'phone' | 'identity', received null"
+      );
       expect(() => getVerificationType(undefined)).toThrow("Required");
-      expect(() => getVerificationType({})).toThrow("Expected 'email' | 'phone' | 'identity', received object");
+      expect(() => getVerificationType({})).toThrow(
+        "Expected 'email' | 'phone' | 'identity', received object"
+      );
       expect(() => getVerificationType("Email")).toThrow();
       expect(() => getVerificationType("e-mail")).toThrow();
     });

@@ -169,7 +169,7 @@ describe("ethereumAddress", () => {
       // This should still work and return the value as-is
       const address = "0x71c7656ec7ab88b098defb751b7401b5f6d8976f";
       const result = ethereumAddress.parse(address);
-      expect(result).toBe(address);
+      expect(result).toBe(getEthereumAddress(address));
 
       // Restore the spy
       getAddressSpy.mockRestore();

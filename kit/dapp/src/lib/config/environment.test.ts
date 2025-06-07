@@ -1,5 +1,5 @@
-import { describe, expect, it, beforeEach, afterEach } from "bun:test";
-import { getServerEnvironment, getClientEnvironment } from "./environment";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { getClientEnvironment, getServerEnvironment } from "./environment";
 
 describe("environment configuration", () => {
   let originalEnv: NodeJS.ProcessEnv;
@@ -23,19 +23,23 @@ describe("environment configuration", () => {
   describe("getServerEnvironment", () => {
     it("should validate valid server environment", () => {
       process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-      process.env.SETTLEMINT_HD_PRIVATE_KEY = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+      process.env.SETTLEMINT_HD_PRIVATE_KEY =
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
       process.env.NEXT_PUBLIC_APP_URL = "https://example.com";
 
       const env = getServerEnvironment();
 
       expect(env.SETTLEMINT_HASURA_ADMIN_SECRET).toBe("test-secret");
-      expect(env.SETTLEMINT_HD_PRIVATE_KEY).toBe("0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+      expect(env.SETTLEMINT_HD_PRIVATE_KEY).toBe(
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+      );
       expect(env.APP_URL).toBe("https://example.com");
     });
 
     it("should use fallback APP_URL when NEXT_PUBLIC_APP_URL is not set", () => {
       process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-      process.env.SETTLEMINT_HD_PRIVATE_KEY = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+      process.env.SETTLEMINT_HD_PRIVATE_KEY =
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
       process.env.BETTER_AUTH_URL = "https://auth.example.com";
 
       const env = getServerEnvironment();
@@ -45,7 +49,8 @@ describe("environment configuration", () => {
 
     it("should use default localhost URL when no URL env vars are set", () => {
       process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-      process.env.SETTLEMINT_HD_PRIVATE_KEY = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+      process.env.SETTLEMINT_HD_PRIVATE_KEY =
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
       const env = getServerEnvironment();
 
@@ -53,7 +58,8 @@ describe("environment configuration", () => {
     });
 
     it("should throw on missing required SETTLEMINT_HASURA_ADMIN_SECRET", () => {
-      process.env.SETTLEMINT_HD_PRIVATE_KEY = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+      process.env.SETTLEMINT_HD_PRIVATE_KEY =
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
       expect(() => getServerEnvironment()).toThrow();
     });
@@ -68,11 +74,13 @@ describe("environment configuration", () => {
       process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
 
       // Valid formats - hex private key
-      process.env.SETTLEMINT_HD_PRIVATE_KEY = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+      process.env.SETTLEMINT_HD_PRIVATE_KEY =
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
       expect(() => getServerEnvironment()).not.toThrow();
 
       // Valid formats - BIP39 mnemonic phrase (12 words)
-      process.env.SETTLEMINT_HD_PRIVATE_KEY = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+      process.env.SETTLEMINT_HD_PRIVATE_KEY =
+        "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
       expect(() => getServerEnvironment()).not.toThrow();
 
       // Invalid formats
@@ -88,7 +96,8 @@ describe("environment configuration", () => {
 
     it("should validate URL formats", () => {
       process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-      process.env.SETTLEMINT_HD_PRIVATE_KEY = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+      process.env.SETTLEMINT_HD_PRIVATE_KEY =
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
       // Invalid URL
       process.env.NEXT_PUBLIC_APP_URL = "not-a-url";
@@ -101,7 +110,8 @@ describe("environment configuration", () => {
 
     it("should handle optional OAuth configs", () => {
       process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-      process.env.SETTLEMINT_HD_PRIVATE_KEY = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+      process.env.SETTLEMINT_HD_PRIVATE_KEY =
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
       process.env.GOOGLE_CLIENT_ID = "google-id";
       process.env.GOOGLE_CLIENT_SECRET = "google-secret";
       process.env.GITHUB_CLIENT_ID = "github-id";
@@ -117,7 +127,8 @@ describe("environment configuration", () => {
 
     it("should handle optional RESEND_API_KEY", () => {
       process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-      process.env.SETTLEMINT_HD_PRIVATE_KEY = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+      process.env.SETTLEMINT_HD_PRIVATE_KEY =
+        "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
       process.env.RESEND_API_KEY = "resend-key";
 
       const env = getServerEnvironment();

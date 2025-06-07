@@ -94,10 +94,16 @@ describe("fiatCurrency", () => {
       expect(isFiatCurrency(undefined)).toBe(false);
       expect(isFiatCurrency({})).toBe(false);
 
-      expect(() => getFiatCurrency(123)).toThrow("Expected string, received number");
-      expect(() => getFiatCurrency(null)).toThrow("Expected string, received null");
+      expect(() => getFiatCurrency(123)).toThrow(
+        "Expected string, received number"
+      );
+      expect(() => getFiatCurrency(null)).toThrow(
+        "Expected string, received null"
+      );
       expect(() => getFiatCurrency(undefined)).toThrow("Required");
-      expect(() => getFiatCurrency({})).toThrow("Expected string, received object");
+      expect(() => getFiatCurrency({})).toThrow(
+        "Expected string, received object"
+      );
     });
   });
 

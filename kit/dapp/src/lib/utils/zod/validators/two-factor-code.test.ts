@@ -157,7 +157,9 @@ describe("helper functions", () => {
       expect(() => getTwoFactorCode("1234567")).toThrow(
         "Two-factor code must be exactly 6 digits"
       );
-      expect(() => getTwoFactorCode("")).toThrow("Two-factor code must be exactly 6 digits");
+      expect(() => getTwoFactorCode("")).toThrow(
+        "Two-factor code must be exactly 6 digits"
+      );
       expect(() => getTwoFactorCode("12345a")).toThrow(
         "Two-factor code must contain only numeric digits (0-9)"
       );
@@ -179,9 +181,7 @@ describe("helper functions", () => {
       expect(() => getTwoFactorCode(null)).toThrow(
         "Expected string, received null"
       );
-      expect(() => getTwoFactorCode(undefined)).toThrow(
-        "Required"
-      );
+      expect(() => getTwoFactorCode(undefined)).toThrow("Required");
       expect(() => getTwoFactorCode({})).toThrow(
         "Expected string, received object"
       );

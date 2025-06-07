@@ -76,7 +76,8 @@ export const bigDecimal = () =>
       if (upper === "NAN" || upper === "INFINITY" || upper === "-INFINITY") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Invalid value. NaN, Infinity, and -Infinity are not allowed",
+          message:
+            "Invalid value. NaN, Infinity, and -Infinity are not allowed",
         });
         return z.NEVER;
       }
@@ -86,7 +87,8 @@ export const bigDecimal = () =>
       } catch {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Invalid decimal format. Please provide a valid numeric string",
+          message:
+            "Invalid decimal format. Please provide a valid numeric string",
         });
         return z.NEVER;
       }

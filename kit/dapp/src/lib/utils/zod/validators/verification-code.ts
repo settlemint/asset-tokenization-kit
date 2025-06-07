@@ -48,7 +48,10 @@ export const verificationCode = () =>
   z
     .string()
     .length(8, "Verification code must be exactly 8 characters")
-    .regex(/^[A-Z0-9]{8}$/, "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)")
+    .regex(
+      /^[A-Z0-9]{8}$/,
+      "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
+    )
     .describe("Email verification code")
     .brand<"VerificationCode">();
 

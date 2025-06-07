@@ -149,9 +149,7 @@ describe("helper functions", () => {
       expect(() => getSecretCode(null) as string).toThrow(
         "Expected string, received null"
       );
-      expect(() => getSecretCode(undefined) as string).toThrow(
-        "Required"
-      );
+      expect(() => getSecretCode(undefined) as string).toThrow("Required");
       expect(() => getSecretCode({}) as string).toThrow(
         "Expected string, received object"
       );

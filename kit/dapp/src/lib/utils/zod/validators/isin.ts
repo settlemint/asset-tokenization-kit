@@ -16,40 +16,44 @@ import { z } from "zod";
  */
 function validateIsinChecksum(isin: string): boolean {
   // First, expand alphanumeric characters to their numeric values
-  let expandedString = '';
-  
+  let expandedString = "";
+
   // Process all 12 characters
   for (let i = 0; i < 12; i++) {
     const char = isin[i];
-    if (char >= '0' && char <= '9') {
+    if (char >= "0" && char <= "9") {
       expandedString += char;
-    } else if (char >= 'A' && char <= 'Z') {
+    } else if (char >= "A" && char <= "Z") {
       // A=10, B=11, ..., Z=35
-      expandedString += (char.charCodeAt(0) - 'A'.charCodeAt(0) + 10).toString();
+      expandedString += (
+        char.charCodeAt(0) -
+        "A".charCodeAt(0) +
+        10
+      ).toString();
     } else {
       return false;
     }
   }
-  
+
   // Apply Luhn algorithm to the expanded string
   let sum = 0;
   let alternate = false;
-  
+
   // Process from right to left
   for (let i = expandedString.length - 1; i >= 0; i--) {
     let digit = Number.parseInt(expandedString[i], 10);
-    
+
     if (alternate) {
       digit *= 2;
       if (digit > 9) {
         digit = (digit % 10) + 1;
       }
     }
-    
+
     sum += digit;
     alternate = !alternate;
   }
-  
+
   // The sum should be divisible by 10
   return sum % 10 === 0;
 }

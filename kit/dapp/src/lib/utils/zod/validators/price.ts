@@ -48,15 +48,12 @@ export const price = () =>
     .number()
     .positive("Price must be greater than zero")
     .finite("Price must be a finite number (not Infinity)")
-    .refine(
-      (value) => {
-        // Check decimal places by converting to string
-        // This handles both integer and decimal prices correctly
-        const decimalPlaces = (value.toString().split(".")[1] || "").length;
-        return decimalPlaces <= 4;
-      },
-      "Price cannot have more than 4 decimal places"
-    )
+    .refine((value) => {
+      // Check decimal places by converting to string
+      // This handles both integer and decimal prices correctly
+      const decimalPlaces = (value.toString().split(".")[1] || "").length;
+      return decimalPlaces <= 4;
+    }, "Price cannot have more than 4 decimal places")
     .describe("Asset price")
     .brand<"Price">();
 

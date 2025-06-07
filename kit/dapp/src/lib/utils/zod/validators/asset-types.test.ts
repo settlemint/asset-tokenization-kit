@@ -55,10 +55,16 @@ describe("assetType", () => {
       expect(isAssetType(undefined)).toBe(false);
       expect(isAssetType({})).toBe(false);
 
-      expect(() => getAssetType(123)).toThrow("Expected 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin' | 'deposit', received number");
-      expect(() => getAssetType(null)).toThrow("Expected 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin' | 'deposit', received null");
+      expect(() => getAssetType(123)).toThrow(
+        "Expected 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin' | 'deposit', received number"
+      );
+      expect(() => getAssetType(null)).toThrow(
+        "Expected 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin' | 'deposit', received null"
+      );
       expect(() => getAssetType(undefined)).toThrow("Required");
-      expect(() => getAssetType({})).toThrow("Expected 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin' | 'deposit', received object");
+      expect(() => getAssetType({})).toThrow(
+        "Expected 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin' | 'deposit', received object"
+      );
     });
 
     it("should be case-sensitive", () => {
@@ -128,7 +134,9 @@ describe("assetTypeArray", () => {
       "At least one asset type must be selected"
     );
     expect(isAssetTypeArray([])).toBe(false);
-    expect(() => getAssetTypeArray([])).toThrow("At least one asset type must be selected");
+    expect(() => getAssetTypeArray([])).toThrow(
+      "At least one asset type must be selected"
+    );
   });
 
   it("should reject invalid asset types in array", () => {
@@ -143,9 +151,15 @@ describe("assetTypeArray", () => {
     expect(isAssetTypeArray(null)).toBe(false);
     expect(isAssetTypeArray(undefined)).toBe(false);
 
-    expect(() => getAssetTypeArray("bond")).toThrow("Expected array, received string");
-    expect(() => getAssetTypeArray(123)).toThrow("Expected array, received number");
-    expect(() => getAssetTypeArray(null)).toThrow("Expected array, received null");
+    expect(() => getAssetTypeArray("bond")).toThrow(
+      "Expected array, received string"
+    );
+    expect(() => getAssetTypeArray(123)).toThrow(
+      "Expected array, received number"
+    );
+    expect(() => getAssetTypeArray(null)).toThrow(
+      "Expected array, received null"
+    );
     expect(() => getAssetTypeArray(undefined)).toThrow("Required");
   });
 });
@@ -182,7 +196,9 @@ describe("assetTypeSet", () => {
       "At least one asset type must be selected"
     );
     expect(isAssetTypeSet(emptySet)).toBe(false);
-    expect(() => getAssetTypeSet(emptySet)).toThrow("At least one asset type must be selected");
+    expect(() => getAssetTypeSet(emptySet)).toThrow(
+      "At least one asset type must be selected"
+    );
   });
 
   it("should reject sets with invalid values", () => {
@@ -198,8 +214,12 @@ describe("assetTypeSet", () => {
     expect(isAssetTypeSet(123)).toBe(false);
     expect(isAssetTypeSet(null)).toBe(false);
 
-    expect(() => getAssetTypeSet(["bond"])).toThrow("Expected set, received array");
-    expect(() => getAssetTypeSet("bond")).toThrow("Expected set, received string");
+    expect(() => getAssetTypeSet(["bond"])).toThrow(
+      "Expected set, received array"
+    );
+    expect(() => getAssetTypeSet("bond")).toThrow(
+      "Expected set, received string"
+    );
     expect(() => getAssetTypeSet(123)).toThrow("Expected set, received number");
     expect(() => getAssetTypeSet(null)).toThrow("Expected set, received null");
   });

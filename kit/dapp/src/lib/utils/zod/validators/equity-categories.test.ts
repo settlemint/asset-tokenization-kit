@@ -46,10 +46,16 @@ describe("equityCategory", () => {
       expect(isEquityCategory(undefined)).toBe(false);
       expect(isEquityCategory({})).toBe(false);
 
-      expect(() => getEquityCategory(123)).toThrow("Expected 'common' | 'preferred' | 'restricted', received number");
-      expect(() => getEquityCategory(null)).toThrow("Expected 'common' | 'preferred' | 'restricted', received null");
+      expect(() => getEquityCategory(123)).toThrow(
+        "Expected 'common' | 'preferred' | 'restricted', received number"
+      );
+      expect(() => getEquityCategory(null)).toThrow(
+        "Expected 'common' | 'preferred' | 'restricted', received null"
+      );
       expect(() => getEquityCategory(undefined)).toThrow("Required");
-      expect(() => getEquityCategory({})).toThrow("Expected 'common' | 'preferred' | 'restricted', received object");
+      expect(() => getEquityCategory({})).toThrow(
+        "Expected 'common' | 'preferred' | 'restricted', received object"
+      );
     });
 
     it("should be case-sensitive", () => {

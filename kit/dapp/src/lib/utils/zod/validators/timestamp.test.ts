@@ -123,8 +123,10 @@ describe("timestamp", () => {
     it("should handle negative numeric string timestamps", () => {
       // Negative numeric strings don't match the /^\d+$/ pattern, so they're handled as regular date strings
       // "-1680350400" is invalid and throws
-      expect(() => validator.parse("-1680350400")).toThrow("Invalid date string format");
-      
+      expect(() => validator.parse("-1680350400")).toThrow(
+        "Invalid date string format"
+      );
+
       // However, "-1" is interpreted by JavaScript Date as year 2001 (weird but true)
       const result = validator.parse("-1");
       expect(result).toBeInstanceOf(Date);
@@ -141,9 +143,10 @@ describe("timestamp", () => {
       expect(() => validator.parse(true)).toThrow();
     });
 
-
     it("should reject mixed content strings", () => {
-      expect(() => validator.parse("123abc")).toThrow("Invalid date string format");
+      expect(() => validator.parse("123abc")).toThrow(
+        "Invalid date string format"
+      );
       expect(() => validator.parse("2023-04-01T12:00:00Z123")).toThrow();
     });
 
@@ -151,7 +154,7 @@ describe("timestamp", () => {
       // Test a numeric string that's too large to be accurately represented
       // This will cause Number() to lose precision and the date parsing to fail
       expect(() => validator.parse("99999999999999999999999999")).toThrow();
-      
+
       // Test an extremely large number that might cause issues
       const hugeNumber = "9".repeat(1000); // 1000 nines
       expect(() => validator.parse(hugeNumber)).toThrow();
@@ -164,14 +167,15 @@ describe("timestamp", () => {
       expect(result.getTime()).toBe(year2001InMs);
     });
 
-
     it("should reject dates outside valid range", () => {
       // Test date before Unix epoch
       expect(() => validator.parse(-1)).toThrow("Timestamp cannot be negative");
-      
+
       // Test date after year 9999 using a string to avoid microsecond conversion
       const afterYear9999 = new Date(253402300800000);
-      expect(() => validator.parse(afterYear9999)).toThrow("Timestamp is out of valid range (must be between 1970 and 9999)");
+      expect(() => validator.parse(afterYear9999)).toThrow(
+        "Timestamp is out of valid range (must be between 1970 and 9999)"
+      );
     });
   });
 
@@ -186,12 +190,15 @@ describe("timestamp", () => {
 
     it("isTimestamp should handle safeParse throwing an error", () => {
       // Create a proxy that throws when accessed
-      const errorProxy = new Proxy({}, {
-        get() {
-          throw new Error("Proxy error");
+      const errorProxy = new Proxy(
+        {},
+        {
+          get() {
+            throw new Error("Proxy error");
+          },
         }
-      });
-      
+      );
+
       // This should return false when safeParse encounters an error
       expect(isTimestamp(errorProxy)).toBe(false);
     });
@@ -203,7 +210,9 @@ describe("timestamp", () => {
     });
 
     it("getTimestamp should throw for invalid input", () => {
-      expect(() => getTimestamp("invalid")).toThrow("Invalid date string format");
+      expect(() => getTimestamp("invalid")).toThrow(
+        "Invalid date string format"
+      );
       expect(() => getTimestamp(null)).toThrow();
     });
   });

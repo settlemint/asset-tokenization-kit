@@ -83,10 +83,16 @@ describe("timeUnit", () => {
       expect(() => getTimeUnit("second")).toThrow();
       expect(() => getTimeUnit("milliseconds")).toThrow();
       expect(() => getTimeUnit("")).toThrow();
-      expect(() => getTimeUnit(60)).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received number");
-      expect(() => getTimeUnit(null)).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received null");
+      expect(() => getTimeUnit(60)).toThrow(
+        "Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received number"
+      );
+      expect(() => getTimeUnit(null)).toThrow(
+        "Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received null"
+      );
       expect(() => getTimeUnit(undefined)).toThrow("Required");
-      expect(() => getTimeUnit({})).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received object");
+      expect(() => getTimeUnit({})).toThrow(
+        "Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received object"
+      );
       expect(() => getTimeUnit("Seconds")).toThrow();
       expect(() => getTimeUnit("sec")).toThrow();
     });
@@ -146,10 +152,16 @@ describe("helper functions", () => {
       expect(() => getTimeUnit("second")).toThrow();
       expect(() => getTimeUnit("milliseconds")).toThrow();
       expect(() => getTimeUnit("")).toThrow();
-      expect(() => getTimeUnit(60)).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received number");
-      expect(() => getTimeUnit(null)).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received null");
+      expect(() => getTimeUnit(60)).toThrow(
+        "Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received number"
+      );
+      expect(() => getTimeUnit(null)).toThrow(
+        "Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received null"
+      );
       expect(() => getTimeUnit(undefined)).toThrow("Required");
-      expect(() => getTimeUnit({})).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received object");
+      expect(() => getTimeUnit({})).toThrow(
+        "Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received object"
+      );
       expect(() => getTimeUnit("Seconds")).toThrow();
       expect(() => getTimeUnit("sec")).toThrow();
     });

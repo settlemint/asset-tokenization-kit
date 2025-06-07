@@ -71,10 +71,16 @@ describe("equityClass", () => {
       expect(isEquityClass(undefined)).toBe(false);
       expect(isEquityClass({})).toBe(false);
 
-      expect(() => getEquityClass(1)).toThrow("Expected 'A' | 'B' | 'C', received number");
-      expect(() => getEquityClass(null)).toThrow("Expected 'A' | 'B' | 'C', received null");
+      expect(() => getEquityClass(1)).toThrow(
+        "Expected 'A' | 'B' | 'C', received number"
+      );
+      expect(() => getEquityClass(null)).toThrow(
+        "Expected 'A' | 'B' | 'C', received null"
+      );
       expect(() => getEquityClass(undefined)).toThrow("Required");
-      expect(() => getEquityClass({})).toThrow("Expected 'A' | 'B' | 'C', received object");
+      expect(() => getEquityClass({})).toThrow(
+        "Expected 'A' | 'B' | 'C', received object"
+      );
     });
   });
 

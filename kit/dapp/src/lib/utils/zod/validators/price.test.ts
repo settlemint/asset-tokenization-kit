@@ -28,13 +28,21 @@ describe("price", () => {
 
   describe("invalid prices", () => {
     it("should reject zero", () => {
-      expect(() => validator.parse(0)).toThrow("Price must be greater than zero");
+      expect(() => validator.parse(0)).toThrow(
+        "Price must be greater than zero"
+      );
     });
 
     it("should reject negative prices", () => {
-      expect(() => validator.parse(-1)).toThrow("Price must be greater than zero");
-      expect(() => validator.parse(-0.01)).toThrow("Price must be greater than zero");
-      expect(() => validator.parse(-999.99)).toThrow("Price must be greater than zero");
+      expect(() => validator.parse(-1)).toThrow(
+        "Price must be greater than zero"
+      );
+      expect(() => validator.parse(-0.01)).toThrow(
+        "Price must be greater than zero"
+      );
+      expect(() => validator.parse(-999.99)).toThrow(
+        "Price must be greater than zero"
+      );
     });
 
     it("should reject prices with more than 4 decimal places", () => {
@@ -129,9 +137,13 @@ describe("helper functions", () => {
       expect(() => getPrice(0)).toThrow("Price must be greater than zero");
       expect(() => getPrice(-1)).toThrow("Price must be greater than zero");
       expect(() => getPrice(-0.01)).toThrow("Price must be greater than zero");
-      expect(() => getPrice(1.12345)).toThrow("Price cannot have more than 4 decimal places");
+      expect(() => getPrice(1.12345)).toThrow(
+        "Price cannot have more than 4 decimal places"
+      );
       expect(() => getPrice(Infinity)).toThrow("Price must be a finite number");
-      expect(() => getPrice(-Infinity)).toThrow("Price must be a finite number");
+      expect(() => getPrice(-Infinity)).toThrow(
+        "Price must be a finite number"
+      );
       expect(() => getPrice(NaN)).toThrow("Expected number, received nan");
       expect(() => getPrice("100")).toThrow("Expected number, received string");
       expect(() => getPrice(null)).toThrow("Expected number, received null");

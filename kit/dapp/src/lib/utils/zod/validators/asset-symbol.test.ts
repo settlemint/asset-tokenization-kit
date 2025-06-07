@@ -92,9 +92,15 @@ describe("assetSymbol", () => {
       expect(isAssetSymbol("Btc")).toBe(false);
       expect(isAssetSymbol("BTc")).toBe(false);
 
-      expect(() => getAssetSymbol("btc")).toThrow("Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)");
-      expect(() => getAssetSymbol("Btc")).toThrow("Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)");
-      expect(() => getAssetSymbol("BTc")).toThrow("Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)");
+      expect(() => getAssetSymbol("btc")).toThrow(
+        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
+      expect(() => getAssetSymbol("Btc")).toThrow(
+        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
+      expect(() => getAssetSymbol("BTc")).toThrow(
+        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
     });
 
     it("should reject special characters", () => {
@@ -116,10 +122,18 @@ describe("assetSymbol", () => {
       expect(isAssetSymbol("BTC.USD")).toBe(false);
       expect(isAssetSymbol("BTC$")).toBe(false);
 
-      expect(() => getAssetSymbol("BTC-USD")).toThrow("Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)");
-      expect(() => getAssetSymbol("BTC_USD")).toThrow("Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)");
-      expect(() => getAssetSymbol("BTC.USD")).toThrow("Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)");
-      expect(() => getAssetSymbol("BTC$")).toThrow("Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)");
+      expect(() => getAssetSymbol("BTC-USD")).toThrow(
+        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
+      expect(() => getAssetSymbol("BTC_USD")).toThrow(
+        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
+      expect(() => getAssetSymbol("BTC.USD")).toThrow(
+        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
+      expect(() => getAssetSymbol("BTC$")).toThrow(
+        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
     });
 
     it("should reject spaces", () => {
@@ -137,9 +151,15 @@ describe("assetSymbol", () => {
       expect(isAssetSymbol(" BTC")).toBe(false);
       expect(isAssetSymbol("BTC ")).toBe(false);
 
-      expect(() => getAssetSymbol("BTC USD")).toThrow("Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)");
-      expect(() => getAssetSymbol(" BTC")).toThrow("Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)");
-      expect(() => getAssetSymbol("BTC ")).toThrow("Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)");
+      expect(() => getAssetSymbol("BTC USD")).toThrow(
+        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
+      expect(() => getAssetSymbol(" BTC")).toThrow(
+        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
+      expect(() => getAssetSymbol("BTC ")).toThrow(
+        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
     });
 
     it("should reject non-string types", () => {
@@ -153,10 +173,16 @@ describe("assetSymbol", () => {
       expect(isAssetSymbol(undefined)).toBe(false);
       expect(isAssetSymbol({})).toBe(false);
 
-      expect(() => getAssetSymbol(123)).toThrow("Expected string, received number");
-      expect(() => getAssetSymbol(null)).toThrow("Expected string, received null");
+      expect(() => getAssetSymbol(123)).toThrow(
+        "Expected string, received number"
+      );
+      expect(() => getAssetSymbol(null)).toThrow(
+        "Expected string, received null"
+      );
       expect(() => getAssetSymbol(undefined)).toThrow("Required");
-      expect(() => getAssetSymbol({})).toThrow("Expected string, received object");
+      expect(() => getAssetSymbol({})).toThrow(
+        "Expected string, received object"
+      );
     });
   });
 
