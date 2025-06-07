@@ -319,19 +319,18 @@ export function Form<
     }
   });
 
-  const { form, handleSubmitWithAction, resetFormAndAction } =
-    useHookFormAction(
-      action,
-      resolver as Resolver<S extends Schema ? Infer<S> : any, FormContext>,
-      {
-        formProps: {
-          mode: "onSubmit",
-          criteriaMode: "all",
-          shouldFocusError: false,
-          defaultValues,
-        },
-      }
-    );
+  const { form, handleSubmitWithAction } = useHookFormAction(
+    action,
+    resolver as Resolver<S extends Schema ? Infer<S> : any, FormContext>,
+    {
+      formProps: {
+        mode: "onSubmit",
+        criteriaMode: "all",
+        shouldFocusError: false,
+        defaultValues,
+      },
+    }
+  );
 
   const handleSubmit = async () => {
     if (toast?.disabled) {
