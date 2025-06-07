@@ -1,9 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "remoteCache": {
+    "enabled": true
+  },
   "tasks": {
     "ci": {
-      "dependsOn": ["format", "compile", "codegen", "lint", "build"]
+      "dependsOn": ["compile", "codegen", "lint", "build"]
     },
     "ci:gha": {
       "dependsOn": ["publish", "ci", "test"]
