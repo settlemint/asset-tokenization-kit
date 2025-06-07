@@ -44,7 +44,7 @@ import { z } from "zod";
  * }
  * ```
  */
-export const zodErrorMap: z.ZodErrorMap = (issue, ctx) => {
+export const zodErrorMap: z.ZodErrorMap = (issue) => {
   // Handle different error types and return appropriate translation keys
   let message: string;
 

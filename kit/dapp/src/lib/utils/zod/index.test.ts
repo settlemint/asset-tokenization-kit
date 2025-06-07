@@ -414,24 +414,6 @@ describe("safeParse", () => {
     });
   });
 
-  describe("options parameter", () => {
-    it("should accept options parameter without using it", () => {
-      const schema = z.string();
-      const options = {
-        errorFormatter: (error: z.ZodError) => "Custom error",
-      };
-
-      // Valid case - options are accepted but not used
-      const result = safeParse(schema, "valid", options);
-      expect(result).toBe("valid");
-
-      // Invalid case - options are accepted but not used
-      expect(() => safeParse(schema, 123, options)).toThrow(
-        "Validation failed with error(s). Check logs for details."
-      );
-    });
-  });
-
   describe("type inference", () => {
     it("should correctly infer types", () => {
       const schema = z.object({

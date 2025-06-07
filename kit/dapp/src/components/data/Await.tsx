@@ -75,7 +75,7 @@ type AwaitProps<TData = unknown, TError = Error> = PropsWithChildren<{
    * and retry rendering. Useful for recovering from errors based on
    * external state changes.
    */
-  resetKeys?: Array<string | number>;
+  resetKeys?: (string | number)[];
 
   /**
    * Custom error fallback component.
