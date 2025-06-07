@@ -45,8 +45,8 @@ import { z } from "zod";
 export const secretCode = () =>
   z
     .string()
-    .min(8, "Secret code must be at least 8 characters")
-    .max(64, "Secret code must be at most 64 characters")
+    .min(8, "Please enter at least 8 characters")
+    .max(64, "Please use 64 characters or less")
     .describe("Secret authentication code")
     .brand<"SecretCode">();
 
@@ -108,7 +108,7 @@ export function isSecretCode(value: unknown): value is SecretCode {
  */
 export function getSecretCode(value: unknown): SecretCode {
   if (!isSecretCode(value)) {
-    throw new Error(`Invalid secret code: ${value}`);
+    throw new Error("Please enter a valid secret code (8-64 characters)");
   }
   return value;
 }

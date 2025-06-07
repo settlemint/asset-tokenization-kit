@@ -46,8 +46,8 @@ import { z } from "zod";
 export const twoFactorCode = () =>
   z
     .string()
-    .length(6, "2FA code must be exactly 6 digits")
-    .regex(/^\d{6}$/, "2FA code must contain only digits")
+    .length(6, "Please enter exactly 6 digits")
+    .regex(/^\d{6}$/, "Please use only numbers (0-9)")
     .describe("Two-factor authentication code")
     .brand<"TwoFactorCode">();
 
@@ -112,7 +112,7 @@ export function isTwoFactorCode(value: unknown): value is TwoFactorCode {
  */
 export function getTwoFactorCode(value: unknown): TwoFactorCode {
   if (!isTwoFactorCode(value)) {
-    throw new Error(`Invalid two-factor code: ${value}`);
+    throw new Error("Please enter a valid 6-digit code");
   }
   return value;
 }

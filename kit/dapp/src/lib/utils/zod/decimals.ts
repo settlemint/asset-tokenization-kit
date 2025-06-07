@@ -40,9 +40,9 @@ import { z } from "zod";
 export const decimals = () =>
   z
     .number()
-    .int("Decimals must be an integer")
-    .min(0, "Decimals must be non-negative")
-    .max(18, "Decimals must be 18 or less") // Standard ERC20 maximum
+    .int("Please enter a whole number for decimal places")
+    .min(0, "Decimal places cannot be negative")
+    .max(18, "Maximum 18 decimal places allowed") // Standard ERC20 maximum
     .describe("Number of decimal places for the asset")
     .brand<"Decimals">();
 
@@ -100,7 +100,7 @@ export function isDecimals(value: unknown): value is Decimals {
  */
 export function getDecimals(value: unknown): Decimals {
   if (!isDecimals(value)) {
-    throw new Error(`Invalid decimals: ${value}`);
+    throw new Error("Please enter a valid number of decimal places (0-18)");
   }
   return value;
 }

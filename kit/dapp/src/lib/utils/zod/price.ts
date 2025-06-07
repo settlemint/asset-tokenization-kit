@@ -46,14 +46,14 @@ import { z } from "zod";
 export const price = () =>
   z
     .number()
-    .positive("Price must be positive")
-    .finite("Price must be a finite number")
+    .positive("Please enter a price greater than zero")
+    .finite("Please enter a valid price")
     .refine((value) => {
       // Check decimal places by converting to string
       // This handles both integer and decimal prices correctly
       const decimalPlaces = (value.toString().split(".")[1] || "").length;
       return decimalPlaces <= 4;
-    }, "Price must have at most 4 decimal places")
+    }, "Please enter a price with up to 4 decimal places")
     .describe("Asset price")
     .brand<"Price">();
 
@@ -117,7 +117,7 @@ export function isPrice(value: unknown): value is Price {
  */
 export function getPrice(value: unknown): Price {
   if (!isPrice(value)) {
-    throw new Error(`Invalid price: ${value}`);
+    throw new Error("Please enter a valid price");
   }
   return value;
 }

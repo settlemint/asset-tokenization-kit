@@ -46,14 +46,14 @@ import { z } from "zod";
 export const ethereumHash = z
   .string()
   .describe("A valid Ethereum hash (66 characters, starting with 0x)")
-  .min(66, "Hash must be 66 characters long")
-  .max(66, "Hash must be 66 characters long")
+  .min(66, "Transaction hashes are 66 characters long")
+  .max(66, "Transaction hashes are 66 characters long")
   .regex(
     /^0x[a-fA-F0-9]{64}$/,
-    "Hash must contain 64 hexadecimal characters after 0x"
+    "Please enter a valid hash starting with '0x' followed by 64 characters"
   )
   .refine(isHash, {
-    message: "Invalid hash format",
+    message: "Please enter a valid transaction hash",
   })
   .brand<"Hash">();
 

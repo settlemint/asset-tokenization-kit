@@ -49,7 +49,7 @@ export const stringifiedBigInt = () =>
         if (value.trim() === "") {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "BigInt string cannot be empty",
+            message: "Please enter a number",
           });
           return z.NEVER;
         }
@@ -58,7 +58,7 @@ export const stringifiedBigInt = () =>
         if (value.toLowerCase().includes("e")) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Scientific notation is not supported",
+            message: "Please enter a number without scientific notation (e.g., use 10000 instead of 1e4)",
           });
           return z.NEVER;
         }
@@ -68,7 +68,7 @@ export const stringifiedBigInt = () =>
         if (decimalCount > 1) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Invalid numeric format: multiple decimal points",
+            message: "Please enter a valid number (only one decimal point allowed)",
           });
           return z.NEVER;
         }
@@ -84,7 +84,7 @@ export const stringifiedBigInt = () =>
       } catch {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Must be a valid numeric string",
+          message: "Please enter a valid number",
         });
         return z.NEVER;
       }
@@ -124,7 +124,7 @@ export const bigIntInput = () =>
  */
 export const positiveBigInt = () =>
   stringifiedBigInt().refine((value) => value > 0n, {
-    message: `BigInt must be positive`,
+    message: "Please enter a positive number",
   });
 
 /**
@@ -143,7 +143,7 @@ export const positiveBigInt = () =>
  */
 export const nonNegativeBigInt = () =>
   stringifiedBigInt().refine((value) => value >= 0n, {
-    message: `BigInt must be non-negative`,
+    message: "Please enter zero or a positive number",
   });
 
 // Note: Global registry functionality removed as it's not available in Zod v4
@@ -204,7 +204,7 @@ export function isStringifiedBigInt(
 export function getStringifiedBigInt(value: unknown): StringifiedBigInt {
   const result = stringifiedBigInt().safeParse(value);
   if (!result.success) {
-    throw new Error(`Invalid stringified bigint: ${value}`);
+    throw new Error("Please enter a valid number");
   }
   return result.data;
 }
@@ -250,7 +250,7 @@ export function isBigIntInput(value: unknown): value is BigIntInput {
 export function getBigIntInput(value: unknown): BigIntInput {
   const result = bigIntInput().safeParse(value);
   if (!result.success) {
-    throw new Error(`Invalid bigint input: ${value}`);
+    throw new Error("Please enter a valid number");
   }
   return result.data;
 }
@@ -295,7 +295,7 @@ export function isPositiveBigInt(value: unknown): value is PositiveBigInt {
 export function getPositiveBigInt(value: unknown): PositiveBigInt {
   const result = positiveBigInt().safeParse(value);
   if (!result.success) {
-    throw new Error(`Invalid positive bigint: ${value}`);
+    throw new Error("Please enter a positive number");
   }
   return result.data;
 }
@@ -343,7 +343,7 @@ export function isNonNegativeBigInt(
 export function getNonNegativeBigInt(value: unknown): NonNegativeBigInt {
   const result = nonNegativeBigInt().safeParse(value);
   if (!result.success) {
-    throw new Error(`Invalid non-negative bigint: ${value}`);
+    throw new Error("Please enter zero or a positive number");
   }
   return result.data;
 }

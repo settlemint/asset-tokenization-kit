@@ -69,11 +69,11 @@ import { z } from "zod";
 export const assetSymbol = () =>
   z
     .string()
-    .min(1, "Asset symbol cannot be empty")
-    .max(12, "Asset symbol must be 12 characters or less")
+    .min(1, "Please enter an asset symbol")
+    .max(12, "Asset symbols can be up to 12 characters long")
     .regex(
       /^[A-Z0-9]+$/,
-      "Asset symbol must contain only uppercase letters and numbers"
+      "Please use only uppercase letters (A-Z) and numbers (0-9)"
     )
     .describe("Trading symbol for the asset")
     .brand<"AssetSymbol">();
@@ -136,7 +136,7 @@ export function isAssetSymbol(value: unknown): value is AssetSymbol {
  */
 export function getAssetSymbol(value: unknown): AssetSymbol {
   if (!isAssetSymbol(value)) {
-    throw new Error(`Invalid asset symbol: ${value}`);
+    throw new Error("Please enter a valid asset symbol (e.g., AAPL, BTC)");
   }
   return value;
 }

@@ -39,8 +39,8 @@ import { z } from "zod";
 export const duration = () =>
   z
     .number()
-    .int("Duration must be in milliseconds")
-    .positive("Duration must be positive") // Greater than 0
+    .int("Please enter a whole number of milliseconds")
+    .positive("Duration must be greater than zero") // Greater than 0
     .describe("Duration in milliseconds")
     .brand<"Duration">();
 
@@ -97,7 +97,7 @@ export function isDuration(value: unknown): value is Duration {
  */
 export function getDuration(value: unknown): Duration {
   if (!isDuration(value)) {
-    throw new Error(`Invalid duration: ${value}`);
+    throw new Error("Please enter a valid duration in milliseconds");
   }
   return value;
 }

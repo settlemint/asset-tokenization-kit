@@ -71,8 +71,8 @@ import { z } from "zod";
 export const pincode = () =>
   z
     .string()
-    .length(6, "PIN code must be exactly 6 digits")
-    .regex(/^\d{6}$/, "PIN code must contain only digits")
+    .length(6, "Please enter exactly 6 digits for your PIN")
+    .regex(/^\d{6}$/, "Your PIN should only contain numbers (0-9)")
     .describe("6-digit PIN code")
     .brand<"Pincode">();
 
@@ -134,7 +134,7 @@ export function isPincode(value: unknown): value is Pincode {
  */
 export function getPincode(value: unknown): Pincode {
   if (!isPincode(value)) {
-    throw new Error(`Invalid PIN code: ${value}`);
+    throw new Error("Please enter a valid 6-digit PIN");
   }
   return value;
 }

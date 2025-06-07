@@ -76,7 +76,7 @@ export const bigDecimal = () =>
       if (upper === "NAN" || upper === "INFINITY" || upper === "-INFINITY") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Must be a valid decimal number",
+          message: "Please enter a valid decimal number",
         });
         return z.NEVER;
       }
@@ -86,7 +86,7 @@ export const bigDecimal = () =>
       } catch {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Must be a valid decimal number",
+          message: "Please enter a valid decimal number",
         });
         return z.NEVER;
       }
@@ -152,7 +152,7 @@ export function isBigDecimal(value: unknown): value is BigDecimal {
 export function getBigDecimal(value: unknown): BigDecimal {
   const result = bigDecimal().safeParse(value);
   if (!result.success) {
-    throw new Error(`Invalid big decimal: ${result.error.message}`);
+    throw new Error("Please enter a valid decimal number");
   }
   return result.data;
 }

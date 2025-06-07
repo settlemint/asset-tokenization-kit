@@ -73,8 +73,8 @@ export const amount = ({
   // Build the base schema with min/max validation
   const baseSchema = z
     .number()
-    .min(minimum, `Amount must be at least ${minimum}`)
-    .max(max, `Amount must be at most ${max}`);
+    .min(minimum, minimum === 0 ? "Please enter an amount" : `Please enter an amount of at least ${minimum}`)
+    .max(max, `Please enter an amount up to ${max}`);
 
   // Add decimal place validation if decimals is specified
   if (typeof decimals === "number") {
@@ -86,7 +86,7 @@ export const amount = ({
           return !decimalPart || decimalPart.length <= decimals;
         },
         {
-          message: `Amount must have at most ${decimals} decimal places`,
+          message: `Please enter up to ${decimals} decimal place${decimals === 1 ? '' : 's'}`,
         }
       )
       .describe(`A positive numerical amount between ${minimum} and ${max}`);
@@ -165,7 +165,7 @@ export function getAmount(value: unknown, options?: AmountOptions): Amount {
   // Attempt to parse the value with the provided options
   const result = amount(options).safeParse(value);
   if (!result.success) {
-    throw new Error(`Invalid amount: ${value}`);
+    throw new Error("Please enter a valid amount");
   }
   return result.data;
 }

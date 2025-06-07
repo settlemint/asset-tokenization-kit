@@ -49,14 +49,14 @@ import { z } from "zod";
 export const ethereumAddress = z
   .string()
   .describe("A valid Ethereum address (42 characters, starting with 0x)")
-  .min(42, "Ethereum address must be 42 characters long")
-  .max(42, "Ethereum address must be 42 characters long")
+  .min(42, "Ethereum addresses are 42 characters long")
+  .max(42, "Ethereum addresses are 42 characters long")
   .regex(
     /^0x[a-fA-F0-9]{40}$/,
-    "Ethereum address must contain 40 hexadecimal characters after 0x"
+    "Please enter a valid Ethereum address starting with '0x' followed by 40 characters"
   )
   .refine(isAddress, {
-    message: "Invalid Ethereum address format",
+    message: "Please enter a valid Ethereum address",
   })
   .transform((value): Address => {
     try {

@@ -71,7 +71,7 @@ export const timestamp = () =>
         if (/^\d+$/.test(value)) {
           const num = Number(value);
           if (isNaN(num)) {
-            throw new Error(`Invalid numeric timestamp string: ${value}`);
+            throw new Error("Please enter a valid timestamp");
           }
 
           // Detect timestamp precision based on length
@@ -102,7 +102,7 @@ export const timestamp = () =>
         // Try parsing as ISO string or other date format
         const date = new Date(value);
         if (isNaN(date.getTime())) {
-          throw new Error(`Invalid date string: ${value}`);
+          throw new Error("Please enter a valid date");
         }
         return date;
       }
@@ -111,7 +111,7 @@ export const timestamp = () =>
       if (typeof value === "number") {
         // Check for valid range (JavaScript Date can safely handle dates up to year 275760)
         if (value < 0) {
-          throw new Error("Timestamp cannot be negative");
+          throw new Error("Please enter a positive timestamp");
         }
 
         // Detect if the number is in seconds or milliseconds
@@ -136,7 +136,7 @@ export const timestamp = () =>
         return time >= 0 && time <= 253402300799999;
       },
       {
-        message: "Date must be between 1970 and 9999",
+        message: "Please enter a date between 1970 and 9999",
       }
     )
     .brand<"Timestamp">();
@@ -208,7 +208,7 @@ export function isTimestamp(value: unknown): value is Timestamp {
 export function getTimestamp(value: unknown): Timestamp {
   const result = timestamp().safeParse(value);
   if (!result.success) {
-    throw new Error(`Invalid timestamp: ${value}`);
+    throw new Error("Please enter a valid date or timestamp");
   }
   return result.data;
 }
