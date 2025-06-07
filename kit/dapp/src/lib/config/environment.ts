@@ -39,16 +39,20 @@ type ClientEnvironment = z.infer<typeof clientEnvironmentSchema>;
  */
 export function getServerEnvironment(): ServerEnvironment {
   // Add the APP_URL property with fallbacks
-  return safeParse(serverEnvironmentSchema, {
-    ...process.env,
-    APP_URL:
-      process.env.NEXT_PUBLIC_APP_URL ??
-      process.env.BETTER_AUTH_URL ??
-      process.env.NEXTAUTH_URL ??
-      "http://localhost:3000",
-  });
+  return safeParse(
+    serverEnvironmentSchema,
+    {
+      ...process.env,
+      APP_URL:
+        process.env.NEXT_PUBLIC_APP_URL ??
+        process.env.BETTER_AUTH_URL ??
+        process.env.NEXTAUTH_URL ??
+        "http://localhost:3000",
+    },
+    { throwOnError: true }
+  );
 }
 
 export function getClientEnvironment(): ClientEnvironment {
-  return safeParse(clientEnvironmentSchema, process.env);
+  return safeParse(clientEnvironmentSchema, process.env, { throwOnError: true });
 }

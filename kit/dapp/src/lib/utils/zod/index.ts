@@ -20,11 +20,6 @@ export function safeParse<T extends z.ZodType>(
   value: unknown,
   options?: {
     /**
-     * Whether to throw on validation failure
-     * @default false
-     */
-    throwOnError?: boolean;
-    /**
      * Custom error formatter
      */
     errorFormatter?: (error: z.ZodError) => string;
@@ -38,12 +33,7 @@ export function safeParse<T extends z.ZodType>(
       errors: fromError(result.error),
     });
 
-    // Throw if requested
-    if (options?.throwOnError) {
-      throw new Error(
-        `Validation failed with error(s). Check logs for details.`
-      );
-    }
+    throw new Error(`Validation failed with error(s). Check logs for details.`);
   }
 
   return result.data;

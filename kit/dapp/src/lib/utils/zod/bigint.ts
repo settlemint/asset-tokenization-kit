@@ -20,10 +20,39 @@ export const stringifiedBigInt = () =>
     .describe("A string representation of a large number")
     .transform((value, ctx) => {
       try {
+        // Check for empty string
+        if (value.trim() === "") {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "BigInt string cannot be empty",
+          });
+          return z.NEVER;
+        }
+
+        // Check for scientific notation
+        if (value.toLowerCase().includes("e")) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Scientific notation is not supported",
+          });
+          return z.NEVER;
+        }
+
+        // Check for multiple decimal points
+        const decimalCount = (value.match(/\./g) || []).length;
+        if (decimalCount > 1) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Invalid numeric format: multiple decimal points",
+          });
+          return z.NEVER;
+        }
+
         // Handle decimal strings by parsing them as integers
         if (value.includes(".")) {
           value = value.split(".")[0];
         }
+        
         return BigInt(value);
       } catch {
         ctx.addIssue({

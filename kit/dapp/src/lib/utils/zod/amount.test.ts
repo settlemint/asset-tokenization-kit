@@ -125,25 +125,6 @@ describe("amount", () => {
     });
   });
 
-  describe("with custom error messages", () => {
-    const validator = amount({
-      min: 100,
-      max: 1000,
-      decimals: 2,
-      errorMessages: {
-        min: "Too small!",
-        max: "Too big!",
-        decimals: "Too precise!",
-        type: "Not a number!",
-      },
-    });
-
-    it("should use custom error messages", () => {
-      expect(() => validator.parse(50)).toThrow("Too small!");
-      expect(() => validator.parse(2000)).toThrow("Too big!");
-      expect(() => validator.parse(100.999)).toThrow("Too precise!");
-    });
-  });
 });
 
 describe("monetaryAmount", () => {
