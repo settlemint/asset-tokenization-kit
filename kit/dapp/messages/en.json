@@ -3370,6 +3370,52 @@
         "invalidString": "Please enter a valid date",
         "negative": "Please enter a date after January 1, 1970",
         "outOfRange": "Please enter a date between 1970 and 9999"
+      },
+      "fundClass": {
+        "invalid": "Please select a valid fund class",
+        "invalidFormat": "Fund class must be one of: institutional, retail, or accredited"
+      },
+      "airdropType": {
+        "invalid": "Please select a valid airdrop type",
+        "invalidFormat": "Airdrop type must be one of: whitelist, merkle, or claim"
+      },
+      "equityCategory": {
+        "invalid": "Please select a valid equity category",
+        "invalidFormat": "Equity category must be one of: common, preferred, or restricted"
+      },
+      "equityClass": {
+        "invalid": "Please select a valid equity class",
+        "invalidFormat": "Equity class must be one of: A, B, or C"
+      },
+      "fundCategory": {
+        "invalid": "Please select a valid fund category",
+        "invalidFormat": "Fund category must be one of: mutual, hedge, etf, or index"
+      },
+      "timeUnit": {
+        "invalid": "Please select a valid time unit",
+        "invalidFormat": "Time unit must be one of: seconds, minutes, hours, days, weeks, months, or years"
+      },
+      "verificationType": {
+        "invalid": "Please select a valid verification type",
+        "invalidFormat": "Verification type must be one of: email, phone, or identity"
+      },
+      "assetType": {
+        "invalid": "Please select a valid asset type",
+        "invalidFormat": "Asset type must be one of: bond, cryptocurrency, deposit, equity, fund, or stablecoin",
+        "invalidBond": "Please select 'bond' as the asset type",
+        "invalidCryptocurrency": "Please select 'cryptocurrency' as the asset type",
+        "invalidDeposit": "Please select 'deposit' as the asset type",
+        "invalidEquity": "Please select 'equity' as the asset type",
+        "invalidFund": "Please select 'fund' as the asset type",
+        "invalidStablecoin": "Please select 'stablecoin' as the asset type"
+      },
+      "userRole": {
+        "invalid": "Please select a valid user role",
+        "invalidFormat": "User role must be one of: admin, user, or viewer"
+      },
+      "role": {
+        "invalid": "Please select a valid system role",
+        "invalidFormat": "Role must be one of: admin, issuer, manager, compliance, auditor, or investor"
       }
     }
   },
