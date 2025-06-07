@@ -1,5 +1,6 @@
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { z } from "zod";
+import { fromError } from "zod-validation-error";
 import { redactSensitiveFields } from "../redaction";
 
 // Create logger instance
@@ -34,7 +35,7 @@ export function safeParse<T extends z.ZodType>(
   if (!result.success) {
     logger.error("Zod validation failed", {
       input: redactSensitiveFields(value),
-      errors: z.prettifyError(result.error),
+      errors: fromError(result.error.issues),
     });
 
     // Throw if requested
@@ -45,5 +46,5 @@ export function safeParse<T extends z.ZodType>(
     }
   }
 
-  return result;
+  return result.data;
 }
