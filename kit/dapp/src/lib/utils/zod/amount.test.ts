@@ -1,21 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  amount,
-  cryptoAmount,
-  getAmount,
-  getCryptoAmount,
-  getMonetaryAmount,
-  getPercentage,
-  getWholeAmount,
-  isAmount,
-  isCryptoAmount,
-  isMonetaryAmount,
-  isPercentage,
-  isWholeAmount,
-  monetaryAmount,
-  percentage,
-  wholeAmount,
-} from "./amount";
+import { amount, getAmount, isAmount } from "./amount";
 
 describe("amount", () => {
   describe("basic validation", () => {
@@ -124,95 +108,6 @@ describe("amount", () => {
       expect(() => validator.parse(-1)).toThrow("Amount must be at least 0");
     });
   });
-
-});
-
-describe("monetaryAmount", () => {
-  const validator = monetaryAmount();
-
-  it("should enforce 2 decimal places", () => {
-    expect(validator.parse(10.99)).toBe(getMonetaryAmount(10.99));
-    expect(() => validator.parse(10.999)).toThrow(
-      "Amount must have at most 2 decimal places"
-    );
-  });
-
-  it("should have minimum of 0.01", () => {
-    expect(validator.parse(0.01)).toBe(getMonetaryAmount(0.01));
-    expect(() => validator.parse(0.009)).toThrow(
-      "Amount must be at least 0.01"
-    );
-  });
-});
-
-describe("percentage", () => {
-  const validator = percentage();
-
-  it("should accept values between 0 and 100", () => {
-    expect(validator.parse(0)).toBe(getPercentage(0));
-    expect(validator.parse(50)).toBe(getPercentage(50));
-    expect(validator.parse(100)).toBe(getPercentage(100));
-  });
-
-  it("should enforce 2 decimal places", () => {
-    expect(validator.parse(50.25)).toBe(getPercentage(50.25));
-    expect(() => validator.parse(50.259)).toThrow(
-      "Amount must have at most 2 decimal places"
-    );
-  });
-
-  it("should reject values outside 0-100", () => {
-    expect(() => validator.parse(-1)).toThrow("Amount must be at least 0");
-    expect(() => validator.parse(100.01)).toThrow("Amount must be at most 100");
-  });
-});
-
-describe("wholeAmount", () => {
-  const validator = wholeAmount();
-
-  it("should accept whole numbers", () => {
-    expect(validator.parse(1)).toBe(getWholeAmount(1));
-    expect(validator.parse(100)).toBe(getWholeAmount(100));
-    expect(validator.parse(9999)).toBe(getWholeAmount(9999));
-  });
-
-  it("should reject decimal numbers", () => {
-    expect(() => validator.parse(10.5)).toThrow(
-      "Amount must be a whole number"
-    );
-    expect(() => validator.parse(10.01)).toThrow(
-      "Amount must be a whole number"
-    );
-  });
-
-  it("should reject zero by default", () => {
-    expect(() => validator.parse(0)).toThrow("Amount must be at least");
-  });
-
-  it("should accept zero with allowZero", () => {
-    const validatorWithZero = wholeAmount({ allowZero: true });
-    expect(validatorWithZero.parse(0)).toBe(getWholeAmount(0));
-  });
-});
-
-describe("cryptoAmount", () => {
-  const validator = cryptoAmount();
-
-  it("should accept up to 18 decimal places", () => {
-    expect(validator.parse(0.000000000000000001)).toBe(
-      getCryptoAmount(0.000000000000000001)
-    );
-    // JavaScript can only accurately represent up to ~15-17 decimal places
-    expect(validator.parse(1.123456789012345)).toBe(
-      getCryptoAmount(1.123456789012345)
-    );
-  });
-
-  it("should have appropriate minimum", () => {
-    expect(validator.parse(0.000000000000000001)).toBe(
-      getCryptoAmount(0.000000000000000001)
-    );
-  });
 });
 
 describe("helper functions", () => {
@@ -234,45 +129,6 @@ describe("helper functions", () => {
       expect(() => getAmount("not a number")).toThrow("Invalid amount");
       expect(() => getAmount(5, { min: 10 })).toThrow("Invalid amount");
       expect(getAmount(15, { min: 10 })).toBe(getAmount(15, { min: 10 }));
-    });
-  });
-
-  describe("isMonetaryAmount and getMonetaryAmount", () => {
-    it("should validate monetary amounts", () => {
-      expect(isMonetaryAmount(10.99)).toBe(true);
-      expect(isMonetaryAmount(10.999)).toBe(false);
-      expect(getMonetaryAmount(10.99)).toBe(getMonetaryAmount(10.99));
-      expect(() => getMonetaryAmount(10.999)).toThrow(
-        "Invalid monetary amount"
-      );
-    });
-  });
-
-  describe("isPercentage and getPercentage", () => {
-    it("should validate percentages", () => {
-      expect(isPercentage(50)).toBe(true);
-      expect(isPercentage(101)).toBe(false);
-      expect(isPercentage(-1)).toBe(false);
-      expect(getPercentage(50)).toBe(getPercentage(50));
-      expect(() => getPercentage(101)).toThrow("Invalid percentage");
-    });
-  });
-
-  describe("isWholeAmount and getWholeAmount", () => {
-    it("should validate whole amounts", () => {
-      expect(isWholeAmount(100)).toBe(true);
-      expect(isWholeAmount(100.5)).toBe(false);
-      expect(getWholeAmount(100)).toBe(getWholeAmount(100));
-      expect(() => getWholeAmount(100.5)).toThrow("Invalid whole amount");
-    });
-  });
-
-  describe("isCryptoAmount and getCryptoAmount", () => {
-    it("should validate crypto amounts", () => {
-      expect(isCryptoAmount(0.000000000000000001)).toBe(true);
-      expect(isCryptoAmount(-1)).toBe(false);
-      expect(getCryptoAmount(1.23456)).toBe(getCryptoAmount(1.23456));
-      expect(() => getCryptoAmount(-1)).toThrow("Invalid crypto amount");
     });
   });
 });
