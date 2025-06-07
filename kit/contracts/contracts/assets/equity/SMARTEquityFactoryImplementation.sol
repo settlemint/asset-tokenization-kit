@@ -52,8 +52,7 @@ contract SMARTEquityFactoryImplementation is ISMARTEquityFactory, AbstractSMARTT
             symbol_,
             decimals_,
             tokenIdentityAddress,
-            requiredClaimTopics_,
-            initialModulePairs_,
+            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -109,8 +108,7 @@ contract SMARTEquityFactoryImplementation is ISMARTEquityFactory, AbstractSMARTT
             symbol_,
             decimals_,
             tokenIdentityAddress,
-            requiredClaimTopics_,
-            initialModulePairs_,
+            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_

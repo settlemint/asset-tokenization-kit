@@ -19,11 +19,13 @@ export class Asset<T extends ContractName> {
   ) {}
 
   public async waitUntilDeployed(transactionHash: Hex) {
-    const { tokenAddress, tokenIdentity, accessManager } = (await waitForEvent({
+    const eventArgs = await waitForEvent({
       transactionHash,
-      contract: this.contract,
+      contract: this.contract as any,
       eventName: "TokenAssetCreated",
-    })) as {
+    });
+
+    const { tokenAddress, tokenIdentity, accessManager } = eventArgs as {
       tokenAddress: Address;
       tokenIdentity: Address;
       accessManager: Address;

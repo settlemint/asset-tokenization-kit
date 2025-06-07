@@ -12,6 +12,11 @@
       "dependsOn": ["contracts#compile"],
       "outputs": ["src/erc165/utils/interfaceids.ts"]
     },
+    "codegen:gql-tada": {
+      "dependsOn": ["publish"],
+      "inputs": ["the-graph-schema.graphql"],
+      "outputs": ["the-graph-env.d.ts", "the-graph-cache.d.ts"]
+    },
     "compile": {
       "dependsOn": ["^compile", "codegen"],
       "outputs": ["build/**"]
@@ -19,6 +24,9 @@
     "publish": {
       "cache": false,
       "dependsOn": ["package", "^publish"]
+    },
+    "test": {
+      "dependsOn": ["codegen:gql-tada"]
     }
   }
 }

@@ -31,7 +31,11 @@ library SMARTSystemRoles {
 
     /// @notice Role for token deployers
     /// @dev Assigned to entities responsible for deploying new tokens
-    bytes32 public constant TOKEN_DEPLOYER_ROLE = keccak256("TOKEN_DEPLOYER_ROLE");
+    bytes32 public constant DEPLOYER_ROLE = keccak256("DEPLOYER_ROLE");
+
+    /// @notice Role for managing implementation addresses
+    /// @dev Assigned to entities responsible for managing implementation addresses
+    bytes32 public constant IMPLEMENTATION_MANAGER_ROLE = keccak256("IMPLEMENTATION_MANAGER_ROLE");
 
     /// @notice A unique identifier (hash) for the role that grants permission to modify the data stored in this
     /// contract.
@@ -50,4 +54,9 @@ library SMARTSystemRoles {
     /// contract).
     /// The value is calculated as `keccak256("MANAGE_REGISTRIES_ROLE")`.
     bytes32 public constant MANAGE_REGISTRIES_ROLE = keccak256("MANAGE_REGISTRIES_ROLE");
+
+    // --- Access Control Roles ---
+    /// @notice Role identifier for addresses that can manage the compliance allow list
+    /// @dev This role allows adding/removing addresses from the allow list that can bypass compliance checks
+    bytes32 public constant ALLOW_LIST_MANAGER_ROLE = keccak256("ALLOW_LIST_MANAGER_ROLE");
 }

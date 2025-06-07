@@ -46,6 +46,8 @@ import { CountryAllowListComplianceModule } from
     "../../contracts/system/compliance/modules/CountryAllowListComplianceModule.sol";
 import { CountryBlockListComplianceModule } from
     "../../contracts/system/compliance/modules/CountryBlockListComplianceModule.sol";
+import { SMARTIdentityVerificationModule } from
+    "../../contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol";
 
 contract SystemUtils is Test {
     // System
@@ -63,6 +65,7 @@ contract SystemUtils is Test {
     MockedComplianceModule public mockedComplianceModule;
     CountryAllowListComplianceModule public countryAllowListComplianceModule;
     CountryBlockListComplianceModule public countryBlockListComplianceModule;
+    SMARTIdentityVerificationModule public identityVerificationModule;
 
     // --- Setup ---
     constructor(address platformAdmin) {
@@ -82,6 +85,9 @@ contract SystemUtils is Test {
         SMARTTopicSchemeRegistryImplementation topicSchemeRegistryImpl =
             new SMARTTopicSchemeRegistryImplementation(forwarder);
 
+        identityVerificationModule = new SMARTIdentityVerificationModule(forwarder);
+        vm.label(address(identityVerificationModule), "Identity Verification Module");
+
         systemFactory = new SMARTSystemFactory(
             address(complianceImpl),
             address(registryImpl),
@@ -92,6 +98,7 @@ contract SystemUtils is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(accessManagerImpl),
+            address(identityVerificationModule),
             forwarder
         );
         vm.label(address(systemFactory), "System Factory");

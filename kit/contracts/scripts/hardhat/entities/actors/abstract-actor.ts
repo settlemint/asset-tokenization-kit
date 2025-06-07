@@ -11,6 +11,7 @@ import {
 } from "viem";
 import type { Account } from "viem/accounts";
 import { smartProtocolDeployer } from "../../services/deployer";
+import { withDecodedRevertReason } from "../../utils/decode-revert-reason";
 import { getPublicClient } from "../../utils/public-client";
 import { waitForEvent } from "../../utils/wait-for-event";
 
@@ -86,10 +87,9 @@ export abstract class AbstractActor {
       const createIdentity = async (): Promise<`0x${string}`> => {
         const identityFactory =
           smartProtocolDeployer.getIdentityFactoryContract();
-        const transactionHash = await identityFactory.write.createIdentity([
-          this.address,
-          [],
-        ]);
+        const transactionHash = await withDecodedRevertReason(() =>
+          identityFactory.write.createIdentity([this.address, []])
+        );
 
         const { identity } = (await waitForEvent({
           transactionHash,

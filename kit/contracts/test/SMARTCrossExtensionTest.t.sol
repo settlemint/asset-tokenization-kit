@@ -197,7 +197,6 @@ contract SMARTCrossExtensionTest is Test {
             address(0), // Temporary zero address
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
-            requiredClaimTopics,
             modulePairs,
             systemUtils.getTopicId(SMARTTopics.TOPIC_COLLATERAL),
             address(accessManager)

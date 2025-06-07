@@ -6,7 +6,7 @@
       "dependsOn": ["format", "compile", "codegen", "lint", "build"]
     },
     "ci:gha": {
-      "dependsOn": ["publish", "ci"]
+      "dependsOn": ["publish", "ci", "test"]
     },
     "//#version": {
       "cache": false,
@@ -48,6 +48,7 @@
     },
     "docs": {
       "cache": false
-    }
+    },
+    "test": {}
   }
 }

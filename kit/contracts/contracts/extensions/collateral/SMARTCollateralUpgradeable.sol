@@ -41,6 +41,11 @@ abstract contract SMARTCollateralUpgradeable is Initializable, SMARTExtensionUpg
         __SMARTCollateral_init_unchained(collateralProofTopic_);
     }
 
+    /// @inheritdoc _SMARTCollateralLogic
+    function __collateral_totalSupply() internal view virtual override returns (uint256) {
+        return totalSupply();
+    }
+
     // -- Hooks (Overrides) --
 
     /// @notice Hook that is executed by the `SMARTHooks` system before any mint operation.

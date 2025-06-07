@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
 import { SMARTYieldHelpers, MockERC20 } from "./../utils/SMARTYieldHelpers.sol";
-import { SMARTFixedYieldScheduleFactory } from
-    "../../contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol";
+import { SMARTFixedYieldScheduleFactory } from "../../contracts/system/yield/SMARTFixedYieldScheduleFactory.sol";
+import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
 
 /// @title Base test contract for SMART Yield functionality
 /// @notice Provides shared state and setup for yield tests
@@ -22,7 +23,17 @@ abstract contract SMARTYieldBaseTest is AbstractSMARTTest, SMARTYieldHelpers {
         }
 
         // Deploy yield schedule factory
-        yieldScheduleFactory = new SMARTFixedYieldScheduleFactory(address(0));
+        vm.startPrank(platformAdmin);
+        yieldScheduleFactory = new SMARTFixedYieldScheduleFactory(address(systemUtils.system()), address(0));
+        vm.label(address(yieldScheduleFactory), "Yield Schedule Factory");
+
+        IAccessControl(yieldScheduleFactory).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, tokenIssuer);
+
+        // Grant whitelist manager role to yield schedule factory
+        IAccessControl(address(systemUtils.compliance())).grantRole(
+            SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(yieldScheduleFactory)
+        );
+        vm.stopPrank();
 
         // Start at a high block number that can accommodate timestamps as block numbers
         _ensureBlockAlignment();

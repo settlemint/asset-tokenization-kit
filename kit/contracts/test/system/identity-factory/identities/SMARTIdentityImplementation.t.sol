@@ -445,6 +445,7 @@ contract SMARTIdentityImplementationTest is Test {
 
     function test_FuzzAddRemoveKeys(address keyAddress, uint256 purpose) public {
         vm.assume(keyAddress != address(0));
+        vm.assume(keyAddress != user1); // Do not test with the initial management key
         vm.assume(purpose > 0 && purpose <= 4); // Valid key purposes
 
         bytes32 keyHash = keccak256(abi.encode(keyAddress));

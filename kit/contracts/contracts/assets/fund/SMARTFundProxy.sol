@@ -23,7 +23,6 @@ contract SMARTFundProxy is SMARTAssetProxy {
     /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
     /// one.
     /// @param managementFeeBps_ The management fee of the fund.
-    /// @param requiredClaimTopics_ The required claim topics of the fund.
     /// @param initialModulePairs_ The initial module pairs of the fund.
     /// @param identityRegistry_ The identity registry of the fund.
     /// @param compliance_ The compliance of the fund.
@@ -35,7 +34,6 @@ contract SMARTFundProxy is SMARTAssetProxy {
         uint8 decimals_,
         address onchainID_,
         uint16 managementFeeBps_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
@@ -53,7 +51,6 @@ contract SMARTFundProxy is SMARTAssetProxy {
             decimals_,
             onchainID_,
             managementFeeBps_,
-            requiredClaimTopics_,
             initialModulePairs_,
             identityRegistry_,
             compliance_,

@@ -13,7 +13,8 @@ import {
     TokenIdentityImplementationNotSet,
     TokenAccessManagerImplementationNotSet,
     IndexOutOfBounds,
-    TopicSchemeRegistryImplementationNotSet
+    TopicSchemeRegistryImplementationNotSet,
+    IdentityVerificationModuleNotSet
 } from "./SMARTSystemErrors.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
@@ -71,6 +72,10 @@ contract SMARTSystemFactory is ISMARTSystemFactory, ERC2771Context {
     /// @dev This same forwarder address will also be passed to each new `SMARTSystem` instance created by this factory,
     /// enabling them to support meta-transactions as well.
     address public immutable factoryForwarder;
+    /// @notice The default contract address for the identity verification module's logic.
+    /// @dev This address will be passed to newly created `SMARTSystem` instances as the initial identity verification
+    /// module implementation.
+    address public immutable defaultIdentityVerificationModule;
 
     /// @notice An array storing the addresses of all `SMARTSystem` instances that have been created by this factory.
     /// @dev This allows for easy tracking and retrieval of deployed systems.
@@ -98,6 +103,8 @@ contract SMARTSystemFactory is ISMARTSystemFactory, ERC2771Context {
     /// @param tokenIdentityImplementation_ The default address for the token identity contract's logic (template).
     /// @param tokenAccessManagerImplementation_ The default address for the token access manager contract's logic
     /// (template).
+    /// @param identityVerificationModule_ The default address for the identity verification module's
+    /// logic contract.
     /// @param forwarder_ The address of the trusted forwarder contract to be used for meta-transactions (ERC2771).
     constructor(
         address complianceImplementation_,
@@ -109,6 +116,7 @@ contract SMARTSystemFactory is ISMARTSystemFactory, ERC2771Context {
         address identityImplementation_,
         address tokenIdentityImplementation_,
         address tokenAccessManagerImplementation_,
+        address identityVerificationModule_,
         address forwarder_
     )
         ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
@@ -139,6 +147,9 @@ contract SMARTSystemFactory is ISMARTSystemFactory, ERC2771Context {
             revert TokenAccessManagerImplementationNotSet(); // Assumes this custom error is defined in
                 // SMARTSystemErrors.sol
         }
+        if (identityVerificationModule_ == address(0)) {
+            revert IdentityVerificationModuleNotSet();
+        }
 
         // Set the immutable state variables with the provided addresses.
         defaultComplianceImplementation = complianceImplementation_;
@@ -151,6 +162,7 @@ contract SMARTSystemFactory is ISMARTSystemFactory, ERC2771Context {
         defaultTokenIdentityImplementation = tokenIdentityImplementation_;
         defaultTokenAccessManagerImplementation = tokenAccessManagerImplementation_;
         factoryForwarder = forwarder_; // Store the forwarder address for use by this factory and new systems.
+        defaultIdentityVerificationModule = identityVerificationModule_;
     }
 
     // --- Public Functions ---
@@ -183,6 +195,7 @@ contract SMARTSystemFactory is ISMARTSystemFactory, ERC2771Context {
             defaultIdentityImplementation,
             defaultTokenIdentityImplementation,
             defaultTokenAccessManagerImplementation,
+            defaultIdentityVerificationModule,
             factoryForwarder // The same forwarder is used for the new system.
         );
 

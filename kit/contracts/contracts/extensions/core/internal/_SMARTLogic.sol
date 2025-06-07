@@ -66,12 +66,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
     ///      depending on the compliance logic.
     address[] internal __complianceModuleList;
 
-    /// @notice An array of `uint256` values representing claim topics.
-    /// @dev These topics are used to query the `__identityRegistry` to verify if a recipient possesses
-    ///      the necessary credentials or attributes (claims) to receive tokens. For example, a topic might
-    ///      represent "KYC Level 2 Approved".
-    uint256[] internal __requiredClaimTopics;
-
     // -- Abstract Functions (Dependencies) --
 
     /// @notice Abstract function placeholder for the actual token minting mechanism.
@@ -287,15 +281,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
         emit ComplianceModuleRemoved(_smartSender(), _module);
     }
 
-    /// @notice Internal function to update the list of required claim topics for identity verification.
-    /// @dev Replaces the existing `__requiredClaimTopics` array with the new one and emits
-    ///      `RequiredClaimTopicsUpdated`.
-    /// @param requiredClaimTopics_ The new array of `uint256` claim topic IDs.
-    function _smart_setRequiredClaimTopics(uint256[] calldata requiredClaimTopics_) internal virtual {
-        __requiredClaimTopics = requiredClaimTopics_;
-        emit RequiredClaimTopicsUpdated(_smartSender(), __requiredClaimTopics);
-    }
-
     /// @notice Internal function to recover ERC20 tokens mistakenly sent to this contract's address.
     /// @dev This function CANNOT be used to recover the contract's own tokens (i.e., `address(this)`).
     ///      It checks for zero addresses for `token` and `to`, and that `amount` is not zero.
@@ -342,13 +327,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
     }
 
     /// @inheritdoc ISMART
-    /// @notice Returns the list of claim topics required for recipients to be verified.
-    /// @return uint256[] memory An array of `uint256` claim topic IDs.
-    function requiredClaimTopics() external view virtual override returns (uint256[] memory) {
-        return __requiredClaimTopics;
-    }
-
-    /// @inheritdoc ISMART
     /// @notice Returns a list of all active compliance modules and their current parameters.
     /// @dev Iterates through `__complianceModuleList` and constructs an array of `SMARTComplianceModuleParamPair`
     /// structs.
@@ -384,7 +362,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
     /// @param onchainID_ The optional on-chain identifier address for this token.
     /// @param identityRegistry_ The address of the `ISMARTIdentityRegistry` contract. Must not be zero.
     /// @param compliance_ The address of the `ISMARTCompliance` contract. Must not be zero.
-    /// @param requiredClaimTopics_ An array of initial `uint256` claim topic IDs for recipient verification.
     /// @param initialModulePairs_ An array of `SMARTComplianceModuleParamPair` structs, defining initial compliance
     /// modules and their parameters.
     function __SMART_init_unchained(
@@ -394,7 +371,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
         address onchainID_,
         address identityRegistry_,
         address compliance_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         internal
@@ -408,7 +384,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
         __onchainID = onchainID_;
         __identityRegistry = ISMARTIdentityRegistry(identityRegistry_);
         __compliance = ISMARTCompliance(compliance_);
-        __requiredClaimTopics = requiredClaimTopics_;
 
         // Validate all initial modules with the main compliance contract first
         __compliance.areValidComplianceModules(initialModulePairs_);
@@ -440,7 +415,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
         emit IdentityRegistryAdded(sender, identityRegistry_);
         emit ComplianceAdded(sender, compliance_);
         emit UpdatedTokenInformation(sender, decimals_, onchainID_); // Includes initial decimals and onchainId
-        emit RequiredClaimTopicsUpdated(sender, __requiredClaimTopics);
     }
 
     // -- Internal Hook Helper Functions --
@@ -492,8 +466,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
     /// @notice Core logic executed *before* a mint operation, typically called by `_beforeMint` hook.
     /// @dev This is where pre-mint checks occur. If `__isForcedUpdate` (from `_SMARTExtension`) is `false` (normal
     /// operation):
-    ///      1. It checks if the recipient (`to`) is verified by the `__identityRegistry` against the
-    /// `__requiredClaimTopics`. Reverts with `RecipientNotVerified` if not.
     ///      2. It checks if the mint operation is allowed by the `__compliance` contract (and its modules)
     ///         by calling `canTransfer` with `from` as `address(0)`. Reverts with `MintNotCompliant` if not.
     ///      If `__isForcedUpdate` is `true`, these checks are skipped.
@@ -502,7 +474,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
     function __smart_beforeMintLogic(address to, uint256 amount) internal virtual {
         if (!__isForcedUpdate) {
             // Only perform checks if not a forced update
-            if (!__identityRegistry.isVerified(to, __requiredClaimTopics)) revert RecipientNotVerified();
             if (!__compliance.canTransfer(address(this), address(0), to, amount)) revert MintNotCompliant();
         }
     }
@@ -530,7 +501,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
     function __smart_beforeTransferLogic(address from, address to, uint256 amount) internal virtual {
         if (!__isForcedUpdate) {
             // Only perform checks if not a forced update
-            if (!__identityRegistry.isVerified(to, __requiredClaimTopics)) revert RecipientNotVerified();
             if (!__compliance.canTransfer(address(this), from, to, amount)) revert TransferNotCompliant();
         }
     }

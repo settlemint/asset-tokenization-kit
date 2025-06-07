@@ -67,9 +67,6 @@ const CONTRACT_ADDRESSES = {
   // System factory
   SMARTSystemFactory: "0x5e771e1417100000000000000000000000020088",
 
-  // Fixed yield
-  SMARTFixedYieldScheduleFactory: "0x5e771e1417100000000000000000000000020089",
-
   // Asset implementations
   SMARTBondImplementation: "0x5e771e1417100000000000000000000000020010",
   SMARTBondFactoryImplementation: "0x5e771e1417100000000000000000000000020011",
@@ -84,6 +81,9 @@ const CONTRACT_ADDRESSES = {
   SMARTStableCoinImplementation: "0x5e771e1417100000000000000000000000020018",
   SMARTStableCoinFactoryImplementation:
     "0x5e771e1417100000000000000000000000020019",
+
+  // Compliance modules
+  SMARTIdentityVerificationModule: "0x5e771e1417100000000000000000000000020100",
 } as const;
 
 const CONTRACT_FILES = {
@@ -113,10 +113,6 @@ const CONTRACT_FILES = {
   // System factory
   SMARTSystemFactory: "contracts/system/SMARTSystemFactory.sol",
 
-  // Fixed yield
-  SMARTFixedYieldScheduleFactory:
-    "contracts/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleFactory.sol",
-
   // Asset implementations
   SMARTBondImplementation: "contracts/assets/bond/SMARTBondImplementation.sol",
   SMARTBondFactoryImplementation:
@@ -136,6 +132,10 @@ const CONTRACT_FILES = {
     "contracts/assets/stable-coin/SMARTStableCoinImplementation.sol",
   SMARTStableCoinFactoryImplementation:
     "contracts/assets/stable-coin/SMARTStableCoinFactoryImplementation.sol",
+
+  // Compliance modules
+  SMARTIdentityVerificationModule:
+    "contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol",
 } as const;
 
 // =============================================================================
@@ -162,6 +162,9 @@ class ContractDeployer {
       case "SMARTForwarder":
         return [];
 
+      case "SMARTIdentityVerificationModule":
+        return [forwarderAddress];
+
       case "SMARTSystemFactory":
         return [
           CONTRACT_ADDRESSES.SMARTComplianceImplementation,
@@ -173,6 +176,7 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.SMARTIdentityImplementation,
           CONTRACT_ADDRESSES.SMARTTokenIdentityImplementation,
           CONTRACT_ADDRESSES.SMARTTokenAccessManagerImplementation,
+          CONTRACT_ADDRESSES.SMARTIdentityVerificationModule,
           forwarderAddress,
         ];
 

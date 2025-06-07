@@ -27,6 +27,7 @@
 
 import { join, relative } from "path";
 import { parseArgs } from "util";
+import { parse, stringify } from "yaml";
 import { logger, LogLevel } from "../../../tools/logging";
 import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
 
@@ -54,6 +55,15 @@ interface GraphPaths {
 
 interface DeployedAddresses {
   [contractName: string]: string;
+}
+
+interface SubgraphYamlConfig {
+  dataSources: {
+    name: string;
+    source: {
+      address: string;
+    };
+  }[];
 }
 
 // ============================================================================
@@ -387,6 +397,62 @@ async function updateSubgraphConfig(
 }
 
 /**
+ * Update subgraph yaml with deployed addresses
+ */
+async function updateSubgraphYaml(addresses: DeployedAddresses): Promise<void> {
+  try {
+    logger.info("Updating subgraph yaml...");
+
+    const subgraphYaml = Bun.file(graphPaths!.subgraphYaml);
+
+    if (!(await subgraphYaml.exists())) {
+      logger.error("Subgraph yaml not found");
+      throw new Error("Missing subgraph yaml");
+    }
+
+    const subgraphYamlConfig = (await parse(
+      await subgraphYaml.text()
+    )) as SubgraphYamlConfig;
+
+    // Update contract addresses
+    const updatedSubgraphYamlConfig: typeof subgraphYamlConfig = {
+      ...subgraphYamlConfig,
+      dataSources: subgraphYamlConfig.dataSources.map((dataSource) => {
+        const addressKey = Object.keys(addresses).find(
+          (key) =>
+            key.endsWith(`#${dataSource.name}`) ||
+            key.endsWith(`#SMART${dataSource.name}`)
+        );
+        if (!addressKey) {
+          logger.warn(`No address found for '${dataSource.name}'`);
+        }
+        const address = addressKey
+          ? addresses[addressKey]!
+          : dataSource.source.address;
+        return {
+          ...dataSource,
+          source: {
+            ...dataSource.source,
+            address,
+          },
+        };
+      }),
+    };
+
+    // Write new configuration
+    await Bun.write(
+      graphPaths!.subgraphYaml,
+      stringify(updatedSubgraphYamlConfig)
+    );
+
+    logger.success("Subgraph yaml updated");
+  } catch (error) {
+    logger.error("Failed to update subgraph yaml:", error);
+    throw error;
+  }
+}
+
+/**
  * Generate TypeScript code from GraphQL schema
  */
 async function generateCode(): Promise<void> {
@@ -416,9 +482,32 @@ async function createLocalSubgraph(
       graphPaths!.subgraphRoot
     );
     logger.success(`Created subgraph: ${graphName}`);
-  } catch (error) {
-    logger.warn("Failed to create subgraph (it may already exist)");
+  } catch (err) {
+    const error = err as Error;
+    logger.warn(
+      `Failed to create subgraph (it may already exist): ${error.message}`
+    );
     // Continue with deployment even if creation fails
+  }
+}
+
+/**
+ * Remove local subgraph
+ */
+async function removeLocalSubgraph(
+  graphName: string = GRAPH_NAME
+): Promise<void> {
+  try {
+    logger.info(`Removing local subgraph: ${graphName}`);
+    await Bun.$`bunx graph remove --node ${LOCAL_GRAPH_NODE} ${graphName}`.cwd(
+      graphPaths!.subgraphRoot
+    );
+    logger.success(`Removed subgraph: ${graphName}`);
+  } catch (err) {
+    const error = err as Error;
+    logger.warn(
+      `Failed to remove subgraph (it may not exist): ${error.message}`
+    );
   }
 }
 
@@ -435,6 +524,9 @@ async function deployLocal(): Promise<void> {
     logger.info(`  Version: ${versionLabel}`);
     logger.info(`  Graph Node: ${LOCAL_GRAPH_NODE}`);
     logger.info(`  IPFS: https://ipfs.console.settlemint.com`);
+
+    // Remove existing subgraph first
+    await removeLocalSubgraph(graphName);
 
     // Create subgraph first
     await createLocalSubgraph(graphName);
@@ -480,6 +572,7 @@ async function executeLocalWorkflow(): Promise<void> {
   try {
     const addresses = await readDeployedAddresses();
     await updateSubgraphConfig(addresses);
+    await updateSubgraphYaml(addresses);
     await generateCode();
     await deployLocal();
   } catch (error) {

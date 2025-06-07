@@ -8,12 +8,15 @@ import { SMARTComplianceImplementation } from "../../../contracts/system/complia
 import { SMARTComplianceProxy } from "../../../contracts/system/compliance/SMARTComplianceProxy.sol";
 import { ISMARTCompliance } from "../../../contracts/interface/ISMARTCompliance.sol";
 import { ISMARTComplianceModule } from "../../../contracts/interface/ISMARTComplianceModule.sol";
+import { ISMARTComplianceAllowList } from "../../../contracts/system/compliance/ISMARTComplianceAllowList.sol";
 import { ISMART } from "../../../contracts/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTSystemRoles } from "../../../contracts/system/SMARTSystemRoles.sol";
 
 import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 contract MockSMARTToken {
     SMARTComplianceModuleParamPair[] private _modules;
@@ -100,20 +103,30 @@ contract SMARTComplianceImplementationTest is Test {
     MockFailingModule public failingModule;
     MockNonCompliantModule public nonCompliantModule;
 
+    address public admin = makeAddr("admin");
+    address public allowListManager = makeAddr("allowListManager");
+    address public unauthorizedUser = makeAddr("unauthorizedUser");
     address public trustedForwarder = address(0x1234);
     address public alice = address(0xa11ce);
     address public bob = address(0xb0b);
+    address public charlie = address(0xc4a12e);
 
     function setUp() public {
         // Deploy implementation and use it directly for unit testing
         implementation = new SMARTComplianceImplementation(trustedForwarder);
 
         // Deploy as proxy
-        bytes memory initData = abi.encodeWithSelector(SMARTComplianceImplementation.initialize.selector);
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        bytes memory initData = abi.encodeWithSelector(SMARTComplianceImplementation.initialize.selector, initialAdmins);
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
 
         // Access proxy as SMARTComplianceImplementation
         compliance = SMARTComplianceImplementation(address(proxy));
+
+        // Grant allow list manager role
+        vm.prank(admin);
+        compliance.grantRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, allowListManager);
 
         // Deploy mock token
         token = new MockSMARTToken(address(compliance));
@@ -126,11 +139,14 @@ contract SMARTComplianceImplementationTest is Test {
 
     function testInitializeCanOnlyBeCalledOnce() public {
         vm.expectRevert();
-        compliance.initialize();
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        compliance.initialize(initialAdmins);
     }
 
     function testSupportsInterface() public view {
         assertTrue(compliance.supportsInterface(type(ISMARTCompliance).interfaceId));
+        assertTrue(compliance.supportsInterface(type(ISMARTComplianceAllowList).interfaceId));
         assertTrue(compliance.supportsInterface(type(IERC165).interfaceId));
         assertFalse(compliance.supportsInterface(0xdeadbeef));
     }
@@ -326,5 +342,313 @@ contract SMARTComplianceImplementationTest is Test {
         // Should revert for non-compliant modules (EOA addresses)
         vm.expectRevert();
         ISMARTCompliance(address(compliance)).isValidComplianceModule(moduleAddr, params);
+    }
+
+    // --- AllowList Management Tests ---
+
+    function testAddToAllowListSuccess() public {
+        vm.prank(allowListManager);
+        vm.expectEmit(true, true, false, true);
+        emit ISMARTComplianceAllowList.AddressAllowListed(alice, allowListManager);
+        compliance.addToAllowList(alice);
+
+        assertTrue(compliance.isAllowListed(alice));
+    }
+
+    function testAddToAllowListUnauthorized() public {
+        vm.prank(unauthorizedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE
+            )
+        );
+        compliance.addToAllowList(alice);
+    }
+
+    function testAddToAllowListZeroAddress() public {
+        vm.prank(allowListManager);
+        vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
+        compliance.addToAllowList(address(0));
+    }
+
+    function testAddToAllowListAlreadyAllowListed() public {
+        vm.prank(allowListManager);
+        compliance.addToAllowList(alice);
+
+        vm.prank(allowListManager);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceAllowList.AddressAlreadyAllowListed.selector, alice));
+        compliance.addToAllowList(alice);
+    }
+
+    function testRemoveFromAllowListSuccess() public {
+        // First add to allow list
+        vm.prank(allowListManager);
+        compliance.addToAllowList(alice);
+        assertTrue(compliance.isAllowListed(alice));
+
+        // Then remove
+        vm.prank(allowListManager);
+        vm.expectEmit(true, true, false, true);
+        emit ISMARTComplianceAllowList.AddressRemovedFromAllowList(alice, allowListManager);
+        compliance.removeFromAllowList(alice);
+
+        assertFalse(compliance.isAllowListed(alice));
+    }
+
+    function testRemoveFromAllowListUnauthorized() public {
+        vm.prank(allowListManager);
+        compliance.addToAllowList(alice);
+
+        vm.prank(unauthorizedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector,
+                unauthorizedUser,
+                SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE
+            )
+        );
+        compliance.removeFromAllowList(alice);
+    }
+
+    function testRemoveFromAllowListNotAllowListed() public {
+        vm.prank(allowListManager);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceAllowList.AddressNotAllowListed.selector, alice));
+        compliance.removeFromAllowList(alice);
+    }
+
+    function testAddMultipleToAllowListSuccess() public {
+        address[] memory accounts = new address[](3);
+        accounts[0] = alice;
+        accounts[1] = bob;
+        accounts[2] = charlie;
+
+        vm.prank(allowListManager);
+        for (uint256 i = 0; i < accounts.length; i++) {
+            vm.expectEmit(true, true, false, true);
+            emit ISMARTComplianceAllowList.AddressAllowListed(accounts[i], allowListManager);
+        }
+        compliance.addMultipleToAllowList(accounts);
+
+        assertTrue(compliance.isAllowListed(alice));
+        assertTrue(compliance.isAllowListed(bob));
+        assertTrue(compliance.isAllowListed(charlie));
+    }
+
+    function testAddMultipleToAllowListWithZeroAddress() public {
+        address[] memory accounts = new address[](3);
+        accounts[0] = alice;
+        accounts[1] = address(0); // Zero address
+        accounts[2] = charlie;
+
+        vm.prank(allowListManager);
+        vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
+        compliance.addMultipleToAllowList(accounts);
+
+        // None should be allow listed due to revert
+        assertFalse(compliance.isAllowListed(alice));
+        assertFalse(compliance.isAllowListed(charlie));
+    }
+
+    function testAddMultipleToAllowListWithDuplicate() public {
+        // First add alice
+        vm.prank(allowListManager);
+        compliance.addToAllowList(alice);
+
+        address[] memory accounts = new address[](3);
+        accounts[0] = bob;
+        accounts[1] = alice; // Already allow listed
+        accounts[2] = charlie;
+
+        vm.prank(allowListManager);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceAllowList.AddressAlreadyAllowListed.selector, alice));
+        compliance.addMultipleToAllowList(accounts);
+
+        // Bob should not be allow listed due to revert
+        assertFalse(compliance.isAllowListed(bob));
+        assertFalse(compliance.isAllowListed(charlie));
+    }
+
+    function testRemoveMultipleFromAllowListSuccess() public {
+        // First add all to allow list
+        address[] memory accounts = new address[](3);
+        accounts[0] = alice;
+        accounts[1] = bob;
+        accounts[2] = charlie;
+
+        vm.prank(allowListManager);
+        compliance.addMultipleToAllowList(accounts);
+
+        // Then remove all
+        vm.prank(allowListManager);
+        for (uint256 i = 0; i < accounts.length; i++) {
+            vm.expectEmit(true, true, false, true);
+            emit ISMARTComplianceAllowList.AddressRemovedFromAllowList(accounts[i], allowListManager);
+        }
+        compliance.removeMultipleFromAllowList(accounts);
+
+        assertFalse(compliance.isAllowListed(alice));
+        assertFalse(compliance.isAllowListed(bob));
+        assertFalse(compliance.isAllowListed(charlie));
+    }
+
+    function testRemoveMultipleFromAllowListWithNotAllowListed() public {
+        // Only add alice to allow list
+        vm.prank(allowListManager);
+        compliance.addToAllowList(alice);
+
+        address[] memory accounts = new address[](3);
+        accounts[0] = alice;
+        accounts[1] = bob; // Not allow listed
+        accounts[2] = charlie;
+
+        vm.prank(allowListManager);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceAllowList.AddressNotAllowListed.selector, bob));
+        compliance.removeMultipleFromAllowList(accounts);
+
+        // Alice should still be allow listed due to revert
+        assertTrue(compliance.isAllowListed(alice));
+    }
+
+    function testIsAllowListedInitiallyFalse() public view {
+        assertFalse(compliance.isAllowListed(alice));
+        assertFalse(compliance.isAllowListed(bob));
+        assertFalse(compliance.isAllowListed(address(0)));
+    }
+
+    // --- AllowList Effect on canTransfer Tests ---
+
+    function testCanTransferWithAllowListedReceiver() public {
+        // Add failing module that would normally prevent transfers
+        token.addModule(address(failingModule), abi.encode(uint256(100)));
+
+        // AllowList the receiver
+        vm.prank(allowListManager);
+        compliance.addToAllowList(bob);
+
+        // Transfer should succeed despite failing module because receiver is allow listed
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
+    }
+
+    function testCanTransferWithNonAllowListedReceiver() public {
+        // Add failing module
+        token.addModule(address(failingModule), abi.encode(uint256(100)));
+
+        // Don't allow list receiver - should fail due to failing module
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Transfer not allowed")
+        );
+        ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100);
+    }
+
+    function testCanTransferAllowListBypassesAllModules() public {
+        // Add multiple failing modules
+        MockFailingModule failingModule2 = new MockFailingModule("Another failure", true, false);
+        token.addModule(address(failingModule), abi.encode(uint256(100)));
+        token.addModule(address(failingModule2), abi.encode(uint256(200)));
+
+        // AllowList receiver
+        vm.prank(allowListManager);
+        compliance.addToAllowList(bob);
+
+        // Should succeed despite multiple failing modules
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
+    }
+
+    function testCanTransferAllowListedMintOperation() public {
+        // Add failing module
+        token.addModule(address(failingModule), abi.encode(uint256(100)));
+
+        // AllowList receiver for mint (from = address(0))
+        vm.prank(allowListManager);
+        compliance.addToAllowList(alice);
+
+        // Mint should succeed despite failing module
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), address(0), alice, 1000));
+    }
+
+    function testCanTransferNonAllowListedSenderStillChecked() public {
+        // Add a valid module (allows transfers)
+        token.addModule(address(validModule), abi.encode(uint256(100)));
+
+        // Don't allow list anyone - should use normal compliance flow
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
+    }
+
+    // --- Gas optimization tests for allow list ---
+
+    function testAllowListGasOptimization() public {
+        // Add many modules
+        for (uint256 i = 0; i < 5; i++) {
+            MockedComplianceModule module = new MockedComplianceModule();
+            token.addModule(address(module), abi.encode(i * 100));
+        }
+
+        // AllowList receiver
+        vm.prank(allowListManager);
+        compliance.addToAllowList(bob);
+
+        // Measure gas - should be much lower due to early return
+        uint256 gasBefore = gasleft();
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
+        uint256 gasUsedAllowListed = gasBefore - gasleft();
+
+        // Remove from allow list and measure gas for normal flow
+        vm.prank(allowListManager);
+        compliance.removeFromAllowList(bob);
+
+        gasBefore = gasleft();
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
+        uint256 gasUsedNormal = gasBefore - gasleft();
+
+        console2.log("Gas used with allow listed receiver:", gasUsedAllowListed);
+        console2.log("Gas used with normal flow:", gasUsedNormal);
+
+        // AllowListed should use significantly less gas
+        assertLt(gasUsedAllowListed, gasUsedNormal);
+    }
+
+    // --- Fuzz tests for allow list ---
+
+    function testFuzzAddToAllowList(address account) public {
+        vm.assume(account != address(0));
+
+        vm.prank(allowListManager);
+        compliance.addToAllowList(account);
+
+        assertTrue(compliance.isAllowListed(account));
+    }
+
+    function testFuzzAllowListCanTransfer(address receiver, uint256 amount) public {
+        vm.assume(receiver != address(0));
+
+        // Add failing module
+        token.addModule(address(failingModule), abi.encode(uint256(100)));
+
+        // AllowList receiver
+        vm.prank(allowListManager);
+        compliance.addToAllowList(receiver);
+
+        // Should always succeed with allow listed receiver
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, receiver, amount));
+    }
+
+    // --- Integration tests ---
+
+    function testAllowListIntegrationWithTransferredCallback() public {
+        // Add valid module to track calls
+        token.addModule(address(validModule), abi.encode(uint256(100)));
+
+        // AllowList receiver
+        vm.prank(allowListManager);
+        compliance.addToAllowList(bob);
+
+        // Even with allow listed receiver, transferred callback should still work
+        vm.prank(address(token));
+        ISMARTCompliance(address(compliance)).transferred(address(token), alice, bob, 100);
+
+        // Verify module was called
+        assertEq(validModule.transferredCallCount(), 1);
     }
 }

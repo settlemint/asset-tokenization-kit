@@ -4,14 +4,18 @@ pragma solidity ^0.8.28;
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
 // Interface imports
 import { ISMARTCompliance } from "../../interface/ISMARTCompliance.sol";
+import { ISMARTComplianceAllowList } from "./ISMARTComplianceAllowList.sol";
 import { ISMARTComplianceModule } from "../../interface/ISMARTComplianceModule.sol";
 import { ISMART } from "../../interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTSystemRoles } from "../SMARTSystemRoles.sol";
 
 /// @title SMART Compliance Contract Implementation
 /// @author SettleMint Tokenization Services
@@ -26,12 +30,21 @@ import { SMARTComplianceModuleParamPair } from "../../interface/structs/SMARTCom
 /// This contract is designed to be used behind a proxy (like `SMARTComplianceProxy`) to allow its logic to be upgraded.
 /// It supports meta-transactions via `ERC2771ContextUpgradeable` allowing a trusted forwarder to pay for gas fees.
 /// It also implements `ERC165Upgradeable` for interface detection.
+/// Additionally, it implements a allow list functionality that allows certain addresses (mainly contracts) to bypass
+/// compliance checks when they are the sender or receiver of a transfer.
 contract SMARTComplianceImplementation is
     Initializable,
-    ISMARTCompliance,
     ERC2771ContextUpgradeable,
-    ERC165Upgradeable
+    AccessControlUpgradeable,
+    ISMARTCompliance,
+    ISMARTComplianceAllowList
 {
+    // --- Storage ---
+    /// @notice Mapping of addresses that are allow listed to bypass compliance checks
+    /// @dev When an address is allow listed, transfers involving this address (as sender or receiver) will skip
+    /// compliance module checks in the `canTransfer` function
+    mapping(address => bool) private _allowListedAddresses;
+
     // --- Constructor ---
     /// @notice Constructor for the compliance implementation contract.
     /// @dev This constructor is specific to OpenZeppelin's upgradeable contracts pattern.
@@ -50,12 +63,93 @@ contract SMARTComplianceImplementation is
 
     // --- Initializer ---
     /// @notice Initializes the compliance contract after it has been deployed (typically via a proxy).
-    /// @dev This function is called once to set up the initial state of the contract. In this case, it initializes
-    /// the ERC165 interface detection capability. For upgradeable contracts, initializers replace constructors for
-    /// setup logic.
+    /// @dev This function is called once to set up the initial state of the contract. It initializes
+    /// the ERC165 interface detection capability and sets up AccessControl with the deployer as the default admin.
+    /// For upgradeable contracts, initializers replace constructors for setup logic.
     /// The `initializer` modifier ensures this function can only be called once.
-    function initialize() public virtual initializer {
-        __ERC165_init_unchained(); // Initializes ERC165 aannouncing which interfaces this contract supports
+    /// @param initialAdmins The addresses of the initial admins.
+    function initialize(address[] memory initialAdmins) public virtual initializer {
+        __ERC165_init_unchained(); // Initializes ERC165 announcing which interfaces this contract supports
+        __AccessControl_init_unchained(); // Initializes AccessControl with msg.sender as default admin
+
+        for (uint256 i = 0; i < initialAdmins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
+        }
+    }
+
+    // --- AllowList Management Functions ---
+
+    /// @notice Adds an address to the compliance allow list
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
+    /// AllowListed addresses can bypass compliance checks in canTransfer function.
+    /// @param account The address to add to the allow list
+    function addToAllowList(address account) external onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE) {
+        if (account == address(0)) revert ZeroAddressNotAllowed();
+        if (_allowListedAddresses[account]) revert AddressAlreadyAllowListed(account);
+
+        _allowListedAddresses[account] = true;
+        emit AddressAllowListed(account, _msgSender());
+    }
+
+    /// @notice Removes an address from the compliance allow list
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
+    /// @param account The address to remove from the allow list
+    function removeFromAllowList(address account) external onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE) {
+        if (!_allowListedAddresses[account]) revert AddressNotAllowListed(account);
+
+        _allowListedAddresses[account] = false;
+        emit AddressRemovedFromAllowList(account, _msgSender());
+    }
+
+    /// @notice Adds multiple addresses to the compliance allow list in a single transaction
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
+    /// This is a gas-efficient way to allow list multiple addresses at once.
+    /// @param accounts Array of addresses to add to the allow list
+    function addMultipleToAllowList(address[] calldata accounts)
+        external
+        onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE)
+    {
+        uint256 accountsLength = accounts.length;
+        for (uint256 i = 0; i < accountsLength;) {
+            address account = accounts[i];
+            if (account == address(0)) revert ZeroAddressNotAllowed();
+            if (_allowListedAddresses[account]) revert AddressAlreadyAllowListed(account);
+
+            _allowListedAddresses[account] = true;
+            emit AddressAllowListed(account, _msgSender());
+
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    /// @notice Removes multiple addresses from the compliance allow list in a single transaction
+    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
+    /// @param accounts Array of addresses to remove from the allow list
+    function removeMultipleFromAllowList(address[] calldata accounts)
+        external
+        onlyRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE)
+    {
+        uint256 accountsLength = accounts.length;
+        for (uint256 i = 0; i < accountsLength;) {
+            address account = accounts[i];
+            if (!_allowListedAddresses[account]) revert AddressNotAllowListed(account);
+
+            _allowListedAddresses[account] = false;
+            emit AddressRemovedFromAllowList(account, _msgSender());
+
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    /// @notice Checks if an address is allow listed
+    /// @param account The address to check
+    /// @return True if the address is allow listed, false otherwise
+    function isAllowListed(address account) external view returns (bool) {
+        return _allowListedAddresses[account];
     }
 
     // --- ISMARTCompliance Implementation (State-Changing) ---
@@ -177,7 +271,9 @@ contract SMARTComplianceImplementation is
     /// @inheritdoc ISMARTCompliance
     /// @notice Checks if a proposed token transfer is compliant with all registered modules for a given token.
     /// @dev This function is typically called by an `ISMART` token contract *before* a transfer is executed.
-    /// It retrieves all compliance modules registered for the `_token` and calls the `canTransfer` view function on
+    /// It first checks if either the sender or receiver is allow listed - if so, the transfer is automatically allowed.
+    /// Otherwise, it retrieves all compliance modules registered for the `_token` and calls the `canTransfer` view
+    /// function on
     /// each module.
     /// If *any* of the modules revert during their `canTransfer` check (indicating the transfer is not allowed by that
     /// module),
@@ -200,6 +296,12 @@ contract SMARTComplianceImplementation is
         override
         returns (bool)
     {
+        // Check if receiver is allow listed - if so, bypass all compliance checks
+        if (_allowListedAddresses[_to]) {
+            return true;
+        }
+
+        // If neither address is allow listed, proceed with normal compliance module checks
         SMARTComplianceModuleParamPair[] memory modulePairs = ISMART(_token).complianceModules();
         uint256 modulePairsLength = modulePairs.length;
         for (uint256 i = 0; i < modulePairsLength;) {
@@ -250,21 +352,58 @@ contract SMARTComplianceImplementation is
         ISMARTComplianceModule(_module).validateParameters(_params);
     }
 
-    /// @inheritdoc ERC165Upgradeable
-    /// @notice Checks if the contract supports a given interface ID.
-    /// @dev This is part of the ERC165 standard, allowing other contracts to query what interfaces this contract
-    /// implements.
-    /// It declares support for the `ISMARTCompliance` interface and any interfaces supported by its parent contracts
-    /// (via `super.supportsInterface`).
-    /// @param interfaceId The interface identifier (bytes4) to check.
-    /// @return `true` if the contract supports the interfaceId, `false` otherwise.
+    // --- Overrides for ERC2771ContextUpgradeable ---
+
+    /// @notice Override supportsInterface to support ERC165 interface detection
+    /// @dev Announces support for ISMARTCompliance and ISMARTComplianceAllowList interfaces
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view
         virtual
-        override(ERC165Upgradeable, IERC165)
+        override(AccessControlUpgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(ISMARTCompliance).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(ISMARTCompliance).interfaceId
+            || interfaceId == type(ISMARTComplianceAllowList).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    /// @notice Override _msgSender to support meta-transactions via ERC2771
+    /// @dev This ensures that when using a trusted forwarder, the original sender is returned
+    /// rather than the forwarder's address. This is crucial for access control functions.
+    /// @return sender The address of the original sender of the transaction
+    function _msgSender()
+        internal
+        view
+        virtual
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (address sender)
+    {
+        return ERC2771ContextUpgradeable._msgSender();
+    }
+
+    /// @notice Override _msgData to support meta-transactions via ERC2771
+    /// @dev This ensures that when using a trusted forwarder, the original calldata is returned
+    /// rather than the forwarder's modified calldata.
+    /// @return The original calldata of the transaction
+    function _msgData()
+        internal
+        view
+        virtual
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
+        return ERC2771ContextUpgradeable._msgData();
+    }
+
+    function _contextSuffixLength()
+        internal
+        view
+        virtual
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
+        return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 }

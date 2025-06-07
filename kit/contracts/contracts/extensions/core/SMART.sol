@@ -50,7 +50,6 @@ abstract contract SMART is SMARTExtension, _SMARTLogic, ERC165 {
     /// @param onchainID_ Optional on-chain identifier address for the token.
     /// @param identityRegistry_ Address of the `ISMARTIdentityRegistry` contract.
     /// @param compliance_ Address of the `ISMARTCompliance` contract.
-    /// @param requiredClaimTopics_ An initial list of `uint256` claim topic IDs for identity verification.
     /// @param initialModulePairs_ An initial list of `SMARTComplianceModuleParamPair` structs, defining active
     /// compliance modules and their parameters.
     constructor(
@@ -60,15 +59,12 @@ abstract contract SMART is SMARTExtension, _SMARTLogic, ERC165 {
         address onchainID_,
         address identityRegistry_,
         address compliance_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         ERC20(name_, symbol_) // Initialize OpenZeppelin ERC20 with name and symbol.
     {
         // Initialize the core SMART logic state using the internal unchained initializer.
-        __SMART_init_unchained(
-            decimals_, onchainID_, identityRegistry_, compliance_, requiredClaimTopics_, initialModulePairs_
-        );
+        __SMART_init_unchained(decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_);
     }
 
     /// @notice Transfers `amount` tokens from `msg.sender` to address `to`.

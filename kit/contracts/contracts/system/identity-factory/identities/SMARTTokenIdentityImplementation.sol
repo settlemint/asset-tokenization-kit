@@ -120,7 +120,7 @@ contract SMARTTokenIdentityImplementation is
         onlyAccessManagerRole(SMARTSystemRoles.CLAIM_MANAGER_ROLE)
         returns (bytes32 claimId)
     {
-        return super.addClaim(_topic, _scheme, _issuer, _signature, _data, _uri);
+        return ERC735.addClaim(_topic, _scheme, _issuer, _signature, _data, _uri);
     }
 
     /// @inheritdoc IERC735
@@ -132,7 +132,7 @@ contract SMARTTokenIdentityImplementation is
         onlyAccessManagerRole(SMARTSystemRoles.CLAIM_MANAGER_ROLE)
         returns (bool success)
     {
-        return super.removeClaim(_claimId);
+        return ERC735.removeClaim(_claimId);
     }
 
     // --- ERC734 (Key Holder) Functions - Overridden for Access Control & Specific Logic ---

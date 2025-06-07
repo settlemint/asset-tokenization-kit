@@ -1,4 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { TokenFixedYieldSchedulePeriod } from "../../generated/schema";
 import {
   FixedYieldScheduleSet,
   UnderlyingAssetTopUp,
@@ -159,17 +160,25 @@ export function handleYieldClaimed(event: YieldClaimed): void {
   );
   fixedYieldSchedule.currentPeriod = currentPeriod.id;
 
-  const nextPeriod = fetchFixedYieldSchedulePeriod(
-    getPeriodId(event.address, event.params.toPeriod.toI32() + 1)
+  const nextPeriodId = getPeriodId(
+    event.address,
+    event.params.toPeriod.toI32() + 1
   );
-  setBigNumber(
-    nextPeriod,
-    "totalYield",
-    event.params.yieldForNextPeriod,
-    tokenDecimals
-  );
-  nextPeriod.save();
-  fixedYieldSchedule.nextPeriod = nextPeriod.id;
+  const nextPeriod = TokenFixedYieldSchedulePeriod.load(nextPeriodId);
+  if (nextPeriod) {
+    setBigNumber(
+      nextPeriod,
+      "totalYield",
+      event.params.yieldForNextPeriod,
+      tokenDecimals
+    );
+    nextPeriod.save();
+    fixedYieldSchedule.nextPeriod = nextPeriod.id;
+  } else {
+    // There is no next period, the schedule has ended
+    fixedYieldSchedule.nextPeriod = null;
+    fixedYieldSchedule.save();
+  }
 
   const totalClaimed = fixedYieldSchedule.totalClaimedExact.plus(
     event.params.claimedAmount

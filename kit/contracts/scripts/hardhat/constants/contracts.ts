@@ -1,4 +1,5 @@
 import {
+  accessControlAbi,
   accessManagerAbi,
   bondAbi,
   bondFactoryAbi,
@@ -55,6 +56,8 @@ export const SMARTContracts = {
   fund: fundAbi,
   stablecoin: stablecoinAbi,
   bond: bondAbi,
+  // Open Zeppelin
+  accessControl: accessControlAbi,
   // smart
   ismart: ismartAbi,
   ismartBurnable: ismartBurnableAbi,
