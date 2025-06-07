@@ -11,52 +11,48 @@ describe("assetSymbol", () => {
 
   describe("valid asset symbols", () => {
     it("should accept valid uppercase symbols", () => {
-      expect(validator.parse("BTC")).toBe(getAssetSymbol("BTC"));
-      expect(validator.parse("ETH")).toBe(getAssetSymbol("ETH"));
-      expect(validator.parse("USDT")).toBe(getAssetSymbol("USDT"));
+      expect(validator.parse("BTC")).toBe("BTC" as AssetSymbol);
+      expect(validator.parse("ETH")).toBe("ETH" as AssetSymbol);
+      expect(validator.parse("USDT")).toBe("USDT" as AssetSymbol);
 
       expect(isAssetSymbol("BTC")).toBe(true);
       expect(isAssetSymbol("ETH")).toBe(true);
       expect(isAssetSymbol("USDT")).toBe(true);
 
-      expect(getAssetSymbol("BTC")).toBe(getAssetSymbol("BTC"));
-      expect(getAssetSymbol("ETH")).toBe(getAssetSymbol("ETH"));
-      expect(getAssetSymbol("USDT")).toBe(getAssetSymbol("USDT"));
+      expect(getAssetSymbol("BTC")).toBe("BTC" as AssetSymbol);
+      expect(getAssetSymbol("ETH")).toBe("ETH" as AssetSymbol);
+      expect(getAssetSymbol("USDT")).toBe("USDT" as AssetSymbol);
     });
 
     it("should accept symbols with numbers", () => {
-      expect(validator.parse("USDC6")).toBe(getAssetSymbol("USDC6"));
-      expect(validator.parse("1INCH")).toBe(getAssetSymbol("1INCH"));
-      expect(validator.parse("C98")).toBe(getAssetSymbol("C98"));
+      expect(validator.parse("USDC6")).toBe("USDC6" as AssetSymbol);
+      expect(validator.parse("1INCH")).toBe("1INCH" as AssetSymbol);
+      expect(validator.parse("C98")).toBe("C98" as AssetSymbol);
 
       expect(isAssetSymbol("USDC6")).toBe(true);
       expect(isAssetSymbol("1INCH")).toBe(true);
       expect(isAssetSymbol("C98")).toBe(true);
 
-      expect(getAssetSymbol("USDC6")).toBe(getAssetSymbol("USDC6"));
-      expect(getAssetSymbol("1INCH")).toBe(getAssetSymbol("1INCH"));
-      expect(getAssetSymbol("C98")).toBe(getAssetSymbol("C98"));
+      expect(getAssetSymbol("USDC6")).toBe("USDC6" as AssetSymbol);
+      expect(getAssetSymbol("1INCH")).toBe("1INCH" as AssetSymbol);
+      expect(getAssetSymbol("C98")).toBe("C98" as AssetSymbol);
     });
 
     it("should accept single character symbols", () => {
-      expect(validator.parse("X")).toBe(getAssetSymbol("X"));
-      expect(validator.parse("1")).toBe(getAssetSymbol("1"));
+      expect(validator.parse("X")).toBe("X" as AssetSymbol);
+      expect(validator.parse("1")).toBe("1" as AssetSymbol);
 
       expect(isAssetSymbol("X")).toBe(true);
       expect(isAssetSymbol("1")).toBe(true);
 
-      expect(getAssetSymbol("X")).toBe(getAssetSymbol("X"));
-      expect(getAssetSymbol("1")).toBe(getAssetSymbol("1"));
+      expect(getAssetSymbol("X")).toBe("X" as AssetSymbol);
+      expect(getAssetSymbol("1")).toBe("1" as AssetSymbol);
     });
 
     it("should accept maximum length symbols", () => {
-      expect(validator.parse("VERYLONGSYMB")).toBe(
-        getAssetSymbol("VERYLONGSYMB")
-      ); // 12 chars
+      expect(validator.parse("VERYLONGSYMB")).toBe("VERYLONGSYMB" as AssetSymbol); // 12 chars
       expect(isAssetSymbol("VERYLONGSYMB")).toBe(true);
-      expect(getAssetSymbol("VERYLONGSYMB")).toBe(
-        getAssetSymbol("VERYLONGSYMB")
-      );
+      expect(getAssetSymbol("VERYLONGSYMB")).toBe("VERYLONGSYMB" as AssetSymbol);
     });
   });
 
