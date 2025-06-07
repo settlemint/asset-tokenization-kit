@@ -209,4 +209,4 @@ GitHub Actions workflows:
 
 ## Memories
 
-- Importing Zod: `import zod from zod/v4`
+- Importing Zod: `import zod from zod`

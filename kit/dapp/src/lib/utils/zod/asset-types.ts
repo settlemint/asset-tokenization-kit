@@ -4,7 +4,7 @@
  * This module provides Zod schemas for validating asset types,
  * ensuring they match predefined enumerations.
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Tuple of valid asset types for type-safe iteration

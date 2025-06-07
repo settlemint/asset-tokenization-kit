@@ -1,5 +1,5 @@
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { redactSensitiveFields } from "../redaction";
 
 // Create logger instance

@@ -4,7 +4,7 @@
  * This module provides a Zod schema for validating and transforming timestamps
  * in different formats (ISO string, milliseconds, seconds, or Date objects).
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Validates and normalizes a timestamp in various formats

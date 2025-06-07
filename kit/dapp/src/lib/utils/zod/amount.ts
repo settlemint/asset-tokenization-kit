@@ -7,7 +7,7 @@
  *
  * @module AmountValidation
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Options for the Amount schema

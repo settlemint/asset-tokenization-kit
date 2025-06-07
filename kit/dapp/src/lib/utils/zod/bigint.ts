@@ -4,7 +4,7 @@
  * This module provides a Zod schema for validating and transforming BigInt values
  * from string representations.
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Validates and transforms a string representation of a large number to BigInt

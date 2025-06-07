@@ -1,5 +1,5 @@
 import { safeParse } from "@/lib/utils/zod";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const serverEnvironmentSchema = z.object({
   BETTER_AUTH_URL: z.string().url().optional(),

@@ -2,7 +2,7 @@ import { FindSchema } from "@/lib/orpc/routes/common/find.schema";
 import { ListSchema } from "@/lib/orpc/routes/common/list.schema";
 import { PlanetSchema } from "@/lib/orpc/routes/planet/schemas/planet.schema";
 import { ac } from "@/lib/orpc/routes/procedures/auth.contract";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Planet creation endpoint contract.
