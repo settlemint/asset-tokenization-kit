@@ -8,6 +8,7 @@
  * @module AssetTypeValidation
  */
 import { z } from "zod";
+import { customErrorKey } from "./error-map";
 
 /**
  * Tuple of valid asset types for type-safe iteration.
@@ -106,7 +107,7 @@ export const assetType = () =>
 export const assetTypeArray = () =>
   z
     .array(assetType())
-    .min(1, "At least one asset type must be selected")
+    .min(1, customErrorKey("assetType", "minSelection"))
     .describe("List of asset types");
 
 /**
@@ -126,7 +127,7 @@ export const assetTypeArray = () =>
 export const assetTypeSet = () =>
   z
     .set(assetType())
-    .min(1, "At least one asset type must be selected")
+    .min(1, customErrorKey("assetType", "minSelection"))
     .describe("Set of unique asset types");
 
 /**
@@ -240,7 +241,7 @@ export function isAssetType(value: unknown): value is AssetType {
  */
 export function getAssetType(value: unknown): AssetType {
   if (!isAssetType(value)) {
-    throw new Error(`Invalid asset type: ${value}`);
+    throw new Error(customErrorKey("assetType", "invalid"));
   }
   return value;
 }
@@ -278,7 +279,7 @@ export function isAssetTypeArray(value: unknown): value is AssetTypeArray {
 export function getAssetTypeArray(value: unknown): AssetTypeArray {
   const result = assetTypeArray().safeParse(value);
   if (!result.success) {
-    throw new Error(`Invalid asset type array: ${result.error.message}`);
+    throw new Error(customErrorKey("assetType", "invalidArray"));
   }
   return result.data;
 }
@@ -317,7 +318,7 @@ export function isAssetTypeSet(value: unknown): value is AssetTypeSet {
 export function getAssetTypeSet(value: unknown): AssetTypeSet {
   const result = assetTypeSet().safeParse(value);
   if (!result.success) {
-    throw new Error(`Invalid asset type set: ${result.error.message}`);
+    throw new Error(customErrorKey("assetType", "invalidSet"));
   }
   return result.data;
 }

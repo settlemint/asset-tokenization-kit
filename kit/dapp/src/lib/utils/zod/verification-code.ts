@@ -47,10 +47,10 @@ import { z } from "zod";
 export const verificationCode = () =>
   z
     .string()
-    .length(8, "Please enter exactly 8 characters")
+    .length(8, customErrorKey("verificationCode", "invalidLength"))
     .regex(
       /^[A-Z0-9]{8}$/,
-      "Please use only uppercase letters (A-Z) and numbers (0-9)"
+      customErrorKey("verificationCode", "invalidFormat")
     )
     .describe("Email verification code")
     .brand<"VerificationCode">();
@@ -116,7 +116,7 @@ export function isVerificationCode(value: unknown): value is VerificationCode {
  */
 export function getVerificationCode(value: unknown): VerificationCode {
   if (!isVerificationCode(value)) {
-    throw new Error("Please enter a valid 8-character code (uppercase letters and numbers only)");
+    throw new Error(customErrorKey("verificationCode", "invalid"));
   }
   return value;
 }

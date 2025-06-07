@@ -8,6 +8,7 @@
  * @module ISINValidation
  */
 import { z } from "zod";
+import { customErrorKey } from "./error-map";
 
 /**
  * Zod schema for validating International Securities Identification Numbers (ISIN)
@@ -66,8 +67,8 @@ import { z } from "zod";
 export const isin = () =>
   z
     .string()
-    .length(12, "ISIN codes are exactly 12 characters long")
-    .regex(/^[A-Za-z]{2}[A-Za-z0-9]{9}[0-9]$/, "Please enter a valid ISIN format (2 letters + 9 characters + 1 digit)")
+    .length(12, customErrorKey("isin", "invalidLength"))
+    .regex(/^[A-Za-z]{2}[A-Za-z0-9]{9}[0-9]$/, customErrorKey("isin", "invalidFormat"))
     .transform((val) => val.toUpperCase())
     .describe("International Securities Identification Number")
     .brand<"ISIN">();
@@ -131,7 +132,7 @@ export function isISIN(value: unknown): value is ISIN {
 export function getISIN(value: unknown): ISIN {
   const result = isin().safeParse(value);
   if (!result.success) {
-    throw new Error("Please enter a valid ISIN code (e.g., US0378331005)");
+    throw new Error(customErrorKey("isin", "invalid"));
   }
   return result.data;
 }

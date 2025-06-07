@@ -9,6 +9,7 @@
  */
 import { from } from "dnum";
 import { z } from "zod";
+import { customErrorKey } from "./error-map";
 
 /**
  * Zod schema for validating and transforming arbitrary precision decimal numbers
@@ -76,7 +77,7 @@ export const bigDecimal = () =>
       if (upper === "NAN" || upper === "INFINITY" || upper === "-INFINITY") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Please enter a valid decimal number",
+          message: customErrorKey("bigDecimal", "invalidSpecialValue"),
         });
         return z.NEVER;
       }
@@ -86,7 +87,7 @@ export const bigDecimal = () =>
       } catch {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Please enter a valid decimal number",
+          message: customErrorKey("bigDecimal", "invalid"),
         });
         return z.NEVER;
       }
@@ -152,7 +153,7 @@ export function isBigDecimal(value: unknown): value is BigDecimal {
 export function getBigDecimal(value: unknown): BigDecimal {
   const result = bigDecimal().safeParse(value);
   if (!result.success) {
-    throw new Error("Please enter a valid decimal number");
+    throw new Error(customErrorKey("bigDecimal", "invalid"));
   }
   return result.data;
 }

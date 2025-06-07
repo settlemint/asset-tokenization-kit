@@ -99,7 +99,7 @@ export function isFundCategory(value: unknown): value is FundCategory {
  */
 export function getFundCategory(value: unknown): FundCategory {
   if (!isFundCategory(value)) {
-    throw new Error(`Invalid fund category: ${value}`);
+    throw new Error(customErrorKey("fundCategory", "invalid"));
   }
   return value;
 }

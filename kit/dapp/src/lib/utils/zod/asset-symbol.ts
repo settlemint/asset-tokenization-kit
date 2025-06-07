@@ -8,6 +8,7 @@
  * @module AssetSymbolValidation
  */
 import { z } from "zod";
+import { customErrorKey } from "./error-map";
 
 /**
  * Zod schema for validating trading symbols for financial assets
@@ -69,11 +70,11 @@ import { z } from "zod";
 export const assetSymbol = () =>
   z
     .string()
-    .min(1, "Please enter an asset symbol")
-    .max(12, "Asset symbols can be up to 12 characters long")
+    .min(1, customErrorKey("assetSymbol", "required"))
+    .max(12, customErrorKey("assetSymbol", "tooLong"))
     .regex(
       /^[A-Z0-9]+$/,
-      "Please use only uppercase letters (A-Z) and numbers (0-9)"
+      customErrorKey("assetSymbol", "invalidFormat")
     )
     .describe("Trading symbol for the asset")
     .brand<"AssetSymbol">();
@@ -136,7 +137,7 @@ export function isAssetSymbol(value: unknown): value is AssetSymbol {
  */
 export function getAssetSymbol(value: unknown): AssetSymbol {
   if (!isAssetSymbol(value)) {
-    throw new Error("Please enter a valid asset symbol (e.g., AAPL, BTC)");
+    throw new Error(customErrorKey("assetSymbol", "invalid"));
   }
   return value;
 }

@@ -116,7 +116,7 @@ export function isFiatCurrency(value: unknown): value is FiatCurrency {
 export function getFiatCurrency(value: unknown): FiatCurrency {
   const result = fiatCurrency().safeParse(value);
   if (!result.success) {
-    throw new Error(`Invalid fiat currency: ${value}`);
+    throw new Error(customErrorKey("fiatCurrency", "invalid"));
   }
   return result.data;
 }

@@ -46,8 +46,8 @@ import { z } from "zod";
 export const twoFactorCode = () =>
   z
     .string()
-    .length(6, "Please enter exactly 6 digits")
-    .regex(/^\d{6}$/, "Please use only numbers (0-9)")
+    .length(6, customErrorKey("twoFactorCode", "invalidLength"))
+    .regex(/^\d{6}$/, customErrorKey("twoFactorCode", "invalidFormat"))
     .describe("Two-factor authentication code")
     .brand<"TwoFactorCode">();
 
@@ -98,7 +98,7 @@ export function isTwoFactorCode(value: unknown): value is TwoFactorCode {
  *   const invalid = getTwoFactorCode("abc123"); // Throws Error
  * } catch (error) {
  *   console.error("Invalid 2FA code provided");
- *   showErrorMessage("Please enter a valid 6-digit code");
+ *   showErrorMessage(customErrorKey("twoFactorCode", "invalid"));
  * }
  * 
  * // Use in authentication
@@ -112,7 +112,7 @@ export function isTwoFactorCode(value: unknown): value is TwoFactorCode {
  */
 export function getTwoFactorCode(value: unknown): TwoFactorCode {
   if (!isTwoFactorCode(value)) {
-    throw new Error("Please enter a valid 6-digit code");
+    throw new Error(customErrorKey("twoFactorCode", "invalid"));
   }
   return value;
 }

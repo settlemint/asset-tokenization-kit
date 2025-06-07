@@ -96,7 +96,7 @@ export function isEquityCategory(value: unknown): value is EquityCategory {
  */
 export function getEquityCategory(value: unknown): EquityCategory {
   if (!isEquityCategory(value)) {
-    throw new Error(`Invalid equity category: ${value}`);
+    throw new Error(customErrorKey("equityCategory", "invalid"));
   }
   return value;
 }

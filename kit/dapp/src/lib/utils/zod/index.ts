@@ -83,3 +83,6 @@ export function safeParse<T extends z.ZodType>(
 
   return result.data;
 }
+
+// Export the error map and helper for i18n
+export { zodErrorMap, customErrorKey, type ValidationTranslationKey } from "./error-map";

@@ -111,7 +111,7 @@ export function isVerificationType(value: unknown): value is VerificationType {
  */
 export function getVerificationType(value: unknown): VerificationType {
   if (!isVerificationType(value)) {
-    throw new Error(`Invalid verification type: ${value}`);
+    throw new Error(customErrorKey("verificationType", "invalid"));
   }
   return value;
 }

@@ -9,6 +9,7 @@
  * @module AmountValidation
  */
 import { z } from "zod";
+import { customErrorKey } from "./error-map";
 
 /**
  * Configuration options for amount validation.
@@ -73,8 +74,8 @@ export const amount = ({
   // Build the base schema with min/max validation
   const baseSchema = z
     .number()
-    .min(minimum, minimum === 0 ? "Please enter an amount" : `Please enter an amount of at least ${minimum}`)
-    .max(max, `Please enter an amount up to ${max}`);
+    .min(minimum, minimum === 0 ? customErrorKey("amount", "required") : customErrorKey("amount", "tooSmall"))
+    .max(max, customErrorKey("amount", "tooLarge"));
 
   // Add decimal place validation if decimals is specified
   if (typeof decimals === "number") {
@@ -86,7 +87,7 @@ export const amount = ({
           return !decimalPart || decimalPart.length <= decimals;
         },
         {
-          message: `Please enter up to ${decimals} decimal place${decimals === 1 ? '' : 's'}`,
+          message: customErrorKey("amount", "tooManyDecimals"),
         }
       )
       .describe(`A positive numerical amount between ${minimum} and ${max}`);
@@ -165,7 +166,7 @@ export function getAmount(value: unknown, options?: AmountOptions): Amount {
   // Attempt to parse the value with the provided options
   const result = amount(options).safeParse(value);
   if (!result.success) {
-    throw new Error("Please enter a valid amount");
+    throw new Error(customErrorKey("amount", "invalid"));
   }
   return result.data;
 }

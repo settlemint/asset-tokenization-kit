@@ -100,7 +100,7 @@ export function isEquityClass(value: unknown): value is EquityClass {
  */
 export function getEquityClass(value: unknown): EquityClass {
   if (!isEquityClass(value)) {
-    throw new Error(`Invalid equity class: ${value}`);
+    throw new Error(customErrorKey("equityClass", "invalid"));
   }
   return value;
 }

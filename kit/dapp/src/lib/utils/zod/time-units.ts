@@ -114,7 +114,7 @@ export function isTimeUnit(value: unknown): value is TimeUnit {
  */
 export function getTimeUnit(value: unknown): TimeUnit {
   if (!isTimeUnit(value)) {
-    throw new Error(`Invalid time unit: ${value}`);
+    throw new Error(customErrorKey("timeUnit", "invalid"));
   }
   return value;
 }

@@ -8,6 +8,7 @@
  * @module DurationValidation
  */
 import { z } from "zod";
+import { customErrorKey } from "./error-map";
 
 /**
  * Creates a Zod schema that validates duration values in milliseconds.
@@ -39,8 +40,8 @@ import { z } from "zod";
 export const duration = () =>
   z
     .number()
-    .int("Please enter a whole number of milliseconds")
-    .positive("Duration must be greater than zero") // Greater than 0
+    .int(customErrorKey("duration", "notInteger"))
+    .positive(customErrorKey("duration", "notPositive")) // Greater than 0
     .describe("Duration in milliseconds")
     .brand<"Duration">();
 
@@ -97,7 +98,7 @@ export function isDuration(value: unknown): value is Duration {
  */
 export function getDuration(value: unknown): Duration {
   if (!isDuration(value)) {
-    throw new Error("Please enter a valid duration in milliseconds");
+    throw new Error(customErrorKey("duration", "invalid"));
   }
   return value;
 }

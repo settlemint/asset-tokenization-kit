@@ -141,7 +141,7 @@ export function isRole(value: unknown): value is Role {
  */
 export function getRole(value: unknown): Role {
   if (!isRole(value)) {
-    throw new Error(`Invalid role: ${value}`);
+    throw new Error(customErrorKey("role", "invalid"));
   }
   return value;
 }
@@ -189,7 +189,7 @@ export function isRoleMap(value: unknown): value is RoleMap {
  */
 export function getRoleMap(value: unknown): RoleMap {
   if (!isRoleMap(value)) {
-    throw new Error(`Invalid role map: ${value}`);
+    throw new Error(customErrorKey("role", "invalidMap"));
   }
   return value;
 }
