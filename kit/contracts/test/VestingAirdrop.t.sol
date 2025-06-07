@@ -154,7 +154,14 @@ contract VestingAirdropTest is Test {
 
         // Deploy the vesting airdrop
         airdrop = new VestingAirdrop(
-            address(token), merkleRoot, owner, address(vestingStrategy), claimPeriodEnd, trustedForwarder
+            address(token),
+            merkleRoot,
+            owner,
+            address(vestingStrategy),
+            claimPeriodEnd,
+            trustedForwarder,
+            "Test Vesting Airdrop",
+            "QmTestHash"
         );
 
         // Fund the airdrop contract
@@ -173,7 +180,9 @@ contract VestingAirdropTest is Test {
             owner,
             address(0), // Zero address for strategy, should revert
             claimPeriodEnd,
-            trustedForwarder
+            trustedForwarder,
+            "Test Vesting Airdrop",
+            "QmTestHash"
         );
         vm.stopPrank();
     }
@@ -187,7 +196,9 @@ contract VestingAirdropTest is Test {
             owner,
             address(vestingStrategy),
             block.timestamp - 1, // claimPeriodEnd in the past, should revert
-            trustedForwarder
+            trustedForwarder,
+            "Test Vesting Airdrop",
+            "QmTestHash"
         );
         vm.stopPrank();
     }
