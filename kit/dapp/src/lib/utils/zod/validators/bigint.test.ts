@@ -167,10 +167,14 @@ describe("apiBigInt", () => {
     });
 
     it("should handle multiple decimal points by truncating at first decimal", () => {
-      // Our preprocess function only splits at the first decimal
-      expect(validator.parse("123.456.789")).toBe(123n);
-      expect(isApiBigInt("123.456.789")).toBe(true);
-      expect(getApiBigInt("123.456.789")).toBe(123n);
+      // Our preprocess function now rejects multiple decimal points
+      expect(() => validator.parse("123.456.789")).toThrow(
+        "Invalid BigInt format: multiple decimal points"
+      );
+      expect(isApiBigInt("123.456.789")).toBe(false);
+      expect(() => getApiBigInt("123.456.789")).toThrow(
+        "Invalid BigInt format: multiple decimal points"
+      );
     });
 
     it("should reject null and undefined", () => {

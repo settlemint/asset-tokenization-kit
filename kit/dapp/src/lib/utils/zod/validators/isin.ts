@@ -15,35 +15,43 @@ import { z } from "zod";
  * @returns `true` if the checksum is valid, `false` otherwise
  */
 function validateIsinChecksum(isin: string): boolean {
-  const alphanumeric = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const a = isin
-    .substring(0, 11)
-    .split("")
-    .map((char) => alphanumeric.indexOf(char))
-    .join("");
-
-  let even = "";
-  let odd = "";
-  for (let i = 0; i < a.length; i++) {
-    if (i % 2 === 0) {
-      even += a[i];
+  // First, expand alphanumeric characters to their numeric values
+  let expandedString = '';
+  
+  // Process all 12 characters
+  for (let i = 0; i < 12; i++) {
+    const char = isin[i];
+    if (char >= '0' && char <= '9') {
+      expandedString += char;
+    } else if (char >= 'A' && char <= 'Z') {
+      // A=10, B=11, ..., Z=35
+      expandedString += (char.charCodeAt(0) - 'A'.charCodeAt(0) + 10).toString();
     } else {
-      odd += a[i];
+      return false;
     }
   }
-
-  const combined =
-    odd
-      .split("")
-      .map((digit) => Number.parseInt(digit, 10) * 2)
-      .join("") + even;
-
-  const sum = combined
-    .split("")
-    .reduce((acc, digit) => acc + Number.parseInt(digit, 10), 0);
-
-  const checkDigit = (10 - (sum % 10)) % 10;
-  return checkDigit === Number.parseInt(isin[11], 10);
+  
+  // Apply Luhn algorithm to the expanded string
+  let sum = 0;
+  let alternate = false;
+  
+  // Process from right to left
+  for (let i = expandedString.length - 1; i >= 0; i--) {
+    let digit = Number.parseInt(expandedString[i], 10);
+    
+    if (alternate) {
+      digit *= 2;
+      if (digit > 9) {
+        digit = (digit % 10) + 1;
+      }
+    }
+    
+    sum += digit;
+    alternate = !alternate;
+  }
+  
+  // The sum should be divisible by 10
+  return sum % 10 === 0;
 }
 
 /**
