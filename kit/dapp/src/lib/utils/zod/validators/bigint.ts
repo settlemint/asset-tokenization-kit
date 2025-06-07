@@ -25,7 +25,7 @@ import { z } from "zod";
  * apiBigInt.parse("1e30"); // 1000000000000000000000000000000n
  * ```
  */
-export const apiBigInt = z.preprocess((value) => {
+export const apiBigInt = z.preprocess((value, ctx) => {
   // If already a bigint, return as is
   if (typeof value === "bigint") {
     return value;
@@ -33,10 +33,13 @@ export const apiBigInt = z.preprocess((value) => {
 
   // Handle string preprocessing
   if (typeof value === "string") {
-    // Handle multiple decimal points by only keeping the first one
-    const parts = value.split(".");
-    if (parts.length > 2) {
-      value = parts[0] + "." + parts.slice(1).join("");
+    // Reject multiple decimal points
+    if (value.includes(".") && value.split(".").length > 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Invalid BigInt format: multiple decimal points",
+      });
+      return z.NEVER;
     }
   }
 

@@ -209,6 +209,17 @@ describe("apiBigInt", () => {
       expect(() => getApiBigInt(-Infinity)).toThrow();
       expect(() => getApiBigInt(NaN)).toThrow();
     });
+
+    it("should reject multiple decimal points", () => {
+      // Our preprocess function now rejects multiple decimal points
+      expect(() => validator.parse("123.456.789")).toThrow(
+        "Invalid BigInt format: multiple decimal points"
+      );
+      expect(isApiBigInt("123.456.789")).toBe(false);
+      expect(() => getApiBigInt("123.456.789")).toThrow(
+        "Invalid BigInt format: multiple decimal points"
+      );
+    });
   });
 });
 

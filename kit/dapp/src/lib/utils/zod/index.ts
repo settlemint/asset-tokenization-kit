@@ -59,13 +59,7 @@ const logger = createLogger({
  */
 export function safeParse<T extends z.ZodType>(
   schema: T,
-  value: unknown,
-  options?: {
-    /**
-     * Custom error formatter to override default formatting
-     */
-    errorFormatter?: (error: z.ZodError) => string;
-  }
+  value: unknown
 ): z.infer<T> {
   // Attempt to parse the value with the provided schema
   const result = schema.safeParse(value);

@@ -10,6 +10,43 @@
 import { z } from "zod";
 
 /**
+ * Validates an ISIN using the Luhn algorithm checksum.
+ * @param isin - The ISIN string to validate
+ * @returns `true` if the checksum is valid, `false` otherwise
+ */
+function validateIsinChecksum(isin: string): boolean {
+  const alphanumeric = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const a = isin
+    .substring(0, 11)
+    .split("")
+    .map((char) => alphanumeric.indexOf(char))
+    .join("");
+
+  let even = "";
+  let odd = "";
+  for (let i = 0; i < a.length; i++) {
+    if (i % 2 === 0) {
+      even += a[i];
+    } else {
+      odd += a[i];
+    }
+  }
+
+  const combined =
+    odd
+      .split("")
+      .map((digit) => Number.parseInt(digit, 10) * 2)
+      .join("") + even;
+
+  const sum = combined
+    .split("")
+    .reduce((acc, digit) => acc + Number.parseInt(digit, 10), 0);
+
+  const checkDigit = (10 - (sum % 10)) % 10;
+  return checkDigit === Number.parseInt(isin[11], 10);
+}
+
+/**
  * Zod schema for validating International Securities Identification Numbers (ISIN)
  *
  * This schema provides comprehensive validation for ISIN codes with the following features:
@@ -66,12 +103,18 @@ import { z } from "zod";
 export const isin = () =>
   z
     .string()
-    .length(12, "ISIN must be exactly 12 characters long")
-    .regex(
-      /^[A-Za-z]{2}[A-Za-z0-9]{9}[0-9]$/,
-      "ISIN must follow the format: 2 letter country code + 9 alphanumeric characters + 1 check digit"
-    )
     .transform((val) => val.toUpperCase())
+    .pipe(
+      z
+        .string()
+        .min(12, "ISIN must be exactly 12 characters long")
+        .max(12, "ISIN must be exactly 12 characters long")
+        .regex(
+          /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/,
+          "ISIN must follow the format: 2 letter country code + 9 alphanumeric characters + 1 check digit"
+        )
+        .refine(validateIsinChecksum, "Invalid ISIN checksum")
+    )
     .describe("International Securities Identification Number")
     .brand<"ISIN">();
 
@@ -107,7 +150,8 @@ export type ISIN = z.infer<ReturnType<typeof isin>>;
  * ```
  */
 export function isISIN(value: unknown): value is ISIN {
-  return isin().safeParse(value).success;
+  const result = isin().safeParse(value);
+  return result.success;
 }
 
 /**
@@ -132,9 +176,5 @@ export function isISIN(value: unknown): value is ISIN {
  * ```
  */
 export function getISIN(value: unknown): ISIN {
-  try {
-    return isin().parse(value);
-  } catch (error) {
-    throw new Error(`Invalid ISIN: ${value}`);
-  }
+  return isin().parse(value);
 }

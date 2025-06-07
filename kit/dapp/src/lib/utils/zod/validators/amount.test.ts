@@ -17,12 +17,18 @@ describe("amount", () => {
     });
 
     it("should reject zero by default", () => {
-      expect(() => validator.parse(0)).toThrow("Amount must be at least");
+      expect(() => validator.parse(0)).toThrow(
+        `Amount must be at least ${Number.EPSILON}`
+      );
     });
 
     it("should reject negative numbers", () => {
-      expect(() => validator.parse(-1)).toThrow("Amount must be at least");
-      expect(() => validator.parse(-0.01)).toThrow("Amount must be at least");
+      expect(() => validator.parse(-1)).toThrow(
+        `Amount must be at least ${Number.EPSILON}`
+      );
+      expect(() => validator.parse(-0.01)).toThrow(
+        `Amount must be at least ${Number.EPSILON}`
+      );
     });
 
     it("should reject non-numeric types", () => {
@@ -105,7 +111,7 @@ describe("amount", () => {
     });
 
     it("should still reject negative numbers", () => {
-      expect(() => validator.parse(-1)).toThrow("Amount is required");
+      expect(() => validator.parse(-1)).toThrow("Amount must be at least 0");
     });
   });
 });
@@ -126,8 +132,12 @@ describe("helper functions", () => {
 
     it("should get valid amounts", () => {
       expect(getAmount(100)).toBe(getAmount(100));
-      expect(() => getAmount("not a number")).toThrow("Expected number, received string");
-      expect(() => getAmount(5, { min: 10 })).toThrow("Amount must be at least 10");
+      expect(() => getAmount("not a number")).toThrow(
+        "Expected number, received string"
+      );
+      expect(() => getAmount(5, { min: 10 })).toThrow(
+        "Amount must be at least 10"
+      );
       expect(getAmount(15, { min: 10 })).toBe(getAmount(15, { min: 10 }));
     });
   });

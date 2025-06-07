@@ -6,54 +6,54 @@ describe("isin", () => {
 
   describe("valid ISINs", () => {
     it("should accept valid ISINs", () => {
-      expect(validator.parse("US0378331005")).toBe(getISIN("US0378331005")); // Apple Inc.
-      expect(validator.parse("GB0002634946")).toBe(getISIN("GB0002634946")); // BAE Systems
-      expect(validator.parse("DE0005557508")).toBe(getISIN("DE0005557508")); // Deutsche Telekom
-      expect(validator.parse("FR0000120271")).toBe(getISIN("FR0000120271")); // Total SE
-      expect(validator.parse("CA0679011084")).toBe(getISIN("CA0679011084")); // Barrick Gold
+      expect(validator.parse("US0378331005")).toBe("US0378331005" as ISIN); // Apple Inc.
+      expect(validator.parse("GB0002634946")).toBe("GB0002634946" as ISIN); // BAE Systems
+      expect(validator.parse("DE0005557508")).toBe("DE0005557508" as ISIN); // Deutsche Telekom
+      expect(validator.parse("FR0000120271")).toBe("FR0000120271" as ISIN); // Total SE
+      expect(validator.parse("CA0679011084")).toBe("CA0679011084" as ISIN); // Barrick Gold
     });
 
     it("should transform lowercase to uppercase", () => {
-      expect(validator.parse("us0378331005")).toBe(getISIN("US0378331005"));
-      expect(validator.parse("gb0002634946")).toBe(getISIN("GB0002634946"));
+      expect(validator.parse("us0378331005")).toBe("US0378331005" as ISIN);
+      expect(validator.parse("gb0002634946")).toBe("GB0002634946" as ISIN);
     });
 
     it("should accept ISINs from different countries", () => {
-      expect(validator.parse("CH0012221716")).toBe(getISIN("CH0012221716")); // ABB
-      expect(validator.parse("NL0000009355")).toBe(getISIN("NL0000009355")); // Unilever
+      expect(validator.parse("CH0012221716")).toBe("CH0012221716" as ISIN); // ABB
+      expect(validator.parse("NL0000009355")).toBe("NL0000009355" as ISIN); // Unilever
     });
 
     it("should accept a valid ISIN", () => {
       const validIsin = "US0378331005";
-      expect(validator.parse(validIsin)).toBe(getISIN(validIsin));
+      expect(validator.parse(validIsin)).toBe(validIsin as ISIN);
       expect(isISIN(validIsin)).toBe(true);
-      expect(getISIN(validIsin)).toBe(getISIN(validIsin));
+      expect(getISIN(validIsin)).toBe(validIsin as ISIN);
     });
 
     it("should transform a lowercase ISIN to uppercase", () => {
       const lowerIsin = "us0378331005";
       const upperIsin = "US0378331005";
-      expect(validator.parse(lowerIsin)).toBe(upperIsin);
+      expect(validator.parse(lowerIsin)).toBe(upperIsin as ISIN);
       expect(isISIN(lowerIsin)).toBe(true);
-      expect(getISIN(lowerIsin)).toBe(upperIsin);
+      expect(getISIN(lowerIsin)).toBe(upperIsin as ISIN);
     });
 
     it("should accept ISIN with different country codes", () => {
       const deIsin = "DE0005557508";
       const gbIsin = "GB00B03MLX29";
-      expect(validator.parse(deIsin)).toBe(getISIN(deIsin));
-      expect(validator.parse(gbIsin)).toBe(getISIN(gbIsin));
+      expect(validator.parse(deIsin)).toBe(deIsin as ISIN);
+      expect(validator.parse(gbIsin)).toBe(gbIsin as ISIN);
       expect(isISIN(deIsin)).toBe(true);
       expect(isISIN(gbIsin)).toBe(true);
-      expect(getISIN(deIsin)).toBe(getISIN(deIsin));
-      expect(getISIN(gbIsin)).toBe(getISIN(gbIsin));
+      expect(getISIN(deIsin)).toBe(deIsin as ISIN);
+      expect(getISIN(gbIsin)).toBe(gbIsin as ISIN);
     });
 
     it("should handle ISIN with check digit 0", () => {
       const zeroCheckDigit = "DE0005557508";
-      expect(validator.parse(zeroCheckDigit)).toBe(getISIN(zeroCheckDigit));
+      expect(validator.parse(zeroCheckDigit)).toBe(zeroCheckDigit as ISIN);
       expect(isISIN(zeroCheckDigit)).toBe(true);
-      expect(getISIN(zeroCheckDigit)).toBe(getISIN(zeroCheckDigit));
+      expect(getISIN(zeroCheckDigit)).toBe(zeroCheckDigit as ISIN);
     });
   });
 
@@ -67,6 +67,12 @@ describe("isin", () => {
       );
       expect(() => validator.parse("")).toThrow(
         "ISIN must be exactly 12 characters long"
+      );
+    });
+
+    it("should reject ISINs with invalid checksum", () => {
+      expect(() => validator.parse("US0378331006")).toThrow(
+        "Invalid ISIN checksum"
       );
     });
 
@@ -129,7 +135,7 @@ describe("isin", () => {
       const result = validator.safeParse("US0378331005");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe(getISIN("US0378331005"));
+        expect(result.data).toBe("US0378331005" as ISIN);
       }
     });
 
@@ -155,7 +161,7 @@ describe("isin", () => {
       expect(isISIN("")).toBe(false);
       expect(isISIN("1S0378331005")).toBe(false); // invalid country code
       expect(isISIN("U10378331005")).toBe(false); // invalid country code
-      expect(isISIN("us0378331005")).toBe(true); // lowercase transformed to uppercase
+      expect(isISIN("us0378331005")).toBe(true); // lowercase is accepted and transformed
       expect(isISIN("US037833100-")).toBe(false); // invalid character
       expect(isISIN("US037833100$")).toBe(false); // invalid character
       expect(isISIN("US037833100 ")).toBe(false); // space
@@ -169,25 +175,19 @@ describe("isin", () => {
     it("should return valid ISINs when input is valid", () => {
       const validIsin = "US0378331005";
       const result = getISIN(validIsin);
-      expect(result).toBe(getISIN(validIsin));
+      expect(result).toBe(validIsin as ISIN);
     });
 
     it("should throw for invalid ISINs", () => {
-      expect(() => getISIN("US037833100")).toThrow("Invalid ISIN: US037833100");
-      expect(() => getISIN("")).toThrow("Invalid ISIN: ");
-      expect(() => getISIN("1S0378331005")).toThrow(
-        "Invalid ISIN: 1S0378331005"
-      );
-      expect(() => getISIN("US037833100-")).toThrow(
-        "Invalid ISIN: US037833100-"
-      );
-      expect(() => getISIN("US037833100A")).toThrow(
-        "Invalid ISIN: US037833100A"
-      );
-      expect(() => getISIN(123456789012)).toThrow("Invalid ISIN: 123456789012");
-      expect(() => getISIN(null)).toThrow("Invalid ISIN: null");
-      expect(() => getISIN(undefined)).toThrow("Invalid ISIN: undefined");
-      expect(() => getISIN({})).toThrow("Invalid ISIN: [object Object]");
+      expect(() => getISIN("US037833100")).toThrow();
+      expect(() => getISIN("")).toThrow();
+      expect(() => getISIN("1S0378331005")).toThrow();
+      expect(() => getISIN("US037833100-")).toThrow();
+      expect(() => getISIN("US037833100A")).toThrow();
+      expect(() => getISIN(123456789012)).toThrow();
+      expect(() => getISIN(null)).toThrow();
+      expect(() => getISIN(undefined)).toThrow();
+      expect(() => getISIN({})).toThrow();
     });
 
     it("isISIN should work as type guard", () => {
@@ -203,7 +203,7 @@ describe("isin", () => {
       const result = getISIN(validIsin);
       // TypeScript should recognize result as ISIN
       const _typeCheck: ISIN = result;
-      expect(result).toBe(getISIN(validIsin));
+      expect(result).toBe(validIsin as ISIN);
     });
   });
 });

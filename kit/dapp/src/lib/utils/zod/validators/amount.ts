@@ -73,12 +73,7 @@ export const amount = ({
   // Build the base schema with min/max validation
   const baseSchema = z
     .number()
-    .min(
-      minimum,
-      minimum === 0
-        ? "Amount is required"
-        : `Amount must be at least ${minimum}`
-    )
+    .min(minimum, { message: `Amount must be at least ${minimum}` })
     .max(max, `Amount must not exceed ${max}`);
 
   // Add decimal place validation if decimals is specified
