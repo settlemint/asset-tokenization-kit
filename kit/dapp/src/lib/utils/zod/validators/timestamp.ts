@@ -66,20 +66,15 @@ export const timestamp = () =>
       // Handle numeric strings that represent timestamps
       if (typeof value === "string" && /^\d+$/.test(value)) {
         const num = Number(value);
-        if (!isNaN(num)) {
-          // Check for negative before conversion
-          if (num < 0) {
-            throw new Error("Timestamp cannot be negative");
-          }
-          // Detect timestamp precision based on length
-          const len = value.length;
-          if (len === 10) return new Date(num * 1000); // Unix seconds to milliseconds
-          if (len === 13) return new Date(num); // Already milliseconds
-          if (len === 16) return new Date(num / 1000); // Microseconds to milliseconds
-          if (len === 19) return new Date(num / 1000000); // Nanoseconds to milliseconds
-          // For other lengths, use heuristic
-          return new Date(num < 10000000000 ? num * 1000 : num);
-        }
+        // No need to check isNaN - a string of only digits always parses to a valid number
+        // Detect timestamp precision based on length
+        const len = value.length;
+        if (len === 10) return new Date(num * 1000); // Unix seconds to milliseconds
+        if (len === 13) return new Date(num); // Already milliseconds
+        if (len === 16) return new Date(num / 1000); // Microseconds to milliseconds
+        if (len === 19) return new Date(num / 1000000); // Nanoseconds to milliseconds
+        // For other lengths, use heuristic
+        return new Date(num < 10000000000 ? num * 1000 : num);
       }
 
       // Handle any other string (ISO dates, etc)

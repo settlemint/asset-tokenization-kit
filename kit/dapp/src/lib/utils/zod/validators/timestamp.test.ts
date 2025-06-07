@@ -119,6 +119,17 @@ describe("timestamp", () => {
       const result2 = validator.parse("16803540000");
       expect(result2.getTime()).toBe(16803540000);
     });
+
+    it("should handle negative numeric string timestamps", () => {
+      // Negative numeric strings don't match the /^\d+$/ pattern, so they're handled as regular date strings
+      // "-1680350400" is invalid and throws
+      expect(() => validator.parse("-1680350400")).toThrow("Invalid date string format");
+      
+      // However, "-1" is interpreted by JavaScript Date as year 2001 (weird but true)
+      const result = validator.parse("-1");
+      expect(result).toBeInstanceOf(Date);
+      expect(result.getFullYear()).toBe(2001);
+    });
   });
 
   describe("invalid inputs", () => {
@@ -140,6 +151,10 @@ describe("timestamp", () => {
       // Test a numeric string that's too large to be accurately represented
       // This will cause Number() to lose precision and the date parsing to fail
       expect(() => validator.parse("99999999999999999999999999")).toThrow();
+      
+      // Test an extremely large number that might cause issues
+      const hugeNumber = "9".repeat(1000); // 1000 nines
+      expect(() => validator.parse(hugeNumber)).toThrow();
     });
 
     it("should handle edge case where milliseconds value is passed directly", () => {
