@@ -206,9 +206,5 @@ export function isTimestamp(value: unknown): value is Timestamp {
  * ```
  */
 export function getTimestamp(value: unknown): Timestamp {
-  const result = timestamp().safeParse(value);
-  if (!result.success) {
-    throw new Error("Invalid timestamp format");
-  }
-  return result.data;
+  return timestamp().parse(value);
 }

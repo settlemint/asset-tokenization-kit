@@ -112,8 +112,5 @@ export function isVerificationCode(value: unknown): value is VerificationCode {
  * ```
  */
 export function getVerificationCode(value: unknown): VerificationCode {
-  if (!isVerificationCode(value)) {
-    throw new Error("Invalid verification code. Must be exactly 8 characters containing only uppercase letters and numbers");
-  }
-  return value;
+  return verificationCode().parse(value);
 }

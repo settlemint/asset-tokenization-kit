@@ -239,10 +239,7 @@ export function isAssetType(value: unknown): value is AssetType {
  * ```
  */
 export function getAssetType(value: unknown): AssetType {
-  if (!isAssetType(value)) {
-    throw new Error("Invalid asset type. Must be one of: bond, cryptocurrency, equity, fund, stablecoin, or deposit");
-  }
-  return value;
+  return assetType().parse(value);
 }
 
 /**
@@ -276,11 +273,7 @@ export function isAssetTypeArray(value: unknown): value is AssetTypeArray {
  * ```
  */
 export function getAssetTypeArray(value: unknown): AssetTypeArray {
-  const result = assetTypeArray().safeParse(value);
-  if (!result.success) {
-    throw new Error("Invalid asset type array. Must contain at least one valid asset type");
-  }
-  return result.data;
+  return assetTypeArray().parse(value);
 }
 
 /**
@@ -315,9 +308,5 @@ export function isAssetTypeSet(value: unknown): value is AssetTypeSet {
  * ```
  */
 export function getAssetTypeSet(value: unknown): AssetTypeSet {
-  const result = assetTypeSet().safeParse(value);
-  if (!result.success) {
-    throw new Error("Invalid asset type set. Must contain at least one valid asset type");
-  }
-  return result.data;
+  return assetTypeSet().parse(value);
 }

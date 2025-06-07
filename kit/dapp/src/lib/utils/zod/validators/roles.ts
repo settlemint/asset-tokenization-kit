@@ -140,10 +140,7 @@ export function isRole(value: unknown): value is Role {
  * ```
  */
 export function getRole(value: unknown): Role {
-  if (!isRole(value)) {
-    throw new Error("Invalid role. Must be one of: admin, issuer, manager, compliance, auditor, or investor");
-  }
-  return value;
+  return role().parse(value);
 }
 
 /**
@@ -188,8 +185,5 @@ export function isRoleMap(value: unknown): value is RoleMap {
  * ```
  */
 export function getRoleMap(value: unknown): RoleMap {
-  if (!isRoleMap(value)) {
-    throw new Error("Invalid role mapping. All values must be valid system roles");
-  }
-  return value;
+  return roleMap().parse(value);
 }

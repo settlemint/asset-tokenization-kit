@@ -110,8 +110,5 @@ export function isVerificationType(value: unknown): value is VerificationType {
  * ```
  */
 export function getVerificationType(value: unknown): VerificationType {
-  if (!isVerificationType(value)) {
-    throw new Error("Invalid verification type. Must be one of: email, phone, or identity");
-  }
-  return value;
+  return verificationType().parse(value);
 }

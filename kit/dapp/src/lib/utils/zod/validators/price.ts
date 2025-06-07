@@ -119,8 +119,5 @@ export function isPrice(value: unknown): value is Price {
  * ```
  */
 export function getPrice(value: unknown): Price {
-  if (!isPrice(value)) {
-    throw new Error("Invalid price. Must be a positive number with maximum 4 decimal places");
-  }
-  return value;
+  return price().parse(value);
 }

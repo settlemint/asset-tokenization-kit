@@ -113,8 +113,5 @@ export function isTimeUnit(value: unknown): value is TimeUnit {
  * ```
  */
 export function getTimeUnit(value: unknown): TimeUnit {
-  if (!isTimeUnit(value)) {
-    throw new Error("Invalid time unit. Must be one of: seconds, minutes, hours, days, weeks, months, or years");
-  }
-  return value;
+  return timeUnit().parse(value);
 }

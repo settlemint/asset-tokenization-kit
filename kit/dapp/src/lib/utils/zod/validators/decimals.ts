@@ -99,8 +99,5 @@ export function isDecimals(value: unknown): value is Decimals {
  * ```
  */
 export function getDecimals(value: unknown): Decimals {
-  if (!isDecimals(value)) {
-    throw new Error("Invalid decimals. Must be an integer between 0 and 18");
-  }
-  return value;
+  return decimals().parse(value);
 }

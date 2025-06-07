@@ -95,8 +95,5 @@ export function isEquityCategory(value: unknown): value is EquityCategory {
  * ```
  */
 export function getEquityCategory(value: unknown): EquityCategory {
-  if (!isEquityCategory(value)) {
-    throw new Error("Invalid equity category. Must be one of: common, preferred, or restricted");
-  }
-  return value;
+  return equityCategory().parse(value);
 }

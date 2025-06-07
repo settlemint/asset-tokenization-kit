@@ -96,8 +96,5 @@ export function isDuration(value: unknown): value is Duration {
  * ```
  */
 export function getDuration(value: unknown): Duration {
-  if (!isDuration(value)) {
-    throw new Error("Invalid duration. Must be a positive integer representing milliseconds");
-  }
-  return value;
+  return duration().parse(value);
 }

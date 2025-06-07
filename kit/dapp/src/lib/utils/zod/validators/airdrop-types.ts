@@ -72,9 +72,5 @@ export function isAirdropType(value: unknown): value is AirdropType {
  * ```
  */
 export function getAirdropType(value: unknown): AirdropType {
-  // First check if the value is valid using the type guard
-  if (!isAirdropType(value)) {
-    throw new Error("Invalid airdrop type. Must be one of: whitelist, merkle, or claim");
-  }
-  return value;
+  return airdropType().parse(value);
 }

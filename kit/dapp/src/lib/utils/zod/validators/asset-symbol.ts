@@ -132,8 +132,5 @@ export function isAssetSymbol(value: unknown): value is AssetSymbol {
  * ```
  */
 export function getAssetSymbol(value: unknown): AssetSymbol {
-  if (!isAssetSymbol(value)) {
-    throw new Error("Invalid asset symbol. Must be 1-12 characters containing only uppercase letters and numbers");
-  }
-  return value;
+  return assetSymbol().parse(value);
 }

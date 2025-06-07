@@ -98,8 +98,5 @@ export function isFundCategory(value: unknown): value is FundCategory {
  * ```
  */
 export function getFundCategory(value: unknown): FundCategory {
-  if (!isFundCategory(value)) {
-    throw new Error("Invalid fund category. Must be one of: mutual, hedge, etf, or index");
-  }
-  return value;
+  return fundCategory().parse(value);
 }

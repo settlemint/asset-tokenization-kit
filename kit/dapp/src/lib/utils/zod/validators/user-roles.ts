@@ -106,8 +106,5 @@ export function isUserRole(value: unknown): value is UserRole {
  * ```
  */
 export function getUserRole(value: unknown): UserRole {
-  if (!isUserRole(value)) {
-    throw new Error("Invalid user role. Must be one of: admin, user, or viewer");
-  }
-  return value;
+  return userRole().parse(value);
 }

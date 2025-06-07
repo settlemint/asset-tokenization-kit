@@ -99,8 +99,5 @@ export function isEquityClass(value: unknown): value is EquityClass {
  * ```
  */
 export function getEquityClass(value: unknown): EquityClass {
-  if (!isEquityClass(value)) {
-    throw new Error("Invalid equity class. Must be one of: A, B, or C");
-  }
-  return value;
+  return equityClass().parse(value);
 }

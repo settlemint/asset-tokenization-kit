@@ -167,10 +167,5 @@ export function getAmount(value: unknown, options?: AmountOptions): Amount {
     return amount({ allowZero: true }).parse(value);
   }
 
-  // Attempt to parse the value with the provided options
-  const result = amount(options).safeParse(value);
-  if (!result.success) {
-    throw new Error("Invalid amount. Must be a positive number");
-  }
-  return result.data;
+  return amount(options).parse(value);
 }

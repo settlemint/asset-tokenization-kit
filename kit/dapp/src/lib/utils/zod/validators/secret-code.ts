@@ -107,8 +107,5 @@ export function isSecretCode(value: unknown): value is SecretCode {
  * ```
  */
 export function getSecretCode(value: unknown): SecretCode {
-  if (!isSecretCode(value)) {
-    throw new Error("Invalid secret code. Must be between 8 and 64 characters");
-  }
-  return value;
+  return secretCode().parse(value);
 }

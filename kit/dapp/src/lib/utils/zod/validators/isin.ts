@@ -132,9 +132,5 @@ export function isISIN(value: unknown): value is ISIN {
  * ```
  */
 export function getISIN(value: unknown): ISIN {
-  const result = isin().safeParse(value);
-  if (!result.success) {
-    throw new Error("Invalid ISIN. Must be 12 characters: 2 letter country code + 9 alphanumeric characters + 1 check digit");
-  }
-  return result.data;
+  return isin().parse(value);
 }

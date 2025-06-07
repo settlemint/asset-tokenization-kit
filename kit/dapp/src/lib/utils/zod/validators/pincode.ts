@@ -133,8 +133,5 @@ export function isPincode(value: unknown): value is Pincode {
  * ```
  */
 export function getPincode(value: unknown): Pincode {
-  if (!isPincode(value)) {
-    throw new Error("Invalid PIN code. Must be exactly 6 numeric digits");
-  }
-  return value;
+  return pincode().parse(value);
 }

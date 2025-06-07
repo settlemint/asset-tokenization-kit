@@ -150,9 +150,5 @@ export function isBigDecimal(value: unknown): value is BigDecimal {
  * ```
  */
 export function getBigDecimal(value: unknown): BigDecimal {
-  const result = bigDecimal().safeParse(value);
-  if (!result.success) {
-    throw new Error("Invalid big decimal. Must be a valid numeric string");
-  }
-  return result.data;
+  return bigDecimal().parse(value);
 }

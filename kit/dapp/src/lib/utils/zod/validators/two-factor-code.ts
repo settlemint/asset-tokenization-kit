@@ -110,8 +110,5 @@ export function isTwoFactorCode(value: unknown): value is TwoFactorCode {
  * ```
  */
 export function getTwoFactorCode(value: unknown): TwoFactorCode {
-  if (!isTwoFactorCode(value)) {
-    throw new Error("Invalid two-factor authentication code. Must be exactly 6 numeric digits");
-  }
-  return value;
+  return twoFactorCode().parse(value);
 }
