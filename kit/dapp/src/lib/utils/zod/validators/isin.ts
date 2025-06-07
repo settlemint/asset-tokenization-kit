@@ -132,5 +132,9 @@ export function isISIN(value: unknown): value is ISIN {
  * ```
  */
 export function getISIN(value: unknown): ISIN {
-  return isin().parse(value);
+  try {
+    return isin().parse(value);
+  } catch (error) {
+    throw new Error(`Invalid ISIN: ${value}`);
+  }
 }

@@ -33,46 +33,46 @@ describe("twoFactorCode", () => {
   describe("invalid 2FA codes", () => {
     it("should reject codes with wrong length", () => {
       expect(() => validator.parse("12345")).toThrow(
-        "2FA code must be exactly 6 digits"
+        "Two-factor code must be exactly 6 digits"
       );
       expect(() => validator.parse("1234567")).toThrow(
-        "2FA code must be exactly 6 digits"
+        "Two-factor code must be exactly 6 digits"
       );
       expect(() => validator.parse("")).toThrow(
-        "2FA code must be exactly 6 digits"
+        "Two-factor code must be exactly 6 digits"
       );
       expect(() => validator.parse("1")).toThrow(
-        "2FA code must be exactly 6 digits"
+        "Two-factor code must be exactly 6 digits"
       );
     });
 
     it("should reject non-numeric characters", () => {
       expect(() => validator.parse("12345a")).toThrow(
-        "2FA code must contain only digits"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("a23456")).toThrow(
-        "2FA code must contain only digits"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("12-456")).toThrow(
-        "2FA code must contain only digits"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("12 456")).toThrow(
-        "2FA code must contain only digits"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
     });
 
     it("should reject special characters", () => {
       expect(() => validator.parse("!23456")).toThrow(
-        "2FA code must contain only digits"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("12345$")).toThrow(
-        "2FA code must contain only digits"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("12#456")).toThrow(
-        "2FA code must contain only digits"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("12.456")).toThrow(
-        "2FA code must contain only digits"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
     });
 
@@ -152,38 +152,38 @@ describe("helper functions", () => {
 
     it("should throw for invalid 2FA codes", () => {
       expect(() => getTwoFactorCode("12345")).toThrow(
-        "Invalid two-factor code: 12345"
+        "Two-factor code must be exactly 6 digits"
       );
       expect(() => getTwoFactorCode("1234567")).toThrow(
-        "Invalid two-factor code: 1234567"
+        "Two-factor code must be exactly 6 digits"
       );
-      expect(() => getTwoFactorCode("")).toThrow("Invalid two-factor code: ");
+      expect(() => getTwoFactorCode("")).toThrow("Two-factor code must be exactly 6 digits");
       expect(() => getTwoFactorCode("12345a")).toThrow(
-        "Invalid two-factor code: 12345a"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
       expect(() => getTwoFactorCode("a23456")).toThrow(
-        "Invalid two-factor code: a23456"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
       expect(() => getTwoFactorCode("12-456")).toThrow(
-        "Invalid two-factor code: 12-456"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
       expect(() => getTwoFactorCode("12 456")).toThrow(
-        "Invalid two-factor code: 12 456"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
       expect(() => getTwoFactorCode("!23456")).toThrow(
-        "Invalid two-factor code: !23456"
+        "Two-factor code must contain only numeric digits (0-9)"
       );
       expect(() => getTwoFactorCode(123456)).toThrow(
-        "Invalid two-factor code: 123456"
+        "Expected string, received number"
       );
       expect(() => getTwoFactorCode(null)).toThrow(
-        "Invalid two-factor code: null"
+        "Expected string, received null"
       );
       expect(() => getTwoFactorCode(undefined)).toThrow(
-        "Invalid two-factor code: undefined"
+        "Required"
       );
       expect(() => getTwoFactorCode({})).toThrow(
-        "Invalid two-factor code: [object Object]"
+        "Expected string, received object"
       );
     });
   });

@@ -46,31 +46,31 @@ describe("pincode", () => {
 
     it("should reject non-numeric characters", () => {
       expect(() => validator.parse("12345a")).toThrow(
-        "PIN code must contain only digits"
+        "PIN code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("a23456")).toThrow(
-        "PIN code must contain only digits"
+        "PIN code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("12-456")).toThrow(
-        "PIN code must contain only digits"
+        "PIN code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("12 456")).toThrow(
-        "PIN code must contain only digits"
+        "PIN code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("12.456")).toThrow(
-        "PIN code must contain only digits"
+        "PIN code must contain only numeric digits (0-9)"
       );
     });
 
     it("should reject special characters", () => {
       expect(() => validator.parse("!23456")).toThrow(
-        "PIN code must contain only digits"
+        "PIN code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("12345$")).toThrow(
-        "PIN code must contain only digits"
+        "PIN code must contain only numeric digits (0-9)"
       );
       expect(() => validator.parse("12#456")).toThrow(
-        "PIN code must contain only digits"
+        "PIN code must contain only numeric digits (0-9)"
       );
     });
 
@@ -139,17 +139,15 @@ describe("helper functions", () => {
     });
 
     it("should throw for invalid pincodes", () => {
-      expect(() => getPincode("12345")).toThrow("Invalid PIN code: 12345");
-      expect(() => getPincode("")).toThrow("Invalid PIN code: ");
-      expect(() => getPincode("12345a")).toThrow("Invalid PIN code: 12345a");
-      expect(() => getPincode("123 45")).toThrow("Invalid PIN code: 123 45");
-      expect(() => getPincode("123-45")).toThrow("Invalid PIN code: 123-45");
-      expect(() => getPincode(123456)).toThrow("Invalid PIN code: 123456");
-      expect(() => getPincode(null)).toThrow("Invalid PIN code: null");
-      expect(() => getPincode(undefined)).toThrow(
-        "Invalid PIN code: undefined"
-      );
-      expect(() => getPincode({})).toThrow("Invalid PIN code: [object Object]");
+      expect(() => getPincode("12345")).toThrow("PIN code must be exactly 6 digits");
+      expect(() => getPincode("")).toThrow("PIN code must be exactly 6 digits");
+      expect(() => getPincode("12345a")).toThrow("PIN code must contain only numeric digits (0-9)");
+      expect(() => getPincode("123 45")).toThrow("PIN code must contain only numeric digits (0-9)");
+      expect(() => getPincode("123-45")).toThrow("PIN code must contain only numeric digits (0-9)");
+      expect(() => getPincode(123456)).toThrow("Expected string, received number");
+      expect(() => getPincode(null)).toThrow("Expected string, received null");
+      expect(() => getPincode(undefined)).toThrow("Required");
+      expect(() => getPincode({})).toThrow("Expected string, received object");
     });
 
     it("isPincode should work as type guard", () => {

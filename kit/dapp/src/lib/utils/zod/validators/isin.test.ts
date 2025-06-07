@@ -60,43 +60,43 @@ describe("isin", () => {
   describe("invalid ISINs", () => {
     it("should reject ISINs with wrong length", () => {
       expect(() => validator.parse("US037833100")).toThrow(
-        "ISIN must be exactly 12 characters"
+        "ISIN must be exactly 12 characters long"
       );
       expect(() => validator.parse("US03783310055")).toThrow(
-        "ISIN must be exactly 12 characters"
+        "ISIN must be exactly 12 characters long"
       );
       expect(() => validator.parse("")).toThrow(
-        "ISIN must be exactly 12 characters"
+        "ISIN must be exactly 12 characters long"
       );
     });
 
     it("should reject ISINs with invalid country code", () => {
       expect(() => validator.parse("1S0378331005")).toThrow(
-        "Invalid ISIN format"
+        "ISIN must follow the format: 2 letter country code + 9 alphanumeric characters + 1 check digit"
       );
       expect(() => validator.parse("U10378331005")).toThrow(
-        "Invalid ISIN format"
+        "ISIN must follow the format: 2 letter country code + 9 alphanumeric characters + 1 check digit"
       );
     });
 
     it("should reject ISINs with invalid characters", () => {
       expect(() => validator.parse("US037833100-")).toThrow(
-        "Invalid ISIN format"
+        "ISIN must follow the format: 2 letter country code + 9 alphanumeric characters + 1 check digit"
       );
       expect(() => validator.parse("US037833100$")).toThrow(
-        "Invalid ISIN format"
+        "ISIN must follow the format: 2 letter country code + 9 alphanumeric characters + 1 check digit"
       );
       expect(() => validator.parse("US037833100 ")).toThrow(
-        "Invalid ISIN format"
+        "ISIN must follow the format: 2 letter country code + 9 alphanumeric characters + 1 check digit"
       );
     });
 
     it("should reject ISINs without final check digit", () => {
       expect(() => validator.parse("US037833100A")).toThrow(
-        "Invalid ISIN format"
+        "ISIN must follow the format: 2 letter country code + 9 alphanumeric characters + 1 check digit"
       );
       expect(() => validator.parse("US037833100X")).toThrow(
-        "Invalid ISIN format"
+        "ISIN must follow the format: 2 letter country code + 9 alphanumeric characters + 1 check digit"
       );
     });
 

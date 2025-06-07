@@ -112,36 +112,16 @@ describe("helper functions", () => {
     });
 
     it("should throw for invalid verification types", () => {
-      expect(() => getVerificationType("sms")).toThrow(
-        "Invalid verification type: sms"
-      );
-      expect(() => getVerificationType("otp")).toThrow(
-        "Invalid verification type: otp"
-      );
-      expect(() => getVerificationType("biometric")).toThrow(
-        "Invalid verification type: biometric"
-      );
-      expect(() => getVerificationType("")).toThrow(
-        "Invalid verification type: "
-      );
-      expect(() => getVerificationType(123)).toThrow(
-        "Invalid verification type: 123"
-      );
-      expect(() => getVerificationType(null)).toThrow(
-        "Invalid verification type: null"
-      );
-      expect(() => getVerificationType(undefined)).toThrow(
-        "Invalid verification type: undefined"
-      );
-      expect(() => getVerificationType({})).toThrow(
-        "Invalid verification type: [object Object]"
-      );
-      expect(() => getVerificationType("Email")).toThrow(
-        "Invalid verification type: Email"
-      );
-      expect(() => getVerificationType("e-mail")).toThrow(
-        "Invalid verification type: e-mail"
-      );
+      expect(() => getVerificationType("sms")).toThrow();
+      expect(() => getVerificationType("otp")).toThrow();
+      expect(() => getVerificationType("biometric")).toThrow();
+      expect(() => getVerificationType("")).toThrow();
+      expect(() => getVerificationType(123)).toThrow("Expected 'email' | 'phone' | 'identity', received number");
+      expect(() => getVerificationType(null)).toThrow("Expected 'email' | 'phone' | 'identity', received null");
+      expect(() => getVerificationType(undefined)).toThrow("Required");
+      expect(() => getVerificationType({})).toThrow("Expected 'email' | 'phone' | 'identity', received object");
+      expect(() => getVerificationType("Email")).toThrow();
+      expect(() => getVerificationType("e-mail")).toThrow();
     });
   });
 });

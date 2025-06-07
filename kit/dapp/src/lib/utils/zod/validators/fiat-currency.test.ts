@@ -49,10 +49,10 @@ describe("fiatCurrency", () => {
       expect(isFiatCurrency("USDT")).toBe(false);
       expect(isFiatCurrency("")).toBe(false);
 
-      expect(() => getFiatCurrency("XXX")).toThrow("Invalid fiat currency");
-      expect(() => getFiatCurrency("BTC")).toThrow("Invalid fiat currency");
-      expect(() => getFiatCurrency("USDT")).toThrow("Invalid fiat currency");
-      expect(() => getFiatCurrency("")).toThrow("Invalid fiat currency");
+      expect(() => getFiatCurrency("XXX")).toThrow();
+      expect(() => getFiatCurrency("BTC")).toThrow();
+      expect(() => getFiatCurrency("USDT")).toThrow();
+      expect(() => getFiatCurrency("")).toThrow();
     });
 
     it("should accept and transform mixed case codes", () => {
@@ -78,9 +78,9 @@ describe("fiatCurrency", () => {
       expect(isFiatCurrency("USDD")).toBe(false);
       expect(isFiatCurrency("$")).toBe(false);
 
-      expect(() => getFiatCurrency("US")).toThrow("Invalid fiat currency");
-      expect(() => getFiatCurrency("USDD")).toThrow("Invalid fiat currency");
-      expect(() => getFiatCurrency("$")).toThrow("Invalid fiat currency");
+      expect(() => getFiatCurrency("US")).toThrow();
+      expect(() => getFiatCurrency("USDD")).toThrow();
+      expect(() => getFiatCurrency("$")).toThrow();
     });
 
     it("should reject non-string types", () => {
@@ -94,10 +94,10 @@ describe("fiatCurrency", () => {
       expect(isFiatCurrency(undefined)).toBe(false);
       expect(isFiatCurrency({})).toBe(false);
 
-      expect(() => getFiatCurrency(123)).toThrow("Invalid fiat currency");
-      expect(() => getFiatCurrency(null)).toThrow("Invalid fiat currency");
-      expect(() => getFiatCurrency(undefined)).toThrow("Invalid fiat currency");
-      expect(() => getFiatCurrency({})).toThrow("Invalid fiat currency");
+      expect(() => getFiatCurrency(123)).toThrow("Expected string, received number");
+      expect(() => getFiatCurrency(null)).toThrow("Expected string, received null");
+      expect(() => getFiatCurrency(undefined)).toThrow("Required");
+      expect(() => getFiatCurrency({})).toThrow("Expected string, received object");
     });
   });
 

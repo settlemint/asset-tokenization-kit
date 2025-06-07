@@ -54,31 +54,31 @@ describe("verificationCode", () => {
 
     it("should reject lowercase letters", () => {
       expect(() => validator.parse("abcd1234") as string).toThrow(
-        "Verification code must contain only uppercase letters and digits"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
       expect(() => validator.parse("ABCD12ab") as string).toThrow(
-        "Verification code must contain only uppercase letters and digits"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
       expect(() => validator.parse("AbCd1234") as string).toThrow(
-        "Verification code must contain only uppercase letters and digits"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
     });
 
     it("should reject special characters", () => {
       expect(() => validator.parse("ABCD-234") as string).toThrow(
-        "Verification code must contain only uppercase letters and digits"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
       expect(() => validator.parse("ABCD_234") as string).toThrow(
-        "Verification code must contain only uppercase letters and digits"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
       expect(() => validator.parse("ABCD.234") as string).toThrow(
-        "Verification code must contain only uppercase letters and digits"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
       expect(() => validator.parse("ABCD!234") as string).toThrow(
-        "Verification code must contain only uppercase letters and digits"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
       expect(() => validator.parse("ABCD 234") as string).toThrow(
-        "Verification code must contain only uppercase letters and digits"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
     });
 
@@ -159,37 +159,37 @@ describe("helper functions", () => {
 
     it("should throw for invalid verification codes", () => {
       expect(() => getVerificationCode("ABCD123") as string).toThrow(
-        "Invalid verification code: ABCD123"
+        "Verification code must be exactly 8 characters"
       );
       expect(() => getVerificationCode("ABCD12345") as string).toThrow(
-        "Invalid verification code: ABCD12345"
+        "Verification code must be exactly 8 characters"
       );
       expect(() => getVerificationCode("") as string).toThrow(
-        "Invalid verification code: "
+        "Verification code must be exactly 8 characters"
       );
       expect(() => getVerificationCode("abcd1234") as string).toThrow(
-        "Invalid verification code: abcd1234"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
       expect(() => getVerificationCode("ABCD12ab") as string).toThrow(
-        "Invalid verification code: ABCD12ab"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
       expect(() => getVerificationCode("ABCD-234") as string).toThrow(
-        "Invalid verification code: ABCD-234"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
       expect(() => getVerificationCode("ABCD 234") as string).toThrow(
-        "Invalid verification code: ABCD 234"
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
       expect(() => getVerificationCode(12345678) as string).toThrow(
-        "Invalid verification code: 12345678"
+        "Expected string, received number"
       );
       expect(() => getVerificationCode(null) as string).toThrow(
-        "Invalid verification code: null"
+        "Expected string, received null"
       );
       expect(() => getVerificationCode(undefined) as string).toThrow(
-        "Invalid verification code: undefined"
+        "Required"
       );
       expect(() => getVerificationCode({}) as string).toThrow(
-        "Invalid verification code: [object Object]"
+        "Expected string, received object"
       );
     });
   });

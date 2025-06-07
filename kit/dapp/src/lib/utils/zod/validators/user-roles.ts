@@ -106,5 +106,5 @@ export function isUserRole(value: unknown): value is UserRole {
  * ```
  */
 export function getUserRole(value: unknown): UserRole {
-  return userRole().parse(value);
+  return userRoles().parse(value);
 }

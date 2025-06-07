@@ -43,20 +43,20 @@ describe("secretCode", () => {
   describe("invalid secret codes", () => {
     it("should reject codes shorter than 8 characters", () => {
       expect(() => validator.parse("1234567") as string).toThrow(
-        "Secret code must be at least 8 characters"
+        "Secret code must be at least 8 characters long"
       );
       expect(() => validator.parse("short") as string).toThrow(
-        "Secret code must be at least 8 characters"
+        "Secret code must be at least 8 characters long"
       );
       expect(() => validator.parse("") as string).toThrow(
-        "Secret code must be at least 8 characters"
+        "Secret code must be at least 8 characters long"
       );
     });
 
     it("should reject codes longer than 64 characters", () => {
       const tooLong = "a".repeat(65);
       expect(() => validator.parse(tooLong) as string).toThrow(
-        "Secret code must be at most 64 characters"
+        "Secret code must not exceed 64 characters"
       );
     });
 
@@ -132,28 +132,28 @@ describe("helper functions", () => {
 
     it("should throw for invalid secret codes", () => {
       expect(() => getSecretCode("1234567") as string).toThrow(
-        "Invalid secret code: 1234567"
+        "Secret code must be at least 8 characters long"
       );
       expect(() => getSecretCode("short") as string).toThrow(
-        "Invalid secret code: short"
+        "Secret code must be at least 8 characters long"
       );
       expect(() => getSecretCode("") as string).toThrow(
-        "Invalid secret code: "
+        "Secret code must be at least 8 characters long"
       );
       expect(() => getSecretCode("a".repeat(65)) as string).toThrow(
-        "Invalid secret code: " + "a".repeat(65)
+        "Secret code must not exceed 64 characters"
       );
       expect(() => getSecretCode(12345678) as string).toThrow(
-        "Invalid secret code: 12345678"
+        "Expected string, received number"
       );
       expect(() => getSecretCode(null) as string).toThrow(
-        "Invalid secret code: null"
+        "Expected string, received null"
       );
       expect(() => getSecretCode(undefined) as string).toThrow(
-        "Invalid secret code: undefined"
+        "Required"
       );
       expect(() => getSecretCode({}) as string).toThrow(
-        "Invalid secret code: [object Object]"
+        "Expected string, received object"
       );
     });
   });

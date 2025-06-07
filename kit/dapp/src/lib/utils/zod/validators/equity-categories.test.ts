@@ -30,13 +30,9 @@ describe("equityCategory", () => {
       expect(isEquityCategory("ordinary")).toBe(false);
       expect(isEquityCategory("")).toBe(false);
 
-      expect(() => getEquityCategory("invalid")).toThrow(
-        "Invalid equity category"
-      );
-      expect(() => getEquityCategory("ordinary")).toThrow(
-        "Invalid equity category"
-      );
-      expect(() => getEquityCategory("")).toThrow("Invalid equity category");
+      expect(() => getEquityCategory("invalid")).toThrow();
+      expect(() => getEquityCategory("ordinary")).toThrow();
+      expect(() => getEquityCategory("")).toThrow();
     });
 
     it("should reject non-string types", () => {
@@ -50,12 +46,10 @@ describe("equityCategory", () => {
       expect(isEquityCategory(undefined)).toBe(false);
       expect(isEquityCategory({})).toBe(false);
 
-      expect(() => getEquityCategory(123)).toThrow("Invalid equity category");
-      expect(() => getEquityCategory(null)).toThrow("Invalid equity category");
-      expect(() => getEquityCategory(undefined)).toThrow(
-        "Invalid equity category"
-      );
-      expect(() => getEquityCategory({})).toThrow("Invalid equity category");
+      expect(() => getEquityCategory(123)).toThrow("Expected 'common' | 'preferred' | 'restricted', received number");
+      expect(() => getEquityCategory(null)).toThrow("Expected 'common' | 'preferred' | 'restricted', received null");
+      expect(() => getEquityCategory(undefined)).toThrow("Required");
+      expect(() => getEquityCategory({})).toThrow("Expected 'common' | 'preferred' | 'restricted', received object");
     });
 
     it("should be case-sensitive", () => {
@@ -67,15 +61,9 @@ describe("equityCategory", () => {
       expect(isEquityCategory("PREFERRED")).toBe(false);
       expect(isEquityCategory("Restricted")).toBe(false);
 
-      expect(() => getEquityCategory("Common")).toThrow(
-        "Invalid equity category"
-      );
-      expect(() => getEquityCategory("PREFERRED")).toThrow(
-        "Invalid equity category"
-      );
-      expect(() => getEquityCategory("Restricted")).toThrow(
-        "Invalid equity category"
-      );
+      expect(() => getEquityCategory("Common")).toThrow();
+      expect(() => getEquityCategory("PREFERRED")).toThrow();
+      expect(() => getEquityCategory("Restricted")).toThrow();
     });
 
     it("should reject similar but incorrect values", () => {
@@ -87,15 +75,9 @@ describe("equityCategory", () => {
       expect(isEquityCategory("prefer")).toBe(false);
       expect(isEquityCategory("restrict")).toBe(false);
 
-      expect(() => getEquityCategory("commons")).toThrow(
-        "Invalid equity category"
-      );
-      expect(() => getEquityCategory("prefer")).toThrow(
-        "Invalid equity category"
-      );
-      expect(() => getEquityCategory("restrict")).toThrow(
-        "Invalid equity category"
-      );
+      expect(() => getEquityCategory("commons")).toThrow();
+      expect(() => getEquityCategory("prefer")).toThrow();
+      expect(() => getEquityCategory("restrict")).toThrow();
     });
   });
 

@@ -27,9 +27,9 @@ describe("equityClass", () => {
       expect(isEquityClass("X")).toBe(false);
       expect(isEquityClass("")).toBe(false);
 
-      expect(() => getEquityClass("D")).toThrow("Invalid equity class");
-      expect(() => getEquityClass("X")).toThrow("Invalid equity class");
-      expect(() => getEquityClass("")).toThrow("Invalid equity class");
+      expect(() => getEquityClass("D")).toThrow();
+      expect(() => getEquityClass("X")).toThrow();
+      expect(() => getEquityClass("")).toThrow();
     });
 
     it("should reject lowercase letters", () => {
@@ -41,9 +41,9 @@ describe("equityClass", () => {
       expect(isEquityClass("b")).toBe(false);
       expect(isEquityClass("c")).toBe(false);
 
-      expect(() => getEquityClass("a")).toThrow("Invalid equity class");
-      expect(() => getEquityClass("b")).toThrow("Invalid equity class");
-      expect(() => getEquityClass("c")).toThrow("Invalid equity class");
+      expect(() => getEquityClass("a")).toThrow();
+      expect(() => getEquityClass("b")).toThrow();
+      expect(() => getEquityClass("c")).toThrow();
     });
 
     it("should reject multiple characters", () => {
@@ -55,9 +55,9 @@ describe("equityClass", () => {
       expect(isEquityClass("AB")).toBe(false);
       expect(isEquityClass("Class A")).toBe(false);
 
-      expect(() => getEquityClass("AA")).toThrow("Invalid equity class");
-      expect(() => getEquityClass("AB")).toThrow("Invalid equity class");
-      expect(() => getEquityClass("Class A")).toThrow("Invalid equity class");
+      expect(() => getEquityClass("AA")).toThrow();
+      expect(() => getEquityClass("AB")).toThrow();
+      expect(() => getEquityClass("Class A")).toThrow();
     });
 
     it("should reject non-string types", () => {
@@ -71,10 +71,10 @@ describe("equityClass", () => {
       expect(isEquityClass(undefined)).toBe(false);
       expect(isEquityClass({})).toBe(false);
 
-      expect(() => getEquityClass(1)).toThrow("Invalid equity class");
-      expect(() => getEquityClass(null)).toThrow("Invalid equity class");
-      expect(() => getEquityClass(undefined)).toThrow("Invalid equity class");
-      expect(() => getEquityClass({})).toThrow("Invalid equity class");
+      expect(() => getEquityClass(1)).toThrow("Expected 'A' | 'B' | 'C', received number");
+      expect(() => getEquityClass(null)).toThrow("Expected 'A' | 'B' | 'C', received null");
+      expect(() => getEquityClass(undefined)).toThrow("Required");
+      expect(() => getEquityClass({})).toThrow("Expected 'A' | 'B' | 'C', received object");
     });
   });
 

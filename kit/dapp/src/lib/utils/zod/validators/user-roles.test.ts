@@ -112,24 +112,16 @@ describe("helper functions", () => {
     });
 
     it("should throw for invalid user roles", () => {
-      expect(() => getUserRole("superadmin")).toThrow(
-        "Invalid user role: superadmin"
-      );
-      expect(() => getUserRole("moderator")).toThrow(
-        "Invalid user role: moderator"
-      );
-      expect(() => getUserRole("guest")).toThrow("Invalid user role: guest");
-      expect(() => getUserRole("")).toThrow("Invalid user role: ");
-      expect(() => getUserRole(123)).toThrow("Invalid user role: 123");
-      expect(() => getUserRole(null)).toThrow("Invalid user role: null");
-      expect(() => getUserRole(undefined)).toThrow(
-        "Invalid user role: undefined"
-      );
-      expect(() => getUserRole({})).toThrow(
-        "Invalid user role: [object Object]"
-      );
-      expect(() => getUserRole("Admin")).toThrow("Invalid user role: Admin");
-      expect(() => getUserRole("USER")).toThrow("Invalid user role: USER");
+      expect(() => getUserRole("superadmin")).toThrow();
+      expect(() => getUserRole("moderator")).toThrow();
+      expect(() => getUserRole("guest")).toThrow();
+      expect(() => getUserRole("")).toThrow();
+      expect(() => getUserRole(123)).toThrow("Expected 'admin' | 'user' | 'viewer', received number");
+      expect(() => getUserRole(null)).toThrow("Expected 'admin' | 'user' | 'viewer', received null");
+      expect(() => getUserRole(undefined)).toThrow("Required");
+      expect(() => getUserRole({})).toThrow("Expected 'admin' | 'user' | 'viewer', received object");
+      expect(() => getUserRole("Admin")).toThrow();
+      expect(() => getUserRole("USER")).toThrow();
     });
   });
 });

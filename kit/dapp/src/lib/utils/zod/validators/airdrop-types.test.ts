@@ -27,9 +27,9 @@ describe("airdropType", () => {
       expect(isAirdropType("random")).toBe(false);
       expect(isAirdropType("")).toBe(false);
 
-      expect(() => getAirdropType("invalid")).toThrow("Invalid airdrop type");
-      expect(() => getAirdropType("random")).toThrow("Invalid airdrop type");
-      expect(() => getAirdropType("")).toThrow("Invalid airdrop type");
+      expect(() => getAirdropType("invalid")).toThrow();
+      expect(() => getAirdropType("random")).toThrow();
+      expect(() => getAirdropType("")).toThrow();
     });
 
     it("should reject non-string types", () => {

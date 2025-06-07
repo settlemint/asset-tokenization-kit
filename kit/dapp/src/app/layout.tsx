@@ -3,14 +3,12 @@ import { ClientToaster } from "@/components/ui/toaster";
 import { routing } from "@/i18n/routing";
 import "@/lib/orpc/orpc.server";
 import { cn } from "@/lib/utils";
-import { zodErrorMap } from "@/lib/utils/zod/error-map";
 import type { Viewport } from "next";
 import { getLocale } from "next-intl/server";
 import { Figtree, Roboto_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { getLangDir } from "rtl-detect";
-import { z } from "zod";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -35,9 +33,6 @@ const robotoMono = Roboto_Mono({
   subsets: ["latin"],
   display: "swap",
 });
-
-//set the error map globally
-z.setErrorMap(zodErrorMap);
 
 export default async function RootLayout({
   children,

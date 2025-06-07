@@ -57,76 +57,56 @@ import { z } from "zod";
  */
 export const timestamp = () =>
   z
-    .union([z.string(), z.number(), z.date()])
-    .describe("A timestamp in various formats")
-    .transform((value): Date => {
-      // Handle Date objects
+    .preprocess((value) => {
+      // Handle Date objects - pass through
       if (value instanceof Date) {
         return value;
       }
 
-      // Handle string inputs
-      if (typeof value === "string") {
-        // Check if it's a numeric string
-        if (/^\d+$/.test(value)) {
-          const num = Number(value);
-          if (isNaN(num)) {
-            throw new Error("Invalid numeric timestamp string");
+      // Handle numeric strings that represent timestamps
+      if (typeof value === "string" && /^\d+$/.test(value)) {
+        const num = Number(value);
+        if (!isNaN(num)) {
+          // Check for negative before conversion
+          if (num < 0) {
+            throw new Error("Timestamp cannot be negative");
           }
-
           // Detect timestamp precision based on length
-          // Unix seconds: 10 digits (covers years 1970-2286)
-          if (value.length === 10) {
-            return new Date(num * 1000);
-          }
-          // Milliseconds: 13 digits (covers years 1970-2286)
-          else if (value.length === 13) {
-            return new Date(num);
-          }
-          // Microseconds: 16 digits
-          else if (value.length === 16) {
-            return new Date(num / 1000);
-          }
-          // Nanoseconds: 19 digits
-          else if (value.length === 19) {
-            return new Date(num / 1000000);
-          }
-          // For other lengths, try to determine if seconds or milliseconds
-          else if (num < 10000000000) {
-            return new Date(num * 1000); // Likely seconds
-          } else {
-            return new Date(num); // Likely milliseconds or higher
-          }
+          const len = value.length;
+          if (len === 10) return new Date(num * 1000); // Unix seconds to milliseconds
+          if (len === 13) return new Date(num); // Already milliseconds
+          if (len === 16) return new Date(num / 1000); // Microseconds to milliseconds
+          if (len === 19) return new Date(num / 1000000); // Nanoseconds to milliseconds
+          // For other lengths, use heuristic
+          return new Date(num < 10000000000 ? num * 1000 : num);
         }
+      }
 
-        // Try parsing as ISO string or other date format
+      // Handle any other string (ISO dates, etc)
+      if (typeof value === "string") {
         const date = new Date(value);
         if (isNaN(date.getTime())) {
-          throw new Error("Invalid date string format");
+          throw new Error(`Invalid date string format`);
         }
         return date;
       }
 
-      // Handle numeric inputs
+      // Handle number timestamps
       if (typeof value === "number") {
-        // Check for valid range (JavaScript Date can safely handle dates up to year 275760)
+        // Check for negative
         if (value < 0) {
           throw new Error("Timestamp cannot be negative");
         }
-
-        // Detect if the number is in seconds or milliseconds
-        // Timestamps before year 2001 in milliseconds would be < 10000000000
-        if (value < 10000000000) {
-          return new Date(value * 1000); // Convert seconds to milliseconds
-        } else if (value >= 10000000000000) {
-          return new Date(value / 1000); // Convert microseconds to milliseconds
-        }
-        return new Date(value); // Already in milliseconds
+        // Convert seconds to milliseconds if needed
+        if (value < 10000000000) return new Date(value * 1000);
+        if (value >= 10000000000000) return new Date(value / 1000); // Microseconds
+        return new Date(value); // Already milliseconds
       }
 
-      // This should never be reached due to the union type, but TypeScript needs it
-      throw new Error("Invalid timestamp type - must be string, number, or Date");
-    })
+      // For any other type, let z.date() handle the error
+      return value;
+    }, z.date())
+    .describe("A timestamp in various formats")
     .refine(
       (date) => {
         const time = date.getTime();
@@ -136,7 +116,8 @@ export const timestamp = () =>
         return time >= 0 && time <= 253402300799999;
       },
       {
-        message: "Timestamp is out of valid range (must be between 1970 and 9999)",
+        message:
+          "Timestamp is out of valid range (must be between 1970 and 9999)",
       }
     )
     .brand<"Timestamp">();

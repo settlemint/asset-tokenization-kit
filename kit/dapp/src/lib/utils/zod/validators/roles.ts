@@ -140,7 +140,7 @@ export function isRole(value: unknown): value is Role {
  * ```
  */
 export function getRole(value: unknown): Role {
-  return role().parse(value);
+  return roles().parse(value);
 }
 
 /**

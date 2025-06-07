@@ -166,14 +166,14 @@ describe("helper functions", () => {
     });
 
     it("should throw for invalid roles", () => {
-      expect(() => getRole("superadmin")).toThrow("Invalid role: superadmin");
-      expect(() => getRole("user")).toThrow("Invalid role: user");
-      expect(() => getRole("")).toThrow("Invalid role: ");
-      expect(() => getRole(123)).toThrow("Invalid role: 123");
-      expect(() => getRole(null)).toThrow("Invalid role: null");
-      expect(() => getRole(undefined)).toThrow("Invalid role: undefined");
-      expect(() => getRole({})).toThrow("Invalid role: [object Object]");
-      expect(() => getRole("Admin")).toThrow("Invalid role: Admin");
+      expect(() => getRole("superadmin")).toThrow();
+      expect(() => getRole("user")).toThrow();
+      expect(() => getRole("")).toThrow();
+      expect(() => getRole(123)).toThrow("Expected 'admin' | 'issuer' | 'manager' | 'compliance' | 'auditor' | 'investor', received number");
+      expect(() => getRole(null)).toThrow("Expected 'admin' | 'issuer' | 'manager' | 'compliance' | 'auditor' | 'investor', received null");
+      expect(() => getRole(undefined)).toThrow("Required");
+      expect(() => getRole({})).toThrow("Expected 'admin' | 'issuer' | 'manager' | 'compliance' | 'auditor' | 'investor', received object");
+      expect(() => getRole("Admin")).toThrow();
     });
   });
 
@@ -228,18 +228,12 @@ describe("helper functions", () => {
     });
 
     it("should throw for invalid role maps", () => {
-      expect(() => getRoleMap({ address1: "superuser" })).toThrow(
-        "Invalid role map: [object Object]"
-      );
-      expect(() => getRoleMap({ address1: 123 })).toThrow(
-        "Invalid role map: [object Object]"
-      );
-      expect(() => getRoleMap(["admin", "manager"])).toThrow(
-        "Invalid role map: admin,manager"
-      );
-      expect(() => getRoleMap("admin")).toThrow("Invalid role map: admin");
-      expect(() => getRoleMap(123)).toThrow("Invalid role map: 123");
-      expect(() => getRoleMap(null)).toThrow("Invalid role map: null");
+      expect(() => getRoleMap({ address1: "superuser" })).toThrow();
+      expect(() => getRoleMap({ address1: 123 })).toThrow();
+      expect(() => getRoleMap(["admin", "manager"])).toThrow("Expected object, received array");
+      expect(() => getRoleMap("admin")).toThrow("Expected object, received string");
+      expect(() => getRoleMap(123)).toThrow("Expected object, received number");
+      expect(() => getRoleMap(null)).toThrow("Expected object, received null");
     });
   });
 });

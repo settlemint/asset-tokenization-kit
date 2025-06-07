@@ -60,7 +60,7 @@ describe("Ethereum Hash Validation", () => {
         expect(result.success).toBe(false);
         if (!result.success) {
           expect(result.error.issues[0].message).toBe(
-            "Hash must be 66 characters long"
+            "Ethereum hash must be exactly 66 characters long"
           );
         }
       });
@@ -70,7 +70,7 @@ describe("Ethereum Hash Validation", () => {
         expect(shortResult.success).toBe(false);
         if (!shortResult.success) {
           expect(shortResult.error.issues[0].message).toBe(
-            "Hash must be 66 characters long"
+            "Ethereum hash must be exactly 66 characters long"
           );
         }
 
@@ -78,7 +78,7 @@ describe("Ethereum Hash Validation", () => {
         expect(longResult.success).toBe(false);
         if (!longResult.success) {
           expect(longResult.error.issues[0].message).toBe(
-            "Hash must be 66 characters long"
+            "Ethereum hash must be exactly 66 characters long"
           );
         }
       });
@@ -88,7 +88,7 @@ describe("Ethereum Hash Validation", () => {
         expect(result.success).toBe(false);
         if (!result.success) {
           expect(result.error.issues[0].message).toBe(
-            "Hash must contain 64 hexadecimal characters after 0x"
+            "Ethereum hash must start with '0x' followed by 64 hexadecimal characters"
           );
         }
       });

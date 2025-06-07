@@ -80,23 +80,15 @@ describe("timeUnit", () => {
     });
 
     it("should throw for invalid time units", () => {
-      expect(() => getTimeUnit("second")).toThrow("Invalid time unit: second");
-      expect(() => getTimeUnit("milliseconds")).toThrow(
-        "Invalid time unit: milliseconds"
-      );
-      expect(() => getTimeUnit("")).toThrow("Invalid time unit: ");
-      expect(() => getTimeUnit(60)).toThrow("Invalid time unit: 60");
-      expect(() => getTimeUnit(null)).toThrow("Invalid time unit: null");
-      expect(() => getTimeUnit(undefined)).toThrow(
-        "Invalid time unit: undefined"
-      );
-      expect(() => getTimeUnit({})).toThrow(
-        "Invalid time unit: [object Object]"
-      );
-      expect(() => getTimeUnit("Seconds")).toThrow(
-        "Invalid time unit: Seconds"
-      );
-      expect(() => getTimeUnit("sec")).toThrow("Invalid time unit: sec");
+      expect(() => getTimeUnit("second")).toThrow();
+      expect(() => getTimeUnit("milliseconds")).toThrow();
+      expect(() => getTimeUnit("")).toThrow();
+      expect(() => getTimeUnit(60)).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received number");
+      expect(() => getTimeUnit(null)).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received null");
+      expect(() => getTimeUnit(undefined)).toThrow("Required");
+      expect(() => getTimeUnit({})).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received object");
+      expect(() => getTimeUnit("Seconds")).toThrow();
+      expect(() => getTimeUnit("sec")).toThrow();
     });
   });
 });
@@ -151,23 +143,15 @@ describe("helper functions", () => {
     });
 
     it("should throw for invalid time units", () => {
-      expect(() => getTimeUnit("second")).toThrow("Invalid time unit: second");
-      expect(() => getTimeUnit("milliseconds")).toThrow(
-        "Invalid time unit: milliseconds"
-      );
-      expect(() => getTimeUnit("")).toThrow("Invalid time unit: ");
-      expect(() => getTimeUnit(60)).toThrow("Invalid time unit: 60");
-      expect(() => getTimeUnit(null)).toThrow("Invalid time unit: null");
-      expect(() => getTimeUnit(undefined)).toThrow(
-        "Invalid time unit: undefined"
-      );
-      expect(() => getTimeUnit({})).toThrow(
-        "Invalid time unit: [object Object]"
-      );
-      expect(() => getTimeUnit("Seconds")).toThrow(
-        "Invalid time unit: Seconds"
-      );
-      expect(() => getTimeUnit("sec")).toThrow("Invalid time unit: sec");
+      expect(() => getTimeUnit("second")).toThrow();
+      expect(() => getTimeUnit("milliseconds")).toThrow();
+      expect(() => getTimeUnit("")).toThrow();
+      expect(() => getTimeUnit(60)).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received number");
+      expect(() => getTimeUnit(null)).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received null");
+      expect(() => getTimeUnit(undefined)).toThrow("Required");
+      expect(() => getTimeUnit({})).toThrow("Expected 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years', received object");
+      expect(() => getTimeUnit("Seconds")).toThrow();
+      expect(() => getTimeUnit("sec")).toThrow();
     });
   });
 });

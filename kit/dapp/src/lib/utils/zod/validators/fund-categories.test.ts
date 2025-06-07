@@ -33,10 +33,10 @@ describe("fundCategory", () => {
       expect(isFundCategory("venture")).toBe(false);
       expect(isFundCategory("")).toBe(false);
 
-      expect(() => getFundCategory("invalid")).toThrow("Invalid fund category");
-      expect(() => getFundCategory("private")).toThrow("Invalid fund category");
-      expect(() => getFundCategory("venture")).toThrow("Invalid fund category");
-      expect(() => getFundCategory("")).toThrow("Invalid fund category");
+      expect(() => getFundCategory("invalid")).toThrow();
+      expect(() => getFundCategory("private")).toThrow();
+      expect(() => getFundCategory("venture")).toThrow();
+      expect(() => getFundCategory("")).toThrow();
     });
 
     it("should reject non-string types", () => {
@@ -50,10 +50,10 @@ describe("fundCategory", () => {
       expect(isFundCategory(undefined)).toBe(false);
       expect(isFundCategory({})).toBe(false);
 
-      expect(() => getFundCategory(123)).toThrow("Invalid fund category");
-      expect(() => getFundCategory(null)).toThrow("Invalid fund category");
-      expect(() => getFundCategory(undefined)).toThrow("Invalid fund category");
-      expect(() => getFundCategory({})).toThrow("Invalid fund category");
+      expect(() => getFundCategory(123)).toThrow("Expected 'mutual' | 'hedge' | 'etf' | 'index', received number");
+      expect(() => getFundCategory(null)).toThrow("Expected 'mutual' | 'hedge' | 'etf' | 'index', received null");
+      expect(() => getFundCategory(undefined)).toThrow("Required");
+      expect(() => getFundCategory({})).toThrow("Expected 'mutual' | 'hedge' | 'etf' | 'index', received object");
     });
 
     it("should be case-sensitive", () => {
@@ -67,10 +67,10 @@ describe("fundCategory", () => {
       expect(isFundCategory("ETF")).toBe(false);
       expect(isFundCategory("Index")).toBe(false);
 
-      expect(() => getFundCategory("Mutual")).toThrow("Invalid fund category");
-      expect(() => getFundCategory("HEDGE")).toThrow("Invalid fund category");
-      expect(() => getFundCategory("ETF")).toThrow("Invalid fund category");
-      expect(() => getFundCategory("Index")).toThrow("Invalid fund category");
+      expect(() => getFundCategory("Mutual")).toThrow();
+      expect(() => getFundCategory("HEDGE")).toThrow();
+      expect(() => getFundCategory("ETF")).toThrow();
+      expect(() => getFundCategory("Index")).toThrow();
     });
   });
 

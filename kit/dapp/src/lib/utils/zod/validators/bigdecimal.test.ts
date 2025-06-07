@@ -99,30 +99,30 @@ describe("bigDecimal", () => {
   describe("invalid decimal numbers", () => {
     it("should reject non-numeric strings", () => {
       expect(() => validator.parse("abc")).toThrow(
-        "Must be a valid decimal number"
+        "Invalid decimal format. Please provide a valid numeric string"
       );
       expect(() => validator.parse("12a34")).toThrow(
-        "Must be a valid decimal number"
+        "Invalid decimal format. Please provide a valid numeric string"
       );
       expect(() => validator.parse("$123")).toThrow(
-        "Must be a valid decimal number"
+        "Invalid decimal format. Please provide a valid numeric string"
       );
 
       expect(isBigDecimal("abc")).toBe(false);
       expect(isBigDecimal("12a34")).toBe(false);
       expect(isBigDecimal("$123")).toBe(false);
 
-      expect(() => getBigDecimal("abc")).toThrow("Invalid big decimal");
-      expect(() => getBigDecimal("12a34")).toThrow("Invalid big decimal");
-      expect(() => getBigDecimal("$123")).toThrow("Invalid big decimal");
+      expect(() => getBigDecimal("abc")).toThrow("Invalid decimal format. Please provide a valid numeric string");
+      expect(() => getBigDecimal("12a34")).toThrow("Invalid decimal format. Please provide a valid numeric string");
+      expect(() => getBigDecimal("$123")).toThrow("Invalid decimal format. Please provide a valid numeric string");
     });
 
     it("should reject empty string", () => {
       expect(() => validator.parse("")).toThrow(
-        "Must be a valid decimal number"
+        "Invalid decimal format. Please provide a valid numeric string"
       );
       expect(isBigDecimal("")).toBe(false);
-      expect(() => getBigDecimal("")).toThrow("Invalid big decimal");
+      expect(() => getBigDecimal("")).toThrow("Invalid decimal format. Please provide a valid numeric string");
     });
 
     it("should reject special values", () => {
@@ -135,17 +135,17 @@ describe("bigDecimal", () => {
       expect(isBigDecimal("Infinity")).toBe(false);
       expect(isBigDecimal("-Infinity")).toBe(false);
 
-      expect(() => getBigDecimal("NaN")).toThrow("Invalid big decimal");
-      expect(() => getBigDecimal("Infinity")).toThrow("Invalid big decimal");
-      expect(() => getBigDecimal("-Infinity")).toThrow("Invalid big decimal");
+      expect(() => getBigDecimal("NaN")).toThrow("Invalid value. NaN, Infinity, and -Infinity are not allowed");
+      expect(() => getBigDecimal("Infinity")).toThrow("Invalid value. NaN, Infinity, and -Infinity are not allowed");
+      expect(() => getBigDecimal("-Infinity")).toThrow("Invalid value. NaN, Infinity, and -Infinity are not allowed");
     });
 
     it("should reject multiple decimal points", () => {
       expect(() => validator.parse("123.456.789")).toThrow(
-        "Must be a valid decimal number"
+        "Invalid decimal format. Please provide a valid numeric string"
       );
       expect(isBigDecimal("123.456.789")).toBe(false);
-      expect(() => getBigDecimal("123.456.789")).toThrow("Invalid big decimal");
+      expect(() => getBigDecimal("123.456.789")).toThrow("Invalid decimal format. Please provide a valid numeric string");
     });
 
     it("should reject non-string types", () => {
@@ -159,10 +159,10 @@ describe("bigDecimal", () => {
       expect(isBigDecimal(undefined)).toBe(false);
       expect(isBigDecimal({})).toBe(false);
 
-      expect(() => getBigDecimal(123)).toThrow("Invalid big decimal");
-      expect(() => getBigDecimal(null)).toThrow("Invalid big decimal");
-      expect(() => getBigDecimal(undefined)).toThrow("Invalid big decimal");
-      expect(() => getBigDecimal({})).toThrow("Invalid big decimal");
+      expect(() => getBigDecimal(123)).toThrow("Expected string, received number");
+      expect(() => getBigDecimal(null)).toThrow("Expected string, received null");
+      expect(() => getBigDecimal(undefined)).toThrow("Required");
+      expect(() => getBigDecimal({})).toThrow("Expected string, received object");
     });
   });
 

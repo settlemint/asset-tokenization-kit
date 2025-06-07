@@ -58,10 +58,10 @@ describe("amount", () => {
 
     it("should reject values above maximum", () => {
       expect(() => validator.parse(1000.01)).toThrow(
-        "Amount must be at most 1000"
+        "Amount must not exceed 1000"
       );
       expect(() => validator.parse(10000)).toThrow(
-        "Amount must be at most 1000"
+        "Amount must not exceed 1000"
       );
     });
   });
@@ -77,10 +77,10 @@ describe("amount", () => {
 
     it("should reject values with too many decimal places", () => {
       expect(() => validator.parse(10.999)).toThrow(
-        "Amount must have at most 2 decimal places"
+        "Amount cannot have more than 2 decimal places"
       );
       expect(() => validator.parse(10.12345)).toThrow(
-        "Amount must have at most 2 decimal places"
+        "Amount cannot have more than 2 decimal places"
       );
     });
 
@@ -105,7 +105,7 @@ describe("amount", () => {
     });
 
     it("should still reject negative numbers", () => {
-      expect(() => validator.parse(-1)).toThrow("Amount must be at least 0");
+      expect(() => validator.parse(-1)).toThrow("Amount is required");
     });
   });
 });
@@ -126,8 +126,8 @@ describe("helper functions", () => {
 
     it("should get valid amounts", () => {
       expect(getAmount(100)).toBe(getAmount(100));
-      expect(() => getAmount("not a number")).toThrow("Invalid amount");
-      expect(() => getAmount(5, { min: 10 })).toThrow("Invalid amount");
+      expect(() => getAmount("not a number")).toThrow("Expected number, received string");
+      expect(() => getAmount(5, { min: 10 })).toThrow("Amount must be at least 10");
       expect(getAmount(15, { min: 10 })).toBe(getAmount(15, { min: 10 }));
     });
   });

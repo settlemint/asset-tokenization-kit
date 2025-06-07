@@ -40,47 +40,47 @@ describe("decimals", () => {
   describe("invalid decimal values", () => {
     it("should reject negative numbers", () => {
       expect(() => validator.parse(-1)).toThrow(
-        "Decimals must be non-negative"
+        "Decimals cannot be negative"
       );
       expect(() => validator.parse(-18)).toThrow(
-        "Decimals must be non-negative"
+        "Decimals cannot be negative"
       );
 
       expect(isDecimals(-1)).toBe(false);
       expect(isDecimals(-18)).toBe(false);
 
-      expect(() => getDecimals(-1)).toThrow("Invalid decimals");
-      expect(() => getDecimals(-18)).toThrow("Invalid decimals");
+      expect(() => getDecimals(-1)).toThrow("Decimals cannot be negative");
+      expect(() => getDecimals(-18)).toThrow("Decimals cannot be negative");
     });
 
     it("should reject values greater than 18", () => {
-      expect(() => validator.parse(19)).toThrow("Decimals must be 18 or less");
-      expect(() => validator.parse(20)).toThrow("Decimals must be 18 or less");
-      expect(() => validator.parse(100)).toThrow("Decimals must be 18 or less");
+      expect(() => validator.parse(19)).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
+      expect(() => validator.parse(20)).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
+      expect(() => validator.parse(100)).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
 
       expect(isDecimals(19)).toBe(false);
       expect(isDecimals(20)).toBe(false);
       expect(isDecimals(100)).toBe(false);
 
-      expect(() => getDecimals(19)).toThrow("Invalid decimals");
-      expect(() => getDecimals(20)).toThrow("Invalid decimals");
-      expect(() => getDecimals(100)).toThrow("Invalid decimals");
+      expect(() => getDecimals(19)).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
+      expect(() => getDecimals(20)).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
+      expect(() => getDecimals(100)).toThrow("Decimals cannot exceed 18 (ERC20 standard maximum)");
     });
 
     it("should reject non-integer values", () => {
-      expect(() => validator.parse(2.5)).toThrow("Decimals must be an integer");
-      expect(() => validator.parse(6.1)).toThrow("Decimals must be an integer");
+      expect(() => validator.parse(2.5)).toThrow("Decimals must be a whole number (integer)");
+      expect(() => validator.parse(6.1)).toThrow("Decimals must be a whole number (integer)");
       expect(() => validator.parse(17.99)).toThrow(
-        "Decimals must be an integer"
+        "Decimals must be a whole number (integer)"
       );
 
       expect(isDecimals(2.5)).toBe(false);
       expect(isDecimals(6.1)).toBe(false);
       expect(isDecimals(17.99)).toBe(false);
 
-      expect(() => getDecimals(2.5)).toThrow("Invalid decimals");
-      expect(() => getDecimals(6.1)).toThrow("Invalid decimals");
-      expect(() => getDecimals(17.99)).toThrow("Invalid decimals");
+      expect(() => getDecimals(2.5)).toThrow("Decimals must be a whole number (integer)");
+      expect(() => getDecimals(6.1)).toThrow("Decimals must be a whole number (integer)");
+      expect(() => getDecimals(17.99)).toThrow("Decimals must be a whole number (integer)");
     });
 
     it("should reject non-numeric types", () => {
@@ -94,10 +94,10 @@ describe("decimals", () => {
       expect(isDecimals(undefined)).toBe(false);
       expect(isDecimals({})).toBe(false);
 
-      expect(() => getDecimals("6")).toThrow("Invalid decimals");
-      expect(() => getDecimals(null)).toThrow("Invalid decimals");
-      expect(() => getDecimals(undefined)).toThrow("Invalid decimals");
-      expect(() => getDecimals({})).toThrow("Invalid decimals");
+      expect(() => getDecimals("6")).toThrow("Expected number, received string");
+      expect(() => getDecimals(null)).toThrow("Expected number, received null");
+      expect(() => getDecimals(undefined)).toThrow("Required");
+      expect(() => getDecimals({})).toThrow("Expected number, received object");
     });
 
     it("should reject special numeric values", () => {
@@ -109,9 +109,9 @@ describe("decimals", () => {
       expect(isDecimals(Infinity)).toBe(false);
       expect(isDecimals(-Infinity)).toBe(false);
 
-      expect(() => getDecimals(NaN)).toThrow("Invalid decimals");
-      expect(() => getDecimals(Infinity)).toThrow("Invalid decimals");
-      expect(() => getDecimals(-Infinity)).toThrow("Invalid decimals");
+      expect(() => getDecimals(NaN)).toThrow("Expected number, received nan");
+      expect(() => getDecimals(Infinity)).toThrow("Decimals must be a whole number (integer)");
+      expect(() => getDecimals(-Infinity)).toThrow("Decimals cannot be negative");
     });
   });
 

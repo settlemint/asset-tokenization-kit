@@ -28,24 +28,24 @@ describe("price", () => {
 
   describe("invalid prices", () => {
     it("should reject zero", () => {
-      expect(() => validator.parse(0)).toThrow("Price must be positive");
+      expect(() => validator.parse(0)).toThrow("Price must be greater than zero");
     });
 
     it("should reject negative prices", () => {
-      expect(() => validator.parse(-1)).toThrow("Price must be positive");
-      expect(() => validator.parse(-0.01)).toThrow("Price must be positive");
-      expect(() => validator.parse(-999.99)).toThrow("Price must be positive");
+      expect(() => validator.parse(-1)).toThrow("Price must be greater than zero");
+      expect(() => validator.parse(-0.01)).toThrow("Price must be greater than zero");
+      expect(() => validator.parse(-999.99)).toThrow("Price must be greater than zero");
     });
 
     it("should reject prices with more than 4 decimal places", () => {
       expect(() => validator.parse(1.12345)).toThrow(
-        "Price must have at most 4 decimal places"
+        "Price cannot have more than 4 decimal places"
       );
       expect(() => validator.parse(0.00001)).toThrow(
-        "Price must have at most 4 decimal places"
+        "Price cannot have more than 4 decimal places"
       );
       expect(() => validator.parse(99.99999)).toThrow(
-        "Price must have at most 4 decimal places"
+        "Price cannot have more than 4 decimal places"
       );
     });
 
@@ -126,17 +126,17 @@ describe("helper functions", () => {
     });
 
     it("should throw for invalid prices", () => {
-      expect(() => getPrice(0)).toThrow("Invalid price: 0");
-      expect(() => getPrice(-1)).toThrow("Invalid price: -1");
-      expect(() => getPrice(-0.01)).toThrow("Invalid price: -0.01");
-      expect(() => getPrice(1.12345)).toThrow("Invalid price: 1.12345");
-      expect(() => getPrice(Infinity)).toThrow("Invalid price: Infinity");
-      expect(() => getPrice(-Infinity)).toThrow("Invalid price: -Infinity");
-      expect(() => getPrice(NaN)).toThrow("Invalid price: NaN");
-      expect(() => getPrice("100")).toThrow("Invalid price: 100");
-      expect(() => getPrice(null)).toThrow("Invalid price: null");
-      expect(() => getPrice(undefined)).toThrow("Invalid price: undefined");
-      expect(() => getPrice({})).toThrow("Invalid price: [object Object]");
+      expect(() => getPrice(0)).toThrow("Price must be greater than zero");
+      expect(() => getPrice(-1)).toThrow("Price must be greater than zero");
+      expect(() => getPrice(-0.01)).toThrow("Price must be greater than zero");
+      expect(() => getPrice(1.12345)).toThrow("Price cannot have more than 4 decimal places");
+      expect(() => getPrice(Infinity)).toThrow("Price must be a finite number");
+      expect(() => getPrice(-Infinity)).toThrow("Price must be a finite number");
+      expect(() => getPrice(NaN)).toThrow("Expected number, received nan");
+      expect(() => getPrice("100")).toThrow("Expected number, received string");
+      expect(() => getPrice(null)).toThrow("Expected number, received null");
+      expect(() => getPrice(undefined)).toThrow("Required");
+      expect(() => getPrice({})).toThrow("Expected number, received object");
     });
 
     it("isPrice should work as type guard", () => {
