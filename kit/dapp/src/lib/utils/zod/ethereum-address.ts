@@ -48,6 +48,7 @@ import { z } from "zod";
  */
 export const ethereumAddress = z
   .string()
+  .describe("A valid Ethereum address (42 characters, starting with 0x)")
   .min(42, "Ethereum address must be 42 characters long")
   .max(42, "Ethereum address must be 42 characters long")
   .regex(
@@ -67,22 +68,6 @@ export const ethereumAddress = z
     }
   })
   .brand<"EthereumAddress">();
-
-// Register the schema globally for potential use in JSON Schema generation
-// and documentation tools that support Zod's global registry
-z.globalRegistry.add(ethereumAddress, {
-  id: "ethereum_address",
-  title: "Ethereum address",
-  description: "A valid Ethereum address (42 characters, starting with 0x)",
-  examples: [
-    "0x742d35Cc6634C0532925a3b844Bc9e7595f5b899",
-    "0x0000000000000000000000000000000000000000",
-    "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
-  ],
-  pattern: "^0x[a-fA-F0-9]{40}$",
-  minLength: 42,
-  maxLength: 42,
-});
 
 /**
  * Type representing a validated and checksummed Ethereum address

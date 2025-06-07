@@ -35,7 +35,7 @@ export function safeParse<T extends z.ZodType>(
   if (!result.success) {
     logger.error("Zod validation failed", {
       input: redactSensitiveFields(value),
-      errors: fromError(result.error.issues),
+      errors: fromError(result.error),
     });
 
     // Throw if requested

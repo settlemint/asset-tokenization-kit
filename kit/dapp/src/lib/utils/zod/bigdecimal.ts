@@ -93,24 +93,6 @@ export const bigDecimal = () =>
     })
     .brand<"BigDecimal">();
 
-// Register the schema globally for potential use in JSON Schema generation
-// and documentation tools that support Zod's global registry
-z.globalRegistry.add(bigDecimal(), {
-  id: "big_decimal",
-  title: "Arbitrary precision decimal",
-  description:
-    "A decimal number string with arbitrary precision using dnum library",
-  examples: [
-    "123.456789012345678901234567890",
-    "999999999999999999999999999999.99",
-    "0.000000000000000001",
-    "1.23e10",
-    "-123.456",
-  ],
-  type: "string",
-  pattern: "^-?[0-9]+(\\.[0-9]+)?(e[+-]?[0-9]+)?$",
-});
-
 /**
  * Type representing a validated arbitrary precision decimal number
  *

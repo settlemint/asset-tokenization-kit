@@ -45,6 +45,7 @@ import { z } from "zod";
  */
 export const ethereumHash = z
   .string()
+  .describe("A valid Ethereum hash (66 characters, starting with 0x)")
   .min(66, "Hash must be 66 characters long")
   .max(66, "Hash must be 66 characters long")
   .regex(
@@ -55,21 +56,6 @@ export const ethereumHash = z
     message: "Invalid hash format",
   })
   .brand<"Hash">();
-
-// Register the schema globally for potential use in JSON Schema generation
-// and documentation tools that support Zod's global registry
-z.globalRegistry.add(ethereumHash, {
-  id: "hash",
-  title: "Hash",
-  description: "A valid Ethereum hash",
-  examples: [
-    "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-    "0x0000000000000000000000000000000000000000000000000000000000000000",
-  ],
-  pattern: "^0x[a-fA-F0-9]{64}$",
-  minLength: 66,
-  maxLength: 66,
-});
 
 /**
  * Type representing a validated Ethereum hash

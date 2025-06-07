@@ -90,6 +90,20 @@ type AwaitProps<TData = unknown, TError = Error> = PropsWithChildren<{
 }>;
 
 /**
+ * Error fallback component that renders a ReactNode.
+ * Used when the error prop is provided as a ReactNode instead of a component.
+ */
+function ReactNodeErrorFallback({
+  reactNode,
+}: {
+  reactNode: ReactNode;
+  error: Error;
+  resetErrorBoundary: () => void;
+}) {
+  return <>{reactNode}</>;
+}
+
+/**
  * Default error fallback component with retry functionality.
  */
 function DefaultErrorFallback({
@@ -218,24 +232,36 @@ export async function Await<TData = unknown, TError = Error>({
         }
       })
     );
-  } catch (error) {
+  } catch (prefetchError) {
     // Log error in development for debugging
     if (process.env.NODE_ENV === "development") {
-      console.error("[Await] Prefetch error:", error);
+      console.error("[Await] Prefetch error:", prefetchError);
     }
 
-    // If we have an error fallback, render it instead of throwing
+    // If we have an error fallback prop configured, render it instead of throwing
     if (error || errorFallbackComponent) {
-      const ErrorFallback = errorFallbackComponent || DefaultErrorFallback;
-      return (
-        <ErrorBoundary FallbackComponent={ErrorFallback} resetKeys={resetKeys}>
-          {children}
-        </ErrorBoundary>
-      );
+      // If errorFallbackComponent is provided, use it
+      if (errorFallbackComponent) {
+        const ErrorComponent = errorFallbackComponent;
+        return (
+          <ErrorComponent
+            error={prefetchError as Error}
+            resetErrorBoundary={() => {
+              // In a server component context, we can't really reset
+              // This would need to be handled by client-side navigation
+            }}
+          />
+        );
+      }
+
+      // If only error prop (ReactNode) is provided, render it directly
+      if (error) {
+        return <>{error}</>;
+      }
     }
 
     // Re-throw if no error handling is configured
-    throw error;
+    throw prefetchError;
   }
 
   // Default dehydrate options that only include successful queries
@@ -243,11 +269,29 @@ export async function Await<TData = unknown, TError = Error>({
     shouldDehydrateQuery: (query: any) => query.state.status === "success",
   };
 
-  // Determine which error boundary to use
+  // Determine which error boundary to use for runtime errors (not prefetch errors)
   const shouldUseErrorBoundary = !!(error || errorFallbackComponent);
 
   if (shouldUseErrorBoundary) {
-    const FallbackComponent = errorFallbackComponent || (() => <>{error}</>);
+    // If error prop is provided as ReactNode without errorFallbackComponent,
+    // create a wrapper component that renders it
+    const FallbackComponent =
+      errorFallbackComponent ||
+      (error
+        ? ({
+            error: err,
+            resetErrorBoundary,
+          }: {
+            error: Error;
+            resetErrorBoundary: () => void;
+          }) => (
+            <ReactNodeErrorFallback
+              reactNode={error}
+              error={err}
+              resetErrorBoundary={resetErrorBoundary}
+            />
+          )
+        : DefaultErrorFallback);
     return (
       <ErrorBoundary
         FallbackComponent={FallbackComponent}

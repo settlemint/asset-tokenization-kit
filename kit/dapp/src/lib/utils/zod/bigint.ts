@@ -9,43 +9,30 @@ import { z } from "zod";
 /**
  * Validates and transforms a string representation of a large number to BigInt
  *
- * Features:
- * - Accepts numeric strings, optionally with decimal points (truncates decimals)
- * - Handles very large numbers beyond JavaScript's safe integer range
- * - Provides clear error messages for invalid formats
- * - Supports negative numbers
- * - Automatically trims whitespace
+ * This validator ensures the input is a valid string that can be converted to BigInt.
+ * If the string contains decimals, it truncates to the integer part.
  *
- * @example
- * stringifiedBigInt().parse("123456789012345678901234567890") // 123456789012345678901234567890n
- * stringifiedBigInt().parse("123.456") // 123n (decimals truncated)
- * stringifiedBigInt().parse("-999999999999999999999") // -999999999999999999999n
+ * @returns A Zod schema that validates and transforms string to BigInt
  */
 export const stringifiedBigInt = () =>
   z
     .string()
     .describe("A string representation of a large number")
-    .trim()
-    .min(1, "BigInt string cannot be empty")
-    .regex(
-      /^-?\d+(\.\d+)?$/,
-      "Must be a valid numeric string (digits, optional decimal point, optional negative sign)"
-    )
-    .transform((value) => {
-      // Handle decimal strings by truncating the decimal part
-      const integerPart = value.includes(".") ? value.split(".")[0] : value;
-
-      // Remove leading zeros except for "0" itself
-      const normalized = integerPart.replace(/^(-?)0+(\d)/, "$1$2") || "0";
-
+    .transform((value, ctx) => {
       try {
-        return BigInt(normalized);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        throw new Error(`Cannot convert "${value}" to BigInt: ${message}`);
+        // Handle decimal strings by parsing them as integers
+        if (value.includes(".")) {
+          value = value.split(".")[0];
+        }
+        return BigInt(value);
+      } catch {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Must be a valid numeric string",
+        });
+        return z.NEVER;
       }
-    })
-    .brand<"StringifiedBigInt">();
+    });
 
 /**
  * Alternative validator that accepts both string and bigint inputs
@@ -82,35 +69,22 @@ export type NonNegativeBigInt = z.infer<ReturnType<typeof nonNegativeBigInt>>;
 
 /**
  * Type guard to check if a value is a valid stringified bigint
- * @param value - The value to check
- * @returns true if the value is a valid stringified bigint
  */
 export function isStringifiedBigInt(
   value: unknown
 ): value is StringifiedBigInt {
-  try {
-    return stringifiedBigInt().safeParse(value).success;
-  } catch {
-    return false;
-  }
+  return stringifiedBigInt().safeParse(value).success;
 }
 
 /**
  * Safely parse and return a stringified bigint or throw an error
- * @param value - The value to parse
- * @returns The stringified bigint if valid, throws when not
  */
 export function getStringifiedBigInt(value: unknown): StringifiedBigInt {
-  try {
-    const result = stringifiedBigInt().safeParse(value);
-    if (!result.success) {
-      throw new Error(`Invalid stringified bigint: ${value}`);
-    }
-    return result.data;
-  } catch {
-    // If transform throws, use our error message
+  const result = stringifiedBigInt().safeParse(value);
+  if (!result.success) {
     throw new Error(`Invalid stringified bigint: ${value}`);
   }
+  return result.data;
 }
 
 /**
