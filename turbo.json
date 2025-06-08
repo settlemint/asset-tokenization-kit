@@ -47,7 +47,8 @@
       "persistent": true
     },
     "helm": {
-      "cache": false
+      "cache": false,
+      "env": ["OP_SERVICE_ACCOUNT_TOKEN"]
     },
     "docs": {
       "cache": false
