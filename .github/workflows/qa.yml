@@ -116,6 +116,10 @@ jobs:
           kubernetes-version: "1.32"
           ingress: wildcard
 
+      - name: Deploy to k8s
+        run: |
+          bun run helm
+
       - name: Expose application
         id: expose-cluster
         uses: namespacelabs/nscloud-expose-kubernetes-action@9f3918cfc7952ccfcff7ea2c4b7df0580027163e # v0
@@ -127,7 +131,7 @@ jobs:
           port: 443
           wildcard: true
 
-      - name: Deploy to k8s
+      - name: Deploy to k8s to update the ingress
         run: |
           bun run helm
 
