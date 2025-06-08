@@ -158,13 +158,6 @@ job:
         repository: busybox
         tag: 1.37.0 # Use specific stable tag
         pullPolicy: IfNotPresent
-    cloneRepo:
-      atkTag: "1.1.1"
-      image:
-        registry: docker.io
-        repository: alpine/git
-        tag: 2.49.0 # Or pin to a specific version
-        pullPolicy: IfNotPresent
   # Custom Init Containers (add definitions here if needed, e.g., for dependencies)
   # extraInitContainers: []
 

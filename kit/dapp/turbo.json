@@ -17,6 +17,18 @@
     },
     "build": {
       "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "db:generate": {
+      "outputs": ["drizzle/**"],
+      "inputs": ["src/lib/db/**"]
+    },
+    "db:migrate": {
+      "dependsOn": ["db:generate"],
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": ["db:migrate"],
+      "cache": false
     }
   }
 }
