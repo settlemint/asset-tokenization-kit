@@ -23,14 +23,14 @@ services:
       start_period: 60s
   txsigner:
     depends_on:
-      - txsigner-postgres
+      - postgres
       - besu
     image: ghcr.io/settlemint/btp-signer:7.13.0
     restart: unless-stopped
     environment:
       MODE: "standalone"
       RPC_ENDPOINT: "http://besu:8545"
-      DB_CONNECTION_STRING: "postgresql://txsigner:txsigner@txsigner-postgres:5432/txsigner?sslmode=disable"
+      DB_CONNECTION_STRING: "postgresql://txsigner:txsigner@postgres:5432/txsigner?sslmode=disable"
       PRIVATE_KEY_MNEMONIC:
         "gate yellow grunt wrestle disease obtain mixed nature mansion tape
         purchase awful"
@@ -42,7 +42,7 @@ services:
       TX_SIGNER_LOG_LEVEL: info
       TX_SIGNER_DEBUG: false
       TX_SIGNER_SIGNING_STRATEGY: local
-      DATABASE_URL: "postgresql://txsigner:txsigner@txsigner-postgres:5432/txsigner?sslmode=disable"
+      DATABASE_URL: "postgresql://txsigner:txsigner@postgres:5432/txsigner?sslmode=disable"
       TX_SIGNER_RATE_LIMIT_ENABLED: true
       TX_SIGNER_RATE_LIMIT_MAX_REQUESTS_PER_MINUTE: 60
       TX_SIGNER_RATE_LIMIT_MAX_REQUESTS_PER_HOUR: 1000
@@ -72,7 +72,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
-  txsigner-postgres:
+  postgres:
     image: postgres:17.5-alpine
     restart: unless-stopped
     command:
@@ -82,23 +82,24 @@ services:
         "-cmax_connections=200",
       ]
     volumes:
-      - ./.docker/txsigner/data:/var/lib/postgresql/data
+      - ./.docker/shared/postgres/data:/var/lib/postgresql/data
+      - ./tools/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     environment:
-      POSTGRES_USER: txsigner
-      POSTGRES_PASSWORD: txsigner
-      POSTGRES_DB: txsigner
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
       PGDATA: "/var/lib/postgresql/data"
       POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U txsigner"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
   portal:
     image: ghcr.io/settlemint/btp-scs-portal:8.5.6
     restart: unless-stopped
     depends_on:
-      - portal-postgres
-      - portal-redis
+      - postgres
+      - redis
       - txsigner
     volumes:
       - ./portal:/abis:ro
@@ -109,39 +110,18 @@ services:
       CONTRACT_ABI_PATH: /abis
       GRAPHQL_PORT: "3001"
       PORT: "3000"
-      POSTGRES_CONNECTION_STRING: postgresql://portal:portal@portal-postgres:5432/portal?sslmode=disable
-      REDIS_HOST: portal-redis
-      REDIS_PASSWORD: portal
+      POSTGRES_CONNECTION_STRING: postgresql://portal:portal@postgres:5432/portal?sslmode=disable
+      REDIS_HOST: redis
+      REDIS_PASSWORD: shared
       REDIS_PORT: "6379"
       REDIS_USERNAME: default
-  portal-redis:
+  redis:
     image: redis:8.0.2-alpine
     restart: unless-stopped
-    command: redis-server --requirepass portal --save 60 1 --loglevel warning
+    command: redis-server --requirepass shared --save 60 1 --loglevel warning
     volumes:
-      - ./.docker/portal/data:/data
+      - ./.docker/shared/redis/data:/data
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping"]
-      interval: 10s
-      timeout: 5s
-  portal-postgres:
-    image: postgres:17.5-alpine
-    restart: unless-stopped
-    command:
-      [
-        "postgres",
-        "-cshared_preload_libraries=pg_stat_statements",
-        "-cmax_connections=200",
-      ]
-    volumes:
-      - ./.docker/portal/data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: portal
-      POSTGRES_PASSWORD: portal
-      POSTGRES_DB: portal
-      PGDATA: "/var/lib/postgresql/data"
-      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U portal"]
+      test: ["CMD-SHELL", "redis-cli -a shared ping"]
       interval: 10s
       timeout: 5s
