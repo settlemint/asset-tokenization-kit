@@ -1,0 +1,30 @@
+{
+  "config": {
+    "chainId": 1337,
+    "cancunTime": 0,
+    "zeroBaseFee": true,
+    "qbft": {
+      "blockperiodseconds": 2,
+      "epochlength": 30000,
+      "xemptyblockperiodseconds": 60,
+      "requesttimeoutseconds": 65
+    }
+  },
+  "nonce": "0x0",
+  "timestamp": "0x0",
+  "gasLimit": "9007199254740991",
+  "gasUsed": "0x0",
+  "number": "0x0",
+  "difficulty": "0x1",
+  "mixHash": "0x63746963616c2062797a616e74696e65206661756c7420746f6c6572616e6365",
+  "coinbase": "0x0000000000000000000000000000000000000000",
+  "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "alloc": {
+    "f39Fd6e51aad88F6F4ce6aB8827279cffFb92266": {
+      "privateKey": "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+      "comment": "Test faucet key (Anvil). In a real chain, the private key should NOT and will not be stored",
+      "balance": "0x446c3b15f9926687d2c40534fdb564000000000000"
+    }
+  },
+  "extraData": "0xf83aa00000000000000000000000000000000000000000000000000000000000000000d59470997970c51812dc3a010c7d01b50e0d17dc79c8c080c0"
+}

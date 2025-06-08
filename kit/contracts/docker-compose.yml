@@ -1,0 +1,11 @@
+services:
+  besu:
+    image: hyperledger/besu:25.6.0
+    command: ["--config-file=/opt/besu/config.toml", "--identity=atk"]
+    volumes:
+      - ./tools/docker/besu/config.toml:/opt/besu/config.toml:ro
+      - ./tools/docker/besu/genesis.json:/opt/besu/genesis.json:ro
+      - ./tools/docker/besu/anvil-test-key:/opt/besu/key:ro
+      - ./.docker/besu/data:/opt/besu/data
+    ports:
+      - "8545:8545"

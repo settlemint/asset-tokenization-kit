@@ -36,6 +36,10 @@
     "publish": {
       "cache": false,
       "dependsOn": ["package", "codegen"]
+    },
+    "docker:up": {
+      "dependsOn": ["dependencies", "^codegen", "codegen"],
+      "cache": false
     }
   }
 }

@@ -55,6 +55,7 @@
     "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
     "test:e2e:api:debug": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests --ui",
     "helm": "turbo run helm",
+    "docker:up": "turbo run docker:up",
     "extract-env": "bun run tools/extract-env.ts"
   },
   "dependencies": {},
