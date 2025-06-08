@@ -1,11 +1,97 @@
 services:
   besu:
     image: hyperledger/besu:25.6.0
+    restart: unless-stopped
     command: ["--config-file=/opt/besu/config.toml", "--identity=atk"]
     volumes:
       - ./tools/docker/besu/config.toml:/opt/besu/config.toml:ro
       - ./tools/docker/besu/genesis.json:/opt/besu/genesis.json:ro
       - ./tools/docker/besu/anvil-test-key:/opt/besu/key:ro
       - ./.docker/besu/data:/opt/besu/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'curl -f http://localhost:8545 -X POST -H ''Content-Type:
+          application/json'' -d
+          ''{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'' ||
+          exit 1',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+  txsigner:
+    depends_on:
+      - txsigner-postgres
+      - besu
+    image: ghcr.io/settlemint/btp-signer:7.13.0
+    restart: unless-stopped
+    environment:
+      MODE: "standalone"
+      RPC_ENDPOINT: "http://besu:8545"
+      DB_CONNECTION_STRING: "postgresql://txsigner:txsigner@txsigner-postgres:5432/txsigner?sslmode=disable"
+      PRIVATE_KEY_MNEMONIC:
+        "gate yellow grunt wrestle disease obtain mixed nature mansion tape
+        purchase awful"
+      PRIVATE_KEY_DERIVATION_PATH: "m/44'/60'/0'/0/0"
+      TX_SIGNER_PORT: 8545
+      TX_SIGNER_METRICS_PORT: 3001
+      TX_SIGNER_RPC_URL: "http://besu:8545"
+      TX_SIGNER_CHAIN_ID: 1337
+      TX_SIGNER_LOG_LEVEL: info
+      TX_SIGNER_DEBUG: false
+      TX_SIGNER_SIGNING_STRATEGY: local
+      DATABASE_URL: "postgresql://txsigner:txsigner@txsigner-postgres:5432/txsigner?sslmode=disable"
+      TX_SIGNER_RATE_LIMIT_ENABLED: true
+      TX_SIGNER_RATE_LIMIT_MAX_REQUESTS_PER_MINUTE: 60
+      TX_SIGNER_RATE_LIMIT_MAX_REQUESTS_PER_HOUR: 1000
+      TX_SIGNER_QUEUE_MAX_SIZE: 1000
+      TX_SIGNER_QUEUE_PROCESSING_INTERVAL: 1000
+      TX_SIGNER_GAS_PRICE_STRATEGY: estimator
+      TX_SIGNER_GAS_FIXED_PRICE: 20
+      TX_SIGNER_GAS_LIMIT: 9007199254740991
+      TX_SIGNER_GAS_MULTIPLIER: 1.1
+      TX_SIGNER_NONCE_STRATEGY: sequential
+      TX_SIGNER_NONCE_MAX_PENDING: 10
+      TX_SIGNER_AUDIT_ENABLED: true
+      TX_SIGNER_AUDIT_RETENTION_DAYS: 30
+      TX_SIGNER_CORS_ENABLED: false
+      TX_SIGNER_CORS_METHODS: GET,POST
+      TX_SIGNER_CORS_HEADERS: Content-Type,Authorization
     ports:
       - "8545:8545"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'curl -f http://localhost:8545 -X POST -H ''Content-Type:
+          application/json'' -d
+          ''{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'' ||
+          exit 1',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+  txsigner-postgres:
+    image: postgres:17.5-bookworm
+    restart: unless-stopped
+    command:
+      [
+        "postgres",
+        "-cshared_preload_libraries=pg_stat_statements",
+        "-cmax_connections=200",
+      ]
+    volumes:
+      - ./.docker/txsigner/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: txsigner
+      POSTGRES_PASSWORD: txsigner
+      POSTGRES_DB: txsigner
+      PGDATA: "/var/lib/postgresql/data"
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U txsigner"]
+      interval: 10s
+      timeout: 5s
