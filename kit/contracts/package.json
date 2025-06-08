@@ -9,7 +9,7 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "docker:up": "docker compose up -d",
+    "docker:up": "docker compose -p atk up -d",
     "dependencies": "bun run tools/dependencies.ts",
     "compile:forge": "settlemint scs foundry build --sizes",
     "compile:hardhat": "settlemint scs hardhat build",

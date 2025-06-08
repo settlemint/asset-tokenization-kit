@@ -30,7 +30,10 @@
       "inputs": ["contracts/**"]
     },
     "codegen:genesis": {
-      "outputs": ["tools/genesis-output.json"],
+      "outputs": [
+        "tools/genesis-output.json",
+        "tools/docker/besu/genesis.json"
+      ],
       "inputs": ["contracts/**"]
     },
     "format": {
