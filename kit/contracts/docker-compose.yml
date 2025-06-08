@@ -59,8 +59,6 @@ services:
       TX_SIGNER_CORS_ENABLED: false
       TX_SIGNER_CORS_METHODS: GET,POST
       TX_SIGNER_CORS_HEADERS: Content-Type,Authorization
-    ports:
-      - "8545:8545"
     healthcheck:
       test:
         [
@@ -75,7 +73,7 @@ services:
       retries: 3
       start_period: 60s
   txsigner-postgres:
-    image: postgres:17.5-bookworm
+    image: postgres:17.5-alpine
     restart: unless-stopped
     command:
       [
@@ -93,5 +91,57 @@ services:
       POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U txsigner"]
+      interval: 10s
+      timeout: 5s
+  portal:
+    image: ghcr.io/settlemint/btp-scs-portal:8.5.6
+    restart: unless-stopped
+    depends_on:
+      - portal-postgres
+      - portal-redis
+      - txsigner
+    volumes:
+      - ./portal:/abis:ro
+    environment:
+      BLOCKCHAIN_JSON_RPC_ENDPOINT: http://txsigner:8545
+      BLOCKCHAIN_NETWORK_ID: "1337"
+      BLOCKCHAIN_NETWORK_NAME: ATK
+      CONTRACT_ABI_PATH: /abis
+      GRAPHQL_PORT: "3001"
+      PORT: "3000"
+      POSTGRES_CONNECTION_STRING: postgresql://portal:portal@portal-postgres:5432/portal?sslmode=disable
+      REDIS_HOST: portal-redis
+      REDIS_PASSWORD: portal
+      REDIS_PORT: "6379"
+      REDIS_USERNAME: default
+  portal-redis:
+    image: redis:8.0.2-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass portal --save 60 1 --loglevel warning
+    volumes:
+      - ./.docker/portal/data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+  portal-postgres:
+    image: postgres:17.5-alpine
+    restart: unless-stopped
+    command:
+      [
+        "postgres",
+        "-cshared_preload_libraries=pg_stat_statements",
+        "-cmax_connections=200",
+      ]
+    volumes:
+      - ./.docker/portal/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: portal
+      POSTGRES_PASSWORD: portal
+      POSTGRES_DB: portal
+      PGDATA: "/var/lib/postgresql/data"
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portal"]
       interval: 10s
       timeout: 5s

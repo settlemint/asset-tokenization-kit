@@ -9,24 +9,29 @@
       "dependsOn": ["compile:forge", "compile:hardhat"]
     },
     "compile:forge": {
-      "outputs": ["out/**", "cache_forge/**"]
+      "outputs": ["out/**", "cache_forge/**"],
+      "inputs": ["**/*.sol"]
     },
     "compile:hardhat": {
-      "outputs": ["artifacts/**", "cache/**"]
+      "outputs": ["artifacts/**", "cache/**"],
+      "inputs": ["**/*.sol"]
     },
     "codegen": {
       "dependsOn": ["codegen:types", "codegen:genesis", "codegen:abi"]
     },
     "codegen:types": {
       "dependsOn": ["compile"],
-      "outputs": ["scripts/hardhat/abi/**"]
+      "outputs": ["scripts/hardhat/abi/**"],
+      "inputs": ["contracts/**"]
     },
     "codegen:abi": {
       "dependsOn": ["compile"],
-      "outputs": ["portal/**"]
+      "outputs": ["portal/**"],
+      "inputs": ["contracts/**"]
     },
     "codegen:genesis": {
-      "outputs": ["tools/genesis-output.json"]
+      "outputs": ["tools/genesis-output.json"],
+      "inputs": ["contracts/**"]
     },
     "format": {
       "dependsOn": ["format:forge", "format:prettier"]
