@@ -14,15 +14,13 @@ import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { getServerEnvironment } from "../config/environment";
+import { env } from "../config/env";
 import { metadata } from "../config/metadata";
 import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
 import { pincode } from "./plugins/pincode-plugin";
 import { secretCodes } from "./plugins/secret-codes-plugin";
 import twoFactorPlugin from "./plugins/two-factor";
 import { createUserWallet } from "./portal";
-
-const env = getServerEnvironment();
 
 const hasEmailConfigured = env.RESEND_API_KEY !== undefined;
 

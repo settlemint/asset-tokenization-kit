@@ -1,4 +1,4 @@
-import { getServerEnvironment } from "@/lib/config/environment";
+import { env } from "@/lib/config/env";
 import { contract } from "@/lib/orpc/routes/contract";
 import { createORPCClient } from "@orpc/client";
 import type { ContractRouterClient } from "@orpc/contract";
@@ -17,7 +17,7 @@ const link = new OpenAPILink(contract, {
   // Dynamically determine the API base URL based on environment
   // - Browser: Use current origin to avoid CORS issues
   // - Server: Use localhost for SSR/build-time requests
-  url: `${typeof window !== "undefined" ? `${window.location.origin}/api` : `${getServerEnvironment().APP_URL}/api`}`,
+  url: `${typeof window !== "undefined" ? `${window.location.origin}/api` : `${env.APP_URL}/api`}`,
 
   /**
    * Dynamic header injection for authentication and request context.
