@@ -9,10 +9,22 @@ import { br } from "./procedures/base.router";
  * they are actually needed.
  *
  * The router structure follows a hierarchical pattern where each namespace
- * (like 'planet') contains related API procedures, making the API more
+ * (like 'planet' or 'bootstrap') contains related API procedures, making the API more
  * organized and maintainable.
  */
 export const router = br.router({
+  /**
+   * Bootstrap-related API procedures.
+   *
+   * Lazy-loaded module containing all bootstrap-specific operations such as
+   * creating bootstrap configurations, retrieving bootstrap data, updating
+   * bootstrap settings, and managing bootstrap-related resources. The lazy loading
+   * ensures this module is only bundled and loaded when bootstrap procedures are actually called.
+   *
+   * @see {@link ./bootstrap/bootstrap.router} - Bootstrap router implementation
+   */
+  bootstrap: br.bootstrap.lazy(() => import("./bootstrap/bootstrap.router")),
+
   /**
    * Planet-related API procedures.
    *

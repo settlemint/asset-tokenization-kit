@@ -1,3 +1,4 @@
+import { bootstrapContract } from "@/lib/orpc/routes/bootstrap/bootstrap.contract";
 import { planetContract } from "@/lib/orpc/routes/planet/planet.contract";
 
 /**
@@ -18,6 +19,19 @@ import { planetContract } from "@/lib/orpc/routes/planet/planet.contract";
  * the type definitions for all procedures within that namespace.
  */
 export const contract = {
+  /**
+   * Bootstrap-related API contract.
+   *
+   * Contains type definitions for all bootstrap-specific procedures including
+   * input/output schemas, error types, and procedure metadata. This contract
+   * ensures that client calls to bootstrap procedures are type-safe and that
+   * the server implementation matches the expected interface.
+   *
+   * @see {@link ./bootstrap/bootstrap.contract} - Bootstrap contract implementation
+   * @see {@link ./bootstrap/bootstrap.router} - Corresponding router implementation
+   */
+  bootstrap: bootstrapContract,
+
   /**
    * Planet-related API contract.
    *
