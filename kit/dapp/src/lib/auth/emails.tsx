@@ -1,10 +1,8 @@
 import { EmailTemplate } from "@/components/blocks/email/email-template";
-import { getServerEnvironment } from "@/lib/config/environment";
+import { env } from "@/lib/config/env";
 import { siteConfig } from "@/lib/config/site";
 import type { betterAuth } from "better-auth";
 import { Resend } from "resend";
-
-const env = getServerEnvironment();
 
 const hasEmailConfigured = env.RESEND_API_KEY !== undefined;
 const resend = hasEmailConfigured ? new Resend(env.RESEND_API_KEY) : undefined;

@@ -1,7 +1,7 @@
-import { getClientEnvironment } from "./config/environment";
+import { env } from "./config/env";
 
 export function getBlockExplorerUrl(explorerUrl?: string) {
-  return explorerUrl ?? getClientEnvironment().NEXT_PUBLIC_EXPLORER_URL ?? null;
+  return explorerUrl ?? env.NEXT_PUBLIC_EXPLORER_URL ?? null;
 }
 
 function createExplorerUrl(path: string, explorerUrl?: string): string | null {
