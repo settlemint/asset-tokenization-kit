@@ -108,6 +108,29 @@ jobs:
       - name: Install Bun dependencies
         run: bun install
 
+      - name: Create a k8s cluster with Namespace
+        id: create-cluster
+        uses: namespacelabs/nscloud-cluster-action@d70b1e2b5ba0fa700698d8af8b331177df9ad4f6 # v0
+        with:
+          machine-shape: 16x32
+          kubernetes-version: "1.32"
+          ingress: wildcard
+
+      - name: Expose application
+        id: expose-cluster
+        uses: namespacelabs/nscloud-expose-kubernetes-action@9f3918cfc7952ccfcff7ea2c4b7df0580027163e # v0
+        with:
+          instance-id: ${{ steps.create-cluster.outputs.instance-id }}
+          namespace: atk
+          service: ingress-nginx-controller
+          ingress: noauth
+          port: 443
+          wildcard: true
+
+      - name: Deploy to k8s
+        run: |
+          bun run helm
+
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:
