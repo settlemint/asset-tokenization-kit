@@ -19,10 +19,9 @@
     "prod:local": "next build --turbopack && cp -r .next/static .next/standalone/kit/dapp/.next/static && cp -r public .next/standalone/public && node .next/standalone/kit/dapp/server.js",
     "start": "next start",
     "test": "bun test",
-    "db:pull": "drizzle-kit pull",
-    "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
-    "db:generate": "rm -rf ./drizzle && drizzle-kit generate"
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
     "zod-validation-error": "3.4.1",

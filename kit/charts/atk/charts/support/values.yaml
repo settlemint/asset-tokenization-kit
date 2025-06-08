@@ -25,7 +25,7 @@ postgresql-ha:
     pullSecrets: []
     resourcesPreset: none
     initdbScripts:
-      create_blockscout_db.sql: |
+      create_db.sql: |
         CREATE DATABASE blockscout;
         CREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;
         GRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;
