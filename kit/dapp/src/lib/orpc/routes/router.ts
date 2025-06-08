@@ -24,5 +24,17 @@ export const router = br.router({
    * @see {@link ./planet/planet.router} - Planet router implementation
    */
   planet: br.planet.lazy(() => import("./planet/planet.router")),
+  
+  /**
+   * System-related API procedures.
+   * 
+   * Lazy-loaded module containing SMART system management operations.
+   * Systems are the foundational contracts that orchestrate the deployment
+   * and management of tokenized assets, including compliance rules, identity
+   * verification, and access control. This module provides endpoints for
+   * querying and managing these system contracts.
+   * 
+   * @see {@link ./system/system.router} - System router implementation
+   */
   system: br.system.lazy(() => import("./system/system.router")),
 });

@@ -3,6 +3,17 @@ import { theGraphMiddleware } from "@/lib/orpc/middlewares/services/the-graph.mi
 import { ar } from "@/lib/orpc/routes/procedures/auth.router";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 
+/**
+ * GraphQL query for retrieving SMART systems from TheGraph.
+ * 
+ * This query fetches a paginated list of system contracts with support for:
+ * - Offset-based pagination (skip/first)
+ * - Configurable sort order (ascending/descending)
+ * - Custom ordering by any system field
+ * 
+ * Systems represent deployed SMART protocol instances that manage
+ * tokenized assets and their associated compliance infrastructure.
+ */
 const listSystemQuery = theGraphGraphql(`
   query ListSystemQuery($skip: Int!, $orderDirection: OrderDirection = asc, $orderBy: System_orderBy = id, $first: Int = 20) {
     systems(
@@ -17,30 +28,32 @@ const listSystemQuery = theGraphGraphql(`
 `);
 
 /**
- * Planet listing route handler.
+ * System listing route handler.
  *
- * Handles the retrieval of multiple planets with optional filtering, pagination,
- * and sorting capabilities. This handler requires authentication and processes
- * query parameters to return a filtered list of planets. The implementation
- * currently returns mock data but should be replaced with actual database queries.
+ * Retrieves a paginated list of SMART system contracts from TheGraph indexer.
+ * Systems are the core infrastructure contracts that manage tokenized assets,
+ * compliance modules, identity registries, and access control within the SMART
+ * protocol ecosystem.
  *
  * Authentication: Required (uses authenticated router)
- * API Key Permissions: Requires "read" permissions for "planet" resource
- * Method: GET /planets
+ * Permissions: Requires "read" permission - available to admin, issuer, user, and auditor roles
+ * Method: GET /systems
  *
- * @param input - List parameters including pagination (validated against ListSchema)
- * @param context - Request context including authenticated user and database connection
- * @returns Promise<Planet[]> - Array of planet objects matching the query criteria
+ * @param input - List parameters including pagination and sorting options
+ * @param context - Request context with TheGraph client and authenticated user
+ * @returns Promise<System[]> - Array of system objects with their blockchain addresses
  *
  * @throws UNAUTHORIZED - If user is not authenticated
- * @throws FORBIDDEN - If API key lacks required permissions (planet: [read])
+ * @throws FORBIDDEN - If user lacks required read permissions
  *
  * @example
  * ```typescript
  * // Client usage:
- * const planets = await orpc.planet.list.query({
+ * const systems = await orpc.system.list.query({
  *   offset: 0,
- *   limit: 10
+ *   limit: 20,
+ *   orderBy: 'deployedAt',
+ *   orderDirection: 'desc'
  * });
  * ```
  */
@@ -53,15 +66,17 @@ export const list = ar.system.list
   )
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    // Extract query parameters for pagination (offset-based pagination)
+    // Extract and validate pagination parameters from the request
     const { offset, limit, orderDirection, orderBy } = input;
 
+    // Execute TheGraph query with pagination and sorting parameters
     const { systems } = await context.theGraphClient.request(listSystemQuery, {
       skip: offset,
       orderDirection,
-      orderBy: orderBy as any,
+      orderBy: orderBy as any, // Type assertion needed due to TheGraph's dynamic schema
       first: limit,
     });
 
+    // Return the array of system contracts
     return systems;
   });
