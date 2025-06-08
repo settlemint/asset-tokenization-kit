@@ -136,7 +136,7 @@ jobs:
         with:
           instance-id: ${{ steps.create-cluster.outputs.instance-id }}
           namespace: atk
-          service: ingress-nginx-controller
+          service: nginx-ingress-ingress-nginx-controller
           ingress: noauth
           port: 443
           wildcard: true
