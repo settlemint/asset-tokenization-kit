@@ -1,4 +1,5 @@
 import { planetContract } from "@/lib/orpc/routes/planet/planet.contract";
+import { systemContract } from "./system/system.contract";
 
 /**
  * Main ORPC contract definition.
@@ -30,4 +31,5 @@ export const contract = {
    * @see {@link ./planet/planet.router} - Corresponding router implementation
    */
   planet: planetContract,
+  system: systemContract,
 };

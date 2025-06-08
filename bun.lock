@@ -3,9 +3,6 @@
   "workspaces": {
     "": {
       "name": "@settlemint/asset-tokenization-kit",
-      "dependencies": {
-        "zod-validation-error": "3.4.1",
-      },
       "devDependencies": {
         "@settlemint/sdk-cli": "2.3.6",
         "lefthook": "1.11.13",
@@ -137,6 +134,7 @@
         "tw-animate-css": "1.3.4",
         "viem": "2.30.6",
         "zod": "3.25.55",
+        "zod-validation-error": "3.4.1",
       },
       "devDependencies": {
         "@better-auth/cli": "1.2.8",

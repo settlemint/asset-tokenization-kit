@@ -24,4 +24,5 @@ export const router = br.router({
    * @see {@link ./planet/planet.router} - Planet router implementation
    */
   planet: br.planet.lazy(() => import("./planet/planet.router")),
+  system: br.system.lazy(() => import("./system/system.router")),
 });

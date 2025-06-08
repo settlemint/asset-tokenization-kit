@@ -20,7 +20,8 @@ const serverEnvironmentSchema = z.object({
     .regex(
       /^[a-z0-9-]+$/,
       "SETTLEMINT_HD_PRIVATE_KEY can only contain lowercase letters, digits, and hyphens with no spaces"
-    ),
+    )
+    .optional(),
   // Define APP_URL as part of the schema with a default value
   APP_URL: z.string().url(),
 });

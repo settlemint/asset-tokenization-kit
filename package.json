@@ -57,9 +57,7 @@
     "helm": "turbo run helm",
     "extract-env": "bun run tools/extract-env.ts"
   },
-  "dependencies": {
-    "zod-validation-error": "3.4.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@settlemint/sdk-cli": "2.3.6",
     "lefthook": "1.11.13",
