@@ -30,8 +30,7 @@
     },
     "helm": {
       "dependsOn": ["helm:check-context", "dependencies", "helm:secrets", "^codegen", "codegen", "subgraph#build","helm:subgraph"],
-      "cache": false,
-      "env": ["OP_SERVICE_ACCOUNT_TOKEN"]
+      "cache": false
     },
     "helm:check-context": {
       "cache": false
