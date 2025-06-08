@@ -423,9 +423,8 @@ async function updateChartVersions(): Promise<void> {
 if (import.meta.main) {
   // Check if running in CI environment
   if (!process.env.CI) {
-    console.error("Error: This script should only run in CI environments.");
-    console.error("Set the CI environment variable to run this script.");
-    process.exit(1);
+    console.log("Set the CI environment variable to run this script.");
+    process.exit(0);
   }
 
   await updateChartVersions();
