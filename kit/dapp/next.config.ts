@@ -75,7 +75,7 @@ let config = withSettleMint(withNextIntl(nextConfig));
 
 // Only apply Sentry configuration if DSN is provided
 if (process.env.SENTRY_DSN) {
-  // Dynamic import to avoid loading Sentry when not needed
+  // Only require Sentry when needed
   const { withSentryConfig } = await import("@sentry/nextjs");
 
   config = withSentryConfig(config, {

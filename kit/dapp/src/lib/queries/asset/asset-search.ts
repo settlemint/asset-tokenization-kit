@@ -5,7 +5,7 @@ import {
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";

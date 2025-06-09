@@ -3,7 +3,7 @@ import "server-only";
 import { db } from "@/lib/db";
 import { regulationConfigs } from "@/lib/db/regulations/schema-base-regulation-configs";
 import { micaRegulationConfigs } from "@/lib/db/regulations/schema-mica-regulation-configs";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
 import { and, eq } from "drizzle-orm";
 import type { Address } from "viem";

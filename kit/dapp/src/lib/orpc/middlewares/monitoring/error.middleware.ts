@@ -4,6 +4,7 @@ import { ORPCError, ValidationError } from "@orpc/server";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { APIError } from "better-auth/api";
 import { ZodError, type ZodIssue } from "zod";
+import * as Sentry from "@sentry/nextjs";
 
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
@@ -75,7 +76,7 @@ export function betterAuthErrorToORPCError(error: APIError) {
  * @see {@link ../../routes/procedures/base.contract} - Error definitions
  * @see {@link betterAuthErrorToORPCError} - Auth error conversion utility
  */
-export const errorMiddleware = br.middleware(async ({ next }) => {
+export const errorMiddleware = br.middleware(async ({ next, path }) => {
   try {
     return await next();
   } catch (error) {
@@ -86,6 +87,17 @@ export const errorMiddleware = br.middleware(async ({ next }) => {
         message: error.message,
         error: error.name,
       });
+
+      // Capture auth errors in Sentry with context
+      Sentry.captureException(error, {
+        tags: {
+          "error.type": "auth",
+          "error.status": error.statusCode,
+          "orpc.procedure": path.join("."),
+        },
+        level: "warning",
+      });
+
       throw betterAuthErrorToORPCError(error);
     }
 
@@ -96,6 +108,16 @@ export const errorMiddleware = br.middleware(async ({ next }) => {
         error.code === "FORBIDDEN" &&
         error.cause instanceof ValidationError
       ) {
+        // Capture authorization errors
+        Sentry.captureException(error, {
+          tags: {
+            "error.type": "authorization",
+            "error.status": "403",
+            "orpc.procedure": path.join("."),
+          },
+          level: "warning",
+        });
+
         throw new ORPCError("FORBIDDEN", {
           status: 403,
           cause: error.cause,
@@ -110,6 +132,21 @@ export const errorMiddleware = br.middleware(async ({ next }) => {
       ) {
         // Convert ORPC validation issues to Zod format for consistent error structure
         const zodError = new ZodError(error.cause.issues as ZodIssue[]);
+
+        // Capture validation errors with field details
+        Sentry.captureException(error, {
+          tags: {
+            "error.type": "validation",
+            "error.status": "422",
+            "orpc.procedure": path.join("."),
+          },
+          level: "info",
+          contexts: {
+            validation: {
+              issues: zodError.errors,
+            },
+          },
+        });
 
         throw new ORPCError("INPUT_VALIDATION_FAILED", {
           status: 422,
@@ -127,6 +164,21 @@ export const errorMiddleware = br.middleware(async ({ next }) => {
       ) {
         // Convert validation issues to structured format
         const zodError = new ZodError(error.cause.issues as ZodIssue[]);
+
+        // Capture server validation errors - these are more serious
+        Sentry.captureException(error, {
+          tags: {
+            "error.type": "output_validation",
+            "error.status": "522",
+            "orpc.procedure": path.join("."),
+          },
+          level: "error",
+          contexts: {
+            validation: {
+              issues: zodError.errors,
+            },
+          },
+        });
 
         throw new ORPCError("OUTPUT_VALIDATION_FAILED", {
           status: 522,

@@ -686,16 +686,18 @@ describe("customErrorKey", () => {
 describe("integration with z.setErrorMap", () => {
   it("should work when set globally", () => {
     const originalErrorMap = z.getErrorMap();
-    
+
     try {
       z.setErrorMap(zodErrorMap);
-      
+
       const schema = z.string().min(5);
       const result = schema.safeParse("abc");
-      
+
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe("validation.string.minLength");
+        expect(result.error.issues[0].message).toBe(
+          "validation.string.minLength"
+        );
       }
     } finally {
       // Restore original error map
@@ -706,7 +708,7 @@ describe("integration with z.setErrorMap", () => {
   it("should work when passed to safeParse", () => {
     const schema = z.string().email();
     const result = schema.safeParse("invalid-email", { errorMap: zodErrorMap });
-    
+
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0].message).toBe("validation.invalidEmail");

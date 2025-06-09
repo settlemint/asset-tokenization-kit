@@ -1,7 +1,7 @@
 "use server";
 
 import { client as minioClient } from "@/lib/settlemint/minio";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 
 // Default bucket name
 const DEFAULT_BUCKET = "uploads";

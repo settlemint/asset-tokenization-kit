@@ -3,7 +3,7 @@ import "server-only";
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import type { Price } from "@/lib/utils/typebox/price";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
