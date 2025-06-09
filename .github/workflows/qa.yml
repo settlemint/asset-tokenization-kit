@@ -4,28 +4,15 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - "**.md"
-      - "docs/**"
-      - ".github/ISSUE_TEMPLATE/**"
-      - ".github/CODEOWNERS"
-      - "LICENSE"
   pull_request:
     branches:
       - main
     types: [opened, synchronize, reopened, closed]
-    paths-ignore:
-      - "**.md"
-      - "docs/**"
-      - ".github/ISSUE_TEMPLATE/**"
-      - ".github/CODEOWNERS"
-      - "LICENSE"
 
 jobs:
   qa:
     name: QA
     runs-on: namespace-profile-atk
-    environment: "staging"
     if:
       github.event_name == 'push' || github.event.action == 'opened' ||
       github.event.action == 'synchronize'
@@ -106,12 +93,10 @@ jobs:
         run: bun install
 
       - name: Connect to SettleMint
-        uses: settlemint/settlemint-action@main
-        with:
-          instance: ${{ secrets.SETTLEMINT_INSTANCE }}
-          access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
-          dotEnvFile: ${{ secrets.ENV_FILE }}
-          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+          echo "${{ secrets.ENV_FILE_LOCAL }}" > .env.local
+          bunx settlemint connect -a
 
       - name: Turbo
         run: |
