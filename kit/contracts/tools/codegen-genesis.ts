@@ -901,7 +901,7 @@ class GenesisGenerator {
       const finalGenesis = {
         ...template,
         alloc: {
-          ...template.alloc,
+          ...(template.alloc ?? {}),
           ...contractAllocations,
         },
       };
@@ -982,8 +982,7 @@ OPTIONS:
     -h, --help              Show this help message
     -v, --verbose           Enable verbose logging (DEBUG level)
     -q, --quiet             Enable quiet mode (ERROR level only)
-    -p, --port PORT         Set Anvil port (default: 8545)
-    -b, --block-time TIME   Set Anvil block time in seconds (default: 1)
+    -p, --port PORT         Set Anvil port (default: 8546)
     -r, --restart-anvil     Force restart Anvil if already running
     -k, --keep-anvil        Keep Anvil running after script completion
     --show-output           Display final genesis.json output

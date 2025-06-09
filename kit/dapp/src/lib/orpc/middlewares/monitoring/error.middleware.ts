@@ -1,10 +1,10 @@
 import { br } from "@/lib/orpc/routes/procedures/base.router";
 import type { ORPCErrorCode } from "@orpc/client";
 import { ORPCError, ValidationError } from "@orpc/server";
+import * as Sentry from "@sentry/nextjs";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { APIError } from "better-auth/api";
 import { ZodError, type ZodIssue } from "zod";
-import * as Sentry from "@sentry/nextjs";
 
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,

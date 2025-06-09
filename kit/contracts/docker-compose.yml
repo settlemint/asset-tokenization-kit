@@ -103,16 +103,16 @@ services:
       BLOCKCHAIN_NETWORK_ID: "${CHAIN_ID:-1337}"
       BLOCKCHAIN_NETWORK_NAME: ${NETWORK_NAME:-ATK}
       CONTRACT_ABI_PATH: /abis
-      GRAPHQL_PORT: "7001"
-      PORT: "7000"
+      GRAPHQL_PORT: "7701"
+      PORT: "7700"
       POSTGRES_CONNECTION_STRING: postgresql://${PORTAL_DB_USER:-portal}:${PORTAL_DB_PASSWORD:-portal}@postgres:5432/${PORTAL_DB_NAME:-portal}?sslmode=disable
       REDIS_HOST: redis
       REDIS_PASSWORD: ${REDIS_PASSWORD:-shared}
       REDIS_PORT: "6379"
       REDIS_USERNAME: ${REDIS_USERNAME:-default}
     ports:
-      - "7000:7000"
-      - "7001:7001"
+      - "7700:7700"
+      - "7701:7701"
 
   redis:
     image: redis:8.0-alpine
