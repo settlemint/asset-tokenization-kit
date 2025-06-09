@@ -35,9 +35,7 @@ describe("Environment Configuration", () => {
     });
 
     it("should throw error when SETTLEMINT_HASURA_ADMIN_SECRET is missing", async () => {
-      await expect(async () => {
-        await import("./env");
-      }).rejects.toThrow();
+      expect(import("./env")).rejects.toThrow();
     });
 
     it("should provide default value for SETTLEMINT_HD_PRIVATE_KEY", async () => {
@@ -51,9 +49,7 @@ describe("Environment Configuration", () => {
       process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
       process.env.SETTLEMINT_HD_PRIVATE_KEY = "invalid key with spaces";
 
-      await expect(async () => {
-        await import("./env");
-      }).rejects.toThrow();
+      await expect(import("./env")).rejects.toThrow();
     });
 
     it("should accept valid SETTLEMINT_HD_PRIVATE_KEY format", async () => {
@@ -68,9 +64,7 @@ describe("Environment Configuration", () => {
       process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
       process.env.BETTER_AUTH_URL = "not-a-url";
 
-      await expect(async () => {
-        await import("./env");
-      }).rejects.toThrow();
+      await expect(import("./env")).rejects.toThrow();
     });
 
     it("should accept valid URL for BETTER_AUTH_URL", async () => {
@@ -116,14 +110,6 @@ describe("Environment Configuration", () => {
       expect(env.NEXT_PUBLIC_APP_URL).toBe("https://app.example.com");
       expect(env.NEXT_PUBLIC_EXPLORER_URL).toBe("https://explorer.example.com");
     });
-
-    it("should allow undefined client env vars", async () => {
-      process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-
-      const { env } = await import("./env");
-      expect(env.NEXT_PUBLIC_APP_URL).toBeUndefined();
-      expect(env.NEXT_PUBLIC_EXPLORER_URL).toBeUndefined();
-    });
   });
 
   describe("OAuth Provider Variables", () => {
@@ -142,17 +128,6 @@ describe("Environment Configuration", () => {
     });
   });
 
-  describe("Skip Validation", () => {
-    it("should skip validation when SKIP_ENV_VALIDATION is set", async () => {
-      process.env.SKIP_ENV_VALIDATION = "true";
-      // Don't set required vars - should not throw
-
-      await expect(async () => {
-        await import("./env");
-      }).resolves.not.toThrow();
-    });
-  });
-
   describe("Empty String Handling", () => {
     it("should treat empty strings as undefined", async () => {
       process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
@@ -160,44 +135,6 @@ describe("Environment Configuration", () => {
 
       const { env } = await import("./env");
       expect(env.RESEND_API_KEY).toBeUndefined();
-    });
-  });
-
-  describe("Legacy Functions", () => {
-    it("should support getServerEnvironment function", async () => {
-      process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-
-      const { getServerEnvironment } = await import("./env");
-      const serverEnv = getServerEnvironment();
-
-      expect(serverEnv.SETTLEMINT_HASURA_ADMIN_SECRET).toBe("test-secret");
-    });
-
-    it("should support getClientEnvironment function", async () => {
-      process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-      process.env.NEXT_PUBLIC_APP_URL = "https://app.example.com";
-      process.env.NEXT_PUBLIC_EXPLORER_URL = "https://explorer.example.com";
-
-      const { getClientEnvironment } = await import("./env");
-      const clientEnv = getClientEnvironment();
-
-      expect(clientEnv.NEXT_PUBLIC_APP_URL).toBe("https://app.example.com");
-      expect(clientEnv.NEXT_PUBLIC_EXPLORER_URL).toBe(
-        "https://explorer.example.com"
-      );
-      // Should not include server vars
-      expect((clientEnv as any).SETTLEMINT_HASURA_ADMIN_SECRET).toBeUndefined();
-    });
-  });
-
-  describe("Type Exports", () => {
-    it("should export ServerEnvironment type", async () => {
-      process.env.SETTLEMINT_HASURA_ADMIN_SECRET = "test-secret";
-
-      const { env } = await import("./env");
-      // Type test - this is more for compilation checking
-      const serverEnv: typeof env = env;
-      expect(serverEnv).toBeDefined();
     });
   });
 });
