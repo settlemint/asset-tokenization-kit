@@ -1,3 +1,4 @@
+import { withSentryConfig } from "@sentry/nextjs";
 import { withSettleMint } from "@settlemint/sdk-next/config/with-settlemint";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
@@ -75,9 +76,6 @@ let config = withSettleMint(withNextIntl(nextConfig));
 
 // Only apply Sentry configuration if DSN is provided
 if (process.env.SENTRY_DSN) {
-  // Only require Sentry when needed
-  const { withSentryConfig } = await import("@sentry/nextjs");
-
   config = withSentryConfig(config, {
     // For all available options, see:
     // https://www.npmjs.com/package/@sentry/webpack-plugin#options
