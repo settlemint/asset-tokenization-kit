@@ -115,3 +115,26 @@ services:
       HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_ADMIN_SECRET:-hasura}
     ports:
       - "8080:8080"
+
+  graph-node:
+    image: graphprotocol/graph-node:v0.39.1
+    restart: unless-stopped
+    platform: linux/amd64
+    ports:
+      - "8000:8000" # GraphQL HTTP
+      - "8001:8001" # Admin
+      - "8020:8020" # Index Node
+      - "8030:8030" # Query Node
+      - "8040:8040" # Subgraph
+    environment:
+      postgres_host: postgres
+      postgres_user: thegraph
+      postgres_pass: thegraph
+      postgres_db: thegraph
+      ipfs: "https://ipfs.console.settlemint.com"
+      ethereum: "settlemint:http://besu:8545"
+      GRAPH_ETHEREUM_REQUEST_RETRIES: 10
+      ETHEREUM_POLLING_INTERVAL: 1000
+      GRAPH_IPFS_TIMEOUT: 60
+      GRAPH_MAX_IPFS_FILE_BYTES: 52428800
+      GRAPH_IPFS_REQUEST_RETRIES: 10

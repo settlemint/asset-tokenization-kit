@@ -4,11 +4,11 @@ CREATE DATABASE portal;
 CREATE DATABASE hasura;
 CREATE DATABASE thegraph;
 
--- Create users
-CREATE USER txsigner WITH PASSWORD 'txsigner';
-CREATE USER portal WITH PASSWORD 'portal';
-CREATE USER hasura WITH PASSWORD 'hasura';
-CREATE USER thegraph WITH PASSWORD 'thegraph';
+-- Create users with SUPERUSER privileges to allow extension creation
+CREATE USER txsigner WITH PASSWORD 'txsigner' SUPERUSER;
+CREATE USER portal WITH PASSWORD 'portal' SUPERUSER;
+CREATE USER hasura WITH PASSWORD 'hasura' SUPERUSER;
+CREATE USER thegraph WITH PASSWORD 'thegraph' SUPERUSER;
 
 -- Grant privileges
 GRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;
@@ -18,6 +18,7 @@ GRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;
 
 -- Connect to txsigner database and grant schema privileges
 \c txsigner;
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 GRANT ALL ON SCHEMA public TO txsigner;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO txsigner;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO txsigner;
@@ -26,6 +27,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO txsigner;
 
 -- Connect to portal database and grant schema privileges
 \c portal;
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 GRANT ALL ON SCHEMA public TO portal;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO portal;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO portal;
@@ -34,6 +36,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO portal;
 
 -- Connect to hasura database and grant schema privileges
 \c hasura;
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 GRANT ALL ON SCHEMA public TO hasura;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO hasura;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO hasura;
@@ -42,6 +45,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO hasura;
 
 -- Connect to thegraph database and grant schema privileges
 \c thegraph;
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
 GRANT ALL ON SCHEMA public TO thegraph;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO thegraph;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO thegraph;
