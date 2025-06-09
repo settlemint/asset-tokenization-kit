@@ -93,10 +93,11 @@ jobs:
         run: bun install
 
       - name: Connect to SettleMint
-        run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
-          echo "${{ secrets.ENV_FILE_LOCAL }}" > .env.local
-          bunx settlemint connect -a
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: standalone
+          dotEnvFile: ${{ secrets.ENV_FILE }}
+          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Turbo
         run: |
