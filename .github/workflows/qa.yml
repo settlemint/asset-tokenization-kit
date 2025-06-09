@@ -98,7 +98,7 @@ jobs:
           instance: standalone
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
-          command: "settlemint connect -a"
+          command: "connect -a"
 
       - name: Turbo
         run: |
