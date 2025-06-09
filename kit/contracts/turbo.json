@@ -46,7 +46,7 @@
       "dependsOn": ["package", "codegen"]
     },
     "docker:up": {
-      "dependsOn": ["dependencies", "^codegen", "codegen"],
+      "dependsOn": ["dependencies", "^codegen", "codegen", "subgraph#compile"],
       "cache": false
     }
   }

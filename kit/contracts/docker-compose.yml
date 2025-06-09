@@ -8,7 +8,6 @@ services:
       - ./tools/docker/besu/config.toml:/opt/besu/config.toml:ro
       - ./tools/docker/besu/genesis.json:/opt/besu/genesis.json:ro
       - ./tools/docker/besu/anvil-test-key:/opt/besu/key:ro
-
   txsigner:
     image: ghcr.io/settlemint/btp-signer:7.13.0
     container_name: atk-txsigner
@@ -22,9 +21,7 @@ services:
       MODE: "standalone"
       RPC_ENDPOINT: "http://besu:8545"
       DB_CONNECTION_STRING: "postgresql://${TXSIGNER_DB_USER:-txsigner}:${TXSIGNER_DB_PASSWORD:-txsigner}@postgres:5432/${TXSIGNER_DB_NAME:-txsigner}?sslmode=disable"
-      PRIVATE_KEY_MNEMONIC:
-        ${PRIVATE_KEY_MNEMONIC:-"gate yellow grunt wrestle disease obtain mixed
-        nature mansion tape purchase awful"}
+      PRIVATE_KEY_MNEMONIC: ${PRIVATE_KEY_MNEMONIC:-"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"}
       PRIVATE_KEY_DERIVATION_PATH: "m/44'/60'/0'/0/0"
       TX_SIGNER_PORT: 3000
       TX_SIGNER_METRICS_PORT: 3001
@@ -52,20 +49,11 @@ services:
       TX_SIGNER_CORS_HEADERS: ${CORS_HEADERS:-Content-Type,Authorization}
     ports:
       - "8545:3000"
-
   postgres:
     image: postgres:17.5-alpine
     container_name: atk-postgres
     restart: unless-stopped
-    command:
-      [
-        "postgres",
-        "-cshared_preload_libraries=pg_stat_statements",
-        "-cmax_connections=200",
-        "-clog_statement=none",
-        "-clog_duration=off",
-        "-clog_min_duration_statement=1000",
-      ]
+    command: ["postgres", "-cshared_preload_libraries=pg_stat_statements", "-cmax_connections=200", "-clog_statement=none", "-clog_duration=off", "-clog_min_duration_statement=1000"]
     volumes:
       - ./tools/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
@@ -77,16 +65,11 @@ services:
       PGDATA: "/var/lib/postgresql/data"
       POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}",
-        ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}"]
       interval: 2s
       timeout: 2s
       retries: 5
       start_period: 5s
-
   portal:
     image: ghcr.io/settlemint/btp-scs-portal:8.5.6
     container_name: atk-portal
@@ -113,29 +96,17 @@ services:
     ports:
       - "7700:7700"
       - "7701:7701"
-
   redis:
     image: redis:8.0-alpine
     container_name: atk-redis
     restart: unless-stopped
-    command:
-      redis-server --requirepass ${REDIS_PASSWORD:-shared} --save 60 1
-      --loglevel warning --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: redis-server --requirepass ${REDIS_PASSWORD:-shared} --save 60 1 --loglevel warning --maxmemory 256mb --maxmemory-policy allkeys-lru
     healthcheck:
-      test:
-        [
-          "CMD",
-          "redis-cli",
-          "--no-auth-warning",
-          "-a",
-          "${REDIS_PASSWORD:-shared}",
-          "ping",
-        ]
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-shared}", "ping"]
       interval: 2s
       timeout: 2s
       retries: 5
       start_period: 3s
-
   hasura:
     image: hasura/graphql-engine:v2.46.0
     container_name: atk-hasura
@@ -148,12 +119,10 @@ services:
       PG_DATABASE_URL: postgres://${HASURA_DB_USER:-hasura}:${HASURA_DB_PASSWORD:-hasura}@postgres:5432/hasura
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_DEV_MODE: "true"
-      HASURA_GRAPHQL_ENABLED_LOG_TYPES:
-        startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_ADMIN_SECRET:-hasura}
     ports:
       - "8080:8080"
-
   graph-node:
     image: graphprotocol/graph-node:v0.39.1
     container_name: atk-graph-node
@@ -182,7 +151,7 @@ services:
       GRAPH_IPFS_TIMEOUT: 60
       GRAPH_MAX_IPFS_FILE_BYTES: 52428800
       GRAPH_IPFS_REQUEST_RETRIES: 10
-
+      SUBGRAPH: "kit:QmbA53S3UUeoxdNQV9PGUDN7WAgFcHT6qU9FiH8QXXGv3z"
   minio:
     image: minio/minio:RELEASE.2025-05-24T17-08-30Z
     container_name: atk-minio
@@ -200,7 +169,6 @@ services:
       timeout: 2s
       retries: 5
       start_period: 5s
-
   minio-setup:
     image: minio/mc:RELEASE.2025-05-21T01-59-54Z
     container_name: atk-minio-setup
@@ -216,7 +184,6 @@ services:
     volumes:
       - ./tools/docker/minio/init.sh:/init.sh
     restart: "no"
-
   blockscout-backend:
     image: ghcr.io/blockscout/blockscout:8.1.1
     container_name: atk-blockscout-backend
@@ -251,7 +218,6 @@ services:
       NFT_MEDIA_HANDLER_ENABLED: false
     ports:
       - "4000:4000"
-
   blockscout-frontend:
     image: ghcr.io/blockscout/frontend:v2.0.3
     platform: linux/amd64
