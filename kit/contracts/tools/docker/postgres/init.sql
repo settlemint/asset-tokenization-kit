@@ -3,18 +3,21 @@ CREATE DATABASE txsigner;
 CREATE DATABASE portal;
 CREATE DATABASE hasura;
 CREATE DATABASE thegraph;
+CREATE DATABASE blockscout;
 
 -- Create users with SUPERUSER privileges to allow extension creation
 CREATE USER txsigner WITH PASSWORD 'txsigner' SUPERUSER;
 CREATE USER portal WITH PASSWORD 'portal' SUPERUSER;
 CREATE USER hasura WITH PASSWORD 'hasura' SUPERUSER;
 CREATE USER thegraph WITH PASSWORD 'thegraph' SUPERUSER;
+CREATE USER blockscout WITH PASSWORD 'blockscout' SUPERUSER;
 
 -- Grant privileges
 GRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;
 GRANT ALL PRIVILEGES ON DATABASE portal TO portal;
 GRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;
 GRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;
+GRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;
 
 -- Connect to txsigner database and grant schema privileges
 \c txsigner;
@@ -51,3 +54,12 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO thegraph;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO thegraph;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO thegraph;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO thegraph;
+
+-- Connect to blockscout database and grant schema privileges
+\c blockscout;
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
+GRANT ALL ON SCHEMA public TO blockscout;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO blockscout;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO blockscout;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO blockscout;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO blockscout;

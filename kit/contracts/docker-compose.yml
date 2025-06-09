@@ -8,12 +8,6 @@ services:
       - ./tools/docker/besu/config.toml:/opt/besu/config.toml:ro
       - ./tools/docker/besu/genesis.json:/opt/besu/genesis.json:ro
       - ./tools/docker/besu/anvil-test-key:/opt/besu/key:ro
-    healthcheck:
-      test: ["CMD-SHELL", "timeout 1 bash -c '</dev/tcp/localhost/8545'"]
-      interval: 2s
-      timeout: 2s
-      retries: 5
-      start_period: 10s
 
   txsigner:
     image: ghcr.io/settlemint/btp-signer:7.13.0
@@ -102,12 +96,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O-", "http://localhost:3000/health"]
-      interval: 2s
-      timeout: 2s
-      retries: 5
-      start_period: 5s
     volumes:
       - ./portal:/abis:ro
     environment:
@@ -115,16 +103,16 @@ services:
       BLOCKCHAIN_NETWORK_ID: "${CHAIN_ID:-1337}"
       BLOCKCHAIN_NETWORK_NAME: ${NETWORK_NAME:-ATK}
       CONTRACT_ABI_PATH: /abis
-      GRAPHQL_PORT: "3001"
-      PORT: "3000"
+      GRAPHQL_PORT: "7001"
+      PORT: "7000"
       POSTGRES_CONNECTION_STRING: postgresql://${PORTAL_DB_USER:-portal}:${PORTAL_DB_PASSWORD:-portal}@postgres:5432/${PORTAL_DB_NAME:-portal}?sslmode=disable
       REDIS_HOST: redis
       REDIS_PASSWORD: ${REDIS_PASSWORD:-shared}
       REDIS_PORT: "6379"
       REDIS_USERNAME: ${REDIS_USERNAME:-default}
     ports:
-      - "7000:3000"
-      - "7001:3001"
+      - "7000:7000"
+      - "7001:7001"
 
   redis:
     image: redis:8.0-alpine
@@ -155,12 +143,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O-", "http://localhost:8080/healthz"]
-      interval: 2s
-      timeout: 2s
-      retries: 5
-      start_period: 10s
     environment:
       HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://${HASURA_DB_USER:-hasura}:${HASURA_DB_PASSWORD:-hasura}@postgres:5432/hasura
       PG_DATABASE_URL: postgres://${HASURA_DB_USER:-hasura}:${HASURA_DB_PASSWORD:-hasura}@postgres:5432/hasura
@@ -182,12 +164,6 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O-", "http://localhost:8000/"]
-      interval: 2s
-      timeout: 2s
-      retries: 5
-      start_period: 15s
     ports:
       - "8000:8000" # GraphQL HTTP
       - "8001:8001" # Admin
@@ -210,6 +186,7 @@ services:
   minio:
     image: minio/minio:RELEASE.2025-05-24T17-08-30Z
     container_name: atk-minio
+    restart: unless-stopped
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -239,3 +216,62 @@ services:
     volumes:
       - ./tools/docker/minio/init.sh:/init.sh
     restart: "no"
+
+  blockscout-backend:
+    image: ghcr.io/blockscout/blockscout:8.1.1
+    container_name: atk-blockscout-backend
+    restart: unless-stopped
+    command: |
+      sh -c "bin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\" && bin/blockscout start"
+    environment:
+      ETHEREUM_JSONRPC_VARIANT: besu
+      ETHEREUM_JSONRPC_HTTP_URL: http://besu:8545/
+      DATABASE_URL: postgresql://blockscout:blockscout@postgres:5432/blockscout
+      ETHEREUM_JSONRPC_TRANSPORT: http
+      ETHEREUM_JSONRPC_DISABLE_ARCHIVE_BALANCES: false
+      ETHEREUM_JSONRPC_TRACE_URL: http://besu:8545/
+      SECRET_KEY_BASE: 56NtB48ear7+wMSf0IQuWDAAazhpb31qyc7GiyspBP2vh7t5zlCsF5QDv76chXeN
+      PORT: 4000
+      COIN_NAME: ATK
+      COIN: ATK
+      DISABLE_MARKET: true
+      POOL_SIZE: 80
+      POOL_SIZE_API: 10
+      ECTO_USE_SSL: false
+      HEART_BEAT_TIMEOUT: 30
+      ADMIN_PANEL_ENABLED: false
+      API_V1_READ_METHODS_DISABLED: false
+      API_V1_WRITE_METHODS_DISABLED: false
+      API_GRAPHQL_ENABLED: true
+      TXS_STATS_DAYS_TO_COMPILE_AT_INIT: 10
+      COIN_BALANCE_HISTORY_DAYS: 90
+      RE_CAPTCHA_DISABLED: true
+      DECODE_NOT_A_CONTRACT_CALLS: true
+      ACCOUNT_ENABLED: false
+      NFT_MEDIA_HANDLER_ENABLED: false
+    ports:
+      - "4000:4000"
+
+  blockscout-frontend:
+    image: ghcr.io/blockscout/frontend:v2.0.3
+    platform: linux/amd64
+    restart: unless-stopped
+    container_name: atk-blockscout-frontend
+    environment:
+      NEXT_PUBLIC_API_HOST: localhost:4000
+      NEXT_PUBLIC_API_PROTOCOL: http
+      NEXT_PUBLIC_NETWORK_NAME: Asset Tokenization Kit
+      NEXT_PUBLIC_NETWORK_SHORT_NAME: ATK
+      NEXT_PUBLIC_NETWORK_ID: 1337
+      NEXT_PUBLIC_NETWORK_CURRENCY_NAME: Asset Tokenization Kit
+      NEXT_PUBLIC_NETWORK_CURRENCY_SYMBOL: ATK
+      NEXT_PUBLIC_NETWORK_CURRENCY_DECIMALS: 18
+      NEXT_PUBLIC_API_BASE_PATH: /
+      NEXT_PUBLIC_APP_HOST: localhost:4000
+      NEXT_PUBLIC_APP_PROTOCOL: http
+      NEXT_PUBLIC_HOMEPAGE_CHARTS: "['daily_txs']"
+      NEXT_PUBLIC_IS_TESTNET: false
+      NEXT_PUBLIC_API_WEBSOCKET_PROTOCOL: ws
+      NEXT_PUBLIC_API_SPEC_URL: https://raw.githubusercontent.com/blockscout/blockscout-api-v2-swagger/main/swagger.yaml
+    ports:
+      - "4001:3000"
