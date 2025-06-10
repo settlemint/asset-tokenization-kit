@@ -21,6 +21,9 @@ export const AirdropFragment = theGraphGraphqlKit(`
     totalClaimed
     totalClaimedExact
     totalRecipients
+    owner {
+      id
+    }
   }
 `);
 

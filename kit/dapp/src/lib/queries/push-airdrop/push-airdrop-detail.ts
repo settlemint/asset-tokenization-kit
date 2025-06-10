@@ -1,11 +1,12 @@
 import "server-only";
 
+import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
-import { safeParse } from "@/lib/utils/typebox/index";
+import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -74,9 +75,16 @@ export const getPushAirdropDetail = withTracing(
       })(),
     ]);
 
+    // Get the token balance
+    const balance = await getAssetBalanceDetail({
+      address: onChainPushAirdrop.asset.id,
+      account: address,
+    });
+
     return {
       ...onChainPushAirdrop,
       ...offChainPushAirdrop,
+      balance: balance?.value ?? 0,
     };
   })
 );
