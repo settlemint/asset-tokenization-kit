@@ -6,7 +6,7 @@ import type { UserAirdrop } from "@/lib/queries/airdrop/user-airdrop-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useLocale, useTranslations } from "next-intl";
-import { AirdropClaimStatusIndicator } from "../airdrop-claim-status/airdrop-claim-status";
+import { AirdropStatusIndicator } from "../airdrop-claim-status/airdrop-claim-status";
 import { AirdropTypeIndicator } from "../airdrop-type-indicator/airdrop-type-indicator";
 
 const columnHelper = createColumnHelper<UserAirdrop>();
@@ -40,7 +40,7 @@ export function Columns() {
     columnHelper.display({
       header: t("table.status-header"),
       cell: ({ row }) => (
-        <AirdropClaimStatusIndicator
+        <AirdropStatusIndicator
           status={row.original.status}
           type={row.original.type}
         />

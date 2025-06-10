@@ -12,17 +12,17 @@ import { CalendarMinus2, Clock, Info, PlayCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
 
-type AirdropClaimStatusIndicatorProps = {
+type AirdropStatusIndicatorProps = {
   asBadge?: boolean;
   status: AirdropStatus;
   type: AirdropType;
 };
 
-export function AirdropClaimStatusIndicator({
+export function AirdropStatusIndicator({
   status,
   asBadge = false,
   type,
-}: AirdropClaimStatusIndicatorProps): ReactElement {
+}: AirdropStatusIndicatorProps): ReactElement {
   const t = useTranslations("portfolio.my-airdrops");
 
   const statusConfig = {
