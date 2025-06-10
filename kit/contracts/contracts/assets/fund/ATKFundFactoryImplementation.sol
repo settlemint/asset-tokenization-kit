@@ -2,27 +2,27 @@
 pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
-import { AbstractSMARTTokenFactoryImplementation } from
-    "../../system/token-factory/AbstractSMARTTokenFactoryImplementation.sol";
+import { AbstractATKTokenFactoryImplementation } from
+    "../../system/token-factory/AbstractATKTokenFactoryImplementation.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interface imports
-import { ISMARTFund } from "./ISMARTFund.sol";
-import { ISMARTFundFactory } from "./ISMARTFundFactory.sol";
+import { IATKFund } from "./IATKFund.sol";
+import { IATKFundFactory } from "./IATKFundFactory.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 // Local imports
-import { SMARTFundProxy } from "./SMARTFundProxy.sol";
+import { ATKFundProxy } from "./ATKFundProxy.sol";
 
-/// @title Implementation of the SMART Fund Factory
-/// @notice This contract is responsible for creating instances of SMART Funds.
-contract SMARTFundFactoryImplementation is ISMARTFundFactory, AbstractSMARTTokenFactoryImplementation {
-    /// @notice Constructor for the SMARTFundFactoryImplementation.
+/// @title Implementation of the ATK Fund Factory
+/// @notice This contract is responsible for creating instances of ATK Funds.
+contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactoryImplementation {
+    /// @notice Constructor for the ATKFundFactoryImplementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions.
-    constructor(address forwarder) AbstractSMARTTokenFactoryImplementation(forwarder) { }
+    constructor(address forwarder) AbstractATKTokenFactoryImplementation(forwarder) { }
 
-    /// @notice Creates a new SMART Fund.
+    /// @notice Creates a new ATK Fund.
     /// @param name_ The name of the fund.
     /// @param symbol_ The symbol of the fund.
     /// @param decimals_ The number of decimals for the fund tokens.
@@ -62,8 +62,8 @@ contract SMARTFundFactoryImplementation is ISMARTFundFactory, AbstractSMARTToken
             address(accessManager)
         );
 
-        // Get the creation bytecode of SMARTFundProxy
-        bytes memory proxyBytecode = type(SMARTFundProxy).creationCode;
+        // Get the creation bytecode of ATKFundProxy
+        bytes memory proxyBytecode = type(ATKFundProxy).creationCode;
 
         // Deploy using the helper from the abstract contract
         address deployedTokenIdentityAddress;
@@ -81,10 +81,10 @@ contract SMARTFundFactoryImplementation is ISMARTFundFactory, AbstractSMARTToken
     /// @param tokenImplementation_ The address of the contract to check.
     /// @return bool True if the contract supports the ISMARTFund interface, false otherwise.
     function isValidTokenImplementation(address tokenImplementation_) public view override returns (bool) {
-        return IERC165(tokenImplementation_).supportsInterface(type(ISMARTFund).interfaceId);
+        return IERC165(tokenImplementation_).supportsInterface(type(IATKFund).interfaceId);
     }
 
-    /// @notice Predicts the deployment address of a SMARTFundProxy contract.
+    /// @notice Predicts the deployment address of a ATKFundProxy contract.
     /// @param name_ The name of the fund.
     /// @param symbol_ The symbol of the fund.
     /// @param decimals_ The decimals of the fund.
@@ -121,7 +121,7 @@ contract SMARTFundFactoryImplementation is ISMARTFundFactory, AbstractSMARTToken
             accessManagerAddress_
         );
 
-        bytes memory proxyBytecode = type(SMARTFundProxy).creationCode;
+        bytes memory proxyBytecode = type(ATKFundProxy).creationCode;
         predictedAddress = _predictProxyAddress(proxyBytecode, constructorArgs, salt);
         return predictedAddress;
     }

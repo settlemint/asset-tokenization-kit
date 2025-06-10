@@ -16,7 +16,7 @@ import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { IATKIdentityFactory } from "../identity-factory/IATKIdentityFactory.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
-import { SMARTRoles } from "../../assets/SMARTRoles.sol";
+import { ATKRoles } from "../../assets/ATKRoles.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";

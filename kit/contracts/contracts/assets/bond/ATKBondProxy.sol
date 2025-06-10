@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { SMARTAssetProxy } from "../SMARTAssetProxy.sol";
-import { ISMARTBond } from "./ISMARTBond.sol";
+import { ATKAssetProxy } from "../ATKAssetProxy.sol";
+import { IATKBond } from "./IATKBond.sol";
 
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMARTTokenFactory } from "../../system/token-factory/ISMARTTokenFactory.sol";
+import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
 
-import { TokenImplementationNotSet } from "../../system/SMARTSystemErrors.sol";
+import { TokenImplementationNotSet } from "../../system/ATKSystemErrors.sol";
 
-/// @title Proxy contract for SMART Bonds, using SMARTAssetProxy.
+/// @title Proxy contract for ATK Bonds, using ATKAssetProxy.
 /// @notice This contract serves as a proxy, allowing for upgradeability of the underlying bond logic.
-/// It retrieves the implementation address from the ISMARTTokenFactory contract via SMARTAssetProxy.
-contract SMARTBondProxy is SMARTAssetProxy {
-    /// @notice Constructs the SMARTBondProxy.
+/// It retrieves the implementation address from the ISMARTTokenFactory contract via ATKAssetProxy.
+contract ATKBondProxy is ATKAssetProxy {
+    /// @notice Constructs the ATKBondProxy.
     /// @dev Initializes the proxy by delegating a call to the `initialize` function
     /// of the implementation provided by the token factory.
     /// @param tokenFactoryAddress The address of the token factory contract.
@@ -45,12 +45,12 @@ contract SMARTBondProxy is SMARTAssetProxy {
         address accessManager_
     )
         payable
-        SMARTAssetProxy(tokenFactoryAddress)
+        ATKAssetProxy(tokenFactoryAddress)
     {
         address implementation = _implementation();
 
         bytes memory data = abi.encodeWithSelector(
-            ISMARTBond.initialize.selector,
+            IATKBond.initialize.selector,
             name_,
             symbol_,
             decimals_,

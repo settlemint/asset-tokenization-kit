@@ -2,26 +2,26 @@
 pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
-import { AbstractSMARTTokenFactoryImplementation } from
-    "../../system/token-factory/AbstractSMARTTokenFactoryImplementation.sol";
+import { AbstractATKTokenFactoryImplementation } from
+    "../../system/token-factory/AbstractATKTokenFactoryImplementation.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interface imports
-import { ISMARTEquity } from "./ISMARTEquity.sol";
+import { IATKEquity } from "./IATKEquity.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMARTEquityFactory } from "./ISMARTEquityFactory.sol";
+import { IATKEquityFactory } from "./IATKEquityFactory.sol";
 // Local imports
-import { SMARTEquityProxy } from "./SMARTEquityProxy.sol";
+import { ATKEquityProxy } from "./ATKEquityProxy.sol";
 
-/// @title Implementation of the SMART Equity Factory
-/// @notice This contract is responsible for creating instances of SMART Equity tokens.
-contract SMARTEquityFactoryImplementation is ISMARTEquityFactory, AbstractSMARTTokenFactoryImplementation {
-    /// @notice Constructor for the SMARTEquityFactoryImplementation.
+/// @title Implementation of the ATK Equity Factory
+/// @notice This contract is responsible for creating instances of ATK Equity tokens.
+contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFactoryImplementation {
+    /// @notice Constructor for the ATKEquityFactoryImplementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions.
-    constructor(address forwarder) AbstractSMARTTokenFactoryImplementation(forwarder) { }
+    constructor(address forwarder) AbstractATKTokenFactoryImplementation(forwarder) { }
 
-    /// @notice Creates a new SMART Equity token.
+    /// @notice Creates a new ATK Equity token.
     /// @param name_ The name of the equity token.
     /// @param symbol_ The symbol of the equity token.
     /// @param decimals_ The number of decimals for the equity token.
@@ -58,8 +58,8 @@ contract SMARTEquityFactoryImplementation is ISMARTEquityFactory, AbstractSMARTT
             address(accessManager)
         );
 
-        // Get the creation bytecode of SMARTEquityProxy
-        bytes memory proxyBytecode = type(SMARTEquityProxy).creationCode;
+        // Get the creation bytecode of ATKEquityProxy
+        bytes memory proxyBytecode = type(ATKEquityProxy).creationCode;
 
         // Deploy using the helper from the abstract contract
         address deployedTokenIdentityAddress;
@@ -77,10 +77,10 @@ contract SMARTEquityFactoryImplementation is ISMARTEquityFactory, AbstractSMARTT
     /// @param tokenImplementation_ The address of the contract to check.
     /// @return bool True if the contract supports the ISMARTEquity interface, false otherwise.
     function isValidTokenImplementation(address tokenImplementation_) public view override returns (bool) {
-        return IERC165(tokenImplementation_).supportsInterface(type(ISMARTEquity).interfaceId);
+        return IERC165(tokenImplementation_).supportsInterface(type(IATKEquity).interfaceId);
     }
 
-    /// @notice Predicts the deployment address of a SMARTEquityProxy contract.
+    /// @notice Predicts the deployment address of a ATKEquityProxy contract.
     /// @param name_ The name of the equity.
     /// @param symbol_ The symbol of the equity.
     /// @param decimals_ The decimals of the equity.
@@ -114,7 +114,7 @@ contract SMARTEquityFactoryImplementation is ISMARTEquityFactory, AbstractSMARTT
             accessManagerAddress_
         );
 
-        bytes memory proxyBytecode = type(SMARTEquityProxy).creationCode;
+        bytes memory proxyBytecode = type(ATKEquityProxy).creationCode;
         predictedAddress = _predictProxyAddress(proxyBytecode, constructorArgs, salt);
         return predictedAddress;
     }

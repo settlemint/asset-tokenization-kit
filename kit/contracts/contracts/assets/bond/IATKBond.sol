@@ -17,10 +17,10 @@ import { ISMARTHistoricalBalances } from "../../smart/extensions/historical-bala
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 import { ISMARTCapped } from "../../smart/extensions/capped/ISMARTCapped.sol";
 
-/// @title Interface for a SMART Bond
-/// @notice Defines the core functionality and extensions for a SMART Bond, including features like redeemability,
+/// @title Interface for a ATK Bond
+/// @notice Defines the core functionality and extensions for a ATK Bond, including features like redeemability,
 /// historical balances, yield, and capping.
-interface ISMARTBond is
+interface IATKBond is
     ISMART,
     ISMARTTokenAccessManaged,
     ISMARTCustodian,

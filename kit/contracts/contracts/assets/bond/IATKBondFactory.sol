@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity 0.8.28;
 
-import { ISMARTTokenFactory } from "../../system/token-factory/ISMARTTokenFactory.sol";
+import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
-/// @title Interface for the SMART Bond Factory
-/// @notice Defines the functions for creating and predicting addresses of SMART Bond instances.
-interface ISMARTBondFactory is ISMARTTokenFactory {
-    /// @notice Creates a new SMART Bond.
+/// @title Interface for the ATK Bond Factory
+/// @notice Defines the functions for creating and predicting addresses of ATK Bond instances.
+interface IATKBondFactory is IATKTokenFactory {
+    /// @notice Creates a new ATK Bond.
     /// @param name_ The name of the bond.
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals for the bond tokens.
@@ -33,7 +33,7 @@ interface ISMARTBondFactory is ISMARTTokenFactory {
         external
         returns (address deployedBondAddress);
 
-    /// @notice Predicts the deployment address of a new SMART Bond.
+    /// @notice Predicts the deployment address of a new ATK Bond.
     /// @param name_ The name of the bond.
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals for the bond tokens.

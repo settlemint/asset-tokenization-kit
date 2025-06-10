@@ -1,0 +1,27 @@
+---
+description: 
+globs: *.sol
+alwaysApply: false
+---
+# Contract Naming Convention: SMART vs ATK Prefixes
+
+## Purpose
+To ensure clear separation and consistent naming of protocol and implementation contracts.
+
+## Rule
+- **Directory:** `kit/contracts/contracts/smart`  
+  - Contains only **SMART protocol** contracts.  
+  - All contracts here **must** be prefixed with `SMART`, e.g. `SMARTGovernance.sol`.  
+
+- **Directory:** `kit/contracts/contracts` (excluding `/smart`)  
+  - Contains the **ATK implementation** of the SMART protocol.  
+  - Contracts here **must not** be prefixed with `SMART`.  
+  - If prefixes are used, they should be `ATK`, e.g. `ATKToken.sol`.  
+
+This ensures that protocol contracts and implementation contracts are clearly distinguished by both directory and naming.
+
+## Examples
+- `kit/contracts/contracts/smart/SMARTGovernance.sol` ✅  
+- `kit/contracts/contracts/ATKToken.sol` ✅  
+- `kit/contracts/contracts/SMARTImplementation.sol` ❌ (should not use `SMART` prefix outside `/smart`)  
+- `kit/contracts/contracts/smart/ATKToken.sol` ❌ (should not use `ATK` prefix inside `/smart`)

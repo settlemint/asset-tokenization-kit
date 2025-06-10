@@ -8,18 +8,14 @@ import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/m
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ERC20VotesUpgradeable } from
-    "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 // Constants
-import { SMARTRoles } from "../SMARTRoles.sol";
+import { ATKRoles } from "../ATKRoles.sol";
 
 // Interface imports
-import { ISMARTFund } from "./ISMARTFund.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IATKDeposit } from "./IATKDeposit.sol";
 
 // Core extensions
 import { SMARTUpgradeable } from "../../smart/extensions/core/SMARTUpgradeable.sol"; // Base SMART logic + ERC20
@@ -29,47 +25,27 @@ import { SMARTHooks } from "../../smart/extensions/common/SMARTHooks.sol";
 import { SMARTPausableUpgradeable } from "../../smart/extensions/pausable/SMARTPausableUpgradeable.sol";
 import { SMARTBurnableUpgradeable } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
 import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMARTCustodianUpgradeable.sol";
+import { SMARTCollateralUpgradeable } from "../../smart/extensions/collateral/SMARTCollateralUpgradeable.sol";
 import { SMARTTokenAccessManagedUpgradeable } from
     "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 
-/// @title SMARTFund - A security token representing fund shares with management fees
-/// @notice This contract implements a security token that represents fund shares with voting rights,
-/// blocklist, custodian features, and management fee collection. It supports different fund classes
-/// and categories, and includes governance capabilities through the ERC20Votes extension.
-/// @dev Inherits from multiple OpenZeppelin contracts to provide comprehensive security token functionality
-/// with governance capabilities, meta-transactions support, and role-based access control.
-/// @custom:security-contact support@settlemint.com
-contract SMARTFundImplementation is
+/// @title ATKDeposit
+/// @notice An implementation of a deposit using the SMART extension framework,
+///         backed by collateral and using custom roles.
+/// @dev Combines core SMART features (compliance, verification) with extensions for pausing,
+///      burning, custodian actions, and collateral tracking. Access control uses custom roles.
+contract ATKDepositImplementation is
     Initializable,
-    ISMARTFund,
+    IATKDeposit,
     SMARTUpgradeable,
     SMARTTokenAccessManagedUpgradeable,
-    SMARTBurnableUpgradeable,
-    SMARTPausableUpgradeable,
+    SMARTCollateralUpgradeable,
     SMARTCustodianUpgradeable,
-    ERC20VotesUpgradeable, // TODO: ??
+    SMARTPausableUpgradeable,
+    SMARTBurnableUpgradeable,
     ERC2771ContextUpgradeable
 {
-    using Math for uint256;
-    using SafeERC20 for IERC20;
-
-    /// @notice Custom errors for the SMARTFund contract
-    /// @dev These errors provide more gas-efficient and descriptive error handling
-
-    /// @notice The timestamp of the last fee collection
-    /// @dev Used to calculate time-based management fees
-    uint40 private _lastFeeCollection;
-
-    /// @notice The management fee in basis points (1 basis point = 0.01%)
-    /// @dev Set at deployment and cannot be changed
-    uint16 private _managementFeeBps;
-
-    /// @notice Emitted when management fees are collected
-    /// @param sender The address that collected the management fees
-    /// @param amount The amount of tokens minted as management fees
-    /// @param timestamp The timestamp when the fees were collected
-    event ManagementFeeCollected(address indexed sender, uint256 amount, uint256 timestamp);
-
+    // ERC20PermitUpgradeable
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
@@ -82,7 +58,7 @@ contract SMARTFundImplementation is
     /// @param decimals_ The number of decimals the token uses.
     /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
     /// one.
-    /// @param managementFeeBps_ The management fee in basis points (1 basis point = 0.01%)
+    /// @param collateralTopicId_ The topic ID of the collateral claim.
     /// @param initialModulePairs_ Initial compliance module configurations.
     /// @param identityRegistry_ The address of the Identity Registry contract.
     /// @param compliance_ The address of the main compliance contract.
@@ -92,14 +68,13 @@ contract SMARTFundImplementation is
         string memory symbol_,
         uint8 decimals_,
         address onchainID_,
-        uint16 managementFeeBps_,
+        uint256 collateralTopicId_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
         address accessManager_
     )
         public
-        override
         initializer
     {
         __SMART_init(name_, symbol_, decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_);
@@ -107,62 +82,19 @@ contract SMARTFundImplementation is
         __SMARTBurnable_init();
         __SMARTPausable_init();
         __SMARTTokenAccessManaged_init(accessManager_);
-
-        _managementFeeBps = managementFeeBps_;
-        _lastFeeCollection = uint40(block.timestamp);
-    }
-
-    // --- View Functions ---
-
-    /// @notice Returns the management fee in basis points
-    /// @dev One basis point equals 0.01%
-    /// @return The management fee in basis points
-    function managementFeeBps() external view returns (uint16) {
-        return _managementFeeBps;
-    }
-
-    /// @notice Returns the current timestamp for voting snapshots
-    /// @dev Implementation of ERC20Votes clock method for voting delay and period calculations
-    /// @return Current block timestamp cast to uint48
-    function clock() public view override returns (uint48) {
-        return uint48(block.timestamp);
-    }
-
-    // --- State-Changing Functions ---
-    /// @notice Collects management fee based on time elapsed and assets under management
-    /// @dev Only callable by addresses with DEFAULT_ADMIN_ROLE. Fee is calculated as:
-    /// (AUM * fee_rate * time_elapsed) / (100% * 1 year)
-    /// @return The amount of tokens minted as management fee
-    function collectManagementFee() public onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE) returns (uint256) {
-        uint256 timeElapsed = block.timestamp - _lastFeeCollection;
-        uint256 aum = totalSupply();
-
-        uint256 fee = Math.mulDiv(Math.mulDiv(aum, _managementFeeBps, 10_000), timeElapsed, 365 days);
-
-        if (fee > 0) {
-            address sender = _msgSender();
-            _mint(sender, fee);
-            emit ManagementFeeCollected(sender, fee, block.timestamp);
-        }
-
-        _lastFeeCollection = uint40(block.timestamp);
-        return fee;
+        __SMARTCollateral_init(collateralTopicId_);
     }
 
     // --- ISMART Implementation ---
 
-    function setOnchainID(address _onchainID)
-        external
-        override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
-    {
+    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE) {
         _smart_setOnchainID(_onchainID);
     }
 
     function setIdentityRegistry(address _identityRegistry)
         external
         override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_setIdentityRegistry(_identityRegistry);
     }
@@ -170,7 +102,7 @@ contract SMARTFundImplementation is
     function setCompliance(address _compliance)
         external
         override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_setCompliance(_compliance);
     }
@@ -181,7 +113,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
     }
@@ -192,7 +124,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_mint(_to, _amount);
     }
@@ -203,7 +135,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_batchMint(_toList, _amounts);
     }
@@ -226,7 +158,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.EMERGENCY_ROLE)
+        onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE)
     {
         _smart_recoverERC20(token, to, amount);
     }
@@ -237,7 +169,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_addComplianceModule(_module, _params);
     }
@@ -245,7 +177,7 @@ contract SMARTFundImplementation is
     function removeComplianceModule(address _module)
         external
         override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_removeComplianceModule(_module);
     }
@@ -258,7 +190,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_burn(userAddress, amount);
     }
@@ -269,7 +201,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_batchBurn(userAddresses, amounts);
     }
@@ -282,7 +214,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_setAddressFrozen(userAddress, freeze);
     }
@@ -293,7 +225,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_freezePartialTokens(userAddress, amount);
     }
@@ -304,7 +236,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_unfreezePartialTokens(userAddress, amount);
     }
@@ -315,7 +247,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_batchSetAddressFrozen(userAddresses, freeze);
     }
@@ -326,7 +258,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_batchFreezePartialTokens(userAddresses, amounts);
     }
@@ -337,7 +269,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_batchUnfreezePartialTokens(userAddresses, amounts);
     }
@@ -349,7 +281,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
         returns (bool)
     {
         return _smart_forcedTransfer(from, to, amount);
@@ -362,7 +294,7 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_batchForcedTransfer(fromList, toList, amounts);
     }
@@ -373,18 +305,18 @@ contract SMARTFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_recoverTokens(lostWallet, newWallet);
     }
 
     // --- ISMARTPausable Implementation ---
 
-    function pause() external override onlyAccessManagerRole(SMARTRoles.EMERGENCY_ROLE) {
+    function pause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_pause();
     }
 
-    function unpause() external override onlyAccessManagerRole(SMARTRoles.EMERGENCY_ROLE) {
+    function unpause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_unpause();
     }
 
@@ -423,7 +355,7 @@ contract SMARTFundImplementation is
         override(SMARTUpgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(ISMARTFund).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKDeposit).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- Hooks (Overrides for Chaining) ---
@@ -436,7 +368,7 @@ contract SMARTFundImplementation is
     )
         internal
         virtual
-        override(SMARTUpgradeable, SMARTCustodianUpgradeable, SMARTHooks)
+        override(SMARTCollateralUpgradeable, SMARTCustodianUpgradeable, SMARTUpgradeable, SMARTHooks)
     {
         super._beforeMint(to, amount);
     }
@@ -449,7 +381,7 @@ contract SMARTFundImplementation is
     )
         internal
         virtual
-        override(SMARTUpgradeable, SMARTCustodianUpgradeable, SMARTHooks)
+        override(SMARTCustodianUpgradeable, SMARTUpgradeable, SMARTHooks)
     {
         super._beforeTransfer(from, to, amount);
     }
@@ -525,9 +457,9 @@ contract SMARTFundImplementation is
     )
         internal
         virtual
-        override(SMARTPausableUpgradeable, SMARTUpgradeable, ERC20VotesUpgradeable, ERC20Upgradeable)
+        override(SMARTUpgradeable, SMARTPausableUpgradeable, ERC20Upgradeable)
     {
-        // Calls chain: SMARTPausable -> SMART -> ERC20Votes -> ERC20
+        // Calls chain: ERC20Collateral -> SMARTPausable -> SMART -> ERC20
         super._update(from, to, value);
     }
 

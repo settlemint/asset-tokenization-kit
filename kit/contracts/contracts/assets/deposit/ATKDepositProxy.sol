@@ -1,32 +1,32 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { SMARTAssetProxy } from "../SMARTAssetProxy.sol";
-import { ISMARTStableCoin } from "./ISMARTStableCoin.sol";
+import { ATKAssetProxy } from "../ATKAssetProxy.sol";
+import { IATKDeposit } from "./IATKDeposit.sol";
 
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMARTTokenFactory } from "../../system/token-factory/ISMARTTokenFactory.sol";
+import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
 
-import { TokenImplementationNotSet } from "../../system/SMARTSystemErrors.sol";
+import { TokenImplementationNotSet } from "../../system/ATKSystemErrors.sol";
 
-/// @title Proxy contract for SMART Stable Coins, using SMARTAssetProxy.
-/// @notice This contract serves as a proxy, allowing for upgradeability of the underlying stable coin logic.
-/// It retrieves the implementation address from the ISMARTTokenFactory contract via SMARTAssetProxy.
-contract SMARTStableCoinProxy is SMARTAssetProxy {
-    /// @notice Constructs the SMARTStableCoinProxy.
+/// @title Proxy contract for ATK Deposits, using ATKAssetProxy.
+/// @notice This contract serves as a proxy, allowing for upgradeability of the underlying deposit logic.
+/// It retrieves the implementation address from the IATKTokenFactory contract via ATKAssetProxy.
+contract ATKDepositProxy is ATKAssetProxy {
+    /// @notice Constructs the ATKDepositProxy.
     /// @dev Initializes the proxy by delegating a call to the `initialize` function
     /// of the implementation provided by the token factory.
     /// @param tokenFactoryAddress The address of the token factory contract.
-    /// @param name_ The name of the stable coin.
-    /// @param symbol_ The symbol of the stable coin.
-    /// @param decimals_ The number of decimals of the stable coin.
+    /// @param name_ The name of the deposit.
+    /// @param symbol_ The symbol of the deposit.
+    /// @param decimals_ The number of decimals of the deposit.
     /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
     /// one.
     /// @param collateralTopicId_ The topic ID of the collateral claim.
-    /// @param initialModulePairs_ The initial module pairs of the stable coin.
-    /// @param identityRegistry_ The identity registry of the stable coin.
-    /// @param compliance_ The compliance of the stable coin.
-    /// @param accessManager_ The access manager of the stable coin.
+    /// @param initialModulePairs_ The initial module pairs of the deposit.
+    /// @param identityRegistry_ The identity registry of the deposit.
+    /// @param compliance_ The compliance of the deposit.
+    /// @param accessManager_ The access manager of the deposit.
     constructor(
         address tokenFactoryAddress,
         string memory name_,
@@ -40,12 +40,12 @@ contract SMARTStableCoinProxy is SMARTAssetProxy {
         address accessManager_
     )
         payable
-        SMARTAssetProxy(tokenFactoryAddress)
+        ATKAssetProxy(tokenFactoryAddress)
     {
         address implementation = _implementation();
 
         bytes memory data = abi.encodeWithSelector(
-            ISMARTStableCoin.initialize.selector,
+            IATKDeposit.initialize.selector,
             name_,
             symbol_,
             decimals_,

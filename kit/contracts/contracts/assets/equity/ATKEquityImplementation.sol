@@ -14,11 +14,11 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 import { NoncesUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol";
 
 // Constants
-import { SMARTRoles } from "../SMARTRoles.sol";
+import { ATKRoles } from "../ATKRoles.sol";
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMARTEquity } from "./ISMARTEquity.sol";
+import { IATKEquity } from "./IATKEquity.sol";
 
 // Core extensions
 import { SMARTUpgradeable } from "../../smart/extensions/core/SMARTUpgradeable.sol"; // Base SMART logic + ERC20
@@ -31,9 +31,9 @@ import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMAR
 import { SMARTTokenAccessManagedUpgradeable } from
     "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 
-contract SMARTEquityImplementation is
+contract ATKEquityImplementation is
     Initializable,
-    ISMARTEquity,
+    IATKEquity,
     SMARTUpgradeable,
     SMARTTokenAccessManagedUpgradeable,
     SMARTCustodianUpgradeable,
@@ -81,18 +81,14 @@ contract SMARTEquityImplementation is
 
     // --- ISMART Implementation ---
 
-    function setOnchainID(address _onchainID)
-        external
-        override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
-    {
+    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE) {
         _smart_setOnchainID(_onchainID);
     }
 
     function setIdentityRegistry(address _identityRegistry)
         external
         override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_setIdentityRegistry(_identityRegistry);
     }
@@ -100,7 +96,7 @@ contract SMARTEquityImplementation is
     function setCompliance(address _compliance)
         external
         override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_setCompliance(_compliance);
     }
@@ -111,7 +107,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
     }
@@ -122,7 +118,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_mint(_to, _amount);
     }
@@ -133,7 +129,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_batchMint(_toList, _amounts);
     }
@@ -156,7 +152,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.EMERGENCY_ROLE)
+        onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE)
     {
         _smart_recoverERC20(token, to, amount);
     }
@@ -167,7 +163,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_addComplianceModule(_module, _params);
     }
@@ -175,7 +171,7 @@ contract SMARTEquityImplementation is
     function removeComplianceModule(address _module)
         external
         override
-        onlyAccessManagerRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
     {
         _smart_removeComplianceModule(_module);
     }
@@ -188,7 +184,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_burn(userAddress, amount);
     }
@@ -199,7 +195,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE)
+        onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE)
     {
         _smart_batchBurn(userAddresses, amounts);
     }
@@ -212,7 +208,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_setAddressFrozen(userAddress, freeze);
     }
@@ -223,7 +219,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_freezePartialTokens(userAddress, amount);
     }
@@ -234,7 +230,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_unfreezePartialTokens(userAddress, amount);
     }
@@ -245,7 +241,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_batchSetAddressFrozen(userAddresses, freeze);
     }
@@ -256,7 +252,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_batchFreezePartialTokens(userAddresses, amounts);
     }
@@ -267,7 +263,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_batchUnfreezePartialTokens(userAddresses, amounts);
     }
@@ -279,7 +275,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
         returns (bool)
     {
         return _smart_forcedTransfer(from, to, amount);
@@ -292,7 +288,7 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_batchForcedTransfer(fromList, toList, amounts);
     }
@@ -303,18 +299,18 @@ contract SMARTEquityImplementation is
     )
         external
         override
-        onlyAccessManagerRole(SMARTRoles.CUSTODIAN_ROLE)
+        onlyAccessManagerRole(ATKRoles.CUSTODIAN_ROLE)
     {
         _smart_recoverTokens(lostWallet, newWallet);
     }
 
     // --- ISMARTPausable Implementation ---
 
-    function pause() external override onlyAccessManagerRole(SMARTRoles.EMERGENCY_ROLE) {
+    function pause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_pause();
     }
 
-    function unpause() external override onlyAccessManagerRole(SMARTRoles.EMERGENCY_ROLE) {
+    function unpause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_unpause();
     }
 
@@ -353,7 +349,7 @@ contract SMARTEquityImplementation is
         override(SMARTUpgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(ISMARTEquity).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKEquity).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- Hooks (Overrides for Chaining) ---

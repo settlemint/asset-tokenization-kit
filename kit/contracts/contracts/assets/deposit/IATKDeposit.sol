@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity 0.8.28;
 
-// OpenZeppelin imports
-import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
-
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
@@ -12,17 +9,25 @@ import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/
 import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
+import { ISMARTCollateral } from "../../smart/extensions/collateral/ISMARTCollateral.sol";
 
-/// @title Interface for a SMART Fund
-/// @notice Defines the core functionality and extensions for a SMART Fund, including voting capabilities.
-interface ISMARTFund is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTPausable, ISMARTBurnable, IVotes {
-    /// @notice Initializes the SMART Fund contract.
-    /// @param name_ The name of the fund.
-    /// @param symbol_ The symbol of the fund.
-    /// @param decimals_ The number of decimals for the fund tokens.
+/// @title Interface for a ATK Deposit token
+/// @notice Defines the core functionality and extensions for a ATK Deposit token.
+interface IATKDeposit is
+    ISMART,
+    ISMARTTokenAccessManaged,
+    ISMARTCollateral,
+    ISMARTCustodian,
+    ISMARTPausable,
+    ISMARTBurnable
+{
+    /// @notice Initializes the ATK Deposit token contract.
+    /// @param name_ The name of the deposit token.
+    /// @param symbol_ The symbol of the deposit token.
+    /// @param decimals_ The number of decimals for the deposit token.
     /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
     /// one.
-    /// @param managementFeeBps_ The management fee in basis points.
+    /// @param collateralTopicId_ The topic ID of the collateral claim.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
     /// @param compliance_ The address of the compliance contract.
@@ -32,19 +37,11 @@ interface ISMARTFund is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMAR
         string memory symbol_,
         uint8 decimals_,
         address onchainID_,
-        uint16 managementFeeBps_,
+        uint256 collateralTopicId_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
         address accessManager_
     )
         external;
-
-    /// @notice Returns the management fee in basis points.
-    /// @return The management fee in BPS.
-    function managementFeeBps() external view returns (uint16);
-
-    /// @notice Allows the fund manager to collect accrued management fees.
-    /// @return The amount of fees collected.
-    function collectManagementFee() external returns (uint256);
 }

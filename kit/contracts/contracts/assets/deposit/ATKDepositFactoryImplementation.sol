@@ -2,37 +2,37 @@
 pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
-import { AbstractSMARTTokenFactoryImplementation } from
-    "../../system/token-factory/AbstractSMARTTokenFactoryImplementation.sol";
+import { AbstractATKTokenFactoryImplementation } from
+    "../../system/token-factory/AbstractATKTokenFactoryImplementation.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interface imports
-import { ISMARTDeposit } from "./ISMARTDeposit.sol";
+import { IATKDeposit } from "./IATKDeposit.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMARTDepositFactory } from "./ISMARTDepositFactory.sol";
-import { ISMARTTokenFactory } from "../../system/token-factory/ISMARTTokenFactory.sol";
-import { ISMARTSystem } from "../../system/ISMARTSystem.sol";
+import { IATKDepositFactory } from "./IATKDepositFactory.sol";
+import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
+import { IATKSystem } from "../../system/IATKSystem.sol";
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 
 // Constants
-import { SMARTTopics } from "../../system/SMARTTopics.sol";
+import { ATKTopics } from "../../system/ATKTopics.sol";
 
 // Local imports
-import { SMARTDepositProxy } from "./SMARTDepositProxy.sol";
+import { ATKDepositProxy } from "./ATKDepositProxy.sol";
 
-/// @title Implementation of the SMART Deposit Factory
-/// @notice This contract is responsible for creating instances of SMART Deposit tokens.
-contract SMARTDepositFactoryImplementation is ISMARTDepositFactory, AbstractSMARTTokenFactoryImplementation {
+/// @title Implementation of the ATK Deposit Factory
+/// @notice This contract is responsible for creating instances of ATK Deposit tokens.
+contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKTokenFactoryImplementation {
     /// @notice The collateral claim topic ID.
     uint256 internal _collateralClaimTopicId;
 
-    /// @notice Constructor for the SMARTDepositFactoryImplementation.
+    /// @notice Constructor for the ATKDepositFactoryImplementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions.
-    constructor(address forwarder) AbstractSMARTTokenFactoryImplementation(forwarder) { }
+    constructor(address forwarder) AbstractATKTokenFactoryImplementation(forwarder) { }
 
-    /// @inheritdoc ISMARTTokenFactory
-    /// @param systemAddress The address of the `ISMARTSystem` contract.
+    /// @inheritdoc IATKTokenFactory
+    /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
     /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE.
     /// @param identityVerificationModule_ The address of the identity verification module.
@@ -43,18 +43,18 @@ contract SMARTDepositFactoryImplementation is ISMARTDepositFactory, AbstractSMAR
         address identityVerificationModule_
     )
         public
-        override(AbstractSMARTTokenFactoryImplementation, ISMARTTokenFactory)
+        override(AbstractATKTokenFactoryImplementation, IATKTokenFactory)
         initializer
     {
         super.initialize(systemAddress, tokenImplementation_, initialAdmin, identityVerificationModule_);
 
         ISMARTTopicSchemeRegistry topicSchemeRegistry =
-            ISMARTTopicSchemeRegistry(ISMARTSystem(_systemAddress).topicSchemeRegistryProxy());
+            ISMARTTopicSchemeRegistry(IATKSystem(_systemAddress).topicSchemeRegistryProxy());
 
-        _collateralClaimTopicId = topicSchemeRegistry.getTopicId(SMARTTopics.TOPIC_COLLATERAL);
+        _collateralClaimTopicId = topicSchemeRegistry.getTopicId(ATKTopics.TOPIC_COLLATERAL);
     }
 
-    /// @notice Creates a new SMART Deposit token.
+    /// @notice Creates a new ATK Deposit token.
     /// @param name_ The name of the deposit token.
     /// @param symbol_ The symbol of the deposit token.
     /// @param decimals_ The number of decimals for the deposit token.
@@ -79,7 +79,7 @@ contract SMARTDepositFactoryImplementation is ISMARTDepositFactory, AbstractSMAR
 
         address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, address(accessManager));
 
-        // ABI encode constructor arguments for SMARTDepositProxy
+        // ABI encode constructor arguments for ATKDepositProxy
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
@@ -93,8 +93,8 @@ contract SMARTDepositFactoryImplementation is ISMARTDepositFactory, AbstractSMAR
             address(accessManager)
         );
 
-        // Get the creation bytecode of SMARTDepositProxy
-        bytes memory proxyBytecode = type(SMARTDepositProxy).creationCode;
+        // Get the creation bytecode of ATKDepositProxy
+        bytes memory proxyBytecode = type(ATKDepositProxy).creationCode;
 
         // Deploy using the helper from the abstract contract
         address deployedTokenIdentityAddress;
@@ -108,14 +108,14 @@ contract SMARTDepositFactoryImplementation is ISMARTDepositFactory, AbstractSMAR
         return deployedDepositAddress;
     }
 
-    /// @notice Checks if a given address implements the ISMARTDeposit interface.
+    /// @notice Checks if a given address implements the IATKDeposit interface.
     /// @param tokenImplementation_ The address of the contract to check.
-    /// @return bool True if the contract supports the ISMARTDeposit interface, false otherwise.
+    /// @return bool True if the contract supports the IATKDeposit interface, false otherwise.
     function isValidTokenImplementation(address tokenImplementation_) public view override returns (bool) {
-        return IERC165(tokenImplementation_).supportsInterface(type(ISMARTDeposit).interfaceId);
+        return IERC165(tokenImplementation_).supportsInterface(type(IATKDeposit).interfaceId);
     }
 
-    /// @notice Predicts the deployment address of a SMARTDepositProxy contract.
+    /// @notice Predicts the deployment address of a ATKDepositProxy contract.
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param decimals_ The decimals of the token.
@@ -137,7 +137,7 @@ contract SMARTDepositFactoryImplementation is ISMARTDepositFactory, AbstractSMAR
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
         address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
-        // ABI encode constructor arguments for SMARTDepositProxy
+        // ABI encode constructor arguments for ATKDepositProxy
         bytes memory constructorArgs = abi.encode(
             address(this), // The factory address is part of the constructor args
             name_,
@@ -151,8 +151,8 @@ contract SMARTDepositFactoryImplementation is ISMARTDepositFactory, AbstractSMAR
             accessManagerAddress_ // Use the provided access manager address
         );
 
-        // Get the creation bytecode of SMARTDepositProxy
-        bytes memory proxyBytecode = type(SMARTDepositProxy).creationCode;
+        // Get the creation bytecode of ATKDepositProxy
+        bytes memory proxyBytecode = type(ATKDepositProxy).creationCode;
 
         // Predict the address using the helper from the abstract contract
         predictedAddress = _predictProxyAddress(proxyBytecode, constructorArgs, salt);

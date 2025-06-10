@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity 0.8.28;
 
-import { ISMARTTokenFactory } from "../../system/token-factory/ISMARTTokenFactory.sol";
+import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
-/// @title Interface for the SMART Fund Factory
-/// @notice Defines the functions for creating and predicting addresses of SMART Fund instances.
-interface ISMARTFundFactory is ISMARTTokenFactory {
-    /// @notice Creates a new SMART Fund.
+/// @title Interface for the ATK Fund Factory
+/// @notice Defines the functions for creating and predicting addresses of ATK Fund instances.
+interface IATKFundFactory is IATKTokenFactory {
+    /// @notice Creates a new ATK Fund.
     /// @param name_ The name of the fund.
     /// @param symbol_ The symbol of the fund.
     /// @param decimals_ The number of decimals for the fund tokens.
@@ -26,7 +26,7 @@ interface ISMARTFundFactory is ISMARTTokenFactory {
         external
         returns (address deployedFundAddress);
 
-    /// @notice Predicts the deployment address of a new SMART Fund.
+    /// @notice Predicts the deployment address of a new ATK Fund.
     /// @param name_ The name of the fund.
     /// @param symbol_ The symbol of the fund.
     /// @param decimals_ The number of decimals for the fund tokens.

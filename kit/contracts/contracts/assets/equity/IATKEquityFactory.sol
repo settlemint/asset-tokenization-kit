@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity 0.8.28;
 
-import { ISMARTTokenFactory } from "../../system/token-factory/ISMARTTokenFactory.sol";
+import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
-/// @title Interface for the SMART Equity Factory
-/// @notice Defines the functions for creating and predicting addresses of SMART Equity instances.
-interface ISMARTEquityFactory is ISMARTTokenFactory {
-    /// @notice Creates a new SMART Equity token.
+/// @title Interface for the ATK Equity Factory
+/// @notice Defines the functions for creating and predicting addresses of ATK Equity instances.
+interface IATKEquityFactory is IATKTokenFactory {
+    /// @notice Creates a new ATK Equity token.
     /// @param name_ The name of the equity token.
     /// @param symbol_ The symbol of the equity token.
     /// @param decimals_ The number of decimals for the equity token.
@@ -24,7 +24,7 @@ interface ISMARTEquityFactory is ISMARTTokenFactory {
         external
         returns (address deployedEquityAddress);
 
-    /// @notice Predicts the deployment address of a new SMART Equity token.
+    /// @notice Predicts the deployment address of a new ATK Equity token.
     /// @param name_ The name of the equity token.
     /// @param symbol_ The symbol of the equity token.
     /// @param decimals_ The number of decimals for the equity token.
