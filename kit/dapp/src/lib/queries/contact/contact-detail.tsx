@@ -1,5 +1,5 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { ContactFragment } from "./contact-fragment";

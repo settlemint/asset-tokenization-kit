@@ -62,7 +62,7 @@ export async function Charts({ assettype, address }: ChartsProps) {
     getLocale(),
   ]);
 
-  const calculatedMaxRange = calculateMaxRange(assetDetails.deployedOn);
+  const calculatedMaxRange = calculateMaxRange(0n); //assetDetails.deployedOn);
 
   return (
     <>

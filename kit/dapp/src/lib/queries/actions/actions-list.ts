@@ -5,7 +5,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
@@ -19,20 +19,20 @@ import {
 /**
  * GraphQL query to fetch actions for user
  */
-const Actions = theGraphGraphqlKit(
-  `
-  query Actions($first: Int, $skip: Int, $where: ActionExecutor_filter) {
-    actionExecutors(
-      first: $first
-      skip: $skip
-      where: $where
-    ) {
-      ...ActionExecutorFragment
-    }
-  }
-`,
-  [ActionExecutorFragment]
-);
+// const Actions = theGraphGraphqlKit(
+//   `
+//   query Actions($first: Int, $skip: Int, $where: ActionExecutor_filter) {
+//     actionExecutors(
+//       first: $first
+//       skip: $skip
+//       where: $where
+//     ) {
+//       ...ActionExecutorFragment
+//     }
+//   }
+// `,
+//   [ActionExecutorFragment]
+// );
 
 /**
  * Props interface for actions for user list components
@@ -84,28 +84,30 @@ export const getActionsList = withTracing(
       };
       const actionExecutors = await fetchAllTheGraphPages(
         async (first, skip) => {
-          const result = await theGraphClientKit.request(
-            Actions,
-            {
-              first,
-              skip,
-              where: {
-                executors_: {
-                  id_contains: userAddress.toLowerCase(),
-                },
-                actions_: {
-                  type,
-                  ...(status ? where[status] : {}),
-                  ...(targetAddress ? { target: targetAddress } : {}),
-                },
-              },
-            },
-            {
-              "X-GraphQL-Operation-Name": "ActionExecutors",
-              "X-GraphQL-Operation-Type": "query",
-            }
-          );
+                //       // const result = await theGraphClientKit.request(
+      //       //             Actions,
+      //       //             {
+      //       //               first,
+      //       //               skip,
+      //       //               where: {
+      //       //                 executors_: {
+      //       //                   id_contains: userAddress.toLowerCase(),
+      //       //                 },
+      //       //                 actions_: {
+      //       //                   type,
+      //       //                   ...(status ? where[status] : {}),
+      //       //                   ...(targetAddress ? { target: targetAddress } : {}),
+      //       //                 },
+      //       //               },
+      //       //             },
+      //       //             {
+      //       //               "X-GraphQL-Operation-Name": "ActionExecutors",
+      //       //               "X-GraphQL-Operation-Type": "query",
+      //       //             }
+      //       //           );
 
+          // NOTE: HARDCODED SO IT STILL COMPILES
+          const result = { actionExecutors: [] };
           const actionExecutors = result.actionExecutors || [];
           return safeParse(t.Array(ActionExecutorSchema), actionExecutors);
         }

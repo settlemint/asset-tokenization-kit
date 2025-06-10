@@ -1,0 +1,98 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "tokenFactoryAddress",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "name_",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "symbol_",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "decimals_",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "onchainID_",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "managementFeeBps_",
+        "type": "uint16",
+        "internalType": "uint16"
+      },
+      {
+        "name": "initialModulePairs_",
+        "type": "tuple[]",
+        "internalType": "struct SMARTComplianceModuleParamPair[]",
+        "components": [
+          {
+            "name": "module",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "params",
+            "type": "bytes",
+            "internalType": "bytes"
+          }
+        ]
+      },
+      {
+        "name": "identityRegistry_",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "compliance_",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "accessManager_",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "fallback",
+    "stateMutability": "payable"
+  },
+  {
+    "type": "receive",
+    "stateMutability": "payable"
+  },
+  {
+    "type": "error",
+    "name": "ETHTransfersNotAllowed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InitializationWithZeroAddress",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidTokenFactoryAddress",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "TokenImplementationNotSet",
+    "inputs": []
+  }
+]

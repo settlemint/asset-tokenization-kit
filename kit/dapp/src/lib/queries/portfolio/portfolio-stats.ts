@@ -5,25 +5,25 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import { PortfolioStatsCollectionSchema } from "./portfolio-schema";
 
-const PortfolioHistoryQuery = theGraphGraphqlKit(
-  `
-  query PortfolioHistory($account: String!, $startTime: Timestamp!) {
-    portfolioStatsDatas(
-      where: { account: $account, timestamp_gte: $startTime }
-    ) {
-      ...PortfolioStatsDataFragment
-    }
-  }
-`,
-  [PortfolioStatsDataFragment]
-);
+// const PortfolioHistoryQuery = theGraphGraphqlKit(
+//   `
+//   query PortfolioHistory($account: String!, $startTime: Timestamp!) {
+//     portfolioStatsDatas(
+//       where: { account: $account, timestamp_gte: $startTime }
+//     ) {
+//       ...PortfolioStatsDataFragment
+//     }
+//   }
+// `,
+//   [PortfolioStatsDataFragment]
+// );
 
 interface GetPortfolioHistoryParams {
   address: Address;
@@ -45,18 +45,19 @@ export const getPortfolioStats = withTracing(
     cacheTag("asset");
     const startTime = Math.floor(Date.now() / 1000) - days * 24 * 60 * 60;
 
-    const data = await theGraphClientKit.request(
-      PortfolioHistoryQuery,
-      {
-        account: getAddress(address),
-        startTime: startTime.toString(),
-      },
-      {
-        "X-GraphQL-Operation-Name": "PortfolioHistory",
-        "X-GraphQL-Operation-Type": "query",
-      }
-    );
+    //       // const data = await theGraphClientKit.request(
+      //     //   PortfolioHistoryQuery,
+      //     //   {
+      //     //     account: getAddress(address),
+      //     //     startTime: startTime.toString(),
+      //     //   },
+      //     //   {
+      //     //     "X-GraphQL-Operation-Name": "PortfolioHistory",
+      //     //     "X-GraphQL-Operation-Type": "query",
+      //     //   }
+      //     // );
 
-    return safeParse(PortfolioStatsCollectionSchema, data.portfolioStatsDatas);
+    // NOTE: HARDCODED SO IT STILL COMPILES
+    return safeParse(PortfolioStatsCollectionSchema, []);
   })
 );

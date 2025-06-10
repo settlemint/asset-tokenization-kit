@@ -5,15 +5,18 @@
       "dependsOn": ["codegen:settlemint", "codegen:gql-tada"]
     },
     "codegen:settlemint": {
+      "inputs": [".env.local", ".env"],
       "outputs": [
         "*-env-*.d.ts",
         "*-schema.graphql",
         "*-schema-*.graphql",
         "src/lib/settlemint/**"
-      ]
+      ],
+      "dependsOn": ["contracts#docker:up", "db:migrate"]
     },
     "codegen:gql-tada": {
-      "outputs": ["*-cache.d.ts"]
+      "outputs": ["*-cache.d.ts"],
+      "dependsOn": ["contracts#docker:up", "db:migrate"]
     },
     "build": {
       "outputs": [".next/**", "!.next/cache/**"]
@@ -23,7 +26,7 @@
       "inputs": ["src/lib/db/**"]
     },
     "db:migrate": {
-      "dependsOn": ["db:generate"],
+      "dependsOn": ["db:generate", "contracts#docker:up"],
       "cache": false
     },
     "dev": {

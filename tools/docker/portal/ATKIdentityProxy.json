@@ -1,0 +1,51 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "systemAddress",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "initialManagementKey",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "fallback",
+    "stateMutability": "payable"
+  },
+  {
+    "type": "receive",
+    "stateMutability": "payable"
+  },
+  {
+    "type": "error",
+    "name": "ETHTransfersNotAllowed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "IdentityImplementationNotSet",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InitializationWithZeroAddress",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidSystemAddress",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ZeroAddressNotAllowed",
+    "inputs": []
+  }
+]

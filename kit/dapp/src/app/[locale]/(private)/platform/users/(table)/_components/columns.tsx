@@ -76,11 +76,11 @@ export function Columns() {
             />
           </Suspense>
           <span>{renderValue()}</span>
-          {row.original.banned && (
+          {/* {row.original.banned && (
             <Badge variant="destructive">
               {t("banned_reason", { reason: row.original.banReason ?? "" })}
             </Badge>
-          )}
+          )} */}
         </>
       ),
       enableColumnFilter: true,

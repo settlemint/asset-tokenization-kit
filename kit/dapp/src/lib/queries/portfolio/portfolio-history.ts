@@ -2,7 +2,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress, type Address } from "viem";
@@ -52,29 +52,29 @@ export const PortfolioHistorySchema = t.Object(
 
 export type PortfolioHistory = StaticDecode<typeof PortfolioHistorySchema>;
 
-const PortfolioHistoryQuery = theGraphGraphqlKit(
-  `
-  query PortfolioHistory($account: String!, $interval: Aggregation_interval!, $startTime: Timestamp!) {
-    portfolioStats_collection(
-      where: { account: $account, timestamp_gte: $startTime }
-      interval: $interval
-    ) {
-      timestamp
-      account {
-        id
-      }
-      asset {
-        id
-        name
-        symbol
-        decimals
-      }
-      totalBalance
-      totalBalanceExact
-    }
-  }
-`
-);
+// const PortfolioHistoryQuery = theGraphGraphqlKit(
+//   `
+//   query PortfolioHistory($account: String!, $interval: Aggregation_interval!, $startTime: Timestamp!) {
+//     portfolioStats_collection(
+//       where: { account: $account, timestamp_gte: $startTime }
+//       interval: $interval
+//     ) {
+//       timestamp
+//       account {
+//         id
+//       }
+//       asset {
+//         id
+//         name
+//         symbol
+//         decimals
+//       }
+//       totalBalance
+//       totalBalanceExact
+//     }
+//   }
+// `
+// );
 
 interface GetPortfolioHistoryParams {
   address: Address;
@@ -98,25 +98,27 @@ export const getPortfolioHistory = withTracing(
     // Calculate start time based on days parameter
     const startTime = Math.floor(Date.now() / 1000) - days * 24 * 60 * 60;
 
-    const data = await theGraphClientKit.request(PortfolioHistoryQuery, {
-      account: getAddress(address),
-      interval,
-      startTime: startTime.toString(),
-    });
+    //       // const data = await theGraphClientKit.request(PortfolioHistoryQuery, {
+      //     //   account: getAddress(address),
+      //     //   interval,
+      //     //   startTime: startTime.toString(),
+      //     // });
 
-    return data.portfolioStats_collection.map((stat: any) => ({
-      timestamp: stat.timestamp,
-      account: {
-        id: stat.account.id,
-      },
-      asset: {
-        id: stat.asset.id,
-        name: stat.asset.name,
-        symbol: stat.asset.symbol,
-        decimals: stat.asset.decimals,
-      },
-      balance: stat.totalBalance,
-      balanceExact: stat.totalBalanceExact,
-    }));
+    // NOTE: HARDCODED SO IT STILL COMPILES
+    return [];
+    // return data.portfolioStats_collection.map((stat: any) => ({
+    //   timestamp: stat.timestamp,
+    //   account: {
+    //     id: stat.account.id,
+    //   },
+    //   asset: {
+    //     id: stat.asset.id,
+    //     name: stat.asset.name,
+    //     symbol: stat.asset.symbol,
+    //     decimals: stat.asset.decimals,
+    //   },
+    //   balance: stat.totalBalance,
+    //   balanceExact: stat.totalBalanceExact,
+    // }));
   }
 );

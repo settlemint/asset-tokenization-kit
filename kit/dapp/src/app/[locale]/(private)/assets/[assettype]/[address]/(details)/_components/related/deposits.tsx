@@ -73,7 +73,8 @@ export async function DepositsRelated({
           symbol={assetDetails.symbol}
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
-          allowlist={assetUsersDetails?.allowlist ?? []}
+          // allowlist={assetUsersDetails?.allowlist ?? []}
+          allowlist={[]}
         />
       </RelatedGridItem>
       <RelatedGridItem

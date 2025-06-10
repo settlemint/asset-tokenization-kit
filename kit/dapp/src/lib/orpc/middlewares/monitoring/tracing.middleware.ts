@@ -57,7 +57,7 @@ const MAX_ERROR_MESSAGE_LENGTH = 1000;
  * // - Errors are recorded with stack traces
  * ```
  *
- * @see {@link @/lib/utils/tracing} - Base tracing utilities
+ * @see {@link @/lib/utils/sentry-tracing} - Base tracing utilities
  * @see {@link ../../routes/procedures/base.router} - Base router implementation
  */
 export const tracingMiddleware = br.middleware(

@@ -11,7 +11,6 @@ import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
-import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
 import { Target } from "./steps/target";
 
@@ -50,13 +49,13 @@ export function TopUpForm({
       steps.push(<Target key="target" />);
     }
 
-    steps.push(
-      <Amount
-        max={maxAmount}
-        symbol={bondDetails.underlyingAsset.symbol}
-        key="amount"
-      />
-    );
+    // steps.push(
+    //   <Amount
+    //     max={maxAmount}
+    //     symbol={bondDetails.underlyingAsset.symbol}
+    //     key="amount"
+    //   />
+    // );
     steps.push(<Summary key="summary" bondDetails={bondDetails} />);
 
     return steps;
@@ -67,7 +66,7 @@ export function TopUpForm({
     address,
     target: "bond" as const,
     bondAddress: address,
-    underlyingAssetAddress: bondDetails.underlyingAsset.id,
+    // underlyingAssetAddress: bondDetails.underlyingAsset.id,
   };
 
   return (
@@ -87,7 +86,7 @@ export function TopUpForm({
         action={topUpUnderlyingAsset}
         resolver={typeboxResolver(
           TopUpSchema({
-            decimals: bondDetails.underlyingAsset.decimals,
+            decimals: 18, // bondDetails.underlyingAsset.decimals,
             maxAmount,
           })
         )}

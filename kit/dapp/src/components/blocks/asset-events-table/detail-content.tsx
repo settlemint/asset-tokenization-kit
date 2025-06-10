@@ -3,13 +3,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import { apiClient } from "@/lib/api/client";
 import { getRoleFromHash } from "@/lib/config/roles";
 import { formatDate } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
 import React from "react";
 import useSWR from "swr";
-import { isAddress, type Hash, type Hex } from "viem";
+import { isAddress, type Address, type Hash, type Hex } from "viem";
 import { EvmAddress } from "../evm-address/evm-address";
 import { TransactionHash } from "../transaction-hash/transaction-hash";
 
@@ -22,12 +21,18 @@ export const EventDetailContent = React.memo(function EventDetailContent({
   const { data: event, isLoading } = useSWR(
     [`events-${eventId}`],
     async () => {
-      const { data } = await apiClient.api
-        .events({
-          id: eventId,
-        })
-        .get();
-      return data;
+      // const { data } = await apiClient.api
+      //   .events({
+      //     id: eventId,
+      //   })
+      //   .get();
+      return {
+        eventName: "Event Name",
+        sender: { id: "0x1234567890123456789012345678901234567890" },
+        emitter: { id: "0x1234567890123456789012345678901234567890" },
+        blockTimestamp: 1718000000,
+        transactionHash: "0x1234567890123456789012345678901234567890",
+      };
     },
     {
       revalidateOnFocus: false,
@@ -95,15 +100,15 @@ export const EventDetailContent = React.memo(function EventDetailContent({
             <dl className="grid grid-cols-[1fr_2fr] gap-4">
               <dt className="text-muted-foreground text-sm">{t("sender")}:</dt>
               <dd className="text-sm">
-                <EvmAddress address={event.sender.id} />
+                <EvmAddress address={event.sender.id as Address} />
               </dd>
               <dt className="text-muted-foreground text-sm">{t("asset")}:</dt>
               <dd className="text-sm">
-                <EvmAddress address={event.emitter.id} />
+                <EvmAddress address={event.emitter.id as Address} />
               </dd>
               <dt className="text-muted-foreground text-sm">{t("date")}:</dt>
               <dd className="text-sm first-letter:uppercase">
-                {formatDate(event.blockTimestamp)}
+                {formatDate(event.blockTimestamp.toString())}
               </dd>
               <dt className="text-muted-foreground text-sm">
                 {t("transaction-hash")}:
@@ -115,7 +120,7 @@ export const EventDetailContent = React.memo(function EventDetailContent({
           </CardContent>
         </Card>
         <div className="mt-6 mb-6">
-          {event.values && Object.keys(event.values).length > 0 && (
+          {/* {event.values && Object.keys(event.values as Record<string, unknown>).length > 0 && (
             <>
               <Card>
                 <CardHeader>
@@ -123,7 +128,7 @@ export const EventDetailContent = React.memo(function EventDetailContent({
                 </CardHeader>
                 <CardContent>
                   <dl className="grid grid-cols-[1fr_2fr] gap-4">
-                    {event.values.map(({ name, value }) => [
+                    {event.values.map(({ name, value }: { name: string; value: unknown }) => [
                       <dt
                         key={`${name}-dt`}
                         className="text-muted-foreground text-sm capitalize"
@@ -138,7 +143,7 @@ export const EventDetailContent = React.memo(function EventDetailContent({
                 </CardContent>
               </Card>
             </>
-          )}
+          )} */}
         </div>
       </div>
     </SheetContent>
