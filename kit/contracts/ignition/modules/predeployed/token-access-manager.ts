@@ -7,7 +7,7 @@ const TokenAccessManagerModule = buildModule(
     const { forwarder } = m.useModule(ForwarderModule);
 
     const tokenAccessManager = m.contract(
-      "SMARTTokenAccessManagerImplementation",
+      "ATKTokenAccessManagerImplementation",
       [forwarder]
     );
 

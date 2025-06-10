@@ -5,10 +5,10 @@ import {
   investorB,
 } from "../entities/actors/investors";
 
-import { SMARTTopic } from "../constants/topics";
+import { ATKTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
@@ -22,7 +22,7 @@ import { setupAsset } from "./actions/setup-asset";
 export const createDeposit = async () => {
   console.log("\n=== Creating deposit... ===\n");
 
-  const depositFactory = smartProtocolDeployer.getDepositFactoryContract();
+  const depositFactory = atkDeployer.getDepositFactoryContract();
 
   const deposit = new Asset<"depositFactory">(
     "Euro Deposits",
@@ -41,12 +41,10 @@ export const createDeposit = async () => {
     deposit.name,
     deposit.symbol,
     deposit.decimals,
-    [topicManager.getTopicId(SMARTTopic.kyc)],
+    [topicManager.getTopicId(ATKTopic.kyc)],
     [
       {
-        module: smartProtocolDeployer.getContractAddress(
-          "countryBlockListModule"
-        ),
+        module: atkDeployer.getContractAddress("countryBlockListModule"),
         params: encodedBlockedCountries,
       },
     ],

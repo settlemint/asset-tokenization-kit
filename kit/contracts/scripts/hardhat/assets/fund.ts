@@ -1,6 +1,6 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 
 import {
   frozenInvestor,
@@ -8,7 +8,7 @@ import {
   investorB,
 } from "../entities/actors/investors";
 
-import { SMARTTopic } from "../constants/topics";
+import { ATKTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
@@ -24,7 +24,7 @@ import { setupAsset } from "./actions/setup-asset";
 export const createFund = async () => {
   console.log("\n=== Creating fund... ===\n");
 
-  const fundFactory = smartProtocolDeployer.getFundFactoryContract();
+  const fundFactory = atkDeployer.getFundFactoryContract();
 
   const fund = new Asset<"fundFactory">(
     "Bens Bugs",
@@ -44,12 +44,10 @@ export const createFund = async () => {
     fund.symbol,
     fund.decimals,
     20,
-    [topicManager.getTopicId(SMARTTopic.kyc)],
+    [topicManager.getTopicId(ATKTopic.kyc)],
     [
       {
-        module: smartProtocolDeployer.getContractAddress(
-          "countryBlockListModule"
-        ),
+        module: atkDeployer.getContractAddress("countryBlockListModule"),
         params: encodedBlockedCountries,
       },
     ],

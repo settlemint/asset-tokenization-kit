@@ -1,0 +1,435 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+import { Test } from "forge-std/Test.sol";
+import { ATKSystemFactory } from "../../contracts/system/ATKSystemFactory.sol";
+import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
+import { ATKSystem } from "../../contracts/system/ATKSystem.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {
+    ComplianceImplementationNotSet,
+    IdentityRegistryImplementationNotSet,
+    IdentityRegistryStorageImplementationNotSet,
+    TrustedIssuersRegistryImplementationNotSet,
+    TopicSchemeRegistryImplementationNotSet,
+    IdentityFactoryImplementationNotSet,
+    IdentityImplementationNotSet,
+    TokenIdentityImplementationNotSet,
+    TokenAccessManagerImplementationNotSet,
+    IndexOutOfBounds,
+    IdentityVerificationModuleNotSet
+} from "../../contracts/system/ATKSystemErrors.sol";
+
+// Implementations for testing
+import { ATKIdentityRegistryStorageImplementation } from
+    "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
+import { ATKTrustedIssuersRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
+import { ATKIdentityRegistryImplementation } from
+    "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
+import { ATKTopicSchemeRegistryImplementation } from
+    "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
+import { ATKComplianceImplementation } from "../../contracts/system/compliance/ATKComplianceImplementation.sol";
+import { ATKIdentityFactoryImplementation } from
+    "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
+import { ATKIdentityImplementation } from
+    "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
+import { ATKTokenIdentityImplementation } from
+    "../../contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol";
+import { ATKTokenAccessManagerImplementation } from
+    "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+
+// Import compliance module
+import { SMARTIdentityVerificationModule } from "../../contracts/smart/modules/SMARTIdentityVerificationModule.sol";
+
+contract ATKSystemFactoryTest is Test {
+    ATKSystemFactory public factory;
+
+    // Implementation addresses
+    address public complianceImpl;
+    address public identityRegistryImpl;
+    address public identityRegistryStorageImpl;
+    address public trustedIssuersRegistryImpl;
+    address public topicSchemeRegistryImpl;
+    address public identityFactoryImpl;
+    address public identityImpl;
+    address public tokenIdentityImpl;
+    address public tokenAccessManagerImpl;
+    address public identityVerificationModule;
+    address public forwarder;
+
+    // Test addresses
+    address public admin = makeAddr("admin");
+    address public user1 = makeAddr("user1");
+    address public user2 = makeAddr("user2");
+
+    event SMARTSystemCreated(address indexed sender, address indexed systemAddress);
+
+    function setUp() public {
+        forwarder = makeAddr("forwarder");
+
+        // Deploy all implementations
+        complianceImpl = address(new ATKComplianceImplementation(forwarder));
+        identityRegistryImpl = address(new ATKIdentityRegistryImplementation(forwarder));
+        identityRegistryStorageImpl = address(new ATKIdentityRegistryStorageImplementation(forwarder));
+        trustedIssuersRegistryImpl = address(new ATKTrustedIssuersRegistryImplementation(forwarder));
+        topicSchemeRegistryImpl = address(new ATKTopicSchemeRegistryImplementation(forwarder));
+        identityFactoryImpl = address(new ATKIdentityFactoryImplementation(forwarder));
+        identityImpl = address(new ATKIdentityImplementation(forwarder));
+        tokenIdentityImpl = address(new ATKTokenIdentityImplementation(forwarder));
+        tokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
+        identityVerificationModule = address(new SMARTIdentityVerificationModule(forwarder));
+
+        // Deploy factory with valid implementations
+        factory = new ATKSystemFactory(
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            tokenIdentityImpl,
+            tokenAccessManagerImpl,
+            identityVerificationModule,
+            forwarder
+        );
+    }
+
+    function test_ConstructorWithValidImplementations() public view {
+        assertEq(factory.defaultComplianceImplementation(), complianceImpl);
+        assertEq(factory.defaultIdentityRegistryImplementation(), identityRegistryImpl);
+        assertEq(factory.defaultIdentityRegistryStorageImplementation(), identityRegistryStorageImpl);
+        assertEq(factory.defaultTrustedIssuersRegistryImplementation(), trustedIssuersRegistryImpl);
+        assertEq(factory.defaultTopicSchemeRegistryImplementation(), topicSchemeRegistryImpl);
+        assertEq(factory.defaultIdentityFactoryImplementation(), identityFactoryImpl);
+        assertEq(factory.defaultIdentityImplementation(), identityImpl);
+        assertEq(factory.defaultTokenIdentityImplementation(), tokenIdentityImpl);
+        assertEq(factory.defaultTokenAccessManagerImplementation(), tokenAccessManagerImpl);
+        assertEq(factory.factoryForwarder(), forwarder);
+        assertEq(factory.getSystemCount(), 0);
+    }
+
+    function test_ConstructorWithZeroComplianceImplementation() public {
+        vm.expectRevert(ComplianceImplementationNotSet.selector);
+        new ATKSystemFactory(
+            address(0), // Zero compliance implementation
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            tokenIdentityImpl,
+            tokenAccessManagerImpl,
+            identityVerificationModule,
+            forwarder
+        );
+    }
+
+    function test_ConstructorWithZeroIdentityRegistryImplementation() public {
+        vm.expectRevert(IdentityRegistryImplementationNotSet.selector);
+        new ATKSystemFactory(
+            complianceImpl,
+            address(0), // Zero identity registry implementation
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            tokenIdentityImpl,
+            tokenAccessManagerImpl,
+            identityVerificationModule,
+            forwarder
+        );
+    }
+
+    function test_ConstructorWithZeroIdentityRegistryStorageImplementation() public {
+        vm.expectRevert(IdentityRegistryStorageImplementationNotSet.selector);
+        new ATKSystemFactory(
+            complianceImpl,
+            identityRegistryImpl,
+            address(0), // Zero identity registry storage implementation
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            tokenIdentityImpl,
+            tokenAccessManagerImpl,
+            identityVerificationModule,
+            forwarder
+        );
+    }
+
+    function test_ConstructorWithZeroTrustedIssuersRegistryImplementation() public {
+        vm.expectRevert(TrustedIssuersRegistryImplementationNotSet.selector);
+        new ATKSystemFactory(
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            address(0), // Zero trusted issuers registry implementation
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            tokenIdentityImpl,
+            tokenAccessManagerImpl,
+            identityVerificationModule,
+            forwarder
+        );
+    }
+
+    function test_ConstructorWithZeroTopicSchemeRegistryImplementation() public {
+        vm.expectRevert(TopicSchemeRegistryImplementationNotSet.selector);
+        new ATKSystemFactory(
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            address(0), // Zero topic scheme registry implementation
+            identityFactoryImpl,
+            identityImpl,
+            tokenIdentityImpl,
+            tokenAccessManagerImpl,
+            identityVerificationModule,
+            forwarder
+        );
+    }
+
+    function test_ConstructorWithZeroIdentityFactoryImplementation() public {
+        vm.expectRevert(IdentityFactoryImplementationNotSet.selector);
+        new ATKSystemFactory(
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            address(0), // Zero identity factory implementation
+            identityImpl,
+            tokenIdentityImpl,
+            tokenAccessManagerImpl,
+            identityVerificationModule,
+            forwarder
+        );
+    }
+
+    function test_ConstructorWithZeroIdentityImplementation() public {
+        vm.expectRevert(IdentityImplementationNotSet.selector);
+        new ATKSystemFactory(
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            address(0), // Zero identity implementation
+            tokenIdentityImpl,
+            tokenAccessManagerImpl,
+            identityVerificationModule,
+            forwarder
+        );
+    }
+
+    function test_ConstructorWithZeroTokenIdentityImplementation() public {
+        vm.expectRevert(TokenIdentityImplementationNotSet.selector);
+        new ATKSystemFactory(
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            address(0), // Zero token identity implementation
+            tokenAccessManagerImpl,
+            identityVerificationModule,
+            forwarder
+        );
+    }
+
+    function test_ConstructorWithZeroTokenAccessManagerImplementation() public {
+        vm.expectRevert(TokenAccessManagerImplementationNotSet.selector);
+        new ATKSystemFactory(
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            tokenIdentityImpl,
+            address(0), // Zero token access manager implementation
+            identityVerificationModule,
+            forwarder
+        );
+    }
+
+    function test_ConstructorWithZeroIdentityVerificationModule() public {
+        vm.expectRevert(IdentityVerificationModuleNotSet.selector);
+        new ATKSystemFactory(
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            tokenIdentityImpl,
+            tokenAccessManagerImpl,
+            address(0), // Zero identity verification module
+            forwarder
+        );
+    }
+
+    function test_CreateSystemSuccess() public {
+        vm.prank(admin);
+        address systemAddress = factory.createSystem();
+
+        assertNotEq(systemAddress, address(0));
+        assertEq(factory.getSystemCount(), 1);
+        assertEq(factory.getSystemAtIndex(0), systemAddress);
+
+        // Verify the created system has correct properties
+        IAccessControl system = IAccessControl(systemAddress);
+        assertTrue(system.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+    }
+
+    function test_CreateMultipleSystems() public {
+        // Create first system
+        vm.prank(user1);
+        address system1 = factory.createSystem();
+
+        // Create second system
+        vm.prank(user2);
+        address system2 = factory.createSystem();
+
+        assertEq(factory.getSystemCount(), 2);
+        assertEq(factory.getSystemAtIndex(0), system1);
+        assertEq(factory.getSystemAtIndex(1), system2);
+        assertNotEq(system1, system2);
+
+        // Verify each system has correct admin
+        IAccessControl smartSystem1 = IAccessControl(system1);
+        IAccessControl smartSystem2 = IAccessControl(system2);
+        assertTrue(smartSystem1.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, user1));
+        assertTrue(smartSystem2.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, user2));
+    }
+
+    function test_GetSystemCount() public {
+        assertEq(factory.getSystemCount(), 0);
+
+        vm.prank(admin);
+        factory.createSystem();
+        assertEq(factory.getSystemCount(), 1);
+
+        vm.prank(user1);
+        factory.createSystem();
+        assertEq(factory.getSystemCount(), 2);
+    }
+
+    function test_GetSystemAtIndexValidIndex() public {
+        vm.prank(admin);
+        address system1 = factory.createSystem();
+
+        vm.prank(user1);
+        address system2 = factory.createSystem();
+
+        assertEq(factory.getSystemAtIndex(0), system1);
+        assertEq(factory.getSystemAtIndex(1), system2);
+    }
+
+    function test_GetSystemAtIndexInvalidIndex() public {
+        // No systems created yet
+        vm.expectRevert(abi.encodeWithSelector(IndexOutOfBounds.selector, 0, 0));
+        factory.getSystemAtIndex(0);
+
+        // Create one system
+        vm.prank(admin);
+        factory.createSystem();
+
+        // Index 1 should be out of bounds
+        vm.expectRevert(abi.encodeWithSelector(IndexOutOfBounds.selector, 1, 1));
+        factory.getSystemAtIndex(1);
+
+        // Large index should be out of bounds
+        vm.expectRevert(abi.encodeWithSelector(IndexOutOfBounds.selector, 999, 1));
+        factory.getSystemAtIndex(999);
+    }
+
+    function test_SystemCreatedEventEmitted() public {
+        vm.prank(admin);
+
+        // Record logs to verify event was emitted
+        vm.recordLogs();
+        address systemAddress = factory.createSystem();
+
+        // Verify system was created and event logs exist
+        assertNotEq(systemAddress, address(0));
+        assertTrue(vm.getRecordedLogs().length > 0);
+    }
+
+    function test_ERC2771ContextIntegration() public view {
+        // Verify forwarder is set correctly
+        assertEq(factory.factoryForwarder(), forwarder);
+
+        // Test that the factory inherits from ERC2771Context
+        // This is implicitly tested through the constructor and forwarder storage
+    }
+
+    function test_ImmutableVariablesCannotBeChanged() public view {
+        // All variables are immutable, so they cannot be changed after construction
+        // This test verifies they are set correctly and remain constant
+        assertEq(factory.defaultComplianceImplementation(), complianceImpl);
+        assertEq(factory.defaultIdentityRegistryImplementation(), identityRegistryImpl);
+        assertEq(factory.defaultIdentityRegistryStorageImplementation(), identityRegistryStorageImpl);
+        assertEq(factory.defaultTrustedIssuersRegistryImplementation(), trustedIssuersRegistryImpl);
+        assertEq(factory.defaultTopicSchemeRegistryImplementation(), topicSchemeRegistryImpl);
+        assertEq(factory.defaultIdentityFactoryImplementation(), identityFactoryImpl);
+        assertEq(factory.defaultIdentityImplementation(), identityImpl);
+        assertEq(factory.defaultTokenIdentityImplementation(), tokenIdentityImpl);
+        assertEq(factory.defaultTokenAccessManagerImplementation(), tokenAccessManagerImpl);
+        assertEq(factory.defaultIdentityVerificationModule(), identityVerificationModule);
+        assertEq(factory.factoryForwarder(), forwarder);
+    }
+
+    function test_CreateSystemWithZeroForwarder() public {
+        // Test factory can be created with zero forwarder address
+        ATKSystemFactory factoryWithZeroForwarder = new ATKSystemFactory(
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            tokenIdentityImpl,
+            tokenAccessManagerImpl,
+            identityVerificationModule,
+            address(0) // Zero forwarder
+        );
+
+        assertEq(factoryWithZeroForwarder.factoryForwarder(), address(0));
+
+        vm.prank(admin);
+        address systemAddress = factoryWithZeroForwarder.createSystem();
+        assertNotEq(systemAddress, address(0));
+    }
+
+    function test_FuzzCreateSystems(uint8 numSystems) public {
+        vm.assume(numSystems > 0 && numSystems <= 50); // Reasonable limits
+
+        address[] memory systems = new address[](numSystems);
+
+        for (uint8 i = 0; i < numSystems; i++) {
+            address user = makeAddr(string(abi.encodePacked("user", i)));
+            vm.prank(user);
+            systems[i] = factory.createSystem();
+        }
+
+        assertEq(factory.getSystemCount(), numSystems);
+
+        for (uint8 i = 0; i < numSystems; i++) {
+            assertEq(factory.getSystemAtIndex(i), systems[i]);
+        }
+    }
+}

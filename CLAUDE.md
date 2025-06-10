@@ -101,7 +101,7 @@ The contracts follow the SMART protocol (v8.0.15) and implement:
 3. **Extension System**: Modular features via extensions
 
    - `SMARTBurnable`, `SMARTCapped`, `SMARTCollateral`, `SMARTPausable`, etc.
-   - Located in `/kit/contracts/contracts/extensions/`
+   - Located in `/kit/contracts/contracts/smart/extensions/`
 
 4. **Compliance System**: ERC-3643 compliance
    - Identity registry, trusted issuers, claim topics

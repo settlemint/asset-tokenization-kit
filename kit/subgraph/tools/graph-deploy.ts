@@ -256,7 +256,7 @@ async function initGraphPaths(): Promise<GraphPaths> {
         contractsRoot,
         "ignition",
         "deployments",
-        "smart-protocol-local",
+        "atk-local",
         "deployed_addresses.json"
       ),
       subgraphConfig: join(subgraphRoot, "subgraph.json"),
@@ -421,7 +421,7 @@ async function updateSubgraphYaml(addresses: DeployedAddresses): Promise<void> {
         const addressKey = Object.keys(addresses).find(
           (key) =>
             key.endsWith(`#${dataSource.name}`) ||
-            key.endsWith(`#SMART${dataSource.name}`)
+            key.endsWith(`#ATK${dataSource.name}`)
         );
         if (!addressKey) {
           logger.warn(`No address found for '${dataSource.name}'`);

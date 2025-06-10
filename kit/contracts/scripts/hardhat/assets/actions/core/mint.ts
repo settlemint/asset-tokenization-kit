@@ -1,4 +1,4 @@
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
@@ -14,7 +14,7 @@ export const mint = async (
 ) => {
   const tokenContract = owner.getContractInstance({
     address: asset.address,
-    abi: SMARTContracts.ismart,
+    abi: ATKContracts.ismart,
   });
 
   const tokenAmount = toDecimals(amount, asset.decimals);

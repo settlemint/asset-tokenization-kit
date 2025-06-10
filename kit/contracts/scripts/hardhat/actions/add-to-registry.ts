@@ -1,12 +1,12 @@
 import type { AbstractActor } from "../entities/actors/abstract-actor";
 
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 import { waitForSuccess } from "../utils/wait-for-success";
 
 export const addToRegistry = async (actor: AbstractActor) => {
   const identity = await actor.getIdentity();
 
-  const transactionHash = await smartProtocolDeployer
+  const transactionHash = await atkDeployer
     .getIdentityRegistryContract()
     .write.registerIdentity([actor.address, identity, actor.countryCode]);
 
@@ -19,7 +19,7 @@ export async function batchAddToRegistry(actors: AbstractActor[]) {
   const resolvedIdentities = await Promise.all(
     actors.map((actor) => actor.getIdentity())
   );
-  const transactionHash = await smartProtocolDeployer
+  const transactionHash = await atkDeployer
     .getIdentityRegistryContract()
     .write.batchRegisterIdentity([
       actors.map((actor) => actor.address),

@@ -1,4 +1,4 @@
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import type { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
@@ -14,7 +14,7 @@ export const transfer = async (
 ) => {
   const tokenContract = from.getContractInstance({
     address: asset.address,
-    abi: SMARTContracts.ismart,
+    abi: ATKContracts.ismart,
   });
 
   const tokenAmount = toDecimals(amount, asset.decimals);

@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
@@ -14,7 +14,7 @@ export const approve = async (
 ) => {
   const tokenContract = owner.getContractInstance({
     address: asset.address,
-    abi: SMARTContracts.ismart,
+    abi: ATKContracts.ismart,
   });
 
   const tokenAmount = toDecimals(amount, asset.decimals);

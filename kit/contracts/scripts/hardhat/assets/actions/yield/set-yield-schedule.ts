@@ -1,8 +1,8 @@
 import { Address } from "viem";
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
-import { smartProtocolDeployer } from "../../../services/deployer";
+import { atkDeployer } from "../../../services/deployer";
 import { increaseAnvilTime, mineAnvilBlock } from "../../../utils/anvil";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForEvent } from "../../../utils/wait-for-event";
@@ -19,15 +19,15 @@ export const setYieldSchedule = async (
 ) => {
   const tokenContract = owner.getContractInstance({
     address: asset.address,
-    abi: SMARTContracts.ismartYield,
+    abi: ATKContracts.ismartYield,
   });
 
-  const factoryAddress = smartProtocolDeployer.getContractAddress(
+  const factoryAddress = atkDeployer.getContractAddress(
     "fixedYieldScheduleFactory"
   );
   const factoryContract = owner.getContractInstance({
     address: factoryAddress,
-    abi: SMARTContracts.fixedYieldScheduleFactory,
+    abi: ATKContracts.fixedYieldScheduleFactory,
   });
 
   const createYieldScheduleTransactionHash = await withDecodedRevertReason(() =>
@@ -42,7 +42,7 @@ export const setYieldSchedule = async (
   const { schedule } = (await waitForEvent({
     transactionHash: createYieldScheduleTransactionHash,
     contract: factoryContract,
-    eventName: "SMARTFixedYieldScheduleCreated",
+    eventName: "ATKFixedYieldScheduleCreated",
   })) as { schedule: Address };
 
   const setYieldScheduleTransactionHash =
@@ -51,7 +51,7 @@ export const setYieldSchedule = async (
 
   const scheduleContract = owner.getContractInstance({
     address: schedule,
-    abi: SMARTContracts.ismartFixedYieldSchedule,
+    abi: ATKContracts.ismartFixedYieldSchedule,
   });
 
   console.log(

@@ -44,42 +44,39 @@ const ALL_ALLOCATIONS_FILE = join(CONTRACTS_ROOT, "tools/genesis-output.json");
 // Contract configuration
 const CONTRACT_ADDRESSES = {
   // Core infrastructure
-  SMARTForwarder: "0x5e771e1417100000000000000000000000020099",
+  ATKForwarder: "0x5e771e1417100000000000000000000000020099",
 
   // System implementations
-  SMARTComplianceImplementation: "0x5e771e1417100000000000000000000000020001",
-  SMARTIdentityRegistryImplementation:
+  ATKComplianceImplementation: "0x5e771e1417100000000000000000000000020001",
+  ATKIdentityRegistryImplementation:
     "0x5e771e1417100000000000000000000000020002",
-  SMARTIdentityRegistryStorageImplementation:
+  ATKIdentityRegistryStorageImplementation:
     "0x5e771e1417100000000000000000000000020003",
-  SMARTTrustedIssuersRegistryImplementation:
+  ATKTrustedIssuersRegistryImplementation:
     "0x5e771e1417100000000000000000000000020004",
-  SMARTIdentityFactoryImplementation:
+  ATKIdentityFactoryImplementation:
     "0x5e771e1417100000000000000000000000020005",
-  SMARTIdentityImplementation: "0x5e771e1417100000000000000000000000020006",
-  SMARTTokenIdentityImplementation:
-    "0x5e771e1417100000000000000000000000020007",
-  SMARTTopicSchemeRegistryImplementation:
+  ATKIdentityImplementation: "0x5e771e1417100000000000000000000000020006",
+  ATKTokenIdentityImplementation: "0x5e771e1417100000000000000000000000020007",
+  ATKTopicSchemeRegistryImplementation:
     "0x5e771e1417100000000000000000000000020008",
-  SMARTTokenAccessManagerImplementation:
+  ATKTokenAccessManagerImplementation:
     "0x5e771e1417100000000000000000000000020009",
 
   // System factory
-  SMARTSystemFactory: "0x5e771e1417100000000000000000000000020088",
+  ATKSystemFactory: "0x5e771e1417100000000000000000000000020088",
 
   // Asset implementations
-  SMARTBondImplementation: "0x5e771e1417100000000000000000000000020010",
-  SMARTBondFactoryImplementation: "0x5e771e1417100000000000000000000000020011",
-  SMARTDepositImplementation: "0x5e771e1417100000000000000000000000020012",
-  SMARTDepositFactoryImplementation:
-    "0x5e771e1417100000000000000000000000020013",
-  SMARTEquityImplementation: "0x5e771e1417100000000000000000000000020014",
-  SMARTEquityFactoryImplementation:
-    "0x5e771e1417100000000000000000000000020015",
-  SMARTFundImplementation: "0x5e771e1417100000000000000000000000020016",
-  SMARTFundFactoryImplementation: "0x5e771e1417100000000000000000000000020017",
-  SMARTStableCoinImplementation: "0x5e771e1417100000000000000000000000020018",
-  SMARTStableCoinFactoryImplementation:
+  ATKBondImplementation: "0x5e771e1417100000000000000000000000020010",
+  ATKBondFactoryImplementation: "0x5e771e1417100000000000000000000000020011",
+  ATKDepositImplementation: "0x5e771e1417100000000000000000000000020012",
+  ATKDepositFactoryImplementation: "0x5e771e1417100000000000000000000000020013",
+  ATKEquityImplementation: "0x5e771e1417100000000000000000000000020014",
+  ATKEquityFactoryImplementation: "0x5e771e1417100000000000000000000000020015",
+  ATKFundImplementation: "0x5e771e1417100000000000000000000000020016",
+  ATKFundFactoryImplementation: "0x5e771e1417100000000000000000000000020017",
+  ATKStableCoinImplementation: "0x5e771e1417100000000000000000000000020018",
+  ATKStableCoinFactoryImplementation:
     "0x5e771e1417100000000000000000000000020019",
 
   // Compliance modules
@@ -88,54 +85,54 @@ const CONTRACT_ADDRESSES = {
 
 const CONTRACT_FILES = {
   // Core infrastructure
-  SMARTForwarder: "contracts/vendor/SMARTForwarder.sol",
+  ATKForwarder: "contracts/vendor/ATKForwarder.sol",
 
   // System implementations
-  SMARTComplianceImplementation:
-    "contracts/system/compliance/SMARTComplianceImplementation.sol",
-  SMARTIdentityRegistryImplementation:
-    "contracts/system/identity-registry/SMARTIdentityRegistryImplementation.sol",
-  SMARTIdentityRegistryStorageImplementation:
-    "contracts/system/identity-registry-storage/SMARTIdentityRegistryStorageImplementation.sol",
-  SMARTTrustedIssuersRegistryImplementation:
-    "contracts/system/trusted-issuers-registry/SMARTTrustedIssuersRegistryImplementation.sol",
-  SMARTIdentityFactoryImplementation:
-    "contracts/system/identity-factory/SMARTIdentityFactoryImplementation.sol",
-  SMARTIdentityImplementation:
-    "contracts/system/identity-factory/identities/SMARTIdentityImplementation.sol",
-  SMARTTokenIdentityImplementation:
-    "contracts/system/identity-factory/identities/SMARTTokenIdentityImplementation.sol",
-  SMARTTopicSchemeRegistryImplementation:
-    "contracts/system/topic-scheme-registry/SMARTTopicSchemeRegistryImplementation.sol",
-  SMARTTokenAccessManagerImplementation:
-    "contracts/system/access-manager/SMARTTokenAccessManagerImplementation.sol",
+  ATKComplianceImplementation:
+    "contracts/system/compliance/ATKComplianceImplementation.sol",
+  ATKIdentityRegistryImplementation:
+    "contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol",
+  ATKIdentityRegistryStorageImplementation:
+    "contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol",
+  ATKTrustedIssuersRegistryImplementation:
+    "contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol",
+  ATKIdentityFactoryImplementation:
+    "contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol",
+  ATKIdentityImplementation:
+    "contracts/system/identity-factory/identities/ATKIdentityImplementation.sol",
+  ATKTokenIdentityImplementation:
+    "contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol",
+  ATKTopicSchemeRegistryImplementation:
+    "contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol",
+  ATKTokenAccessManagerImplementation:
+    "contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol",
 
   // System factory
-  SMARTSystemFactory: "contracts/system/SMARTSystemFactory.sol",
+  ATKSystemFactory: "contracts/system/ATKSystemFactory.sol",
 
   // Asset implementations
-  SMARTBondImplementation: "contracts/assets/bond/SMARTBondImplementation.sol",
-  SMARTBondFactoryImplementation:
-    "contracts/assets/bond/SMARTBondFactoryImplementation.sol",
-  SMARTDepositImplementation:
-    "contracts/assets/deposit/SMARTDepositImplementation.sol",
-  SMARTDepositFactoryImplementation:
-    "contracts/assets/deposit/SMARTDepositFactoryImplementation.sol",
-  SMARTEquityImplementation:
-    "contracts/assets/equity/SMARTEquityImplementation.sol",
-  SMARTEquityFactoryImplementation:
-    "contracts/assets/equity/SMARTEquityFactoryImplementation.sol",
-  SMARTFundImplementation: "contracts/assets/fund/SMARTFundImplementation.sol",
-  SMARTFundFactoryImplementation:
-    "contracts/assets/fund/SMARTFundFactoryImplementation.sol",
-  SMARTStableCoinImplementation:
-    "contracts/assets/stable-coin/SMARTStableCoinImplementation.sol",
-  SMARTStableCoinFactoryImplementation:
-    "contracts/assets/stable-coin/SMARTStableCoinFactoryImplementation.sol",
+  ATKBondImplementation: "contracts/assets/bond/ATKBondImplementation.sol",
+  ATKBondFactoryImplementation:
+    "contracts/assets/bond/ATKBondFactoryImplementation.sol",
+  ATKDepositImplementation:
+    "contracts/assets/deposit/ATKDepositImplementation.sol",
+  ATKDepositFactoryImplementation:
+    "contracts/assets/deposit/ATKDepositFactoryImplementation.sol",
+  ATKEquityImplementation:
+    "contracts/assets/equity/ATKEquityImplementation.sol",
+  ATKEquityFactoryImplementation:
+    "contracts/assets/equity/ATKEquityFactoryImplementation.sol",
+  ATKFundImplementation: "contracts/assets/fund/ATKFundImplementation.sol",
+  ATKFundFactoryImplementation:
+    "contracts/assets/fund/ATKFundFactoryImplementation.sol",
+  ATKStableCoinImplementation:
+    "contracts/assets/stable-coin/ATKStableCoinImplementation.sol",
+  ATKStableCoinFactoryImplementation:
+    "contracts/assets/stable-coin/ATKStableCoinFactoryImplementation.sol",
 
   // Compliance modules
   SMARTIdentityVerificationModule:
-    "contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol",
+    "contracts/smart/modules/SMARTIdentityVerificationModule.sol",
 } as const;
 
 // =============================================================================
@@ -156,26 +153,26 @@ class ContractDeployer {
   }
 
   private getConstructorArgs(contractName: string): string[] {
-    const forwarderAddress = CONTRACT_ADDRESSES.SMARTForwarder;
+    const forwarderAddress = CONTRACT_ADDRESSES.ATKForwarder;
 
     switch (contractName) {
-      case "SMARTForwarder":
+      case "ATKForwarder":
         return [];
 
       case "SMARTIdentityVerificationModule":
         return [forwarderAddress];
 
-      case "SMARTSystemFactory":
+      case "ATKSystemFactory":
         return [
-          CONTRACT_ADDRESSES.SMARTComplianceImplementation,
-          CONTRACT_ADDRESSES.SMARTIdentityRegistryImplementation,
-          CONTRACT_ADDRESSES.SMARTIdentityRegistryStorageImplementation,
-          CONTRACT_ADDRESSES.SMARTTrustedIssuersRegistryImplementation,
-          CONTRACT_ADDRESSES.SMARTTopicSchemeRegistryImplementation,
-          CONTRACT_ADDRESSES.SMARTIdentityFactoryImplementation,
-          CONTRACT_ADDRESSES.SMARTIdentityImplementation,
-          CONTRACT_ADDRESSES.SMARTTokenIdentityImplementation,
-          CONTRACT_ADDRESSES.SMARTTokenAccessManagerImplementation,
+          CONTRACT_ADDRESSES.ATKComplianceImplementation,
+          CONTRACT_ADDRESSES.ATKIdentityRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKIdentityRegistryStorageImplementation,
+          CONTRACT_ADDRESSES.ATKTrustedIssuersRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKTopicSchemeRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKIdentityFactoryImplementation,
+          CONTRACT_ADDRESSES.ATKIdentityImplementation,
+          CONTRACT_ADDRESSES.ATKTokenIdentityImplementation,
+          CONTRACT_ADDRESSES.ATKTokenAccessManagerImplementation,
           CONTRACT_ADDRESSES.SMARTIdentityVerificationModule,
           forwarderAddress,
         ];
@@ -580,14 +577,14 @@ class GenesisGenerator {
     const totalContracts = contractNames.length;
     log.info(`Processing ${totalContracts} contracts...`);
 
-    // Process SMARTForwarder first (no dependencies)
-    if (CONTRACT_ADDRESSES.SMARTForwarder) {
-      await this.processContract("SMARTForwarder", totalContracts);
+    // Process ATKForwarder first (no dependencies)
+    if (CONTRACT_ADDRESSES.ATKForwarder) {
+      await this.processContract("ATKForwarder", totalContracts);
     }
 
     // Process all other contracts
     for (const contractName of contractNames) {
-      if (contractName === "SMARTForwarder") {
+      if (contractName === "ATKForwarder") {
         continue; // Already processed
       }
 

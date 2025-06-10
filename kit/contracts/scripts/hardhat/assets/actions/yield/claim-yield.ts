@@ -1,4 +1,4 @@
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
@@ -12,13 +12,13 @@ export const claimYield = async (
 ) => {
   const tokenContract = actor.getContractInstance({
     address: asset.address,
-    abi: SMARTContracts.ismartYield,
+    abi: ATKContracts.ismartYield,
   });
 
   const scheduleAddress = await tokenContract.read.yieldSchedule();
   const scheduleContract = actor.getContractInstance({
     address: scheduleAddress,
-    abi: SMARTContracts.ismartFixedYieldSchedule,
+    abi: ATKContracts.ismartFixedYieldSchedule,
   });
 
   const transactionHash = await withDecodedRevertReason(() =>

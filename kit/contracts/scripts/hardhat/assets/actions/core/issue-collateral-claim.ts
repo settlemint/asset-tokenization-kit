@@ -1,8 +1,8 @@
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import { claimIssuer } from "../../../entities/actors/claim-issuer";
 import { owner } from "../../../entities/actors/owner";
 
-import { SMARTTopic } from "../../../constants/topics";
+import { ATKTopic } from "../../../constants/topics";
 import type { Asset } from "../../../entities/asset";
 import { encodeClaimData } from "../../../utils/claim-scheme-utils";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
@@ -34,7 +34,7 @@ export const issueCollateralClaim = async (
 
   // 1. Encode the collateral claim data (amount, expiryTimestamp)
   // Corresponds to abi.encode(amount, expiryTimestamp) in Solidity
-  const encodedCollateralData = encodeClaimData(SMARTTopic.collateral, [
+  const encodedCollateralData = encodeClaimData(ATKTopic.collateral, [
     tokenAmount,
     expiryTimestampBigInt,
   ]);
@@ -47,14 +47,14 @@ export const issueCollateralClaim = async (
     topicId,
   } = await claimIssuer.createClaim(
     asset.identity,
-    SMARTTopic.collateral,
+    ATKTopic.collateral,
     encodedCollateralData
   );
 
   // 3. Get an instance of the token's identity contract, interacted with by the 'owner' (assumed token owner)
   const tokenIdentityContract = owner.getContractInstance({
     address: asset.identity!,
-    abi: SMARTContracts.tokenIdentity,
+    abi: ATKContracts.tokenIdentity,
   });
 
   // 4. Get the identity address of the claim issuer

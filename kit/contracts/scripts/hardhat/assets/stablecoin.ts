@@ -1,6 +1,6 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 
 import {
   frozenInvestor,
@@ -8,7 +8,7 @@ import {
   investorB,
 } from "../entities/actors/investors";
 
-import { SMARTTopic } from "../constants/topics";
+import { ATKTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
@@ -24,8 +24,7 @@ import { setupAsset } from "./actions/setup-asset";
 export const createStableCoin = async () => {
   console.log("\n=== Creating stablecoin... ===\n");
 
-  const stablecoinFactory =
-    smartProtocolDeployer.getStablecoinFactoryContract();
+  const stablecoinFactory = atkDeployer.getStablecoinFactoryContract();
 
   const stableCoin = new Asset<"stablecoinFactory">(
     "Tether",
@@ -44,12 +43,10 @@ export const createStableCoin = async () => {
     stableCoin.name,
     stableCoin.symbol,
     stableCoin.decimals,
-    [topicManager.getTopicId(SMARTTopic.kyc)],
+    [topicManager.getTopicId(ATKTopic.kyc)],
     [
       {
-        module: smartProtocolDeployer.getContractAddress(
-          "countryBlockListModule"
-        ),
+        module: atkDeployer.getContractAddress("countryBlockListModule"),
         params: encodedBlockedCountries,
       },
     ],
