@@ -34,6 +34,7 @@
     "turbo.json"
   ],
   "scripts": {
+    "typecheck": "turbo run typecheck",
     "postinstall": "turbo run dependencies",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
@@ -55,12 +56,14 @@
     "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
     "test:e2e:api:debug": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests --ui",
     "helm": "turbo run helm",
-    "docker:up": "turbo run docker:up",
+    "predev:up": "docker compose -p atk down || true",
+    "dev:up": "docker compose -p atk up -d",
+    "artifacts": "turbo run artifacts",
     "extract-env": "bun run tools/extract-env.ts"
   },
   "dependencies": {},
   "devDependencies": {
-    "@settlemint/sdk-cli": "2.3.8",
+    "@settlemint/sdk-cli": "2.3.14",
     "lefthook": "1.11.13",
     "prettier": "3.5.3",
     "turbo": "2.5.4",
