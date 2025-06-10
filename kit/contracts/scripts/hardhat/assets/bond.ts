@@ -46,13 +46,18 @@ export const createBond = async (depositToken: Asset<any>) => {
     [[]]
   );
 
+  const latestBlockTime = new Date(
+    (await getLatestBlockTimestamp(owner)) * 1000
+  );
+  const faceValue = toDecimals(0.000123, depositToken.decimals);
+  const cap = toDecimals(1000000, bond.decimals);
   const transactionHash = await bondFactory.write.createBond([
     bond.name,
     bond.symbol,
     bond.decimals,
-    toDecimals(1000000, bond.decimals),
-    BigInt(Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60), // 1 year
-    BigInt(123),
+    cap,
+    BigInt(Math.floor(latestBlockTime.getTime() / 1000) + 365 * 24 * 60 * 60), // 1 year
+    faceValue,
     depositToken.address!,
     [topicManager.getTopicId(SMARTTopic.kyc)],
     [
@@ -84,9 +89,6 @@ export const createBond = async (depositToken: Asset<any>) => {
   await unfreezePartialTokens(bond, owner, investorB, 2n);
 
   // yield
-  const latestBlockTime = new Date(
-    (await getLatestBlockTimestamp(owner)) * 1000
-  );
   const { advanceToNextPeriod } = await setYieldSchedule(
     bond,
     new Date(latestBlockTime.getTime() + 1 * 24 * 60 * 60 * 1000), // 1 day from latestBlockTime
@@ -97,7 +99,7 @@ export const createBond = async (depositToken: Asset<any>) => {
   // do some mint/burns to change the yield
   await mint(bond, owner, 10n);
   await burn(bond, owner, 1n);
-  await topupUnderlyingAsset(bond, depositToken, 10000n);
+  await topupUnderlyingAsset(bond, depositToken, 90000n);
   // claim yield for 3 periods
   for (let i = 0; i < 3; i++) {
     const didAdvance = await advanceToNextPeriod();
@@ -115,6 +117,7 @@ export const createBond = async (depositToken: Asset<any>) => {
   await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);
 
   // mature bond
+  await mint(depositToken, bond.address, 150n);
   await mature(bond);
 
   // redeemable
