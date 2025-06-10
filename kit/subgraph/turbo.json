@@ -23,7 +23,7 @@
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "^publish"]
+      "dependsOn": ["package", "^publish", "^docker:up"]
     },
     "test": {
       "dependsOn": ["codegen:gql-tada"]
