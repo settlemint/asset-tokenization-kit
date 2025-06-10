@@ -859,4 +859,45 @@ contract ATKBondTest is AbstractATKAssetTest {
         assertEq(bond.balanceOf(user1), 0);
         assertEq(bond.balanceOf(user2), 1);
     }
+
+    function test_ForcedTransferAfterMaturity() public {
+        // 1. Mint some bonds to user1
+        uint256 amount = toDecimals(10);
+        vm.startPrank(owner);
+        bond.mint(user1, amount);
+        vm.stopPrank();
+        assertEq(bond.balanceOf(user1), amount);
+        assertEq(bond.totalSupply(), initialSupply + amount);
+
+        // 2. Mature the bond
+        vm.warp(maturityDate + 1);
+
+        vm.startPrank(owner);
+        uint256 requiredAmount = bond.totalUnderlyingNeeded();
+        // The owner already has initialUnderlyingSupply. We need to mint the difference
+        uint256 additionalUnderlying = requiredAmount - initialUnderlyingSupply;
+        underlyingAsset.mint(owner, additionalUnderlying);
+
+        underlyingAsset.approve(address(bond), requiredAmount);
+        underlyingAsset.transfer(address(bond), requiredAmount);
+
+        bond.mature();
+        assertTrue(bond.isMatured());
+        vm.stopPrank();
+
+        // 3. A regular transfer from user1 should fail
+        vm.prank(user1);
+        vm.expectRevert(IATKBond.BondAlreadyMatured.selector);
+        bond.transfer(user2, amount);
+
+        // 4. A forced transfer should succeed
+        vm.startPrank(owner); // owner has CUSTODIAN_ROLE
+        bond.forcedTransfer(user1, user2, amount);
+        vm.stopPrank();
+
+        // 5. Verify balances
+        assertEq(bond.balanceOf(user1), 0);
+        assertEq(bond.balanceOf(user2), amount);
+        assertEq(bond.balanceOf(owner), initialSupply);
+    }
 }
