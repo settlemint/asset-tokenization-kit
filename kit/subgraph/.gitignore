@@ -38,3 +38,5 @@ subgraph-output.txt
 the-graph-schema.graphql
 the-graph-env.d.ts
 the-graph-cache.d.ts
+
+subgraph.json
