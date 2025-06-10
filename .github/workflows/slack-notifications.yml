@@ -4,7 +4,7 @@ name: Slack Notifications
 # If this workflow file is being added in a PR, the workflow_run trigger won't work until merged.
 on:
   workflow_run:
-    workflows: ["build"]
+    workflows: ["qa"]
     types: [completed]
   pull_request:
     branches:
