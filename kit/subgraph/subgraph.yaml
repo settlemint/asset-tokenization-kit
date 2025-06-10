@@ -8,7 +8,7 @@ dataSources:
     name: SystemFactory
     network: settlemint
     source:
-      address: "0x5e771e1417100000000000000000000000020088"
+      address: "0x1c9fD50dF7a4f066884b58A05D91e4b55005876A"
       abi: SystemFactory
       startBlock: 0
     mapping:
@@ -31,7 +31,7 @@ dataSources:
     name: FixedYieldScheduleFactory
     network: settlemint
     source:
-      address: "0x5e771e1417100000000000000000000000020089"
+      address: "0x71a0b8A2245A9770A4D887cE1E4eCc6C1d4FF28c"
       abi: FixedYieldScheduleFactory
       startBlock: 0
     mapping:
