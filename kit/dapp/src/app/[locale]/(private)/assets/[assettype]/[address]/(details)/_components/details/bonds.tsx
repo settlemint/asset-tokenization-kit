@@ -1,12 +1,7 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
-import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
-import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import { getBondStatus } from "@/lib/utils/bond-status";
-import { formatDate } from "@/lib/utils/date";
-import { formatNumber } from "@/lib/utils/number";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
@@ -36,7 +31,7 @@ export async function BondsDetails({
 
   return (
     <DetailGrid>
-      <DetailGridItem label={t("name")}>{bond.name}</DetailGridItem>
+      {/* <DetailGridItem label={t("name")}>{bond.name}</DetailGridItem>
       <DetailGridItem label={t("symbol")}>{bond.symbol}</DetailGridItem>
       {bond.isin && (
         <DetailGridItem label={t("isin")}>{bond.isin}</DetailGridItem>
@@ -78,7 +73,7 @@ export async function BondsDetails({
         })}
       </DetailGridItem>
       {/* Show balance only when requested and available */}
-      {showBalance && balanceData && (
+      {/* {showBalance && balanceData && (
         <DetailGridItem label={t("balance")}>
           {formatNumber(balanceData.value, {
             token: bond.symbol,
@@ -124,7 +119,7 @@ export async function BondsDetails({
         {/* Calculate percentage: (part/total) * 100
               Since we're using bigInt which doesn't support decimal division,
               we multiply the numerator by 100 before dividing to preserve precision */}
-        {bond.totalUnderlyingNeededExact > 0
+      {/* {bond.totalUnderlyingNeededExact > 0
           ? Number(
               (bond.underlyingBalanceExact * 100n) /
                 bond.totalUnderlyingNeededExact
@@ -154,8 +149,8 @@ export async function BondsDetails({
           currency: bond.price.currency,
           decimals: 2,
           locale: locale,
-        })}
-      </DetailGridItem>
+        })} */}
+      {/* </DetailGridItem> */}
     </DetailGrid>
   );
 }

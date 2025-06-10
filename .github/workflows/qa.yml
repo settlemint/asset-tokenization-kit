@@ -4,28 +4,19 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - "**.md"
-      - "docs/**"
-      - ".github/ISSUE_TEMPLATE/**"
-      - ".github/CODEOWNERS"
-      - "LICENSE"
   pull_request:
     branches:
       - main
     types: [opened, synchronize, reopened, closed]
-    paths-ignore:
-      - "**.md"
-      - "docs/**"
-      - ".github/ISSUE_TEMPLATE/**"
-      - ".github/CODEOWNERS"
-      - "LICENSE"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   qa:
     name: QA
     runs-on: namespace-profile-atk
-    environment: "staging"
     if:
       github.event_name == 'push' || github.event.action == 'opened' ||
       github.event.action == 'synchronize'
@@ -49,9 +40,6 @@ jobs:
         with:
           path: |
             ~/.bun/install/cache
-
-      - name: Start Docker Compose
-        run: docker compose up -d
 
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
@@ -111,10 +99,10 @@ jobs:
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:
-          instance: ${{ secrets.SETTLEMINT_INSTANCE }}
-          access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
+          instance: standalone
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+          command: "connect -a"
 
       - name: Turbo
         run: |
@@ -127,6 +115,11 @@ jobs:
           fi
         env:
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: settlemintcom
+          SENTRY_PROJECT: atk
 
       - name: Store predeployed output
         uses: actions/upload-artifact@v4

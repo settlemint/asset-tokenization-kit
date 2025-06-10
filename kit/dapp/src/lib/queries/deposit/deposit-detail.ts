@@ -2,31 +2,27 @@ import "server-only";
 
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { depositsCalculateFields } from "./deposit-calculated";
-import { DepositFragment, OffchainDepositFragment } from "./deposit-fragment";
+import { OffchainDepositFragment } from "./deposit-fragment";
 import { OffChainDepositSchema, OnChainDepositSchema } from "./deposit-schema";
 /**
  * GraphQL query to fetch on-chain tokenized deposit details from The Graph
  */
-const DepositDetail = theGraphGraphqlKit(
-  `
-  query DepositDetail($id: ID!) {
-    deposit(id: $id) {
-      ...DepositFragment
-    }
-  }
-`,
-  [DepositFragment]
-);
+// const DepositDetail = theGraphGraphqlKit(
+//   `
+//   query DepositDetail($id: ID!) {
+//     deposit(id: $id) {
+//       ...DepositFragment
+//     }
+//   }
+// `,
+//   [DepositFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain tokenized deposit details from Hasura
@@ -67,20 +63,20 @@ export const getDepositDetail = withTracing(
     cacheTag("asset");
     const [onChainDeposit, offChainDeposit] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(
-          DepositDetail,
-          {
-            id: address,
-          },
-          {
-            "X-GraphQL-Operation-Name": "DepositDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
-        if (!response.deposit) {
-          throw new Error("Deposit not found");
-        }
-        return safeParse(OnChainDepositSchema, response.deposit);
+        //       // const response = await theGraphClientKit.request(
+        //       //           DepositDetail,
+        //       //           {
+        //       //             id: address,
+        //       //           },
+        //       //           {
+        //       //             "X-GraphQL-Operation-Name": "DepositDetail",
+        //       //             "X-GraphQL-Operation-Type": "query",
+        //       //           }
+        //       //         );
+        // if (!response.deposit) {
+        //   throw new Error("Deposit not found");
+        // }
+        return safeParse(OnChainDepositSchema, {});
       })(),
       (async () => {
         const response = await hasuraClient.request(

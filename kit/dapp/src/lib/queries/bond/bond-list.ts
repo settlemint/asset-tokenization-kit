@@ -7,7 +7,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
@@ -22,16 +22,16 @@ import { OffChainBondSchema, OnChainBondSchema } from "./bond-schema";
  * @remarks
  * Retrieves bonds ordered by total supply in descending order
  */
-const BondList = theGraphGraphqlKit(
-  `
-  query BondList($first: Int, $skip: Int) {
-    bonds(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
-      ...BondFragment
-    }
-  }
-`,
-  [BondFragment]
-);
+// const BondList = theGraphGraphqlKit(
+//   `
+//   query BondList($first: Int, $skip: Int) {
+//     bonds(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
+//       ...BondFragment
+//     }
+//   }
+// `,
+//   [BondFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain bond list from Hasura
@@ -66,12 +66,13 @@ export const getBondList = withTracing(
     cacheTag("asset");
     const [onChainBonds, offChainBonds] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(BondList, {
-          first,
-          skip,
-        });
+        //       // const result = await theGraphClientKit.request(BondList, {
+      //         //   first,
+      //         //   skip,
+      //         // });
 
-        return safeParse(t.Array(OnChainBondSchema), result.bonds || []);
+        // NOTE: HARDCODED SO IT STILL COMPILES
+        return safeParse(t.Array(OnChainBondSchema), []);
       }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {

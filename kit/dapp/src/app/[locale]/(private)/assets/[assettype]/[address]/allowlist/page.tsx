@@ -22,7 +22,7 @@ export default async function AllowlistPage({ params }: PageProps) {
         assettype,
       }}
       columns={columns}
-      data={assetDetail.allowlist}
+      data={[]} //assetDetail.allowlist
       name={t("allowlist")}
     />
   );

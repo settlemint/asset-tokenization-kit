@@ -3,18 +3,14 @@ import "server-only";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress } from "viem";
 import { fundsCalculateFields } from "./fund-calculated";
-import { FundFragment, OffchainFundFragment } from "./fund-fragment";
+import { OffchainFundFragment } from "./fund-fragment";
 import { OffChainFundSchema, OnChainFundSchema } from "./fund-schema";
 /**
  * GraphQL query to fetch on-chain fund list from The Graph
@@ -22,16 +18,16 @@ import { OffChainFundSchema, OnChainFundSchema } from "./fund-schema";
  * @remarks
  * Retrieves funds ordered by total supply in descending order
  */
-const FundList = theGraphGraphqlKit(
-  `
-  query FundList($first: Int, $skip: Int) {
-    funds(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
-      ...FundFragment
-    }
-  }
-`,
-  [FundFragment]
-);
+// const FundList = theGraphGraphqlKit(
+//   `
+//   query FundList($first: Int, $skip: Int) {
+//     funds(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
+//       ...FundFragment
+//     }
+//   }
+// `,
+//   [FundFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain fund list from Hasura
@@ -66,19 +62,19 @@ export const getFundList = withTracing(
     cacheTag("asset");
     const [onChainFunds, offChainFunds] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(
-          FundList,
-          {
-            first,
-            skip,
-          },
-          {
-            "X-GraphQL-Operation-Name": "FundList",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+        //       // const result = await theGraphClientKit.request(
+        //       //           FundList,
+        //       //           {
+        //       //             first,
+        //       //             skip,
+        //       //           },
+        //       //           {
+        //       //             "X-GraphQL-Operation-Name": "FundList",
+        //       //             "X-GraphQL-Operation-Type": "query",
+        //       //           }
+        //       //         );
 
-        return safeParse(t.Array(OnChainFundSchema), result.funds || []);
+        return safeParse(t.Array(OnChainFundSchema), []);
       }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {

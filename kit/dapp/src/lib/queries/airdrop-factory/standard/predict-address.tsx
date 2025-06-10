@@ -4,7 +4,7 @@ import { AIRDROP_FACTORY_ADDRESS } from "@/lib/contracts";
 import { getMerkleRoot } from "@/lib/mutations/airdrop/create/common/merkle-tree";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import {
   PredictedStandardAirdropAddressSchema,

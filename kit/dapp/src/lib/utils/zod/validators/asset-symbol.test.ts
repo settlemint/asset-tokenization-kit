@@ -50,9 +50,13 @@ describe("assetSymbol", () => {
     });
 
     it("should accept maximum length symbols", () => {
-      expect(validator.parse("VERYLONGSYMB")).toBe("VERYLONGSYMB" as AssetSymbol); // 12 chars
+      expect(validator.parse("VERYLONGSYMB")).toBe(
+        "VERYLONGSYMB" as AssetSymbol
+      ); // 12 chars
       expect(isAssetSymbol("VERYLONGSYMB")).toBe(true);
-      expect(getAssetSymbol("VERYLONGSYMB")).toBe("VERYLONGSYMB" as AssetSymbol);
+      expect(getAssetSymbol("VERYLONGSYMB")).toBe(
+        "VERYLONGSYMB" as AssetSymbol
+      );
     });
   });
 

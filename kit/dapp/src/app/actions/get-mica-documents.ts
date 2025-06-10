@@ -1,7 +1,7 @@
 "use server";
 
 import { getMicaDocuments } from "@/lib/queries/regulations/mica-documents";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import type { Address } from "viem";
 
 // Re-export the MicaDocument type from the query module

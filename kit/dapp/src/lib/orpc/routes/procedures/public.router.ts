@@ -1,6 +1,6 @@
 import { sessionMiddleware } from "../../middlewares/auth/session.middleware";
 import { errorMiddleware } from "../../middlewares/monitoring/error.middleware";
-import { tracingMiddleware } from "../../middlewares/monitoring/tracing.middleware";
+import { sentryTracingMiddleware } from "../../middlewares/monitoring/sentry-tracing.middleware";
 import { br } from "./base.router";
 
 /**
@@ -11,7 +11,7 @@ import { br } from "./base.router";
  * procedures that should be accessible to all users, whether authenticated or not.
  *
  * Middleware composition (applied in order):
- * 1. Tracing middleware - Adds tracing information to the request
+ * 1. Sentry tracing middleware - Adds distributed tracing with Sentry
  * 2. Error middleware - Handles and formats all errors consistently
  * 3. Session middleware - Optionally loads session data if available
  *
@@ -26,11 +26,11 @@ import { br } from "./base.router";
  * - Public API endpoints with optional user context
  *
  * @see {@link ../../middlewares/monitoring/error.middleware} - Error handling middleware
- * @see {@link ../../middlewares/monitoring/tracing.middleware} - Tracing middleware
+ * @see {@link ../../middlewares/monitoring/sentry-tracing.middleware} - Sentry tracing middleware
  * @see {@link ../../middlewares/auth/session.middleware} - Session loading middleware
  * @see {@link ./base.router} - Base router implementation
  */
 export const pr = br
-  .use(tracingMiddleware)
+  .use(sentryTracingMiddleware)
   .use(errorMiddleware)
   .use(sessionMiddleware);

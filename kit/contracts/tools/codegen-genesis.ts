@@ -4,13 +4,13 @@
  * Genesis Output Generator
  *
  * This script deploys contracts to a temporary blockchain (Anvil) and generates
- * genesis allocations for use in production blockchain networks.
+ * genesis allocations for use in production blockchain networks. It combines
+ * the contract allocations with the genesis template to create the final genesis.json.
+ *
+ * Optimized for Bun runtime with native file operations and efficient JSON handling.
  */
 
 import { $ } from "bun";
-import { existsSync } from "node:fs";
-import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
-import { join } from "node:path";
 import { logger, LogLevel } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
@@ -20,15 +20,13 @@ import { getKitProjectPath } from "../../../tools/root";
 
 interface Config {
   anvilPort: number;
-  anvilBlockTime: number;
   forceRestartAnvil: boolean;
   keepAnvilRunning: boolean;
   showOutput: boolean;
 }
 
 const defaultConfig: Config = {
-  anvilPort: 8545,
-  anvilBlockTime: 1,
+  anvilPort: 8546,
   forceRestartAnvil: false,
   keepAnvilRunning: false,
   showOutput: false,
@@ -38,8 +36,10 @@ const log = logger;
 
 // File paths
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
-const FORGE_OUT_DIR = join(CONTRACTS_ROOT, "out-genesis");
-const ALL_ALLOCATIONS_FILE = join(CONTRACTS_ROOT, "tools/genesis-output.json");
+const FORGE_OUT_DIR = `${CONTRACTS_ROOT}/out-genesis`;
+const ALL_ALLOCATIONS_FILE = `${CONTRACTS_ROOT}/tools/genesis-output.json`;
+const GENESIS_TEMPLATE_FILE = `${CONTRACTS_ROOT}/tools/docker/besu/genesis-template.json`;
+const GENESIS_OUTPUT_FILE = `${CONTRACTS_ROOT}/tools/docker/besu/genesis.json`;
 
 // Contract configuration
 const CONTRACT_ADDRESSES = {
@@ -134,6 +134,240 @@ const CONTRACT_FILES = {
   SMARTIdentityVerificationModule:
     "contracts/smart/modules/SMARTIdentityVerificationModule.sol",
 } as const;
+
+// =============================================================================
+// ANVIL NODE MANAGER
+// =============================================================================
+
+class AnvilManager {
+  private config: Config;
+  private anvilProcess: any = null;
+
+  constructor(config: Config) {
+    this.config = config;
+  }
+
+  async isAnvilRunning(): Promise<boolean> {
+    try {
+      const response = await fetch(
+        `http://localhost:${this.config.anvilPort}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            method: "eth_chainId",
+            params: [],
+            id: 1,
+          }),
+          signal: AbortSignal.timeout(5000), // 5 second timeout
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        log.debug(`Anvil response: ${JSON.stringify(data)}`);
+        return true;
+      }
+
+      log.debug(
+        `Anvil HTTP response not OK: ${response.status} ${response.statusText}`
+      );
+      return false;
+    } catch (error) {
+      log.debug(`Anvil connection check failed: ${error}`);
+      return false;
+    }
+  }
+
+  async stopExistingAnvil(): Promise<void> {
+    log.info("Stopping existing Anvil instances...");
+
+    try {
+      // Kill any existing anvil processes
+      await $`pkill -f "anvil.*--port ${this.config.anvilPort}"`.quiet();
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
+    } catch {
+      // Ignore errors - process might not exist
+    }
+
+    // Verify it's stopped
+    const isStillRunning = await this.isAnvilRunning();
+    if (isStillRunning) {
+      throw new Error(
+        `Failed to stop existing Anvil on port ${this.config.anvilPort}`
+      );
+    }
+
+    log.debug("Existing Anvil instances stopped");
+  }
+
+  async startAnvil(): Promise<void> {
+    log.info(`Starting Anvil on port ${this.config.anvilPort}...`);
+
+    // Check if anvil is available
+    try {
+      const anvilCheck = await $`which anvil`.quiet();
+      if (anvilCheck.exitCode !== 0) {
+        throw new Error("Anvil not found in PATH. Please install Foundry.");
+      }
+      log.debug(`Anvil found at: ${anvilCheck.stdout.toString().trim()}`);
+    } catch (error) {
+      throw new Error("Anvil not found in PATH. Please install Foundry.");
+    }
+
+    const anvilArgs = ["anvil", "--port", this.config.anvilPort.toString()];
+
+    log.debug(`Starting Anvil with args: ${anvilArgs.join(" ")}`);
+
+    // Capture stdout and stderr for debugging
+    const stdout = log.isLevelEnabled(LogLevel.DEBUG) ? "inherit" : "pipe";
+    const stderr = log.isLevelEnabled(LogLevel.DEBUG) ? "inherit" : "pipe";
+
+    // Start anvil in background
+    this.anvilProcess = Bun.spawn(anvilArgs, {
+      stdout,
+      stderr,
+    });
+
+    // Check if process started successfully
+    if (!this.anvilProcess) {
+      throw new Error("Failed to spawn Anvil process");
+    }
+
+    // Wait for Anvil to be ready
+    let attempts = 0;
+    const maxAttempts = 30;
+
+    while (attempts < maxAttempts) {
+      // Check if process is still alive
+      if (this.anvilProcess.exitCode !== null) {
+        const exitCode = this.anvilProcess.exitCode;
+        let errorOutput = "";
+
+        if (!log.isLevelEnabled(LogLevel.DEBUG) && this.anvilProcess.stderr) {
+          try {
+            const stderr = await new Response(this.anvilProcess.stderr).text();
+            errorOutput = stderr;
+          } catch {
+            // Ignore stderr read errors
+          }
+        }
+
+        throw new Error(
+          `Anvil process exited with code ${exitCode}. ${errorOutput ? `Error: ${errorOutput}` : ""}`
+        );
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      if (await this.isAnvilRunning()) {
+        log.success(
+          `Anvil started successfully on port ${this.config.anvilPort}`
+        );
+        return;
+      }
+
+      attempts++;
+      log.debug(
+        `Waiting for Anvil to start... (attempt ${attempts}/${maxAttempts})`
+      );
+    }
+
+    // If we get here, Anvil failed to start
+    let errorOutput = "";
+    if (!log.isLevelEnabled(LogLevel.DEBUG) && this.anvilProcess.stderr) {
+      try {
+        const stderr = await new Response(this.anvilProcess.stderr).text();
+        errorOutput = stderr;
+      } catch {
+        // Ignore stderr read errors
+      }
+    }
+
+    throw new Error(
+      `Anvil failed to start after ${maxAttempts} attempts. ${errorOutput ? `Error: ${errorOutput}` : "Check if port ${this.config.anvilPort} is available."}`
+    );
+  }
+
+  async stopAnvil(): Promise<void> {
+    if (this.anvilProcess) {
+      log.info("Stopping Anvil...");
+      this.anvilProcess.kill();
+      this.anvilProcess = null;
+
+      // Wait a bit for graceful shutdown
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      log.debug("Anvil stopped");
+    }
+  }
+
+  async testAnvilCommand(): Promise<void> {
+    log.debug("Testing Anvil command...");
+    try {
+      const testResult = await $`anvil --version`.quiet();
+      if (testResult.exitCode === 0) {
+        log.debug(`Anvil version: ${testResult.stdout.toString().trim()}`);
+      } else {
+        throw new Error(`Anvil version check failed: ${testResult.stderr}`);
+      }
+    } catch (error) {
+      throw new Error(`Anvil command test failed: ${error}`);
+    }
+  }
+
+  async checkPortAvailability(): Promise<void> {
+    log.debug(`Checking if port ${this.config.anvilPort} is available...`);
+    try {
+      // Try to connect to the port to see if something is already running
+      const response = await fetch(
+        `http://localhost:${this.config.anvilPort}`,
+        {
+          signal: AbortSignal.timeout(2000),
+        }
+      );
+
+      // If we get a response, something is running on this port
+      log.warn(
+        `Port ${this.config.anvilPort} is already in use by another service`
+      );
+    } catch (error) {
+      // If connection fails, port is likely available
+      log.debug(`Port ${this.config.anvilPort} appears to be available`);
+    }
+  }
+
+  async ensureAnvilRunning(): Promise<void> {
+    // Test anvil command first
+    await this.testAnvilCommand();
+
+    const isRunning = await this.isAnvilRunning();
+
+    if (isRunning && !this.config.forceRestartAnvil) {
+      log.info(`Anvil already running on port ${this.config.anvilPort}`);
+      return;
+    }
+
+    if (isRunning && this.config.forceRestartAnvil) {
+      await this.stopExistingAnvil();
+    } else if (!isRunning) {
+      // Check if port is available before starting
+      await this.checkPortAvailability();
+    }
+
+    await this.startAnvil();
+  }
+
+  async cleanup(): Promise<void> {
+    if (!this.config.keepAnvilRunning) {
+      await this.stopAnvil();
+    } else {
+      log.info(
+        `Keeping Anvil running on port ${this.config.anvilPort} as requested`
+      );
+    }
+  }
+}
 
 // =============================================================================
 // CONTRACT DEPLOYMENT
@@ -407,28 +641,6 @@ class ContractDeployer {
     solFile: string,
     contractName: string
   ): Promise<DeploymentResult> {
-    // Test Anvil connection first
-    log.debug(`Testing Anvil connection for ${contractName}...`);
-    try {
-      const response = await fetch(
-        `http://localhost:${this.config.anvilPort}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            method: "eth_chainId",
-            params: [],
-            id: 1,
-          }),
-        }
-      );
-      const responseData = await response.json();
-      log.debug(`Anvil response: ${JSON.stringify(responseData)}`);
-    } catch (error) {
-      throw new Error(`Failed to connect to Anvil: ${error}`);
-    }
-
     // Validate bytecode size
     await this.validateBytecode(solFile, contractName);
 
@@ -463,6 +675,7 @@ class ContractDeployer {
 class GenesisGenerator {
   private config: Config;
   private deployer: ContractDeployer;
+  private anvilManager: AnvilManager;
   private processedCount = 0;
   private skippedCount = 0;
   private failedCount = 0;
@@ -470,23 +683,33 @@ class GenesisGenerator {
   constructor(config: Config) {
     this.config = config;
     this.deployer = new ContractDeployer(config);
+    this.anvilManager = new AnvilManager(config);
+  }
+
+  async startAnvil(): Promise<void> {
+    await this.anvilManager.ensureAnvilRunning();
+  }
+
+  async stopAnvil(): Promise<void> {
+    await this.anvilManager.cleanup();
   }
 
   async initializeGenesisFile(): Promise<void> {
     log.info("Initializing genesis allocation file...");
 
     // Create forge output directory
-    await mkdir(FORGE_OUT_DIR, { recursive: true });
+    await $`mkdir -p ${FORGE_OUT_DIR}`.quiet();
     log.debug(`Created forge output directory: ${FORGE_OUT_DIR}`);
 
     // Remove existing file if it exists
-    if (existsSync(ALL_ALLOCATIONS_FILE)) {
-      await unlink(ALL_ALLOCATIONS_FILE);
+    const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
+    if (await allocFile.exists()) {
+      await $`rm -f ${ALL_ALLOCATIONS_FILE}`.quiet();
       log.debug("Removed existing genesis file");
     }
 
     // Initialize empty JSON object
-    await writeFile(ALL_ALLOCATIONS_FILE, "{}", "utf8");
+    await Bun.write(ALL_ALLOCATIONS_FILE, "{}");
     log.success("Genesis allocation file initialized");
   }
 
@@ -499,9 +722,8 @@ class GenesisGenerator {
     log.debug(`Adding ${contractName} to genesis allocation...`);
 
     // Read current genesis file
-    const currentGenesis = JSON.parse(
-      await readFile(ALL_ALLOCATIONS_FILE, "utf8")
-    );
+    const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
+    const currentGenesis = await allocFile.json();
 
     // Add contract allocation
     currentGenesis[targetAddress] = {
@@ -511,10 +733,9 @@ class GenesisGenerator {
     };
 
     // Write back to file
-    await writeFile(
+    await Bun.write(
       ALL_ALLOCATIONS_FILE,
-      JSON.stringify(currentGenesis, null, 2),
-      "utf8"
+      JSON.stringify(currentGenesis, null, 2)
     );
     log.debug(`Added ${contractName} to genesis allocation`);
   }
@@ -538,9 +759,10 @@ class GenesisGenerator {
     log.debug(`[${progressPct}%] Processing ${contractName}...`);
 
     try {
-      const solFile = join(CONTRACTS_ROOT, CONTRACT_FILES[contractName]);
+      const solFile = `${CONTRACTS_ROOT}/${CONTRACT_FILES[contractName]}`;
 
-      if (!existsSync(solFile)) {
+      const contractFile = Bun.file(solFile);
+      if (!(await contractFile.exists())) {
         throw new Error(`Contract file not found: ${solFile}`);
       }
 
@@ -566,6 +788,7 @@ class GenesisGenerator {
     } catch (error) {
       this.failedCount++;
       log.error(`Failed to process ${contractName}: ${error}`);
+      console.error(error);
       throw error;
     }
   }
@@ -606,13 +829,12 @@ class GenesisGenerator {
   async verifyAllContractsProcessed(): Promise<void> {
     log.info("Verifying all contracts were processed...");
 
-    if (!existsSync(ALL_ALLOCATIONS_FILE)) {
+    const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
+    if (!(await allocFile.exists())) {
       throw new Error(`Genesis file not found: ${ALL_ALLOCATIONS_FILE}`);
     }
 
-    const genesisData = JSON.parse(
-      await readFile(ALL_ALLOCATIONS_FILE, "utf8")
-    );
+    const genesisData = await allocFile.json();
     const genesisAddresses = Object.keys(genesisData);
     const expectedTotal = Object.keys(CONTRACT_ADDRESSES).length;
     const missingContracts: string[] = [];
@@ -646,11 +868,82 @@ class GenesisGenerator {
     log.success(`All ${expectedTotal} contracts were successfully processed!`);
   }
 
+  async generateFinalGenesis(): Promise<void> {
+    log.info("Generating final genesis.json file...");
+
+    // Check if template exists
+    const templateFile = Bun.file(GENESIS_TEMPLATE_FILE);
+    if (!(await templateFile.exists())) {
+      throw new Error(`Genesis template not found: ${GENESIS_TEMPLATE_FILE}`);
+    }
+
+    // Check if allocations exist
+    const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
+    if (!(await allocFile.exists())) {
+      throw new Error(`Genesis allocations not found: ${ALL_ALLOCATIONS_FILE}`);
+    }
+
+    try {
+      // Read template and allocations
+      const template = await templateFile.json();
+      const contractAllocations = await allocFile.json();
+
+      log.debug(
+        `Template allocations: ${Object.keys(template.alloc || {}).length}`
+      );
+      log.debug(
+        `Contract allocations: ${Object.keys(contractAllocations).length}`
+      );
+
+      // Merge allocations
+      const finalGenesis = {
+        ...template,
+        alloc: {
+          ...(template.alloc ?? {}),
+          ...contractAllocations,
+        },
+      };
+
+      // Ensure output directory exists
+      const outputDir = `${CONTRACTS_ROOT}/tools/docker/besu`;
+      await $`mkdir -p ${outputDir}`.quiet();
+
+      // Validate the final genesis structure
+      if (!finalGenesis.config || !finalGenesis.alloc) {
+        throw new Error("Invalid genesis structure: missing config or alloc");
+      }
+
+      // Write final genesis file
+      await Bun.write(
+        GENESIS_OUTPUT_FILE,
+        JSON.stringify(finalGenesis, null, 2)
+      );
+
+      log.success(`Final genesis file written to: ${GENESIS_OUTPUT_FILE}`);
+      log.info(
+        `Total allocations: ${Object.keys(finalGenesis.alloc).length} (${
+          Object.keys(template.alloc || {}).length
+        } from template + ${Object.keys(contractAllocations).length} contracts)`
+      );
+
+      // Verify the written file can be read back
+      const verificationFile = Bun.file(GENESIS_OUTPUT_FILE);
+      const verification = await verificationFile.json();
+      if (!verification.config || !verification.alloc) {
+        throw new Error("Written genesis file is invalid");
+      }
+      log.debug("Genesis file verification passed");
+    } catch (error) {
+      throw new Error(`Failed to generate final genesis file: ${error}`);
+    }
+  }
+
   async cleanupForgeOutput(): Promise<void> {
     log.info("Cleaning up forge output directory...");
 
     try {
-      if (existsSync(FORGE_OUT_DIR)) {
+      const forgeDir = Bun.file(FORGE_OUT_DIR);
+      if (await forgeDir.exists()) {
         await $`rm -rf ${FORGE_OUT_DIR}`.quiet();
         log.debug(`Removed forge output directory: ${FORGE_OUT_DIR}`);
       }
@@ -677,6 +970,7 @@ function showUsage(): void {
 Usage: bun run codegen-genesis.ts [OPTIONS]
 
 This script deploys contracts to a temporary blockchain and generates genesis allocations.
+It combines the contract allocations with the genesis template to create the final genesis.json.
 Uses an alternative output directory (out-genesis) to avoid conflicts with other tasks.
 
 To copy the generated genesis file to the charts directory, run:
@@ -686,11 +980,10 @@ OPTIONS:
     -h, --help              Show this help message
     -v, --verbose           Enable verbose logging (DEBUG level)
     -q, --quiet             Enable quiet mode (ERROR level only)
-    -p, --port PORT         Set Anvil port (default: 8545)
-    -b, --block-time TIME   Set Anvil block time in seconds (default: 1)
+    -p, --port PORT         Set Anvil port (default: 8546)
     -r, --restart-anvil     Force restart Anvil if already running
     -k, --keep-anvil        Keep Anvil running after script completion
-    --show-output           Display final genesis JSON output
+    --show-output           Display final genesis.json output
 
 ENVIRONMENT VARIABLES:
     LOG_LEVEL               Set logging level (DEBUG, INFO, WARN, ERROR)
@@ -726,9 +1019,6 @@ function parseCliArgs(): Config {
   }
   if (process.env.ANVIL_PORT) {
     config.anvilPort = parseInt(process.env.ANVIL_PORT, 10);
-  }
-  if (process.env.ANVIL_BLOCK_TIME) {
-    config.anvilBlockTime = parseInt(process.env.ANVIL_BLOCK_TIME, 10);
   }
   if (process.env.FORCE_RESTART_ANVIL === "true") {
     config.forceRestartAnvil = true;
@@ -769,16 +1059,6 @@ function parseCliArgs(): Config {
         config.anvilPort = port;
         break;
 
-      case "-b":
-      case "--block-time":
-        const blockTime = parseInt(args[++i] ?? "", 10);
-        if (isNaN(blockTime)) {
-          console.error("Option --block-time requires a valid number");
-          process.exit(1);
-        }
-        config.anvilBlockTime = blockTime;
-        break;
-
       case "-r":
       case "--restart-anvil":
         config.forceRestartAnvil = true;
@@ -799,7 +1079,6 @@ function parseCliArgs(): Config {
         process.exit(1);
     }
   }
-
   return config;
 }
 
@@ -838,8 +1117,12 @@ async function main(): Promise<void> {
   }
 
   const generator = new GenesisGenerator(config);
+  globalGenerator = generator;
 
   try {
+    // Start Anvil
+    await generator.startAnvil();
+
     // Initialize genesis file
     await generator.initializeGenesisFile();
 
@@ -849,26 +1132,35 @@ async function main(): Promise<void> {
     // Verify all contracts were processed
     await generator.verifyAllContractsProcessed();
 
+    // Generate final genesis.json file
+    await generator.generateFinalGenesis();
+
     // Cleanup forge output directory
     await generator.cleanupForgeOutput();
+
+    // Stop Anvil (unless keepAnvilRunning is true)
+    await generator.stopAnvil();
 
     const stats = generator.getStats();
     log.success("Genesis generation completed successfully!");
     log.info(
       `Processing summary: ${stats.processed} processed, ${stats.skipped} skipped, ${stats.failed} failed`
     );
-    log.info(`Genesis allocation written to: ${ALL_ALLOCATIONS_FILE}`);
+    log.info(`Contract allocations written to: ${ALL_ALLOCATIONS_FILE}`);
+    log.info(`Final genesis file written to: ${GENESIS_OUTPUT_FILE}`);
 
     // Show output if requested
     if (config.showOutput) {
-      console.log("=== GENESIS OUTPUT ===");
-      const genesisContent = await readFile(ALL_ALLOCATIONS_FILE, "utf8");
+      console.log("=== FINAL GENESIS OUTPUT ===");
+      const genesisFile = Bun.file(GENESIS_OUTPUT_FILE);
+      const genesisContent = await genesisFile.text();
       console.log(genesisContent);
     }
   } catch (error) {
-    // Cleanup forge output directory even on error
+    // Cleanup on error
     try {
       await generator.cleanupForgeOutput();
+      await generator.stopAnvil();
     } catch (cleanupError) {
       log.warn(`Failed to cleanup on error: ${cleanupError}`);
     }
@@ -877,6 +1169,34 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 }
+
+// Global generator reference for cleanup
+let globalGenerator: GenesisGenerator | null = null;
+
+// Handle process interruption
+process.on("SIGINT", async () => {
+  log.info("Received SIGINT, cleaning up...");
+  if (globalGenerator) {
+    try {
+      await globalGenerator.stopAnvil();
+    } catch (error) {
+      log.warn(`Error during cleanup: ${error}`);
+    }
+  }
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  log.info("Received SIGTERM, cleaning up...");
+  if (globalGenerator) {
+    try {
+      await globalGenerator.stopAnvil();
+    } catch (error) {
+      log.warn(`Error during cleanup: ${error}`);
+    }
+  }
+  process.exit(0);
+});
 
 // Run the script
 if (import.meta.main) {

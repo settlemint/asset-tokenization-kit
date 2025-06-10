@@ -11,17 +11,17 @@ type BondDetails = Awaited<ReturnType<typeof getBondDetail>>;
  * @returns The bond status (issueing, active, or matured)
  */
 export function getBondStatus(bond: BondDetails): BondStatus {
-  if (bond?.isMatured) {
-    return "matured";
-  }
+  // if (bond?.isMatured) {
+  //   return "matured";
+  // }
 
-  if (
-    bond?.totalSupply !== undefined &&
-    bond?.cap !== undefined &&
-    Number(bond.totalSupply) < Number(bond.cap)
-  ) {
-    return "issuing";
-  }
+  // if (
+  //   bond?.totalSupply !== undefined &&
+  //   bond?.cap !== undefined &&
+  //   Number(bond.totalSupply) < Number(bond.cap)
+  // ) {
+  //   return "issuing";
+  // }
 
   return "active";
 }

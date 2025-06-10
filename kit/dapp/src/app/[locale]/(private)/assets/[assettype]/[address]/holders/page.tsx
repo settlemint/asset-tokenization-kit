@@ -33,9 +33,9 @@ export default async function BondHoldersPage({ params }: PageProps) {
     <DataTable
       columnParams={{
         maxMint,
-        decimals: assetDetails.decimals,
-        price: assetDetails.price,
-        allowList: assetUsersDetails.allowlist,
+        decimals: 18, // assetDetails.decimals,
+        price: { amount: 0, currency: "EUR" }, // assetDetails.price,
+        allowList: [], // assetUsersDetails.allowlist,
       }}
       columns={columns}
       data={balances}

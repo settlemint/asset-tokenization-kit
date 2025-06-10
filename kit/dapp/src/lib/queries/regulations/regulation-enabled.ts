@@ -1,7 +1,7 @@
 "use server";
 
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import type { Address } from "viem";
 
 /**

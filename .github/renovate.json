@@ -28,11 +28,6 @@
       "matchPackageNames": ["/^@settlemint//"]
     },
     {
-      "groupName": "Elysia",
-      "groupSlug": "elysia",
-      "matchPackageNames": ["elysia", "/^@elysiajs//"]
-    },
-    {
       "groupName": "ORPC / Tanstack",
       "groupSlug": "orpc",
       "matchPackageNames": ["/^@orpc//", "/^@tanstack//"]

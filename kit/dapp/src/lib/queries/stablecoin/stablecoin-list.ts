@@ -3,20 +3,13 @@ import "server-only";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress } from "viem";
 import { stablecoinsCalculateFields } from "./stablecoin-calculated";
-import {
-  OffchainStableCoinFragment,
-  StableCoinFragment,
-} from "./stablecoin-fragment";
+import { OffchainStableCoinFragment } from "./stablecoin-fragment";
 import {
   OffChainStableCoinSchema,
   OnChainStableCoinSchema,
@@ -27,16 +20,16 @@ import {
  * @remarks
  * Retrieves stablecoins ordered by total supply in descending order
  */
-const StableCoinList = theGraphGraphqlKit(
-  `
-  query StableCoinList($first: Int, $skip: Int) {
-    stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
-      ...StableCoinFragment
-    }
-  }
-`,
-  [StableCoinFragment]
-);
+// const StableCoinList = theGraphGraphqlKit(
+//   `
+//   query StableCoinList($first: Int, $skip: Int) {
+//     stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
+//       ...StableCoinFragment
+//     }
+//   }
+// `,
+//   [StableCoinFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain stablecoin list from Hasura
@@ -69,22 +62,19 @@ export const getStableCoinList = withTracing(
     cacheTag("asset");
     const [onChainStableCoins, offChainStableCoins] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(
-          StableCoinList,
-          {
-            first,
-            skip,
-          },
-          {
-            "X-GraphQL-Operation-Name": "StableCoinList",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+        //       // const result = await theGraphClientKit.request(
+        //       //           StableCoinList,
+        //       //           {
+        //       //             first,
+        //       //             skip,
+        //       //           },
+        //       //           {
+        //       //             "X-GraphQL-Operation-Name": "StableCoinList",
+        //       //             "X-GraphQL-Operation-Type": "query",
+        //       //           }
+        //       //         );
 
-        return safeParse(
-          t.Array(OnChainStableCoinSchema),
-          result.stableCoins || []
-        );
+        return safeParse(t.Array(OnChainStableCoinSchema), []);
       }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {

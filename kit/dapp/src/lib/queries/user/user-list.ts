@@ -1,20 +1,12 @@
 import "server-only";
 
-import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
+import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withAccessControl } from "@/lib/utils/access-control";
-import { withTracing } from "@/lib/utils/tracing";
-import { safeParse, t } from "@/lib/utils/typebox";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
-import { getAddress } from "viem";
-import { userCalculateFields } from "./user-calculated";
-import { AccountFragment, UserFragment } from "./user-fragment";
-import { AccountSchema, UserSchema } from "./user-schema";
+import type { Address } from "viem";
+import { UserFragment } from "./user-fragment";
 
 /**
  * GraphQL query to fetch user list from Hasura
@@ -39,16 +31,16 @@ const UserList = hasuraGraphql(
  * @remarks
  * Retrieves accounts with their last activity timestamp
  */
-const UserActivity = theGraphGraphqlKit(
-  `
-  query UserActivity($first: Int, $skip: Int) {
-    accounts(where: { isContract: false }, first: $first, skip: $skip) {
-      ...AccountFragment
-    }
-  }
-`,
-  [AccountFragment]
-);
+// const UserActivity = theGraphGraphqlKit(
+//   `
+//   query UserActivity($first: Int, $skip: Int) {
+//     accounts(where: { isContract: false }, first: $first, skip: $skip) {
+//       ...AccountFragment
+//     }
+//   }
+// `,
+//   [AccountFragment]
+// );
 
 /**
  * Fetches a list of users from Hasura with their last activity
@@ -70,61 +62,56 @@ export const getUserList = withTracing(
       async () => {
         "use cache";
         cacheTag("user-activity");
-        const [users, accounts] = await Promise.all([
-          fetchAllHasuraPages(async (pageLimit, offset) => {
-            cacheTag("user");
-            const result = await hasuraClient.request(
-              UserList,
-              {
-                limit: pageLimit,
-                offset,
-              },
-              {
-                "X-GraphQL-Operation-Name": "UserList",
-                "X-GraphQL-Operation-Type": "query",
-              }
-            );
-            return safeParse(t.Array(UserSchema), result.user || []);
-          }),
-          fetchAllTheGraphPages(async (first, skip) => {
-            const result = await theGraphClientKit.request(
-              UserActivity,
-              {
-                first,
-                skip,
-              },
-              {
-                "X-GraphQL-Operation-Name": "UserActivity",
-                "X-GraphQL-Operation-Type": "query",
-              }
-            );
-            return safeParse(t.Array(AccountSchema), result.accounts || []);
-          }),
-        ]);
 
-        // Create a map of accounts by address for quick lookup
-        const accountsById = new Map(
-          accounts.map((account) => [getAddress(account.id), account])
-        );
+        // NOTE: HARDCODED SO IT STILL COMPILES
+        const users = [
+          {
+            id: "mock-user-1",
+            wallet: "0x0000000000000000000000000000000000000001" as Address,
+            email: "user1@example.com",
+            isActive: true,
+            isAdmin: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            kycStatus: "not_started" as const,
+            verified: false,
+            residency: "US",
+            deletedAt: null,
+            isHouseAccount: false,
+            name: "Mock User 1",
+            role: "user",
+            banned: false,
+            kycVerifiedAt: null,
+            lastActivity: null,
+            lastLoginAt: null,
+          },
+        ];
+
+        // const accounts = [];
+
+        // // Create a map of accounts by address for quick lookup
+        // const accountsById = new Map(
+        //   accounts.map((account) => [getAddress(account.id), account])
+        // );
 
         // Combine user data with account data and calculate fields
         return users.map((user) => {
-          if (!user.wallet) {
-            // Return user with default calculated fields if no wallet
-            const calculatedFields = userCalculateFields(user);
-            return {
-              ...user,
-              ...calculatedFields,
-            };
-          }
+          // if (!user.wallet) {
+          //   // Return user with default calculated fields if no wallet
+          //   const calculatedFields = userCalculateFields(user);
+          //   return {
+          //     ...user,
+          //     ...calculatedFields,
+          //   };
+          // }
 
-          const account = accountsById.get(getAddress(user.wallet));
-          const calculatedFields = userCalculateFields(user, account);
+          // const account = accountsById.get(getAddress(user.wallet));
+          // const calculatedFields = userCalculateFields(user, account);
 
           return {
-            ...account,
+            // ...account,
             ...user,
-            ...calculatedFields,
+            // ...calculatedFields,
           };
         });
       }
