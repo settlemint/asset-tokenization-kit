@@ -49,6 +49,8 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     error InvalidUnderlyingAsset();
     /// @dev Reverted by `withdrawUnderlyingAsset` if the withdrawal `amount` is zero.
     error InvalidAmount();
+    /// @dev Reverted by `withdrawUnderlyingAsset` if the underlying asset balance is zero.
+    error NoUnderlyingBalance();
     /// @dev Reverted by `periodEnd` if an invalid period number (0 or out of bounds) is requested.
     error InvalidPeriod();
 
