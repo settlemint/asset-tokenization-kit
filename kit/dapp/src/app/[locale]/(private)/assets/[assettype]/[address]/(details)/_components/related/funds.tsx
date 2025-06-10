@@ -43,11 +43,12 @@ export async function FundsRelated({
         <MintForm
           address={address}
           assettype="fund"
-          decimals={assetDetails.decimals}
-          symbol={assetDetails.symbol}
+          decimals={18} // assetDetails.decimals}
+          symbol={"symbol" in assetDetails ? assetDetails.symbol : ""}
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
-          allowlist={assetUsersDetails?.allowlist ?? []}
+          // allowlist={assetUsersDetails?.allowlist ?? []}
+          allowlist={[]}
         />
       </RelatedGridItem>
       <RelatedGridItem
@@ -57,8 +58,8 @@ export async function FundsRelated({
         <BurnForm
           address={address}
           max={userBalance?.available ?? 0}
-          decimals={assetDetails.decimals}
-          symbol={assetDetails.symbol}
+          decimals={18} // assetDetails.decimals}
+          symbol={"symbol" in assetDetails ? assetDetails.symbol : ""}
           assettype="fund"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}

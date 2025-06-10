@@ -68,11 +68,11 @@ export async function generateMetadata({
     title: {
       ...metadata.title,
       default: t("page-title", {
-        name: detailData?.name,
+        name: "WW", // detailData?.name,
       }),
     },
     description: t("page-description", {
-      name: detailData?.name,
+      name: "WW", // detailData?.name,
     }),
   };
 }

@@ -7,7 +7,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Link } from "@/i18n/routing";
-import { apiClient } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { History } from "lucide-react";
@@ -81,12 +80,12 @@ export const Search = () => {
   const { data: users, isLoading: isLoadingUsers } = useSWR(
     sanitizedSearchTerm ? [`user-search`, sanitizedSearchTerm] : null,
     async () => {
-      const { data } = await apiClient.api.user.search.get({
-        query: {
-          term: sanitizedSearchTerm,
-        },
-      });
-      return data || [];
+      // const { data } = await apiClient.api.user.search.get({
+      //   query: {
+      //     term: sanitizedSearchTerm,
+      //   },
+      // });
+      return [];
     },
     {
       revalidateOnFocus: false,
@@ -98,12 +97,12 @@ export const Search = () => {
   const { data: assets, isLoading: isLoadingAssets } = useSWR(
     sanitizedSearchTerm ? [`asset-search`, sanitizedSearchTerm] : null,
     async () => {
-      const { data } = await apiClient.api.asset.search.get({
-        query: {
-          searchTerm: sanitizedSearchTerm,
-        },
-      });
-      return data || [];
+      // const { data } = await apiClient.api.asset.search.get({
+      //   query: {
+      //     searchTerm: sanitizedSearchTerm,
+      //   },
+      // });
+      return [];
     },
     {
       revalidateOnFocus: false,

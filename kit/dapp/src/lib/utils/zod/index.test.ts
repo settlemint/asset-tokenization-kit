@@ -2,6 +2,8 @@ import { describe, expect, it, mock } from "bun:test";
 import { z } from "zod";
 import { safeParse } from "./index";
 
+process.env.CI = "true";
+
 // Mock the logger to avoid console output during tests
 mock.module("@settlemint/sdk-utils/logging", () => ({
   createLogger: () => ({

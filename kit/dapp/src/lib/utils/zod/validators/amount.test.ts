@@ -88,9 +88,7 @@ describe("amount", () => {
       expect(() => validator.parse(0.009)).toThrow(
         "Amount must be at least 0.01"
       );
-      expect(() => validator.parse(0)).toThrow(
-        "Amount must be at least 0.01"
-      );
+      expect(() => validator.parse(0)).toThrow("Amount must be at least 0.01");
     });
 
     it("should accept any number of decimal places above minimum", () => {
@@ -98,7 +96,6 @@ describe("amount", () => {
       expect(validator.parse(10.12345)).toBe(10.12345);
     });
   });
-
 });
 
 describe("helper functions", () => {
@@ -125,6 +122,5 @@ describe("helper functions", () => {
       );
       expect(getAmount(15, { min: 10 })).toBe(15);
     });
-
   });
 });

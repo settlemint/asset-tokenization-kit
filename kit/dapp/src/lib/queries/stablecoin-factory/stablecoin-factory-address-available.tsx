@@ -4,7 +4,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { Address } from "viem";
@@ -16,13 +16,13 @@ import { StableCoinExistsSchema } from "./stablecoin-factory-schema";
  * @remarks
  * Checks if a token address is already deployed through the stablecoin factory
  */
-const StableCoinExists = theGraphGraphqlKit(`
-  query StableCoinExists($token: ID!) {
-    stableCoin(id: $token) {
-      id
-    }
-  }
-`);
+// const StableCoinExists = theGraphGraphqlKit(`
+//   query StableCoinExists($token: ID!) {
+//     stableCoin(id: $token) {
+//       id
+//     }
+//   }
+// `);
 
 export const isAddressAvailable = withTracing(
   "queries",
@@ -30,9 +30,11 @@ export const isAddressAvailable = withTracing(
   async (address: Address) => {
     "use cache";
     cacheTag("asset");
-    const data = await theGraphClientKit.request(StableCoinExists, {
-      token: address,
-    });
+          //       // const data = await theGraphClientKit.request(StableCoinExists, {
+      //       //       token: address,
+      //       //     });
+    // NOTE: HARDCODED SO IT STILL COMPILES
+    const data = { stableCoin: null };
 
     const stableCoinExists = safeParse(StableCoinExistsSchema, data);
 

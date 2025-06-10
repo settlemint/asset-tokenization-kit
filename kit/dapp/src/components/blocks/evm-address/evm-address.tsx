@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/routing";
-import { apiClient } from "@/lib/api/client";
 import type { User } from "@/lib/auth/types";
 import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
 import type { Contact } from "@/lib/queries/contact/contact-schema";
@@ -81,12 +80,15 @@ function EvmAddressInner({
   const { data: user, isLoading: isLoadingUser } = useSWR(
     [`user-search-${address}`],
     async () => {
-      const { data } = await apiClient.api.user.search.get({
-        query: {
-          term: getAddress(address),
-        },
-      });
-      return data?.[0] ?? null;
+      // const { data } = await apiClient.api.user.search.get({
+      //   query: {
+      //     term: getAddress(address),
+      //   },
+      // });
+      return {
+        name: "User Name",
+        email: "user@example.com",
+      } as User;
     },
     {
       revalidateOnFocus: false,
@@ -98,12 +100,15 @@ function EvmAddressInner({
   const { data: asset, isLoading: isLoadingAsset } = useSWR(
     [`asset-search`, address],
     async () => {
-      const { data } = await apiClient.api.asset.search.get({
-        query: {
-          searchTerm: getAddress(address),
-        },
-      });
-      return data?.[0] ?? null;
+      // const { data } = await apiClient.api.asset.search.get({
+      //   query: {
+      //     searchTerm: getAddress(address),
+      //   },
+      // });
+      return {
+        name: "Asset Name",
+        type: "Asset Type",
+      };
     },
     {
       revalidateOnFocus: false,

@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth/auth";
 import { redirectToSignIn } from "@/lib/auth/redirect";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { getLocale } from "next-intl/server";
 import { headers } from "next/headers";
 import { cache } from "react";

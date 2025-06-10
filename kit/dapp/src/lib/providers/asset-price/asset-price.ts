@@ -3,7 +3,7 @@ import { asset, assetPrice } from "@/lib/db/schema-assets";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { getSettingValue } from "@/lib/queries/setting/setting-detail";
 import { withAccessControl } from "@/lib/utils/access-control";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import type { Price } from "@/lib/utils/typebox/price";
 import { eq } from "drizzle-orm";

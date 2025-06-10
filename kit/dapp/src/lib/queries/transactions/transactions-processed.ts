@@ -1,7 +1,7 @@
 import "server-only";
 
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import type { Address } from "viem";
 
 /**

@@ -59,8 +59,8 @@ export function WithdrawForm({
     address,
     target: "bond" as const,
     targetAddress: address,
-    underlyingAssetAddress: bondDetails.underlyingAsset.id,
-    underlyingAssetType: bondDetails.underlyingAsset.type,
+    // underlyingAssetAddress: bondDetails.underlyingAsset.id,
+    // underlyingAssetType: bondDetails.underlyingAsset.type,
     assettype: "bond" as const,
   };
 
@@ -81,7 +81,7 @@ export function WithdrawForm({
         action={withdraw}
         resolver={typeboxResolver(
           WithdrawSchema({
-            decimals: bondDetails.underlyingAsset.decimals,
+            decimals: 18, // bondDetails.underlyingAsset.decimals,
           })
         )}
         onOpenChange={

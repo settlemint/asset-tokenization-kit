@@ -98,8 +98,8 @@ export function ManageDropdown({
         onOpenChange={onFormOpenChange}
         disabled={isBlocked || isPaused || (userBalance?.available ?? 0) === 0}
         userAddress={userAddress}
-        decimals={assetDetails.decimals}
-        symbol={assetDetails.symbol}
+        decimals={18} // assetDetails.decimals}
+        symbol={"symbol" in assetDetails ? assetDetails.symbol : ""}
       />
       <BurnForm
         address={address}
@@ -107,8 +107,8 @@ export function ManageDropdown({
         open={openMenuItem === "burn"}
         onOpenChange={onFormOpenChange}
         max={Number(userBalance?.available ?? 0)}
-        decimals={assetDetails.decimals}
-        symbol={assetDetails.symbol}
+        decimals={18} // assetDetails.decimals}
+        symbol={"symbol" in assetDetails ? assetDetails.symbol : ""}
         disabled={Number(userBalance?.available ?? 0) === 0}
       />
       {assettype === "bond" && (
@@ -118,7 +118,7 @@ export function ManageDropdown({
           open={openMenuItem === "redeem"}
           onOpenChange={onFormOpenChange}
           disabled={isBlocked || isPaused}
-          decimals={assetDetails.decimals}
+          decimals={18} // assetDetails.decimals}
         />
       )}
     </>

@@ -5,12 +5,12 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 
 /**
  * GraphQL query for retrieving SMART systems from TheGraph.
- * 
+ *
  * This query fetches a paginated list of system contracts with support for:
  * - Offset-based pagination (skip/first)
  * - Configurable sort order (ascending/descending)
  * - Custom ordering by any system field
- * 
+ *
  * Systems represent deployed SMART protocol instances that manage
  * tokenized assets and their associated compliance infrastructure.
  */

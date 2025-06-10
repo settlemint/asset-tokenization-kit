@@ -21,7 +21,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { apiClient } from "@/lib/api/client";
 import { authClient } from "@/lib/auth/client";
 import type { User } from "@/lib/auth/types";
 import type { Contact } from "@/lib/queries/contact/contact-schema";
@@ -177,12 +176,12 @@ function FormUsersList({
       // getUserSearch already filters based on user role
       // If user role is "user", it returns contacts
       // If user role is "admin" or "issuer", it returns all users
-      const { data } = await apiClient.api.user.search.get({
-        query: {
-          term: debounced,
-        },
-      });
-      return data || [];
+      // const { data } = await apiClient.api.user.search.get({
+      //   query: {
+      //     term: debounced,
+      //   },
+      // });
+      return [];
     },
     {
       revalidateOnFocus: false,

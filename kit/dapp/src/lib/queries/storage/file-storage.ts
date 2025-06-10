@@ -1,6 +1,6 @@
 import "server-only";
 
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
 
 // Import the configured client instance from the correct location

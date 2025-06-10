@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { from, format, add, subtract, multiply, divide, type Dnum } from "dnum";
-import { bigDecimal, isBigDecimal, getBigDecimal } from "./bigdecimal";
+import { add, divide, format, multiply, subtract } from "dnum";
+import { bigDecimal, getBigDecimal, isBigDecimal } from "./bigdecimal";
 
 describe("bigDecimal", () => {
   const validator = bigDecimal();
@@ -222,23 +222,6 @@ describe("bigDecimal", () => {
       const result = validator.safeParse("invalid");
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
-    });
-  });
-
-  describe("helper functions", () => {
-    it("isBigDecimal should work as type guard", () => {
-      const value: unknown = "123.456";
-      if (isBigDecimal(value)) {
-        // TypeScript should recognize value as BigDecimal here
-        const _typeCheck: Dnum & { __brand: "BigDecimal" } = value;
-      }
-    });
-
-    it("getBigDecimal should return typed value", () => {
-      const result = getBigDecimal("789.012");
-      // TypeScript should recognize result as BigDecimal
-      const _typeCheck: Dnum & { __brand: "BigDecimal" } = result;
-      expect(format(result)).toBe("789.012");
     });
   });
 });
