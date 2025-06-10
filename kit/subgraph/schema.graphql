@@ -520,6 +520,7 @@ interface Airdrop {
   totalClaims: Int! # Count of claim events
   isWithdrawn: Boolean!
   trustedForwarder: Account!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 }
 
 type StandardAirdrop implements Airdrop @entity(immutable: false) {
@@ -539,6 +540,7 @@ type StandardAirdrop implements Airdrop @entity(immutable: false) {
   # Standard specific
   startTime: BigInt!
   endTime: BigInt!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 }
 
 type VestingAirdrop implements Airdrop @entity(immutable: false) {
@@ -558,6 +560,7 @@ type VestingAirdrop implements Airdrop @entity(immutable: false) {
   # Vesting specific
   claimPeriodEnd: BigInt!
   strategy: VestingStrategy!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 }
 
 type PushAirdrop implements Airdrop @entity(immutable: false) {
@@ -577,6 +580,7 @@ type PushAirdrop implements Airdrop @entity(immutable: false) {
   # PushAirdrop specific
   distributionCap: BigInt!
   totalDistributed: BigInt!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 }
 
 interface VestingStrategy {
