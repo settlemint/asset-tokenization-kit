@@ -34,7 +34,7 @@
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package"]
+      "dependsOn": ["package", "docker:up", "^docker:up"]
     },
     "dependencies": {},
     "format": {},
