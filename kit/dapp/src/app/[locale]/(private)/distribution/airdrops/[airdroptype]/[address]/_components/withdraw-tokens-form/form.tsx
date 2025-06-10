@@ -8,7 +8,6 @@ import type { PushAirdrop } from "@/lib/queries/push-airdrop/push-airdrop-schema
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
 
 interface WithdrawTokensFormProps {
@@ -46,12 +45,10 @@ export function WithdrawTokensForm({
     >
       <Form
         action={withdrawTokensFromAirdrop}
-        resolver={typeboxResolver(
-          WithdrawTokenFromAirdropSchema({
-            maxAmount: airdrop.balance,
-            decimals: airdrop.asset.decimals,
-          })
-        )}
+        resolver={typeboxResolver(WithdrawTokenFromAirdropSchema)}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("title"),
         }}
@@ -59,11 +56,6 @@ export function WithdrawTokensForm({
           airdrop: airdrop.id,
         }}
       >
-        <Amount
-          balance={airdrop.balance}
-          decimals={airdrop.asset.decimals}
-          symbol={airdrop.asset.symbol}
-        />
         <Summary airdrop={airdrop} />
       </Form>
     </FormSheet>

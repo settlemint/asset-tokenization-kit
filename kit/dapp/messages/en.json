@@ -1718,14 +1718,12 @@
           "manage": "Manage",
           "withdraw-tokens": {
             "title": "Withdraw tokens",
-            "description": "Withdraw tokens from the airdrop",
-            "amount-label": "Amount",
-            "amount-description": "The amount of tokens to withdraw",
+            "description": "Withdraw all tokens from the airdrop to your wallet",
             "summary-title": "Review and confirm withdrawing tokens",
-            "summary-description": "Withdraw tokens from the airdrop",
+            "summary-description": "Withdraw all tokens from the airdrop to your wallet",
             "airdrop-label": "Airdrop",
             "airdrop-asset-label": "Asset",
-            "withdraw-amount-label": "Withdraw amount"
+            "withdraw-amount-label": "Balance"
           }
         }
       }
