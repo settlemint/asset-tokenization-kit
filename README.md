@@ -371,3 +371,21 @@ Then browse to <http://localhost:16686/> to view the traces and
 ```bash
 brew install chart-testing yamllint helm-docs
 ```
+
+## Local development
+
+```bash
+# Start the docker compose setup
+bun run dev:up
+```
+
+### Updating the artifacts
+
+This will change the genesis file and the portal ABIs that are deployed in
+docker compose.
+
+```bash
+# Update the artifacts
+bun run artifacts
+bun run dev:up
+```
