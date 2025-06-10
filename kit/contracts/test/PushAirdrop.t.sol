@@ -90,7 +90,9 @@ contract PushAirdropTest is Test {
         recipient3Proof[1] = nextLevel[0]; // Next level node
 
         // Deploy airdrop contract
-        airdrop = new PushAirdrop(address(token), merkleRoot, owner, distributionCap, trustedForwarder);
+        airdrop = new PushAirdrop(
+            address(token), merkleRoot, owner, distributionCap, trustedForwarder, "Test Push Airdrop", "QmTestHash"
+        );
 
         // Fund the airdrop contract
         token.transfer(address(airdrop), 1000 * 10 ** 18);
@@ -107,7 +109,9 @@ contract PushAirdropTest is Test {
             merkleRoot,
             owner,
             distributionCap,
-            trustedForwarder
+            trustedForwarder,
+            "Test Push Airdrop",
+            "QmTestHash"
         );
         vm.stopPrank();
     }
@@ -522,5 +526,11 @@ contract PushAirdropTest is Test {
     function testMaxBatchSizeConstant() public view {
         uint256 maxBatchSize = airdrop.MAX_BATCH_SIZE();
         assertEq(maxBatchSize, 100);
+    }
+
+    // Test that name and distributionIpfsHash are correctly set
+    function testNameAndIpfsHash() public view {
+        assertEq(airdrop.name(), "Test Push Airdrop");
+        assertEq(airdrop.distributionIpfsHash(), "QmTestHash");
     }
 }
