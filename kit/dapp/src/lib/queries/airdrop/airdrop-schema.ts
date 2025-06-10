@@ -80,8 +80,11 @@ export const AirdropStatusSchema = t.Union([
 
 export type AirdropStatus = StaticDecode<typeof AirdropStatusSchema>;
 
-export const OffChainAirdropDistributionSchema = t.Object({
+export const OffChainAirdropSchema = t.Object({
   distribution: AirdropDistributionListSchema,
+  price: t.Price({
+    description: "The price of the asset in the airdrop",
+  }),
 });
 
 /**
@@ -115,3 +118,65 @@ export const OnChainAirdropRecipientSchema = t.Object(
 export type OnChainAirdropRecipient = StaticDecode<
   typeof OnChainAirdropRecipientSchema
 >;
+
+export const OffChainAirdropRecipientSchema = t.Object({
+  totalAmountAllocated: t.BigDecimal({
+    description: "Total amount allocated to the recipient",
+  }),
+  totalAmountAllocatedExact: t.StringifiedBigInt({
+    description: "Total amount allocated to the recipient",
+  }),
+});
+
+export type OffChainAirdropRecipient = StaticDecode<
+  typeof OffChainAirdropRecipientSchema
+>;
+
+export const AirdropRecipientSchema = t.Object({
+  ...t.Partial(OnChainAirdropRecipientSchema).properties,
+  ...OffChainAirdropRecipientSchema.properties,
+});
+
+export type AirdropRecipient = StaticDecode<typeof AirdropRecipientSchema>;
+
+export const OnChainAirdropClaimIndexSchema = t.Object({
+  index: t.StringifiedBigInt({
+    description: "The index of the claim",
+  }),
+  claimedAmount: t.BigDecimal({
+    description: "The amount of the claim",
+  }),
+  claimedAmountExact: t.StringifiedBigInt({
+    description: "The exact amount of the claim",
+  }),
+  timestamp: t.Timestamp({
+    description: "The timestamp of the claim",
+  }),
+});
+
+export type OnChainAirdropClaimIndex = StaticDecode<
+  typeof OnChainAirdropClaimIndexSchema
+>;
+
+export const OffChainAirdropClaimIndexSchema = t.Object({
+  index: t.Number({
+    description: "The index of the claim",
+  }),
+  amount: t.BigDecimal({
+    description: "The amount of the claim",
+  }),
+  amountExact: t.StringifiedBigInt({
+    description: "The exact amount of the claim",
+  }),
+});
+
+export type OffChainAirdropClaimIndex = StaticDecode<
+  typeof OffChainAirdropClaimIndexSchema
+>;
+
+export const AirdropClaimIndexSchema = t.Object({
+  ...t.Partial(OnChainAirdropClaimIndexSchema).properties,
+  ...OffChainAirdropClaimIndexSchema.properties,
+});
+
+export type AirdropClaimIndex = StaticDecode<typeof AirdropClaimIndexSchema>;

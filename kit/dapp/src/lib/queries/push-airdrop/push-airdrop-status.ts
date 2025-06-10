@@ -3,7 +3,7 @@ export interface CalculatePushAirdropStatusProps {
   totalDistributed: string;
 }
 
-export async function calculatePushAirdropStatus({
+export function calculatePushAirdropStatus({
   distributionCap,
   totalDistributed,
 }: {

@@ -139,7 +139,7 @@ function getRecipient(
     : base;
 }
 
-async function getStatus(
+function getStatus(
   airdrop: ResultOf<typeof AirdropDetailsByIds>["airdrops"][number]
 ) {
   if (airdrop.type === "StandardAirdrop") {

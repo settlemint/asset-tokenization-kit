@@ -1205,9 +1205,9 @@
       "status-info-label": "Additional information about this status",
       "tooltip": {
         "standard": {
-          "UPCOMING": "Claims will start on {date}",
-          "ACTIVE": "You can claim your assets now. Claiming period ends on {date}",
-          "ENDED": "The claiming period ended on {date}"
+          "UPCOMING": "Claims are yet to start.",
+          "ACTIVE": "You can claim your assets now.",
+          "ENDED": "The claiming period has ended."
         },
         "push": {
           "UPCOMING": "The admin will send your assets to you",
@@ -1215,7 +1215,7 @@
           "ENDED": "All assets have been distributed"
         },
         "vesting": {
-          "UPCOMING": "You can initialize your vesting schedule now, before claims start on {date}",
+          "UPCOMING": "You can initialize your vesting schedule now, before claims start.",
           "ACTIVE": "You can claim any available assets from your vesting schedule now.",
           "ENDED": "The vesting period for the airdrop has ended. Claim any remaining assets now."
         }

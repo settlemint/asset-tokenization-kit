@@ -1,7 +1,7 @@
 import { formatDate } from "@/lib/utils/date";
 import { isAfter, isBefore } from "date-fns";
 
-export async function calculateStandardAirdropStatus({
+export function calculateStandardAirdropStatus({
   startTimeMicroSeconds,
   endTimeMicroSeconds,
 }: {

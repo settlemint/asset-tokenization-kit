@@ -1,6 +1,7 @@
+import { UserAirdropDetailSchema } from "@/lib/queries/airdrop/user-airdrop-schema";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import {
-  OffChainAirdropDistributionSchema,
+  OffChainAirdropSchema,
   OnChainAirdropSchema,
 } from "../airdrop/airdrop-schema";
 
@@ -29,7 +30,7 @@ export const OnChainStandardAirdropSchema = t.Object(
 export const StandardAirdropSchema = t.Object(
   {
     ...OnChainStandardAirdropSchema.properties,
-    ...OffChainAirdropDistributionSchema.properties,
+    ...OffChainAirdropSchema.properties,
   },
   {
     description:
@@ -38,3 +39,14 @@ export const StandardAirdropSchema = t.Object(
 );
 
 export type StandardAirdrop = StaticDecode<typeof StandardAirdropSchema>;
+
+export const UserStandardAirdropSchema = t.Object(
+  {
+    ...UserAirdropDetailSchema.properties,
+    ...OnChainStandardAirdropSchema.properties,
+  },
+  {
+    description:
+      "Complete standard airdrop data including both on-chain and off-chain properties",
+  }
+);

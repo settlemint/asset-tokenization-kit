@@ -1,6 +1,6 @@
 import { addSeconds, isAfter, isBefore } from "date-fns";
 
-export async function calculateVestingAirdropStatus({
+export function calculateVestingAirdropStatus({
   claimPeriodEndMicroSeconds,
   vestingDurationSeconds,
   cliffDurationSeconds,

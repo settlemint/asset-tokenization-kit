@@ -1,9 +1,10 @@
-import { AirdropStatusSchema } from "@/lib/queries/airdrop/airdrop-schema";
-import { t, type StaticDecode } from "@/lib/utils/typebox";
 import {
-  OnChainAirdropRecipientSchema,
-  OnChainAirdropSchema,
-} from "./airdrop-schema";
+  AirdropClaimIndexSchema,
+  AirdropRecipientSchema,
+  AirdropStatusSchema,
+} from "@/lib/queries/airdrop/airdrop-schema";
+import { t, type StaticDecode } from "@/lib/utils/typebox";
+import { OnChainAirdropSchema } from "./airdrop-schema";
 
 /**
  * TypeBox schema for airdrop recipient data
@@ -14,15 +15,7 @@ import {
 export const UserAirdropSchema = t.Object(
   {
     ...OnChainAirdropSchema.properties,
-    recipient: t.Object({
-      ...t.Partial(OnChainAirdropRecipientSchema).properties,
-      totalAmountAllocated: t.BigDecimal({
-        description: "Total amount allocated to the recipient",
-      }),
-      totalAmountAllocatedExact: t.StringifiedBigInt({
-        description: "Total amount allocated to the recipient",
-      }),
-    }),
+    recipient: AirdropRecipientSchema,
     status: AirdropStatusSchema,
   },
   {
@@ -35,6 +28,10 @@ export type UserAirdrop = StaticDecode<typeof UserAirdropSchema>;
 
 export const UserAirdropDetailSchema = t.Object({
   ...UserAirdropSchema.properties,
+  recipient: t.Object({
+    ...AirdropRecipientSchema.properties,
+    claimIndices: t.Array(AirdropClaimIndexSchema),
+  }),
   price: t.Price({
     description: "The price of the asset in the user's currency",
   }),

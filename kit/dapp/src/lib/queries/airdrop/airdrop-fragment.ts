@@ -42,8 +42,8 @@ export const OffchainAirdropFragment = hasuraGraphql(`
 export const AirdropClaimIndexFragment = theGraphGraphqlKit(`
   fragment AirdropClaimIndexFragment on AirdropClaimIndex {
     index
-    amount
-    amountExact
+    claimedAmount: amount
+    claimedAmountExact: amountExact
     timestamp
   }
 `);

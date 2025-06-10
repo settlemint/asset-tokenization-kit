@@ -1,10 +1,8 @@
 import "server-only";
 
-import { AirdropDistributionListSchema } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
 import { fetchAllHasuraPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/tracing";
-import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { Address } from "viem";
 import { OffchainAirdropFragment } from "./airdrop-fragment";
@@ -67,6 +65,6 @@ export const getAirdropDistribution = withTracing(
       return result.airdrop_distribution;
     });
 
-    return safeParse(AirdropDistributionListSchema, distributions);
+    return distributions;
   }
 );

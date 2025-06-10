@@ -42,13 +42,18 @@ if (!TypeRegistry.Has("big-int")) {
 export const StringifiedBigInt = (options?: SchemaOptions) =>
   t
     .Transform(
-      t.String({
-        format: "big-int",
-        title: "BigInt",
-        description: "A string representation of a large number",
-        examples: ["123456789012345678901234567890123"],
-        ...options,
-      })
+      t.Union([
+        t.String({
+          format: "big-int",
+          title: "BigInt",
+          description: "A string representation of a large number",
+          examples: ["123456789012345678901234567890123"],
+          ...options,
+        }),
+        t.BigInt({
+          ...options,
+        }),
+      ])
     )
     .Decode((value) => BigInt(value))
     .Encode((value) => value.toString());
