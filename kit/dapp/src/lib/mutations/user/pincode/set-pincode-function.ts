@@ -7,19 +7,19 @@ import { ApiError } from "next/dist/server/api-utils";
 /**
  * GraphQL mutation to set a pincode for wallet verification
  */
-const SetPinCode = portalGraphql(`
-  mutation SetPinCode($address: String!, $pincode: String!) {
-    createWalletVerification(
-      userWalletAddress: $address
-      verificationInfo: {pincode: {name: "PINCODE", pincode: $pincode}}
-    ) {
-      id
-      name
-      parameters
-      verificationType
-    }
-  }
-`);
+// const SetPinCode = portalGraphql(`
+//   mutation SetPinCode($address: String!, $pincode: String!) {
+//     createWalletVerification(
+//       userWalletAddress: $address
+//       verificationInfo: {pincode: {name: "PINCODE", pincode: $pincode}}
+//     ) {
+//       id
+//       name
+//       parameters
+//       verificationType
+//     }
+//   }
+// `);
 
 /**
  * Function to set a pincode for wallet verification

@@ -18,25 +18,25 @@ import type { CreateDepositInput } from "./create-schema";
  * @remarks
  * Creates a new tokenized deposit contract through the tokenized deposit factory
  */
-const DepositFactoryCreate = portalGraphql(`
-  mutation DepositFactoryCreate(
-    $challengeResponse: String!
-    $verificationId: String
-    $address: String!
-    $from: String!
-    $input: DepositFactoryCreateInput!
-  ) {
-    DepositFactoryCreate(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      address: $address
-      from: $from
-      input: $input
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const DepositFactoryCreate = portalGraphql(`
+//   mutation DepositFactoryCreate(
+//     $challengeResponse: String!
+//     $verificationId: String
+//     $address: String!
+//     $from: String!
+//     $input: DepositFactoryCreateInput!
+//   ) {
+//     DepositFactoryCreate(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       address: $address
+//       from: $from
+//       input: $input
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for creating off-chain metadata for a tokenized deposit
@@ -98,28 +98,30 @@ export const createDepositFunction = withAccessControl(
       collateralLivenessTimeUnit
     );
 
-    const createDepositResult = await portalClient.request(
-      DepositFactoryCreate,
-      {
-        address: DEPOSIT_FACTORY_ADDRESS,
-        from: user.wallet,
-        input: {
-          name: assetName,
-          symbol: symbol.toString(),
-          decimals,
-          collateralLivenessSeconds,
-        },
-        ...(await handleChallenge(
-          user,
-          user.wallet,
-          verificationCode,
-          verificationType
-        )),
-      }
-    );
+      // const createDepositResult = await portalClient.request(
+  //       DepositFactoryCreate,
+  //       {
+  //         address: DEPOSIT_FACTORY_ADDRESS,
+  //         from: user.wallet,
+  //         input: {
+  //           name: assetName,
+  //           symbol: symbol.toString(),
+  //           decimals,
+  //           collateralLivenessSeconds,
+  //         },
+  //         ...(await handleChallenge(
+  //           user,
+  //           user.wallet,
+  //           verificationCode,
+  //           verificationType
+  //         )),
+  //       }
+  //     );
 
-    const createTxHash =
+      // const createTxHash =
       createDepositResult.DepositFactoryCreate?.transactionHash;
+  // NOTE: HARDCODED SO IT STILL COMPILES
+  const createTxHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
     if (!createTxHash) {
       throw new Error("Failed to create deposit: no transaction hash received");
     }

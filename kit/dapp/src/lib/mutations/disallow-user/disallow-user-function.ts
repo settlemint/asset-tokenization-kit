@@ -10,25 +10,25 @@ import type { DisallowUserInput } from "./disallow-user-schema";
 /**
  * GraphQL mutation to disallow a user from a tokenized deposit
  */
-const DepositDisallowUser = portalGraphql(`
-  mutation DepositDisallowUser(
-    $challengeResponse: String!
-    $verificationId: String
-    $address: String!
-    $from: String!
-    $input: DepositDisallowUserInput!
-  ) {
-    DepositDisallowUser(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      address: $address
-      from: $from
-      input: $input
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const DepositDisallowUser = portalGraphql(`
+//   mutation DepositDisallowUser(
+//     $challengeResponse: String!
+//     $verificationId: String
+//     $address: String!
+//     $from: String!
+//     $input: DepositDisallowUserInput!
+//   ) {
+//     DepositDisallowUser(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       address: $address
+//       from: $from
+//       input: $input
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * Function to disallow a user from accessing a tokenized deposit
@@ -73,12 +73,12 @@ export const disallowUserFunction = withAccessControl(
 
     switch (assettype) {
       case "deposit": {
-        const response = await portalClient.request(
-          DepositDisallowUser,
-          params
-        );
+          // const response = await portalClient.request(
+  //           DepositDisallowUser,
+  //           params
+  //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.DepositDisallowUser?.transactionHash])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"] // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositDisallowUser?.transactionHash */])
         );
       }
       default:

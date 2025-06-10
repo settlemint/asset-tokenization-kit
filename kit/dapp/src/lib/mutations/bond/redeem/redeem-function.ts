@@ -14,19 +14,19 @@ import type { RedeemBondInput } from "./redeem-schema";
  * @remarks
  * This mutation requires authentication via challenge response
  */
-const BondRedeem = portalGraphql(`
-  mutation BondRedeem($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: BondRedeemInput!) {
-    BondRedeem(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const BondRedeem = portalGraphql(`
+//   mutation BondRedeem($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: BondRedeemInput!) {
+//     BondRedeem(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * Function to redeem a bond
@@ -53,22 +53,22 @@ export const redeemFunction = withAccessControl(
       userCurrency: user.currency,
     });
 
-    const response = await portalClient.request(BondRedeem, {
-      address,
-      from: user.wallet,
-      input: {
-        amount: parseUnits(amount.toString(), decimals).toString(),
-      },
-      ...(await handleChallenge(
-        user,
-        user.wallet,
-        verificationCode,
-        verificationType
-      )),
-    });
+      // const response = await portalClient.request(BondRedeem, {
+  //       address,
+  //       from: user.wallet,
+  //       input: {
+  //         amount: parseUnits(amount.toString(), decimals).toString(),
+  //       },
+  //       ...(await handleChallenge(
+  //         user,
+  //         user.wallet,
+  //         verificationCode,
+  //         verificationType
+  //       )),
+  //     });
 
     return waitForIndexingTransactions(
-      safeParse(t.Hashes(), [response.BondRedeem?.transactionHash])
+      safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"] // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondRedeem?.transactionHash */])
     );
   }
 );

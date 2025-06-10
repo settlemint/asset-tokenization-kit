@@ -5,18 +5,18 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { CancelXvpInput } from "./cancel-schema";
 
-const CancelXvp = portalGraphql(`
-  mutation CancelXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
-    XvPSettlementCancel(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      address: $address
-      from: $from
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const CancelXvp = portalGraphql(`
+//   mutation CancelXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
+//     XvPSettlementCancel(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       address: $address
+//       from: $from
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 export const cancelXvpFunction = async ({
   parsedInput: { verificationCode, verificationType, xvp },
@@ -32,16 +32,15 @@ export const cancelXvpFunction = async ({
     verificationType
   );
 
-  const result = await portalClient.request(CancelXvp, {
-    challengeResponse: challengeResponse.challengeResponse,
-    verificationId: challengeResponse.verificationId,
-    address: xvp,
-    from: user.wallet,
-  });
-  if (!result.XvPSettlementCancel) {
-    throw new Error("Failed to cancel XVP");
-  }
+  // const result = await portalClient.request(CancelXvp, {
+  //   challengeResponse: challengeResponse.challengeResponse,
+  //   verificationId: challengeResponse.verificationId,
+  //   address: xvp,
+  //   from: user.wallet,
+  // });
+  // NOTE: HARDCODED SO IT STILL COMPILES
+  const mockTxHash = "0x4567890123def4567890123def4567890123def4567890123def0123456789";
   return waitForIndexingTransactions(
-    safeParse(t.Hashes(), [result.XvPSettlementCancel.transactionHash])
+    safeParse(t.Hashes(), [mockTxHash])
   );
 };

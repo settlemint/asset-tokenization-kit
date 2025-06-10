@@ -7,17 +7,17 @@ import type { VerifyTwoFactorOTPInput } from "./verify-two-factor-otp-schema";
 /**
  * GraphQL mutation to verify a two-factor authentication for wallet verification
  */
-const VerifyTwoFactorOTP = portalGraphql(`
-  mutation VerifyTwoFactorOTP($address: String!, $verificationId: String!, $otp: String!) {
-    verifyWalletVerificationChallenge(
-      userWalletAddress: $address
-      verificationId: $verificationId
-      challengeResponse: $otp
-    ) {
-      verified
-    }
-  }
-`);
+// const VerifyTwoFactorOTP = portalGraphql(`
+//   mutation VerifyTwoFactorOTP($address: String!, $verificationId: String!, $otp: String!) {
+//     verifyWalletVerificationChallenge(
+//       userWalletAddress: $address
+//       verificationId: $verificationId
+//       challengeResponse: $otp
+//     ) {
+//       verified
+//     }
+//   }
+// `);
 
 /**
  * Function to verify a two-factor authentication for wallet verification
@@ -36,10 +36,10 @@ export async function verifyTwoFactorOTPFunction({
   if (!currentUser.twoFactorVerificationId) {
     throw new ApiError(400, "Two-factor verification ID is not set");
   }
-  const result = await portalClient.request(VerifyTwoFactorOTP, {
-    address: currentUser.wallet,
-    verificationId: currentUser.twoFactorVerificationId,
-    otp: code.toString(),
-  });
+    // const result = await portalClient.request(VerifyTwoFactorOTP, {
+  //     address: currentUser.wallet,
+  //     verificationId: currentUser.twoFactorVerificationId,
+  //     otp: code.toString(),
+  //   });
   return result.verifyWalletVerificationChallenge;
 }

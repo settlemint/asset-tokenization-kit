@@ -7,16 +7,16 @@ import { ApiError } from "next/dist/server/api-utils";
 /**
  * GraphQL mutation to remove a pincode for wallet verification
  */
-const RemovePinCode = portalGraphql(`
-  mutation RemovePinCode($address: String!, $verificationId: String!) {
-    deleteWalletVerification(
-      userWalletAddress: $address
-      verificationId: $verificationId
-    ) {
-      success
-    }
-  }
-`);
+// const RemovePinCode = portalGraphql(`
+//   mutation RemovePinCode($address: String!, $verificationId: String!) {
+//     deleteWalletVerification(
+//       userWalletAddress: $address
+//       verificationId: $verificationId
+//     ) {
+//       success
+//     }
+//   }
+// `);
 
 /**
  * Function to set a pincode for wallet verification

@@ -14,19 +14,19 @@ import type { RevokeRoleInput } from "./revoke-role-schema";
  * @remarks
  * Removes permissions from an account for interacting with the bond
  */
-const BondRevokeRole = portalGraphql(`
-  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: BondRevokeRoleInput!) {
-    BondRevokeRole(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const BondRevokeRole = portalGraphql(`
+//   mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: BondRevokeRoleInput!) {
+//     BondRevokeRole(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for revoking a role from a user for a cryptocurrency
@@ -34,19 +34,19 @@ const BondRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the cryptocurrency
  */
-const CryptoCurrencyRevokeRole = portalGraphql(`
-  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: CryptoCurrencyRevokeRoleInput!) {
-    CryptoCurrencyRevokeRole(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const CryptoCurrencyRevokeRole = portalGraphql(`
+//   mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: CryptoCurrencyRevokeRoleInput!) {
+//     CryptoCurrencyRevokeRole(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for revoking a role from a user for a stablecoin
@@ -54,19 +54,19 @@ const CryptoCurrencyRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the stablecoin
  */
-const StableCoinRevokeRole = portalGraphql(`
-  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: StableCoinRevokeRoleInput!) {
-    StableCoinRevokeRole(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const StableCoinRevokeRole = portalGraphql(`
+//   mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: StableCoinRevokeRoleInput!) {
+//     StableCoinRevokeRole(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for revoking a role from a user for a fund
@@ -74,19 +74,19 @@ const StableCoinRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the fund
  */
-const FundRevokeRole = portalGraphql(`
-  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: FundRevokeRoleInput!) {
-    FundRevokeRole(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const FundRevokeRole = portalGraphql(`
+//   mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: FundRevokeRoleInput!) {
+//     FundRevokeRole(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for revoking a role from a user for a equity
@@ -94,19 +94,19 @@ const FundRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the equity
  */
-const EquityRevokeRole = portalGraphql(`
-  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: EquityRevokeRoleInput!) {
-    EquityRevokeRole(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const EquityRevokeRole = portalGraphql(`
+//   mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: EquityRevokeRoleInput!) {
+//     EquityRevokeRole(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for revoking a role from a user for a tokenized deposit
@@ -114,19 +114,19 @@ const EquityRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the tokenized deposit
  */
-const DepositRevokeRole = portalGraphql(`
-  mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: DepositRevokeRoleInput!) {
-    DepositRevokeRole(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const DepositRevokeRole = portalGraphql(`
+//   mutation RevokeRole($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: DepositRevokeRoleInput!) {
+//     DepositRevokeRole(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * Function to revoke roles from a user for an asset
@@ -180,48 +180,48 @@ export const revokeRoleFunction = withAccessControl(
 
       switch (assettype) {
         case "stablecoin": {
-          const response = await portalClient.request(
-            StableCoinRevokeRole,
-            params
-          );
+            // const response = await portalClient.request(
+  //             StableCoinRevokeRole,
+  //             params
+  //           );
           return safeParse(t.Hashes(), [
-            response.StableCoinRevokeRole?.transactionHash,
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinRevokeRole?.transactionHash */,
           ]);
         }
         case "bond": {
-          const response = await portalClient.request(BondRevokeRole, params);
+            // const response = await portalClient.request(BondRevokeRole, params);
           return safeParse(t.Hashes(), [
-            response.BondRevokeRole?.transactionHash,
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondRevokeRole?.transactionHash */,
           ]);
         }
         case "cryptocurrency": {
-          const response = await portalClient.request(
-            CryptoCurrencyRevokeRole,
-            params
-          );
+            // const response = await portalClient.request(
+  //             CryptoCurrencyRevokeRole,
+  //             params
+  //           );
           return safeParse(t.Hashes(), [
-            response.CryptoCurrencyRevokeRole?.transactionHash,
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.CryptoCurrencyRevokeRole?.transactionHash */,
           ]);
         }
         case "fund": {
-          const response = await portalClient.request(FundRevokeRole, params);
+            // const response = await portalClient.request(FundRevokeRole, params);
           return safeParse(t.Hashes(), [
-            response.FundRevokeRole?.transactionHash,
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundRevokeRole?.transactionHash */,
           ]);
         }
         case "equity": {
-          const response = await portalClient.request(EquityRevokeRole, params);
+            // const response = await portalClient.request(EquityRevokeRole, params);
           return safeParse(t.Hashes(), [
-            response.EquityRevokeRole?.transactionHash,
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityRevokeRole?.transactionHash */,
           ]);
         }
         case "deposit": {
-          const response = await portalClient.request(
-            DepositRevokeRole,
-            params
-          );
+            // const response = await portalClient.request(
+  //             DepositRevokeRole,
+  //             params
+  //           );
           return safeParse(t.Hashes(), [
-            response.DepositRevokeRole?.transactionHash,
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositRevokeRole?.transactionHash */,
           ]);
         }
         default:

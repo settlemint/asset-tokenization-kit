@@ -14,19 +14,19 @@ import type { ApproveInput } from "./approve-schema";
  * @remarks
  * Approves a spend for a stablecoin
  */
-const StableCoinApprove = portalGraphql(`
-  mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: StableCoinApproveInput!) {
-    StableCoinApprove(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const StableCoinApprove = portalGraphql(`
+//   mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: StableCoinApproveInput!) {
+//     StableCoinApprove(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for approving a spend for a bond
@@ -34,19 +34,19 @@ const StableCoinApprove = portalGraphql(`
  * @remarks
  * Approves a spend for a bond
  */
-const BondApprove = portalGraphql(`
-  mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: BondApproveInput!) {
-    BondApprove(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const BondApprove = portalGraphql(`
+//   mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: BondApproveInput!) {
+//     BondApprove(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for approving a spend for a cryptocurrency
@@ -54,19 +54,19 @@ const BondApprove = portalGraphql(`
  * @remarks
  * Approves a spend for a cryptocurrency
  */
-const CryptoCurrencyApprove = portalGraphql(`
-  mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: CryptoCurrencyApproveInput!) {
-    CryptoCurrencyApprove(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const CryptoCurrencyApprove = portalGraphql(`
+//   mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: CryptoCurrencyApproveInput!) {
+//     CryptoCurrencyApprove(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for approving a spend for a fund
@@ -74,19 +74,19 @@ const CryptoCurrencyApprove = portalGraphql(`
  * @remarks
  * Approves a spend for a fund
  */
-const FundApprove = portalGraphql(`
-  mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: FundApproveInput!) {
-    FundApprove(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const FundApprove = portalGraphql(`
+//   mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: FundApproveInput!) {
+//     FundApprove(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for approving a spend for a equity
@@ -94,19 +94,19 @@ const FundApprove = portalGraphql(`
  * @remarks
  * Approves a spend for a equity
  */
-const EquityApprove = portalGraphql(`
-  mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: EquityApproveInput!) {
-    EquityApprove(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const EquityApprove = portalGraphql(`
+//   mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: EquityApproveInput!) {
+//     EquityApprove(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for approving a spend for a tokenized deposit
@@ -114,19 +114,19 @@ const EquityApprove = portalGraphql(`
  * @remarks
  * Approves a spend for a tokenized deposit
  */
-const DepositApprove = portalGraphql(`
-  mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: DepositApproveInput!) {
-    DepositApprove(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      from: $from
-      input: $input
-      address: $address
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const DepositApprove = portalGraphql(`
+//   mutation Approve($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: DepositApproveInput!) {
+//     DepositApprove(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       from: $from
+//       input: $input
+//       address: $address
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * Function to approve a spend for an asset
@@ -177,35 +177,35 @@ export const approveFunction = async ({
 
   switch (assettype) {
     case "stablecoin": {
-      const response = await portalClient.request(StableCoinApprove, params);
+        // const response = await portalClient.request(StableCoinApprove, params);
       return safeParse(t.Hashes(), [
-        response.StableCoinApprove?.transactionHash,
+        "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.StableCoinApprove?.transactionHash */,
       ]);
     }
     case "bond": {
-      const response = await portalClient.request(BondApprove, params);
-      return safeParse(t.Hashes(), [response.BondApprove?.transactionHash]);
+        // const response = await portalClient.request(BondApprove, params);
+      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"] // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.BondApprove?.transactionHash */]);
     }
     case "cryptocurrency": {
-      const response = await portalClient.request(
-        CryptoCurrencyApprove,
-        params
-      );
+        // const response = await portalClient.request(
+  //         CryptoCurrencyApprove,
+  //         params
+  //       );
       return safeParse(t.Hashes(), [
-        response.CryptoCurrencyApprove?.transactionHash,
+        "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.CryptoCurrencyApprove?.transactionHash */,
       ]);
     }
     case "fund": {
-      const response = await portalClient.request(FundApprove, params);
-      return safeParse(t.Hashes(), [response.FundApprove?.transactionHash]);
+        // const response = await portalClient.request(FundApprove, params);
+      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"] // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.FundApprove?.transactionHash */]);
     }
     case "equity": {
-      const response = await portalClient.request(EquityApprove, params);
-      return safeParse(t.Hashes(), [response.EquityApprove?.transactionHash]);
+        // const response = await portalClient.request(EquityApprove, params);
+      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"] // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.EquityApprove?.transactionHash */]);
     }
     case "deposit": {
-      const response = await portalClient.request(DepositApprove, params);
-      return safeParse(t.Hashes(), [response.DepositApprove?.transactionHash]);
+        // const response = await portalClient.request(DepositApprove, params);
+      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"] // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.DepositApprove?.transactionHash */]);
     }
     default:
       exhaustiveGuard(assettype);

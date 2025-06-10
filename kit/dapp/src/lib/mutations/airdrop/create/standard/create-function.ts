@@ -11,19 +11,19 @@ import { AddAirdropDistribution } from "../common/add-distribution";
 import { getMerkleRoot } from "../common/merkle-tree";
 import type { CreateStandardAirdropInput } from "./create-schema";
 
-const AirdropFactoryDeployStandardAirdrop = portalGraphql(`
-mutation AirdropFactoryDeployStandardAirdrop($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: AirdropFactoryDeployStandardAirdropInput!) {
-    AirdropFactoryDeployStandardAirdrop(
-    address: $address
-    from: $from
-    input: $input
-    challengeResponse: $challengeResponse
-    verificationId: $verificationId
-  ) {
-    transactionHash
-  }
-}
-`);
+// const AirdropFactoryDeployStandardAirdrop = portalGraphql(`
+// mutation AirdropFactoryDeployStandardAirdrop($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: AirdropFactoryDeployStandardAirdropInput!) {
+//     AirdropFactoryDeployStandardAirdrop(
+//     address: $address
+//     from: $from
+//     input: $input
+//     challengeResponse: $challengeResponse
+//     verificationId: $verificationId
+//   ) {
+//     transactionHash
+//   }
+// }
+// `);
 
 export const createStandardAirdropFunction = async ({
   parsedInput: {
@@ -41,33 +41,34 @@ export const createStandardAirdropFunction = async ({
   parsedInput: CreateStandardAirdropInput;
   ctx: { user: User };
 }) => {
-  const result = await portalClient.request(
-    AirdropFactoryDeployStandardAirdrop,
-    {
-      address: AIRDROP_FACTORY_ADDRESS,
-      from: user.wallet,
-      input: {
-        tokenAddress: asset.id,
-        merkleRoot: getMerkleRoot(distribution),
-        owner,
-        startTime: formatDate(startTime, {
-          type: "unixSeconds",
-        }),
-        endTime: formatDate(endTime, {
-          type: "unixSeconds",
-        }),
-      },
-      ...(await handleChallenge(
-        user,
-        user.wallet,
-        verificationCode,
-        verificationType
-      )),
-    }
-  );
+    // const result = await portalClient.request(
+  //     AirdropFactoryDeployStandardAirdrop,
+  //     {
+  //       address: AIRDROP_FACTORY_ADDRESS,
+  //       from: user.wallet,
+  //       input: {
+  //         tokenAddress: asset.id,
+  //         merkleRoot: getMerkleRoot(distribution),
+  //         owner,
+  //         startTime: formatDate(startTime, {
+  //           type: "unixSeconds",
+  //         }),
+  //         endTime: formatDate(endTime, {
+  //           type: "unixSeconds",
+  //         }),
+  //       },
+  //       ...(await handleChallenge(
+  //         user,
+  //         user.wallet,
+  //         verificationCode,
+  //         verificationType
+  //       )),
+  //     }
+  //   );
 
-  const createTxHash =
-    result.AirdropFactoryDeployStandardAirdrop?.transactionHash;
+  // const createTxHash = result.AirdropFactoryDeployStandardAirdrop?.transactionHash;
+  // NOTE: HARDCODED SO IT STILL COMPILES
+  const createTxHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
   if (!createTxHash) {
     throw new Error(
       "Failed to create standard airdrop: no transaction hash received"

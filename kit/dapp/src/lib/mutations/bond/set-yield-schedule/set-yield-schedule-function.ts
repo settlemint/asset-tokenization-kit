@@ -15,25 +15,25 @@ import type { SetYieldScheduleInput } from "./set-yield-schedule-schema";
  * @remarks
  * Creates a yield schedule through the fixed yield factory
  */
-const FixedYieldFactoryCreate = portalGraphql(`
-  mutation FixedYieldFactoryCreate(
-    $challengeResponse: String!,
-    $verificationId: String,
-    $address: String!,
-    $from: String!,
-    $input: FixedYieldFactoryCreateInput!
-  ) {
-    FixedYieldFactoryCreate(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      address: $address
-      from: $from
-      input: $input
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const FixedYieldFactoryCreate = portalGraphql(`
+//   mutation FixedYieldFactoryCreate(
+//     $challengeResponse: String!,
+//     $verificationId: String,
+//     $address: String!,
+//     $from: String!,
+//     $input: FixedYieldFactoryCreateInput!
+//   ) {
+//     FixedYieldFactoryCreate(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       address: $address
+//       from: $from
+//       input: $input
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * Function to set a yield schedule for a bond
@@ -70,23 +70,23 @@ export const setYieldScheduleFunction = withAccessControl(
       type: "unixSeconds",
     });
 
-    const data = await portalClient.request(FixedYieldFactoryCreate, {
-      address: FIXED_YIELD_FACTORY_ADDRESS,
-      from: user.wallet,
-      input: {
-        token: address,
-        startTime: startTimeTimestamp,
-        endTime: endTimeTimestamp,
-        rate: percentageToBasisPoints(Number(rate)),
-        interval: intervalToSeconds(interval),
-      },
-      ...(await handleChallenge(
-        user,
-        user.wallet,
-        verificationCode,
-        verificationType
-      )),
-    });
+      // const data = await portalClient.request(FixedYieldFactoryCreate, {
+  //       address: FIXED_YIELD_FACTORY_ADDRESS,
+  //       from: user.wallet,
+  //       input: {
+  //         token: address,
+  //         startTime: startTimeTimestamp,
+  //         endTime: endTimeTimestamp,
+  //         rate: percentageToBasisPoints(Number(rate)),
+  //         interval: intervalToSeconds(interval),
+  //       },
+  //       ...(await handleChallenge(
+  //         user,
+  //         user.wallet,
+  //         verificationCode,
+  //         verificationType
+  //       )),
+  //     });
 
     return waitForIndexingTransactions(
       safeParse(t.Hashes(), [data.FixedYieldFactoryCreate?.transactionHash])

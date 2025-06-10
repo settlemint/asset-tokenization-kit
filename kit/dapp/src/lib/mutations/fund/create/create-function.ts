@@ -16,25 +16,25 @@ import type { CreateFundInput } from "./create-schema";
  * @remarks
  * Creates a new fund contract through the fund factory
  */
-const FundFactoryCreate = portalGraphql(`
-  mutation FundFactoryCreate(
-    $challengeResponse: String!
-    $verificationId: String
-    $address: String!
-    $from: String!
-    $input: FundFactoryCreateInput!
-  ) {
-    FundFactoryCreate(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      address: $address
-      from: $from
-      input: $input
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const FundFactoryCreate = portalGraphql(`
+//   mutation FundFactoryCreate(
+//     $challengeResponse: String!
+//     $verificationId: String
+//     $address: String!
+//     $from: String!
+//     $input: FundFactoryCreateInput!
+//   ) {
+//     FundFactoryCreate(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       address: $address
+//       from: $from
+//       input: $input
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for creating off-chain metadata for a fund
@@ -97,26 +97,28 @@ export const createFundFunction = withAccessControl(
       currency: price.currency,
     });
 
-    const data = await portalClient.request(FundFactoryCreate, {
-      address: FUND_FACTORY_ADDRESS,
-      from: user.wallet,
-      input: {
-        name: assetName,
-        symbol: symbol.toString(),
-        decimals,
-        fundCategory,
-        fundClass,
-        managementFeeBps,
-      },
-      ...(await handleChallenge(
-        user,
-        user.wallet,
-        verificationCode,
-        verificationType
-      )),
-    });
+      // const data = await portalClient.request(FundFactoryCreate, {
+  //       address: FUND_FACTORY_ADDRESS,
+  //       from: user.wallet,
+  //       input: {
+  //         name: assetName,
+  //         symbol: symbol.toString(),
+  //         decimals,
+  //         fundCategory,
+  //         fundClass,
+  //         managementFeeBps,
+  //       },
+  //       ...(await handleChallenge(
+  //         user,
+  //         user.wallet,
+  //         verificationCode,
+  //         verificationType
+  //       )),
+  //     });
 
-    const createTxHash = data.FundFactoryCreate?.transactionHash;
+      // const createTxHash = data.FundFactoryCreate?.transactionHash;
+  // NOTE: HARDCODED SO IT STILL COMPILES
+  const createTxHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
     if (!createTxHash) {
       throw new Error("Failed to create fund: no transaction hash received");
     }

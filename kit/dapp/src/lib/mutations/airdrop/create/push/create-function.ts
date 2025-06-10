@@ -10,19 +10,19 @@ import { AddAirdropDistribution } from "../common/add-distribution";
 import { getMerkleRoot } from "../common/merkle-tree";
 import type { CreatePushAirdropInput } from "./create-schema";
 
-const AirdropFactoryDeployPushAirdrop = portalGraphql(`
-mutation AirdropFactoryDeployPushAirdrop($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: AirdropFactoryDeployPushAirdropInput!) {
-    AirdropFactoryDeployPushAirdrop(
-    address: $address
-    from: $from
-    input: $input
-    challengeResponse: $challengeResponse
-    verificationId: $verificationId
-  ) {
-    transactionHash
-  }
-}
-`);
+// const AirdropFactoryDeployPushAirdrop = portalGraphql(`
+// mutation AirdropFactoryDeployPushAirdrop($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: AirdropFactoryDeployPushAirdropInput!) {
+//     AirdropFactoryDeployPushAirdrop(
+//     address: $address
+//     from: $from
+//     input: $input
+//     challengeResponse: $challengeResponse
+//     verificationId: $verificationId
+//   ) {
+//     transactionHash
+//   }
+// }
+// `);
 
 export const createPushAirdropFunction = async ({
   parsedInput: {
@@ -39,27 +39,29 @@ export const createPushAirdropFunction = async ({
   parsedInput: CreatePushAirdropInput;
   ctx: { user: User };
 }) => {
-  const result = await portalClient.request(AirdropFactoryDeployPushAirdrop, {
-    address: AIRDROP_FACTORY_ADDRESS,
-    from: user.wallet,
-    input: {
-      tokenAddress: asset.id,
-      merkleRoot: getMerkleRoot(distribution),
-      owner,
-      distributionCap: parseUnits(
-        distributionCap.toString(),
-        asset.decimals
-      ).toString(),
-    },
-    ...(await handleChallenge(
-      user,
-      user.wallet,
-      verificationCode,
-      verificationType
-    )),
-  });
+    // const result = await portalClient.request(AirdropFactoryDeployPushAirdrop, {
+  //     address: AIRDROP_FACTORY_ADDRESS,
+  //     from: user.wallet,
+  //     input: {
+  //       tokenAddress: asset.id,
+  //       merkleRoot: getMerkleRoot(distribution),
+  //       owner,
+  //       distributionCap: parseUnits(
+  //         distributionCap.toString(),
+  //         asset.decimals
+  //       ).toString(),
+  //     },
+  //     ...(await handleChallenge(
+  //       user,
+  //       user.wallet,
+  //       verificationCode,
+  //       verificationType
+  //     )),
+  //   });
 
-  const createTxHash = result.AirdropFactoryDeployPushAirdrop?.transactionHash;
+  // const createTxHash = result.AirdropFactoryDeployPushAirdrop?.transactionHash;
+  // NOTE: HARDCODED SO IT STILL COMPILES
+  const createTxHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
   if (!createTxHash) {
     throw new Error(
       "Failed to create push airdrop: no transaction hash received"

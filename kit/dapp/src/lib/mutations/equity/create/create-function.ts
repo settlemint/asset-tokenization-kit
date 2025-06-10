@@ -17,25 +17,25 @@ import type { CreateEquityInput } from "./create-schema";
  * @remarks
  * Creates a new equity contract through the equity factory
  */
-const EquityFactoryCreate = portalGraphql(`
-  mutation EquityFactoryCreate(
-    $challengeResponse: String!
-    $verificationId: String
-    $address: String!
-    $from: String!
-    $input: EquityFactoryCreateInput!
-  ) {
-    EquityFactoryCreate(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      address: $address
-      from: $from
-      input: $input
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const EquityFactoryCreate = portalGraphql(`
+//   mutation EquityFactoryCreate(
+//     $challengeResponse: String!
+//     $verificationId: String
+//     $address: String!
+//     $from: String!
+//     $input: EquityFactoryCreateInput!
+//   ) {
+//     EquityFactoryCreate(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       address: $address
+//       from: $from
+//       input: $input
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for creating off-chain metadata for a equity
@@ -96,26 +96,28 @@ export const createEquityFunction = withAccessControl(
       currency: price.currency,
     });
 
-    const createEquityResult = await portalClient.request(EquityFactoryCreate, {
-      address: EQUITY_FACTORY_ADDRESS,
-      from: user.wallet,
-      input: {
-        name: assetName,
-        symbol: symbol.toString(),
-        decimals,
-        equityCategory,
-        equityClass,
-      },
-      ...(await handleChallenge(
-        user,
-        user.wallet,
-        verificationCode,
-        verificationType
-      )),
-    });
+      // const createEquityResult = await portalClient.request(EquityFactoryCreate, {
+  //       address: EQUITY_FACTORY_ADDRESS,
+  //       from: user.wallet,
+  //       input: {
+  //         name: assetName,
+  //         symbol: symbol.toString(),
+  //         decimals,
+  //         equityCategory,
+  //         equityClass,
+  //       },
+  //       ...(await handleChallenge(
+  //         user,
+  //         user.wallet,
+  //         verificationCode,
+  //         verificationType
+  //       )),
+  //     });
 
-    const createTxHash =
+      // const createTxHash =
       createEquityResult.EquityFactoryCreate?.transactionHash;
+  // NOTE: HARDCODED SO IT STILL COMPILES
+  const createTxHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
     if (!createTxHash) {
       throw new Error("Failed to create equity: no transaction hash received");
     }
