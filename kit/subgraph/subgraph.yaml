@@ -439,7 +439,7 @@ templates:
         - Redeemed
       abis:
         - name: Redeemable
-          file: ../contracts/artifacts/contracts/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json
+          file: ../contracts/artifacts/contracts/smart/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json
       eventHandlers:
         - event: Redeemed(indexed address,uint256)
           handler: handleRedeemed
@@ -459,7 +459,7 @@ templates:
         - BondRedeemed
       abis:
         - name: Bond
-          file: ../contracts/artifacts/contracts/assets/bond/ISMARTBond.sol/ISMARTBond.json
+          file: ../contracts/artifacts/contracts/assets/bond/IATKBond.sol/IATKBond.json
       eventHandlers:
         - event: BondCreated(indexed
             address,string,string,uint8,uint256,uint256,uint256,address)
