@@ -77,17 +77,17 @@ jobs:
           node-version-file: .nvmrc
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
       - name: Install Bun dependencies
         run: bun install
 
       - name: Launch docker compose
         run: |
           bun run dev:up
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: stable
 
       - name: Install Helm
         uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
