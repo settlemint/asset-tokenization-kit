@@ -1243,10 +1243,15 @@
           },
           "summary": {
             "title": {
-              "claim": "Claim Summary"
+              "claim": "Initiate Claim"
             },
             "description": {
               "claim": "Review your claim details and confirm the transaction to receive your assets."
+            },
+            "asset-label": "Asset",
+            "standard": {
+              "title": "Summary",
+              "description": "Review the assets and amounts that will be transferred to your wallet."
             },
             "airdrop-contract-label": "Airdrop Contract",
             "amount-label": "Amount",

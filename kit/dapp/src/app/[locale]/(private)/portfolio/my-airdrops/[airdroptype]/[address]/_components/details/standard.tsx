@@ -5,11 +5,12 @@ import { DataTable } from "@/components/blocks/data-table/data-table";
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { authClient } from "@/lib/auth/client";
 import type { UserStandardAirdrop } from "@/lib/queries/standard-airdrop/standard-airdrop-schema";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { useLocale, useTranslations } from "next-intl";
-import { Columns } from "./standard-claim-indices-columns";
+import { Columns } from "./standard-allocation-columns";
 
 export function StandardAirdropDetails({
   airdrop,
@@ -18,6 +19,7 @@ export function StandardAirdropDetails({
 }) {
   const t = useTranslations("private.airdrops.details");
   const locale = useLocale();
+  const session = authClient.useSession();
 
   return (
     <>
@@ -85,9 +87,13 @@ export function StandardAirdropDetails({
         columnParams={{
           decimals: airdrop.asset.decimals,
           symbol: airdrop.asset.symbol,
+          airdrop: airdrop.id,
+          recipient: session.data?.user.wallet,
+          asset: airdrop.asset.id,
+          airdropType: "standard",
         }}
         data={airdrop.recipient.claimIndices}
-        name="Claim Indices"
+        name={t("asset-allocation")}
       />
     </>
   );
