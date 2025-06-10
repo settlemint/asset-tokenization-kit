@@ -1,7 +1,5 @@
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
-import { getAssetDetail } from "@/lib/queries/asset-detail";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
@@ -15,7 +13,6 @@ const CryptoCurrencyApprove = {} as any;
 const FundApprove = {} as any;
 const EquityApprove = {} as any;
 const DepositApprove = {} as any;
-
 
 /**
  * GraphQL mutation for approving a spend for a stablecoin
@@ -158,10 +155,10 @@ export const approveFunction = async ({
   parsedInput: ApproveInput;
   ctx: { user: User };
 }) => {
-  const { decimals } = await getAssetDetail({
-    address,
-    assettype,
-  });
+  // const { decimals } = await getAssetDetail({
+  //   address,
+  //   assettype,
+  // });
   const params: VariablesOf<
     | typeof DepositApprove
     | typeof StableCoinApprove
@@ -173,7 +170,7 @@ export const approveFunction = async ({
     address: address,
     from: user.wallet,
     input: {
-      value: parseUnits(amount.toString(), decimals).toString(),
+      value: parseUnits(amount.toString(), 18).toString(),
       spender,
     },
     ...(await handleChallenge(
@@ -186,35 +183,43 @@ export const approveFunction = async ({
 
   switch (assettype) {
     case "stablecoin": {
-        // const response = await portalClient.request(StableCoinApprove, params);
+      // const response = await portalClient.request(StableCoinApprove, params);
       return safeParse(t.Hashes(), [
         "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.StableCoinApprove?.transactionHash */,
       ]);
     }
     case "bond": {
-        // const response = await portalClient.request(BondApprove, params);
-      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.BondApprove?.transactionHash */]
+      // const response = await portalClient.request(BondApprove, params);
+      return safeParse(t.Hashes(), [
+        "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01",
+      ]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.BondApprove?.transactionHash */]
     }
     case "cryptocurrency": {
-        // const response = await portalClient.request(
-  //         CryptoCurrencyApprove,
-  //         params
-  //       );
+      // const response = await portalClient.request(
+      //         CryptoCurrencyApprove,
+      //         params
+      //       );
       return safeParse(t.Hashes(), [
         "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.CryptoCurrencyApprove?.transactionHash */,
       ]);
     }
     case "fund": {
-        // const response = await portalClient.request(FundApprove, params);
-      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.FundApprove?.transactionHash */]
+      // const response = await portalClient.request(FundApprove, params);
+      return safeParse(t.Hashes(), [
+        "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01",
+      ]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.FundApprove?.transactionHash */]
     }
     case "equity": {
-        // const response = await portalClient.request(EquityApprove, params);
-      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.EquityApprove?.transactionHash */]
+      // const response = await portalClient.request(EquityApprove, params);
+      return safeParse(t.Hashes(), [
+        "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01",
+      ]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.EquityApprove?.transactionHash */]
     }
     case "deposit": {
-        // const response = await portalClient.request(DepositApprove, params);
-      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.DepositApprove?.transactionHash */]
+      // const response = await portalClient.request(DepositApprove, params);
+      return safeParse(t.Hashes(), [
+        "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01",
+      ]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.DepositApprove?.transactionHash */]
     }
     default:
       exhaustiveGuard(assettype);

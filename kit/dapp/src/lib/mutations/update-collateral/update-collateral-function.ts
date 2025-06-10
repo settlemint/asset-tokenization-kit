@@ -1,18 +1,13 @@
 import type { User } from "@/lib/auth/types";
-import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
-import type { VariablesOf } from "@settlemint/sdk-portal";
-import { parseUnits } from "viem";
 import type { UpdateCollateralInput } from "./update-collateral-schema";
 
 // Dummy types for commented GraphQL operations
 const StableCoinUpdateCollateral = {} as any;
 const DepositUpdateCollateral = {} as any;
-
 
 /**
  * GraphQL mutation for updating a stablecoin's collateral amount
@@ -76,32 +71,32 @@ export const updateCollateralFunction = withAccessControl(
   }) => {
     const asset = await getAssetDetail({ address, assettype });
 
-    // Input format for collateral updates
-    const collateralInput = {
-      amount: parseUnits(amount.toString(), asset.decimals).toString(),
-    };
+    // // Input format for collateral updates
+    // const collateralInput = {
+    //   amount: parseUnits(amount.toString(), asset.decimals).toString(),
+    // };
 
-    // Common parameters for collateral update mutations
-    const params: VariablesOf<
-      typeof StableCoinUpdateCollateral | typeof DepositUpdateCollateral
-    > = {
-      address,
-      from: user.wallet,
-      input: collateralInput,
-      ...(await handleChallenge(
-        user,
-        user.wallet,
-        verificationCode,
-        verificationType
-      )),
-    };
+    // // Common parameters for collateral update mutations
+    // const params: VariablesOf<
+    //   typeof StableCoinUpdateCollateral | typeof DepositUpdateCollateral
+    // > = {
+    //   address,
+    //   from: user.wallet,
+    //   input: collateralInput,
+    //   ...(await handleChallenge(
+    //     user,
+    //     user.wallet,
+    //     verificationCode,
+    //     verificationType
+    //   )),
+    // };
 
     switch (assettype) {
       case "stablecoin": {
-          // const response = await portalClient.request(
-  //           StableCoinUpdateCollateral,
-  //           params
-  //         );
+        // const response = await portalClient.request(
+        //           StableCoinUpdateCollateral,
+        //           params
+        //         );
         return waitForIndexingTransactions(
           safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinUpdateCollateral?.transactionHash */,
@@ -109,10 +104,10 @@ export const updateCollateralFunction = withAccessControl(
         );
       }
       case "deposit": {
-          // const response = await portalClient.request(
-  //           DepositUpdateCollateral,
-  //           params
-  //         );
+        // const response = await portalClient.request(
+        //           DepositUpdateCollateral,
+        //           params
+        //         );
         return waitForIndexingTransactions(
           safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositUpdateCollateral?.transactionHash */,

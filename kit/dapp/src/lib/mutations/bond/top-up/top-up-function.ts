@@ -1,14 +1,10 @@
 import type { User } from "@/lib/auth/types";
-import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
-import type { VariablesOf } from "@settlemint/sdk-hasura";
-import { parseUnits } from "viem";
 import type { TopUpInput } from "./top-up-schema";
 
 // Dummy types for commented GraphQL operations
@@ -20,7 +16,6 @@ const StableCoinApprove = {} as any;
 const DepositApprove = {} as any;
 const BondTopUpUnderlyingAsset = {} as any;
 const FixedYieldTopUpUnderlyingAsset = {} as any;
-
 
 /**
  * GraphQL mutations for approving token spending for each asset type
@@ -233,91 +228,91 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
     if (!bondDetails) {
       throw new Error("Missing bond details");
     }
-    if (isYield && !bondDetails.yieldSchedule) {
-      throw new Error("Bond does not have a yield schedule");
-    }
+    // if (isYield && !bondDetails.yieldSchedule) {
+    //   throw new Error("Bond does not have a yield schedule");
+    // }
 
-    const formattedAmount = parseUnits(
-      amount.toString(),
-      isYield
-        ? bondDetails.yieldSchedule!.underlyingAsset.decimals
-        : bondDetails.underlyingAsset.decimals
-    ).toString();
+    // const formattedAmount = parseUnits(
+    //   amount.toString(),
+    //   isYield
+    //     ? bondDetails.yieldSchedule!.underlyingAsset.decimals
+    //     : bondDetails.underlyingAsset.decimals
+    // ).toString();
 
-    const spender = isYield ? bondDetails.yieldSchedule!.id : bondDetails.id;
+    // const spender = isYield ? bondDetails.yieldSchedule!.id : bondDetails.id;
 
     // Common parameters for all approve mutations
-    const approveParams: VariablesOf<
-      | typeof BondApprove
-      | typeof CryptoCurrencyApprove
-      | typeof EquityApprove
-      | typeof FundApprove
-      | typeof StableCoinApprove
-      | typeof DepositApprove
-    > = {
-      address: underlyingAssetAddress,
-      from: user.wallet,
-      ...(await handleChallenge(
-        user,
-        user.wallet,
-        verificationCode,
-        verificationType
-      )),
-      input: {
-        spender,
-        value: formattedAmount,
-      },
-    };
+    // const approveParams: VariablesOf<
+    //   | typeof BondApprove
+    //   | typeof CryptoCurrencyApprove
+    //   | typeof EquityApprove
+    //   | typeof FundApprove
+    //   | typeof StableCoinApprove
+    //   | typeof DepositApprove
+    // > = {
+    //   address: underlyingAssetAddress,
+    //   from: user.wallet,
+    //   ...(await handleChallenge(
+    //     user,
+    //     user.wallet,
+    //     verificationCode,
+    //     verificationType
+    //   )),
+    //   input: {
+    //     spender,
+    //     value: formattedAmount,
+    //   },
+    // };
 
     // Approve spending of the underlying asset based on asset type
     let approvalTxHash;
 
-    switch (bondDetails.underlyingAsset.type) {
-      case "bond": {
-          // const response = await portalClient.request(BondApprove, approveParams);
-        approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondApprove?.transactionHash */;
-        break;
-      }
-      case "cryptocurrency": {
-          // const response = await portalClient.request(
-  //           CryptoCurrencyApprove,
-  //           approveParams
-  //         );
-        approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.CryptoCurrencyApprove?.transactionHash */;
-        break;
-      }
-      case "equity": {
-          // const response = await portalClient.request(
-  //           EquityApprove,
-  //           approveParams
-  //         );
-        approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityApprove?.transactionHash */;
-        break;
-      }
-      case "fund": {
-          // const response = await portalClient.request(FundApprove, approveParams);
-        approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundApprove?.transactionHash */;
-        break;
-      }
-      case "stablecoin": {
-          // const response = await portalClient.request(
-  //           StableCoinApprove,
-  //           approveParams
-  //         );
-        approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinApprove?.transactionHash */;
-        break;
-      }
-      case "deposit": {
-          // const response = await portalClient.request(
-  //           DepositApprove,
-  //           approveParams
-  //         );
-        approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositApprove?.transactionHash */;
-        break;
-      }
-      default:
-        throw new Error("Invalid asset type");
-    }
+    //   switch (bondDetails.underlyingAsset.type) {
+    //     case "bond": {
+    //         // const response = await portalClient.request(BondApprove, approveParams);
+    //       approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondApprove?.transactionHash */;
+    //       break;
+    //     }
+    //     case "cryptocurrency": {
+    //         // const response = await portalClient.request(
+    // //           CryptoCurrencyApprove,
+    // //           approveParams
+    // //         );
+    //       approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.CryptoCurrencyApprove?.transactionHash */;
+    //       break;
+    //     }
+    //     case "equity": {
+    //         // const response = await portalClient.request(
+    // //           EquityApprove,
+    // //           approveParams
+    // //         );
+    //       approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityApprove?.transactionHash */;
+    //       break;
+    //     }
+    //     case "fund": {
+    //         // const response = await portalClient.request(FundApprove, approveParams);
+    //       approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundApprove?.transactionHash */;
+    //       break;
+    //     }
+    //     case "stablecoin": {
+    //         // const response = await portalClient.request(
+    // //           StableCoinApprove,
+    // //           approveParams
+    // //         );
+    //       approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinApprove?.transactionHash */;
+    //       break;
+    //     }
+    //     case "deposit": {
+    //         // const response = await portalClient.request(
+    // //           DepositApprove,
+    // //           approveParams
+    // //         );
+    //       approvalTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositApprove?.transactionHash */;
+    //       break;
+    //     }
+    //     default:
+    //       throw new Error("Invalid asset type");
+    //   }
 
     if (!approvalTxHash) {
       throw new Error("Failed to approve spending of the underlying asset");
@@ -328,50 +323,48 @@ export const topUpUnderlyingAssetFunction = withAccessControl(
 
     // Top up either the bond or the yield schedule
     if (isYield) {
-        // const response = await portalClient.request(
-  //         FixedYieldTopUpUnderlyingAsset,
-  //         {
-  //           address: spender,
-  //           from: user.wallet,
-  //           input: {
-  //             amount: formattedAmount,
-  //           },
-  //           ...(await handleChallenge(
-  //             user,
-  //             user.wallet,
-  //             verificationCode,
-  //             verificationType
-  //           )),
-  //         }
-  //       );
+      // const response = await portalClient.request(
+      //         FixedYieldTopUpUnderlyingAsset,
+      //         {
+      //           address: spender,
+      //           from: user.wallet,
+      //           input: {
+      //             amount: formattedAmount,
+      //           },
+      //           ...(await handleChallenge(
+      //             user,
+      //             user.wallet,
+      //             verificationCode,
+      //             verificationType
+      //           )),
+      //         }
+      //       );
 
       // NOTE: HARDCODED SO IT STILL COMPILES
-      const mockTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92";
-      
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [mockTxHash])
-      );
+      const mockTxHash =
+        "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92";
+
+      return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
     } else {
-        // const response = await portalClient.request(BondTopUpUnderlyingAsset, {
-  //         address: spender,
-  //         from: user.wallet,
-  //         input: {
-  //           amount: formattedAmount,
-  //         },
-  //         ...(await handleChallenge(
-  //           user,
-  //           user.wallet,
-  //           verificationCode,
-  //           verificationType
-  //         )),
-  //       });
+      // const response = await portalClient.request(BondTopUpUnderlyingAsset, {
+      //         address: spender,
+      //         from: user.wallet,
+      //         input: {
+      //           amount: formattedAmount,
+      //         },
+      //         ...(await handleChallenge(
+      //           user,
+      //           user.wallet,
+      //           verificationCode,
+      //           verificationType
+      //         )),
+      //       });
 
       // NOTE: HARDCODED SO IT STILL COMPILES
-      const mockTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92";
-      
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [mockTxHash])
-      );
+      const mockTxHash =
+        "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92";
+
+      return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
     }
   }
 );

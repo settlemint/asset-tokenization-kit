@@ -1,11 +1,6 @@
 import type { User } from "@/lib/auth/types";
-import { handleChallenge } from "@/lib/challenge";
-import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
-import type { VariablesOf } from "@settlemint/sdk-portal";
-import { parseUnits } from "viem";
 import type { BurnInput } from "./burn-schema";
 
 // Dummy types for commented GraphQL operations
@@ -14,7 +9,6 @@ const EquityBurn = {} as any;
 const FundBurn = {} as any;
 const StableCoinBurn = {} as any;
 const DepositBurn = {} as any;
-
 
 /**
  * GraphQL mutation for burning bond tokens
@@ -122,68 +116,59 @@ export const burnFunction = async ({
   ctx: { user: User };
 }) => {
   // Get token details based on asset type
-  const { decimals } = await getAssetDetail({
-    address,
-    assettype,
-  });
+  // const { decimals } = await getAssetDetail({
+  //   address,
+  //   assettype,
+  // });
 
   // Common parameters for all mutations
-  const params: VariablesOf<
-    | typeof BondBurn
-    | typeof EquityBurn
-    | typeof FundBurn
-    | typeof StableCoinBurn
-    | typeof DepositBurn
-  > = {
-    address,
-    from: user.wallet,
-    input: {
-      value: parseUnits(amount.toString(), decimals).toString(),
-    },
-    ...(await handleChallenge(
-      user,
-      user.wallet,
-      verificationCode,
-      verificationType
-    )),
-  };
+  // const params: VariablesOf<
+  //   | typeof BondBurn
+  //   | typeof EquityBurn
+  //   | typeof FundBurn
+  //   | typeof StableCoinBurn
+  //   | typeof DepositBurn
+  // > = {
+  //   address,
+  //   from: user.wallet,
+  //   input: {
+  //     value: parseUnits(amount.toString(), decimals).toString(),
+  //   },
+  //   ...(await handleChallenge(
+  //     user,
+  //     user.wallet,
+  //     verificationCode,
+  //     verificationType
+  //   )),
+  // };
 
   // NOTE: HARDCODED SO IT STILL COMPILES
-  const mockTxHash = "0x890123b890123b890123b890123b890123b890123b890123b890123b890123b8";
-  
+  const mockTxHash =
+    "0x890123b890123b890123b890123b890123b890123b890123b890123b890123b8";
+
   switch (assettype) {
     case "bond": {
       // const response = await portalClient.request(BondBurn, params);
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [mockTxHash])
-      );
+      return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
     }
     case "cryptocurrency": {
       throw new Error("Cryptocurrency does not support burn operations");
     }
     case "equity": {
       // const response = await portalClient.request(EquityBurn, params);
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [mockTxHash])
-      );
+      return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
     }
     case "fund": {
       // const response = await portalClient.request(FundBurn, params);
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [mockTxHash])
-      );
+      return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
     }
     case "stablecoin": {
       // const response = await portalClient.request(StableCoinBurn, params);
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [mockTxHash])
-      );
+      return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
     }
     case "deposit": {
       // const response = await portalClient.request(DepositBurn, params);
-      return waitForIndexingTransactions(
-        safeParse(t.Hashes(), [mockTxHash])
-      );
+      return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
     }
     default:
       throw new Error("Invalid asset type");

@@ -5,6 +5,7 @@
       "dependsOn": ["codegen:settlemint", "codegen:gql-tada"]
     },
     "codegen:settlemint": {
+      "inputs": [".env.local", ".env"],
       "outputs": [
         "*-env-*.d.ts",
         "*-schema.graphql",

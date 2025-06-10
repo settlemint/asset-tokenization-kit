@@ -1,10 +1,8 @@
 import type { User } from "@/lib/auth/types";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { parseUnits } from "viem";
 import type { WithdrawInput } from "./withdraw-schema";
 
 // Dummy types for commented GraphQL operations
@@ -247,72 +245,44 @@ export const withdrawFunction = withAccessControl(
       case "bond": {
         // Withdraw underlying asset from bond
 
-        const isYield = target === "yield";
-        const bondDetails = asset as Awaited<ReturnType<typeof getBondDetail>>;
-        if (isYield && !bondDetails.yieldSchedule) {
-          throw new Error("Bond does not have a yield schedule");
-        }
+        // const isYield = target === "yield";
+        // const bondDetails = asset as Awaited<ReturnType<typeof getBondDetail>>;
+        // if (isYield && !bondDetails.yieldSchedule) {
+        //   throw new Error("Bond does not have a yield schedule");
+        // }
 
-        const bondFormattedAmount = parseUnits(
-          amount.toString(),
-          isYield
-            ? bondDetails.yieldSchedule!.underlyingAsset.decimals
-            : bondDetails.underlyingAsset.decimals
-        ).toString();
+        // const bondFormattedAmount = parseUnits(
+        //   amount.toString(),
+        //   isYield
+        //     ? bondDetails.yieldSchedule!.underlyingAsset.decimals
+        //     : bondDetails.underlyingAsset.decimals
+        // ).toString();
 
-        if (isYield) {
-          // const response = await portalClient.request(
-          //             FixedYieldWithdrawUnderlyingAsset,
-          //             {
-          //               address: bondDetails.yieldSchedule!.id,
-          //               from: user.wallet,
-          //               input: {
-          //                 to,
-          //                 amount: bondFormattedAmount,
-          //               },
-          //               ...(await handleChallenge(
-          //                 user,
-          //                 user.wallet,
-          //                 verificationCode,
-          //                 verificationType
-          //               )),
-          //             }
-          //           );
+        // if (isYield) {
+        // const response = await portalClient.request(
+        //             FixedYieldWithdrawUnderlyingAsset,
+        //             {
+        //               address: bondDetails.yieldSchedule!.id,
+        //               from: user.wallet,
+        //               input: {
+        //                 to,
+        //                 amount: bondFormattedAmount,
+        //               },
+        //               ...(await handleChallenge(
+        //                 user,
+        //                 user.wallet,
+        //                 verificationCode,
+        //                 verificationType
+        //               )),
+        //             }
+        //           );
 
-          // NOTE: HARDCODED SO IT STILL COMPILES
-          const mockTxHash =
-            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92";
+        // NOTE: HARDCODED SO IT STILL COMPILES
+        const mockTxHash =
+          "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92";
 
-          return waitForIndexingTransactions(
-            safeParse(t.Hashes(), [mockTxHash])
-          );
-        } else {
-          // const response = await portalClient.request(
-          //             BondWithdrawUnderlyingAsset,
-          //             {
-          //               address: targetAddress,
-          //               from: user.wallet,
-          //               input: {
-          //                 to,
-          //                 amount: bondFormattedAmount,
-          //               },
-          //               ...(await handleChallenge(
-          //                 user,
-          //                 user.wallet,
-          //                 verificationCode,
-          //                 verificationType
-          //               )),
-          //             }
-          //           );
-
-          // NOTE: HARDCODED SO IT STILL COMPILES
-          const mockTxHash2 =
-            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92";
-
-          return waitForIndexingTransactions(
-            safeParse(t.Hashes(), [mockTxHash2])
-          );
-        }
+        return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
+        // }
       }
       case "cryptocurrency": {
         // const response = await portalClient.request(

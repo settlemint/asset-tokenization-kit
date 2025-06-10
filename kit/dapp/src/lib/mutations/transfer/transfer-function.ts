@@ -1,12 +1,7 @@
 import type { User } from "@/lib/auth/types";
-import { handleChallenge } from "@/lib/challenge";
-import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
-import type { VariablesOf } from "@settlemint/sdk-portal";
-import { parseUnits } from "viem";
 import type { TransferInput } from "./transfer-schema";
 
 // Dummy types for commented GraphQL operations
@@ -16,7 +11,6 @@ const EquityTransfer = {} as any;
 const FundTransfer = {} as any;
 const StableCoinTransfer = {} as any;
 const DepositTransfer = {} as any;
-
 
 /**
  * GraphQL mutation to transfer bond tokens
@@ -184,76 +178,65 @@ export const transferAssetFunction = withAccessControl(
     ctx: { user: User };
   }) => {
     // Get token details based on asset type
-    const { decimals } = await getAssetDetail({
-      address,
-      assettype,
-    });
+    // const { decimals } = await getAssetDetail({
+    //   address,
+    //   assettype,
+    // });
 
-    // Common parameters for all mutations
-    const params: VariablesOf<
-      | typeof BondTransfer
-      | typeof CryptoCurrencyTransfer
-      | typeof EquityTransfer
-      | typeof FundTransfer
-      | typeof StableCoinTransfer
-      | typeof DepositTransfer
-    > = {
-      address,
-      from: user.wallet,
-      input: {
-        value: parseUnits(value.toString(), decimals).toString(),
-        to,
-      },
-      ...(await handleChallenge(
-        user,
-        user.wallet,
-        verificationCode,
-        verificationType
-      )),
-    };
+    // // Common parameters for all mutations
+    // const params: VariablesOf<
+    //   | typeof BondTransfer
+    //   | typeof CryptoCurrencyTransfer
+    //   | typeof EquityTransfer
+    //   | typeof FundTransfer
+    //   | typeof StableCoinTransfer
+    //   | typeof DepositTransfer
+    // > = {
+    //   address,
+    //   from: user.wallet,
+    //   input: {
+    //     value: parseUnits(value.toString(), decimals).toString(),
+    //     to,
+    //   },
+    //   ...(await handleChallenge(
+    //     user,
+    //     user.wallet,
+    //     verificationCode,
+    //     verificationType
+    //   )),
+    // };
 
     // NOTE: HARDCODED SO IT STILL COMPILES
-    const mockTxHash = "0x67890123f67890123f67890123f67890123f67890123f67890123f67890123";
-    
+    const mockTxHash =
+      "0x67890123f67890123f67890123f67890123f67890123f67890123f67890123";
+
     switch (assettype) {
       case "bond": {
         // const response = await portalClient.request(BondTransfer, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [mockTxHash])
-        );
+        return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
       }
       case "cryptocurrency": {
         // const response = await portalClient.request(
         //   CryptoCurrencyTransfer,
         //   params
         // );
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [mockTxHash])
-        );
+        return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
       }
       case "equity": {
         // const response = await portalClient.request(EquityTransfer, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [mockTxHash])
-        );
+        return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
       }
       case "fund": {
         // const response = await portalClient.request(FundTransfer, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [mockTxHash])
-        );
+        return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
       }
       case "stablecoin": {
         // const response = await portalClient.request(StableCoinTransfer, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [mockTxHash])
-        );
+        return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
       }
       case "deposit": {
         // const response = await portalClient.request(DepositTransfer, params);
-        return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [mockTxHash])
-        );
+        return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
       }
       default:
         throw new Error("Invalid asset type");
