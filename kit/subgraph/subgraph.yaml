@@ -86,6 +86,8 @@ templates:
       abis:
         - name: System
           file: ../contracts/artifacts/contracts/system/IATKSystem.sol/IATKSystem.json
+        - name: BondFactory
+          file: ../contracts/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
             address,address,address,address,address,address)
@@ -130,8 +132,6 @@ templates:
           file: ../contracts/artifacts/contracts/system/token-factory/IATKTokenFactory.sol/IATKTokenFactory.json
         - name: Token
           file: ../contracts/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
-        - name: BondFactory
-          file: ../contracts/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
       eventHandlers:
         - event: TokenAssetCreated(indexed address,indexed address,indexed
             address,address)
