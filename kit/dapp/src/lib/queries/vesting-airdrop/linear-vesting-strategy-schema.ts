@@ -1,15 +1,16 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
+import type { Static } from "@sinclair/typebox";
 
 /**
  * Schema for vesting data associated with linear vesting strategy
  */
 export const VestingDataSchema = t.Object(
   {
-    id: t.EthereumAddress({
+    id: t.String({
       description: "The vesting data contract address",
     }),
     user: t.Object({
-      id: t.EthereumAddress({
+      id: t.String({
         description: "The user address",
       }),
     }),
@@ -36,6 +37,8 @@ export const VestingDataSchema = t.Object(
     description: "Vesting data associated with the strategy",
   }
 );
+
+export type VestingData = Static<typeof VestingDataSchema>;
 
 /**
  * Schema for linear vesting strategy data
