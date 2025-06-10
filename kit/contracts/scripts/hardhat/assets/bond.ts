@@ -119,7 +119,7 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   // redeemable
   await redeem(bond, owner, 10n);
-  await redeem(bond, investorA, 1n);
+  await redeem(bond, investorB, 1n);
 
   return bond;
 };

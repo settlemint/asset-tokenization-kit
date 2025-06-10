@@ -64,7 +64,7 @@ export function fetchToken(address: Address): Token {
       token.redeemable = fetchRedeemable(address).id;
       token.save();
     }
-    if (tokenContract.supportsInterface(InterfaceIds.ISMARTBond)) {
+    if (tokenContract.supportsInterface(InterfaceIds.IATKBond)) {
       token.bond = fetchBond(address).id;
       token.save();
     }
