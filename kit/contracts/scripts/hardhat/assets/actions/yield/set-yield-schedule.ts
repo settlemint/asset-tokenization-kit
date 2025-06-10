@@ -42,7 +42,7 @@ export const setYieldSchedule = async (
   const { schedule } = (await waitForEvent({
     transactionHash: createYieldScheduleTransactionHash,
     contract: factoryContract,
-    eventName: "SMARTFixedYieldScheduleCreated",
+    eventName: "ATKFixedYieldScheduleCreated",
   })) as { schedule: Address };
 
   const setYieldScheduleTransactionHash =

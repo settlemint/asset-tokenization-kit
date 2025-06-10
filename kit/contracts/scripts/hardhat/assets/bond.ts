@@ -11,6 +11,7 @@ import {
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
+import { getAnvilTimeMilliseconds } from "../utils/anvil";
 import { toDecimals } from "../utils/to-decimals";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
@@ -79,10 +80,11 @@ export const createBond = async (depositToken: Asset<any>) => {
   await unfreezePartialTokens(bond, owner, investorB, 2n);
 
   // yield
+  const anvilTime = await getAnvilTimeMilliseconds(owner);
   const { advanceToNextPeriod } = await setYieldSchedule(
     bond,
-    new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day from now
-    new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days from now
+    new Date(anvilTime + 1 * 24 * 60 * 60 * 1000), // 1 day from now
+    new Date(anvilTime + 4 * 24 * 60 * 60 * 1000), // 4 days from now
     50, // 0.5%
     12 * 60 * 60 // 12 hours in seconds
   );
