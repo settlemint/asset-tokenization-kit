@@ -1727,7 +1727,8 @@
               "recipients": "Recipients",
               "recipients-preview": "Recipients preview",
               "total-recipients": "Total recipients",
-              "total-amount": "Total amount"
+              "total-amount": "Total amount",
+              "and-more": "and {count} more recipients..."
             }
           }
         }

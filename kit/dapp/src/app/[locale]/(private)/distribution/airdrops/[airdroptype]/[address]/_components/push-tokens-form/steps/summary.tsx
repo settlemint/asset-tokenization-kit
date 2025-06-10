@@ -79,7 +79,7 @@ export function Summary({ airdrop }: SummaryProps) {
         </div>
         {airdrop.distribution.length > 5 ? (
           <p className="text-sm text-muted-foreground mt-2 text-right">
-            {t("create.summary.recipients.and-more", {
+            {t("detail.forms.distribute.summary.and-more", {
               count: airdrop.distribution.length - 5,
             })}
           </p>

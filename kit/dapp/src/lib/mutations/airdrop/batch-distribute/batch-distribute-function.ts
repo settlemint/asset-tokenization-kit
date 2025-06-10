@@ -46,18 +46,22 @@ export const batchDistributeFunction = async ({
     const batch = distributions.slice(i, i + MAX_BATCH_SIZE);
     const recipients = batch.map((d) => d.recipient);
     const amounts = batch.map((d) => d.amountExact.toString());
-    const merkleProofs = batch
-      .map((recipientData) =>
-        getMerkleProof(
-          {
-            ...recipientData,
-            amount: Number(recipientData.amount),
-            amountExact: BigInt(recipientData.amountExact),
-          },
-          tree
-        )
+
+    // TODO: remove any when portal fix https://github.com/settlemint/portal/pull/1263 is merged and released
+    const merkleProofs: any = batch.map((recipientData) =>
+      getMerkleProof(
+        {
+          ...recipientData,
+          amount: Number(recipientData.amount),
+          amountExact: BigInt(recipientData.amountExact),
+        },
+        tree
       )
-      .flat();
+    );
+    // TODO: remove this when portal fix https://github.com/settlemint/portal/pull/1263 is merged and released
+    const wrappedMerkleProofs = merkleProofs.map((proof: string[]) => [proof]);
+
+    console.log("wrappedMerkleProofs", wrappedMerkleProofs);
 
     const result = await portalClient.request(PushAirdropBatchDistribute, {
       address: airdrop,
@@ -65,7 +69,7 @@ export const batchDistributeFunction = async ({
       input: {
         recipients,
         amounts,
-        merkleProofs,
+        merkleProofs: wrappedMerkleProofs,
       },
       ...(await handleChallenge(
         user,
