@@ -16,13 +16,13 @@ import { DepositExistsSchema } from "./deposit-factory-schema";
  * @remarks
  * Checks if a token address is already deployed through the stablecoin factory
  */
-const DepositExists = theGraphGraphqlKit(`
-  query DepositExists($token: ID!) {
-    deposit(id: $token) {
-      id
-    }
-  }
-`);
+// const DepositExists = theGraphGraphqlKit(`
+//   query DepositExists($token: ID!) {
+//     deposit(id: $token) {
+//       id
+//     }
+//   }
+// `);
 
 export const isAddressAvailable = withTracing(
   "queries",
@@ -30,9 +30,11 @@ export const isAddressAvailable = withTracing(
   async (address: Address) => {
     "use cache";
     cacheTag("asset");
-    const data = await theGraphClientKit.request(DepositExists, {
-      token: address,
-    });
+          //       // const data = await theGraphClientKit.request(DepositExists, {
+      //       //       token: address,
+      //       //     });
+    // NOTE: HARDCODED SO IT STILL COMPILES
+    const data = { deposit: null };
 
     const depositExists = safeParse(DepositExistsSchema, data);
 

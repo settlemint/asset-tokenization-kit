@@ -17,16 +17,16 @@ import { OffChainDepositSchema, OnChainDepositSchema } from "./deposit-schema";
 /**
  * GraphQL query to fetch on-chain tokenized deposit details from The Graph
  */
-const DepositDetail = theGraphGraphqlKit(
-  `
-  query DepositDetail($id: ID!) {
-    deposit(id: $id) {
-      ...DepositFragment
-    }
-  }
-`,
-  [DepositFragment]
-);
+// const DepositDetail = theGraphGraphqlKit(
+//   `
+//   query DepositDetail($id: ID!) {
+//     deposit(id: $id) {
+//       ...DepositFragment
+//     }
+//   }
+// `,
+//   [DepositFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain tokenized deposit details from Hasura
@@ -67,16 +67,16 @@ export const getDepositDetail = withTracing(
     cacheTag("asset");
     const [onChainDeposit, offChainDeposit] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(
-          DepositDetail,
-          {
-            id: address,
-          },
-          {
-            "X-GraphQL-Operation-Name": "DepositDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+              //       // const response = await theGraphClientKit.request(
+      //       //           DepositDetail,
+      //       //           {
+      //       //             id: address,
+      //       //           },
+      //       //           {
+      //       //             "X-GraphQL-Operation-Name": "DepositDetail",
+      //       //             "X-GraphQL-Operation-Type": "query",
+      //       //           }
+      //       //         );
         if (!response.deposit) {
           throw new Error("Deposit not found");
         }

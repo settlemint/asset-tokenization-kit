@@ -184,7 +184,7 @@ export const approveFunction = async ({
     }
     case "bond": {
         // const response = await portalClient.request(BondApprove, params);
-      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"] // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.BondApprove?.transactionHash */]);
+      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.BondApprove?.transactionHash */]
     }
     case "cryptocurrency": {
         // const response = await portalClient.request(
@@ -197,15 +197,15 @@ export const approveFunction = async ({
     }
     case "fund": {
         // const response = await portalClient.request(FundApprove, params);
-      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"] // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.FundApprove?.transactionHash */]);
+      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.FundApprove?.transactionHash */]
     }
     case "equity": {
         // const response = await portalClient.request(EquityApprove, params);
-      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"] // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.EquityApprove?.transactionHash */]);
+      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.EquityApprove?.transactionHash */]
     }
     case "deposit": {
         // const response = await portalClient.request(DepositApprove, params);
-      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"] // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.DepositApprove?.transactionHash */]);
+      return safeParse(t.Hashes(), ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01"]); // ["0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01" /* response.DepositApprove?.transactionHash */]
     }
     default:
       exhaustiveGuard(assettype);

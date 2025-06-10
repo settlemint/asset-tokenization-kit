@@ -21,16 +21,16 @@ import { OffChainDepositSchema, OnChainDepositSchema } from "./deposit-schema";
  * @remarks
  * Retrieves tokenized deposits ordered by total supply in descending order
  */
-const DepositList = theGraphGraphqlKit(
-  `
-  query DepositList($first: Int, $skip: Int) {
-    deposits(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
-      ...DepositFragment
-    }
-  }
-`,
-  [DepositFragment]
-);
+// const DepositList = theGraphGraphqlKit(
+//   `
+//   query DepositList($first: Int, $skip: Int) {
+//     deposits(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
+//       ...DepositFragment
+//     }
+//   }
+// `,
+//   [DepositFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain tokenized deposit list from Hasura
@@ -63,17 +63,17 @@ export const getDepositList = withTracing(
     cacheTag("asset");
     const [onChainDeposits, offChainDeposits] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(
-          DepositList,
-          {
-            first,
-            skip,
-          },
-          {
-            "X-GraphQL-Operation-Name": "DepositList",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+              //       // const result = await theGraphClientKit.request(
+      //       //           DepositList,
+      //       //           {
+      //       //             first,
+      //       //             skip,
+      //       //           },
+      //       //           {
+      //       //             "X-GraphQL-Operation-Name": "DepositList",
+      //       //             "X-GraphQL-Operation-Type": "query",
+      //       //           }
+      //       //         );
 
         return safeParse(t.Array(OnChainDepositSchema), result.deposits || []);
       }),

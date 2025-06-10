@@ -16,16 +16,16 @@ import {
 /**
  * GraphQL query to fetch fixed yield schedule details by ID
  */
-const FixedYieldDetailQuery = theGraphGraphqlKit(
-  `
-  query FixedYieldDetail($id: ID!) {
-    fixedYield(id: $id) {
-      ...FixedYieldFragment
-    }
-  }
-`,
-  [FixedYieldFragment]
-);
+// const FixedYieldDetailQuery = theGraphGraphqlKit(
+//   `
+//   query FixedYieldDetail($id: ID!) {
+//     fixedYield(id: $id) {
+//       ...FixedYieldFragment
+//     }
+//   }
+// `,
+//   [FixedYieldFragment]
+// );
 
 interface GetFixedYieldDetailParams {
   address: Address;
@@ -43,9 +43,9 @@ export const getFixedYieldDetail = withTracing(
   async ({ address }: GetFixedYieldDetailParams) => {
     "use cache";
     cacheTag("asset");
-    const data = await theGraphClientKit.request(FixedYieldDetailQuery, {
-      id: address,
-    });
+          //       // const data = await theGraphClientKit.request(FixedYieldDetailQuery, {
+      //       //       id: address,
+      //       //     });
 
     if (!data.fixedYield) {
       return null;

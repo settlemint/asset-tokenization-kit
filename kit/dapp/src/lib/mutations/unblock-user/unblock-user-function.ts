@@ -123,19 +123,19 @@ export const unblockUserFunction = withAccessControl(
       case "bond": {
           // const response = await portalClient.request(BondUnblockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"] // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondUnblockUser?.transactionHash */])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondUnblockUser?.transactionHash */]
         );
       }
       case "equity": {
           // const response = await portalClient.request(EquityUnblockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"] // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityUnblockUser?.transactionHash */])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityUnblockUser?.transactionHash */]
         );
       }
       case "fund": {
           // const response = await portalClient.request(FundUnblockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"] // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundUnblockUser?.transactionHash */])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundUnblockUser?.transactionHash */]
         );
       }
       case "stablecoin": {
@@ -144,9 +144,7 @@ export const unblockUserFunction = withAccessControl(
   //           params
   //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [
-            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinUnblockUser?.transactionHash */,
-          ])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) /* response.StableCoinUnblockUser?.transactionHash */
         );
       }
       case "cryptocurrency": {

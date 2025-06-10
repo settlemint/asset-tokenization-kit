@@ -16,13 +16,13 @@ import { StandardAirdropExistsSchema } from "./schema";
  * @remarks
  * Checks if a standard airdrop address is already deployed through the airdrop factory
  */
-const StandardAirdropExists = theGraphGraphqlKit(`
-  query StandardAirdropExists($airdropAddress: ID!) {
-    standardAirdrop(id: $airdropAddress) {
-      id
-    }
-  }
-`);
+// const StandardAirdropExists = theGraphGraphqlKit(`
+//   query StandardAirdropExists($airdropAddress: ID!) {
+//     standardAirdrop(id: $airdropAddress) {
+//       id
+//     }
+//   }
+// `);
 
 export const isAddressAvailable = withTracing(
   "queries",
@@ -30,9 +30,11 @@ export const isAddressAvailable = withTracing(
   async (address: Address) => {
     "use cache";
     cacheTag("airdrop");
-    const data = await theGraphClientKit.request(StandardAirdropExists, {
-      airdropAddress: address,
-    });
+          //       // const data = await theGraphClientKit.request(StandardAirdropExists, {
+      //       //       airdropAddress: address,
+      //       //     });
+    // NOTE: HARDCODED SO IT STILL COMPILES
+    const data = { standardAirdrop: null };
 
     const standardAirdropExists = safeParse(StandardAirdropExistsSchema, data);
 

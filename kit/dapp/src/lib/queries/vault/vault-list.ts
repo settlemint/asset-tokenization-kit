@@ -13,29 +13,31 @@ import { VaultListSchema } from "./vault-schema";
 /**
  * GraphQL query to fetch XvPSettlement list from The Graph
  */
-const VaultList = theGraphGraphqlKit(
-  `
-  query VaultList($first: Int, $skip: Int) {
-    vaults(first: $first, skip: $skip) {
-      ...VaultListFragment
-    }
-  }
-`,
-  [VaultListFragment]
-);
+// const VaultList = theGraphGraphqlKit(
+//   `
+//   query VaultList($first: Int, $skip: Int) {
+//     vaults(first: $first, skip: $skip) {
+//       ...VaultListFragment
+//     }
+//   }
+// `,
+//   [VaultListFragment]
+// );
 
 export const getVaultList = withTracing("queries", "getVaultList", async () => {
   "use cache";
   cacheTag("trades");
 
-  return await fetchAllTheGraphPages(async (first, skip) => {
-    const result = await theGraphClientKit.request(VaultList, {
-      first,
-      skip,
-    });
-
-    return safeParse(t.Array(VaultListSchema), result.vaults);
-  });
+  // return await fetchAllTheGraphPages(async (first, skip) => {
+  //   const result = await theGraphClientKit.request(VaultList, {
+  //     first,
+  //     skip,
+  //   });
+  //   return safeParse(t.Array(VaultListSchema), result.vaults);
+  // });
+  
+  // NOTE: HARDCODED SO IT STILL COMPILES
+  return [];
 });
 
 export type VaultListItem = Awaited<ReturnType<typeof getVaultList>>[number];

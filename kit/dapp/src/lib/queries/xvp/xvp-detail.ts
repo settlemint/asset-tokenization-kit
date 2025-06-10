@@ -16,16 +16,16 @@ import { OnChainXvPSettlementSchema, type XvPSettlement } from "./xvp-schema";
 /**
  * GraphQL query to fetch XvPSettlement from The Graph
  */
-const XvPSettlementDetail = theGraphGraphqlKit(
-  `
-  query XvPSettlement($id: ID!) {
-    xvPSettlement(id: $id) {
-      ...XvPSettlementFragment
-    }
-  }
-`,
-  [XvPSettlementFragment]
-);
+// const XvPSettlementDetail = theGraphGraphqlKit(
+//   `
+//   query XvPSettlement($id: ID!) {
+//     xvPSettlement(id: $id) {
+//       ...XvPSettlementFragment
+//     }
+//   }
+// `,
+//   [XvPSettlementFragment]
+// );
 
 /**
  * Fetches a single XvPSettlement from The Graph and enriches it.
@@ -40,9 +40,9 @@ export const getXvPSettlementDetail = withTracing(
     "use cache";
     cacheTag("trades");
 
-    const result = await theGraphClientKit.request(XvPSettlementDetail, {
-      id,
-    });
+          //       // const result = await theGraphClientKit.request(XvPSettlementDetail, {
+      //       //       id,
+      //       //     });
 
     const onChainSettlement = safeParse(
       OnChainXvPSettlementSchema,

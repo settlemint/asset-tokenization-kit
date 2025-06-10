@@ -27,16 +27,16 @@ import {
  * @remarks
  * Retrieves stablecoins ordered by total supply in descending order
  */
-const StableCoinList = theGraphGraphqlKit(
-  `
-  query StableCoinList($first: Int, $skip: Int) {
-    stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
-      ...StableCoinFragment
-    }
-  }
-`,
-  [StableCoinFragment]
-);
+// const StableCoinList = theGraphGraphqlKit(
+//   `
+//   query StableCoinList($first: Int, $skip: Int) {
+//     stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
+//       ...StableCoinFragment
+//     }
+//   }
+// `,
+//   [StableCoinFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain stablecoin list from Hasura
@@ -69,17 +69,17 @@ export const getStableCoinList = withTracing(
     cacheTag("asset");
     const [onChainStableCoins, offChainStableCoins] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(
-          StableCoinList,
-          {
-            first,
-            skip,
-          },
-          {
-            "X-GraphQL-Operation-Name": "StableCoinList",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+              //       // const result = await theGraphClientKit.request(
+      //       //           StableCoinList,
+      //       //           {
+      //       //             first,
+      //       //             skip,
+      //       //           },
+      //       //           {
+      //       //             "X-GraphQL-Operation-Name": "StableCoinList",
+      //       //             "X-GraphQL-Operation-Type": "query",
+      //       //           }
+      //       //         );
 
         return safeParse(
           t.Array(OnChainStableCoinSchema),

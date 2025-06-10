@@ -161,19 +161,19 @@ export const blockUserFunction = withAccessControl(
       case "bond": {
           // const response = await portalClient.request(BondBlockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"] // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondBlockUser?.transactionHash */])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondBlockUser?.transactionHash */]
         );
       }
       case "equity": {
           // const response = await portalClient.request(EquityBlockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"] // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityBlockUser?.transactionHash */])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityBlockUser?.transactionHash */]
         );
       }
       case "fund": {
           // const response = await portalClient.request(FundBlockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"] // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundBlockUser?.transactionHash */])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundBlockUser?.transactionHash */]
         );
       }
       case "stablecoin": {
@@ -182,7 +182,7 @@ export const blockUserFunction = withAccessControl(
   //           params
   //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"] // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinBlockUser?.transactionHash */])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinBlockUser?.transactionHash */]
         );
       }
       case "cryptocurrency": {

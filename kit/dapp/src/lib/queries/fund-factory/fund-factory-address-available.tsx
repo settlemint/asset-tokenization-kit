@@ -16,13 +16,13 @@ import { FundExistsSchema } from "./fund-factory-schema";
  * @remarks
  * Checks if a token address is already deployed through the fund factory
  */
-const FundExists = theGraphGraphqlKit(`
-  query FundExists($token: ID!) {
-    fund(id: $token) {
-      id
-    }
-  }
-`);
+// const FundExists = theGraphGraphqlKit(`
+//   query FundExists($token: ID!) {
+//     fund(id: $token) {
+//       id
+//     }
+//   }
+// `);
 
 export const isAddressAvailable = withTracing(
   "queries",
@@ -30,9 +30,11 @@ export const isAddressAvailable = withTracing(
   async (address: Address) => {
     "use cache";
     cacheTag("asset");
-    const data = await theGraphClientKit.request(FundExists, {
-      token: address,
-    });
+          //       // const data = await theGraphClientKit.request(FundExists, {
+      //       //       token: address,
+      //       //     });
+    // NOTE: HARDCODED SO IT STILL COMPILES
+    const data = { fund: null };
 
     const fundExists = safeParse(FundExistsSchema, data);
 

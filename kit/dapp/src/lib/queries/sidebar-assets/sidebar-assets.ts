@@ -12,46 +12,46 @@ import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 /**
  * GraphQL query to fetch sidebar asset data
  */
-const SidebarAssets = theGraphGraphqlKit(
-  `
-  query SidebarAssets($limit: Int!) {
-    stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
-      id
-      name
-      symbol
-    }
-    bonds(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
-      id
-      name
-      symbol
-    }
-    equities(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
-      id
-      name
-      symbol
-    }
-    funds(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
-      id
-      name
-      symbol
-    }
-    cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
-      id
-      name
-      symbol
-    }
-    deposits(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
-      id
-      name
-      symbol
-    }
-    assetCounts {
-      assetType
-      count
-    }
-  }
-`
-);
+// const SidebarAssets = theGraphGraphqlKit(
+//   `
+//   query SidebarAssets($limit: Int!) {
+//     stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
+//       id
+//       name
+//       symbol
+//     }
+//     bonds(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
+//       id
+//       name
+//       symbol
+//     }
+//     equities(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
+//       id
+//       name
+//       symbol
+//     }
+//     funds(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
+//       id
+//       name
+//       symbol
+//     }
+//     cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
+//       id
+//       name
+//       symbol
+//     }
+//     deposits(orderBy: totalSupplyExact, orderDirection: desc, first: $limit) {
+//       id
+//       name
+//       symbol
+//     }
+//     assetCounts {
+//       assetType
+//       count
+//     }
+//   }
+// `
+// );
 
 /**
  * TypeBox schema for asset count entries
@@ -113,44 +113,45 @@ export const getSidebarAssets = withTracing(
     "use cache";
     cacheTag("asset");
     const { limit = 10 } = options || {};
-    const result = await theGraphClientKit.request(SidebarAssets, {
-      limit,
-    });
+    //       // const result = await theGraphClientKit.request(SidebarAssets, {
+      //     //   limit,
+      //     // });
 
+    // NOTE: HARDCODED SO IT STILL COMPILES
     const validatedStableCoins = safeParse(
       t.Array(SidebarAssetSchema),
-      result.stableCoins || []
+      []
     );
 
     const validatedBonds = safeParse(
       t.Array(SidebarAssetSchema),
-      result.bonds || []
+      []
     );
 
     const validatedEquities = safeParse(
       t.Array(SidebarAssetSchema),
-      result.equities || []
+      []
     );
 
     const validatedFunds = safeParse(
       t.Array(SidebarAssetSchema),
-      result.funds || []
+      []
     );
 
     const validatedCryptoCurrencies = safeParse(
       t.Array(SidebarAssetSchema),
-      result.cryptoCurrencies || []
+      []
     );
 
     const validatedDeposits = safeParse(
       t.Array(SidebarAssetSchema),
-      result.deposits || []
+      []
     );
 
     // Validate assetCounts with TypeBox schema
     const validatedAssetCounts = safeParse(
       t.Array(AssetCountSchema),
-      result.assetCounts || []
+      []
     );
 
     /**

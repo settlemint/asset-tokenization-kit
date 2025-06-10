@@ -22,16 +22,16 @@ import { OffChainBondSchema, OnChainBondSchema } from "./bond-schema";
  * @remarks
  * Retrieves bonds ordered by total supply in descending order
  */
-const BondList = theGraphGraphqlKit(
-  `
-  query BondList($first: Int, $skip: Int) {
-    bonds(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
-      ...BondFragment
-    }
-  }
-`,
-  [BondFragment]
-);
+// const BondList = theGraphGraphqlKit(
+//   `
+//   query BondList($first: Int, $skip: Int) {
+//     bonds(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
+//       ...BondFragment
+//     }
+//   }
+// `,
+//   [BondFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain bond list from Hasura
@@ -66,12 +66,13 @@ export const getBondList = withTracing(
     cacheTag("asset");
     const [onChainBonds, offChainBonds] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(BondList, {
-          first,
-          skip,
-        });
+        //       // const result = await theGraphClientKit.request(BondList, {
+      //         //   first,
+      //         //   skip,
+      //         // });
 
-        return safeParse(t.Array(OnChainBondSchema), result.bonds || []);
+        // NOTE: HARDCODED SO IT STILL COMPILES
+        return safeParse(t.Array(OnChainBondSchema), []);
       }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {

@@ -22,16 +22,16 @@ import { OffChainFundSchema, OnChainFundSchema } from "./fund-schema";
  * @remarks
  * Retrieves funds ordered by total supply in descending order
  */
-const FundList = theGraphGraphqlKit(
-  `
-  query FundList($first: Int, $skip: Int) {
-    funds(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
-      ...FundFragment
-    }
-  }
-`,
-  [FundFragment]
-);
+// const FundList = theGraphGraphqlKit(
+//   `
+//   query FundList($first: Int, $skip: Int) {
+//     funds(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
+//       ...FundFragment
+//     }
+//   }
+// `,
+//   [FundFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain fund list from Hasura
@@ -66,17 +66,17 @@ export const getFundList = withTracing(
     cacheTag("asset");
     const [onChainFunds, offChainFunds] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(
-          FundList,
-          {
-            first,
-            skip,
-          },
-          {
-            "X-GraphQL-Operation-Name": "FundList",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+              //       // const result = await theGraphClientKit.request(
+      //       //           FundList,
+      //       //           {
+      //       //             first,
+      //       //             skip,
+      //       //           },
+      //       //           {
+      //       //             "X-GraphQL-Operation-Name": "FundList",
+      //       //             "X-GraphQL-Operation-Type": "query",
+      //       //           }
+      //       //         );
 
         return safeParse(t.Array(OnChainFundSchema), result.funds || []);
       }),

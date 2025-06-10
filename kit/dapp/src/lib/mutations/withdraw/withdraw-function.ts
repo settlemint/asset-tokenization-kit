@@ -314,9 +314,7 @@ export const withdrawFunction = withAccessControl(
   //           tokenParams
   //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [
-            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.CryptoCurrencyWithdrawToken?.transactionHash */,
-          ])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) /* response.CryptoCurrencyWithdrawToken?.transactionHash */
         );
       }
       case "equity": {
@@ -325,7 +323,7 @@ export const withdrawFunction = withAccessControl(
   //           tokenParams
   //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"] // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityWithdrawToken?.transactionHash */])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityWithdrawToken?.transactionHash */]
         );
       }
       case "fund": {
@@ -334,7 +332,7 @@ export const withdrawFunction = withAccessControl(
   //           tokenParams
   //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"] // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundWithdrawToken?.transactionHash */])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundWithdrawToken?.transactionHash */]
         );
       }
       case "stablecoin": {
@@ -343,9 +341,7 @@ export const withdrawFunction = withAccessControl(
   //           tokenParams
   //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [
-            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinWithdrawToken?.transactionHash */,
-          ])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) /* response.StableCoinWithdrawToken?.transactionHash */
         );
       }
       case "deposit": {
@@ -354,9 +350,7 @@ export const withdrawFunction = withAccessControl(
   //           tokenParams
   //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [
-            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositWithdrawToken?.transactionHash */,
-          ])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) /* response.DepositWithdrawToken?.transactionHash */
         );
       }
       default:

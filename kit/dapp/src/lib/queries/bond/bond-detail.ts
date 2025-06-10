@@ -18,16 +18,16 @@ import { OffChainBondSchema, OnChainBondSchema } from "./bond-schema";
 /**
  * GraphQL query to fetch on-chain bond details from The Graph
  */
-const BondDetail = theGraphGraphqlKit(
-  `
-  query BondDetail($id: ID!) {
-    bond(id: $id) {
-      ...BondFragment
-    }
-  }
-`,
-  [BondFragment]
-);
+// const BondDetail = theGraphGraphqlKit(
+//   `
+//   query BondDetail($id: ID!) {
+//     bond(id: $id) {
+//       ...BondFragment
+//     }
+//   }
+// `,
+//   [BondFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain bond details from Hasura
@@ -68,20 +68,22 @@ export const getBondDetail = withTracing(
     cacheTag("asset");
     const [onChainBond, offChainBond] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(
-          BondDetail,
-          {
-            id: address,
-          },
-          {
-            "X-GraphQL-Operation-Name": "BondDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
-        if (!response.bond) {
-          throw new Error("Bond not found");
-        }
-        return safeParse(OnChainBondSchema, response.bond);
+        //       // const response = await theGraphClientKit.request(
+      //         //   BondDetail,
+      //         //   {
+      //         //     id: address,
+      //         //   },
+      //         //   {
+      //         //     "X-GraphQL-Operation-Name": "BondDetail",
+      //         //     "X-GraphQL-Operation-Type": "query",
+      //         //   }
+      //         // );
+        // if (!response.bond) {
+        //   throw new Error("Bond not found");
+        // }
+        // return safeParse(OnChainBondSchema, response.bond);
+        // NOTE: HARDCODED SO IT STILL COMPILES
+        throw new Error("Bond not found");
       })(),
       (async () => {
         const response = await hasuraClient.request(

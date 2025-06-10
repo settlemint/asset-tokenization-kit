@@ -24,16 +24,16 @@ import {
 /**
  * GraphQL query to fetch on-chain stablecoin details from The Graph
  */
-const StableCoinDetail = theGraphGraphqlKit(
-  `
-  query StableCoinDetail($id: ID!) {
-    stableCoin(id: $id) {
-      ...StableCoinFragment
-    }
-  }
-`,
-  [StableCoinFragment]
-);
+// const StableCoinDetail = theGraphGraphqlKit(
+//   `
+//   query StableCoinDetail($id: ID!) {
+//     stableCoin(id: $id) {
+//       ...StableCoinFragment
+//     }
+//   }
+// `,
+//   [StableCoinFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain stablecoin details from Hasura
@@ -74,16 +74,16 @@ export const getStableCoinDetail = withTracing(
     cacheTag("asset");
     const [onChainStableCoin, offChainStableCoin] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(
-          StableCoinDetail,
-          {
-            id: address,
-          },
-          {
-            "X-GraphQL-Operation-Name": "StableCoinDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+              //       // const response = await theGraphClientKit.request(
+      //       //           StableCoinDetail,
+      //       //           {
+      //       //             id: address,
+      //       //           },
+      //       //           {
+      //       //             "X-GraphQL-Operation-Name": "StableCoinDetail",
+      //       //             "X-GraphQL-Operation-Type": "query",
+      //       //           }
+      //       //         );
         if (!response.stableCoin) {
           throw new Error("StableCoin not found");
         }

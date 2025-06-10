@@ -17,51 +17,51 @@ import { AssetUsersSchema } from "./asset-users-schema";
 /**
  * GraphQL query to search for assets by name, symbol, or address
  */
-const AssetSearch = theGraphGraphqlKit(
-  `
-  query SearchAssets($searchAddress: Bytes, $search: String!) {
-    assets(
-      where: {
-        or: [
-          { name_contains_nocase: $search },
-          { symbol_contains_nocase: $search },
-          { id: $searchAddress }
-        ]
-      },
-      first: 10
-    ) {
-      holders {
-        id
-        value
-      }
-      ...AssetUsersFragment
-    }
-  }
-`,
-  [AssetUsersFragment]
-);
+// const AssetSearch = theGraphGraphqlKit(
+//   `
+//   query SearchAssets($searchAddress: Bytes, $search: String!) {
+//     assets(
+//       where: {
+//         or: [
+//           { name_contains_nocase: $search },
+//           { symbol_contains_nocase: $search },
+//           { id: $searchAddress }
+//         ]
+//       },
+//       first: 10
+//     ) {
+//       holders {
+//         id
+//         value
+//       }
+//       ...AssetUsersFragment
+//     }
+//   }
+// `,
+//   [AssetUsersFragment]
+// );
 
 /**
  * GraphQL query to get all assets with a limit
  */
-const AllAssets = theGraphGraphqlKit(
-  `
-  query AllAssets($limit: Int!) {
-    assets(
-      first: $limit,
-      orderBy: name,
-      orderDirection: asc
-    ) {
-      holders {
-        id
-        value
-      }
-      ...AssetUsersFragment
-    }
-  }
-`,
-  [AssetUsersFragment]
-);
+// const AllAssets = theGraphGraphqlKit(
+//   `
+//   query AllAssets($limit: Int!) {
+//     assets(
+//       first: $limit,
+//       orderBy: name,
+//       orderDirection: asc
+//     ) {
+//       holders {
+//         id
+//         value
+//       }
+//       ...AssetUsersFragment
+//     }
+//   }
+// `,
+//   [AssetUsersFragment]
+// );
 
 /**
  * Props interface for asset search components
@@ -88,14 +88,14 @@ export const getAssetSearch = withTracing(
 
     if (!sanitizedSearchTerm) {
       // If no search term, fetch all assets with a reasonable limit
-      const result = await theGraphClientKit.request(
-        AllAssets,
-        { limit: 10 },
-        {
-          "X-GraphQL-Operation-Name": "AllAssets",
-          "X-GraphQL-Operation-Type": "query",
-        }
-      );
+            //       // const result = await theGraphClientKit.request(
+      //       //         AllAssets,
+      //       //         { limit: 10 },
+      //       //         {
+      //       //           "X-GraphQL-Operation-Name": "AllAssets",
+      //       //           "X-GraphQL-Operation-Type": "query",
+      //       //         }
+      //       //       );
       assets = result.assets;
     } else {
       // Otherwise perform the search
@@ -107,10 +107,10 @@ export const getAssetSearch = withTracing(
         search.searchAddress = sanitizedSearchTerm;
       }
 
-      const result = await theGraphClientKit.request(AssetSearch, search, {
-        "X-GraphQL-Operation-Name": "AssetSearch",
-        "X-GraphQL-Operation-Type": "query",
-      });
+            //       // const result = await theGraphClientKit.request(AssetSearch, search, {
+      //       //         "X-GraphQL-Operation-Name": "AssetSearch",
+      //       //         "X-GraphQL-Operation-Type": "query",
+      //       //       });
       assets = result.assets;
     }
 

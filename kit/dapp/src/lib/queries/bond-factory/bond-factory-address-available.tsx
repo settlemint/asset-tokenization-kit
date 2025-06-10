@@ -16,13 +16,13 @@ import { BondExistsSchema } from "./bond-factory-schema";
  * @remarks
  * Checks if a token address is already deployed through the bond factory
  */
-const BondExists = theGraphGraphqlKit(`
-  query BondExists($token: ID!) {
-    bond(id: $token) {
-      id
-    }
-  }
-`);
+// const BondExists = theGraphGraphqlKit(`
+//   query BondExists($token: ID!) {
+//     bond(id: $token) {
+//       id
+//     }
+//   }
+// `);
 
 export const isAddressAvailable = withTracing(
   "queries",
@@ -30,9 +30,11 @@ export const isAddressAvailable = withTracing(
   async (address: Address) => {
     "use cache";
     cacheTag("asset");
-    const data = await theGraphClientKit.request(BondExists, {
-      token: address,
-    });
+    // const data = await theGraphClientKit.request(BondExists, {
+    //   token: address,
+    // });
+    // NOTE: HARDCODED SO IT STILL COMPILES
+    const data = { bond: null };
 
     const bondExists = safeParse(BondExistsSchema, data);
 

@@ -17,16 +17,16 @@ import { OffChainFundSchema, OnChainFundSchema } from "./fund-schema";
 /**
  * GraphQL query to fetch on-chain fund details from The Graph
  */
-const FundDetail = theGraphGraphqlKit(
-  `
-  query FundDetail($id: ID!) {
-    fund(id: $id) {
-      ...FundFragment
-    }
-  }
-`,
-  [FundFragment]
-);
+// const FundDetail = theGraphGraphqlKit(
+//   `
+//   query FundDetail($id: ID!) {
+//     fund(id: $id) {
+//       ...FundFragment
+//     }
+//   }
+// `,
+//   [FundFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain fund details from Hasura
@@ -67,16 +67,16 @@ export const getFundDetail = withTracing(
     cacheTag("asset");
     const [onChainFund, offChainFund] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(
-          FundDetail,
-          {
-            id: address,
-          },
-          {
-            "X-GraphQL-Operation-Name": "FundDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+              //       // const response = await theGraphClientKit.request(
+      //       //           FundDetail,
+      //       //           {
+      //       //             id: address,
+      //       //           },
+      //       //           {
+      //       //             "X-GraphQL-Operation-Name": "FundDetail",
+      //       //             "X-GraphQL-Operation-Type": "query",
+      //       //           }
+      //       //         );
         if (!response.fund) {
           throw new Error("Fund not found");
         }

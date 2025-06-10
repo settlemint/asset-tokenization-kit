@@ -18,16 +18,16 @@ import { OnChainXvPSettlementSchema, type XvPSettlement } from "./xvp-schema";
 /**
  * GraphQL query to fetch XvPSettlement list from The Graph
  */
-const XvPSettlementList = theGraphGraphqlKit(
-  `
-  query XvPSettlementList($first: Int, $skip: Int, $user: String!) {
-    xvPSettlements(orderBy: createdAt, orderDirection: desc, first: $first, skip: $skip, where: { participants_contains: [$user] }) {
-      ...XvPSettlementFragment
-    }
-  }
-`,
-  [XvPSettlementFragment]
-);
+// const XvPSettlementList = theGraphGraphqlKit(
+//   `
+//   query XvPSettlementList($first: Int, $skip: Int, $user: String!) {
+//     xvPSettlements(orderBy: createdAt, orderDirection: desc, first: $first, skip: $skip, where: { participants_contains: [$user] }) {
+//       ...XvPSettlementFragment
+//     }
+//   }
+// `,
+//   [XvPSettlementFragment]
+// );
 
 /**
  * Fetches a list of XvPSettlements from The Graph and enriches them.
@@ -47,11 +47,11 @@ export const getXvPSettlementList = withTracing(
 
     const onChainSettlements = await fetchAllTheGraphPages(
       async (first, skip) => {
-        const result = await theGraphClientKit.request(XvPSettlementList, {
-          first,
-          skip,
-          user: userAddress,
-        });
+              //       // const result = await theGraphClientKit.request(XvPSettlementList, {
+      //       //           first,
+      //       //           skip,
+      //       //           user: userAddress,
+      //       //         });
 
         return safeParse(
           t.Array(OnChainXvPSettlementSchema),

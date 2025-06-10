@@ -22,16 +22,16 @@ import { OffChainEquitySchema, OnChainEquitySchema } from "./equity-schema";
  * @remarks
  * Retrieves equitys ordered by total supply in descending order
  */
-const EquityList = theGraphGraphqlKit(
-  `
-  query EquityList($first: Int, $skip: Int) {
-    equities(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
-      ...EquityFragment
-    }
-  }
-`,
-  [EquityFragment]
-);
+// const EquityList = theGraphGraphqlKit(
+//   `
+//   query EquityList($first: Int, $skip: Int) {
+//     equities(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
+//       ...EquityFragment
+//     }
+//   }
+// `,
+//   [EquityFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain equity list from Hasura
@@ -66,17 +66,17 @@ export const getEquityList = withTracing(
     cacheTag("asset");
     const [onChainEquities, offChainEquities] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(
-          EquityList,
-          {
-            first,
-            skip,
-          },
-          {
-            "X-GraphQL-Operation-Name": "EquityList",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+              //       // const result = await theGraphClientKit.request(
+      //       //           EquityList,
+      //       //           {
+      //       //             first,
+      //       //             skip,
+      //       //           },
+      //       //           {
+      //       //             "X-GraphQL-Operation-Name": "EquityList",
+      //       //             "X-GraphQL-Operation-Type": "query",
+      //       //           }
+      //       //         );
 
         return safeParse(t.Array(OnChainEquitySchema), result.equities || []);
       }),

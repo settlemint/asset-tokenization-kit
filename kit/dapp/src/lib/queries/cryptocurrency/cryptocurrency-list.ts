@@ -28,16 +28,16 @@ import {
  * @remarks
  * Retrieves cryptocurrencys ordered by total supply in descending order
  */
-const CryptoCurrencyList = theGraphGraphqlKit(
-  `
-  query CryptoCurrencyList($first: Int, $skip: Int) {
-    cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
-      ...CryptoCurrencyFragment
-    }
-  }
-`,
-  [CryptoCurrencyFragment]
-);
+// const CryptoCurrencyList = theGraphGraphqlKit(
+//   `
+//   query CryptoCurrencyList($first: Int, $skip: Int) {
+//     cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
+//       ...CryptoCurrencyFragment
+//     }
+//   }
+// `,
+//   [CryptoCurrencyFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain cryptocurrency list from Hasura
@@ -73,21 +73,22 @@ export const getCryptoCurrencyList = withTracing(
     const [onChainCryptoCurrencies, offChainCryptoCurrencies] =
       await Promise.all([
         fetchAllTheGraphPages(async (first, skip) => {
-          const result = await theGraphClientKit.request(
-            CryptoCurrencyList,
-            {
-              first,
-              skip,
-            },
-            {
-              "X-GraphQL-Operation-Name": "CryptoCurrencyList",
-              "X-GraphQL-Operation-Type": "query",
-            }
-          );
+                //       // const result = await theGraphClientKit.request(
+      //       //             CryptoCurrencyList,
+      //       //             {
+      //       //               first,
+      //       //               skip,
+      //       //             },
+      //       //             {
+      //       //               "X-GraphQL-Operation-Name": "CryptoCurrencyList",
+      //       //               "X-GraphQL-Operation-Type": "query",
+      //       //             }
+      //       //           );
 
+          // NOTE: HARDCODED SO IT STILL COMPILES
           return safeParse(
             t.Array(OnChainCryptoCurrencySchema),
-            result.cryptoCurrencies || []
+            []
           );
         }),
 

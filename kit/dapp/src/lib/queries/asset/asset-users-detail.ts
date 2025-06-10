@@ -24,16 +24,16 @@ import {
 /**
  * GraphQL query to fetch on-chain asset details from The Graph
  */
-const AssetDetail = theGraphGraphqlKit(
-  `
-  query AssetDetail($id: ID!) {
-    asset(id: $id) {
-      ...AssetUsersFragment
-    }
-  }
-`,
-  [AssetUsersFragment]
-);
+// const AssetDetail = theGraphGraphqlKit(
+//   `
+//   query AssetDetail($id: ID!) {
+//     asset(id: $id) {
+//       ...AssetUsersFragment
+//     }
+//   }
+// `,
+//   [AssetUsersFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain asset details from Hasura

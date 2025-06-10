@@ -39,16 +39,16 @@ const UserList = hasuraGraphql(
  * @remarks
  * Retrieves accounts with their last activity timestamp
  */
-const UserActivity = theGraphGraphqlKit(
-  `
-  query UserActivity($first: Int, $skip: Int) {
-    accounts(where: { isContract: false }, first: $first, skip: $skip) {
-      ...AccountFragment
-    }
-  }
-`,
-  [AccountFragment]
-);
+// const UserActivity = theGraphGraphqlKit(
+//   `
+//   query UserActivity($first: Int, $skip: Int) {
+//     accounts(where: { isContract: false }, first: $first, skip: $skip) {
+//       ...AccountFragment
+//     }
+//   }
+// `,
+//   [AccountFragment]
+// );
 
 /**
  * Fetches a list of users from Hasura with their last activity
@@ -84,20 +84,24 @@ export const getUserList = withTracing(
                 "X-GraphQL-Operation-Type": "query",
               }
             );
-            return safeParse(t.Array(UserSchema), result.user || []);
-          }),
-          fetchAllTheGraphPages(async (first, skip) => {
-            const result = await theGraphClientKit.request(
-              UserActivity,
-              {
-                first,
-                skip,
-              },
-              {
-                "X-GraphQL-Operation-Name": "UserActivity",
-                "X-GraphQL-Operation-Type": "query",
-              }
-            );
+                  //       // return safeParse(t.Array(UserSchema), result.user || []);
+      //       //           }),
+      //       //           fetchAllTheGraphPages(async (first, skip) => {
+      //       //                   //       // const result = await theGraphClientKit.request(
+      //       //       //       //               UserActivity,
+      //       //       //       //               {
+      //       //       //       //                 first,
+      //       //       //       //                 skip,
+      //       //       //       //               },
+      //       //       //       //               {
+      //       //       //       //                 "X-GraphQL-Operation-Name": "UserActivity",
+      //       //       //       //                 "X-GraphQL-Operation-Type": "query",
+      //       //       //       //               }
+      //       //       //       //             );
+      // NOTE: HARDCODED SO IT STILL COMPILES
+      return [];
+      // NOTE: HARDCODED SO IT STILL COMPILES
+      return [];
             return safeParse(t.Array(AccountSchema), result.accounts || []);
           }),
         ]);

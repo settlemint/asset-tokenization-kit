@@ -15,16 +15,16 @@ import {
 /**
  * GraphQL query to fetch all fixed yield schedules
  */
-const FixedYieldListQuery = theGraphGraphqlKit(
-  `
-  query FixedYieldList {
-    fixedYields {
-      ...FixedYieldFragment
-    }
-  }
-`,
-  [FixedYieldFragment]
-);
+// const FixedYieldListQuery = theGraphGraphqlKit(
+//   `
+//   query FixedYieldList {
+//     fixedYields {
+//       ...FixedYieldFragment
+//     }
+//   }
+// `,
+//   [FixedYieldFragment]
+// );
 
 /**
  * Fetches a list of all fixed yield schedules
@@ -37,14 +37,14 @@ export const getFixedYieldList = withTracing(
   async () => {
     "use cache";
     cacheTag("asset");
-    const data = await theGraphClientKit.request(
-      FixedYieldListQuery,
-      {},
-      {
-        "X-GraphQL-Operation-Name": "FixedYieldList",
-        "X-GraphQL-Operation-Type": "query",
-      }
-    );
+          //       // const data = await theGraphClientKit.request(
+      //       //       FixedYieldListQuery,
+      //       //       {},
+      //       //       {
+      //       //         "X-GraphQL-Operation-Name": "FixedYieldList",
+      //       //         "X-GraphQL-Operation-Type": "query",
+      //       //       }
+      //       //     );
 
     if (!data.fixedYields?.length) {
       return [];

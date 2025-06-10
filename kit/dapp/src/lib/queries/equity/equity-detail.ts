@@ -17,16 +17,16 @@ import { OffChainEquitySchema, OnChainEquitySchema } from "./equity-schema";
 /**
  * GraphQL query to fetch on-chain equity details from The Graph
  */
-const EquityDetail = theGraphGraphqlKit(
-  `
-  query EquityDetail($id: ID!) {
-    equity(id: $id) {
-      ...EquityFragment
-    }
-  }
-`,
-  [EquityFragment]
-);
+// const EquityDetail = theGraphGraphqlKit(
+//   `
+//   query EquityDetail($id: ID!) {
+//     equity(id: $id) {
+//       ...EquityFragment
+//     }
+//   }
+// `,
+//   [EquityFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain equity details from Hasura
@@ -67,16 +67,16 @@ export const getEquityDetail = withTracing(
     cacheTag("asset");
     const [onChainEquity, offChainEquity] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(
-          EquityDetail,
-          {
-            id: address,
-          },
-          {
-            "X-GraphQL-Operation-Name": "EquityDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+              //       // const response = await theGraphClientKit.request(
+      //       //           EquityDetail,
+      //       //           {
+      //       //             id: address,
+      //       //           },
+      //       //           {
+      //       //             "X-GraphQL-Operation-Name": "EquityDetail",
+      //       //             "X-GraphQL-Operation-Type": "query",
+      //       //           }
+      //       //         );
         if (!response.equity) {
           throw new Error("Equity not found");
         }

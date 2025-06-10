@@ -11,29 +11,29 @@ import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 
-const AssetEventDetail = theGraphGraphqlKit(
-  `
-  query AssetEventDetail($id: ID!) {
-    activityLogEntry(id: $id) {
-      blockNumber
-      blockTimestamp
-      emitter {
-        id
-      }
-      eventName
-      sender {
-        id
-      }
-      transactionHash
-      txIndex
-      values {
-        name
-        value
-      }
-    }
-  }
-`
-);
+// const AssetEventDetail = theGraphGraphqlKit(
+//   `
+//   query AssetEventDetail($id: ID!) {
+//     activityLogEntry(id: $id) {
+//       blockNumber
+//       blockTimestamp
+//       emitter {
+//         id
+//       }
+//       eventName
+//       sender {
+//         id
+//       }
+//       transactionHash
+//       txIndex
+//       values {
+//         name
+//         value
+//       }
+//     }
+//   }
+// `
+// );
 
 /**
  * Props interface for asset events list components
@@ -46,16 +46,16 @@ const fetchAssetEventDetail = cache(async (id: string) => {
   "use cache";
   cacheTag("asset");
 
-  const event = await theGraphClientKit.request(
-    AssetEventDetail,
-    {
-      id,
-    },
-    {
-      "X-GraphQL-Operation-Name": "AssetEventDetail",
-      "X-GraphQL-Operation-Type": "query",
-    }
-  );
+        //       // const event = await theGraphClientKit.request(
+      //       //     AssetEventDetail,
+      //       //     {
+      //       //       id,
+      //       //     },
+      //       //     {
+      //       //       "X-GraphQL-Operation-Name": "AssetEventDetail",
+      //       //       "X-GraphQL-Operation-Type": "query",
+      //       //     }
+      //       //   );
 
   return event.activityLogEntry;
 });

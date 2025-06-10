@@ -23,16 +23,16 @@ import {
 /**
  * GraphQL query to fetch on-chain cryptocurrency details from The Graph
  */
-const CryptoCurrencyDetail = theGraphGraphqlKit(
-  `
-  query CryptoCurrencyDetail($id: ID!) {
-    cryptoCurrency(id: $id) {
-      ...CryptoCurrencyFragment
-    }
-  }
-`,
-  [CryptoCurrencyFragment]
-);
+// const CryptoCurrencyDetail = theGraphGraphqlKit(
+//   `
+//   query CryptoCurrencyDetail($id: ID!) {
+//     cryptoCurrency(id: $id) {
+//       ...CryptoCurrencyFragment
+//     }
+//   }
+// `,
+//   [CryptoCurrencyFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain cryptocurrency details from Hasura
@@ -73,16 +73,16 @@ export const getCryptoCurrencyDetail = withTracing(
     cacheTag("asset");
     const [onChainCryptoCurrency, offChainCryptoCurrency] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(
-          CryptoCurrencyDetail,
-          {
-            id: address,
-          },
-          {
-            "X-GraphQL-Operation-Name": "CryptoCurrencyDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+              //       // const response = await theGraphClientKit.request(
+      //       //           CryptoCurrencyDetail,
+      //       //           {
+      //       //             id: address,
+      //       //           },
+      //       //           {
+      //       //             "X-GraphQL-Operation-Name": "CryptoCurrencyDetail",
+      //       //             "X-GraphQL-Operation-Type": "query",
+      //       //           }
+      //       //         );
         if (!response.cryptoCurrency) {
           throw new Error("Cryptocurrency not found");
         }
