@@ -42,7 +42,10 @@ export function Columns() {
     columnHelper.display({
       header: t("table.status-header"),
       cell: ({ row }) => (
-        <AirdropClaimStatusIndicator airdrop={row.original.airdrop} />
+        <AirdropClaimStatusIndicator
+          airdrop={row.original.airdrop}
+          amountExact={row.original.amountExact.toString()}
+        />
       ),
     }),
     columnHelper.display({

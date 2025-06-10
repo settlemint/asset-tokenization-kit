@@ -41,16 +41,14 @@ export function ClaimForm({
         }}
         defaultValues={{
           airdrop: address,
-          asset: airdropDetails.airdrop.asset,
           index: airdropDetails.index,
           amount: airdropDetails.amount,
           amountExact: airdropDetails.amountExact.toString(),
           recipient: airdropDetails.recipient,
-          price: airdropDetails.price,
           airdropType: airdropDetails.airdrop.type,
         }}
       >
-        <Summary />
+        <Summary airdropDetails={airdropDetails} />
       </Form>
     </FormSheet>
   );

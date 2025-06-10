@@ -42,7 +42,7 @@ export function PushAirdropDetails({
         />
       </DetailGridItem>
       <DetailGridItem label={t("status")}>
-        <AirdropClaimStatusIndicator airdrop={airdrop} />
+        <AirdropClaimStatusIndicator airdrop={airdrop} amountExact={amount} />
       </DetailGridItem>
       <DetailGridItem label={t("amount")}>
         {formatNumber(amount, {

@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { getUserAirdropDetail } from "@/lib/queries/airdrop/user-airdrop-detail";
+import type { UserAirdropDetail } from "@/lib/queries/airdrop/user-airdrop-schema";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -16,7 +16,7 @@ import { ClaimForm } from "./claim-form/form";
 
 interface MyAirdropManageDropdownProps {
   address: Address;
-  airdropDetails: Awaited<ReturnType<typeof getUserAirdropDetail>>;
+  airdropDetails: UserAirdropDetail;
 }
 
 export function MyAirdropManageDropdown({
@@ -33,6 +33,7 @@ export function MyAirdropManageDropdown({
   };
 
   const isClaimed = Boolean(airdropDetails.airdrop.claimed);
+  // TODO: for vesting airdrops, check if vesting has been initialized, if not initialized and cliff period has passed, disable button + show error
 
   return (
     <>

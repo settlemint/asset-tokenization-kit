@@ -9,10 +9,10 @@ import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress, type Address } from "viem";
 import { PushAirdropFragment } from "../push-airdrop/push-airdrop-fragment";
 import { StandardAirdropFragment } from "../standard-airdrop/standard-airdrop-fragment";
+import type { VestingData } from "../vesting-airdrop/linear-vesting-strategy-schema";
 import { VestingAirdropFragment } from "../vesting-airdrop/vesting-airdrop-fragment";
 import { AirdropClaimFragment } from "./airdrop-fragment";
 import { getUserAirdropDistributionList } from "./user-airdrop-distribution";
@@ -20,7 +20,6 @@ import {
   AirdropClaimSchema,
   UserAirdropSchema,
   type UserAirdrop,
-  type UserVestingData,
 } from "./user-airdrop-schema";
 
 /**
@@ -80,11 +79,19 @@ export const getUserAirdropList = withTracing(
   "queries",
   "getUserAirdropList",
   async (user: Address): Promise<UserAirdrop[]> => {
-    "use cache";
-    cacheTag("airdrop");
+    // "use cache";
+    // cacheTag("airdrop");
 
-    const distributions = await getUserAirdropDistributionList(user);
-    const uniqueAirdropIds = [...new Set(distributions.map((d) => d.airdrop))];
+    const distributions = (await getUserAirdropDistributionList(user)).filter(
+      (d) => {
+        return d.airdrop === "0xFe78F1A16Dc53512b1862C03d56D9D0b403F7e02";
+      }
+    );
+    const uniqueAirdropIds = [
+      ...new Set(distributions.map((d) => d.airdrop)),
+    ].filter(
+      (airdrop) => airdrop === "0xFe78F1A16Dc53512b1862C03d56D9D0b403F7e02"
+    );
 
     // Create recipient IDs for The Graph query (airdropId-recipientAddress format)
     const recipientIds = distributions.map((d) =>
@@ -145,12 +152,13 @@ export const getUserAirdropList = withTracing(
       );
 
       // Get user vesting data if this is a vesting airdrop
-      let userVestingData: UserVestingData = null;
+      let userVestingData: VestingData | null = null;
       if (airdropData.type === "VestingAirdrop") {
         if (airdropData.strategy?.vestingData) {
-          userVestingData = airdropData.strategy.vestingData.find(
+          const data = airdropData.strategy.vestingData.find(
             (vd) => getAddress(vd.user.id) === getAddress(user)
           );
+          userVestingData = data ?? null;
         }
       }
 

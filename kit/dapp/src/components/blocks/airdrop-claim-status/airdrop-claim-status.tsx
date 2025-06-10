@@ -18,6 +18,7 @@ import type { ReactElement } from "react";
 
 type AirdropClaimStatusIndicatorProps = {
   airdrop: UserAirdrop["airdrop"];
+  amountExact: string;
   asBadge?: boolean;
 };
 
@@ -30,7 +31,8 @@ type StatusResult = {
  * Calculate airdrop status and message based on type
  */
 function calculateAirdropStatusAndMessage(
-  airdrop: UserAirdrop["airdrop"]
+  airdrop: UserAirdrop["airdrop"],
+  amountExact: string
 ): StatusResult {
   switch (airdrop.__typename) {
     case "StandardAirdrop":
@@ -40,7 +42,7 @@ function calculateAirdropStatusAndMessage(
       return CalculatePushAirdropStatus(airdrop);
 
     case "VestingAirdrop":
-      return CalculateVestingAirdropStatus(airdrop);
+      return CalculateVestingAirdropStatus(airdrop, amountExact);
 
     default:
       exhaustiveGuard(airdrop);
@@ -49,10 +51,14 @@ function calculateAirdropStatusAndMessage(
 
 export function AirdropClaimStatusIndicator({
   airdrop,
+  amountExact,
   asBadge = false,
 }: AirdropClaimStatusIndicatorProps): ReactElement {
   const t = useTranslations("portfolio.my-airdrops");
-  const { status, message } = calculateAirdropStatusAndMessage(airdrop);
+  const { status, message } = calculateAirdropStatusAndMessage(
+    airdrop,
+    amountExact
+  );
 
   const statusConfig = {
     READY: {

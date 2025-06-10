@@ -15,33 +15,39 @@ export type VestingAirdropStatusResult = {
  */
 function calculateClaimableAmount(
   vestingStart: Date,
-  totalAllocated: number,
-  totalClaimed: number,
-  vestingDuration: number
-): number {
+  totalAllocatedExact: bigint,
+  totalClaimedExact: bigint,
+  vestingDuration: bigint = BigInt(0)
+) {
   const currentTime = new Date();
-  const timeElapsed = Math.floor(
-    (currentTime.getTime() - vestingStart.getTime()) / 1000
+  const timeElapsed = BigInt(
+    Math.floor((currentTime.getTime() - vestingStart.getTime()) / 1000)
   );
 
-  let vestedAmount = 0;
-  if (timeElapsed >= vestingDuration) {
-    vestedAmount = totalAllocated; // Fully vested
-  } else {
-    vestedAmount = Math.floor((totalAllocated * timeElapsed) / vestingDuration);
+  if (vestingDuration === BigInt(0)) {
+    return 0n;
   }
 
-  return vestedAmount - totalClaimed;
+  let vestedAmount = BigInt(0);
+  if (timeElapsed >= vestingDuration) {
+    vestedAmount = totalAllocatedExact; // Fully vested
+  } else {
+    vestedAmount = BigInt(
+      (totalAllocatedExact * timeElapsed) / vestingDuration
+    );
+  }
+
+  return vestedAmount - totalClaimedExact;
 }
 
 /**
  * Check if cliff period has passed
  */
-function hasCliffPassed(vestingStart: Date, cliffDuration: number): boolean {
-  if (cliffDuration <= 0) return true;
+function hasCliffPassed(vestingStart: Date, cliffDuration?: bigint): boolean {
+  if (!cliffDuration || cliffDuration <= 0) return true;
 
   const currentTime = new Date();
-  const cliffEnd = addSeconds(vestingStart, cliffDuration);
+  const cliffEnd = addSeconds(vestingStart, Number(cliffDuration));
   return isAfter(currentTime, cliffEnd);
 }
 
@@ -55,11 +61,12 @@ function hasCliffPassed(vestingStart: Date, cliffDuration: number): boolean {
  * @returns Object containing status and translated message
  */
 export function CalculateVestingAirdropStatus(
-  airdrop: VestingAirdropRecipient
+  airdrop: VestingAirdropRecipient,
+  amountExact: string
 ): VestingAirdropStatusResult {
   const t = useTranslations("portfolio.my-airdrops.tooltip");
   const currentTime = new Date();
-  const { claimPeriodEnd, userVestingData, strategy } = airdrop;
+  const { claimPeriodEnd, strategy, userVestingData } = airdrop;
 
   // Early return: User hasn't initialized vesting
   if (!userVestingData?.initialized) {
@@ -79,11 +86,11 @@ export function CalculateVestingAirdropStatus(
     };
   }
 
-  const totalAllocated = userVestingData.totalAmountAggregated;
-  const totalClaimed = userVestingData.claimedAmountTrackedByStrategy;
+  const totalAllocatedExact = BigInt(amountExact);
+  const totalClaimedExact = userVestingData.claimedAmountTrackedByStrategyExact;
 
   // Early return: All tokens claimed
-  if (totalClaimed >= totalAllocated) {
+  if (totalClaimedExact >= totalAllocatedExact) {
     return {
       status: "CLAIMED",
       message: t("vesting-airdrop.claimed"),
@@ -91,11 +98,11 @@ export function CalculateVestingAirdropStatus(
   }
 
   const vestingStart = userVestingData.vestingStart;
-  const cliffDuration = Number(strategy?.cliffDuration || 0);
+  const cliffDuration = strategy?.cliffDuration;
 
   // Early return: Waiting for cliff to pass
   if (!hasCliffPassed(vestingStart, cliffDuration)) {
-    const cliffEnd = addSeconds(vestingStart, cliffDuration);
+    const cliffEnd = addSeconds(vestingStart, Number(cliffDuration));
     return {
       status: "PENDING",
       message: t("vesting-airdrop.pending-cliff", {
@@ -105,25 +112,83 @@ export function CalculateVestingAirdropStatus(
   }
 
   // Check if there are claimable tokens
-  const vestingDuration = Number(strategy?.vestingDuration || 0);
-  if (vestingDuration > 0) {
-    const claimableAmount = calculateClaimableAmount(
-      vestingStart,
-      totalAllocated,
-      totalClaimed,
-      vestingDuration
-    );
+  const claimableAmount = calculateClaimableAmount(
+    vestingStart,
+    totalAllocatedExact,
+    totalClaimedExact,
+    strategy?.vestingDuration || BigInt(0)
+  );
 
-    if (claimableAmount > 0) {
-      return {
-        status: "READY",
-        message: t("vesting-airdrop.ready-claim"),
-      };
-    }
+  if (claimableAmount > 0) {
+    return {
+      status: "READY",
+      message: t("vesting-airdrop.ready-claim"),
+    };
   }
 
   return {
     status: "PENDING",
     message: t("vesting-airdrop.pending-vesting"),
+  };
+}
+
+export function calculateVestingAirdropAmounts(
+  airdrop: VestingAirdropRecipient,
+  amountExact: bigint
+) {
+  const currentTime = new Date();
+  const { userVestingData } = airdrop;
+
+  if (
+    !userVestingData?.initialized &&
+    isAfter(currentTime, airdrop.claimPeriodEnd)
+  ) {
+    return {
+      claimableExact: 0,
+      vestedExact: 0,
+      claimedExact: 0,
+      totalAllocatedExact: amountExact,
+    };
+  }
+
+  // No vesting start -> claim has not been initialized
+  if (!userVestingData?.vestingStart) {
+    return {
+      claimableExact: 0,
+      vestedExact: 0,
+      claimedExact: 0,
+      totalAllocatedExact: amountExact,
+    };
+  }
+
+  const vestingStart = userVestingData.vestingStart;
+  const cliffDuration = airdrop.strategy?.cliffDuration;
+
+  if (!hasCliffPassed(vestingStart, cliffDuration)) {
+    return {
+      claimedExact: 0,
+      claimableExact: 0,
+      vestedExact: amountExact,
+      totalAllocatedExact: amountExact,
+    };
+  }
+
+  const claimableAmountExact = calculateClaimableAmount(
+    vestingStart,
+    amountExact,
+    userVestingData.claimedAmountTrackedByStrategyExact,
+    airdrop.strategy?.vestingDuration
+  );
+
+  const vestedExact =
+    amountExact -
+    claimableAmountExact -
+    userVestingData.claimedAmountTrackedByStrategyExact;
+
+  return {
+    claimableExact: claimableAmountExact,
+    vestedExact: vestedExact > BigInt(0) ? vestedExact : BigInt(0),
+    claimedExact: userVestingData.claimedAmountTrackedByStrategyExact,
+    totalAllocatedExact: amountExact,
   };
 }

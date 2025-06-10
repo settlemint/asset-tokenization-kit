@@ -14,11 +14,14 @@ export const LinearVestingStrategyFragment = theGraphGraphqlKit(`
     cliffDuration
     vestingDuration
     vestingData {
+      id
       user {
         id
       }
       totalAmountAggregated
+      totalAmountAggregatedExact
       claimedAmountTrackedByStrategy
+      claimedAmountTrackedByStrategyExact
       vestingStart
       initialized
     }

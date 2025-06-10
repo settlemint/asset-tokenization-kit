@@ -1,6 +1,6 @@
 import { AirdropDistributionSchema } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
+import { VestingDataSchema } from "@/lib/queries/vesting-airdrop/linear-vesting-strategy-schema";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
-import type { Static } from "@sinclair/typebox";
 import { OnChainPushAirdropSchema } from "../push-airdrop/push-airdrop-schema";
 import { OnChainStandardAirdropSchema } from "../standard-airdrop/standard-airdrop-schema";
 import { OnChainVestingAirdropSchema } from "../vesting-airdrop/vesting-airdrop-schema";
@@ -15,7 +15,7 @@ export const AirdropClaimSchema = t.Optional(
     t.Object(
       {
         id: t.String({
-          description: "Composite ID in format: airdropId-recipientAddress",
+          description: "Composite ID in format: airdropIdrecipientAddress",
         }),
         firstClaimedTimestamp: t.Timestamp({
           description:
@@ -31,45 +31,6 @@ export const AirdropClaimSchema = t.Optional(
 );
 
 export type AirdropClaim = StaticDecode<typeof AirdropClaimSchema>;
-
-/**
- * TypeBox schema for user vesting data from The Graph
- *
- * Provides validation for minimal vesting information needed for status calculation
- */
-export const UserVestingDataSchema = t.Optional(
-  t.MaybeEmpty(
-    t.Object(
-      {
-        user: t.Object({
-          id: t.String({
-            description: "User address",
-          }),
-        }),
-        totalAmountAggregated: t.BigDecimal({
-          description:
-            "Total allocated amount across all indices for this user",
-        }),
-        claimedAmountTrackedByStrategy: t.BigDecimal({
-          description:
-            "Amount claimed according to strategy's internal tracking",
-        }),
-        vestingStart: t.Timestamp({
-          description: "Timestamp when vesting started for this user",
-        }),
-        initialized: t.Boolean({
-          description: "Whether vesting has been initialized for this user",
-        }),
-      },
-      {
-        description:
-          "Schema for minimal vesting data needed for status calculation",
-      }
-    )
-  )
-);
-
-export type UserVestingData = Static<typeof UserVestingDataSchema>;
 
 export const StandardAirdropRecipientSchema = t.Object({
   ...OnChainStandardAirdropSchema.properties,
@@ -109,7 +70,7 @@ export type PushAirdropRecipient = StaticDecode<
 
 export const VestingAirdropRecipientSchema = t.Object({
   ...OnChainVestingAirdropSchema.properties,
-  userVestingData: UserVestingDataSchema,
+  userVestingData: VestingDataSchema,
   claimed: t.Optional(
     t.MaybeEmpty(
       t.Timestamp({

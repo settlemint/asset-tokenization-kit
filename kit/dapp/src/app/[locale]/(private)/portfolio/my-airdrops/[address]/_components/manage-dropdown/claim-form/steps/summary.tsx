@@ -2,11 +2,15 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { ClaimAirdropInput } from "@/lib/mutations/airdrop/claim/claim-schema";
-import { formatNumber } from "@/lib/utils/number";
+import type { UserAirdropDetail } from "@/lib/queries/airdrop/user-airdrop-schema";
 import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-export function Summary() {
+interface SummaryProps {
+  airdropDetails: UserAirdropDetail;
+}
+
+export function Summary({ airdropDetails }: SummaryProps) {
   const t = useTranslations("portfolio.my-airdrops.details.forms.summary");
   const locale = useLocale();
   const form = useFormContext<ClaimAirdropInput>();
@@ -18,7 +22,7 @@ export function Summary() {
         label={t("airdrop-contract-label")}
         value={values.airdrop ? <EvmAddress address={values.airdrop} /> : "-"}
       />
-      <FormSummaryDetailItem
+      {/* <FormSummaryDetailItem
         label={t("amount-label")}
         value={
           values.amount
@@ -29,8 +33,8 @@ export function Summary() {
               })
             : "-"
         }
-      />
-      <FormSummaryDetailItem
+      /> */}
+      {/* <FormSummaryDetailItem
         label={t("value-label")}
         value={
           values.price
@@ -40,7 +44,7 @@ export function Summary() {
               })
             : "-"
         }
-      />
+      /> */}
     </FormStep>
   );
 }

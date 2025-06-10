@@ -19,8 +19,14 @@ export const VestingDataSchema = t.Object(
     vestingStart: t.Timestamp({
       description: "The start time of the vesting in seconds",
     }),
+    claimedAmountTrackedByStrategyExact: t.StringifiedBigInt({
+      description: "The amount claimed by the strategy",
+    }),
     claimedAmountTrackedByStrategy: t.BigDecimal({
       description: "The amount claimed by the strategy",
+    }),
+    totalAmountAggregatedExact: t.StringifiedBigInt({
+      description: "The total amount aggregated",
     }),
     totalAmountAggregated: t.BigDecimal({
       description: "The total amount aggregated",

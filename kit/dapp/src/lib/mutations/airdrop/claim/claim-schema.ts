@@ -10,20 +10,6 @@ export const ClaimAirdropSchema = t.Object(
     airdropType: t.AirdropType({
       description: "The type of airdrop (standard or vesting)",
     }),
-    asset: t.Object({
-      id: t.EthereumAddress({
-        description: "The address of the asset to claim",
-      }),
-      symbol: t.String({
-        description: "The symbol of the asset to claim",
-      }),
-      decimals: t.Number({
-        description: "The decimals of the asset to claim",
-      }),
-    }),
-    price: t.Price({
-      description: "The price of the asset to claim",
-    }),
     verificationCode: t.VerificationCode({
       description:
         "The verification code (PIN, 2FA, or secret code) for signing the transaction",
