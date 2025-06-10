@@ -27,7 +27,7 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
     IdentityVerificationModule
   );
 
-  const systemFactory = m.contract("SMARTSystemFactory", [
+  const systemFactory = m.contract("ATKSystemFactory", [
     compliance,
     identityRegistry,
     identityRegistryStorage,

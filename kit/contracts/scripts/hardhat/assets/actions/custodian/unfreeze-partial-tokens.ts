@@ -1,4 +1,4 @@
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
@@ -14,7 +14,7 @@ export const unfreezePartialTokens = async (
 ) => {
   const tokenContract = custodian.getContractInstance({
     address: asset.address,
-    abi: SMARTContracts.ismartCustodian,
+    abi: ATKContracts.ismartCustodian,
   });
 
   const tokenAmount = toDecimals(amount, asset.decimals);

@@ -1,13 +1,13 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import SMARTModule from "../../main";
-import SMARTOnboardingSystemModule from "../system";
+import ATKModule from "../../main";
+import ATKOnboardingSystemModule from "../system";
 
-const SMARTOnboardingDepositModule = buildModule(
-  "SMARTOnboardingDepositModule",
+const ATKOnboardingDepositModule = buildModule(
+  "ATKOnboardingDepositModule",
   (m) => {
-    const { system } = m.useModule(SMARTOnboardingSystemModule);
+    const { system } = m.useModule(ATKOnboardingSystemModule);
     const { depositFactoryImplementation, depositImplementation } =
-      m.useModule(SMARTModule);
+      m.useModule(ATKModule);
 
     const createDepositFactory = m.call(system, "createTokenFactory", [
       "deposit",
@@ -21,7 +21,7 @@ const SMARTOnboardingDepositModule = buildModule(
       { id: "depositFactoryAddress" }
     );
     const depositFactoryProxy = m.contractAt(
-      "SMARTDepositFactoryImplementation",
+      "ATKDepositFactoryImplementation",
       depositFactoryAddress,
       {
         id: "depositFactory",
@@ -34,4 +34,4 @@ const SMARTOnboardingDepositModule = buildModule(
   }
 );
 
-export default SMARTOnboardingDepositModule;
+export default ATKOnboardingDepositModule;

@@ -1,19 +1,19 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import SMARTOnboardingBondModule from "./onboarding/assets/bond";
-import SMARTOnboardingDepositModule from "./onboarding/assets/deposit";
-import SMARTOnboardingEquityModule from "./onboarding/assets/equity";
-import SMARTOnboardingFundModule from "./onboarding/assets/fund";
-import SMARTOnboardingStableCoinModule from "./onboarding/assets/stablecoin";
-import SMARTOnboardingSystemModule from "./onboarding/system";
+import ATKOnboardingBondModule from "./onboarding/assets/bond";
+import ATKOnboardingDepositModule from "./onboarding/assets/deposit";
+import ATKOnboardingEquityModule from "./onboarding/assets/equity";
+import ATKOnboardingFundModule from "./onboarding/assets/fund";
+import ATKOnboardingStableCoinModule from "./onboarding/assets/stablecoin";
+import ATKOnboardingSystemModule from "./onboarding/system";
 import CountryAllowListModule from "./predeployed/modules/country-allow-list-module";
 import CountryBlockListModule from "./predeployed/modules/country-block-list-module";
 
 /**
- * This module is used to deploy the SMART contracts, this should be used to
+ * This module is used to deploy the ATK contracts, this should be used to
  * bootstrap a public network. For SettleMint consortium networks this is handled
  * by predeploying in the genesis file.
  */
-const SMARTOnboardingModule = buildModule("SMARTOnboardingModule", (m) => {
+const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
   const {
     system,
     compliance,
@@ -23,14 +23,14 @@ const SMARTOnboardingModule = buildModule("SMARTOnboardingModule", (m) => {
     topicSchemeRegistry,
     identityFactory,
     fixedYieldScheduleFactory,
-  } = m.useModule(SMARTOnboardingSystemModule);
+  } = m.useModule(ATKOnboardingSystemModule);
 
   // This can be setup based out of configuration in the onboarding wizard at some point
-  const { bondFactory } = m.useModule(SMARTOnboardingBondModule);
-  const { depositFactory } = m.useModule(SMARTOnboardingDepositModule);
-  const { equityFactory } = m.useModule(SMARTOnboardingEquityModule);
-  const { fundFactory } = m.useModule(SMARTOnboardingFundModule);
-  const { stablecoinFactory } = m.useModule(SMARTOnboardingStableCoinModule);
+  const { bondFactory } = m.useModule(ATKOnboardingBondModule);
+  const { depositFactory } = m.useModule(ATKOnboardingDepositModule);
+  const { equityFactory } = m.useModule(ATKOnboardingEquityModule);
+  const { fundFactory } = m.useModule(ATKOnboardingFundModule);
+  const { stablecoinFactory } = m.useModule(ATKOnboardingStableCoinModule);
 
   const { countryAllowListModule } = m.useModule(CountryAllowListModule);
   const { countryBlockListModule } = m.useModule(CountryBlockListModule);
@@ -55,4 +55,4 @@ const SMARTOnboardingModule = buildModule("SMARTOnboardingModule", (m) => {
   };
 });
 
-export default SMARTOnboardingModule;
+export default ATKOnboardingModule;

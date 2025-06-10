@@ -6,7 +6,7 @@ import {
   decodeErrorResult,
   Hex,
 } from "viem";
-import { SMARTContracts } from "../constants/contracts";
+import { ATKContracts } from "../constants/contracts";
 
 const ARTIFACTS_DIR = join(__dirname, "../../../artifacts");
 
@@ -41,7 +41,7 @@ async function tryDecodeRevertReason(error: Error): Promise<never> {
 }
 
 async function parseRevertReason(revertReason: Hex | undefined) {
-  for (const abi of Object.values(SMARTContracts)) {
+  for (const abi of Object.values(ATKContracts)) {
     const decoded = decodeRevertReason(revertReason, abi);
     if (decoded) {
       return decoded;

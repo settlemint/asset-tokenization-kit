@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
@@ -13,7 +13,7 @@ export const forcedRecoverTokens = async (
 ) => {
   const custodianContract = custodian.getContractInstance({
     address: asset.address,
-    abi: SMARTContracts.ismartCustodian,
+    abi: ATKContracts.ismartCustodian,
   });
 
   const transactionHash = await withDecodedRevertReason(() =>

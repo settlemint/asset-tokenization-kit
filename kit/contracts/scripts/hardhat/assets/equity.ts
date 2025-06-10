@@ -1,6 +1,6 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 
-import { SMARTTopic } from "../constants/topics";
+import { ATKTopic } from "../constants/topics";
 import {
   frozenInvestor,
   investorA,
@@ -8,7 +8,7 @@ import {
 } from "../entities/actors/investors";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
@@ -22,7 +22,7 @@ import { setupAsset } from "./actions/setup-asset";
 export const createEquity = async () => {
   console.log("\n=== Creating equity... ===\n");
 
-  const equityFactory = smartProtocolDeployer.getEquityFactoryContract();
+  const equityFactory = atkDeployer.getEquityFactoryContract();
 
   const equity = new Asset<"equityFactory">(
     "Apple",
@@ -41,12 +41,10 @@ export const createEquity = async () => {
     equity.name,
     equity.symbol,
     equity.decimals,
-    [topicManager.getTopicId(SMARTTopic.kyc)],
+    [topicManager.getTopicId(ATKTopic.kyc)],
     [
       {
-        module: smartProtocolDeployer.getContractAddress(
-          "countryBlockListModule"
-        ),
+        module: atkDeployer.getContractAddress("countryBlockListModule"),
         params: encodedBlockedCountries,
       },
     ],

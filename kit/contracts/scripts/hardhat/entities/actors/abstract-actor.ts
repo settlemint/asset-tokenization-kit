@@ -10,7 +10,7 @@ import {
   getContract as getViemContract,
 } from "viem";
 import type { Account } from "viem/accounts";
-import { smartProtocolDeployer } from "../../services/deployer";
+import { atkDeployer } from "../../services/deployer";
 import { getPublicClient } from "../../utils/public-client";
 import { waitForEvent } from "../../utils/wait-for-event";
 
@@ -84,8 +84,7 @@ export abstract class AbstractActor {
     this._identityPromise = new Promise((resolve, reject) => {
       // Internal function to create the identity
       const createIdentity = async (): Promise<`0x${string}`> => {
-        const identityFactory =
-          smartProtocolDeployer.getIdentityFactoryContract();
+        const identityFactory = atkDeployer.getIdentityFactoryContract();
         const transactionHash = await identityFactory.write.createIdentity([
           this.address,
           [],

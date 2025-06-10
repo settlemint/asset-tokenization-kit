@@ -1,11 +1,11 @@
 /**
- * SMART Protocol Topic Constants
+ * ATK Protocol Topic Constants
  *
- * These constants must match the topic names defined in contracts/system/SMARTTopics.sol
+ * These constants must match the topic names defined in contracts/system/ATKTopics.sol
  * Topic IDs are dynamically generated during system bootstrap using keccak256(abi.encodePacked(name))
  */
 
-export enum SMARTTopic {
+export enum ATKTopic {
   kyc = "kyc",
   aml = "aml",
   collateral = "collateral",

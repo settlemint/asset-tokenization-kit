@@ -31,7 +31,7 @@ import {
   trustedIssuersRegistryAbi,
 } from "../abi";
 
-export const SMARTContracts = {
+export const ATKContracts = {
   // onboarding
   system: systemAbi,
   compliance: complianceAbi,

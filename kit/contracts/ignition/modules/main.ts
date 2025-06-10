@@ -7,11 +7,11 @@ import StableCoinModule from "./predeployed/assets/stablecoin";
 import SystemFactoryModule from "./predeployed/system-factory";
 
 /**
- * This module is used to deploy the SMART contracts, this should be used to
+ * This module is used to deploy the ATK contracts, this should be used to
  * bootstrap a public network. For SettleMint consortium networks this is handled
  * by predeploying in the genesis file.
  */
-const SMARTModule = buildModule("SMARTModule", (m) => {
+const ATKModule = buildModule("ATKModule", (m) => {
   const { systemFactory } = m.useModule(SystemFactoryModule);
   const { bondImplementation, bondFactoryImplementation } =
     m.useModule(BondModule);
@@ -39,4 +39,4 @@ const SMARTModule = buildModule("SMARTModule", (m) => {
   };
 });
 
-export default SMARTModule;
+export default ATKModule;

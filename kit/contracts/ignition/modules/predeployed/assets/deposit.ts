@@ -5,10 +5,10 @@ const DepositModule = buildModule("DepositModule", (m) => {
   const { forwarder } = m.useModule(ForwarderModule);
 
   const depositFactoryImplementation = m.contract(
-    "SMARTDepositFactoryImplementation",
+    "ATKDepositFactoryImplementation",
     [forwarder]
   );
-  const depositImplementation = m.contract("SMARTDepositImplementation", [
+  const depositImplementation = m.contract("ATKDepositImplementation", [
     forwarder,
   ]);
 

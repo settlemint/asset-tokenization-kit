@@ -1,6 +1,6 @@
 import { encodePacked, keccak256 } from "viem";
-import { SMARTTopic } from "../constants/topics";
-import { smartProtocolDeployer } from "./deployer";
+import { ATKTopic } from "../constants/topics";
+import { atkDeployer } from "./deployer";
 
 /**
  * Cached topic information
@@ -106,11 +106,11 @@ export class TopicManager {
   /**
    * Get topic IDs for the default SMART topics
    */
-  public getDefaultTopicIds(): Record<SMARTTopic, bigint> {
-    const result = {} as Record<SMARTTopic, bigint>;
+  public getDefaultTopicIds(): Record<ATKTopic, bigint> {
+    const result = {} as Record<ATKTopic, bigint>;
 
-    for (const [key, name] of Object.entries(SMARTTopic)) {
-      result[key as SMARTTopic] = this.getTopicId(name);
+    for (const [key, name] of Object.entries(ATKTopic)) {
+      result[key as ATKTopic] = this.getTopicId(name);
     }
 
     return result;
@@ -120,8 +120,7 @@ export class TopicManager {
    * Load topics from the registry and cache them
    */
   private async _loadTopicsFromRegistry(): Promise<void> {
-    const topicRegistry =
-      smartProtocolDeployer.getTopicSchemeRegistryContract();
+    const topicRegistry = atkDeployer.getTopicSchemeRegistryContract();
 
     try {
       // Get all topic IDs from the registry
@@ -142,7 +141,7 @@ export class TopicManager {
           let topicName: string | null = null;
 
           // Check if this is one of the default topics
-          for (const [, name] of Object.entries(SMARTTopic)) {
+          for (const [, name] of Object.entries(ATKTopic)) {
             const calculatedId = this.getTopicId(name);
             if (calculatedId === topicId) {
               topicName = name;
@@ -173,12 +172,12 @@ export class TopicManager {
         `[TopicManager] Loaded ${this._topicCache.size} topics into cache`
       );
       console.log("[TopicManager] Default Topic IDs:", {
-        kyc: this.getTopicId(SMARTTopic.kyc).toString(),
-        aml: this.getTopicId(SMARTTopic.aml).toString(),
-        collateral: this.getTopicId(SMARTTopic.collateral).toString(),
-        isin: this.getTopicId(SMARTTopic.isin).toString(),
+        kyc: this.getTopicId(ATKTopic.kyc).toString(),
+        aml: this.getTopicId(ATKTopic.aml).toString(),
+        collateral: this.getTopicId(ATKTopic.collateral).toString(),
+        isin: this.getTopicId(ATKTopic.isin).toString(),
         assetClassification: this.getTopicId(
-          SMARTTopic.assetClassification
+          ATKTopic.assetClassification
         ).toString(),
       });
     } catch (error) {

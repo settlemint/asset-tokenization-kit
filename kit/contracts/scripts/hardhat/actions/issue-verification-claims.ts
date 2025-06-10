@@ -1,10 +1,10 @@
 import type { Address } from "viem";
-import { SMARTContracts } from "../constants/contracts";
+import { ATKContracts } from "../constants/contracts";
 import type { AbstractActor } from "../entities/actors/abstract-actor";
 import { claimIssuer } from "../entities/actors/claim-issuer";
 
-import { SMARTTopic } from "../constants/topics";
-import { smartProtocolDeployer } from "../services/deployer";
+import { ATKTopic } from "../constants/topics";
+import { atkDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
 import { encodeClaimData } from "../utils/claim-scheme-utils";
 import { waitForSuccess } from "../utils/wait-for-success";
@@ -16,23 +16,23 @@ export const issueVerificationClaims = async (actor: AbstractActor) => {
   await _issueClaim(
     actor,
     claimIssuerIdentity,
-    SMARTTopic.kyc,
+    ATKTopic.kyc,
     `KYC verified by ${claimIssuer.name} (${claimIssuerIdentity})`
   );
   await _issueClaim(
     actor,
     claimIssuerIdentity,
-    SMARTTopic.aml,
+    ATKTopic.aml,
     `AML verified by ${claimIssuer.name} (${claimIssuerIdentity})`
   );
 
-  const isVerified = await smartProtocolDeployer
+  const isVerified = await atkDeployer
     .getIdentityRegistryContract()
     .read.isVerified([
       actor.address,
       [
-        topicManager.getTopicId(SMARTTopic.kyc),
-        topicManager.getTopicId(SMARTTopic.aml),
+        topicManager.getTopicId(ATKTopic.kyc),
+        topicManager.getTopicId(ATKTopic.aml),
       ],
     ]);
 
@@ -48,7 +48,7 @@ export const issueVerificationClaims = async (actor: AbstractActor) => {
 async function _issueClaim(
   actor: AbstractActor,
   claimIssuerIdentity: Address,
-  claimTopic: SMARTTopic,
+  claimTopic: ATKTopic,
   claimData: string
 ) {
   const encodedClaimData = encodeClaimData(claimTopic, [claimData]);
@@ -63,7 +63,7 @@ async function _issueClaim(
 
   const identityContract = actor.getContractInstance({
     address: identityAddress,
-    abi: SMARTContracts.identity,
+    abi: ATKContracts.identity,
   });
 
   const transactionHash = await identityContract.write.addClaim([

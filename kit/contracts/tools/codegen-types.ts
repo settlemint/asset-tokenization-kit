@@ -45,29 +45,29 @@ const OUTPUT_DIR = join(CONTRACTS_ROOT, "scripts/hardhat/abi");
 
 const ABI_PATHS = {
   // onboarding
-  system: `${ARTIFACTS_DIR}/contracts/system/ISMARTSystem.sol/ISMARTSystem.json`,
+  system: `${ARTIFACTS_DIR}/contracts/system/IATKSystem.sol/IATKSystem.json`,
   compliance: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMARTCompliance.sol/ISMARTCompliance.json`,
   identityRegistry: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json`,
   identityRegistryStorage: `${ARTIFACTS_DIR}/contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol/IERC3643IdentityRegistryStorage.json`,
   trustedIssuersRegistry: `${ARTIFACTS_DIR}/contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol/IERC3643TrustedIssuersRegistry.json`,
-  topicSchemeRegistry: `${ARTIFACTS_DIR}/contracts/system/topic-scheme-registry/SMARTTopicSchemeRegistryImplementation.sol/SMARTTopicSchemeRegistryImplementation.json`,
-  identityFactory: `${ARTIFACTS_DIR}/contracts/system/identity-factory/ISMARTIdentityFactory.sol/ISMARTIdentityFactory.json`,
-  bondFactory: `${ARTIFACTS_DIR}/contracts/assets/bond/ISMARTBondFactory.sol/ISMARTBondFactory.json`,
-  depositFactory: `${ARTIFACTS_DIR}/contracts/assets/deposit/SMARTDepositFactoryImplementation.sol/SMARTDepositFactoryImplementation.json`,
-  equityFactory: `${ARTIFACTS_DIR}/contracts/assets/equity/ISMARTEquityFactory.sol/ISMARTEquityFactory.json`,
-  fundFactory: `${ARTIFACTS_DIR}/contracts/assets/fund/ISMARTFundFactory.sol/ISMARTFundFactory.json`,
-  stablecoinFactory: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/ISMARTStableCoinFactory.sol/ISMARTStableCoinFactory.json`,
-  fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/system/yield/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json`,
+  topicSchemeRegistry: `${ARTIFACTS_DIR}/contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol/ATKTopicSchemeRegistryImplementation.json`,
+  identityFactory: `${ARTIFACTS_DIR}/contracts/system/identity-factory/IATKIdentityFactory.sol/IATKIdentityFactory.json`,
+  bondFactory: `${ARTIFACTS_DIR}/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json`,
+  depositFactory: `${ARTIFACTS_DIR}/contracts/assets/deposit/ATKDepositFactoryImplementation.sol/ATKDepositFactoryImplementation.json`,
+  equityFactory: `${ARTIFACTS_DIR}/contracts/assets/equity/IATKEquityFactory.sol/IATKEquityFactory.json`,
+  fundFactory: `${ARTIFACTS_DIR}/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json`,
+  stablecoinFactory: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/IATKStableCoinFactory.sol/IATKStableCoinFactory.json`,
+  fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/system/yield/ATKFixedYieldScheduleFactory.sol/ATKFixedYieldScheduleFactory.json`,
   // token
   accessManager: `${ARTIFACTS_DIR}/contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
-  identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/SMARTIdentityImplementation.sol/SMARTIdentityImplementation.json`,
-  tokenIdentity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/SMARTTokenIdentityImplementation.sol/SMARTTokenIdentityImplementation.json`,
+  identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKIdentityImplementation.sol/ATKIdentityImplementation.json`,
+  tokenIdentity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol/ATKTokenIdentityImplementation.json`,
   // tokens
-  deposit: `${ARTIFACTS_DIR}/contracts/assets/deposit/SMARTDepositImplementation.sol/SMARTDepositImplementation.json`,
-  equity: `${ARTIFACTS_DIR}/contracts/assets/equity/ISMARTEquity.sol/ISMARTEquity.json`,
-  fund: `${ARTIFACTS_DIR}/contracts/assets/fund/ISMARTFund.sol/ISMARTFund.json`,
-  stablecoin: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/ISMARTStableCoin.sol/ISMARTStableCoin.json`,
-  bond: `${ARTIFACTS_DIR}/contracts/assets/bond/ISMARTBond.sol/ISMARTBond.json`,
+  deposit: `${ARTIFACTS_DIR}/contracts/assets/deposit/ATKDepositImplementation.sol/ATKDepositImplementation.json`,
+  equity: `${ARTIFACTS_DIR}/contracts/assets/equity/IATKEquity.sol/IATKEquity.json`,
+  fund: `${ARTIFACTS_DIR}/contracts/assets/fund/IATKFund.sol/IATKFund.json`,
+  stablecoin: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/IATKStableCoin.sol/IATKStableCoin.json`,
+  bond: `${ARTIFACTS_DIR}/contracts/assets/bond/IATKBond.sol/IATKBond.json`,
   // Open Zeppelin
   accessControl: `${ARTIFACTS_DIR}/@openzeppelin/contracts/access/IAccessControl.sol/IAccessControl.json`,
   // smart
@@ -78,9 +78,9 @@ const ABI_PATHS = {
   ismartYield: `${ARTIFACTS_DIR}/contracts/smart/extensions/yield/ISMARTYield.sol/ISMARTYield.json`,
   ismartFixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json`,
   // compliance modules
-  identityVerification: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol/SMARTIdentityVerificationModule.json`,
-  countryAllowList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
-  countryBlockList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
+  identityVerification: `${ARTIFACTS_DIR}/contracts/smart/modules/SMARTIdentityVerificationModule.sol/SMARTIdentityVerificationModule.json`,
+  countryAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
+  countryBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
 } as const;
 
 const AVAILABLE_ABIS = {
@@ -291,7 +291,7 @@ function listAbiNames(): void {
   console.log("\n💰 Asset Tokens:");
   AVAILABLE_ABIS.assetTokens.forEach((name) => console.log(`  • ${name}`));
 
-  console.log("\n🧠 Core SMART:");
+  console.log("\n🧠 Core ATK:");
   AVAILABLE_ABIS.coreSmart.forEach((name) => console.log(`  • ${name}`));
 
   console.log("\n🔒 Open Zeppelin:");

@@ -9,13 +9,13 @@ import {
   WalletClient,
   decodeEventLog,
 } from "viem";
-import { SMARTContracts } from "../constants/contracts";
+import { ATKContracts } from "../constants/contracts";
 import { ViemContract } from "../services/deployer";
 import { waitForSuccess } from "./wait-for-success";
 
 type Contracts = {
-  [K in keyof typeof SMARTContracts]: ViemContract<
-    (typeof SMARTContracts)[K], // Access ABI by key
+  [K in keyof typeof ATKContracts]: ViemContract<
+    (typeof ATKContracts)[K], // Access ABI by key
     { public: PublicClient; wallet: WalletClient<Transport, Chain, Account> }
   >;
 };

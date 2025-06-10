@@ -4,11 +4,10 @@ import ForwarderModule from "../forwarder";
 const BondModule = buildModule("BondModule", (m) => {
   const { forwarder } = m.useModule(ForwarderModule);
 
-  const bondFactoryImplementation = m.contract(
-    "SMARTBondFactoryImplementation",
-    [forwarder]
-  );
-  const bondImplementation = m.contract("SMARTBondImplementation", [forwarder]);
+  const bondFactoryImplementation = m.contract("ATKBondFactoryImplementation", [
+    forwarder,
+  ]);
+  const bondImplementation = m.contract("ATKBondImplementation", [forwarder]);
 
   return { bondFactoryImplementation, bondImplementation };
 });

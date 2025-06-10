@@ -1,20 +1,20 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import SMARTModule from "../main";
+import ATKModule from "../main";
 import ForwarderModule from "../predeployed/forwarder";
 
-const SMARTOnboardingSystemModule = buildModule(
-  "SMARTOnboardingSystemModule",
+const ATKOnboardingSystemModule = buildModule(
+  "ATKOnboardingSystemModule",
   (m) => {
-    const { systemFactory } = m.useModule(SMARTModule);
+    const { systemFactory } = m.useModule(ATKModule);
 
     const createSystem = m.call(systemFactory, "createSystem");
     const systemAddress = m.readEventArgument(
       createSystem,
-      "SMARTSystemCreated",
+      "ATKSystemCreated",
       "systemAddress",
       { id: "systemAddress" }
     );
-    const system = m.contractAt("SMARTSystem", systemAddress, {
+    const system = m.contractAt("ATKSystem", systemAddress, {
       id: "system",
     });
 
@@ -91,7 +91,7 @@ const SMARTOnboardingSystemModule = buildModule(
     );
 
     const identityFactory = m.contractAt(
-      "ISMARTIdentityFactory",
+      "IATKIdentityFactory",
       identityFactoryAddress,
       { id: "identityFactory" }
     );
@@ -99,7 +99,7 @@ const SMARTOnboardingSystemModule = buildModule(
     const { forwarder } = m.useModule(ForwarderModule);
     // For now do it this way, will be integrated into system completely
     const fixedYieldScheduleFactory = m.contract(
-      "SMARTFixedYieldScheduleFactory",
+      "ATKFixedYieldScheduleFactory",
       [system.address, forwarder]
     );
 
@@ -116,4 +116,4 @@ const SMARTOnboardingSystemModule = buildModule(
   }
 );
 
-export default SMARTOnboardingSystemModule;
+export default ATKOnboardingSystemModule;
