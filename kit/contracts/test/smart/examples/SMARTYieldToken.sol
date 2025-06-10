@@ -31,6 +31,7 @@ contract SMARTYieldToken is SMARTToken, ISMARTYield {
             name_,
             symbol_,
             decimals_,
+            1_000_000 ether,
             forwarder_,
             identityRegistry_,
             compliance_,

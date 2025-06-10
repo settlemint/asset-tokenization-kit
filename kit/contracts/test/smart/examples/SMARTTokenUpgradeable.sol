@@ -29,6 +29,8 @@ import { SMARTHistoricalBalancesUpgradeable } from
     "../../../contracts/smart/extensions/historical-balances/SMARTHistoricalBalancesUpgradeable.sol";
 import { SMARTTokenAccessManagedUpgradeable } from
     "../../../contracts/smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
+import { SMARTCappedUpgradeable } from "../../../contracts/smart/extensions/capped/SMARTCappedUpgradeable.sol";
+
 /// @title SMARTTokenUpgradeable
 /// @author SettleMint
 /// @notice This contract is an upgradeable version of the SMARTToken, designed to be used with a UUPS (Universal
@@ -49,7 +51,8 @@ contract SMARTTokenUpgradeable is
     SMARTPausableUpgradeable,
     SMARTBurnableUpgradeable,
     SMARTRedeemableUpgradeable,
-    SMARTHistoricalBalancesUpgradeable
+    SMARTHistoricalBalancesUpgradeable,
+    SMARTCappedUpgradeable
 {
     // Role constants
     /// @notice Role identifier for administrators who can update general token settings like name, symbol, and the
@@ -84,6 +87,9 @@ contract SMARTTokenUpgradeable is
     /// @notice Role identifier for entities authorized to pause or unpause the entire contract.
     /// @dev An emergency safety feature that blocks most token operations.
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    /// @notice Role identifier for entities authorized to manage the token's supply cap.
+    /// @dev Used to set or update the maximum number of tokens that can be minted.
+    bytes32 public constant CAP_MANAGEMENT_ROLE = keccak256("CAP_MANAGEMENT_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @dev This empty constructor is required for upgradeable contracts following the UUPS pattern.
@@ -103,6 +109,7 @@ contract SMARTTokenUpgradeable is
     /// @param name_ The name of the token (e.g., "My Upgradeable SMART Token").
     /// @param symbol_ The symbol of the token (e.g., "MUST").
     /// @param decimals_ The number of decimal places the token uses (e.g., 18).
+    /// @param cap_ The maximum number of tokens that can be minted.
     /// @param onchainID_ The address of the OnchainID contract for identity verification.
     /// @param identityRegistry_ The address of the Identity Registry contract.
     /// @param compliance_ The address of the main compliance contract.
@@ -113,6 +120,7 @@ contract SMARTTokenUpgradeable is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
+        uint256 cap_,
         address onchainID_,
         address identityRegistry_,
         address compliance_,
@@ -133,6 +141,7 @@ contract SMARTTokenUpgradeable is
         __SMARTPausable_init(); // Initializes pausable contract features
         __SMARTCollateral_init(collateralProofTopic_); // Initializes collateral features
         __SMARTHistoricalBalances_init(); // Initializes historical balance tracking
+        __SMARTCapped_init(cap_); // Initializes capped token features
     }
 
     // --- ISMART Implementation ---
@@ -276,6 +285,12 @@ contract SMARTTokenUpgradeable is
         onlyAccessManagerRole(BURNER_ROLE)
     {
         _smart_batchBurn(userAddresses, amounts);
+    }
+
+    // --- ISMARTCapped Implementation ---
+
+    function setCap(uint256 newCap) external override onlyAccessManagerRole(CAP_MANAGEMENT_ROLE) {
+        _smart_setCap(newCap);
     }
 
     // --- ISMARTCustodian Implementation ---
@@ -504,7 +519,9 @@ contract SMARTTokenUpgradeable is
     )
         internal
         virtual
-        override(SMARTUpgradeable, SMARTCollateralUpgradeable, SMARTCustodianUpgradeable, SMARTHooks)
+        override(
+            SMARTUpgradeable, SMARTCollateralUpgradeable, SMARTCustodianUpgradeable, SMARTCappedUpgradeable, SMARTHooks
+        )
     {
         super._beforeMint(to, amount);
     }

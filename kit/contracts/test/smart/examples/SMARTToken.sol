@@ -25,6 +25,8 @@ import { SMARTCollateral } from "../../../contracts/smart/extensions/collateral/
 import { SMARTHistoricalBalances } from
     "../../../contracts/smart/extensions/historical-balances/SMARTHistoricalBalances.sol";
 import { SMARTTokenAccessManaged } from "../../../contracts/smart/extensions/access-managed/SMARTTokenAccessManaged.sol";
+import { SMARTCapped } from "../../../contracts/smart/extensions/capped/SMARTCapped.sol";
+
 /// @title SMARTToken
 /// @author SettleMint
 /// @notice This contract is a comprehensive implementation of a "SMART" (Secure, Managable, Accountable, Regulated,
@@ -45,7 +47,8 @@ contract SMARTToken is
     SMARTPausable,
     SMARTBurnable,
     SMARTRedeemable,
-    SMARTHistoricalBalances
+    SMARTHistoricalBalances,
+    SMARTCapped
 {
     using SafeERC20 for IERC20;
 
@@ -93,12 +96,17 @@ contract SMARTToken is
     /// safety feature.
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
+    /// @notice Role identifier for entities authorized to set the cap on the token.
+    /// @dev This allows setting the cap on the token, which is the maximum number of tokens that can be minted.
+    bytes32 public constant CAP_MANAGEMENT_ROLE = keccak256("CAP_MANAGEMENT_ROLE");
+
     /// @notice Constructor for the SMARTToken.
     /// @dev Initializes the token with its core properties, sets up initial compliance modules, collateral proof topic,
     /// and assigns administrative roles.
     /// @param name_ The name of the token (e.g., "My SMART Token").
     /// @param symbol_ The symbol of the token (e.g., "MST").
     /// @param decimals_ The number of decimal places the token uses (e.g., 18 for standard ERC20 tokens).
+    /// @param cap_ The maximum number of tokens that can be minted.
     /// @param onchainID_ The address of the OnchainID contract used for identity verification.
     /// @param identityRegistry_ The address of the Identity Registry contract, which stores identity claims.
     /// @param compliance_ The address of the main compliance contract that enforces transfer restrictions.
@@ -111,6 +119,7 @@ contract SMARTToken is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
+        uint256 cap_,
         address onchainID_,
         address identityRegistry_,
         address compliance_,
@@ -126,6 +135,7 @@ contract SMARTToken is
         SMARTBurnable()
         SMARTRedeemable()
         SMARTHistoricalBalances()
+        SMARTCapped(cap_)
     { }
 
     // --- ISMART Implementation ---
@@ -270,6 +280,12 @@ contract SMARTToken is
         onlyAccessManagerRole(BURNER_ROLE)
     {
         _smart_batchBurn(userAddresses, amounts);
+    }
+
+    // --- ISMARTCapped Implementation ---
+
+    function setCap(uint256 newCap) external override onlyAccessManagerRole(CAP_MANAGEMENT_ROLE) {
+        _smart_setCap(newCap);
     }
 
     // --- ISMARTCustodian Implementation ---
@@ -466,7 +482,7 @@ contract SMARTToken is
     )
         internal
         virtual
-        override(SMART, SMARTCollateral, SMARTCustodian, SMARTHooks)
+        override(SMART, SMARTCollateral, SMARTCustodian, SMARTCapped, SMARTHooks)
     {
         super._beforeMint(to, amount);
     }

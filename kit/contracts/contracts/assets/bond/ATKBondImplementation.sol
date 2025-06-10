@@ -330,6 +330,12 @@ contract ATKBondImplementation is
         _smart_batchBurn(userAddresses, amounts);
     }
 
+    // --- ISMARTCapped Implementation ---
+
+    function setCap(uint256 newCap) external override onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE) {
+        _smart_setCap(newCap);
+    }
+
     // --- ISMARTCustodian Implementation ---
 
     function setAddressFrozen(
