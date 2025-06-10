@@ -57,7 +57,7 @@ export async function DetailPageHeader({
   const micaRegulation = isMicaEnabled
     ? await getRegulationDetail({
         assetId: address,
-        regulationType: "mica",
+        // regulationType: "mica",
       })
     : null;
 

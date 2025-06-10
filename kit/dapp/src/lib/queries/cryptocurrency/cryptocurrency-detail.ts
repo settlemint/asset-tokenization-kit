@@ -2,20 +2,13 @@ import "server-only";
 
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { cryptoCurrenciesCalculateFields } from "./cryptocurrency-calculated";
-import {
-  CryptoCurrencyFragment,
-  OffchainCryptoCurrencyFragment,
-} from "./cryptocurrency-fragment";
+import { OffchainCryptoCurrencyFragment } from "./cryptocurrency-fragment";
 import {
   OffChainCryptoCurrencySchema,
   OnChainCryptoCurrencySchema,
@@ -73,20 +66,20 @@ export const getCryptoCurrencyDetail = withTracing(
     cacheTag("asset");
     const [onChainCryptoCurrency, offChainCryptoCurrency] = await Promise.all([
       (async () => {
-              //       // const response = await theGraphClientKit.request(
-      //       //           CryptoCurrencyDetail,
-      //       //           {
-      //       //             id: address,
-      //       //           },
-      //       //           {
-      //       //             "X-GraphQL-Operation-Name": "CryptoCurrencyDetail",
-      //       //             "X-GraphQL-Operation-Type": "query",
-      //       //           }
-      //       //         );
-        if (!response.cryptoCurrency) {
-          throw new Error("Cryptocurrency not found");
-        }
-        return safeParse(OnChainCryptoCurrencySchema, response.cryptoCurrency);
+        //       // const response = await theGraphClientKit.request(
+        //       //           CryptoCurrencyDetail,
+        //       //           {
+        //       //             id: address,
+        //       //           },
+        //       //           {
+        //       //             "X-GraphQL-Operation-Name": "CryptoCurrencyDetail",
+        //       //             "X-GraphQL-Operation-Type": "query",
+        //       //           }
+        //       //         );
+        // if (!response.cryptoCurrency) {
+        //   throw new Error("Cryptocurrency not found");
+        // }
+        return safeParse(OnChainCryptoCurrencySchema, {});
       })(),
       (async () => {
         const response = await hasuraClient.request(

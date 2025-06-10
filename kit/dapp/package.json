@@ -9,6 +9,7 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "codegen:settlemint": "settlemint codegen",
     "codegen:gql-tada": "gql-tada turbo",
     "format": "prettier --write .",
@@ -19,6 +20,7 @@
     "prod:local": "next build --turbopack && cp -r .next/static .next/standalone/kit/dapp/.next/static && cp -r public .next/standalone/public && node .next/standalone/kit/dapp/server.js",
     "start": "next start",
     "test": "bun test",
+    "db:check": "drizzle-kit check",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate"

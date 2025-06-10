@@ -3,10 +3,6 @@ import "server-only";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/sentry-tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
@@ -14,7 +10,7 @@ import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress } from "viem";
 import { equitiesCalculateFields } from "./equity-calculated";
-import { EquityFragment, OffchainEquityFragment } from "./equity-fragment";
+import { OffchainEquityFragment } from "./equity-fragment";
 import { OffChainEquitySchema, OnChainEquitySchema } from "./equity-schema";
 /**
  * GraphQL query to fetch on-chain equity list from The Graph
@@ -66,19 +62,19 @@ export const getEquityList = withTracing(
     cacheTag("asset");
     const [onChainEquities, offChainEquities] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-              //       // const result = await theGraphClientKit.request(
-      //       //           EquityList,
-      //       //           {
-      //       //             first,
-      //       //             skip,
-      //       //           },
-      //       //           {
-      //       //             "X-GraphQL-Operation-Name": "EquityList",
-      //       //             "X-GraphQL-Operation-Type": "query",
-      //       //           }
-      //       //         );
+        //       // const result = await theGraphClientKit.request(
+        //       //           EquityList,
+        //       //           {
+        //       //             first,
+        //       //             skip,
+        //       //           },
+        //       //           {
+        //       //             "X-GraphQL-Operation-Name": "EquityList",
+        //       //             "X-GraphQL-Operation-Type": "query",
+        //       //           }
+        //       //         );
 
-        return safeParse(t.Array(OnChainEquitySchema), result.equities || []);
+        return safeParse(t.Array(OnChainEquitySchema), []);
       }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {

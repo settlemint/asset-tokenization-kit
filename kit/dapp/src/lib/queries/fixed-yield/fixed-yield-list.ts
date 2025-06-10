@@ -1,16 +1,9 @@
 import "server-only";
 
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import {
-  FixedYieldFragment,
-  FixedYieldFragmentSchema,
-} from "./fixed-yield-fragment";
+import { FixedYieldFragmentSchema } from "./fixed-yield-fragment";
 
 /**
  * GraphQL query to fetch all fixed yield schedules
@@ -37,19 +30,19 @@ export const getFixedYieldList = withTracing(
   async () => {
     "use cache";
     cacheTag("asset");
-          //       // const data = await theGraphClientKit.request(
-      //       //       FixedYieldListQuery,
-      //       //       {},
-      //       //       {
-      //       //         "X-GraphQL-Operation-Name": "FixedYieldList",
-      //       //         "X-GraphQL-Operation-Type": "query",
-      //       //       }
-      //       //     );
+    //       // const data = await theGraphClientKit.request(
+    //       //       FixedYieldListQuery,
+    //       //       {},
+    //       //       {
+    //       //         "X-GraphQL-Operation-Name": "FixedYieldList",
+    //       //         "X-GraphQL-Operation-Type": "query",
+    //       //       }
+    //       //     );
 
-    if (!data.fixedYields?.length) {
-      return [];
-    }
+    // if (!data.fixedYields?.length) {
+    //   return [];
+    // }
 
-    return safeParse(t.Array(FixedYieldFragmentSchema), data.fixedYields || []);
+    return safeParse(t.Array(FixedYieldFragmentSchema), []);
   }
 );

@@ -1,16 +1,11 @@
 import "server-only";
 
 import type { CurrencyCode } from "@/lib/db/schema-settings";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { ApiError } from "next/dist/server/api-utils";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { calculateXvPSettlement } from "./xvp-calculated";
-import { XvPSettlementFragment } from "./xvp-fragment";
 import { OnChainXvPSettlementSchema, type XvPSettlement } from "./xvp-schema";
 
 /**
@@ -40,14 +35,11 @@ export const getXvPSettlementDetail = withTracing(
     "use cache";
     cacheTag("trades");
 
-          //       // const result = await theGraphClientKit.request(XvPSettlementDetail, {
-      //       //       id,
-      //       //     });
+    //       // const result = await theGraphClientKit.request(XvPSettlementDetail, {
+    //       //       id,
+    //       //     });
 
-    const onChainSettlement = safeParse(
-      OnChainXvPSettlementSchema,
-      result.xvPSettlement
-    );
+    const onChainSettlement = safeParse(OnChainXvPSettlementSchema, {});
 
     if (!onChainSettlement) {
       throw new ApiError(404, "XvPSettlement not found");

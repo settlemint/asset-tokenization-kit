@@ -2,20 +2,13 @@ import "server-only";
 
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { stablecoinsCalculateFields } from "./stablecoin-calculated";
-import {
-  OffchainStableCoinFragment,
-  StableCoinFragment,
-} from "./stablecoin-fragment";
+import { OffchainStableCoinFragment } from "./stablecoin-fragment";
 import {
   OffChainStableCoinSchema,
   OnChainStableCoinSchema,
@@ -74,20 +67,20 @@ export const getStableCoinDetail = withTracing(
     cacheTag("asset");
     const [onChainStableCoin, offChainStableCoin] = await Promise.all([
       (async () => {
-              //       // const response = await theGraphClientKit.request(
-      //       //           StableCoinDetail,
-      //       //           {
-      //       //             id: address,
-      //       //           },
-      //       //           {
-      //       //             "X-GraphQL-Operation-Name": "StableCoinDetail",
-      //       //             "X-GraphQL-Operation-Type": "query",
-      //       //           }
-      //       //         );
-        if (!response.stableCoin) {
-          throw new Error("StableCoin not found");
-        }
-        return safeParse(OnChainStableCoinSchema, response.stableCoin);
+        //       // const response = await theGraphClientKit.request(
+        //       //           StableCoinDetail,
+        //       //           {
+        //       //             id: address,
+        //       //           },
+        //       //           {
+        //       //             "X-GraphQL-Operation-Name": "StableCoinDetail",
+        //       //             "X-GraphQL-Operation-Type": "query",
+        //       //           }
+        //       //         );
+        // if (!response.stableCoin) {
+        //   throw new Error("StableCoin not found");
+        // }
+        return safeParse(OnChainStableCoinSchema, {});
       })(),
       (async () => {
         const response = await hasuraClient.request(

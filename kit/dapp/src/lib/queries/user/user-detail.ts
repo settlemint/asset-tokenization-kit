@@ -1,20 +1,13 @@
 import "server-only";
 
 import { getUser } from "@/lib/auth/utils";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
+import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { withTracing } from "@/lib/utils/sentry-tracing";
-import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
-import { type Address, getAddress } from "viem";
-import { userCalculateFields } from "./user-calculated";
-import { AccountFragment, UserFragment } from "./user-fragment";
-import { AccountSchema, UserSchema } from "./user-schema";
+import type { Address } from "viem";
+import { UserFragment } from "./user-fragment";
 
 /**
  * GraphQL query to fetch a single user by ID from Hasura
@@ -123,7 +116,7 @@ const getUserDetailFromIdOrAddress = withTracing(
     //     throw new Error("Either id or address must be provided");
     //   }
     // })();
-    
+
     // NOTE: HARDCODED SO IT STILL COMPILES - user and account data
     const user = {
       id: "mock-user-id",
@@ -143,23 +136,23 @@ const getUserDetailFromIdOrAddress = withTracing(
       banned: false,
       kycVerifiedAt: null,
       lastActivity: null,
-      lastLoginAt: null
+      lastLoginAt: null,
     };
-    
+
     const account = {
       id: "0x0000000000000000000000000000000000000000",
       transactionsSent: 0,
-      transactionsReceived: 0
+      transactionsReceived: 0,
     };
 
     // Calculate additional fields
-    const calculatedFields = userCalculateFields(user, account);
+    // const calculatedFields = userCalculateFields(user, account);
 
     // Return combined data
     return {
       ...account,
       ...user,
-      ...calculatedFields,
+      // ...calculatedFields,
     };
   })
 );

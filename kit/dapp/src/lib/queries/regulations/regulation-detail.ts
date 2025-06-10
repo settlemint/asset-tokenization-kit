@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/sentry-tracing";
 import type { Address } from "viem";
 
@@ -70,34 +70,34 @@ const RegulationDetail = hasuraGraphql(
 
 /**
  * Map of regulation type to their specific GraphQL queries
- */
-const RegulationTypeQueries = {
-  mica: hasuraGraphql(
-    `
-    query MicaRegulationDetail($regulationConfigId: String!) {
-      mica_regulation_configs(
-        where: {
-          regulation_config_id: { _eq: $regulationConfigId }
-        },
-        limit: 1
-      ) {
-        id
-        regulation_config_id
-        documents
-        reserve_composition
-        last_audit_date
-        reserve_status
-        token_type
-        licence_number
-        regulatory_authority
-        approval_date
-        approval_details
-      }
-    }
-  `
-  ),
-  // Add more regulation type queries here as needed
-} as const;
+//  */
+// const RegulationTypeQueries = {
+//   mica: hasuraGraphql(
+//     `
+//     query MicaRegulationDetail($regulationConfigId: String!) {
+//       mica_regulation_configs(
+//         where: {
+//           regulation_config_id: { _eq: $regulationConfigId }
+//         },
+//         limit: 1
+//       ) {
+//         id
+//         regulation_config_id
+//         documents
+//         reserve_composition
+//         last_audit_date
+//         reserve_status
+//         token_type
+//         licence_number
+//         regulatory_authority
+//         approval_date
+//         approval_details
+//       }
+//     }
+//   `
+//   ),
+//   // Add more regulation type queries here as needed
+// } as const;
 
 /**
  * Map of regulation type to their specific config field names in the response
@@ -114,7 +114,7 @@ export interface RegulationDetailProps {
   /** Asset ID to fetch regulation for */
   assetId: Address;
   /** Type of regulation to fetch */
-  regulationType: keyof typeof RegulationTypeQueries;
+  // regulationType: keyof typeof RegulationTypeQueries;
 }
 
 type BaseRegulationConfig = {
@@ -141,57 +141,57 @@ export const getRegulationDetail = withTracing(
   "getRegulationDetail",
   async ({
     assetId,
-    regulationType,
+    // regulationType,
   }: RegulationDetailProps): Promise<RegulationDetailResponse | null> => {
     try {
-      const baseResponse = await hasuraClient.request(
-        RegulationDetail,
-        {
-          assetId,
-          regulationType,
-        },
-        {
-          "X-GraphQL-Operation-Name": "RegulationDetail",
-          "X-GraphQL-Operation-Type": "query",
-        }
-      );
+      // const baseResponse = await hasuraClient.request(
+      //   RegulationDetail,
+      //   {
+      //     assetId,
+      //     regulationType,
+      //   },
+      //   {
+      //     "X-GraphQL-Operation-Name": "RegulationDetail",
+      //     "X-GraphQL-Operation-Type": "query",
+      //   }
+      // );
 
-      if (baseResponse.regulation_configs.length === 0) {
-        return null;
-      }
+      // if (baseResponse.regulation_configs.length === 0) {
+      //   return null;
+      // }
 
-      const baseConfig = baseResponse.regulation_configs[0];
+      // const baseConfig = baseResponse.regulation_configs[0];
 
-      const specificQuery = RegulationTypeQueries[regulationType];
-      const configField = RegulationTypeConfigFields[regulationType];
+      // const specificQuery = RegulationTypeQueries[regulationType];
+      // const configField = RegulationTypeConfigFields[regulationType];
 
-      if (!specificQuery || !configField) {
-        return null;
-      }
+      // if (!specificQuery || !configField) {
+      //   return null;
+      // }
 
-      const specificResponse = await hasuraClient.request(
-        specificQuery,
-        {
-          regulationConfigId: baseConfig.id,
-        },
-        {
-          "X-GraphQL-Operation-Name": `${regulationType}RegulationDetail`,
-          "X-GraphQL-Operation-Type": "query",
-        }
-      );
+      // const specificResponse = await hasuraClient.request(
+      //   specificQuery,
+      //   {
+      //     regulationConfigId: baseConfig.id,
+      //   },
+      //   {
+      //     "X-GraphQL-Operation-Name": `${regulationType}RegulationDetail`,
+      //     "X-GraphQL-Operation-Type": "query",
+      //   }
+      // );
 
-      if (specificResponse[configField].length === 0) {
-        return null;
-      }
+      // if (specificResponse[configField].length === 0) {
+      //   return null;
+      // }
 
-      // Transform the response to match the expected types
-      const transformedConfig = transformMicaConfig(
-        specificResponse[configField][0]
-      );
+      // // Transform the response to match the expected types
+      // const transformedConfig = transformMicaConfig(
+      //   specificResponse[configField][0]
+      // );
 
       return {
-        ...baseConfig,
-        [`${regulationType}_regulation_config`]: transformedConfig,
+        // ...baseConfig,
+        // [`${regulationType}_regulation_config`]: transformedConfig,
       } as RegulationDetailResponse;
     } catch (error) {
       console.error("Error fetching regulation detail:", error);

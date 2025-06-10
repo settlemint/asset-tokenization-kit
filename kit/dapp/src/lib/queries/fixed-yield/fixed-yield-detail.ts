@@ -1,17 +1,10 @@
 import "server-only";
 
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { Address } from "viem";
-import {
-  FixedYieldFragment,
-  FixedYieldFragmentSchema,
-} from "./fixed-yield-fragment";
+import { FixedYieldFragmentSchema } from "./fixed-yield-fragment";
 
 /**
  * GraphQL query to fetch fixed yield schedule details by ID
@@ -43,14 +36,14 @@ export const getFixedYieldDetail = withTracing(
   async ({ address }: GetFixedYieldDetailParams) => {
     "use cache";
     cacheTag("asset");
-          //       // const data = await theGraphClientKit.request(FixedYieldDetailQuery, {
-      //       //       id: address,
-      //       //     });
+    //       // const data = await theGraphClientKit.request(FixedYieldDetailQuery, {
+    //       //       id: address,
+    //       //     });
 
-    if (!data.fixedYield) {
-      return null;
-    }
+    // if (!data.fixedYield) {
+    //   return null;
+    // }
 
-    return safeParse(FixedYieldFragmentSchema, data.fixedYield);
+    return safeParse(FixedYieldFragmentSchema, {});
   }
 );

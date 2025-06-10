@@ -12,7 +12,7 @@ export async function GET(
     // Fetch the regulation data
     const regulationData = await getRegulationDetail({
       assetId: assetAddress,
-      regulationType: "mica",
+      // regulationType: "mica",
     });
 
     if (!regulationData?.mica_regulation_config) {
