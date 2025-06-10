@@ -3,6 +3,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { ClaimAirdropInput } from "@/lib/mutations/airdrop/claim/claim-schema";
 import type { UserAirdropDetail } from "@/lib/queries/airdrop/user-airdrop-schema";
+import { calculateVestingAirdropAmounts } from "@/lib/queries/vesting-airdrop/vesting-airdrop-status";
 import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
@@ -15,6 +16,14 @@ export function Summary({ airdropDetails }: SummaryProps) {
   const locale = useLocale();
   const form = useFormContext<ClaimAirdropInput>();
   const values = form.getValues();
+  if (airdropDetails.airdrop.__typename === "VestingAirdrop") {
+    const amounts = calculateVestingAirdropAmounts(
+      airdropDetails.airdrop,
+      BigInt(values.amountExact)
+    );
+
+    console.log({ amounts });
+  }
 
   return (
     <FormStep title={t("title.claim")} description={t("description.claim")}>

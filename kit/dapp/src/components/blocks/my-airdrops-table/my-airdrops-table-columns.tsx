@@ -51,7 +51,7 @@ export function Columns() {
       cell: ({ row }) => {
         return (
           <DataTableRowActions
-            detailUrl={`/portfolio/my-airdrops/${row.original.id}`}
+            detailUrl={`/portfolio/my-airdrops/${row.original.type}/${row.original.id}`}
           />
         );
       },

@@ -23,12 +23,7 @@ export const UserAirdropSchema = t.Object(
         description: "Total amount allocated to the recipient",
       }),
     }),
-    status: t.Object({
-      status: AirdropStatusSchema,
-      message: t.String({
-        description: "The message of the airdrop",
-      }),
-    }),
+    status: AirdropStatusSchema,
   },
   {
     description:
