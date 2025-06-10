@@ -20,8 +20,6 @@ abstract contract AirdropBase is Ownable, ERC2771Context {
     // Common state variables
     IERC20 public immutable token;
     bytes32 public immutable merkleRoot;
-    string public name;
-    string public distributionIpfsHash;
 
     // Track claimed status with bitmap for gas efficiency
     mapping(uint256 => uint256) private claimedBitMap;
@@ -48,9 +46,7 @@ abstract contract AirdropBase is Ownable, ERC2771Context {
         address tokenAddress,
         bytes32 root,
         address initialOwner,
-        address trustedForwarder,
-        string memory _name,
-        string memory _distributionIpfsHash
+        address trustedForwarder
     )
         Ownable(initialOwner)
         ERC2771Context(trustedForwarder)
@@ -58,8 +54,6 @@ abstract contract AirdropBase is Ownable, ERC2771Context {
         if (tokenAddress == address(0)) revert ZeroAddress();
         token = IERC20(tokenAddress);
         merkleRoot = root;
-        name = _name;
-        distributionIpfsHash = _distributionIpfsHash;
     }
 
     /**

@@ -4,6 +4,7 @@ import type {
   AirdropDistribution,
   AirdropDistributionList,
 } from "./airdrop-distribution-schema";
+
 import {
   createMerkleTree,
   getMerkleProof,
@@ -90,7 +91,7 @@ describe("Merkle Tree Utilities", () => {
     });
   });
 
-  describe.skip("verifyMerkleProof", () => {
+  describe("verifyMerkleProof", () => {
     const tree = createMerkleTree(sampleLeaves);
     const root = tree.getHexRoot() as Hex;
 

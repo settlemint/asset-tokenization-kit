@@ -289,7 +289,6 @@ type Account @entity(immutable: false) {
   nativeBalance: BigDecimal!
   nativeBalanceExact: BigInt!
   lastActivity: BigInt!
-  airdropAllocations: [AirdropRecipient!]! @derivedFrom(field: "recipient")
 }
 
 type AssetBalance @entity(immutable: false) {
@@ -511,8 +510,6 @@ interface Airdrop {
   id: Bytes! # Contract address
   factory: AirdropFactory!
   token: Asset!
-  name: String!
-  distributionIpfsHash: String!
   merkleRoot: Bytes!
   owner: Account!
   deployedOn: BigInt!
@@ -529,8 +526,6 @@ type StandardAirdrop implements Airdrop @entity(immutable: false) {
   id: Bytes! # Contract address
   factory: AirdropFactory!
   token: Asset! # Matches interface
-  name: String!
-  distributionIpfsHash: String!
   merkleRoot: Bytes!
   owner: Account!
   deployedOn: BigInt!
@@ -550,8 +545,6 @@ type VestingAirdrop implements Airdrop @entity(immutable: false) {
   id: Bytes! # Contract address
   factory: AirdropFactory!
   token: Asset! # Matches interface
-  name: String!
-  distributionIpfsHash: String!
   merkleRoot: Bytes!
   owner: Account!
   deployedOn: BigInt!
@@ -571,8 +564,6 @@ type PushAirdrop implements Airdrop @entity(immutable: false) {
   id: Bytes! # Contract address
   factory: AirdropFactory!
   token: Asset! # Matches interface
-  name: String!
-  distributionIpfsHash: String!
   merkleRoot: Bytes!
   owner: Account!
   deployedOn: BigInt!
@@ -609,13 +600,11 @@ type LinearVestingStrategy implements VestingStrategy
 }
 
 # Represents a potential recipient listed in the Merkle tree
-# Stores the relationship between an account and an airdrop with allocation details
+# Primarily created/updated upon claim events
 type AirdropRecipient @entity(immutable: false) {
   id: String! # airdropId-recipientAddress
   airdrop: Airdrop!
   recipient: Account!
-  allocatedAmount: BigDecimal! # Total amount allocated to this recipient in the airdrop
-  allocatedAmountExact: BigInt!
   firstClaimedTimestamp: BigInt # Timestamp of the first claim event for this recipient
   lastClaimedTimestamp: BigInt # Timestamp of the most recent claim event
   totalClaimedByRecipient: BigDecimal! # Sum of all claims by this recipient for this airdrop
