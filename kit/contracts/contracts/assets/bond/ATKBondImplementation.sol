@@ -537,7 +537,7 @@ contract ATKBondImplementation is
         virtual
         override(SMARTUpgradeable, SMARTCustodianUpgradeable, SMARTHooks)
     {
-        // If not a forced uptdate (recoverTokens or forcedTransfer) and the bond is matured,
+        // If not a forced update (recoverTokens or forcedTransfer) and the bond is matured,
         // we cannot transfer tokens anymore, only redeem them.
         if (!__isForcedUpdate && isMatured && (to != address(0))) {
             revert BondAlreadyMatured();
