@@ -43,7 +43,7 @@
     "format:prettier": {},
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "codegen"]
+      "dependsOn": ["package", "codegen", "docker:up"]
     },
     "docker:up": {
       "dependsOn": ["dependencies", "^codegen", "codegen", "subgraph#compile"],
