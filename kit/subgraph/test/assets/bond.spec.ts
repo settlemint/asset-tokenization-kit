@@ -26,7 +26,7 @@ describe("Bonds", () => {
       {
         name: "Euro Bonds",
         type: "bond",
-        bond: { isMatured: false, faceValue: "0.000123" },
+        bond: { isMatured: true, faceValue: "0.000123" },
       },
     ]);
   });
