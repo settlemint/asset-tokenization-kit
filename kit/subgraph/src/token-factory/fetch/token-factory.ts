@@ -1,19 +1,26 @@
 import { Address } from "@graphprotocol/graph-ts";
 import { TokenFactory } from "../../../generated/schema";
-import { TokenFactory as TokenFactoryTemplate } from "../../../generated/templates";
+import {
+  BondFactory as BondFactoryTemplate,
+  TokenFactory as TokenFactoryTemplate,
+} from "../../../generated/templates";
 import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../../account/fetch/account";
 
-export function fetchTokenFactory(address: Address): TokenFactory {
+export function fetchTokenFactory(
+  address: Address,
+  initialType: string = "unknown"
+): TokenFactory {
   let tokenFactory = TokenFactory.load(address);
 
   if (!tokenFactory) {
     tokenFactory = new TokenFactory(address);
     tokenFactory.accessControl = fetchAccessControl(address).id;
     tokenFactory.account = fetchAccount(address).id;
-    tokenFactory.type = "unknown";
+    tokenFactory.type = initialType;
     tokenFactory.save();
     TokenFactoryTemplate.create(address);
+    BondFactoryTemplate.create(address);
   }
 
   return tokenFactory;

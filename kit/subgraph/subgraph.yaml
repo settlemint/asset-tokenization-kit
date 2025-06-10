@@ -130,6 +130,8 @@ templates:
           file: ../contracts/artifacts/contracts/system/token-factory/IATKTokenFactory.sol/IATKTokenFactory.json
         - name: Token
           file: ../contracts/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
+        - name: BondFactory
+          file: ../contracts/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
       eventHandlers:
         - event: TokenAssetCreated(indexed address,indexed address,indexed
             address,address)
@@ -479,8 +481,10 @@ templates:
       abis:
         - name: BondFactory
           file: ../contracts/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
+        - name: Token
+          file: ../contracts/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event: BondCreated(indexed
+        - event: BondCreated(indexed address,indexed
             address,string,string,uint8,uint256,uint256,uint256,address)
           handler: handleBondCreated
       file: ./src/bond-factory/bond-factory.ts

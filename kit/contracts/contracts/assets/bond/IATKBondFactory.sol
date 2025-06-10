@@ -18,6 +18,7 @@ interface IATKBondFactory is IATKTokenFactory {
 
     /// @notice Emitted when a new bond is created.
     /// @param sender The address of the sender.
+    /// @param tokenAddress The address of the newly created token.
     /// @param name The name of the bond.
     /// @param symbol The symbol of the bond.
     /// @param decimals The number of decimals for the bond tokens.
@@ -27,6 +28,7 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param underlyingAsset The address of the ERC20 token used as the underlying asset for the bond.
     event BondCreated(
         address indexed sender,
+        address indexed tokenAddress,
         string name,
         string symbol,
         uint8 decimals,

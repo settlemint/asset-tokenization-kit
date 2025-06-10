@@ -9,7 +9,8 @@ describe("Bonds", () => {
           name
           type
           bond {
-           isMatured
+            isMatured
+            maturityDate
             faceValue
           }
         }
@@ -26,7 +27,11 @@ describe("Bonds", () => {
       {
         name: "Euro Bonds",
         type: "bond",
-        bond: { isMatured: true, faceValue: "0.000123" },
+        bond: {
+          isMatured: true,
+          maturityDate: expect.not.stringMatching(/^0$/),
+          faceValue: "0.000123",
+        },
       },
     ]);
   });

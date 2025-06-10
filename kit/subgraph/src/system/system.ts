@@ -81,7 +81,10 @@ export function handleTokenAccessManagerImplementationUpdated(
 
 export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
   fetchEvent(event, "TokenFactoryCreated");
-  const tokenFactory = fetchTokenFactory(event.params.proxyAddress);
+  const tokenFactory = fetchTokenFactory(
+    event.params.proxyAddress,
+    event.params.typeName
+  );
   tokenFactory.type = event.params.typeName;
   tokenFactory.system = fetchSystem(event.address).id;
   tokenFactory.save();

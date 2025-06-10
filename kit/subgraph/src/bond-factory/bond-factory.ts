@@ -5,7 +5,7 @@ import { setBigNumber } from "../utils/bignumber";
 
 export function handleBondCreated(event: BondCreated): void {
   fetchEvent(event, "BondCreated");
-  const bond = fetchBond(event.address);
+  const bond = fetchBond(event.params.tokenAddress);
   setBigNumber(
     bond,
     "faceValue",
