@@ -2,10 +2,10 @@
 
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
+import { getAirdropDistribution } from "@/lib/queries/airdrop/airdrop-distribution";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { parseUnits } from "viem";
 import { createMerkleTree, getMerkleProof } from "../create/common/merkle-tree";
 import type { DistributeInput } from "./distribute-schema";
 
@@ -24,21 +24,17 @@ mutation PushAirdropDistribute($challengeResponse: String!, $verificationId: Str
 `);
 
 export const distributeFunction = async ({
-  parsedInput: {
-    address,
-    decimals,
-    recipient,
-    distribution,
-    verificationCode,
-    verificationType,
-  },
+  parsedInput: { airdrop, recipient, verificationCode, verificationType },
   ctx: { user },
 }: {
   parsedInput: DistributeInput;
   ctx: { user: User };
 }) => {
-  const recipientData = distribution.find((d) => d.recipient === recipient);
+  // Get all distributions for this airdrop and build the merkle tree
+  const distributions = await getAirdropDistribution(airdrop);
+  const tree = createMerkleTree(distributions);
 
+  const recipientData = distributions.find((d) => d.recipient === recipient);
   if (!recipientData) {
     throw new Error("Recipient not found in distribution list");
   }
@@ -49,22 +45,16 @@ export const distributeFunction = async ({
       amount: Number(recipientData.amount),
       amountExact: BigInt(recipientData.amountExact),
     },
-    createMerkleTree(
-      distribution.map((d) => ({
-        ...d,
-        amount: Number(d.amount),
-        amountExact: BigInt(d.amountExact),
-      }))
-    )
+    tree
   );
 
   const result = await portalClient.request(PushAirdropDistribute, {
-    address,
+    address: airdrop,
     from: user.wallet,
     input: {
       recipient,
       merkleProof,
-      amount: parseUnits(recipientData.amount.toString(), decimals).toString(),
+      amount: recipientData.amountExact.toString(),
     },
     ...(await handleChallenge(
       user,

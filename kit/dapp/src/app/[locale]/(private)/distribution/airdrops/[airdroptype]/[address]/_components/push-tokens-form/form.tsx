@@ -53,12 +53,7 @@ export function PushTokensForm({
           label: t("push-tokens"),
         }}
         defaultValues={{
-          decimals: airdrop.asset.decimals,
-          address: airdrop.id,
-          distribution: airdrop.distribution.map((item) => ({
-            ...item,
-            amountExact: item.amountExact.toString(),
-          })),
+          airdrop: airdrop.id,
         }}
       >
         <Recipients airdrop={airdrop} />
