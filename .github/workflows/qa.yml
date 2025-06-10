@@ -110,7 +110,7 @@ jobs:
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:
-          version: 2.3.11
+          version: 2.3.14
           instance: local
           command: "connect -a"
 
