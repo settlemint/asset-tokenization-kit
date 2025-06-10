@@ -3,17 +3,13 @@ import "server-only";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress } from "viem";
 import { depositsCalculateFields } from "./deposit-calculated";
-import { DepositFragment, OffchainDepositFragment } from "./deposit-fragment";
+import { OffchainDepositFragment } from "./deposit-fragment";
 import { OffChainDepositSchema, OnChainDepositSchema } from "./deposit-schema";
 /**
  * GraphQL query to fetch on-chain tokenized deposit list from The Graph
@@ -21,16 +17,16 @@ import { OffChainDepositSchema, OnChainDepositSchema } from "./deposit-schema";
  * @remarks
  * Retrieves tokenized deposits ordered by total supply in descending order
  */
-const DepositList = theGraphGraphqlKit(
-  `
-  query DepositList($first: Int, $skip: Int) {
-    deposits(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
-      ...DepositFragment
-    }
-  }
-`,
-  [DepositFragment]
-);
+// const DepositList = theGraphGraphqlKit(
+//   `
+//   query DepositList($first: Int, $skip: Int) {
+//     deposits(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
+//       ...DepositFragment
+//     }
+//   }
+// `,
+//   [DepositFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain tokenized deposit list from Hasura
@@ -63,19 +59,19 @@ export const getDepositList = withTracing(
     cacheTag("asset");
     const [onChainDeposits, offChainDeposits] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientKit.request(
-          DepositList,
-          {
-            first,
-            skip,
-          },
-          {
-            "X-GraphQL-Operation-Name": "DepositList",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+        //       // const result = await theGraphClientKit.request(
+        //       //           DepositList,
+        //       //           {
+        //       //             first,
+        //       //             skip,
+        //       //           },
+        //       //           {
+        //       //             "X-GraphQL-Operation-Name": "DepositList",
+        //       //             "X-GraphQL-Operation-Type": "query",
+        //       //           }
+        //       //         );
 
-        return safeParse(t.Array(OnChainDepositSchema), result.deposits || []);
+        return safeParse(t.Array(OnChainDepositSchema), []);
       }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {

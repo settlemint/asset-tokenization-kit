@@ -3,7 +3,7 @@ import "server-only";
 import { getUser } from "@/lib/auth/utils";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";

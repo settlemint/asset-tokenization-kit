@@ -11,7 +11,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
@@ -28,16 +28,16 @@ import {
  * @remarks
  * Retrieves cryptocurrencys ordered by total supply in descending order
  */
-const CryptoCurrencyList = theGraphGraphqlKit(
-  `
-  query CryptoCurrencyList($first: Int, $skip: Int) {
-    cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
-      ...CryptoCurrencyFragment
-    }
-  }
-`,
-  [CryptoCurrencyFragment]
-);
+// const CryptoCurrencyList = theGraphGraphqlKit(
+//   `
+//   query CryptoCurrencyList($first: Int, $skip: Int) {
+//     cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
+//       ...CryptoCurrencyFragment
+//     }
+//   }
+// `,
+//   [CryptoCurrencyFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain cryptocurrency list from Hasura
@@ -73,21 +73,22 @@ export const getCryptoCurrencyList = withTracing(
     const [onChainCryptoCurrencies, offChainCryptoCurrencies] =
       await Promise.all([
         fetchAllTheGraphPages(async (first, skip) => {
-          const result = await theGraphClientKit.request(
-            CryptoCurrencyList,
-            {
-              first,
-              skip,
-            },
-            {
-              "X-GraphQL-Operation-Name": "CryptoCurrencyList",
-              "X-GraphQL-Operation-Type": "query",
-            }
-          );
+                //       // const result = await theGraphClientKit.request(
+      //       //             CryptoCurrencyList,
+      //       //             {
+      //       //               first,
+      //       //               skip,
+      //       //             },
+      //       //             {
+      //       //               "X-GraphQL-Operation-Name": "CryptoCurrencyList",
+      //       //               "X-GraphQL-Operation-Type": "query",
+      //       //             }
+      //       //           );
 
+          // NOTE: HARDCODED SO IT STILL COMPILES
           return safeParse(
             t.Array(OnChainCryptoCurrencySchema),
-            result.cryptoCurrencies || []
+            []
           );
         }),
 

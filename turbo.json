@@ -6,10 +6,10 @@
   },
   "tasks": {
     "ci": {
-      "dependsOn": ["compile", "codegen", "lint", "build"]
+      "dependsOn": ["compile", "codegen", "lint", "test", "build"]
     },
     "ci:gha": {
-      "dependsOn": ["publish", "ci", "test"]
+      "dependsOn": ["publish", "ci"]
     },
     "//#version": {
       "cache": false,
@@ -34,7 +34,7 @@
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package"]
+      "dependsOn": ["package", "docker:up", "^docker:up"]
     },
     "dependencies": {},
     "format": {},
@@ -42,7 +42,7 @@
       "dependsOn": ["//#version"]
     },
     "dev": {
-      "dependsOn": ["dapp#codegen"],
+      "dependsOn": ["dapp#codegen", "docker:up"],
       "cache": false,
       "persistent": true
     },
@@ -52,6 +52,8 @@
     "docs": {
       "cache": false
     },
-    "test": {}
+    "test": {},
+    "docker:up": { "cache": false },
+    "artifacts": {}
   }
 }

@@ -2,31 +2,27 @@ import "server-only";
 
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { equitiesCalculateFields } from "./equity-calculated";
-import { EquityFragment, OffchainEquityFragment } from "./equity-fragment";
+import { OffchainEquityFragment } from "./equity-fragment";
 import { OffChainEquitySchema, OnChainEquitySchema } from "./equity-schema";
 /**
  * GraphQL query to fetch on-chain equity details from The Graph
  */
-const EquityDetail = theGraphGraphqlKit(
-  `
-  query EquityDetail($id: ID!) {
-    equity(id: $id) {
-      ...EquityFragment
-    }
-  }
-`,
-  [EquityFragment]
-);
+// const EquityDetail = theGraphGraphqlKit(
+//   `
+//   query EquityDetail($id: ID!) {
+//     equity(id: $id) {
+//       ...EquityFragment
+//     }
+//   }
+// `,
+//   [EquityFragment]
+// );
 
 /**
  * GraphQL query to fetch off-chain equity details from Hasura
@@ -67,20 +63,20 @@ export const getEquityDetail = withTracing(
     cacheTag("asset");
     const [onChainEquity, offChainEquity] = await Promise.all([
       (async () => {
-        const response = await theGraphClientKit.request(
-          EquityDetail,
-          {
-            id: address,
-          },
-          {
-            "X-GraphQL-Operation-Name": "EquityDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
-        if (!response.equity) {
-          throw new Error("Equity not found");
-        }
-        return safeParse(OnChainEquitySchema, response.equity);
+        //       // const response = await theGraphClientKit.request(
+        //       //           EquityDetail,
+        //       //           {
+        //       //             id: address,
+        //       //           },
+        //       //           {
+        //       //             "X-GraphQL-Operation-Name": "EquityDetail",
+        //       //             "X-GraphQL-Operation-Type": "query",
+        //       //           }
+        //       //         );
+        // if (!response.equity) {
+        //   throw new Error("Equity not found");
+        // }
+        return safeParse(OnChainEquitySchema, {});
       })(),
       (async () => {
         const response = await hasuraClient.request(

@@ -3,40 +3,37 @@ import { z } from "zod";
 
 /**
  * Environment configuration using t3-env for type-safe environment variables.
- * 
+ *
  * This module provides runtime validation and type safety for environment variables
  * using the @t3-oss/env-nextjs library. It ensures that all required environment
  * variables are present and correctly typed at build time, preventing runtime errors.
- * 
+ *
  * Key features:
  * - Build-time validation of environment variables
  * - Type-safe access to env vars throughout the codebase
  * - Clear separation between server and client variables
  * - Automatic handling of empty strings as undefined
  * - Support for skipping validation in CI/CD environments
- * 
+ *
  * @example
  * ```typescript
  * // Direct usage (recommended)
  * import { env } from '@/lib/config/env';
  * console.log(env.SETTLEMINT_HASURA_ADMIN_SECRET);
- * 
- * // Legacy usage (for backward compatibility)
- * import { getServerEnvironment } from '@/lib/config/env';
- * const serverEnv = getServerEnvironment();
+
  * ```
- * 
+ *
  * @see https://env.t3.gg/docs/introduction
  * @module
  */
 export const env = createEnv({
   /**
    * Server-side environment variables schema.
-   * 
+   *
    * These variables are only available on the server and typically contain
    * sensitive information like API keys, secrets, and OAuth credentials.
    * They are never exposed to the client bundle.
-   * 
+   *
    * @private Server-only access
    */
   server: {
@@ -46,18 +43,21 @@ export const env = createEnv({
      */
     BETTER_AUTH_URL: z.string().url().optional(),
     NEXTAUTH_URL: z.string().url().optional(),
-    
+
     /**
      * Application base URL with intelligent fallback.
      * Priority: NEXT_PUBLIC_APP_URL > BETTER_AUTH_URL > NEXTAUTH_URL > localhost
      */
-    APP_URL: z.string().url().default(
-      process.env.NEXT_PUBLIC_APP_URL ??
-      process.env.BETTER_AUTH_URL ??
-      process.env.NEXTAUTH_URL ??
-      "http://localhost:3000"
-    ),
-    
+    APP_URL: z
+      .string()
+      .url()
+      .default(
+        process.env.NEXT_PUBLIC_APP_URL ??
+          process.env.BETTER_AUTH_URL ??
+          process.env.NEXTAUTH_URL ??
+          "http://localhost:3000"
+      ),
+
     /**
      * Hasura GraphQL admin secret.
      * Required for server-side GraphQL operations with admin privileges.
@@ -66,13 +66,13 @@ export const env = createEnv({
     SETTLEMINT_HASURA_ADMIN_SECRET: z
       .string()
       .min(1, "SETTLEMINT_HASURA_ADMIN_SECRET is required"),
-    
+
     /**
      * Resend API key for email services.
      * Optional - if not provided, email functionality will be disabled.
      */
     RESEND_API_KEY: z.string().optional(),
-    
+
     /**
      * OAuth provider credentials.
      * Configure these to enable social login functionality.
@@ -99,11 +99,11 @@ export const env = createEnv({
 
   /**
    * Client-side environment variables schema.
-   * 
+   *
    * These variables are exposed to the browser bundle and must be prefixed
    * with NEXT_PUBLIC_ for Next.js to include them in the client build.
    * Never put sensitive information in these variables.
-   * 
+   *
    * @public Browser-accessible
    */
   client: {
@@ -111,8 +111,16 @@ export const env = createEnv({
      * Public application URL.
      * Used for generating absolute URLs in client-side code.
      */
-    NEXT_PUBLIC_APP_URL: z.string().url().optional(),
-    
+    NEXT_PUBLIC_APP_URL: z
+      .string()
+      .url()
+      .default(
+        process.env.NEXT_PUBLIC_APP_URL ??
+          process.env.BETTER_AUTH_URL ??
+          process.env.NEXTAUTH_URL ??
+          "http://localhost:3000"
+      ),
+
     /**
      * Blockchain explorer URL.
      * Used for generating links to transactions and addresses.
@@ -122,7 +130,7 @@ export const env = createEnv({
 
   /**
    * Runtime environment variable mappings.
-   * 
+   *
    * This object maps the schema fields to the actual process.env values.
    * It's required by t3-env to properly access environment variables at runtime.
    * All environment variables must be explicitly mapped here.
@@ -138,7 +146,8 @@ export const env = createEnv({
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     SETTLEMINT_HD_PRIVATE_KEY: process.env.SETTLEMINT_HD_PRIVATE_KEY,
-    
+    APP_URL: process.env.APP_URL,
+
     // Client
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_EXPLORER_URL: process.env.NEXT_PUBLIC_EXPLORER_URL,
@@ -146,74 +155,23 @@ export const env = createEnv({
 
   /**
    * Skip validation flag.
-   * 
+   *
    * When set to true (via SKIP_ENV_VALIDATION=true), t3-env will skip
    * all validation checks. This is useful in CI/CD environments where
    * environment variables might not be available during the build step.
-   * 
+   *
    * @default false
    */
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 
   /**
    * Empty string handling.
-   * 
+   *
    * When true, t3-env treats empty strings as undefined values.
    * This is useful for environment variables that might be set to
    * empty strings in certain deployment environments.
-   * 
+   *
    * @default true
    */
   emptyStringAsUndefined: true,
 });
-
-/**
- * Type representing all server-side environment variables.
- * Includes both server-only and client variables.
- * 
- * @deprecated Use `typeof env` directly instead
- */
-export type ServerEnvironment = typeof env;
-
-/**
- * Type representing only client-side environment variables.
- * Limited to variables prefixed with NEXT_PUBLIC_
- * 
- * @deprecated Use Pick<typeof env, "NEXT_PUBLIC_..."> directly
- */
-export type ClientEnvironment = Pick<typeof env, 
-  | "NEXT_PUBLIC_APP_URL" 
-  | "NEXT_PUBLIC_EXPLORER_URL"
->;
-
-/**
- * Get all server environment variables.
- * 
- * @deprecated Import `env` directly instead:
- * ```typescript
- * import { env } from '@/lib/config/env';
- * ```
- * 
- * @returns {ServerEnvironment} The complete environment object
- */
-export function getServerEnvironment() {
-  return env;
-}
-
-/**
- * Get only client-safe environment variables.
- * 
- * @deprecated Import `env` directly and access client vars:
- * ```typescript
- * import { env } from '@/lib/config/env';
- * const appUrl = env.NEXT_PUBLIC_APP_URL;
- * ```
- * 
- * @returns {ClientEnvironment} Object containing only client-safe variables
- */
-export function getClientEnvironment() {
-  return {
-    NEXT_PUBLIC_APP_URL: env.NEXT_PUBLIC_APP_URL,
-    NEXT_PUBLIC_EXPLORER_URL: env.NEXT_PUBLIC_EXPLORER_URL,
-  };
-}

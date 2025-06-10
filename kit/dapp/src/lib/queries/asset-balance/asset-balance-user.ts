@@ -2,12 +2,7 @@ import "server-only";
 
 import { ROLES, type Role } from "@/lib/config/roles";
 import { fetchAllTheGraphPages } from "@/lib/pagination";
-import { AssetBalanceFragment } from "@/lib/queries/asset-balance/asset-balance-fragment";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import BigNumber from "bignumber.js";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
@@ -15,18 +10,18 @@ import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import { AssetBalanceSchema, type AssetBalance } from "./asset-balance-schema";
 
-const UserAssetsBalance = theGraphGraphqlKit(
-  `
-  query UserAssetsBalance($accountId: ID!, $first: Int, $skip: Int) {
-    account(id: $accountId) {
-      balances(first: $first, skip: $skip) {
-        ...AssetBalanceFragment
-      }
-    }
-  }
-`,
-  [AssetBalanceFragment]
-);
+// const UserAssetsBalance = theGraphGraphqlKit(
+//   `
+//   query UserAssetsBalance($accountId: ID!, $first: Int, $skip: Int) {
+//     account(id: $accountId) {
+//       balances(first: $first, skip: $skip) {
+//         ...AssetBalanceFragment
+//       }
+//     }
+//   }
+// `,
+//   [AssetBalanceFragment]
+// );
 
 export type UserAsset = AssetBalance & { roles: Role[] };
 
@@ -40,19 +35,19 @@ export const getUserAssetsBalance = withTracing(
     cacheTag("asset");
     const userAssetsBalance = await fetchAllTheGraphPages(
       async (first, skip) => {
-        const pageResult = await theGraphClientKit.request(
-          UserAssetsBalance,
-          {
-            accountId: getAddress(wallet),
-            first,
-            skip,
-          },
-          {
-            "X-GraphQL-Operation-Name": "UserAssetsBalance",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
-        return pageResult.account?.balances ?? [];
+        //       // const pageResult = await theGraphClientKit.request(
+        //       //           UserAssetsBalance,
+        //       //           {
+        //       //             accountId: getAddress(wallet),
+        //       //             first,
+        //       //             skip,
+        //       //           },
+        //       //           {
+        //       //             "X-GraphQL-Operation-Name": "UserAssetsBalance",
+        //       //             "X-GraphQL-Operation-Type": "query",
+        //       //           }
+        //       //         );
+        return [];
       }
     );
 

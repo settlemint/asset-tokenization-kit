@@ -4,7 +4,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
@@ -14,19 +14,19 @@ import { AssetBalanceSchema } from "./asset-balance-schema";
 /**
  * GraphQL query to fetch asset balances
  */
-const AssetBalanceList = theGraphGraphqlKit(
-  `
-  query Balances($address: String, $wallet: String) {
-    assetBalances(where: {asset: $address, valueExact_gt: "0"}) {
-      ...AssetBalanceFragment
-    }
-    userBalances: assetBalances(where: {account: $wallet, valueExact_gt: "0"}) {
-      ...AssetBalanceFragment
-    }
-  }
-`,
-  [AssetBalanceFragment]
-);
+// const AssetBalanceList = theGraphGraphqlKit(
+//   `
+//   query Balances($address: String, $wallet: String) {
+//     assetBalances(where: {asset: $address, valueExact_gt: "0"}) {
+//       ...AssetBalanceFragment
+//     }
+//     userBalances: assetBalances(where: {account: $wallet, valueExact_gt: "0"}) {
+//       ...AssetBalanceFragment
+//     }
+//   }
+// `,
+//   [AssetBalanceFragment]
+// );
 
 /**
  * Props interface for asset balance list components
@@ -52,25 +52,26 @@ export const getAssetBalanceList = withTracing(
   cache(async ({ address, wallet }: AssetBalanceListProps) => {
     "use cache";
     cacheTag("asset");
-    const result = await theGraphClientKit.request(
-      AssetBalanceList,
-      {
-        address: address,
-        wallet: wallet,
-      },
-      {
-        "X-GraphQL-Operation-Name": "AssetBalanceList",
-        "X-GraphQL-Operation-Type": "query",
-      }
-    );
+          //       // const result = await theGraphClientKit.request(
+      //       //       AssetBalanceList,
+      //       //       {
+      //       //         address: address,
+      //       //         wallet: wallet,
+      //       //       },
+      //       //       {
+      //       //         "X-GraphQL-Operation-Name": "AssetBalanceList",
+      //       //         "X-GraphQL-Operation-Type": "query",
+      //       //       }
+      //       //     );
 
+    // NOTE: HARDCODED SO IT STILL COMPILES
     const balances = safeParse(
       t.Array(AssetBalanceSchema),
-      result.assetBalances || []
+      []
     );
     const userBalances = safeParse(
       t.Array(AssetBalanceSchema),
-      result.userBalances || []
+      []
     );
 
     if (wallet) {

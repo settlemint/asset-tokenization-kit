@@ -1,30 +1,25 @@
 import "server-only";
 
 import { fetchAllTheGraphPages } from "@/lib/pagination";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
-import { AssetActivityFragment } from "./asset-activity-fragment";
 import { AssetActivitySchema } from "./asset-activity-schema";
 
-/**
- * GraphQL query to fetch asset activity data
- */
-const AssetActivity = theGraphGraphqlKit(
-  `
-  query AssetActivity($first: Int, $skip: Int, $where: AssetActivityData_filter) {
-    assetActivityDatas(first: $first, skip: $skip, where: $where) {
-      ...AssetActivityFragment
-    }
-  }
-`,
-  [AssetActivityFragment]
-);
+// /**
+//  * GraphQL query to fetch asset activity data
+//  */
+// const AssetActivity = theGraphGraphqlKit(
+//   `
+//   query AssetActivity($first: Int, $skip: Int, $where: AssetActivityData_filter) {
+//     assetActivityDatas(first: $first, skip: $skip, where: $where) {
+//       ...AssetActivityFragment
+//     }
+//   }
+// `,
+//   [AssetActivityFragment]
+// );
 
 /**
  * Options interface for asset activity queries
@@ -49,27 +44,27 @@ export const getAssetActivity = withTracing(
     "use cache";
     cacheTag("asset");
     const rawData = await fetchAllTheGraphPages(async (first, skip) => {
-      const response = await theGraphClientKit.request(
-        AssetActivity,
-        {
-          first,
-          skip,
-          where: assetAddress ? { id: assetAddress } : undefined,
-        },
-        {
-          "X-GraphQL-Operation-Name": "AssetActivity",
-          "X-GraphQL-Operation-Type": "query",
-        }
-      );
+      // const response = await theGraphClientKit.request(
+      //   AssetActivity,
+      //   {
+      //     first,
+      //     skip,
+      //     where: assetAddress ? { id: assetAddress } : undefined,
+      //   },
+      //   {
+      //     "X-GraphQL-Operation-Name": "AssetActivity",
+      //     "X-GraphQL-Operation-Type": "query",
+      //   }
+      // );
 
-      const activityData = response.assetActivityDatas || [];
+      // const activityData = response.assetActivityDatas || [];
 
       // If we have a limit, check if we should stop
-      if (limit && skip + activityData.length >= limit) {
-        return activityData.slice(0, limit - skip);
-      }
+      // if (limit && skip + activityData.length >= limit) {
+      //   return activityData.slice(0, limit - skip);
+      // }
 
-      return activityData;
+      return [];
     }, limit);
 
     // Validate data using TypeBox schema

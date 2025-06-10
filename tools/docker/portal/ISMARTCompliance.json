@@ -1,0 +1,182 @@
+[
+  {
+    "type": "function",
+    "name": "areValidComplianceModules",
+    "inputs": [
+      {
+        "name": "_pairs",
+        "type": "tuple[]",
+        "internalType": "struct SMARTComplianceModuleParamPair[]",
+        "components": [
+          {
+            "name": "module",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "params",
+            "type": "bytes",
+            "internalType": "bytes"
+          }
+        ]
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "canTransfer",
+    "inputs": [
+      {
+        "name": "_token",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_from",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_to",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "isCompliant",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "created",
+    "inputs": [
+      {
+        "name": "_token",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_to",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "destroyed",
+    "inputs": [
+      {
+        "name": "_token",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_from",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "isValidComplianceModule",
+    "inputs": [
+      {
+        "name": "_module",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_params",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "supportsInterface",
+    "inputs": [
+      {
+        "name": "interfaceId",
+        "type": "bytes4",
+        "internalType": "bytes4"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "transferred",
+    "inputs": [
+      {
+        "name": "_token",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_from",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_to",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "error",
+    "name": "InvalidModule",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ZeroAddressNotAllowed",
+    "inputs": []
+  }
+]

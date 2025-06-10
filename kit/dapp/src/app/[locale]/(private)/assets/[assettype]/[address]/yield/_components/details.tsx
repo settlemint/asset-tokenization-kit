@@ -1,11 +1,6 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
-import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
-import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getUser } from "@/lib/auth/utils";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import { formatDate } from "@/lib/utils/date";
-import { formatNumber } from "@/lib/utils/number";
-import { secondsToInterval } from "@/lib/utils/yield";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
@@ -17,28 +12,30 @@ export async function YieldDetails({ address }: DetailsProps) {
   const user = await getUser();
   // Hardcoded to bond because the other asset types don't have yield
   const bond = await getBondDetail({ address, userCurrency: user.currency });
-  const yieldSchedule = bond.yieldSchedule!;
+  // const yieldSchedule = bond.yieldSchedule!;
 
   const t = await getTranslations("admin.bonds.yield");
   const locale = await getLocale();
 
-  const ratePercentage = Number(yieldSchedule.rate) / 100;
-  const periodCount = yieldSchedule.periods.length;
+  // const ratePercentage = Number(yieldSchedule.rate) / 100;
+  // const periodCount = yieldSchedule.periods.length;
 
-  const intervalPeriod = secondsToInterval(yieldSchedule.interval.toString());
+  // const intervalPeriod = secondsToInterval(yieldSchedule.interval.toString());
   // Use the translation from the interval options section
   // The translation keys are in admin.bonds.yield.set-schedule.interval.options.[period]
-  const intervalDisplay = intervalPeriod
-    ? t(`set-schedule.interval.options.${intervalPeriod}`)
-    : `${intervalPeriod} ${t("set-schedule.interval.options.seconds")}`;
-  const totalYield = yieldSchedule.periods.reduce(
-    (acc, period) => acc + Number(period.totalYield),
-    0
-  );
-  const totalUnclaimedYield = totalYield - Number(yieldSchedule.totalClaimed);
+  // const intervalDisplay = intervalPeriod
+  //   ? t(`set-schedule.interval.options.${intervalPeriod}`)
+  //   : `${intervalPeriod} ${t("set-schedule.interval.options.seconds")}`;
+  //NOTE: HARDCODED SO IT STILL COMPILES
+  const totalYield = 0;
+  // const totalYield = yieldSchedule.periods.reduce(
+  //   (acc, period) => acc + Number(period.totalYield),
+  //   0
+  // );
+  // const totalUnclaimedYield = totalYield - Number(yieldSchedule.totalClaimed);
   return (
     <DetailGrid>
-      <DetailGridItem label={t("type")}>{t("type-fixed")}</DetailGridItem>
+      {/* <DetailGridItem label={t("type")}>{t("type-fixed")}</DetailGridItem>
       <DetailGridItem label={t("contract-address")}>
         <EvmAddress
           address={yieldSchedule.id}
@@ -95,13 +92,13 @@ export async function YieldDetails({ address }: DetailsProps) {
       <DetailGridItem
         label={t("yield-coverage")}
         info={t("yield-coverage-info")}
-      >
-        {/*
+      > */}
+      {/*
             Yield coverage shows what percentage of unclaimed yield obligations can be covered
             by the available underlying asset balance. If there's no unclaimed yield (equals 0),
             we display "N/A" as there's nothing to cover rather than showing 100% which could be misleading.
           */}
-        {Number(totalYield) === 0
+      {/* {Number(totalYield) === 0
           ? "N/A"
           : Number(yieldSchedule.underlyingBalance) >
               Number(totalUnclaimedYield)
@@ -116,7 +113,7 @@ export async function YieldDetails({ address }: DetailsProps) {
                   locale,
                 }
               )}
-      </DetailGridItem>
+      </DetailGridItem> */}
     </DetailGrid>
   );
 }

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { format } from "date-fns";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";

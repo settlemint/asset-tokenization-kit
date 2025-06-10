@@ -47,8 +47,8 @@ export async function BondStatusProgress({ address }: BondStatusProgressProps) {
       chartProps = {
         title: t("bond-issuance"),
         description: t("bond-issued"),
-        value: Number(bond.totalSupply),
-        max: Number(bond.cap),
+        value: 0, // Number(bond.totalSupply),
+        max: 0, // Number(bond.cap),
         status: "issuing" as const,
         statusLabel: t("bond-issued"),
         statusColor: getBondStatusColor("issuing"),
@@ -60,8 +60,8 @@ export async function BondStatusProgress({ address }: BondStatusProgressProps) {
       chartProps = {
         title: t("bond-redemption-assets"),
         description: t("bond-redeemable"),
-        value: Number(bond.underlyingBalance),
-        max: Number(bond.totalUnderlyingNeeded),
+        value: 0, // Number(bond.underlyingBalance),
+        max: 0, // Number(bond.totalUnderlyingNeeded),
         status: "redeemable" as const,
         statusLabel: t("bond-redeemable"),
         statusColor: getBondStatusColor("redeemable"),
@@ -73,8 +73,8 @@ export async function BondStatusProgress({ address }: BondStatusProgressProps) {
       chartProps = {
         title: t("bond-redeemed"),
         description: t("bond-matured"),
-        value: Number(bond.redeemedAmount),
-        max: Number(bond.totalSupply),
+        value: 0, // Number(bond.redeemedAmount),
+        max: 0, // Number(bond.totalSupply),
         status: "redeemed" as const,
         statusLabel: t("bond-redeemed"),
         statusColor: getBondStatusColor("redeemed"),

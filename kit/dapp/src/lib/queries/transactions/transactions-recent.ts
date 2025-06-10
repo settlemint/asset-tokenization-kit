@@ -2,7 +2,7 @@ import "server-only";
 
 import { TransactionFragment } from "@/lib/queries/transactions/transaction-fragment";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { Address } from "viem";
 import { TransactionSchema } from "./transaction-schema";

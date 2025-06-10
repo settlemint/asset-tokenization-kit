@@ -19,7 +19,7 @@ export async function getMicaRegulationConfigAction(
     // for this asset, then gets the MiCA-specific config
     let regulationData = await getRegulationDetail({
       assetId: assetAddress as Address,
-      regulationType: "mica",
+      // regulationType: "mica",
     });
 
     // If no MiCA regulation config exists, create a default one
@@ -66,7 +66,7 @@ export async function getMicaRegulationConfigAction(
       // Now fetch the newly created config
       regulationData = await getRegulationDetail({
         assetId: assetAddress as Address,
-        regulationType: "mica",
+        // regulationType: "mica",
       });
 
       if (!regulationData) {
