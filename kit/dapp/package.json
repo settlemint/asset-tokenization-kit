@@ -22,6 +22,7 @@
     "test": "bun test",
     "db:check": "drizzle-kit check",
     "db:migrate": "drizzle-kit migrate",
+    "postdb:migrate": "settlemint hasura track -a",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate"
   },
