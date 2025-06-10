@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { exchangeRate } from "@/lib/db/schema-exchange-rates";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { withAccessControl } from "@/lib/utils/access-control";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { format } from "date-fns";

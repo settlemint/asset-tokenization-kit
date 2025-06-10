@@ -22,13 +22,13 @@ export function Amount({ bondDetails }: AmountProps) {
   });
 
   const isYield = target === "yield";
-  const max = isYield
-    ? Number(bondDetails.yieldSchedule?.underlyingBalance ?? 0)
-    : Number(bondDetails.underlyingBalance);
+  const max = isYield ? Number(0) : Number(0);
+  //   ? Number(bondDetails.yieldSchedule?.underlyingBalance ?? 0)
+  //   : Number(bondDetails.underlyingBalance);
   const noUnderlyingBalance = max === 0;
-  const decimals = isYield
-    ? bondDetails.yieldSchedule?.underlyingAsset.decimals
-    : bondDetails.underlyingAsset.decimals;
+  const decimals = 18; // isYield
+  //   ? bondDetails.yieldSchedule?.underlyingAsset.decimals
+  //   : bondDetails.underlyingAsset.decimals;
   const description = noUnderlyingBalance
     ? t("max-limit.withdraw-no-balance")
     : max
@@ -48,7 +48,7 @@ export function Amount({ bondDetails }: AmountProps) {
         description={description}
         required
         step={decimals ? 10 ** -decimals : "any"}
-        postfix={bondDetails.symbol}
+        postfix={"WW"}
         disabled={noUnderlyingBalance}
       />
     </FormStep>

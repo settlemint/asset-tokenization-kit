@@ -19,7 +19,8 @@
     },
     "compile": {
       "dependsOn": ["^compile", "codegen"],
-      "outputs": ["build/**"]
+      "outputs": ["build/**"],
+      "inputs": ["subgraph.yaml", "schema.graphql"]
     },
     "publish": {
       "cache": false,
@@ -27,6 +28,9 @@
     },
     "test": {
       "dependsOn": ["codegen:gql-tada"]
+    },
+    "artifacts": {
+      "dependsOn": ["build"]
     }
   }
 }

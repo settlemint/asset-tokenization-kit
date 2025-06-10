@@ -1,0 +1,61 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "systemAddress",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "initialAdmin",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "identityStorage",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "trustedIssuersRegistry",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "topicSchemeRegistry",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "fallback",
+    "stateMutability": "payable"
+  },
+  {
+    "type": "receive",
+    "stateMutability": "payable"
+  },
+  {
+    "type": "error",
+    "name": "ETHTransfersNotAllowed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "IdentityRegistryImplementationNotSet",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InitializationWithZeroAddress",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidSystemAddress",
+    "inputs": []
+  }
+]

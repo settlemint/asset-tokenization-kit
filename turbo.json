@@ -1,15 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "remoteCache": {
-    "enabled": true
-  },
   "tasks": {
     "ci": {
-      "dependsOn": ["compile", "codegen", "lint", "build"]
+      "dependsOn": ["compile", "codegen", "lint", "test", "typecheck", "build"]
     },
     "ci:gha": {
-      "dependsOn": ["publish", "ci", "test"]
+      "dependsOn": ["publish", "ci"]
     },
     "//#version": {
       "cache": false,
@@ -52,6 +49,10 @@
     "docs": {
       "cache": false
     },
-    "test": {}
+    "test": {},
+    "artifacts": {},
+    "typecheck": {
+      "dependsOn": ["dependencies", "codegen", "subgraph#build"]
+    }
   }
 }

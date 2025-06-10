@@ -9,12 +9,13 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "dependencies": "bun run tools/dependencies.ts",
     "compile:forge": "settlemint scs foundry build --sizes",
     "compile:hardhat": "settlemint scs hardhat build",
     "codegen:types": "bun run tools/codegen-types.ts",
-    "codegen:genesis": "bun run tools/codegen-genesis.ts",
-    "codegen:abi": "bun run tools/codegen-abi.ts",
+    "artifacts:genesis": "bun run tools/artifacts-genesis.ts",
+    "artifacts:abi": "bun run tools/artifacts-abi.ts",
     "lint": "solhint --config .solhint.json ./contracts/**/*.sol",
     "format:forge": "settlemint scs foundry format",
     "format:prettier": "prettier --write .",

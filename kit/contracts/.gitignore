@@ -30,3 +30,5 @@ portal
 # Scripts
 scripts/hardhat/abi
 out-genesis
+.docker
+tools/docker/besu/genesis.json

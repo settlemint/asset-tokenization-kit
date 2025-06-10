@@ -28,14 +28,14 @@
       "matchPackageNames": ["/^@settlemint//"]
     },
     {
-      "groupName": "Elysia",
-      "groupSlug": "elysia",
-      "matchPackageNames": ["elysia", "/^@elysiajs//"]
-    },
-    {
       "groupName": "ORPC / Tanstack",
       "groupSlug": "orpc",
       "matchPackageNames": ["/^@orpc//", "/^@tanstack//"]
+    },
+    {
+      "groupName": "Better Auth",
+      "groupSlug": "better-auth",
+      "matchPackageNames": ["/^@better-auth//", "better-auth"]
     },
     {
       "groupName": "Next Safe Action",

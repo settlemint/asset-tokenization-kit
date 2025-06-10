@@ -9,6 +9,7 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "codegen:settlemint": "settlemint codegen",
     "codegen:gql-tada": "gql-tada turbo",
     "format": "prettier --write .",
@@ -19,16 +20,14 @@
     "prod:local": "next build --turbopack && cp -r .next/static .next/standalone/kit/dapp/.next/static && cp -r public .next/standalone/public && node .next/standalone/kit/dapp/server.js",
     "start": "next start",
     "test": "bun test",
+    "db:check": "drizzle-kit check",
     "db:migrate": "drizzle-kit migrate",
+    "postdb:migrate": "settlemint hasura track -a",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
     "@daveyplate/better-auth-ui": "1.7.4",
-    "@elysiajs/eden": "1.3.2",
-    "@elysiajs/opentelemetry": "1.3.0",
-    "@elysiajs/server-timing": "1.3.0",
-    "@elysiajs/swagger": "1.3.0",
     "@hookform/resolvers": "5.1.0",
     "@next-safe-action/adapter-react-hook-form": "1.0.14",
     "@opentelemetry/api": "1.9.0",
@@ -64,13 +63,14 @@
     "@react-email/components": "0.0.41",
     "@scalar/api-reference-react": "0.7.13",
     "@scalar/types": "0.2.2",
-    "@settlemint/sdk-blockscout": "2.3.6",
-    "@settlemint/sdk-hasura": "2.3.6",
-    "@settlemint/sdk-ipfs": "2.3.6",
-    "@settlemint/sdk-minio": "2.3.6",
-    "@settlemint/sdk-next": "2.3.6",
-    "@settlemint/sdk-portal": "2.3.6",
-    "@settlemint/sdk-thegraph": "2.3.6",
+    "@sentry/nextjs": "9.27.0",
+    "@settlemint/sdk-blockscout": "2.3.14",
+    "@settlemint/sdk-hasura": "2.3.14",
+    "@settlemint/sdk-ipfs": "2.3.14",
+    "@settlemint/sdk-minio": "2.3.14",
+    "@settlemint/sdk-next": "2.3.14",
+    "@settlemint/sdk-portal": "2.3.14",
+    "@settlemint/sdk-thegraph": "2.3.14",
     "@sinclair/typebox": "0.34.33",
     "@t3-oss/env-nextjs": "0.13.6",
     "@tanstack/query-sync-storage-persister": "5.80.6",
@@ -133,7 +133,7 @@
     "@eslint/js": "9.28.0",
     "@tailwindcss/postcss": "4.1.8",
     "@tanstack/eslint-plugin-query": "5.78.0",
-    "@types/node": "22.15.30",
+    "@types/node": "22.15.31",
     "@types/pg": "8.15.4",
     "@types/react": "19.1.6",
     "@types/react-dom": "19.1.6",
@@ -149,7 +149,9 @@
     "tailwindcss": "4.1.8",
     "typescript": "5.8.3"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "contracts": "workspace:*"
+  },
   "trustedDependencies": [
     "sharp"
   ],

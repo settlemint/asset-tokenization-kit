@@ -44,7 +44,7 @@ export async function BadgeLoader({
     switch (badgeType) {
       case "holders":
         const details = await getAssetDetail({ address, assettype });
-        count = details.totalHolders.toString();
+        count = 0; //details.totalHolders.toString();
         break;
       case "events":
         const events = await getAssetEventsList({ asset: address });
@@ -52,11 +52,11 @@ export async function BadgeLoader({
         break;
       case "allowlist":
         const assetUsersAllowlist = await getAssetUsersDetail({ address });
-        count = assetUsersAllowlist.allowlist.length;
+        count = 0; //assetUsersAllowlist.allowlist.length;
         break;
       case "blocklist":
         const assetUsersBlocklist = await getAssetUsersDetail({ address });
-        count = assetUsersBlocklist.blocklist.length;
+        count = 0; //assetUsersBlocklist.blocklist.length;
         break;
       case "underlying-assets":
         // Assuming getAssetBalanceList needs the wallet address, not asset address

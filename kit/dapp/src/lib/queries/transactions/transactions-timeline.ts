@@ -1,7 +1,7 @@
 import "server-only";
 
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t, type StaticDecode } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import type { Address } from "viem";

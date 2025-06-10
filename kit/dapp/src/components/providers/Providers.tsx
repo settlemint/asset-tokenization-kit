@@ -19,8 +19,12 @@ import { NextIntlClientProvider } from "next-intl";
  */
 const getAuthConfig = (envConfig: typeof env) => ({
   emailEnabled: !!envConfig.RESEND_API_KEY,
-  googleEnabled: !!(envConfig.GOOGLE_CLIENT_ID && envConfig.GOOGLE_CLIENT_SECRET),
-  githubEnabled: !!(envConfig.GITHUB_CLIENT_ID && envConfig.GITHUB_CLIENT_SECRET),
+  googleEnabled: !!(
+    envConfig.GOOGLE_CLIENT_ID && envConfig.GOOGLE_CLIENT_SECRET
+  ),
+  githubEnabled: !!(
+    envConfig.GITHUB_CLIENT_ID && envConfig.GITHUB_CLIENT_SECRET
+  ),
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {

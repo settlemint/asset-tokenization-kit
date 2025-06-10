@@ -2,31 +2,39 @@
   "extends": ["//"],
   "tasks": {
     "dependencies": {
-      "outputs": ["dependencies/**", "soldeer.lock"],
-      "inputs": ["foundry.toml"]
+      "outputs": ["dependencies/**"],
+      "inputs": ["soldeer.lock"]
     },
     "compile": {
       "dependsOn": ["compile:forge", "compile:hardhat"]
     },
     "compile:forge": {
-      "outputs": ["out/**", "cache_forge/**"]
+      "outputs": ["out/**", "cache_forge/**"],
+      "inputs": ["**/*.sol"]
     },
     "compile:hardhat": {
-      "outputs": ["artifacts/**", "cache/**"]
+      "outputs": ["artifacts/**", "cache/**"],
+      "inputs": ["**/*.sol"]
     },
     "codegen": {
-      "dependsOn": ["codegen:types", "codegen:genesis", "codegen:abi"]
+      "dependsOn": ["codegen:types"]
     },
     "codegen:types": {
-      "dependsOn": ["compile"],
-      "outputs": ["scripts/hardhat/abi/**"]
+      "dependsOn": ["compile:hardhat"],
+      "outputs": ["scripts/hardhat/abi/**"],
+      "inputs": ["contracts/**"]
     },
-    "codegen:abi": {
-      "dependsOn": ["compile"],
-      "outputs": ["portal/**"]
+    "artifacts": {
+      "dependsOn": ["artifacts:genesis", "artifacts:abi"]
     },
-    "codegen:genesis": {
-      "outputs": ["tools/genesis-output.json"]
+    "artifacts:genesis": {
+      "outputs": ["tools/genesis-output.json"],
+      "inputs": ["contracts/**"]
+    },
+    "artifacts:abi": {
+      "dependsOn": ["compile"],
+      "outputs": ["portal/**"],
+      "inputs": ["contracts/**"]
     },
     "format": {
       "dependsOn": ["format:forge", "format:prettier"]

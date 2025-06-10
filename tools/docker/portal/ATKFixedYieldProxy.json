@@ -1,0 +1,71 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "factoryAddress",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "tokenAddress",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "startDate",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "endDate",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "rate",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "interval",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "initialOwner",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "fallback",
+    "stateMutability": "payable"
+  },
+  {
+    "type": "receive",
+    "stateMutability": "payable"
+  },
+  {
+    "type": "error",
+    "name": "ETHTransfersNotAllowed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ImplementationNotSetInFactory",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InitializationWithZeroAddress",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidFactoryAddress",
+    "inputs": []
+  }
+]
