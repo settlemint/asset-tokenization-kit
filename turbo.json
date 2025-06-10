@@ -42,7 +42,7 @@
       "dependsOn": ["//#version"]
     },
     "dev": {
-      "dependsOn": ["dapp#codegen"],
+      "dependsOn": ["dapp#codegen", "docker:up"],
       "cache": false,
       "persistent": true
     },
