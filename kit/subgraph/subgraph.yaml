@@ -20,12 +20,12 @@ dataSources:
         - Event
       abis:
         - name: SystemFactory
-          file: ../contracts/artifacts/contracts/system/ISMARTSystemFactory.sol/ISMARTSystemFactory.json
+          file: ../contracts/artifacts/contracts/system/IATKSystemFactory.sol/IATKSystemFactory.json
         - name: System
-          file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
+          file: ../contracts/artifacts/contracts/system/IATKSystem.sol/IATKSystem.json
       eventHandlers:
-        - event: SMARTSystemCreated(indexed address,indexed address)
-          handler: handleSMARTSystemCreated
+        - event: ATKSystemCreated(indexed address,indexed address)
+          handler: handleATKSystemCreated
       file: ./src/system-factory/system-factory.ts
   - kind: ethereum
     name: FixedYieldScheduleFactory
@@ -39,13 +39,13 @@ dataSources:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - SMARTFixedYieldScheduleCreated
+        - ATKFixedYieldScheduleCreated
       abis:
         - name: FixedYieldScheduleFactory
-          file: ../contracts/artifacts/contracts/system/yield/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json
+          file: ../contracts/artifacts/contracts/system/yield/ATKFixedYieldScheduleFactory.sol/ATKFixedYieldScheduleFactory.json
       eventHandlers:
-        - event: SMARTFixedYieldScheduleCreated(indexed address,indexed address)
-          handler: handleSMARTFixedYieldScheduleCreated
+        - event: ATKFixedYieldScheduleCreated(indexed address,indexed address)
+          handler: handleATKFixedYieldScheduleCreated
       file: ./src/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
 templates:
   - kind: ethereum
@@ -85,7 +85,7 @@ templates:
         - Event
       abis:
         - name: System
-          file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
+          file: ../contracts/artifacts/contracts/system/IATKSystem.sol/IATKSystem.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
             address,address,address,address,address,address)
@@ -127,7 +127,7 @@ templates:
         - Event
       abis:
         - name: TokenFactory
-          file: ../contracts/artifacts/contracts/system/token-factory/ISMARTTokenFactory.sol/ISMARTTokenFactory.json
+          file: ../contracts/artifacts/contracts/system/token-factory/IATKTokenFactory.sol/IATKTokenFactory.json
         - name: Token
           file: ../contracts/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
@@ -268,7 +268,7 @@ templates:
         - Event
       abis:
         - name: IdentityFactory
-          file: ../contracts/artifacts/contracts/system/identity-factory/ISMARTIdentityFactory.sol/ISMARTIdentityFactory.json
+          file: ../contracts/artifacts/contracts/system/identity-factory/IATKIdentityFactory.sol/IATKIdentityFactory.json
         - name: Token
           file: ../contracts/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:

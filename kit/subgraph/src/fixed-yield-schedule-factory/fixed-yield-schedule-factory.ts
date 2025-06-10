@@ -2,7 +2,7 @@ import { SMARTFixedYieldScheduleCreated } from "../../generated/FixedYieldSchedu
 import { fetchEvent } from "../event/fetch/event";
 import { fetchFixedYieldSchedule } from "../fixed-yield-schedule/fetch/fixed-yield-schedule";
 
-export function handleSMARTFixedYieldScheduleCreated(
+export function handleATKFixedYieldScheduleCreated(
   event: SMARTFixedYieldScheduleCreated
 ): void {
   fetchEvent(event, "FixedYieldScheduleCreated");
