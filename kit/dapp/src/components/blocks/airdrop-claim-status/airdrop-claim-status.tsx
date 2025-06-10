@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { AirdropStatus } from "@/lib/queries/airdrop/airdrop-schema";
 import { cn } from "@/lib/utils";
+import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
 import { CalendarMinus2, Clock, Info, PlayCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
@@ -14,13 +15,13 @@ import type { ReactElement } from "react";
 type AirdropClaimStatusIndicatorProps = {
   asBadge?: boolean;
   status: AirdropStatus;
-  message: string;
+  type: AirdropType;
 };
 
 export function AirdropClaimStatusIndicator({
   status,
-  message,
   asBadge = false,
+  type,
 }: AirdropClaimStatusIndicatorProps): ReactElement {
   const t = useTranslations("portfolio.my-airdrops");
 
@@ -46,6 +47,7 @@ export function AirdropClaimStatusIndicator({
   } as const;
 
   const currentStatusStyle = statusConfig[status];
+  const message = t(`tooltip.${type}.${status}`);
 
   const StatusContent = () => (
     <>

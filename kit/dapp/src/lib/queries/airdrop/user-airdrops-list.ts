@@ -108,15 +108,13 @@ export const getUserAirdropList = withTracing(
       }
     );
 
-    const result = await Promise.all(
-      airdropDetailsResult.map(async (airdrop) => {
-        return {
-          ...airdrop,
-          status: await getStatus(airdrop),
-          recipient: getRecipient(airdrop, totalAmountAllocatedMap),
-        };
-      })
-    );
+    const result = airdropDetailsResult.map((airdrop) => {
+      return {
+        ...airdrop,
+        status: getStatus(airdrop),
+        recipient: getRecipient(airdrop, totalAmountAllocatedMap),
+      };
+    });
 
     return safeParse(t.Array(UserAirdropSchema), result);
   }
@@ -145,19 +143,19 @@ async function getStatus(
   airdrop: ResultOf<typeof AirdropDetailsByIds>["airdrops"][number]
 ) {
   if (airdrop.type === "StandardAirdrop") {
-    return await calculateStandardAirdropStatus({
+    return calculateStandardAirdropStatus({
       startTimeMicroSeconds: airdrop.startTime,
       endTimeMicroSeconds: airdrop.endTime,
     });
   }
   if (airdrop.type === "VestingAirdrop") {
-    return await calculateVestingAirdropStatus({
+    return calculateVestingAirdropStatus({
       claimPeriodEndMicroSeconds: airdrop.claimPeriodEnd,
       vestingDurationSeconds: airdrop.strategy.vestingDuration,
       cliffDurationSeconds: airdrop.strategy.cliffDuration,
     });
   }
-  return await calculatePushAirdropStatus({
+  return calculatePushAirdropStatus({
     distributionCap: airdrop.distributionCap,
     totalDistributed: airdrop.totalDistributed,
   });

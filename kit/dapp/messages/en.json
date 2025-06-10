@@ -1204,20 +1204,20 @@
       },
       "status-info-label": "Additional information about this status",
       "tooltip": {
-        "standard-airdrop": {
-          "pending-with-start": "Claims will start on {date}",
-          "ready-with-end": "You can claim your assets now. Claiming period ends on {date}",
-          "expired": "The claiming period ended on {date}",
-          "claimed": "You have successfully claimed your airdrop assets"
+        "standard": {
+          "UPCOMING": "Claims will start on {date}",
+          "ACTIVE": "You can claim your assets now. Claiming period ends on {date}",
+          "ENDED": "The claiming period ended on {date}"
         },
-        "push-airdrop": {
-          "ready": "The admin will send your assets to you",
-          "ended": "All assets have been distributed"
+        "push": {
+          "UPCOMING": "The admin will send your assets to you",
+          "ACTIVE": "The admin will send your assets to you",
+          "ENDED": "All assets have been distributed"
         },
-        "vesting-airdrop": {
-          "ready-initialize": "You can initialize your vesting schedule now, before claims start on {date}",
-          "ready-claim": "You can claim any available assets from your vesting schedule now.",
-          "ended": "The vesting period for the airdrop has ended. Claim any remaining assets now."
+        "vesting": {
+          "UPCOMING": "You can initialize your vesting schedule now, before claims start on {date}",
+          "ACTIVE": "You can claim any available assets from your vesting schedule now.",
+          "ENDED": "The vesting period for the airdrop has ended. Claim any remaining assets now."
         }
       },
       "details": {

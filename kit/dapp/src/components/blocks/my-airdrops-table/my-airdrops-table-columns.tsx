@@ -41,8 +41,8 @@ export function Columns() {
       header: t("table.status-header"),
       cell: ({ row }) => (
         <AirdropClaimStatusIndicator
-          status={row.original.status.status}
-          message={row.original.status.message}
+          status={row.original.status}
+          type={row.original.type}
         />
       ),
     }),
