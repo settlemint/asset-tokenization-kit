@@ -43,7 +43,7 @@ permissions:
 jobs:
   slack-notification:
     name: Send Slack Notification
-    runs-on: namespace-profile-sdk
+    runs-on: namespace-profile-atk
     if: |
       github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' &&
       (github.event_name == 'pull_request' ||
