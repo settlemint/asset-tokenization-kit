@@ -32,7 +32,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -100,6 +100,9 @@ jobs:
             toJson(github.event.workflow_run.pull_requests[0].requested_reviewers)
             }}
           WR_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          WR_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          WR_HEAD_COMMIT_MESSAGE:
+            ${{ github.event.workflow_run.head_commit.message }}
           # Pull request context
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_TITLE: ${{ github.event.pull_request.title }}
@@ -130,14 +133,34 @@ jobs:
             fi
 
             if [[ "$WR_HAS_PRS" != "true" || -z "$WR_PR_NUMBER" ]]; then
-              echo "Debug: No PR associated with workflow run, skipping"
-              echo "skip_notification=true" >> $GITHUB_OUTPUT
-              exit 0
+              echo "Debug: No PR in workflow run data, checking commit message for PR number"
+
+              # Try to extract PR number from commit message (format: "... (#123)")
+              PR_FROM_COMMIT=$(echo "$WR_HEAD_COMMIT_MESSAGE" | grep -oE '#[0-9]+' | tail -1 | tr -d '#')
+
+              if [[ -n "$PR_FROM_COMMIT" ]]; then
+                echo "Debug: Found PR #$PR_FROM_COMMIT in commit message"
+                WR_PR_NUMBER="$PR_FROM_COMMIT"
+
+                # Extract PR title from commit message (everything before the PR number)
+                COMMIT_TITLE=$(echo "$WR_HEAD_COMMIT_MESSAGE" | head -1 | sed -E 's/ \(#[0-9]+\)$//')
+                WR_PR_TITLE="${COMMIT_TITLE:-PR #$WR_PR_NUMBER}"
+
+                # For merged PRs, set appropriate state
+                WR_PR_STATE="closed"
+                WR_PR_MERGED="true"
+              else
+                echo "Debug: No PR found in commit message, skipping"
+                echo "skip_notification=true" >> $GITHUB_OUTPUT
+                exit 0
+              fi
             fi
 
             echo "build_result=$WR_CONCLUSION" >> $GITHUB_OUTPUT
             echo "pr_number=$WR_PR_NUMBER" >> $GITHUB_OUTPUT
-            echo "pr_title=${WR_PR_TITLE:-PR #$WR_PR_NUMBER}" >> $GITHUB_OUTPUT
+            # Escape special characters in PR title to prevent GitHub Actions from interpreting them as commands
+            ESCAPED_TITLE=$(echo "${WR_PR_TITLE:-PR #$WR_PR_NUMBER}" | sed 's/--/%2D%2D/g')
+            echo "pr_title=$ESCAPED_TITLE" >> $GITHUB_OUTPUT
             echo "pr_user=${WR_PR_USER:-unknown}" >> $GITHUB_OUTPUT
 
             # Construct PR URL if not provided
@@ -157,7 +180,9 @@ jobs:
             echo "Debug: Processing pull_request event"
             echo "build_result=running" >> $GITHUB_OUTPUT
             echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
-            echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
+            # Escape special characters in PR title to prevent GitHub Actions from interpreting them as commands
+            ESCAPED_TITLE=$(echo "$PR_TITLE" | sed 's/--/%2D%2D/g')
+            echo "pr_title=$ESCAPED_TITLE" >> $GITHUB_OUTPUT
             echo "pr_user=$PR_USER" >> $GITHUB_OUTPUT
             echo "pr_html_url=$PR_HTML_URL" >> $GITHUB_OUTPUT
             echo "pr_state=$PR_STATE" >> $GITHUB_OUTPUT
@@ -202,12 +227,13 @@ jobs:
             {
               "channel": "${{ env.SLACK_CHANNEL_ID }}",
               ${{ steps.check_message.outputs.message_exists == 'true' && format('"ts": "{0}",', steps.check_message.outputs.slack_ts) || '' }}
+              "text": "PR: ${{ steps.build_status.outputs.pr_title }} - ${{ steps.build_status.outputs.pr_state }} - Build ${{ steps.build_status.outputs.build_result }}",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "${{ steps.build_status.outputs.pr_merged == 'true' && ':tada:' || steps.build_status.outputs.pr_draft == 'true' && ':memo:' || (steps.check_message.outputs.message_exists == 'true' && ':arrows_counterclockwise:') || ':mag:' }} *${{ steps.build_status.outputs.pr_title }}* by ${{ steps.build_status.outputs.pr_user }} in ${{ github.repository }}\n${{ steps.build_status.outputs.pr_draft == 'true' && ':memo:' || steps.build_status.outputs.pr_state == 'open' && ':large_green_circle:' || (steps.build_status.outputs.pr_merged == 'true' && ':tada:') || ':red_circle:' }} ${{ steps.build_status.outputs.pr_draft == 'true' && 'Draft' || steps.build_status.outputs.pr_state == 'open' && 'Open' || (steps.build_status.outputs.pr_merged == 'true' && 'Merged') || 'Closed' }} • ${{ steps.build_status.outputs.build_result == 'success' && ':white_check_mark:' || steps.build_status.outputs.build_result == 'failure' && ':x:' || steps.build_status.outputs.build_result == 'cancelled' && ':no_entry_sign:' || steps.build_status.outputs.build_result == 'skipped' && ':fast_forward:' || ':hourglass_flowing_sand:' }} ${{ steps.build_status.outputs.build_result == 'success' && 'Passed' || steps.build_status.outputs.build_result == 'failure' && 'Failed' || steps.build_status.outputs.build_result == 'cancelled' && 'Cancelled' || steps.build_status.outputs.build_result == 'skipped' && 'Skipped' || 'Running' }}${{ steps.build_status.outputs.pr_reviewers != '' && format(' • :busts_in_silhouette: {0}', steps.build_status.outputs.pr_reviewers) || '' }}"
+                    "text": "*${{ steps.build_status.outputs.pr_title }}*\nby ${{ steps.build_status.outputs.pr_user }} in `${{ github.repository }}`"
                   },
                   "accessory": {
                     "type": "button",
@@ -218,6 +244,23 @@ jobs:
                     "url": "${{ steps.build_status.outputs.pr_html_url || format('https://github.com/{0}/pull/{1}', github.repository, steps.build_status.outputs.pr_number) }}",
                     "action_id": "view_pr"
                   }
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "${{ steps.build_status.outputs.pr_draft == 'true' && ':memo:' || steps.build_status.outputs.pr_state == 'open' && ':large_green_circle:' || (steps.build_status.outputs.pr_merged == 'true' && ':tada:') || ':red_circle:' }} ${{ steps.build_status.outputs.pr_draft == 'true' && 'Draft' || steps.build_status.outputs.pr_state == 'open' && 'Open' || (steps.build_status.outputs.pr_merged == 'true' && 'Merged') || 'Closed' }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "${{ steps.build_status.outputs.build_result == 'success' && ':white_check_mark:' || steps.build_status.outputs.build_result == 'failure' && ':x:' || steps.build_status.outputs.build_result == 'cancelled' && ':no_entry_sign:' || steps.build_status.outputs.build_result == 'skipped' && ':fast_forward:' || ':hourglass_flowing_sand:' }} ${{ steps.build_status.outputs.build_result == 'success' && 'Build passed' || steps.build_status.outputs.build_result == 'failure' && 'Build failed' || steps.build_status.outputs.build_result == 'cancelled' && 'Build cancelled' || steps.build_status.outputs.build_result == 'skipped' && 'Build skipped' || 'Build running' }}"
+                    }${{ steps.build_status.outputs.pr_reviewers != '' && format(',
+                    {
+                      "type": "mrkdwn",
+                      "text": ":busts_in_silhouette: {0}"
+                    }', steps.build_status.outputs.pr_reviewers) || '' }}
+                  ]
                 }
               ]
             }
