@@ -16,7 +16,7 @@
     "publish": "bun run tools/graph-deploy.ts --local",
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
     "test": "bun test --preload ./test/scripts/setup.ts",
-    "test:local": "bun run publish && bun run codegen:gql-tada && bun run test"
+    "test:local": "bun codegen:interfaceid && bun run publish && bun run codegen:gql-tada && bun run test"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",
