@@ -1,4 +1,5 @@
 import { planetContract } from "@/lib/orpc/routes/planet/planet.contract";
+import { systemContract } from "./system/system.contract";
 
 /**
  * Main ORPC contract definition.
@@ -30,4 +31,17 @@ export const contract = {
    * @see {@link ./planet/planet.router} - Corresponding router implementation
    */
   planet: planetContract,
+  
+  /**
+   * System-related API contract.
+   * 
+   * Contains type definitions for SMART system management procedures.
+   * Systems are the core entities that manage the lifecycle and compliance
+   * of tokenized assets on the blockchain. This contract provides type-safe
+   * access to system listing and management operations.
+   * 
+   * @see {@link ./system/system.contract} - System contract implementation
+   * @see {@link ./system/system.router} - Corresponding router implementation
+   */
+  system: systemContract,
 };

@@ -52,7 +52,7 @@ graph-node:
       GRAPH_STORE_WRITE_BATCH_SIZE: '0'
       GRAPH_MAX_GAS_PER_HANDLER: '1_000_000_000_000_000'
       GRAPH_MAX_SPEC_VERSION: '1.2.0'
-      SUBGRAPH: kit:QmWDssNd68FPVjTWpbzyuiFnZnuAVuEbcKExPz5UpkUPCp
+      SUBGRAPH: kit:QmbA53S3UUeoxdNQV9PGUDN7WAgFcHT6qU9FiH8QXXGv3z
       GRAPH_ETHEREUM_REQUEST_RETRIES: '10'
       GRAPH_ETHEREUM_BLOCK_BATCH_SIZE: '100'
       GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE: '1000'
@@ -157,13 +157,6 @@ job:
         registry: docker.io
         repository: busybox
         tag: 1.37.0 # Use specific stable tag
-        pullPolicy: IfNotPresent
-    cloneRepo:
-      atkTag: "1.1.1"
-      image:
-        registry: docker.io
-        repository: alpine/git
-        tag: 2.49.0 # Or pin to a specific version
         pullPolicy: IfNotPresent
   # Custom Init Containers (add definitions here if needed, e.g., for dependencies)
   # extraInitContainers: []

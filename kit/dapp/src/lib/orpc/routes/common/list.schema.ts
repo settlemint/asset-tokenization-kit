@@ -19,9 +19,8 @@ import { z } from "zod";
  * - GET /assets (list all assets)
  * - Any other multi-entity listing endpoint
  *
- * @example
+ * Usage in route contracts:
  * ```typescript
- * // Usage in route contracts:
  * const listPlanets = contract.route({
  *   method: "GET",
  *   path: "/planets"
@@ -67,5 +66,25 @@ export const ListSchema = z.object({
    *
    * Example: limit: 25 returns up to 25 items in the response
    */
-  limit: z.number().int().positive().max(100).default(10),
+  limit: z.number().int().positive().max(100).default(20),
+
+  /**
+   * Sort order direction for the results.
+   *
+   * Determines whether the results should be sorted in ascending
+   * or descending order when combined with the orderBy field.
+   *
+   * Optional field that defaults to natural ordering if not specified.
+   */
+  orderDirection: z.enum(["asc", "desc"]).optional(),
+
+  /**
+   * Field name to sort the results by.
+   *
+   * Specifies which field should be used for ordering the results.
+   * The actual available fields depend on the specific entity being queried.
+   *
+   * Optional field that defaults to natural ordering if not specified.
+   */
+  orderBy: z.string().optional(),
 });

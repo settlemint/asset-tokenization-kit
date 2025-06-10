@@ -1,4 +1,4 @@
-import { getServerEnvironment } from "./environment";
+import { env } from "./env";
 
 /**
  * Interface defining the site's configuration
@@ -16,8 +16,6 @@ interface SiteConfig {
   publisher: string;
 }
 
-const serverEnvironment = getServerEnvironment();
-
 /**
  * The main site configuration
  */
@@ -25,6 +23,6 @@ export const siteConfig = {
   publisher: "SettleMint",
   name: "SettleMint Asset Tokenization Kit",
   description: "SettleMint Asset Tokenization Kit",
-  url: serverEnvironment.APP_URL,
+  url: env.APP_URL,
   email: "no-reply@tokenmint.be",
 } as const satisfies SiteConfig;

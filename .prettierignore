@@ -1,2 +1,5 @@
 kit/charts
 kit/subgraph/subgraph.yaml
+bun.lock
+.gitignore
+.prettierignore

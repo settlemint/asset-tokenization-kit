@@ -43,7 +43,6 @@ next-env.d.ts
 # codegen
 *-cache.d.ts
 
-drizzle
 
 *-env.d.ts
 *-schema.graphql

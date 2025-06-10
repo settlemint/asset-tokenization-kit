@@ -11,6 +11,7 @@ import {
 } from "viem";
 import type { Account } from "viem/accounts";
 import { atkDeployer } from "../../services/deployer";
+import { withDecodedRevertReason } from "../../utils/decode-revert-reason";
 import { getPublicClient } from "../../utils/public-client";
 import { waitForEvent } from "../../utils/wait-for-event";
 
@@ -84,11 +85,11 @@ export abstract class AbstractActor {
     this._identityPromise = new Promise((resolve, reject) => {
       // Internal function to create the identity
       const createIdentity = async (): Promise<`0x${string}`> => {
-        const identityFactory = atkDeployer.getIdentityFactoryContract();
-        const transactionHash = await identityFactory.write.createIdentity([
-          this.address,
-          [],
-        ]);
+        const identityFactory =
+          atkDeployer.getIdentityFactoryContract();
+        const transactionHash = await withDecodedRevertReason(() =>
+          identityFactory.write.createIdentity([this.address, []])
+        );
 
         const { identity } = (await waitForEvent({
           transactionHash,

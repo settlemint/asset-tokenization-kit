@@ -3,7 +3,7 @@ import { ThemeProvider } from "@/components/blocks/theme/theme-provider";
 import { TransitionProvider } from "@/components/layout/transition-provider";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import { QueryClientProvider } from "@/components/providers/QueryClientProvider";
-import { getServerEnvironment } from "@/lib/config/environment";
+import { env } from "@/lib/config/env";
 import { NextIntlClientProvider } from "next-intl";
 
 /**
@@ -14,17 +14,16 @@ import { NextIntlClientProvider } from "next-intl";
  * way to configure authentication providers, making it easier to test and
  * maintain the authentication setup.
  *
- * @param env - The server environment configuration
+ * @param envConfig - The environment configuration
  * @returns Object containing flags for each enabled authentication method
  */
-const getAuthConfig = (env: ReturnType<typeof getServerEnvironment>) => ({
-  emailEnabled: !!env.RESEND_API_KEY,
-  googleEnabled: !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET),
-  githubEnabled: !!(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET),
+const getAuthConfig = (envConfig: typeof env) => ({
+  emailEnabled: !!envConfig.RESEND_API_KEY,
+  googleEnabled: !!(envConfig.GOOGLE_CLIENT_ID && envConfig.GOOGLE_CLIENT_SECRET),
+  githubEnabled: !!(envConfig.GITHUB_CLIENT_ID && envConfig.GITHUB_CLIENT_SECRET),
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const env = getServerEnvironment();
   const authConfig = getAuthConfig(env);
 
   return (
