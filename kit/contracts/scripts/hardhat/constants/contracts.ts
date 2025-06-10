@@ -19,6 +19,7 @@ import {
   identityRegistryStorageAbi,
   ismartAbi,
   ismartBurnableAbi,
+  ismartCappedAbi,
   ismartCustodianAbi,
   ismartFixedYieldScheduleAbi,
   ismartPausableAbi,
@@ -65,6 +66,7 @@ export const ATKContracts = {
   ismartPausable: ismartPausableAbi,
   ismartYield: ismartYieldAbi,
   ismartFixedYieldSchedule: ismartFixedYieldScheduleAbi,
+  ismartCapped: ismartCappedAbi,
   // compliance modules
   countryAllowListModule: countryAllowListAbi,
   countryBlockListModule: countryBlockListAbi,
