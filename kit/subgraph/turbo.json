@@ -13,7 +13,7 @@
       "outputs": ["src/erc165/utils/interfaceids.ts"]
     },
     "codegen:gql-tada": {
-      "dependsOn": ["publish", "^docker:up"],
+      "dependsOn": ["publish"],
       "inputs": ["the-graph-schema.graphql"],
       "outputs": ["the-graph-env.d.ts", "the-graph-cache.d.ts"]
     },
@@ -24,7 +24,7 @@
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "^publish", "^docker:up"]
+      "dependsOn": ["package", "^publish"]
     },
     "test": {
       "dependsOn": ["codegen:gql-tada"]

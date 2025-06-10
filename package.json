@@ -34,6 +34,7 @@
     "turbo.json"
   ],
   "scripts": {
+    "typecheck": "turbo run typecheck",
     "postinstall": "turbo run dependencies",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
