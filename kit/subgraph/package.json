@@ -8,7 +8,6 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
     "codegen:gql-tada": "gql-tada generate-schema http://localhost:8000/subgraphs/name/smart-protocol && gql-tada turbo && gql-tada generate-output",

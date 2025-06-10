@@ -5,6 +5,7 @@
       "dependsOn": ["codegen:settlemint", "codegen:gql-tada"]
     },
     "codegen:settlemint": {
+      "cache": false,
       "inputs": [".env.local", ".env"],
       "outputs": [
         "*-env-*.d.ts",

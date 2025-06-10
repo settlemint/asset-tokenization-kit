@@ -3,7 +3,7 @@
   "ui": "tui",
   "tasks": {
     "ci": {
-      "dependsOn": ["compile", "codegen", "lint", "test", "build"]
+      "dependsOn": ["compile", "codegen", "lint", "test", "typecheck", "build"]
     },
     "ci:gha": {
       "dependsOn": ["publish", "ci"]
