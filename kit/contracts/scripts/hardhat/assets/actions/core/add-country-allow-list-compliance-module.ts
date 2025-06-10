@@ -1,8 +1,8 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem";
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
-import { smartProtocolDeployer } from "../../../services/deployer";
+import { atkDeployer } from "../../../services/deployer";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
@@ -13,7 +13,7 @@ export const addCountryComplianceModule = async (
 ) => {
   const tokenContract = owner.getContractInstance({
     address: asset.address,
-    abi: SMARTContracts.ismart,
+    abi: ATKContracts.ismart,
   });
 
   const encodedCountries = encodeAbiParameters(parseAbiParameters("uint16[]"), [
@@ -22,7 +22,7 @@ export const addCountryComplianceModule = async (
 
   const transactionHash = await withDecodedRevertReason(() =>
     tokenContract.write.addComplianceModule([
-      smartProtocolDeployer.getContractAddress(module),
+      atkDeployer.getContractAddress(module),
       encodedCountries,
     ])
   );

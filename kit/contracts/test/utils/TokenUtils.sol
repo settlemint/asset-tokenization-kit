@@ -3,30 +3,31 @@ pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMART } from "../../contracts/interface/ISMART.sol";
-import { SMART } from "../../contracts/extensions/core/SMART.sol";
-import { SMARTPausable } from "../../contracts/extensions/pausable/SMARTPausable.sol";
-import { SMARTBurnable } from "../../contracts/extensions/burnable/SMARTBurnable.sol";
-import { SMARTRedeemable } from "../../contracts/extensions/redeemable/SMARTRedeemable.sol";
-import { SMARTCustodian } from "../../contracts/extensions/custodian/SMARTCustodian.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
+import { SMART } from "../../contracts/smart/extensions/core/SMART.sol";
+import { SMARTPausable } from "../../contracts/smart/extensions/pausable/SMARTPausable.sol";
+import { SMARTBurnable } from "../../contracts/smart/extensions/burnable/SMARTBurnable.sol";
+import { SMARTRedeemable } from "../../contracts/smart/extensions/redeemable/SMARTRedeemable.sol";
+import { SMARTCustodian } from "../../contracts/smart/extensions/custodian/SMARTCustodian.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { SMARTToken } from "../examples/SMARTToken.sol";
+import { SMARTToken } from "../smart/examples/SMARTToken.sol";
 
-import { ISMARTIdentityRegistry } from "../../contracts/interface/ISMARTIdentityRegistry.sol";
-import { ISMARTIdentityFactory } from "../../contracts/system/identity-factory/ISMARTIdentityFactory.sol";
-import { ISMARTCompliance } from "../../contracts/interface/ISMARTCompliance.sol";
+import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
+import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
+import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 contract TokenUtils is Test {
     address internal _platformAdmin;
-    ISMARTIdentityFactory internal _identityFactory;
+    IATKIdentityFactory internal _identityFactory;
     ISMARTCompliance internal _compliance; // Reference if needed, though factory uses it
     ISMARTIdentityRegistry internal _identityRegistry;
 
     constructor(
         address platformAdmin_,
-        ISMARTIdentityFactory identityFactory_,
+        IATKIdentityFactory identityFactory_,
         ISMARTIdentityRegistry identityRegistry_,
         ISMARTCompliance compliance_ // Pass compliance even if factory uses it, might be needed elsewhere
     ) {

@@ -1,4 +1,4 @@
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
@@ -15,7 +15,7 @@ export const topupUnderlyingAsset = async (
 ) => {
   const tokenContract = owner.getContractInstance({
     address: asset.address,
-    abi: SMARTContracts.ismartYield,
+    abi: ATKContracts.ismartYield,
   });
 
   const scheduleAddress = await tokenContract.read.yieldSchedule();
@@ -24,7 +24,7 @@ export const topupUnderlyingAsset = async (
 
   const scheduleContract = owner.getContractInstance({
     address: scheduleAddress,
-    abi: SMARTContracts.ismartFixedYieldSchedule,
+    abi: ATKContracts.ismartFixedYieldSchedule,
   });
 
   const topUpAmount = toDecimals(amount, underlyingAsset.decimals);

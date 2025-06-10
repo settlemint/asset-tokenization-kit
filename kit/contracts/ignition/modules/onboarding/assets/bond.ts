@@ -1,37 +1,34 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import SMARTModule from "../../main";
-import SMARTOnboardingSystemModule from "../system";
+import ATKModule from "../../main";
+import ATKOnboardingSystemModule from "../system";
 
-const SMARTOnboardingBondModule = buildModule(
-  "SMARTOnboardingBondModule",
-  (m) => {
-    const { system } = m.useModule(SMARTOnboardingSystemModule);
-    const { bondFactoryImplementation, bondImplementation } =
-      m.useModule(SMARTModule);
+const ATKOnboardingBondModule = buildModule("ATKOnboardingBondModule", (m) => {
+  const { system } = m.useModule(ATKOnboardingSystemModule);
+  const { bondFactoryImplementation, bondImplementation } =
+    m.useModule(ATKModule);
 
-    const createBondFactory = m.call(system, "createTokenFactory", [
-      "bond",
-      bondFactoryImplementation,
-      bondImplementation,
-    ]);
-    const bondFactoryAddress = m.readEventArgument(
-      createBondFactory,
-      "TokenFactoryCreated",
-      "proxyAddress",
-      { id: "bondFactoryAddress" }
-    );
-    const bondFactoryProxy = m.contractAt(
-      "SMARTBondFactoryImplementation",
-      bondFactoryAddress,
-      {
-        id: "bondFactory",
-      }
-    );
+  const createBondFactory = m.call(system, "createTokenFactory", [
+    "bond",
+    bondFactoryImplementation,
+    bondImplementation,
+  ]);
+  const bondFactoryAddress = m.readEventArgument(
+    createBondFactory,
+    "TokenFactoryCreated",
+    "proxyAddress",
+    { id: "bondFactoryAddress" }
+  );
+  const bondFactoryProxy = m.contractAt(
+    "ATKBondFactoryImplementation",
+    bondFactoryAddress,
+    {
+      id: "bondFactory",
+    }
+  );
 
-    return {
-      bondFactory: bondFactoryProxy,
-    };
-  }
-);
+  return {
+    bondFactory: bondFactoryProxy,
+  };
+});
 
-export default SMARTOnboardingBondModule;
+export default ATKOnboardingBondModule;

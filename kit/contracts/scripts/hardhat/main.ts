@@ -17,8 +17,8 @@ import { createFund } from "./assets/fund";
 import { createPausedAsset } from "./assets/paused";
 import { createStableCoin } from "./assets/stablecoin";
 import { Countries } from "./constants/countries";
-import { SMARTRoles } from "./constants/roles";
-import { SMARTTopic } from "./constants/topics";
+import { ATKRoles } from "./constants/roles";
+import { ATKTopic } from "./constants/topics";
 import { claimIssuer } from "./entities/actors/claim-issuer";
 import {
   frozenInvestor,
@@ -27,14 +27,14 @@ import {
   investorB,
 } from "./entities/actors/investors";
 import { owner } from "./entities/actors/owner";
-import { smartProtocolDeployer } from "./services/deployer";
+import { atkDeployer } from "./services/deployer";
 import { topicManager } from "./services/topic-manager";
 
 async function main() {
   console.log("\n=== Setting up smart protocol... ===\n");
 
   // Setup the smart protocol
-  await smartProtocolDeployer.setUp({
+  await atkDeployer.setUp({
     displayUi: true,
   });
 
@@ -62,10 +62,10 @@ async function main() {
   // Grant fixed yield schedule factory to allow list manager
   // TODO: this is a temporary solution, will be fixed in the future
   await grantRole(
-    smartProtocolDeployer.getComplianceContract().address,
+    atkDeployer.getComplianceContract().address,
     owner,
-    SMARTRoles.allowListManagerRole,
-    smartProtocolDeployer.getFixedYieldScheduleFactoryContract().address
+    ATKRoles.allowListManagerRole,
+    atkDeployer.getFixedYieldScheduleFactoryContract().address
   );
 
   console.log("\n=== Setting up topics and trusted issuers... ===\n");
@@ -76,10 +76,10 @@ async function main() {
   // Add the claim issuer as a trusted issuer
   const claimIssuerIdentity = await claimIssuer.getIdentity();
   await addTrustedIssuer(claimIssuerIdentity, [
-    topicManager.getTopicId(SMARTTopic.kyc),
-    topicManager.getTopicId(SMARTTopic.aml),
-    topicManager.getTopicId(SMARTTopic.collateral),
-    topicManager.getTopicId(SMARTTopic.assetClassification),
+    topicManager.getTopicId(ATKTopic.kyc),
+    topicManager.getTopicId(ATKTopic.aml),
+    topicManager.getTopicId(ATKTopic.collateral),
+    topicManager.getTopicId(ATKTopic.assetClassification),
   ]);
 
   console.log("\n=== Verify the actors... ===\n");
@@ -125,7 +125,7 @@ async function main() {
   // need to force transfer it into the equity contract ... else it will throw RecipientNotVerified
   await forcedTransfer(stableCoin, owner, investorANew, equity, 10n);
 
-  await grantRoles(equity, owner, [SMARTRoles.emergencyRole]);
+  await grantRoles(equity, owner, [ATKRoles.emergencyRole]);
   await recoverErc20Tokens(equity, owner, stableCoin, investorANew, 10n);
 }
 

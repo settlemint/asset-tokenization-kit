@@ -4,7 +4,7 @@ import {
   encodeAbiParameters,
   parseAbiParameters,
 } from "viem";
-import type { SMARTTopic } from "../constants/topics";
+import type { ATKTopic } from "../constants/topics";
 import { topicManager } from "../services/topic-manager";
 
 /**
@@ -35,12 +35,12 @@ export function decodeClaimData(
 
 /**
  * Encodes claim data based on the claim topic's scheme
- * @param claimTopic The claim topic name from SMARTTopic enum or as a bigint
+ * @param claimTopic The claim topic name from ATKTopic enum or as a bigint
  * @param values The values to encode according to the claim scheme
  * @returns The encoded claim data as hex string
  */
 export function encodeClaimData(
-  claimTopic: SMARTTopic | bigint,
+  claimTopic: ATKTopic | bigint,
   values: readonly unknown[]
 ): Hex {
   let topicId: bigint;

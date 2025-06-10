@@ -1,5 +1,5 @@
 import { AbstractActor } from "../entities/actors/abstract-actor";
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 import { waitForSuccess } from "../utils/wait-for-success";
 
 export const recoverIdentity = async (
@@ -8,7 +8,7 @@ export const recoverIdentity = async (
 ) => {
   const newIdentity = await newActor.getIdentity();
 
-  const transactionHash = await smartProtocolDeployer
+  const transactionHash = await atkDeployer
     .getIdentityRegistryContract()
     .write.recoverIdentity([lostActor.address, newActor.address, newIdentity]);
 

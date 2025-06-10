@@ -1,42 +1,63 @@
 ---
-description:
-globs:
+description: 
+globs: *.sol
 alwaysApply: false
 ---
-
 # Smart Contract Architecture
 
-The contracts follow the SMART protocol (v8.0.15) and are located in
-`[kit/contracts/contracts/](mdc:kit/contracts/contracts)`.
+The ATK implementation contracts follow the SMART protocol, all are located in
+`@kit/contracts/contracts/`.
 
-### 1. Factory Pattern
+### 1. Protocol (SMART) vs Implementation (ATK)
+
+- The **SMART** contracts represent the generic, reusable **protocol layer** that defines standards and core functionality.
+
+  - Located under `@kit/contracts/contracts/smart/`
+  - Use the `SMART` prefix in contract names.
+
+- The **ATK** contracts are **project-specific implementations** built on top of the SMART protocol.
+  - Located under `@kit/contracts/contracts/system/` and `@kit/contracts/contracts/assets/`
+  - Use the `ATK` prefix in contract names to distinguish them from the generic SMART protocol contracts.
+
+#### Examples
+
+- `kit/contracts/contracts/smart/SMARTGovernance.sol` ✅
+- `kit/contracts/contracts/ATKToken.sol` ✅
+- `kit/contracts/contracts/SMARTImplementation.sol` ❌ (should not use `SMART` prefix outside `/smart`)
+- `kit/contracts/contracts/smart/ATKToken.sol` ❌ (should not use `ATK` prefix inside `/smart`)
+
+### 2. Factory Pattern
 
 Each asset type has a factory contract that deploys asset instances.
 
-- `SMARTBondFactory`, `SMARTEquityFactory`, `SMARTStableCoinFactory`, etc.
+- Factories: `ATKBondFactory`, `ATKEquityFactory`, `ATKStableCoinFactory`, etc.
 - Located in
-  `[kit/contracts/contracts/assets/](mdc:kit/contracts/contracts/assets)`
+  `@kit/contracts/contracts/assets/`
 
-### 2. Proxy Pattern
+### 3. Proxy Pattern
 
 All assets use upgradeable proxies, allowing for implementation upgrades while
 maintaining state.
 
-### 3. Extension System
+- Example: `ATKBondProxy`, `ATKStableCoinProxy`, etc.
 
-Modular features are implemented via extensions.
+### 4. Extension System
 
-- `SMARTBurnable`, `SMARTCapped`, `SMARTCollateral`, `SMARTPausable`, etc.
+Modular features are implemented via extensions defined in the SMART protocol.
+
+- Examples: `SMARTBurnable`, `SMARTCapped`, `SMARTCollateral`, `SMARTPausable`, etc.
 - Located in
-  `[kit/contracts/contracts/extensions/](mdc:kit/contracts/contracts/extensions)`
+  `@kit/contracts/contracts/smart/extensions/`
 
-### 4. Compliance System
+### 5. Compliance System
 
-The system uses ERC-3643 for compliance.
+The system uses ERC-3643 for compliance, with implementation-specific contracts
+in the ATK system.
 
-- Features include an identity registry, trusted issuers, and claim topics.
-- Located in
-  `[kit/contracts/contracts/system/](mdc:kit/contracts/contracts/system)`
+- SMART standard compliance interfaces and modules are in
+  `@kit/contracts/contracts/smart/`.
+- ATK-specific compliance implementation contracts (e.g., `ATKIdentityRegistry`, `ATKTrustedIssuersRegistry`) are in
+  `@kit/contracts/contracts/system/`.
 
 ## Contract Addresses
 

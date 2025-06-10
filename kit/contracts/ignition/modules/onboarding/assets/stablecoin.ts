@@ -1,13 +1,13 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import SMARTModule from "../../main";
-import SMARTOnboardingSystemModule from "../system";
+import ATKModule from "../../main";
+import ATKOnboardingSystemModule from "../system";
 
-const SMARTOnboardingStableCoinModule = buildModule(
-  "SMARTOnboardingStableCoinModule",
+const ATKOnboardingStableCoinModule = buildModule(
+  "ATKOnboardingStableCoinModule",
   (m) => {
-    const { system } = m.useModule(SMARTOnboardingSystemModule);
+    const { system } = m.useModule(ATKOnboardingSystemModule);
     const { stablecoinFactoryImplementation, stablecoinImplementation } =
-      m.useModule(SMARTModule);
+      m.useModule(ATKModule);
 
     const createStableCoinFactory = m.call(system, "createTokenFactory", [
       "stablecoin",
@@ -21,7 +21,7 @@ const SMARTOnboardingStableCoinModule = buildModule(
       { id: "stablecoinFactoryAddress" }
     );
     const stablecoinFactoryProxy = m.contractAt(
-      "SMARTStableCoinFactoryImplementation",
+      "ATKStableCoinFactoryImplementation",
       stablecoinFactoryAddress,
       {
         id: "stablecoinFactory",
@@ -34,4 +34,4 @@ const SMARTOnboardingStableCoinModule = buildModule(
   }
 );
 
-export default SMARTOnboardingStableCoinModule;
+export default ATKOnboardingStableCoinModule;

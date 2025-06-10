@@ -1,7 +1,7 @@
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 
-import { SMARTRoles } from "../constants/roles";
-import { SMARTTopic } from "../constants/topics";
+import { ATKRoles } from "../constants/roles";
+import { ATKTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
@@ -12,8 +12,7 @@ import { unpauseAsset } from "./actions/pausable/unpause-asset";
 export const createPausedAsset = async () => {
   console.log("\n=== Creating paused stablecoin... ===\n");
 
-  const stablecoinFactory =
-    smartProtocolDeployer.getStablecoinFactoryContract();
+  const stablecoinFactory = atkDeployer.getStablecoinFactoryContract();
 
   const pausedStableCoin = new Asset<"stablecoinFactory">(
     "Paused Stablecoin",
@@ -27,13 +26,13 @@ export const createPausedAsset = async () => {
     pausedStableCoin.name,
     pausedStableCoin.symbol,
     pausedStableCoin.decimals,
-    [topicManager.getTopicId(SMARTTopic.kyc)],
+    [topicManager.getTopicId(ATKTopic.kyc)],
     [],
   ]);
 
   await pausedStableCoin.waitUntilDeployed(transactionHash);
 
-  await grantRoles(pausedStableCoin, owner, [SMARTRoles.emergencyRole]);
+  await grantRoles(pausedStableCoin, owner, [ATKRoles.emergencyRole]);
 
   await pauseAsset(pausedStableCoin);
 

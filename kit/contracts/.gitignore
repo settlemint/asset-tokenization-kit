@@ -19,6 +19,7 @@ ignition/deployments/chain-*
 ignition/deployments/asset-tokenization
 ignition/deployments/asset-tokenization-local
 ignition/deployments/smart-protocol-local
+ignition/deployments/atk-local
 
 genesis-output.json
 
