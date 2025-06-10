@@ -444,3 +444,27 @@ templates:
         - event: Redeemed(indexed address,uint256)
           handler: handleRedeemed
       file: ./src/redeemable/redeemable.ts
+  - kind: ethereum
+    name: Bond
+    network: settlemint
+    source:
+      abi: Bond
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - BondMatured
+        - BondRedeemed
+      abis:
+        - name: Bond
+          file: ../contracts/artifacts/contracts/assets/bond/ISMARTBond.sol/ISMARTBond.json
+      eventHandlers:
+        - event: BondCreated(indexed
+            address,string,string,uint8,uint256,uint256,uint256,address)
+          handler: handleBondCreated
+        - event: BondMatured(indexed uint256)
+          handler: handleBondMatured
+        - event: BondRedeemed(indexed address,indexed address,uint256,uint256)
+          handler: handleBondRedeemed
+      file: ./src/bond/bond.ts

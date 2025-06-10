@@ -137,6 +137,7 @@ type Token @entity(immutable: false) {
   capped: TokenCapped
   yield_: TokenYield
   redeemable: TokenRedeemable
+  bond: TokenBond
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -177,6 +178,16 @@ type TokenRedeemable @entity(immutable: false) {
   id: Bytes!
   redeemedAmount: BigDecimal!
   redeemedAmountExact: BigInt!
+}
+
+type TokenBond @entity(immutable: false) {
+  id: Bytes!
+  faceValue: BigDecimal!
+  faceValueExact: BigInt!
+  totalUnderlyingNeeded: BigDecimal!
+  totalUnderlyingNeededExact: BigInt!
+  maturityDate: BigInt!
+  isMatured: Boolean!
 }
 
 type TokenFixedYieldSchedule @entity(immutable: false) {

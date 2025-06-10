@@ -26,7 +26,9 @@ export const mature = async (asset: Asset<"bondFactory">) => {
   console.log(
     `[Bond] Maturity date: ${new Date(Number(maturityDate) * 1000).toISOString()}, time until maturity: ${timeUntilMaturity} seconds`
   );
-  await increaseAnvilTime(owner, timeUntilMaturity);
+  if (timeUntilMaturity > 0) {
+    await increaseAnvilTime(owner, timeUntilMaturity);
+  }
 
   const transactionHash = await bondContract.write.mature();
 

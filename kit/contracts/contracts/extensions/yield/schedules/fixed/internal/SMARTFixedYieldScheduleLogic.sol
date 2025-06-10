@@ -415,7 +415,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         if (amount == 0) revert InvalidAmount(); // Cannot withdraw zero amount.
 
         uint256 balance = _underlyingAsset.balanceOf(address(this));
-        if (amount > balance) revert InsufficientUnderlyingBalance(); // Not enough funds in
+        if (amount > balance) revert InsufficientUnderlyingBalance(balance, amount); // Not enough funds in
             // contract.
 
         _underlyingAsset.safeTransfer(to, amount);
@@ -429,7 +429,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             // address.
 
         uint256 balance = _underlyingAsset.balanceOf(address(this));
-        if (balance <= 0) revert InsufficientUnderlyingBalance(); // No funds to withdraw.
+        if (balance <= 0) revert InsufficientUnderlyingBalance(balance, 1); // No funds to withdraw.
 
         _underlyingAsset.safeTransfer(to, balance);
 

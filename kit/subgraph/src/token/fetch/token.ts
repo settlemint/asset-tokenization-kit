@@ -6,6 +6,7 @@ import {
 } from "../../../generated/templates";
 import { Token as TokenContract } from "../../../generated/templates/Token/Token";
 import { fetchAccount } from "../../account/fetch/account";
+import { fetchBond } from "../../bond/fetch/bond";
 import { fetchCapped } from "../../capped/fetch/capped";
 import { fetchCollateral } from "../../collateral/fetch/collateral";
 import { fetchCustodian } from "../../custodian/fetch/custodian";
@@ -61,6 +62,10 @@ export function fetchToken(address: Address): Token {
     }
     if (tokenContract.supportsInterface(InterfaceIds.ISMARTRedeemable)) {
       token.redeemable = fetchRedeemable(address).id;
+      token.save();
+    }
+    if (tokenContract.supportsInterface(InterfaceIds.ISMARTBond)) {
+      token.bond = fetchBond(address).id;
       token.save();
     }
   }

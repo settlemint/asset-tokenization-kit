@@ -142,6 +142,8 @@ contract SMARTBondImplementation is
         _maturityDate = maturityDate_;
         _faceValue = faceValue_;
         _underlyingAsset = IERC20(underlyingAsset_);
+
+        emit BondCreated(_msgSender(), name_, symbol_, decimals_, cap_, maturityDate_, faceValue_, underlyingAsset_);
     }
 
     // --- View Functions ---
@@ -203,7 +205,8 @@ contract SMARTBondImplementation is
         if (isMatured) revert BondAlreadyMatured();
 
         uint256 needed = totalUnderlyingNeeded();
-        if (underlyingAssetBalance() < needed) revert InsufficientUnderlyingBalance();
+        uint256 current = underlyingAssetBalance();
+        if (current < needed) revert InsufficientUnderlyingBalance(current, needed);
 
         isMatured = true;
         emit BondMatured(block.timestamp);
@@ -632,13 +635,13 @@ contract SMARTBondImplementation is
         uint256 currentBalance = balanceOf(from);
 
         // Simple check: user can only redeem what they currently have
-        if (amount > currentBalance) revert InsufficientRedeemableBalance();
+        if (amount > currentBalance) revert InsufficientRedeemableBalance(currentBalance, amount);
 
         uint256 underlyingAmount = _calculateUnderlyingAmount(amount);
 
         uint256 contractBalance = underlyingAssetBalance();
         if (contractBalance < underlyingAmount) {
-            revert InsufficientUnderlyingBalance();
+            revert InsufficientUnderlyingBalance(contractBalance, underlyingAmount);
         }
 
         // State changes BEFORE external calls (checks-effects-interactions pattern)

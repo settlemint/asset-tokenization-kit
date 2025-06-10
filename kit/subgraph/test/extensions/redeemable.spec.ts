@@ -18,7 +18,7 @@ describe("Token redeemable extension", () => {
     );
     const response = await theGraphClient.request(query, {
       where: {
-        capped_not: null,
+        redeemable_not: null,
       },
     });
     expect(response.tokens.length).toBe(1);
