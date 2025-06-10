@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
-import { getRoles, ROLES } from "@/lib/config/roles";
+import { getRoles, ROLES, type Role } from "@/lib/config/roles";
 import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
@@ -21,7 +21,7 @@ import { isBefore } from "date-fns";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { getAddress, type Address } from "viem";
+import type { Address } from "viem";
 import {
   hasAllowlist,
   hasBlocklist,
@@ -80,12 +80,13 @@ export function ManageDropdown({
     const bond = assetDetails as Awaited<ReturnType<typeof getBondDetail>>;
     hasUnderlyingAsset = true;
 
-    canMature = Boolean(
-      !bond.isMatured &&
-        bond.hasSufficientUnderlying &&
-        bond.maturityDate &&
-        isBefore(new Date(Number(bond.maturityDate) * 1000), new Date())
-    );
+    // canMature = Boolean(
+    //   !bond.isMatured &&
+    //     bond.hasSufficientUnderlying &&
+    //     bond.maturityDate &&
+    //     isBefore(new Date(Number(bond.maturityDate) * 1000), new Date())
+    // );
+    canMature = false;
   }
 
   let mintMax: number | undefined = undefined;
@@ -97,16 +98,16 @@ export function ManageDropdown({
   }
   if (assettype === "bond") {
     const bond = assetDetails as Awaited<ReturnType<typeof getBondDetail>>;
-    mintMax =
-      bond.totalSupply < bond.cap ? Number(bond.cap) - bond.totalSupply : 0;
+    mintMax = 0;
+    // bond.totalSupply < bond.cap ? Number(bond.cap) - bond.totalSupply : 0;
   }
 
   const isBlocked = userBalance?.blocked ?? false;
   const isPaused = "paused" in assetDetails && assetDetails.paused;
 
-  const userRoles =
-    assetUsersDetails.roles.find((role) => getAddress(role.id) === userAddress)
-      ?.roles ?? [];
+  const userRoles: Role[] = [];
+  // assetUsersDetails.roles.find((role) => getAddress(role.id) === userAddress)
+  //   ?.roles ?? [];
 
   const userIsSupplyManager = userRoles.includes(
     ROLES.SUPPLY_MANAGEMENT_ROLE.contractRole
@@ -144,9 +145,10 @@ export function ManageDropdown({
           open={openMenuItem === "mint"}
           onOpenChange={onFormOpenChange}
           max={mintMax}
-          decimals={assetDetails.decimals}
-          symbol={assetDetails.symbol}
-          allowlist={assetUsersDetails.allowlist ?? []}
+          decimals={18} // assetDetails.decimals}
+          symbol={"symbol" in assetDetails ? assetDetails.symbol : ""}
+          // allowlist={assetUsersDetails.allowlist ?? []}
+          allowlist={[]}
         />
       ),
     },
@@ -215,8 +217,8 @@ export function ManageDropdown({
           address={address}
           open={openMenuItem === "update-collateral"}
           onOpenChange={onFormOpenChange}
-          decimals={assetDetails.decimals}
-          symbol={assetDetails.symbol}
+          decimals={18} // assetDetails.decimals}
+          symbol={"symbol" in assetDetails ? assetDetails.symbol : ""}
         />
       ),
     },
@@ -285,7 +287,7 @@ export function ManageDropdown({
       id: "unblock-user",
       label: t("actions.unblock-user"),
       hidden: !hasBlocklist(assettype) || !canPerformUserActions,
-      disabled: (assetUsersDetails.blocklist?.length ?? 0) === 0,
+      disabled: false, //(assetUsersDetails.blocklist?.length ?? 0) === 0,
       form: (
         <UnblockForm
           key="unblock-user"
@@ -315,7 +317,7 @@ export function ManageDropdown({
       id: "disallow-user",
       label: t("actions.disallow-user"),
       hidden: !hasAllowlist(assettype) || !canPerformUserActions,
-      disabled: (assetUsersDetails.allowlist?.length ?? 0) === 1,
+      disabled: false, //(assetUsersDetails.allowlist?.length ?? 0) === 1,
       form: (
         <DisallowForm
           key="disallow-user"

@@ -22,7 +22,7 @@ export default async function PermissionsPage({ params }: PageProps) {
         assettype,
       }}
       columns={columns}
-      data={assetDetail.roles}
+      data={[]} //assetDetail.roles
       name={t("table-title")}
     />
   );

@@ -23,7 +23,7 @@ export default async function BlocklistPage({ params }: PageProps) {
         assettype,
       }}
       columns={columns}
-      data={assetDetail.blocklist}
+      data={[]} //assetDetail.blocklist
       name={t("blocklist")}
     />
   );

@@ -1,20 +1,13 @@
 import "server-only";
 
 import type { Role } from "@/lib/config/roles";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphClientKit } from "@/lib/settlemint/the-graph";
+import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/sentry-tracing";
-import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import { OffchainAssetFragment } from "./asset-users-fragment";
-import {
-  AssetUsersSchema,
-  OffchainAssetSchema,
-  PermissionSchema,
-  type Permission,
-} from "./asset-users-schema";
+import type { Permission } from "./asset-users-schema";
 /**
  * GraphQL query to fetch on-chain asset details from The Graph
  */
@@ -76,94 +69,94 @@ export const getAssetUsersDetail = withTracing(
     cacheTag("asset");
     const normalizedAddress = getAddress(address);
 
-    const [onchainData, offchainData] = await Promise.all([
-      theGraphClientKit.request(
-        AssetDetail,
-        {
-          id: address,
-        },
-        {
-          "X-GraphQL-Operation-Name": "AssetDetail",
-          "X-GraphQL-Operation-Type": "query",
-        }
-      ),
-      hasuraClient.request(
-        OffchainAssetDetail,
-        {
-          id: normalizedAddress,
-        },
-        {
-          "X-GraphQL-Operation-Name": "OffchainAssetDetail",
-          "X-GraphQL-Operation-Type": "query",
-        }
-      ),
-    ]);
+    // const [onchainData, offchainData] = await Promise.all([
+    //   theGraphClientKit.request(
+    //     AssetDetail,
+    //     {
+    //       id: address,
+    //     },
+    //     {
+    //       "X-GraphQL-Operation-Name": "AssetDetail",
+    //       "X-GraphQL-Operation-Type": "query",
+    //     }
+    //   ),
+    //   hasuraClient.request(
+    //     OffchainAssetDetail,
+    //     {
+    //       id: normalizedAddress,
+    //     },
+    //     {
+    //       "X-GraphQL-Operation-Name": "OffchainAssetDetail",
+    //       "X-GraphQL-Operation-Type": "query",
+    //     }
+    //   ),
+    // ]);
 
-    if (!onchainData.asset) {
-      throw new Error(`Asset ${address} not found`);
-    }
+    // if (!onchainData.asset) {
+    throw new Error(`Asset ${address} not found`);
+    // }
 
     // Parse and validate the asset data with TypeBox schema
-    const validatedAsset = safeParse(AssetUsersSchema, onchainData.asset);
+    // const validatedAsset = safeParse(AssetUsersSchema, onchainData.asset);
 
-    const offchainAsset = offchainData.asset[0]
-      ? safeParse(OffchainAssetSchema, offchainData.asset[0])
-      : undefined;
+    // const offchainAsset = offchainData.asset[0]
+    //   ? safeParse(OffchainAssetSchema, offchainData.asset[0])
+    //   : undefined;
 
-    // Define the role configurations
-    const roleConfigs = [
-      {
-        permissions: validatedAsset.admins,
-        role: "DEFAULT_ADMIN_ROLE" as const,
-      },
-      {
-        permissions: validatedAsset.supplyManagers,
-        role: "SUPPLY_MANAGEMENT_ROLE" as const,
-      },
-      {
-        permissions: validatedAsset.userManagers,
-        role: "USER_MANAGEMENT_ROLE" as const,
-      },
-      {
-        permissions: validatedAsset.auditors,
-        role: "AUDITOR_ROLE" as const,
-      },
-    ];
+    // // Define the role configurations
+    // const roleConfigs = [
+    //   {
+    //     permissions: validatedAsset.admins,
+    //     role: "DEFAULT_ADMIN_ROLE" as const,
+    //   },
+    //   {
+    //     permissions: validatedAsset.supplyManagers,
+    //     role: "SUPPLY_MANAGEMENT_ROLE" as const,
+    //   },
+    //   {
+    //     permissions: validatedAsset.userManagers,
+    //     role: "USER_MANAGEMENT_ROLE" as const,
+    //   },
+    //   {
+    //     permissions: validatedAsset.auditors,
+    //     role: "AUDITOR_ROLE" as const,
+    //   },
+    // ];
 
-    // Create a map to track users with their roles
-    const usersWithRoles = new Map<string, PermissionWithRoles>();
+    // // Create a map to track users with their roles
+    // const usersWithRoles = new Map<string, PermissionWithRoles>();
 
-    // Process all role configurations
-    for (const { permissions, role } of roleConfigs) {
-      const validatedPermissions =
-        permissions?.map((permission: unknown) =>
-          safeParse(PermissionSchema, permission)
-        ) ?? [];
-      for (const validatedPermission of validatedPermissions) {
-        const userId = validatedPermission.id;
-        const existing = usersWithRoles.get(userId);
+    // // Process all role configurations
+    // for (const { permissions, role } of roleConfigs) {
+    //   const validatedPermissions =
+    //     permissions?.map((permission: unknown) =>
+    //       safeParse(PermissionSchema, permission)
+    //     ) ?? [];
+    //   for (const validatedPermission of validatedPermissions) {
+    //     const userId = validatedPermission.id;
+    //     const existing = usersWithRoles.get(userId);
 
-        if (existing) {
-          if (!existing.roles.includes(role)) {
-            existing.roles.push(role);
-          }
-        } else {
-          usersWithRoles.set(userId, {
-            ...validatedPermission,
-            roles: [role],
-            assetName: validatedAsset.name,
-          });
-        }
-      }
-    }
+    //     if (existing) {
+    //       if (!existing.roles.includes(role)) {
+    //         existing.roles.push(role);
+    //       }
+    //     } else {
+    //       usersWithRoles.set(userId, {
+    //         ...validatedPermission,
+    //         roles: [role],
+    //         assetName: validatedAsset.name,
+    //       });
+    //     }
+    //   }
+    // }
 
-    return {
-      ...validatedAsset,
-      ...{
-        private: false,
-        ...offchainAsset,
-      },
-      roles: Array.from(usersWithRoles.values()),
-    };
+    // return {
+    //   ...validatedAsset,
+    //   ...{
+    //     private: false,
+    //     ...offchainAsset,
+    //   },
+    //   roles: Array.from(usersWithRoles.values()),
+    // };
   })
 );

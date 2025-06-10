@@ -7,7 +7,6 @@ import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
-import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
 import { isMicaEnabledForAsset } from "@/lib/utils/features-enabled";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
@@ -45,14 +44,14 @@ export async function DetailPageHeader({
     getAssetUsersDetail({ address }),
   ]);
 
-  const userUnderlyingAssetBalance =
-    assettype === "bond"
-      ? await getAssetBalanceDetail({
-          address: (assetDetails as Awaited<ReturnType<typeof getBondDetail>>)
-            .underlyingAsset.id,
-          account: user.wallet,
-        })
-      : null;
+  // const userUnderlyingAssetBalance =
+  //   assettype === "bond"
+  //     ? await getAssetBalanceDetail({
+  //         address: (assetDetails as Awaited<ReturnType<typeof getBondDetail>>)
+  //           .underlyingAsset.id,
+  //         account: user.wallet,
+  //       })
+  //     : null;
 
   const isMicaEnabled = await isMicaEnabledForAsset(assettype, address);
   const micaRegulation = isMicaEnabled
@@ -66,8 +65,12 @@ export async function DetailPageHeader({
     <PageHeader
       title={
         <>
-          <span className="mr-2">{assetDetails.name}</span>
-          <span className="text-muted-foreground">({assetDetails.symbol})</span>
+          <span className="mr-2">
+            {"name" in assetDetails ? assetDetails.name : ""}
+          </span>
+          <span className="text-muted-foreground">
+            ({"symbol" in assetDetails ? assetDetails.symbol : ""})
+          </span>
         </>
       }
       subtitle={
@@ -91,9 +94,11 @@ export async function DetailPageHeader({
       button={manageDropdown({
         assetDetails,
         userBalance,
-        assetUsersDetails,
+        assetUsersDetails: assetUsersDetails as Awaited<
+          ReturnType<typeof getAssetUsersDetail>
+        >,
         userAddress: user.wallet,
-        userUnderlyingAssetBalance,
+        userUnderlyingAssetBalance: null,
       })}
     />
   );

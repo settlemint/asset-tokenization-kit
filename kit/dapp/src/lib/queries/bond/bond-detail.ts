@@ -2,18 +2,14 @@ import "server-only";
 
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import { bondsCalculateFields } from "./bond-calculated";
-import { BondFragment, OffchainBondFragment } from "./bond-fragment";
-import { OffChainBondSchema, OnChainBondSchema } from "./bond-schema";
+import { OffchainBondFragment } from "./bond-fragment";
+import { OffChainBondSchema } from "./bond-schema";
 
 /**
  * GraphQL query to fetch on-chain bond details from The Graph
@@ -69,15 +65,15 @@ export const getBondDetail = withTracing(
     const [onChainBond, offChainBond] = await Promise.all([
       (async () => {
         //       // const response = await theGraphClientKit.request(
-      //         //   BondDetail,
-      //         //   {
-      //         //     id: address,
-      //         //   },
-      //         //   {
-      //         //     "X-GraphQL-Operation-Name": "BondDetail",
-      //         //     "X-GraphQL-Operation-Type": "query",
-      //         //   }
-      //         // );
+        //         //   BondDetail,
+        //         //   {
+        //         //     id: address,
+        //         //   },
+        //         //   {
+        //         //     "X-GraphQL-Operation-Name": "BondDetail",
+        //         //     "X-GraphQL-Operation-Type": "query",
+        //         //   }
+        //         // );
         // if (!response.bond) {
         //   throw new Error("Bond not found");
         // }
@@ -107,12 +103,12 @@ export const getBondDetail = withTracing(
       [onChainBond],
       userCurrency
     );
-    const calculatedBond = calculatedFields.get(onChainBond.id)!;
+    // const calculatedBond = calculatedFields.get(onChainBond.id)!;
 
     return {
-      ...onChainBond,
+      // ...onChainBond,
       ...offChainBond,
-      ...calculatedBond,
+      // ...calculatedBond,
     };
   })
 );

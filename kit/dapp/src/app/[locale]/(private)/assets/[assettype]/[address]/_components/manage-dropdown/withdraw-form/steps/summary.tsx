@@ -22,8 +22,8 @@ export function Summary({ bondDetails }: SummaryProps) {
   const locale = useLocale();
 
   // Get the appropriate decimals and symbol from bond details
-  const decimals = bondDetails?.underlyingAsset?.decimals ?? 0;
-  const tokenSymbol = bondDetails?.underlyingAsset?.symbol ?? "";
+  const decimals = 18; // bondDetails?.underlyingAsset?.decimals ?? 0;
+  const tokenSymbol = "WW"; // bondDetails?.underlyingAsset?.symbol ?? "";
 
   return (
     <FormStep

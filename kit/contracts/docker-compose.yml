@@ -141,6 +141,7 @@ services:
         condition: service_healthy
     environment:
       HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://${HASURA_DB_USER:-hasura}:${HASURA_DB_PASSWORD:-hasura}@postgres:5432/hasura
+      HASURA_GRAPHQL_DATABASE_URL: postgres://${HASURA_DB_USER:-hasura}:${HASURA_DB_PASSWORD:-hasura}@postgres:5432/hasura
       PG_DATABASE_URL: postgres://${HASURA_DB_USER:-hasura}:${HASURA_DB_PASSWORD:-hasura}@postgres:5432/hasura
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_DEV_MODE: "true"
