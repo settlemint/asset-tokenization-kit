@@ -11,7 +11,7 @@ import {
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
-import { getAnvilTimeMilliseconds } from "../utils/anvil";
+import { getAnvilTimeMilliseconds, getAnvilTimeSeconds } from "../utils/anvil";
 import { toDecimals } from "../utils/to-decimals";
 import { mature } from "./actions/bond/mature";
 import { burn } from "./actions/burnable/burn";
@@ -46,9 +46,7 @@ export const createBond = async (depositToken: Asset<any>) => {
     [[]]
   );
 
-  const latestBlockTime = new Date(
-    (await getLatestBlockTimestamp(owner)) * 1000
-  );
+  const anvilTimeSeconds = await getAnvilTimeSeconds(owner);
   const faceValue = toDecimals(0.000123, depositToken.decimals);
   const cap = toDecimals(1000000, bond.decimals);
   const transactionHash = await bondFactory.write.createBond([
@@ -56,7 +54,7 @@ export const createBond = async (depositToken: Asset<any>) => {
     bond.symbol,
     bond.decimals,
     cap,
-    BigInt(Math.floor(latestBlockTime.getTime() / 1000) + 365 * 24 * 60 * 60), // 1 year
+    BigInt(anvilTimeSeconds + 365 * 24 * 60 * 60), // 1 year
     faceValue,
     depositToken.address!,
     [topicManager.getTopicId(ATKTopic.kyc)],
@@ -98,7 +96,7 @@ export const createBond = async (depositToken: Asset<any>) => {
   // do some mint/burns to change the yield
   await mint(bond, owner, 10n);
   await burn(bond, owner, 1n);
-  await topupUnderlyingAsset(bond, depositToken, 90000n);
+  await topupUnderlyingAsset(bond, depositToken, 10000n);
   // claim yield for 3 periods
   for (let i = 0; i < 3; i++) {
     const didAdvance = await advanceToNextPeriod();
