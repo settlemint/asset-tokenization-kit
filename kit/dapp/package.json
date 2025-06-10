@@ -72,7 +72,7 @@
     "@settlemint/sdk-portal": "2.3.14",
     "@settlemint/sdk-thegraph": "2.3.14",
     "@sinclair/typebox": "0.34.33",
-    "@t3-oss/env-nextjs": "0.13.6",
+    "@t3-oss/env-nextjs": "0.13.8",
     "@tanstack/query-sync-storage-persister": "5.80.6",
     "@tanstack/react-query": "5.80.6",
     "@tanstack/react-query-devtools": "5.80.6",
