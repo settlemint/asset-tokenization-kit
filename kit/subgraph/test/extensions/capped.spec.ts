@@ -26,7 +26,7 @@ describe("Token capped extension", () => {
       {
         name: "Euro Bonds",
         type: "bond",
-        capped: { capExact: "1000000000000", cap: "1000000" },
+        capped: { capExact: "1_500_000_000_000", cap: "1_500_000" },
       },
     ]);
   });
