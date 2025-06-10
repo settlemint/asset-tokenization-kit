@@ -426,3 +426,21 @@ templates:
             address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)
           handler: handleYieldClaimed
       file: ./src/fixed-yield-schedule/fixed-yield-schedule.ts
+  - kind: ethereum
+    name: Redeemable
+    network: settlemint
+    source:
+      abi: Redeemable
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Redeemed
+      abis:
+        - name: Redeemable
+          file: ../contracts/artifacts/contracts/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json
+      eventHandlers:
+        - event: Redeemed(indexed address,uint256)
+          handler: handleRedeemed
+      file: ./src/redeemable/redeemable.ts

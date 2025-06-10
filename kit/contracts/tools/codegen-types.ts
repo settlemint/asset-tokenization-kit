@@ -77,6 +77,7 @@ const ABI_PATHS = {
   ismartPausable: `${ARTIFACTS_DIR}/contracts/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json`,
   ismartYield: `${ARTIFACTS_DIR}/contracts/extensions/yield/ISMARTYield.sol/ISMARTYield.json`,
   ismartFixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json`,
+  ismartRedeemable: `${ARTIFACTS_DIR}/contracts/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json`,
   // compliance modules
   identityVerification: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol/SMARTIdentityVerificationModule.json`,
   countryAllowList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
@@ -109,6 +110,7 @@ const AVAILABLE_ABIS = {
     "ismartPausable",
     "ismartYield",
     "ismartFixedYieldSchedule",
+    "ismartRedeemable",
   ],
   complianceModules: [
     "identityVerification",

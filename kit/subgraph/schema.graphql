@@ -136,6 +136,7 @@ type Token @entity(immutable: false) {
   collateral: TokenCollateral
   capped: TokenCapped
   yield_: TokenYield
+  redeemable: TokenRedeemable
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -170,6 +171,12 @@ type TokenCapped @entity(immutable: false) {
 type TokenYield @entity(immutable: false) {
   id: Bytes!
   schedule: TokenFixedYieldSchedule!
+}
+
+type TokenRedeemable @entity(immutable: false) {
+  id: Bytes!
+  redeemedAmount: BigDecimal!
+  redeemedAmountExact: BigInt!
 }
 
 type TokenFixedYieldSchedule @entity(immutable: false) {

@@ -4,6 +4,7 @@ import { SMARTTopic } from "../../constants/topics";
 import { owner } from "../../entities/actors/owner";
 import type { Asset } from "../../entities/asset";
 import { smartProtocolDeployer } from "../../services/deployer";
+import { getLatestBlockTimestamp } from "../../utils/anvil";
 import { addCountryComplianceModule } from "./core/add-country-allow-list-compliance-module";
 import { grantRoles } from "./core/grant-roles";
 import { issueAssetClassificationClaim } from "./core/issue-asset-classification-claim";
@@ -62,11 +63,13 @@ export const setupAsset = async (
 
   if (collateral) {
     // Update collateral
-    const now = new Date();
+    const latestBlockTime = new Date(
+      (await getLatestBlockTimestamp(owner)) * 1000
+    );
     const oneYearFromNow = new Date(
-      now.getFullYear() + 1,
-      now.getMonth(),
-      now.getDate()
+      latestBlockTime.getFullYear() + 1,
+      latestBlockTime.getMonth(),
+      latestBlockTime.getDate()
     );
     await issueCollateralClaim(
       asset,

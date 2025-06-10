@@ -11,7 +11,9 @@ import {
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
+import { getLatestBlockTimestamp } from "../utils/anvil";
 import { toDecimals } from "../utils/to-decimals";
+import { mature } from "./actions/bond/mature";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
@@ -19,6 +21,7 @@ import { forcedTransfer } from "./actions/custodian/forced-transfer";
 import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
+import { redeem } from "./actions/redeemable/redeem";
 import { setupAsset } from "./actions/setup-asset";
 import { claimYield } from "./actions/yield/claim-yield";
 import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
@@ -81,10 +84,13 @@ export const createBond = async (depositToken: Asset<any>) => {
   await unfreezePartialTokens(bond, owner, investorB, 2n);
 
   // yield
+  const latestBlockTime = new Date(
+    (await getLatestBlockTimestamp(owner)) * 1000
+  );
   const { advanceToNextPeriod } = await setYieldSchedule(
     bond,
-    new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day from now
-    new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days from now
+    new Date(latestBlockTime.getTime() + 1 * 24 * 60 * 60 * 1000), // 1 day from latestBlockTime
+    new Date(latestBlockTime.getTime() + 4 * 24 * 60 * 60 * 1000), // 4 days from latestBlockTime
     50, // 0.5%
     12 * 60 * 60 // 12 hours in seconds
   );
@@ -108,7 +114,12 @@ export const createBond = async (depositToken: Asset<any>) => {
   }
   await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);
 
-  // TODO: execute all other functions of the bond
+  // mature bond
+  await mature(bond);
+
+  // redeemable
+  await redeem(bond, owner, 10n);
+  await redeem(bond, investorA, 1n);
 
   return bond;
 };

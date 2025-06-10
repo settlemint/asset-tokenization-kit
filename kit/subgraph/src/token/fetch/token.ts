@@ -11,6 +11,7 @@ import { fetchCollateral } from "../../collateral/fetch/collateral";
 import { fetchCustodian } from "../../custodian/fetch/custodian";
 import { InterfaceIds } from "../../erc165/utils/interfaceids";
 import { fetchPausable } from "../../pausable/fetch/pausable";
+import { fetchRedeemable } from "../../redeemable/fetch/redeemable";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchYield } from "../../yield/fetch/yield";
 
@@ -56,6 +57,10 @@ export function fetchToken(address: Address): Token {
     }
     if (tokenContract.supportsInterface(InterfaceIds.ISMARTYield)) {
       token.yield_ = fetchYield(address).id;
+      token.save();
+    }
+    if (tokenContract.supportsInterface(InterfaceIds.ISMARTRedeemable)) {
+      token.redeemable = fetchRedeemable(address).id;
       token.save();
     }
   }
