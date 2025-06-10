@@ -454,18 +454,33 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - BondCreated
         - BondMatured
         - BondRedeemed
       abis:
         - name: Bond
           file: ../contracts/artifacts/contracts/assets/bond/IATKBond.sol/IATKBond.json
       eventHandlers:
-        - event: BondCreated(indexed
-            address,string,string,uint8,uint256,uint256,uint256,address)
-          handler: handleBondCreated
         - event: BondMatured(indexed uint256)
           handler: handleBondMatured
         - event: BondRedeemed(indexed address,indexed address,uint256,uint256)
           handler: handleBondRedeemed
       file: ./src/bond/bond.ts
+  - kind: ethereum
+    name: BondFactory
+    network: settlemint
+    source:
+      abi: BondFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - BondCreated
+      abis:
+        - name: BondFactory
+          file: ../contracts/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
+      eventHandlers:
+        - event: BondCreated(indexed
+            address,string,string,uint8,uint256,uint256,uint256,address)
+          handler: handleBondCreated
+      file: ./src/bond-factory/bond-factory.ts

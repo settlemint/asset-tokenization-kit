@@ -87,6 +87,8 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         // Add the bond to the compliance allow list, because it needs to be able to hold other tokens
         IATKComplianceAllowList(address(_compliance())).addToAllowList(deployedBondAddress);
 
+        emit BondCreated(_msgSender(), name_, symbol_, decimals_, cap_, maturityDate_, faceValue_, underlyingAsset_);
+
         return deployedBondAddress;
     }
 

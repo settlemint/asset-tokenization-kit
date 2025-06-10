@@ -142,8 +142,6 @@ contract ATKBondImplementation is
         _maturityDate = maturityDate_;
         _faceValue = faceValue_;
         _underlyingAsset = IERC20(underlyingAsset_);
-
-        emit BondCreated(_msgSender(), name_, symbol_, decimals_, cap_, maturityDate_, faceValue_, underlyingAsset_);
     }
 
     // --- View Functions ---

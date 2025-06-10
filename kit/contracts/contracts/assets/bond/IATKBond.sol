@@ -64,26 +64,6 @@ interface IATKBond is
     /// @param underlyingAmount The amount of underlying assets received
     event BondRedeemed(address indexed sender, address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
 
-    /// @notice Emitted when a new bond is created.
-    /// @param sender The address of the sender.
-    /// @param name The name of the bond.
-    /// @param symbol The symbol of the bond.
-    /// @param decimals The number of decimals for the bond tokens.
-    /// @param cap The maximum total supply of the bond tokens.
-    /// @param maturityDate The Unix timestamp representing the bond's maturity date.
-    /// @param faceValue The face value of each bond token in the underlying asset's base units.
-    /// @param underlyingAsset The address of the ERC20 token used as the underlying asset for the bond.
-    event BondCreated(
-        address indexed sender,
-        string name,
-        string symbol,
-        uint8 decimals,
-        uint256 cap,
-        uint256 maturityDate,
-        uint256 faceValue,
-        address underlyingAsset
-    );
-
     /// @notice Initializes the SMART Bond contract.
     /// @param name_ The name of the bond.
     /// @param symbol_ The symbol of the bond.
