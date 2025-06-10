@@ -6,10 +6,10 @@
   },
   "tasks": {
     "ci": {
-      "dependsOn": ["compile", "codegen", "lint", "build"]
+      "dependsOn": ["compile", "codegen", "lint", "test", "build"]
     },
     "ci:gha": {
-      "dependsOn": ["publish", "ci", "test"]
+      "dependsOn": ["publish", "ci"]
     },
     "//#version": {
       "cache": false,
