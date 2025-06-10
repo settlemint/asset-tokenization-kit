@@ -150,7 +150,9 @@
     "tailwindcss": "4.1.8",
     "typescript": "5.8.3"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "contracts": "workspace:*"
+  },
   "trustedDependencies": [
     "sharp"
   ],

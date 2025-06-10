@@ -23,7 +23,7 @@
       "inputs": ["src/lib/db/**"]
     },
     "db:migrate": {
-      "dependsOn": ["db:generate"],
+      "dependsOn": ["db:generate", "contracts#docker:up"],
       "cache": false
     },
     "dev": {
