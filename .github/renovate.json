@@ -33,6 +33,11 @@
       "matchPackageNames": ["/^@orpc//", "/^@tanstack//"]
     },
     {
+      "groupName": "Better Auth",
+      "groupSlug": "better-auth",
+      "matchPackageNames": ["/^@better-auth//", "better-auth"]
+    },
+    {
       "groupName": "Next Safe Action",
       "groupSlug": "next-safe-action",
       "matchPackageNames": ["next-safe-action", "/^@next-safe-action//"]
