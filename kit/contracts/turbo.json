@@ -17,23 +17,23 @@
       "inputs": ["**/*.sol"]
     },
     "codegen": {
-      "dependsOn": ["codegen:types", "codegen:genesis", "codegen:abi"]
+      "dependsOn": ["codegen:types", "codegen:abi"]
     },
     "codegen:types": {
       "dependsOn": ["compile"],
       "outputs": ["scripts/hardhat/abi/**"],
       "inputs": ["contracts/**"]
     },
-    "codegen:abi": {
-      "dependsOn": ["compile"],
-      "outputs": ["portal/**"],
+    "artifacts": {
+      "dependsOn": ["artifacts:genesis", "artifacts:abi"]
+    },
+    "artifacts:genesis": {
+      "outputs": ["tools/genesis-output.json"],
       "inputs": ["contracts/**"]
     },
-    "codegen:genesis": {
-      "outputs": [
-        "tools/genesis-output.json",
-        "tools/docker/besu/genesis.json"
-      ],
+    "artifacts:abi": {
+      "dependsOn": ["compile"],
+      "outputs": ["portal/**"],
       "inputs": ["contracts/**"]
     },
     "format": {

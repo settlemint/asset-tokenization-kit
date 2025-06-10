@@ -53,6 +53,7 @@
       "cache": false
     },
     "test": {},
-    "docker:up": { "cache": false }
+    "docker:up": { "cache": false },
+    "artifacts": {}
   }
 }
