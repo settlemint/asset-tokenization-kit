@@ -112,7 +112,8 @@ async function main() {
   await recoverIdentity(investorA, investorANew);
   await forcedRecoverTokens(deposit, owner, investorANew, investorA.address);
   await recoverTokens(equity, investorANew, investorA.address);
-  await recoverTokens(bond, investorANew, investorA.address);
+  // TODO: https://linear.app/settlemint/issue/ENG-3256/it-is-not-possible-to-recover-a-matured-bond
+  // await recoverTokens(bond, investorANew, investorA.address);
   await recoverTokens(fund, investorANew, investorA.address);
   await recoverTokens(stableCoin, investorANew, investorA.address);
 

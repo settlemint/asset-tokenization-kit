@@ -11,7 +11,7 @@ export function handleRedeemed(event: Redeemed): void {
   setBigNumber(
     redeemable,
     "redeemedAmount",
-    event.params.amount,
+    redeemable.redeemedAmountExact.plus(event.params.amount),
     token.decimals
   );
   redeemable.save();
