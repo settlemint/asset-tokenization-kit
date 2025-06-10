@@ -7,7 +7,7 @@ import { console2 } from "forge-std/console2.sol";
 import { SMARTToken } from "./examples/SMARTToken.sol";
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
-import { ISMARTSystem } from "../../contracts/system/ISMARTSystem.sol";
+import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
@@ -26,8 +26,8 @@ import { IdentityUtils } from "../utils/IdentityUtils.sol";
 import { TokenUtils } from "../utils/TokenUtils.sol";
 import { ClaimUtils } from "../utils/ClaimUtils.sol";
 import { TestConstants } from "../Constants.sol";
-import { SMARTTopics } from "../../contracts/system/SMARTTopics.sol";
-import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
+import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 // Mock Access Manager that always returns true for canCall
 
 contract MockAccessManager is IAccessManager {
@@ -148,7 +148,7 @@ contract SMARTCrossExtensionTest is Test {
 
     // System components
     SystemUtils public systemUtils;
-    ISMARTSystem public systemInstance;
+    IATKSystem public systemInstance;
     IdentityUtils public identityUtils;
     ClaimUtils public claimUtils;
 
@@ -185,8 +185,8 @@ contract SMARTCrossExtensionTest is Test {
 
         // Deploy token with all extensions (SMARTToken includes all major extensions)
         uint256[] memory requiredClaimTopics = new uint256[](2);
-        requiredClaimTopics[0] = systemUtils.getTopicId(SMARTTopics.TOPIC_KYC);
-        requiredClaimTopics[1] = systemUtils.getTopicId(SMARTTopics.TOPIC_AML);
+        requiredClaimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
+        requiredClaimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
 
         SMARTComplianceModuleParamPair[] memory modulePairs = new SMARTComplianceModuleParamPair[](0);
 
@@ -199,7 +199,7 @@ contract SMARTCrossExtensionTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             modulePairs,
-            systemUtils.getTopicId(SMARTTopics.TOPIC_COLLATERAL),
+            systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL),
             address(accessManager)
         );
 
@@ -231,15 +231,15 @@ contract SMARTCrossExtensionTest is Test {
         address tokenAddress = address(crossExtToken);
 
         vm.prank(owner);
-        IAccessControl(payable(registryAddress)).grantRole(SMARTSystemRoles.REGISTRAR_ROLE, tokenAddress);
+        IAccessControl(payable(registryAddress)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, tokenAddress);
     }
 
     function _setupTestIdentities() private {
         // Create issuer identity and register as trusted issuer
         uint256[] memory claimTopics = new uint256[](3);
-        claimTopics[0] = systemUtils.getTopicId(SMARTTopics.TOPIC_KYC);
-        claimTopics[1] = systemUtils.getTopicId(SMARTTopics.TOPIC_AML);
-        claimTopics[2] = systemUtils.getTopicId(SMARTTopics.TOPIC_COLLATERAL);
+        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
+        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
+        claimTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
 
         identityUtils.createIssuerIdentity(claimIssuer, claimTopics);
 
@@ -536,7 +536,7 @@ contract SMARTCrossExtensionTest is Test {
     function _setupTokenIdentity() private {
         // Grant CLAIM_MANAGER_ROLE to owner on the token identity's access manager
         vm.prank(owner);
-        IAccessControl(address(accessManager)).grantRole(SMARTSystemRoles.CLAIM_MANAGER_ROLE, owner);
+        IAccessControl(address(accessManager)).grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, owner);
 
         // Issue a large collateral claim to the token to allow minting
         claimUtils.issueCollateralClaim(

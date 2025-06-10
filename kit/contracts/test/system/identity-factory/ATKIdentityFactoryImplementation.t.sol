@@ -2,17 +2,17 @@
 pragma solidity ^0.8.19;
 
 import "forge-std/Test.sol";
-import "../../../contracts/system/identity-factory/ISMARTIdentityFactory.sol";
+import "../../../contracts/system/identity-factory/IATKIdentityFactory.sol";
 import "../../utils/SystemUtils.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { SMARTToken } from "../../smart/examples/SMARTToken.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { SMARTTopics } from "../../../contracts/system/SMARTTopics.sol";
+import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 
-contract SMARTIdentityFactoryImplementationTest is Test {
+contract ATKIdentityFactoryImplementationTest is Test {
     SystemUtils public systemUtils;
-    ISMARTIdentityFactory public factory;
+    IATKIdentityFactory public factory;
     address public admin;
     address public user;
     address public unauthorizedUser;
@@ -60,7 +60,7 @@ contract SMARTIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
             address(accessManager)
         );
 
@@ -132,7 +132,7 @@ contract SMARTIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
             address(accessManager)
         );
 
@@ -164,7 +164,7 @@ contract SMARTIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
             address(accessManager)
         );
 
@@ -202,7 +202,7 @@ contract SMARTIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
             address(accessManager)
         );
         SMARTToken token2 = new SMARTToken(
@@ -213,7 +213,7 @@ contract SMARTIdentityFactoryImplementationTest is Test {
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             new SMARTComplianceModuleParamPair[](0),
-            systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
             address(accessManager)
         );
 

@@ -2,10 +2,10 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { SMARTSystemFactory } from "../../contracts/system/SMARTSystemFactory.sol";
-import { ISMARTSystem } from "../../contracts/system/ISMARTSystem.sol";
-import { SMARTSystem } from "../../contracts/system/SMARTSystem.sol";
-import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
+import { ATKSystemFactory } from "../../contracts/system/ATKSystemFactory.sol";
+import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
+import { ATKSystem } from "../../contracts/system/ATKSystem.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {
     ComplianceImplementationNotSet,
@@ -19,33 +19,32 @@ import {
     TokenAccessManagerImplementationNotSet,
     IndexOutOfBounds,
     IdentityVerificationModuleNotSet
-} from "../../contracts/system/SMARTSystemErrors.sol";
+} from "../../contracts/system/ATKSystemErrors.sol";
 
 // Implementations for testing
-import { SMARTIdentityRegistryStorageImplementation } from
-    "../../contracts/system/identity-registry-storage/SMARTIdentityRegistryStorageImplementation.sol";
-import { SMARTTrustedIssuersRegistryImplementation } from
-    "../../contracts/system/trusted-issuers-registry/SMARTTrustedIssuersRegistryImplementation.sol";
-import { SMARTIdentityRegistryImplementation } from
-    "../../contracts/system/identity-registry/SMARTIdentityRegistryImplementation.sol";
-import { SMARTTopicSchemeRegistryImplementation } from
-    "../../contracts/system/topic-scheme-registry/SMARTTopicSchemeRegistryImplementation.sol";
-import { SMARTComplianceImplementation } from "../../contracts/system/compliance/SMARTComplianceImplementation.sol";
-import { SMARTIdentityFactoryImplementation } from
-    "../../contracts/system/identity-factory/SMARTIdentityFactoryImplementation.sol";
-import { SMARTIdentityImplementation } from
-    "../../contracts/system/identity-factory/identities/SMARTIdentityImplementation.sol";
-import { SMARTTokenIdentityImplementation } from
-    "../../contracts/system/identity-factory/identities/SMARTTokenIdentityImplementation.sol";
-import { SMARTTokenAccessManagerImplementation } from
-    "../../contracts/system/access-manager/SMARTTokenAccessManagerImplementation.sol";
+import { ATKIdentityRegistryStorageImplementation } from
+    "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
+import { ATKTrustedIssuersRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
+import { ATKIdentityRegistryImplementation } from
+    "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
+import { ATKTopicSchemeRegistryImplementation } from
+    "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
+import { ATKComplianceImplementation } from "../../contracts/system/compliance/ATKComplianceImplementation.sol";
+import { ATKIdentityFactoryImplementation } from
+    "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
+import { ATKIdentityImplementation } from
+    "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
+import { ATKTokenIdentityImplementation } from
+    "../../contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol";
+import { ATKTokenAccessManagerImplementation } from
+    "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
 
 // Import compliance module
-import { SMARTIdentityVerificationModule } from
-    "../../contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol";
+import { SMARTIdentityVerificationModule } from "../../contracts/smart/modules/SMARTIdentityVerificationModule.sol";
 
-contract SMARTSystemFactoryTest is Test {
-    SMARTSystemFactory public factory;
+contract ATKSystemFactoryTest is Test {
+    ATKSystemFactory public factory;
 
     // Implementation addresses
     address public complianceImpl;
@@ -71,19 +70,19 @@ contract SMARTSystemFactoryTest is Test {
         forwarder = makeAddr("forwarder");
 
         // Deploy all implementations
-        complianceImpl = address(new SMARTComplianceImplementation(forwarder));
-        identityRegistryImpl = address(new SMARTIdentityRegistryImplementation(forwarder));
-        identityRegistryStorageImpl = address(new SMARTIdentityRegistryStorageImplementation(forwarder));
-        trustedIssuersRegistryImpl = address(new SMARTTrustedIssuersRegistryImplementation(forwarder));
-        topicSchemeRegistryImpl = address(new SMARTTopicSchemeRegistryImplementation(forwarder));
-        identityFactoryImpl = address(new SMARTIdentityFactoryImplementation(forwarder));
-        identityImpl = address(new SMARTIdentityImplementation(forwarder));
-        tokenIdentityImpl = address(new SMARTTokenIdentityImplementation(forwarder));
-        tokenAccessManagerImpl = address(new SMARTTokenAccessManagerImplementation(forwarder));
+        complianceImpl = address(new ATKComplianceImplementation(forwarder));
+        identityRegistryImpl = address(new ATKIdentityRegistryImplementation(forwarder));
+        identityRegistryStorageImpl = address(new ATKIdentityRegistryStorageImplementation(forwarder));
+        trustedIssuersRegistryImpl = address(new ATKTrustedIssuersRegistryImplementation(forwarder));
+        topicSchemeRegistryImpl = address(new ATKTopicSchemeRegistryImplementation(forwarder));
+        identityFactoryImpl = address(new ATKIdentityFactoryImplementation(forwarder));
+        identityImpl = address(new ATKIdentityImplementation(forwarder));
+        tokenIdentityImpl = address(new ATKTokenIdentityImplementation(forwarder));
+        tokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
         identityVerificationModule = address(new SMARTIdentityVerificationModule(forwarder));
 
         // Deploy factory with valid implementations
-        factory = new SMARTSystemFactory(
+        factory = new ATKSystemFactory(
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -114,7 +113,7 @@ contract SMARTSystemFactoryTest is Test {
 
     function test_ConstructorWithZeroComplianceImplementation() public {
         vm.expectRevert(ComplianceImplementationNotSet.selector);
-        new SMARTSystemFactory(
+        new ATKSystemFactory(
             address(0), // Zero compliance implementation
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -131,7 +130,7 @@ contract SMARTSystemFactoryTest is Test {
 
     function test_ConstructorWithZeroIdentityRegistryImplementation() public {
         vm.expectRevert(IdentityRegistryImplementationNotSet.selector);
-        new SMARTSystemFactory(
+        new ATKSystemFactory(
             complianceImpl,
             address(0), // Zero identity registry implementation
             identityRegistryStorageImpl,
@@ -148,7 +147,7 @@ contract SMARTSystemFactoryTest is Test {
 
     function test_ConstructorWithZeroIdentityRegistryStorageImplementation() public {
         vm.expectRevert(IdentityRegistryStorageImplementationNotSet.selector);
-        new SMARTSystemFactory(
+        new ATKSystemFactory(
             complianceImpl,
             identityRegistryImpl,
             address(0), // Zero identity registry storage implementation
@@ -165,7 +164,7 @@ contract SMARTSystemFactoryTest is Test {
 
     function test_ConstructorWithZeroTrustedIssuersRegistryImplementation() public {
         vm.expectRevert(TrustedIssuersRegistryImplementationNotSet.selector);
-        new SMARTSystemFactory(
+        new ATKSystemFactory(
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -182,7 +181,7 @@ contract SMARTSystemFactoryTest is Test {
 
     function test_ConstructorWithZeroTopicSchemeRegistryImplementation() public {
         vm.expectRevert(TopicSchemeRegistryImplementationNotSet.selector);
-        new SMARTSystemFactory(
+        new ATKSystemFactory(
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -199,7 +198,7 @@ contract SMARTSystemFactoryTest is Test {
 
     function test_ConstructorWithZeroIdentityFactoryImplementation() public {
         vm.expectRevert(IdentityFactoryImplementationNotSet.selector);
-        new SMARTSystemFactory(
+        new ATKSystemFactory(
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -216,7 +215,7 @@ contract SMARTSystemFactoryTest is Test {
 
     function test_ConstructorWithZeroIdentityImplementation() public {
         vm.expectRevert(IdentityImplementationNotSet.selector);
-        new SMARTSystemFactory(
+        new ATKSystemFactory(
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -233,7 +232,7 @@ contract SMARTSystemFactoryTest is Test {
 
     function test_ConstructorWithZeroTokenIdentityImplementation() public {
         vm.expectRevert(TokenIdentityImplementationNotSet.selector);
-        new SMARTSystemFactory(
+        new ATKSystemFactory(
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -250,7 +249,7 @@ contract SMARTSystemFactoryTest is Test {
 
     function test_ConstructorWithZeroTokenAccessManagerImplementation() public {
         vm.expectRevert(TokenAccessManagerImplementationNotSet.selector);
-        new SMARTSystemFactory(
+        new ATKSystemFactory(
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -267,7 +266,7 @@ contract SMARTSystemFactoryTest is Test {
 
     function test_ConstructorWithZeroIdentityVerificationModule() public {
         vm.expectRevert(IdentityVerificationModuleNotSet.selector);
-        new SMARTSystemFactory(
+        new ATKSystemFactory(
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -292,7 +291,7 @@ contract SMARTSystemFactoryTest is Test {
 
         // Verify the created system has correct properties
         IAccessControl system = IAccessControl(systemAddress);
-        assertTrue(system.hasRole(SMARTSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(system.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_CreateMultipleSystems() public {
@@ -312,8 +311,8 @@ contract SMARTSystemFactoryTest is Test {
         // Verify each system has correct admin
         IAccessControl smartSystem1 = IAccessControl(system1);
         IAccessControl smartSystem2 = IAccessControl(system2);
-        assertTrue(smartSystem1.hasRole(SMARTSystemRoles.DEFAULT_ADMIN_ROLE, user1));
-        assertTrue(smartSystem2.hasRole(SMARTSystemRoles.DEFAULT_ADMIN_ROLE, user2));
+        assertTrue(smartSystem1.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, user1));
+        assertTrue(smartSystem2.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, user2));
     }
 
     function test_GetSystemCount() public {
@@ -395,7 +394,7 @@ contract SMARTSystemFactoryTest is Test {
 
     function test_CreateSystemWithZeroForwarder() public {
         // Test factory can be created with zero forwarder address
-        SMARTSystemFactory factoryWithZeroForwarder = new SMARTSystemFactory(
+        ATKSystemFactory factoryWithZeroForwarder = new ATKSystemFactory(
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,

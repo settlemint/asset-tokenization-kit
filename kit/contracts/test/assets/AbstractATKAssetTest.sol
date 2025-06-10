@@ -9,15 +9,14 @@ import { ClaimUtils } from "../utils/ClaimUtils.sol";
 import { IdentityUtils } from "../utils/IdentityUtils.sol";
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
-import { SMARTTopics } from "../../contracts/system/SMARTTopics.sol";
-import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
-import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
+import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
+import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { SMARTForwarder } from "../../contracts/vendor/SMARTForwarder.sol";
+import { ATKForwarder } from "../../contracts/vendor/ATKForwarder.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { SMARTBondImplementation } from "../../contracts/assets/bond/SMARTBondImplementation.sol";
 
-abstract contract AbstractSMARTAssetTest is Test {
+abstract contract AbstractATKAssetTest is Test {
     address public platformAdmin;
     address public claimIssuer;
 
@@ -28,9 +27,9 @@ abstract contract AbstractSMARTAssetTest is Test {
     ClaimUtils internal claimUtils;
     IdentityUtils internal identityUtils;
 
-    SMARTForwarder public forwarder;
+    ATKForwarder public forwarder;
 
-    function setUpSMART(address _owner) public virtual {
+    function setUpATK(address _owner) public virtual {
         // --- Setup platform admin ---
         platformAdmin = makeAddr("Platform Admin");
 
@@ -59,8 +58,8 @@ abstract contract AbstractSMARTAssetTest is Test {
 
         // Initialize the claim issuer and topic schemes
         uint256[] memory claimTopics = new uint256[](2);
-        claimTopics[0] = systemUtils.getTopicId(SMARTTopics.TOPIC_KYC);
-        claimTopics[1] = systemUtils.getTopicId(SMARTTopics.TOPIC_COLLATERAL);
+        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
+        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
 
         // Use claimIssuer address directly, createIssuerIdentity handles creating the on-chain identity
         vm.label(claimIssuer, "Claim Issuer");
@@ -68,7 +67,7 @@ abstract contract AbstractSMARTAssetTest is Test {
         vm.label(claimIssuerIdentity, "Claim Issuer Identity");
 
         // Initialize the forwarder
-        forwarder = new SMARTForwarder();
+        forwarder = new ATKForwarder();
 
         // Initialize the access manager
         vm.prank(_owner);
@@ -78,7 +77,7 @@ abstract contract AbstractSMARTAssetTest is Test {
         vm.label(_wallet, _label);
         address identity = identityUtils.createClientIdentity(_wallet, TestConstants.COUNTRY_CODE_BE);
         vm.label(identity, string.concat(_label, " Identity"));
-        claimUtils.issueInvestorClaim(_wallet, SMARTTopics.TOPIC_KYC, "Verified KYC by Issuer");
+        claimUtils.issueInvestorClaim(_wallet, ATKTopics.TOPIC_KYC, "Verified KYC by Issuer");
     }
 
     function _setUpIdentities(string[] memory _labels, address[] memory _wallets) internal {
@@ -116,11 +115,11 @@ abstract contract AbstractSMARTAssetTest is Test {
 
     function _grantAllRoles(address accessManager, address wallet, address defaultAdmin) internal {
         vm.startPrank(defaultAdmin);
-        ISMARTTokenAccessManager(accessManager).grantRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE, wallet);
-        ISMARTTokenAccessManager(accessManager).grantRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, wallet);
-        ISMARTTokenAccessManager(accessManager).grantRole(SMARTRoles.CUSTODIAN_ROLE, wallet);
-        ISMARTTokenAccessManager(accessManager).grantRole(SMARTRoles.EMERGENCY_ROLE, wallet);
-        ISMARTTokenAccessManager(accessManager).grantRole(SMARTSystemRoles.CLAIM_MANAGER_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.CUSTODIAN_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.EMERGENCY_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, wallet);
         vm.stopPrank();
     }
 }

@@ -1,31 +1,31 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity 0.8.28;
 
-import { AbstractSMARTAssetTest } from "./AbstractSMARTAssetTest.sol";
+import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
 import { ISMARTYield } from "../../contracts/smart/extensions/yield/ISMARTYield.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMARTBond } from "../../contracts/assets/bond/ISMARTBond.sol";
-import { ISMARTBondFactory } from "../../contracts/assets/bond/ISMARTBondFactory.sol";
-import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
-import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
+import { IATKBond } from "../../contracts/assets/bond/IATKBond.sol";
+import { IATKBondFactory } from "../../contracts/assets/bond/IATKBondFactory.sol";
+import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { ISMARTCapped } from "../../contracts/smart/extensions/capped/ISMARTCapped.sol";
 
-import { SMARTFixedYieldScheduleFactory } from "../../contracts/system/yield/SMARTFixedYieldScheduleFactory.sol";
+import { ATKFixedYieldScheduleFactory } from "../../contracts/system/yield/ATKFixedYieldScheduleFactory.sol";
 import { SMARTFixedYieldSchedule } from
     "../../contracts/smart/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
-import { SMARTBondFactoryImplementation } from "../../contracts/assets/bond/SMARTBondFactoryImplementation.sol";
-import { SMARTBondImplementation } from "../../contracts/assets/bond/SMARTBondImplementation.sol";
+import { ATKBondFactoryImplementation } from "../../contracts/assets/bond/ATKBondFactoryImplementation.sol";
+import { ATKBondImplementation } from "../../contracts/assets/bond/ATKBondImplementation.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
-contract SMARTBondTest is AbstractSMARTAssetTest {
-    ISMARTBondFactory public bondFactory;
-    ISMARTBond public bond;
+contract ATKBondTest is AbstractATKAssetTest {
+    IATKBondFactory public bondFactory;
+    IATKBond public bond;
     MockedERC20Token public underlyingAsset;
 
     address public owner;
@@ -68,20 +68,20 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         user2 = makeAddr("user2");
         spender = makeAddr("spender");
 
-        // Initialize SMART
-        setUpSMART(owner);
+        // Initialize ATK
+        setUpATK(owner);
 
         // Set up the Bond Factory
-        SMARTBondFactoryImplementation bondFactoryImpl = new SMARTBondFactoryImplementation(address(forwarder));
-        SMARTBondImplementation bondImpl = new SMARTBondImplementation(address(forwarder));
+        ATKBondFactoryImplementation bondFactoryImpl = new ATKBondFactoryImplementation(address(forwarder));
+        ATKBondImplementation bondImpl = new ATKBondImplementation(address(forwarder));
 
         vm.startPrank(platformAdmin);
-        bondFactory = ISMARTBondFactory(
+        bondFactory = IATKBondFactory(
             systemUtils.system().createTokenFactory("Bond", address(bondFactoryImpl), address(bondImpl))
         );
 
         // Grant registrar role to owner so that he can create the bond
-        IAccessControl(address(bondFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+        IAccessControl(address(bondFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -127,7 +127,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         internal
-        returns (ISMARTBond result)
+        returns (IATKBond result)
     {
         vm.startPrank(owner);
         address bondAddress = bondFactory.createBond(
@@ -142,7 +142,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
             initialModulePairs_
         );
 
-        result = ISMARTBond(bondAddress);
+        result = IATKBond(bondAddress);
 
         vm.label(bondAddress, "Bond");
         vm.stopPrank();
@@ -166,10 +166,10 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         assertEq(bond.faceValue(), faceValue);
         assertEq(address(bond.underlyingAsset()), address(underlyingAsset));
         assertFalse(bond.isMatured());
-        assertTrue(bond.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(bond.hasRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE, owner));
-        assertTrue(bond.hasRole(SMARTRoles.CUSTODIAN_ROLE, owner));
-        assertTrue(bond.hasRole(SMARTRoles.EMERGENCY_ROLE, owner));
+        assertTrue(bond.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
+        assertTrue(bond.hasRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, owner));
+        assertTrue(bond.hasRole(ATKRoles.CUSTODIAN_ROLE, owner));
+        assertTrue(bond.hasRole(ATKRoles.EMERGENCY_ROLE, owner));
     }
 
     function test_DifferentDecimals() public {
@@ -180,7 +180,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         decimalValues[3] = 18; // Test max decimals
 
         for (uint256 i = 0; i < decimalValues.length; ++i) {
-            ISMARTBond newBond = _createBondAndMint(
+            IATKBond newBond = _createBondAndMint(
                 string.concat("Test Bond ", Strings.toString(decimalValues[i])),
                 string.concat("TBOND", Strings.toString(decimalValues[i])),
                 decimalValues[i],
@@ -250,7 +250,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTRoles.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.SUPPLY_MANAGEMENT_ROLE
             )
         );
         bond.mint(user1, toDecimals(100));
@@ -259,11 +259,11 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
 
     function test_RoleManagement() public {
         vm.startPrank(owner);
-        ISMARTTokenAccessManager(bond.accessManager()).grantRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertTrue(bond.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(bond.accessManager()).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertTrue(bond.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
 
-        ISMARTTokenAccessManager(bond.accessManager()).revokeRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertFalse(bond.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(bond.accessManager()).revokeRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertFalse(bond.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
         vm.stopPrank();
     }
 
@@ -288,7 +288,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTRoles.EMERGENCY_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.EMERGENCY_ROLE
             )
         );
         bond.pause();
@@ -353,7 +353,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTRoles.TOKEN_GOVERNANCE_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.TOKEN_GOVERNANCE_ROLE
             )
         );
         bond.mature();
@@ -387,7 +387,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         underlyingAsset.transfer(address(bond), initialUnderlyingSupply);
 
         bond.mature();
-        vm.expectRevert(ISMARTBond.BondAlreadyMatured.selector);
+        vm.expectRevert(IATKBond.BondAlreadyMatured.selector);
         bond.mature();
         vm.stopPrank();
     }
@@ -397,7 +397,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         vm.startPrank(owner);
 
         // Try to mature without any underlying assets
-        vm.expectRevert(ISMARTBond.InsufficientUnderlyingBalance.selector);
+        vm.expectRevert(IATKBond.InsufficientUnderlyingBalance.selector);
         bond.mature();
 
         // Add some underlying assets but not enough
@@ -408,7 +408,7 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
         underlyingAsset.transfer(address(bond), partialAmount);
 
         // Try to mature with insufficient underlying assets
-        vm.expectRevert(ISMARTBond.InsufficientUnderlyingBalance.selector);
+        vm.expectRevert(IATKBond.InsufficientUnderlyingBalance.selector);
         bond.mature();
 
         vm.stopPrank();
@@ -753,16 +753,16 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
 
         // Create a forwarder for the FixedYield (already in setup)
         // Create a factory to create the FixedYield
-        SMARTFixedYieldScheduleFactory factory =
-            new SMARTFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
+        ATKFixedYieldScheduleFactory factory =
+            new ATKFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
         vm.label(address(factory), "Yield Schedule Factory");
-        IAccessControl(address(factory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
 
         vm.stopPrank();
 
         vm.startPrank(platformAdmin);
         IAccessControl(address(systemUtils.compliance())).grantRole(
-            SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(factory)
+            ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(factory)
         );
         vm.stopPrank();
 
@@ -799,16 +799,16 @@ contract SMARTBondTest is AbstractSMARTAssetTest {
     function test_CannotMintIfYieldScheduleStarted() public {
         // Setup: Deploy factory and create yield schedule linked to the bond
         vm.startPrank(owner);
-        SMARTFixedYieldScheduleFactory factory =
-            new SMARTFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
+        ATKFixedYieldScheduleFactory factory =
+            new ATKFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
         vm.label(address(factory), "Yield Schedule Factory");
 
-        IAccessControl(address(factory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         vm.startPrank(platformAdmin);
         IAccessControl(address(systemUtils.compliance())).grantRole(
-            SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(factory)
+            ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(factory)
         );
         vm.stopPrank();
 

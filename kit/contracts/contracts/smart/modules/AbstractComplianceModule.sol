@@ -9,7 +9,7 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
 // Interface imports
-import { ISMARTComplianceModule } from "../../../smart/interface/ISMARTComplianceModule.sol";
+import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol";
 
 /// @title Abstract Base for ATK Compliance Modules
 /// @author SettleMint Tokenization Services

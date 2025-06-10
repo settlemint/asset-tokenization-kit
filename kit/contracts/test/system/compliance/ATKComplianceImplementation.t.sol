@@ -4,22 +4,22 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { console2 } from "forge-std/console2.sol";
 
-import { SMARTComplianceImplementation } from "../../../contracts/system/compliance/SMARTComplianceImplementation.sol";
-import { SMARTComplianceProxy } from "../../../contracts/system/compliance/SMARTComplianceProxy.sol";
+import { ATKComplianceImplementation } from "../../../contracts/system/compliance/ATKComplianceImplementation.sol";
+import { ATKComplianceProxy } from "../../../contracts/system/compliance/ATKComplianceProxy.sol";
 import { ISMARTCompliance } from "../../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
-import { ISMARTComplianceAllowList } from "../../../contracts/system/compliance/ISMARTComplianceAllowList.sol";
+import { IATKComplianceAllowList } from "../../../contracts/system/compliance/IATKComplianceAllowList.sol";
 import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { SMARTSystemRoles } from "../../../contracts/system/SMARTSystemRoles.sol";
+import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 
 import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
-contract MockSMARTToken {
+contract MockATKToken {
     SMARTComplianceModuleParamPair[] private _modules;
     address public complianceContract;
 
@@ -96,10 +96,10 @@ contract MockNonCompliantModule {
     }
 }
 
-contract SMARTComplianceImplementationTest is Test {
-    SMARTComplianceImplementation public implementation;
-    SMARTComplianceImplementation public compliance;
-    MockSMARTToken public token;
+contract ATKComplianceImplementationTest is Test {
+    ATKComplianceImplementation public implementation;
+    ATKComplianceImplementation public compliance;
+    MockATKToken public token;
     MockedComplianceModule public validModule;
     MockFailingModule public failingModule;
     MockNonCompliantModule public nonCompliantModule;
@@ -114,23 +114,23 @@ contract SMARTComplianceImplementationTest is Test {
 
     function setUp() public {
         // Deploy implementation and use it directly for unit testing
-        implementation = new SMARTComplianceImplementation(trustedForwarder);
+        implementation = new ATKComplianceImplementation(trustedForwarder);
 
         // Deploy as proxy
         address[] memory initialAdmins = new address[](1);
         initialAdmins[0] = admin;
-        bytes memory initData = abi.encodeWithSelector(SMARTComplianceImplementation.initialize.selector, initialAdmins);
+        bytes memory initData = abi.encodeWithSelector(ATKComplianceImplementation.initialize.selector, initialAdmins);
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
 
         // Access proxy as SMARTComplianceImplementation
-        compliance = SMARTComplianceImplementation(address(proxy));
+        compliance = ATKComplianceImplementation(address(proxy));
 
         // Grant allow list manager role
         vm.prank(admin);
-        compliance.grantRole(SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE, allowListManager);
+        compliance.grantRole(ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE, allowListManager);
 
         // Deploy mock token
-        token = new MockSMARTToken(address(compliance));
+        token = new MockATKToken(address(compliance));
 
         // Deploy mock modules
         validModule = new MockedComplianceModule();
@@ -147,7 +147,7 @@ contract SMARTComplianceImplementationTest is Test {
 
     function testSupportsInterface() public view {
         assertTrue(compliance.supportsInterface(type(ISMARTCompliance).interfaceId));
-        assertTrue(compliance.supportsInterface(type(ISMARTComplianceAllowList).interfaceId));
+        assertTrue(compliance.supportsInterface(type(IATKComplianceAllowList).interfaceId));
         assertTrue(compliance.supportsInterface(type(IERC165).interfaceId));
         assertFalse(compliance.supportsInterface(0xdeadbeef));
     }
@@ -350,7 +350,7 @@ contract SMARTComplianceImplementationTest is Test {
     function testAddToAllowListSuccess() public {
         vm.prank(allowListManager);
         vm.expectEmit(true, true, false, true);
-        emit ISMARTComplianceAllowList.AddressAllowListed(alice, allowListManager);
+        emit IATKComplianceAllowList.AddressAllowListed(alice, allowListManager);
         compliance.addToAllowList(alice);
 
         assertTrue(compliance.isAllowListed(alice));
@@ -362,7 +362,7 @@ contract SMARTComplianceImplementationTest is Test {
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector,
                 unauthorizedUser,
-                SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE
+                ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE
             )
         );
         compliance.addToAllowList(alice);
@@ -379,7 +379,7 @@ contract SMARTComplianceImplementationTest is Test {
         compliance.addToAllowList(alice);
 
         vm.prank(allowListManager);
-        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceAllowList.AddressAlreadyAllowListed.selector, alice));
+        vm.expectRevert(abi.encodeWithSelector(IATKComplianceAllowList.AddressAlreadyAllowListed.selector, alice));
         compliance.addToAllowList(alice);
     }
 
@@ -392,7 +392,7 @@ contract SMARTComplianceImplementationTest is Test {
         // Then remove
         vm.prank(allowListManager);
         vm.expectEmit(true, true, false, true);
-        emit ISMARTComplianceAllowList.AddressRemovedFromAllowList(alice, allowListManager);
+        emit IATKComplianceAllowList.AddressRemovedFromAllowList(alice, allowListManager);
         compliance.removeFromAllowList(alice);
 
         assertFalse(compliance.isAllowListed(alice));
@@ -407,7 +407,7 @@ contract SMARTComplianceImplementationTest is Test {
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector,
                 unauthorizedUser,
-                SMARTSystemRoles.ALLOW_LIST_MANAGER_ROLE
+                ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE
             )
         );
         compliance.removeFromAllowList(alice);
@@ -415,7 +415,7 @@ contract SMARTComplianceImplementationTest is Test {
 
     function testRemoveFromAllowListNotAllowListed() public {
         vm.prank(allowListManager);
-        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceAllowList.AddressNotAllowListed.selector, alice));
+        vm.expectRevert(abi.encodeWithSelector(IATKComplianceAllowList.AddressNotAllowListed.selector, alice));
         compliance.removeFromAllowList(alice);
     }
 
@@ -428,7 +428,7 @@ contract SMARTComplianceImplementationTest is Test {
         vm.prank(allowListManager);
         for (uint256 i = 0; i < accounts.length; i++) {
             vm.expectEmit(true, true, false, true);
-            emit ISMARTComplianceAllowList.AddressAllowListed(accounts[i], allowListManager);
+            emit IATKComplianceAllowList.AddressAllowListed(accounts[i], allowListManager);
         }
         compliance.addMultipleToAllowList(accounts);
 
@@ -463,7 +463,7 @@ contract SMARTComplianceImplementationTest is Test {
         accounts[2] = charlie;
 
         vm.prank(allowListManager);
-        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceAllowList.AddressAlreadyAllowListed.selector, alice));
+        vm.expectRevert(abi.encodeWithSelector(IATKComplianceAllowList.AddressAlreadyAllowListed.selector, alice));
         compliance.addMultipleToAllowList(accounts);
 
         // Bob should not be allow listed due to revert
@@ -485,7 +485,7 @@ contract SMARTComplianceImplementationTest is Test {
         vm.prank(allowListManager);
         for (uint256 i = 0; i < accounts.length; i++) {
             vm.expectEmit(true, true, false, true);
-            emit ISMARTComplianceAllowList.AddressRemovedFromAllowList(accounts[i], allowListManager);
+            emit IATKComplianceAllowList.AddressRemovedFromAllowList(accounts[i], allowListManager);
         }
         compliance.removeMultipleFromAllowList(accounts);
 
@@ -505,7 +505,7 @@ contract SMARTComplianceImplementationTest is Test {
         accounts[2] = charlie;
 
         vm.prank(allowListManager);
-        vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceAllowList.AddressNotAllowListed.selector, bob));
+        vm.expectRevert(abi.encodeWithSelector(IATKComplianceAllowList.AddressNotAllowListed.selector, bob));
         compliance.removeMultipleFromAllowList(accounts);
 
         // Alice should still be allow listed due to revert

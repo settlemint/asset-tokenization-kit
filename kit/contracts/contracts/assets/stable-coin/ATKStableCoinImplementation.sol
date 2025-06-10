@@ -34,7 +34,7 @@ import { SMARTTokenAccessManagedUpgradeable } from
 ///         backed by collateral and using custom roles.
 /// @dev Combines core SMART features (compliance, verification) with extensions for pausing,
 ///      burning, custodian actions, and collateral tracking. Access control uses custom roles.
-contract SMARTStableCoinImplementation is
+contract ATKStableCoinImplementation is
     Initializable,
     IATKStableCoin,
     SMARTUpgradeable,

@@ -2,26 +2,26 @@
 pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { AbstractSMARTAssetTest } from "./AbstractSMARTAssetTest.sol";
+import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { ISMARTFund } from "../../contracts/assets/fund/ISMARTFund.sol";
-import { ISMARTFundFactory } from "../../contracts/assets/fund/ISMARTFundFactory.sol";
-import { SMARTFundFactoryImplementation } from "../../contracts/assets/fund/SMARTFundFactoryImplementation.sol";
-import { SMARTFundImplementation } from "../../contracts/assets/fund/SMARTFundImplementation.sol";
+import { IATKFund } from "../../contracts/assets/fund/IATKFund.sol";
+import { IATKFundFactory } from "../../contracts/assets/fund/IATKFundFactory.sol";
+import { ATKFundFactoryImplementation } from "../../contracts/assets/fund/ATKFundFactoryImplementation.sol";
+import { ATKFundImplementation } from "../../contracts/assets/fund/ATKFundImplementation.sol";
 
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
-import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
+import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISMARTPausable } from "../../contracts/smart/extensions/pausable/ISMARTPausable.sol";
 
-contract SMARTFundTest is AbstractSMARTAssetTest {
-    ISMARTFundFactory public fundFactory;
-    ISMARTFund public fund;
+contract ATKFundTest is AbstractATKAssetTest {
+    IATKFundFactory public fundFactory;
+    IATKFund public fund;
 
     address public owner;
     address public investor1;
@@ -47,20 +47,20 @@ contract SMARTFundTest is AbstractSMARTAssetTest {
         investor1 = makeAddr("investor1");
         investor2 = makeAddr("investor2");
 
-        // Initialize SMART
-        setUpSMART(owner);
+        // Initialize ATK
+        setUpATK(owner);
 
         // Set up the Fund Factory
-        SMARTFundFactoryImplementation fundFactoryImpl = new SMARTFundFactoryImplementation(address(forwarder));
-        SMARTFundImplementation fundImpl = new SMARTFundImplementation(address(forwarder));
+        ATKFundFactoryImplementation fundFactoryImpl = new ATKFundFactoryImplementation(address(forwarder));
+        ATKFundImplementation fundImpl = new ATKFundImplementation(address(forwarder));
 
         vm.startPrank(platformAdmin);
-        fundFactory = ISMARTFundFactory(
+        fundFactory = IATKFundFactory(
             systemUtils.system().createTokenFactory("Fund", address(fundFactoryImpl), address(fundImpl))
         );
 
         // Grant registrar role to owner so that he can create the fund
-        IAccessControl(address(fundFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+        IAccessControl(address(fundFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -83,14 +83,14 @@ contract SMARTFundTest is AbstractSMARTAssetTest {
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         internal
-        returns (ISMARTFund result)
+        returns (IATKFund result)
     {
         vm.startPrank(owner);
         address fundAddress = fundFactory.createFund(
             name_, symbol_, decimals_, managementFeeBps_, requiredClaimTopics_, initialModulePairs_
         );
 
-        result = ISMARTFund(fundAddress);
+        result = IATKFund(fundAddress);
 
         vm.label(fundAddress, "Fund");
         vm.stopPrank();
@@ -107,8 +107,8 @@ contract SMARTFundTest is AbstractSMARTAssetTest {
         assertEq(fund.name(), NAME);
         assertEq(fund.symbol(), SYMBOL);
         assertEq(fund.decimals(), DECIMALS);
-        assertTrue(fund.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(fund.hasRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE, owner));
+        assertTrue(fund.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
+        assertTrue(fund.hasRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, owner));
     }
 
     function test_Mint() public {
@@ -200,7 +200,7 @@ contract SMARTFundTest is AbstractSMARTAssetTest {
         vm.startPrank(investor2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, investor2, SMARTRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, investor2, ATKRoles.CUSTODIAN_ROLE
             )
         );
         fund.forcedTransfer(investor1, investor2, INVESTMENT_AMOUNT);

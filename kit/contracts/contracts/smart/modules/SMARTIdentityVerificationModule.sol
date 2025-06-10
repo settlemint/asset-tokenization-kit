@@ -2,14 +2,14 @@
 pragma solidity ^0.8.28;
 
 import { AbstractComplianceModule } from "./AbstractComplianceModule.sol";
-import { ISMARTIdentityRegistry } from "../../../smart/interface/ISMARTIdentityRegistry.sol";
-import { ISMART } from "../../../smart/interface/ISMART.sol";
+import { ISMARTIdentityRegistry } from "../interface/ISMARTIdentityRegistry.sol";
+import { ISMART } from "../interface/ISMART.sol";
 
 /// @title Identity Verification Module
 /// @author SettleMint Tokenization Services
 /// @notice This module is used to verify the identity of an investor.
 /// @dev This module is used to verify the identity of an investor.
-contract ATKIdentityVerificationModule is AbstractComplianceModule {
+contract SMARTIdentityVerificationModule is AbstractComplianceModule {
     /// @notice Reverted when a token operation (like transfer or mint) is attempted, but the recipient
     ///         (or potentially sender, depending on the operation) does not meet the required identity verification
     /// status.

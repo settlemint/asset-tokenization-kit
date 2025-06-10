@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity 0.8.28;
 
-import { AbstractSMARTAssetTest } from "./AbstractSMARTAssetTest.sol";
+import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ISMARTBond } from "../../contracts/assets/bond/ISMARTBond.sol";
-import { ISMARTBondFactory } from "../../contracts/assets/bond/ISMARTBondFactory.sol";
-import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
-import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
+import { IATKBond } from "../../contracts/assets/bond/IATKBond.sol";
+import { IATKBondFactory } from "../../contracts/assets/bond/IATKBondFactory.sol";
+import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { SMARTBondFactoryImplementation } from "../../contracts/assets/bond/SMARTBondFactoryImplementation.sol";
-import { SMARTBondImplementation } from "../../contracts/assets/bond/SMARTBondImplementation.sol";
+import { ATKBondFactoryImplementation } from "../../contracts/assets/bond/ATKBondFactoryImplementation.sol";
+import { ATKBondImplementation } from "../../contracts/assets/bond/ATKBondImplementation.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
@@ -20,14 +20,14 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * @notice This contract simulates a malicious underlying asset that attempts reentrancy attacks
  */
 contract MaliciousERC20Token is MockedERC20Token {
-    ISMARTBond public targetBond;
+    IATKBond public targetBond;
     address public attacker;
     uint256 public attackCount;
     bool public shouldAttack;
 
     constructor() MockedERC20Token("Malicious Token", "MAL", 18) { }
 
-    function setTarget(ISMARTBond _bond, address _attacker) external {
+    function setTarget(IATKBond _bond, address _attacker) external {
         targetBond = _bond;
         attacker = _attacker;
     }
@@ -67,11 +67,11 @@ contract MaliciousERC20Token is MockedERC20Token {
  * @notice Contract that receives tokens and attempts to exploit reentrancy
  */
 contract ReentrancyAttacker {
-    ISMARTBond public bond;
+    IATKBond public bond;
     uint256 public attackAttempts;
     bool public attackSucceeded;
 
-    constructor(ISMARTBond _bond) {
+    constructor(IATKBond _bond) {
         bond = _bond;
     }
 
@@ -92,9 +92,9 @@ contract ReentrancyAttacker {
     }
 }
 
-contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
-    ISMARTBondFactory public bondFactory;
-    ISMARTBond public bond;
+contract ATKBondReentrancyTest is AbstractATKAssetTest {
+    IATKBondFactory public bondFactory;
+    IATKBond public bond;
     MaliciousERC20Token public maliciousToken;
     ReentrancyAttacker public attacker;
 
@@ -117,19 +117,19 @@ contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
         user1 = makeAddr("user1");
         user2 = makeAddr("user2");
 
-        // Initialize SMART system
-        setUpSMART(owner);
+        // Initialize ATK system
+        setUpATK(owner);
 
         // Set up the Bond Factory
-        SMARTBondFactoryImplementation bondFactoryImpl = new SMARTBondFactoryImplementation(address(forwarder));
-        SMARTBondImplementation bondImpl = new SMARTBondImplementation(address(forwarder));
+        ATKBondFactoryImplementation bondFactoryImpl = new ATKBondFactoryImplementation(address(forwarder));
+        ATKBondImplementation bondImpl = new ATKBondImplementation(address(forwarder));
 
         vm.startPrank(platformAdmin);
-        bondFactory = ISMARTBondFactory(
+        bondFactory = IATKBondFactory(
             systemUtils.system().createTokenFactory("Bond", address(bondFactoryImpl), address(bondImpl))
         );
 
-        IAccessControl(address(bondFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+        IAccessControl(address(bondFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -159,7 +159,7 @@ contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
         vm.label(address(attacker), "Attacker");
     }
 
-    function _createBondWithMaliciousToken() internal returns (ISMARTBond result) {
+    function _createBondWithMaliciousToken() internal returns (IATKBond result) {
         vm.startPrank(owner);
         address bondAddress = bondFactory.createBond(
             "Test Bond",
@@ -173,7 +173,7 @@ contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
             new SMARTComplianceModuleParamPair[](0)
         );
 
-        result = ISMARTBond(bondAddress);
+        result = IATKBond(bondAddress);
         vm.stopPrank();
 
         _grantAllRoles(result.accessManager(), owner, owner);
@@ -251,9 +251,7 @@ contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
         bond.redeem(redeemAmount);
 
         assertEq(bond.balanceOf(user1), redeemAmount, "User1 should have remaining bonds");
-        assertEq(
-            SMARTBondImplementation(address(bond)).bondRedeemed(user1), redeemAmount, "Should track redeemed amount"
-        );
+        assertEq(ATKBondImplementation(address(bond)).bondRedeemed(user1), redeemAmount, "Should track redeemed amount");
 
         // Second redemption should also work
         vm.prank(user1);
@@ -299,7 +297,7 @@ contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
 
         // Try to redeem before maturity
         vm.startPrank(user1);
-        vm.expectRevert(ISMARTBond.BondNotYetMatured.selector);
+        vm.expectRevert(IATKBond.BondNotYetMatured.selector);
         bond.redeem(redeemAmount);
         vm.stopPrank();
     }
@@ -330,7 +328,7 @@ contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
 
         // Try to redeem with insufficient underlying balance
         vm.startPrank(user1);
-        vm.expectRevert(ISMARTBond.InsufficientUnderlyingBalance.selector);
+        vm.expectRevert(IATKBond.InsufficientUnderlyingBalance.selector);
         bond.redeem(redeemAmount);
         vm.stopPrank();
     }
@@ -356,7 +354,7 @@ contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
         // Record initial state
         uint256 initialBondBalance = bond.balanceOf(user1);
         uint256 initialTotalSupply = bond.totalSupply();
-        uint256 initialRedeemed = SMARTBondImplementation(address(bond)).bondRedeemed(user1);
+        uint256 initialRedeemed = ATKBondImplementation(address(bond)).bondRedeemed(user1);
 
         // Perform redemption
         vm.prank(user1);
@@ -366,7 +364,7 @@ contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
         assertEq(bond.balanceOf(user1), initialBondBalance - redeemAmount, "Bond balance not updated correctly");
         assertEq(bond.totalSupply(), initialTotalSupply - redeemAmount, "Total supply not updated correctly");
         assertEq(
-            SMARTBondImplementation(address(bond)).bondRedeemed(user1),
+            ATKBondImplementation(address(bond)).bondRedeemed(user1),
             initialRedeemed + redeemAmount,
             "Redeemed amount not tracked correctly"
         );
@@ -431,13 +429,13 @@ contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
 
         // Try to redeem when underlying transfer will fail
         vm.startPrank(user1);
-        vm.expectRevert(ISMARTBond.InsufficientUnderlyingBalance.selector);
+        vm.expectRevert(IATKBond.InsufficientUnderlyingBalance.selector);
         bond.redeem(redeemAmount);
         vm.stopPrank();
 
         // Verify no state changes occurred
         assertEq(bond.balanceOf(user1), redeemAmount, "Bond balance should be unchanged");
-        assertEq(SMARTBondImplementation(address(bond)).bondRedeemed(user1), 0, "No redemption should be recorded");
+        assertEq(ATKBondImplementation(address(bond)).bondRedeemed(user1), 0, "No redemption should be recorded");
     }
 
     /**
@@ -488,7 +486,7 @@ contract SMARTBondReentrancyTest is AbstractSMARTAssetTest {
             new SMARTComplianceModuleParamPair[](0)
         );
 
-        ISMARTBond normalBond = ISMARTBond(normalBondAddress);
+        IATKBond normalBond = IATKBond(normalBondAddress);
         vm.stopPrank();
 
         _grantAllRoles(normalBond.accessManager(), owner, owner);

@@ -9,7 +9,7 @@ import { ISMARTTokenAccessManager } from
     "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { SMARTTopics } from "../../../contracts/system/SMARTTopics.sol";
+import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { ISMARTIdentityRegistry } from "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { TestConstants } from "../../Constants.sol";
 import { ClaimUtils } from "../../utils/ClaimUtils.sol";
@@ -20,9 +20,8 @@ import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { SMARTSystemRoles } from "../../../contracts/system/SMARTSystemRoles.sol";
-import { SMARTIdentityVerificationModule } from
-    "../../../contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol";
+import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { SMARTIdentityVerificationModule } from "../../../contracts/smart/modules/SMARTIdentityVerificationModule.sol";
 
 abstract contract AbstractSMARTTest is Test {
     // --- State Variables ---
@@ -97,8 +96,8 @@ abstract contract AbstractSMARTTest is Test {
 
         // --- Initialize Test Data FIRST ---
         requiredClaimTopics = new uint256[](2);
-        requiredClaimTopics[0] = systemUtils.getTopicId(SMARTTopics.TOPIC_KYC);
-        requiredClaimTopics[1] = systemUtils.getTopicId(SMARTTopics.TOPIC_AML);
+        requiredClaimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
+        requiredClaimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
 
         allowedCountries = new uint16[](2);
         allowedCountries[0] = TestConstants.COUNTRY_CODE_BE;
@@ -126,11 +125,11 @@ abstract contract AbstractSMARTTest is Test {
         address tokenAddress = address(token);
 
         vm.prank(platformAdmin);
-        IAccessControl(payable(registryAddress)).grantRole(SMARTSystemRoles.REGISTRAR_ROLE, tokenAddress);
+        IAccessControl(payable(registryAddress)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, tokenAddress);
 
         // Verify the role was granted
         assertTrue(
-            IAccessControl(payable(registryAddress)).hasRole(SMARTSystemRoles.REGISTRAR_ROLE, tokenAddress),
+            IAccessControl(payable(registryAddress)).hasRole(ATKSystemRoles.REGISTRAR_ROLE, tokenAddress),
             "Token was not granted REGISTRAR_ROLE"
         );
     }
@@ -169,9 +168,9 @@ abstract contract AbstractSMARTTest is Test {
         identityUtils.createClientIdentity(tokenIssuer, TestConstants.COUNTRY_CODE_BE);
         // Issue claims to the token issuer as well (assuming they need verification)
         uint256[] memory claimTopics = new uint256[](3);
-        claimTopics[0] = systemUtils.getTopicId(SMARTTopics.TOPIC_KYC);
-        claimTopics[1] = systemUtils.getTopicId(SMARTTopics.TOPIC_AML);
-        claimTopics[2] = systemUtils.getTopicId(SMARTTopics.TOPIC_COLLATERAL);
+        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
+        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
+        claimTopics[2] = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
         // Use claimIssuer address directly, createIssuerIdentity handles creating the on-chain identity
         vm.label(claimIssuer, "Claim Issuer");
         address claimIssuerIdentity = identityUtils.createIssuerIdentity(claimIssuer, claimTopics);
@@ -211,7 +210,7 @@ abstract contract AbstractSMARTTest is Test {
         IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).FORCED_TRANSFER_ROLE(), tokenIssuer_);
         IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).RECOVERY_ROLE(), tokenIssuer_);
         IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).PAUSER_ROLE(), tokenIssuer_);
-        IAccessControl(accessManager).grantRole(SMARTSystemRoles.CLAIM_MANAGER_ROLE, tokenIssuer_);
+        IAccessControl(accessManager).grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, tokenIssuer_);
         vm.stopPrank();
     }
 

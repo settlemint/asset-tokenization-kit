@@ -10,7 +10,7 @@ import { SMARTFixedYieldSchedule } from
     "../../contracts/smart/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../contracts/smart/extensions/yield/ISMARTYield.sol";
 
-contract MockSMARTToken is MockedERC20Token {
+contract MockATKToken is MockedERC20Token {
     mapping(address => uint256) private _yieldBasisPerUnit;
     mapping(uint256 => uint256) private _totalSupplyAtTimestamp;
     mapping(address => mapping(uint256 => uint256)) private _balanceOfAt;
@@ -60,7 +60,7 @@ contract MockSMARTToken is MockedERC20Token {
 
 contract SMARTFixedYieldScheduleTest is Test {
     SMARTFixedYieldSchedule public yieldSchedule;
-    MockSMARTToken public smartToken;
+    MockATKToken public atkToken;
     MockedERC20Token public underlyingToken;
 
     address public owner = address(0x1);
@@ -85,28 +85,28 @@ contract SMARTFixedYieldScheduleTest is Test {
         underlyingToken = new MockedERC20Token("Underlying", "UND", 18);
 
         // Deploy mock SMART token
-        smartToken = new MockSMARTToken("Smart Token", "SMART", 18, address(underlyingToken));
+        atkToken = new MockATKToken("ATK Token", "ATK", 18, address(underlyingToken));
 
         // Deploy yield schedule
         yieldSchedule =
-            new SMARTFixedYieldSchedule(address(smartToken), startDate, endDate, RATE, INTERVAL, owner, forwarder);
+            new SMARTFixedYieldSchedule(address(atkToken), startDate, endDate, RATE, INTERVAL, owner, forwarder);
 
         // Setup tokens
         underlyingToken.mint(address(this), INITIAL_SUPPLY);
         underlyingToken.mint(user1, INITIAL_SUPPLY);
         underlyingToken.mint(user2, INITIAL_SUPPLY);
 
-        smartToken.mint(user1, 1000e18);
-        smartToken.mint(user2, 500e18);
+        atkToken.mint(user1, 1000e18);
+        atkToken.mint(user2, 500e18);
 
         // Setup historical data
-        smartToken.setTotalSupplyAt(startDate + 1 days, 1500e18);
-        smartToken.setBalanceOfAt(user1, startDate + 1 days, 1000e18);
-        smartToken.setBalanceOfAt(user2, startDate + 1 days, 500e18);
+        atkToken.setTotalSupplyAt(startDate + 1 days, 1500e18);
+        atkToken.setBalanceOfAt(user1, startDate + 1 days, 1000e18);
+        atkToken.setBalanceOfAt(user2, startDate + 1 days, 500e18);
     }
 
     function test_InitialState() public view {
-        assertEq(address(yieldSchedule.token()), address(smartToken));
+        assertEq(address(yieldSchedule.token()), address(atkToken));
         assertEq(address(yieldSchedule.underlyingAsset()), address(underlyingToken));
         assertEq(yieldSchedule.startDate(), startDate);
         assertEq(yieldSchedule.endDate(), endDate);
@@ -202,8 +202,8 @@ contract SMARTFixedYieldScheduleTest is Test {
 
     function test_YieldCalculations_DifferentBasis() public {
         // Set different basis for users
-        smartToken.setYieldBasisPerUnit(user1, 2000); // 200% basis
-        smartToken.setYieldBasisPerUnit(user2, 500); // 50% basis
+        atkToken.setYieldBasisPerUnit(user1, 2000); // 200% basis
+        atkToken.setYieldBasisPerUnit(user2, 500); // 50% basis
 
         vm.warp(startDate + INTERVAL + 1);
 
@@ -267,21 +267,21 @@ contract SMARTFixedYieldScheduleTest is Test {
 
     function test_YieldCalculations_ChangingBalances() public {
         // Set initial historical balances for first period
-        smartToken.setBalanceOfAt(user1, startDate + INTERVAL, 1000e18);
-        smartToken.setBalanceOfAt(user2, startDate + INTERVAL, 500e18);
+        atkToken.setBalanceOfAt(user1, startDate + INTERVAL, 1000e18);
+        atkToken.setBalanceOfAt(user2, startDate + INTERVAL, 500e18);
 
         // Set different balances for second period (simulate balance changes)
-        smartToken.setBalanceOfAt(user1, startDate + (2 * INTERVAL), 2000e18); // Doubled
-        smartToken.setBalanceOfAt(user2, startDate + (2 * INTERVAL), 250e18); // Halved
+        atkToken.setBalanceOfAt(user1, startDate + (2 * INTERVAL), 2000e18); // Doubled
+        atkToken.setBalanceOfAt(user2, startDate + (2 * INTERVAL), 250e18); // Halved
 
         // Also need to update current balances for pro-rata calculation
         // Current balances: user1: 1000e18, user2: 500e18 (from setUp)
         // Target balances: user1: 1250e18, user2: 250e18
         vm.prank(user2);
-        smartToken.transfer(user1, 250e18); // user1: 1250e18, user2: 250e18
+        atkToken.transfer(user1, 250e18); // user1: 1250e18, user2: 250e18
 
         // Update total supply accordingly
-        smartToken.setTotalSupplyAt(startDate + (2 * INTERVAL), 1500e18); // Keep total same
+        atkToken.setTotalSupplyAt(startDate + (2 * INTERVAL), 1500e18); // Keep total same
 
         // Move to after second period
         vm.warp(startDate + (2 * INTERVAL) + 1);
@@ -311,14 +311,14 @@ contract SMARTFixedYieldScheduleTest is Test {
 
     function test_YieldCalculations_ZeroBalance() public {
         // Check user2's initial balance
-        uint256 user2Balance = smartToken.balanceOf(user2);
+        uint256 user2Balance = atkToken.balanceOf(user2);
 
         // Set user2 balance to zero for the completed period
-        smartToken.setBalanceOfAt(user2, startDate + INTERVAL, 0);
+        atkToken.setBalanceOfAt(user2, startDate + INTERVAL, 0);
 
         // Transfer user2's tokens away to make current balance 0
         vm.prank(user2);
-        smartToken.transfer(user1, user2Balance);
+        atkToken.transfer(user1, user2Balance);
 
         vm.warp(startDate + INTERVAL + 1);
 
@@ -373,11 +373,11 @@ contract SMARTFixedYieldScheduleTest is Test {
 
         // Calculate yield for completed periods only (what claimYield actually pays)
         uint256 lastCompleted = yieldSchedule.lastCompletedPeriod();
-        uint256 basis = smartToken.yieldBasisPerUnit(user1);
+        uint256 basis = atkToken.yieldBasisPerUnit(user1);
         uint256 expectedClaimAmount = 0;
 
         for (uint256 period = 1; period <= lastCompleted; period++) {
-            uint256 balance = smartToken.balanceOfAt(user1, yieldSchedule.periodEnd(period));
+            uint256 balance = atkToken.balanceOfAt(user1, yieldSchedule.periodEnd(period));
             if (balance > 0) {
                 expectedClaimAmount += (balance * basis * 500) / 10_000; // rate = 500, RATE_BASIS_POINTS = 10000
             }
@@ -471,19 +471,19 @@ contract SMARTFixedYieldScheduleTest is Test {
     function test_InvalidConstructorParameters() public {
         // Invalid start date (in the past)
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidStartDate.selector);
-        new SMARTFixedYieldSchedule(address(smartToken), block.timestamp - 1, endDate, RATE, INTERVAL, owner, forwarder);
+        new SMARTFixedYieldSchedule(address(atkToken), block.timestamp - 1, endDate, RATE, INTERVAL, owner, forwarder);
 
         // Invalid end date (before start)
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidEndDate.selector);
-        new SMARTFixedYieldSchedule(address(smartToken), startDate, startDate - 1, RATE, INTERVAL, owner, forwarder);
+        new SMARTFixedYieldSchedule(address(atkToken), startDate, startDate - 1, RATE, INTERVAL, owner, forwarder);
 
         // Invalid rate (zero)
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidRate.selector);
-        new SMARTFixedYieldSchedule(address(smartToken), startDate, endDate, 0, INTERVAL, owner, forwarder);
+        new SMARTFixedYieldSchedule(address(atkToken), startDate, endDate, 0, INTERVAL, owner, forwarder);
 
         // Invalid interval (zero)
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidInterval.selector);
-        new SMARTFixedYieldSchedule(address(smartToken), startDate, endDate, RATE, 0, owner, forwarder);
+        new SMARTFixedYieldSchedule(address(atkToken), startDate, endDate, RATE, 0, owner, forwarder);
     }
 
     function test_InvalidPeriod() public {

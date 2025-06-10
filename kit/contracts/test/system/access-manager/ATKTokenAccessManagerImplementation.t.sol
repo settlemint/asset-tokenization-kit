@@ -2,16 +2,16 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { SMARTTokenAccessManagerImplementation } from
-    "../../../contracts/system/access-manager/SMARTTokenAccessManagerImplementation.sol";
+import { ATKTokenAccessManagerImplementation } from
+    "../../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
 import { ISMARTTokenAccessManager } from
     "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-contract SMARTTokenAccessManagerImplementationTest is Test {
-    SMARTTokenAccessManagerImplementation public implementation;
+contract ATKTokenAccessManagerImplementationTest is Test {
+    ATKTokenAccessManagerImplementation public implementation;
     ISMARTTokenAccessManager public accessManager;
 
     // Test addresses
@@ -32,7 +32,7 @@ contract SMARTTokenAccessManagerImplementationTest is Test {
 
     function setUp() public {
         // Deploy implementation
-        implementation = new SMARTTokenAccessManagerImplementation(forwarder);
+        implementation = new ATKTokenAccessManagerImplementation(forwarder);
 
         // Deploy proxy with initialization data
         bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, admin);
@@ -47,7 +47,7 @@ contract SMARTTokenAccessManagerImplementationTest is Test {
 
     function test_CannotInitializeTwice() public {
         vm.expectRevert();
-        SMARTTokenAccessManagerImplementation(address(accessManager)).initialize(admin);
+        ATKTokenAccessManagerImplementation(address(accessManager)).initialize(admin);
     }
 
     function test_BatchGrantRoleSuccess() public {

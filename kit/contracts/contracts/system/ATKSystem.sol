@@ -30,7 +30,7 @@ import {
 } from "./ATKSystemErrors.sol";
 
 // Compliance modules
-import { ATKIdentityVerificationModule } from "./compliance/modules/ATKIdentityVerificationModule.sol";
+import { SMARTIdentityVerificationModule } from "../smart/modules/SMARTIdentityVerificationModule.sol";
 
 // Constants
 import { ATKSystemRoles } from "./ATKSystemRoles.sol";

@@ -2,18 +2,18 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { SMARTIdentityImplementation } from
-    "../../../../contracts/system/identity-factory/identities/SMARTIdentityImplementation.sol";
-import { ISMARTIdentity } from "../../../../contracts/system/identity-factory/identities/ISMARTIdentity.sol";
+import { ATKIdentityImplementation } from
+    "../../../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
+import { IATKIdentity } from "../../../../contracts/system/identity-factory/identities/IATKIdentity.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
-contract SMARTIdentityImplementationTest is Test {
-    SMARTIdentityImplementation public implementation;
-    ISMARTIdentity public identity;
+contract IATKIdentityTest is Test {
+    ATKIdentityImplementation public implementation;
+    IATKIdentity public identity;
 
     // Test addresses
     address public admin = makeAddr("admin");
@@ -57,12 +57,12 @@ contract SMARTIdentityImplementationTest is Test {
 
     function setUp() public {
         // Deploy implementation
-        implementation = new SMARTIdentityImplementation(forwarder);
+        implementation = new ATKIdentityImplementation(forwarder);
 
         // Deploy proxy with initialization data
-        bytes memory initData = abi.encodeWithSelector(ISMARTIdentity.initialize.selector, user1);
+        bytes memory initData = abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, user1);
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
-        identity = ISMARTIdentity(address(proxy));
+        identity = IATKIdentity(address(proxy));
     }
 
     function test_InitializedIdentityHasCorrectKey() public view {
@@ -80,9 +80,9 @@ contract SMARTIdentityImplementationTest is Test {
 
     function test_InitializeWithZeroAddress() public {
         // Use the implementation directly for this test
-        vm.expectRevert(SMARTIdentityImplementation.InvalidInitialManagementKey.selector);
+        vm.expectRevert(ATKIdentityImplementation.InvalidInitialManagementKey.selector);
         new ERC1967Proxy(
-            address(implementation), abi.encodeWithSelector(ISMARTIdentity.initialize.selector, address(0))
+            address(implementation), abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, address(0))
         );
     }
 
@@ -108,7 +108,7 @@ contract SMARTIdentityImplementationTest is Test {
         bytes32 user2KeyHash = keccak256(abi.encode(user2));
 
         vm.prank(user2); // user2 doesn't have management key
-        vm.expectRevert(SMARTIdentityImplementation.SenderLacksManagementKey.selector);
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksManagementKey.selector);
         identity.addKey(user2KeyHash, ACTION_KEY_PURPOSE, 1);
     }
 
@@ -136,7 +136,7 @@ contract SMARTIdentityImplementationTest is Test {
         identity.addKey(user2KeyHash, ACTION_KEY_PURPOSE, 1);
 
         vm.prank(user2); // user2 doesn't have management key
-        vm.expectRevert(SMARTIdentityImplementation.SenderLacksManagementKey.selector);
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksManagementKey.selector);
         identity.removeKey(user2KeyHash, ACTION_KEY_PURPOSE);
     }
 
@@ -148,7 +148,7 @@ contract SMARTIdentityImplementationTest is Test {
         // The execution will fail because auto-approval doesn't work correctly
         // (this.approve() makes msg.sender the contract itself)
         vm.prank(user1); // user1 has management key
-        vm.expectRevert(SMARTIdentityImplementation.SenderLacksManagementKey.selector);
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksManagementKey.selector);
         identity.execute(address(identity), 0, data);
 
         // Instead, we need to create the execution without auto-approval and then approve manually
@@ -177,7 +177,7 @@ contract SMARTIdentityImplementationTest is Test {
         // The execution will fail because auto-approval doesn't work correctly
         // (this.approve() makes msg.sender the contract itself)
         vm.prank(user2);
-        vm.expectRevert(SMARTIdentityImplementation.SenderLacksActionKey.selector);
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksActionKey.selector);
         identity.execute(admin, 0, data);
 
         // Instead, create execution without auto-approval and then approve manually
@@ -243,14 +243,14 @@ contract SMARTIdentityImplementationTest is Test {
 
         // Try to approve with user2 who has no management key
         vm.prank(user2);
-        vm.expectRevert(SMARTIdentityImplementation.SenderLacksManagementKey.selector);
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksManagementKey.selector);
         identity.approve(executionId, true);
     }
 
     function test_ApproveNonexistentExecution() public {
         vm.prank(user1); // user1 has management key
         vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityImplementation.ReplicatedExecutionIdDoesNotExist.selector, 999)
+            abi.encodeWithSelector(ATKIdentityImplementation.ReplicatedExecutionIdDoesNotExist.selector, 999)
         );
         identity.approve(999, true);
     }
@@ -294,7 +294,7 @@ contract SMARTIdentityImplementationTest is Test {
 
     function test_AddClaimRequiresClaimSignerKey() public {
         vm.prank(user2); // user2 has no claim signer key
-        vm.expectRevert(SMARTIdentityImplementation.SenderLacksClaimSignerKey.selector);
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksClaimSignerKey.selector);
         identity.addClaim(1, 1, address(identity), "signature", "data", "uri");
     }
 
@@ -326,7 +326,7 @@ contract SMARTIdentityImplementationTest is Test {
         bytes32 claimId = identity.addClaim(1, 1, address(identity), "signature", "data", "uri");
 
         vm.prank(user2); // user2 has no claim signer key
-        vm.expectRevert(SMARTIdentityImplementation.SenderLacksClaimSignerKey.selector);
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksClaimSignerKey.selector);
         identity.removeClaim(claimId);
     }
 
@@ -343,13 +343,13 @@ contract SMARTIdentityImplementationTest is Test {
 
         // Revoke claim by signature (requires management key)
         vm.prank(user1);
-        SMARTIdentityImplementation(address(identity)).revokeClaimBySignature(signature);
+        ATKIdentityImplementation(address(identity)).revokeClaimBySignature(signature);
     }
 
     function test_RevokeClaimBySignatureRequiresManagementKey() public {
         vm.prank(user2); // user2 doesn't have management key
-        vm.expectRevert(SMARTIdentityImplementation.SenderLacksManagementKey.selector);
-        SMARTIdentityImplementation(address(identity)).revokeClaimBySignature("signature");
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksManagementKey.selector);
+        ATKIdentityImplementation(address(identity)).revokeClaimBySignature("signature");
     }
 
     function test_RevokeClaimById() public {
@@ -364,20 +364,20 @@ contract SMARTIdentityImplementationTest is Test {
 
         // Revoke claim (requires management key)
         vm.prank(user1);
-        bool success = SMARTIdentityImplementation(address(identity)).revokeClaim(claimId);
+        bool success = ATKIdentityImplementation(address(identity)).revokeClaim(claimId);
         assertTrue(success);
     }
 
     function test_RevokeClaimByIdRequiresManagementKey() public {
         vm.prank(user2); // user2 doesn't have management key
-        vm.expectRevert(SMARTIdentityImplementation.SenderLacksManagementKey.selector);
-        SMARTIdentityImplementation(address(identity)).revokeClaim(bytes32(0));
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksManagementKey.selector);
+        ATKIdentityImplementation(address(identity)).revokeClaim(bytes32(0));
     }
 
     function test_SupportsInterface() public view {
         // Test ERC165 support
         assertTrue(implementation.supportsInterface(type(IERC165).interfaceId));
-        assertTrue(implementation.supportsInterface(type(ISMARTIdentity).interfaceId));
+        assertTrue(implementation.supportsInterface(type(IATKIdentity).interfaceId));
         assertTrue(implementation.supportsInterface(type(IIdentity).interfaceId));
         assertTrue(implementation.supportsInterface(type(IERC734).interfaceId));
         assertTrue(implementation.supportsInterface(type(IERC735).interfaceId));

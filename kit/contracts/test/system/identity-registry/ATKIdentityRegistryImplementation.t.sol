@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 import "forge-std/Test.sol";
 import "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
-import "../../../contracts/system/identity-registry/SMARTIdentityRegistryImplementation.sol";
+import "../../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
 import "../../utils/SystemUtils.sol";
 import "../../utils/IdentityUtils.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -12,7 +12,7 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC3643TrustedIssuersRegistry } from
     "../../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 
-contract SMARTIdentityRegistryImplementationTest is Test {
+contract ATKIdentityRegistryImplementationTest is Test {
     SystemUtils public systemUtils;
     IdentityUtils public identityUtils;
     ISMARTIdentityRegistry public identityRegistry;
@@ -55,7 +55,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
         assertTrue(address(identityRegistry.identityStorage()) != address(0));
         assertTrue(address(identityRegistry.issuersRegistry()) != address(0));
         // Cast to implementation to access supportsInterface
-        SMARTIdentityRegistryImplementation impl = SMARTIdentityRegistryImplementation(address(identityRegistry));
+        ATKIdentityRegistryImplementation impl = ATKIdentityRegistryImplementation(address(identityRegistry));
         assertTrue(impl.supportsInterface(type(ISMARTIdentityRegistry).interfaceId));
     }
 
@@ -73,13 +73,13 @@ contract SMARTIdentityRegistryImplementationTest is Test {
 
     function testRegisterIdentityRevertsWithZeroUser() public {
         vm.prank(admin);
-        vm.expectRevert(SMARTIdentityRegistryImplementation.InvalidUserAddress.selector);
+        vm.expectRevert(ATKIdentityRegistryImplementation.InvalidUserAddress.selector);
         identityRegistry.registerIdentity(address(0), identity1, COUNTRY_US);
     }
 
     function testRegisterIdentityRevertsWithZeroIdentity() public {
         vm.prank(admin);
-        vm.expectRevert(SMARTIdentityRegistryImplementation.InvalidIdentityAddress.selector);
+        vm.expectRevert(ATKIdentityRegistryImplementation.InvalidIdentityAddress.selector);
         identityRegistry.registerIdentity(user1, IIdentity(address(0)), COUNTRY_US);
     }
 
@@ -89,7 +89,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
         identityRegistry.registerIdentity(user1, identity1, COUNTRY_US);
 
         vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryImplementation.IdentityAlreadyRegistered.selector, user1)
+            abi.encodeWithSelector(ATKIdentityRegistryImplementation.IdentityAlreadyRegistered.selector, user1)
         );
         identityRegistry.registerIdentity(user1, identity2, COUNTRY_UK);
 
@@ -120,9 +120,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
 
     function testDeleteIdentityRevertsIfNotRegistered() public {
         vm.prank(admin);
-        vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryImplementation.IdentityNotRegistered.selector, user1)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ATKIdentityRegistryImplementation.IdentityNotRegistered.selector, user1));
         identityRegistry.deleteIdentity(user1);
     }
 
@@ -153,9 +151,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
 
     function testUpdateCountryRevertsIfNotRegistered() public {
         vm.prank(admin);
-        vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryImplementation.IdentityNotRegistered.selector, user1)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ATKIdentityRegistryImplementation.IdentityNotRegistered.selector, user1));
         identityRegistry.updateCountry(user1, COUNTRY_UK);
     }
 
@@ -186,9 +182,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
 
     function testUpdateIdentityRevertsIfNotRegistered() public {
         vm.prank(admin);
-        vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryImplementation.IdentityNotRegistered.selector, user1)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ATKIdentityRegistryImplementation.IdentityNotRegistered.selector, user1));
         identityRegistry.updateIdentity(user1, identity2);
     }
 
@@ -197,7 +191,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
 
         identityRegistry.registerIdentity(user1, identity1, COUNTRY_US);
 
-        vm.expectRevert(SMARTIdentityRegistryImplementation.InvalidIdentityAddress.selector);
+        vm.expectRevert(ATKIdentityRegistryImplementation.InvalidIdentityAddress.selector);
         identityRegistry.updateIdentity(user1, IIdentity(address(0)));
 
         vm.stopPrank();
@@ -248,7 +242,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
         countries[1] = COUNTRY_UK;
 
         vm.prank(admin);
-        vm.expectRevert(SMARTIdentityRegistryImplementation.ArrayLengthMismatch.selector);
+        vm.expectRevert(ATKIdentityRegistryImplementation.ArrayLengthMismatch.selector);
         identityRegistry.batchRegisterIdentity(users, identities, countries);
     }
 
@@ -328,9 +322,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
     }
 
     function testInvestorCountryRevertsIfNotRegistered() public {
-        vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryImplementation.IdentityNotRegistered.selector, user1)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ATKIdentityRegistryImplementation.IdentityNotRegistered.selector, user1));
         identityRegistry.investorCountry(user1);
     }
 
@@ -348,7 +340,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
 
     function testSetIdentityRegistryStorageRevertsWithZeroAddress() public {
         vm.prank(admin);
-        vm.expectRevert(SMARTIdentityRegistryImplementation.InvalidStorageAddress.selector);
+        vm.expectRevert(ATKIdentityRegistryImplementation.InvalidStorageAddress.selector);
         identityRegistry.setIdentityRegistryStorage(address(0));
     }
 
@@ -374,7 +366,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
 
     function testSetTrustedIssuersRegistryRevertsWithZeroAddress() public {
         vm.prank(admin);
-        vm.expectRevert(SMARTIdentityRegistryImplementation.InvalidRegistryAddress.selector);
+        vm.expectRevert(ATKIdentityRegistryImplementation.InvalidRegistryAddress.selector);
         identityRegistry.setTrustedIssuersRegistry(address(0));
     }
 
@@ -387,14 +379,14 @@ contract SMARTIdentityRegistryImplementationTest is Test {
     }
 
     function testSupportsInterface() public view {
-        SMARTIdentityRegistryImplementation impl = SMARTIdentityRegistryImplementation(address(identityRegistry));
+        ATKIdentityRegistryImplementation impl = ATKIdentityRegistryImplementation(address(identityRegistry));
         assertTrue(impl.supportsInterface(type(ISMARTIdentityRegistry).interfaceId));
         assertTrue(impl.supportsInterface(type(IERC165).interfaceId));
         assertTrue(impl.supportsInterface(type(IAccessControl).interfaceId));
     }
 
     function testAccessControlRoles() public view {
-        SMARTIdentityRegistryImplementation impl = SMARTIdentityRegistryImplementation(address(identityRegistry));
+        ATKIdentityRegistryImplementation impl = ATKIdentityRegistryImplementation(address(identityRegistry));
         assertTrue(impl.hasRole(impl.DEFAULT_ADMIN_ROLE(), admin));
     }
 
@@ -432,19 +424,19 @@ contract SMARTIdentityRegistryImplementationTest is Test {
 
     function testRecoverIdentityRevertsWithInvalidIdentityAddress() public {
         vm.prank(admin);
-        vm.expectRevert(SMARTIdentityRegistryImplementation.InvalidIdentityAddress.selector);
+        vm.expectRevert(ATKIdentityRegistryImplementation.InvalidIdentityAddress.selector);
         identityRegistry.recoverIdentity(user1, user2, address(0));
     }
 
     function testRecoverIdentityRevertsWithInvalidNewWalletAddress() public {
         vm.prank(admin);
-        vm.expectRevert(SMARTIdentityRegistryImplementation.InvalidUserAddress.selector);
+        vm.expectRevert(ATKIdentityRegistryImplementation.InvalidUserAddress.selector);
         identityRegistry.recoverIdentity(user1, address(0), address(identity1));
     }
 
     function testRecoverIdentityRevertsWithInvalidOldWalletAddress() public {
         vm.prank(admin);
-        vm.expectRevert(SMARTIdentityRegistryImplementation.InvalidUserAddress.selector);
+        vm.expectRevert(ATKIdentityRegistryImplementation.InvalidUserAddress.selector);
         identityRegistry.recoverIdentity(address(0), user2, address(identity1));
     }
 
@@ -455,9 +447,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
 
         vm.prank(admin);
         vm.expectRevert(
-            abi.encodeWithSelector(
-                SMARTIdentityRegistryImplementation.IdentityNotRegistered.selector, unregisteredWallet
-            )
+            abi.encodeWithSelector(ATKIdentityRegistryImplementation.IdentityNotRegistered.selector, unregisteredWallet)
         );
         identityRegistry.recoverIdentity(unregisteredWallet, newWallet, newIdentityAddr);
     }
@@ -478,9 +468,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
 
         // Second recovery attempt with the same old wallet - should fail
         vm.prank(admin);
-        vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryImplementation.IdentityNotRegistered.selector, user1)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ATKIdentityRegistryImplementation.IdentityNotRegistered.selector, user1));
         identityRegistry.recoverIdentity(user1, secondNewWallet, secondNewIdentity);
     }
 
@@ -542,7 +530,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
         // Try to recover user1's identity to user2's wallet (already registered to different identity)
         vm.prank(admin);
         vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryImplementation.IdentityAlreadyRegistered.selector, user2)
+            abi.encodeWithSelector(ATKIdentityRegistryImplementation.IdentityAlreadyRegistered.selector, user2)
         );
         identityRegistry.recoverIdentity(user1, user2, newIdentityAddr);
     }
@@ -568,7 +556,7 @@ contract SMARTIdentityRegistryImplementationTest is Test {
         // Now try to recover user1's identity to user2 (which is now marked as lost)
         vm.prank(admin);
         vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryImplementation.WalletAlreadyMarkedAsLost.selector, user2)
+            abi.encodeWithSelector(ATKIdentityRegistryImplementation.WalletAlreadyMarkedAsLost.selector, user2)
         );
         identityRegistry.recoverIdentity(user1, user2, newIdentityForUser1);
     }

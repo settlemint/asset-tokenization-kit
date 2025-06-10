@@ -2,15 +2,15 @@
 pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { AbstractSMARTAssetTest } from "./AbstractSMARTAssetTest.sol";
+import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 
-import { ISMARTStableCoin } from "../../contracts/assets/stable-coin/ISMARTStableCoin.sol";
-import { ISMARTStableCoinFactory } from "../../contracts/assets/stable-coin/ISMARTStableCoinFactory.sol";
-import { SMARTStableCoinFactoryImplementation } from
-    "../../contracts/assets/stable-coin/SMARTStableCoinFactoryImplementation.sol";
-import { SMARTStableCoinImplementation } from "../../contracts/assets/stable-coin/SMARTStableCoinImplementation.sol";
-import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
-import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
+import { IATKStableCoin } from "../../contracts/assets/stable-coin/IATKStableCoin.sol";
+import { IATKStableCoinFactory } from "../../contracts/assets/stable-coin/IATKStableCoinFactory.sol";
+import { ATKStableCoinFactoryImplementation } from
+    "../../contracts/assets/stable-coin/ATKStableCoinFactoryImplementation.sol";
+import { ATKStableCoinImplementation } from "../../contracts/assets/stable-coin/ATKStableCoinImplementation.sol";
+import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ClaimUtils } from "../../test/utils/ClaimUtils.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
@@ -21,9 +21,9 @@ import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/acces
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { ISMARTCollateral } from "../../contracts/smart/extensions/collateral/ISMARTCollateral.sol";
 
-contract SMARTStableCoinTest is AbstractSMARTAssetTest {
-    ISMARTStableCoinFactory public stableCoinFactory;
-    ISMARTStableCoin public stableCoin;
+contract ATKStableCoinTest is AbstractATKAssetTest {
+    IATKStableCoinFactory public stableCoinFactory;
+    IATKStableCoin public stableCoin;
 
     address public owner;
     address public user1;
@@ -44,23 +44,23 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
         user2 = makeAddr("user2");
         spender = makeAddr("spender");
 
-        // Initialize SMART
-        setUpSMART(owner);
+        // Initialize ATK
+        setUpATK(owner);
 
         // Set up the Deposit Factory
-        SMARTStableCoinFactoryImplementation stableCoinFactoryImpl =
-            new SMARTStableCoinFactoryImplementation(address(forwarder));
-        SMARTStableCoinImplementation stableCoinImpl = new SMARTStableCoinImplementation(address(forwarder));
+        ATKStableCoinFactoryImplementation stableCoinFactoryImpl =
+            new ATKStableCoinFactoryImplementation(address(forwarder));
+        ATKStableCoinImplementation stableCoinImpl = new ATKStableCoinImplementation(address(forwarder));
 
         vm.startPrank(platformAdmin);
-        stableCoinFactory = ISMARTStableCoinFactory(
+        stableCoinFactory = IATKStableCoinFactory(
             systemUtils.system().createTokenFactory(
                 "StableCoin", address(stableCoinFactoryImpl), address(stableCoinImpl)
             )
         );
 
         // Grant registrar role to owner so that he can create the stable coin
-        IAccessControl(address(stableCoinFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+        IAccessControl(address(stableCoinFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -82,13 +82,13 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
         SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
         internal
-        returns (ISMARTStableCoin result)
+        returns (IATKStableCoin result)
     {
         vm.startPrank(owner);
         address stableCoinAddress =
             stableCoinFactory.createStableCoin(name, symbol, decimals, requiredClaimTopics, initialModulePairs);
 
-        result = ISMARTStableCoin(stableCoinAddress);
+        result = IATKStableCoin(stableCoinAddress);
 
         vm.label(stableCoinAddress, "StableCoin");
         vm.stopPrank();
@@ -120,8 +120,8 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
         assertEq(stableCoin.symbol(), "STBL");
         assertEq(stableCoin.decimals(), DECIMALS);
         assertEq(stableCoin.totalSupply(), 0);
-        assertTrue(stableCoin.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(stableCoin.hasRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE, owner));
+        assertTrue(stableCoin.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
+        assertTrue(stableCoin.hasRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, owner));
     }
 
     function test_DifferentDecimals() public {
@@ -132,7 +132,7 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
         decimalValues[3] = 18; // Test max decimals
 
         for (uint256 i = 0; i < decimalValues.length; ++i) {
-            ISMARTStableCoin newToken = _createStableCoin(
+            IATKStableCoin newToken = _createStableCoin(
                 string.concat("StableCoin ", Strings.toString(decimalValues[i])),
                 string.concat("STBL", Strings.toString(decimalValues[i])),
                 decimalValues[i],
@@ -164,7 +164,7 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTRoles.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.SUPPLY_MANAGEMENT_ROLE
             )
         );
         stableCoin.mint(user1, 100);
@@ -173,11 +173,11 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
 
     function test_RoleManagement() public {
         vm.startPrank(owner);
-        ISMARTTokenAccessManager(stableCoin.accessManager()).grantRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertTrue(stableCoin.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(stableCoin.accessManager()).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertTrue(stableCoin.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
 
-        ISMARTTokenAccessManager(stableCoin.accessManager()).revokeRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertFalse(stableCoin.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(stableCoin.accessManager()).revokeRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertFalse(stableCoin.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
         vm.stopPrank();
     }
 
@@ -197,7 +197,7 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTRoles.EMERGENCY_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.EMERGENCY_ROLE
             )
         );
         stableCoin.pause();
@@ -260,7 +260,7 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
         vm.startPrank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
             )
         );
         stableCoin.freezePartialTokens(user1, 100);
@@ -315,7 +315,7 @@ contract SMARTStableCoinTest is AbstractSMARTAssetTest {
         vm.startPrank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
             )
         );
         stableCoin.forcedTransfer(user1, user2, INITIAL_SUPPLY);

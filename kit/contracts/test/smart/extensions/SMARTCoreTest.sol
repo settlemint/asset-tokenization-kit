@@ -13,8 +13,7 @@ import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { SMARTToken } from "../examples/SMARTToken.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { TestConstants } from "../../Constants.sol";
-import { SMARTIdentityVerificationModule } from
-    "../../../contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol";
+import { SMARTIdentityVerificationModule } from "../../../contracts/smart/modules/SMARTIdentityVerificationModule.sol";
 
 abstract contract SMARTCoreTest is AbstractSMARTTest {
     using SafeERC20 for IERC20;

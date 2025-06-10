@@ -15,19 +15,19 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 import { SMARTToken } from "../smart/examples/SMARTToken.sol";
 
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
-import { ISMARTIdentityFactory } from "../../contracts/system/identity-factory/ISMARTIdentityFactory.sol";
+import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 contract TokenUtils is Test {
     address internal _platformAdmin;
-    ISMARTIdentityFactory internal _identityFactory;
+    IATKIdentityFactory internal _identityFactory;
     ISMARTCompliance internal _compliance; // Reference if needed, though factory uses it
     ISMARTIdentityRegistry internal _identityRegistry;
 
     constructor(
         address platformAdmin_,
-        ISMARTIdentityFactory identityFactory_,
+        IATKIdentityFactory identityFactory_,
         ISMARTIdentityRegistry identityRegistry_,
         ISMARTCompliance compliance_ // Pass compliance even if factory uses it, might be needed elsewhere
     ) {

@@ -10,10 +10,10 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 
 // Import local extensions
-import { ERC734 } from "./extensions/ERC734.sol";
-import { ERC735 } from "./extensions/ERC735.sol";
-import { OnChainIdentity } from "./extensions/OnChainIdentity.sol";
-import { OnChainIdentityWithRevocation } from "./extensions/OnChainIdentityWithRevocation.sol";
+import { ERC734 } from "../../../onchainid/extensions/ERC734.sol";
+import { ERC735 } from "../../../onchainid/extensions/ERC735.sol";
+import { OnChainIdentity } from "../../../onchainid/extensions/OnChainIdentity.sol";
+import { OnChainIdentityWithRevocation } from "../../../onchainid/extensions/OnChainIdentityWithRevocation.sol";
 
 /// @title ATK Identity Implementation Contract (Logic for Wallet Identities)
 /// @author SettleMint Tokenization Services

@@ -13,7 +13,7 @@ import { SMARTCountryAllowListTest } from "./extensions/SMARTCountryAllowListTes
 import { SMARTCountryBlockListTest } from "./extensions/SMARTCountryBlockListTest.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { SMARTToken } from "./examples/SMARTToken.sol";
-import { SMARTTopics } from "../../contracts/system/SMARTTopics.sol";
+import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { SMARTIdentityVerificationTest } from "./extensions/SMARTIdentityVerificationTest.sol";
 // Rename contract to reflect its purpose
 
@@ -38,7 +38,7 @@ contract SMARTStandardTest is
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             modulePairs,
-            systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
             address(accessManager)
         );
         address tokenAddress = address(bond);

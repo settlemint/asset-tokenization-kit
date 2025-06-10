@@ -2,13 +2,13 @@
 pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { AbstractSMARTAssetTest } from "./AbstractSMARTAssetTest.sol";
-import { ISMARTEquityFactory } from "../../contracts/assets/equity/ISMARTEquityFactory.sol";
-import { SMARTEquityFactoryImplementation } from "../../contracts/assets/equity/SMARTEquityFactoryImplementation.sol";
-import { ISMARTEquity } from "../../contracts/assets/equity/ISMARTEquity.sol";
-import { SMARTEquityImplementation } from "../../contracts/assets/equity/SMARTEquityImplementation.sol";
-import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
-import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
+import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
+import { IATKEquityFactory } from "../../contracts/assets/equity/IATKEquityFactory.sol";
+import { ATKEquityFactoryImplementation } from "../../contracts/assets/equity/ATKEquityFactoryImplementation.sol";
+import { IATKEquity } from "../../contracts/assets/equity/IATKEquity.sol";
+import { ATKEquityImplementation } from "../../contracts/assets/equity/ATKEquityImplementation.sol";
+import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
@@ -16,9 +16,9 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
-contract SMARTEquityTest is AbstractSMARTAssetTest {
-    ISMARTEquityFactory internal equityFactory;
-    ISMARTEquity internal smartEquity;
+contract ATKEquityTest is AbstractATKAssetTest {
+    IATKEquityFactory internal equityFactory;
+    IATKEquity internal smartEquity;
 
     address internal owner;
     address internal user1;
@@ -26,8 +26,8 @@ contract SMARTEquityTest is AbstractSMARTAssetTest {
     address internal spender;
 
     uint8 public constant DECIMALS = 8;
-    string public constant NAME = "SMART Equity";
-    string public constant SYMBOL = "SMART";
+    string public constant NAME = "ATK Equity";
+    string public constant SYMBOL = "ATK";
 
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10 ** 8; // 1M tokens with 8 decimals
 
@@ -44,20 +44,20 @@ contract SMARTEquityTest is AbstractSMARTAssetTest {
         user2 = makeAddr("user2");
         spender = makeAddr("spender");
 
-        // Initialize SMART
-        setUpSMART(owner);
+        // Initialize ATK
+        setUpATK(owner);
 
         // Set up the Equity Factory
-        SMARTEquityFactoryImplementation equityFactoryImpl = new SMARTEquityFactoryImplementation(address(forwarder));
-        SMARTEquityImplementation equityImpl = new SMARTEquityImplementation(address(forwarder));
+        ATKEquityFactoryImplementation equityFactoryImpl = new ATKEquityFactoryImplementation(address(forwarder));
+        ATKEquityImplementation equityImpl = new ATKEquityImplementation(address(forwarder));
 
         vm.startPrank(platformAdmin);
-        equityFactory = ISMARTEquityFactory(
+        equityFactory = IATKEquityFactory(
             systemUtils.system().createTokenFactory("Equity", address(equityFactoryImpl), address(equityImpl))
         );
 
         // Grant registrar role to owner so that he can create the equity
-        IAccessControl(address(equityFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+        IAccessControl(address(equityFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -68,7 +68,7 @@ contract SMARTEquityTest is AbstractSMARTAssetTest {
 
         smartEquity =
             _createEquityAndMint(NAME, SYMBOL, DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0));
-        vm.label(address(smartEquity), "SMARTEquity");
+        vm.label(address(smartEquity), "ATKEquity");
 
         // Fund test accounts
         vm.deal(user1, 100 ether);
@@ -84,13 +84,13 @@ contract SMARTEquityTest is AbstractSMARTAssetTest {
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         internal
-        returns (ISMARTEquity result)
+        returns (IATKEquity result)
     {
         vm.startPrank(owner);
         address equityAddress =
             equityFactory.createEquity(name_, symbol_, decimals_, requiredClaimTopics_, initialModulePairs_);
 
-        result = ISMARTEquity(equityAddress);
+        result = IATKEquity(equityAddress);
 
         vm.label(equityAddress, "Equity");
         vm.stopPrank();
@@ -108,10 +108,10 @@ contract SMARTEquityTest is AbstractSMARTAssetTest {
         assertEq(smartEquity.name(), NAME);
         assertEq(smartEquity.symbol(), SYMBOL);
         assertEq(smartEquity.decimals(), DECIMALS);
-        assertTrue(smartEquity.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(smartEquity.hasRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE, owner));
-        assertTrue(smartEquity.hasRole(SMARTRoles.CUSTODIAN_ROLE, owner));
-        assertTrue(smartEquity.hasRole(SMARTRoles.EMERGENCY_ROLE, owner));
+        assertTrue(smartEquity.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
+        assertTrue(smartEquity.hasRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, owner));
+        assertTrue(smartEquity.hasRole(ATKRoles.CUSTODIAN_ROLE, owner));
+        assertTrue(smartEquity.hasRole(ATKRoles.EMERGENCY_ROLE, owner));
         assertEq(smartEquity.totalSupply(), INITIAL_SUPPLY);
         assertEq(smartEquity.balanceOf(owner), INITIAL_SUPPLY);
     }
@@ -124,8 +124,8 @@ contract SMARTEquityTest is AbstractSMARTAssetTest {
         decimalValues[3] = 18; // Test max decimals
 
         for (uint256 i = 0; i < decimalValues.length; ++i) {
-            ISMARTEquity newEquity = _createEquityAndMint(
-                string.concat("Test SMART Equity", Strings.toString(decimalValues[i])),
+            IATKEquity newEquity = _createEquityAndMint(
+                string.concat("Test ATK Equity", Strings.toString(decimalValues[i])),
                 string.concat("TEST", Strings.toString(decimalValues[i])),
                 decimalValues[i],
                 new uint256[](0),
@@ -150,7 +150,7 @@ contract SMARTEquityTest is AbstractSMARTAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTRoles.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.SUPPLY_MANAGEMENT_ROLE
             )
         );
         smartEquity.mint(user1, amount);
@@ -159,11 +159,11 @@ contract SMARTEquityTest is AbstractSMARTAssetTest {
 
     function test_RoleManagement() public {
         vm.startPrank(owner);
-        ISMARTTokenAccessManager(smartEquity.accessManager()).grantRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertTrue(smartEquity.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(smartEquity.accessManager()).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertTrue(smartEquity.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
 
-        ISMARTTokenAccessManager(smartEquity.accessManager()).revokeRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertFalse(smartEquity.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(smartEquity.accessManager()).revokeRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertFalse(smartEquity.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
         vm.stopPrank();
     }
 
@@ -224,7 +224,7 @@ contract SMARTEquityTest is AbstractSMARTAssetTest {
 
     // Pausable Tests
     function test_OnlyAdminCanPause() public {
-        bytes32 role = SMARTRoles.EMERGENCY_ROLE;
+        bytes32 role = ATKRoles.EMERGENCY_ROLE;
 
         vm.startPrank(user1);
         vm.expectRevert(abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", user1, role));
@@ -286,7 +286,7 @@ contract SMARTEquityTest is AbstractSMARTAssetTest {
         vm.startPrank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
             )
         );
         smartEquity.freezePartialTokens(user1, 50 * 10 ** DECIMALS);
@@ -402,7 +402,7 @@ contract SMARTEquityTest is AbstractSMARTAssetTest {
         vm.startPrank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
             )
         );
         smartEquity.forcedTransfer(user1, user2, 1000 * 10 ** DECIMALS);

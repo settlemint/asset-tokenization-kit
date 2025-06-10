@@ -8,6 +8,26 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 /// @notice This interface defines the functions for a factory contract responsible for creating ATK tokens.
 /// @dev This interface extends IERC165 for interface detection support.
 interface IATKTokenFactory is IERC165 {
+    // -- Errors --
+    /// @notice Custom errors for the factory contract
+    /// @dev Defines custom error types used by the contract for various failure conditions.
+
+    error InvalidTokenAddress();
+    /// @notice Error for attempting to unregister a token that is not registered.
+    error InvalidImplementationAddress();
+    /// @notice Error for when the provided token implementation address is the zero address.
+    error ProxyCreationFailed(); // Added for CREATE2
+    /// @notice Error when a CREATE2 proxy deployment fails.
+    error AddressAlreadyDeployed(address predictedAddress); // Added for CREATE2
+    /// @notice Error when a predicted CREATE2 address for an access manager is already marked as deployed by this
+    /// factory.
+    error AccessManagerAlreadyDeployed(address predictedAddress);
+    /// @notice Error when a token identity address mismatch is detected.
+    error TokenIdentityAddressMismatch(address deployedTokenIdentityAddress, address tokenIdentityAddress);
+    /// @notice Error when the provided identity verification module address is the zero address.
+    error InvalidIdentityVerificationModuleAddress();
+
+    // -- Events --
     /// @notice Emitted when the token implementation address is updated.
     /// @param oldImplementation The address of the old token implementation.
     /// @param newImplementation The address of the new token implementation.

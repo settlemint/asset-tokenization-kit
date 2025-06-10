@@ -6,35 +6,35 @@ import { MockedComplianceModule } from "./mocks/MockedComplianceModule.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // System
-import { SMARTSystemFactory } from "../../contracts/system/SMARTSystemFactory.sol";
-import { ISMARTSystem } from "../../contracts/system/ISMARTSystem.sol";
+import { ATKSystemFactory } from "../../contracts/system/ATKSystemFactory.sol";
+import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
 
 // Implementations
-import { SMARTIdentityRegistryStorageImplementation } from
-    "../../contracts/system/identity-registry-storage/SMARTIdentityRegistryStorageImplementation.sol";
-import { SMARTTrustedIssuersRegistryImplementation } from
-    "../../contracts/system/trusted-issuers-registry/SMARTTrustedIssuersRegistryImplementation.sol";
-import { SMARTIdentityRegistryImplementation } from
-    "../../contracts/system/identity-registry/SMARTIdentityRegistryImplementation.sol";
-import { SMARTComplianceImplementation } from "../../contracts/system/compliance/SMARTComplianceImplementation.sol";
-import { SMARTIdentityFactoryImplementation } from
-    "../../contracts/system/identity-factory/SMARTIdentityFactoryImplementation.sol";
+import { ATKIdentityRegistryStorageImplementation } from
+    "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
+import { ATKTrustedIssuersRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
+import { ATKIdentityRegistryImplementation } from
+    "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
+import { ATKComplianceImplementation } from "../../contracts/system/compliance/ATKComplianceImplementation.sol";
+import { ATKIdentityFactoryImplementation } from
+    "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
 
-import { SMARTIdentityImplementation } from
-    "../../contracts/system/identity-factory/identities/SMARTIdentityImplementation.sol";
-import { SMARTTokenIdentityImplementation } from
-    "../../contracts/system/identity-factory/identities/SMARTTokenIdentityImplementation.sol";
-import { SMARTTokenAccessManagerImplementation } from
-    "../../contracts/system/access-manager/SMARTTokenAccessManagerImplementation.sol";
-import { SMARTTopicSchemeRegistryImplementation } from
-    "../../contracts/system/topic-scheme-registry/SMARTTopicSchemeRegistryImplementation.sol";
+import { ATKIdentityImplementation } from
+    "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
+import { ATKTokenIdentityImplementation } from
+    "../../contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol";
+import { ATKTokenAccessManagerImplementation } from
+    "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+import { ATKTopicSchemeRegistryImplementation } from
+    "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 
 // Proxies
-import { SMARTTokenAccessManagerProxy } from "../../contracts/system/access-manager/SMARTTokenAccessManagerProxy.sol";
+import { ATKTokenAccessManagerProxy } from "../../contracts/system/access-manager/ATKTokenAccessManagerProxy.sol";
 
 // Interfaces
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
-import { ISMARTIdentityFactory } from "../../contracts/system/identity-factory/ISMARTIdentityFactory.sol";
+import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
 import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
 import { IERC3643TrustedIssuersRegistry } from
     "../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
@@ -43,24 +43,21 @@ import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/acces
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 
 // Compliance Modules
-import { CountryAllowListComplianceModule } from
-    "../../contracts/system/compliance/modules/CountryAllowListComplianceModule.sol";
-import { CountryBlockListComplianceModule } from
-    "../../contracts/system/compliance/modules/CountryBlockListComplianceModule.sol";
-import { SMARTIdentityVerificationModule } from
-    "../../contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol";
+import { CountryAllowListComplianceModule } from "../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
+import { CountryBlockListComplianceModule } from "../../contracts/smart/modules/CountryBlockListComplianceModule.sol";
+import { SMARTIdentityVerificationModule } from "../../contracts/smart/modules/SMARTIdentityVerificationModule.sol";
 
 contract SystemUtils is Test {
     // System
-    SMARTSystemFactory public systemFactory;
-    ISMARTSystem public system;
+    ATKSystemFactory public systemFactory;
+    IATKSystem public system;
 
     // Core Contract Instances (now holding proxy addresses)
     ISMARTIdentityRegistryStorage public identityRegistryStorage; // Proxy
     IERC3643TrustedIssuersRegistry public trustedIssuersRegistry; // Proxy
     ISMARTIdentityRegistry public identityRegistry; // Proxy
     ISMARTCompliance public compliance; // Proxy
-    ISMARTIdentityFactory public identityFactory; // Proxy
+    IATKIdentityFactory public identityFactory; // Proxy
     ISMARTTopicSchemeRegistry public topicSchemeRegistry; // Proxy
     // Compliance Modules
     MockedComplianceModule public mockedComplianceModule;
@@ -73,23 +70,22 @@ contract SystemUtils is Test {
         // --- Predeployed implementations ---
         address forwarder = address(0);
 
-        IIdentity identityImpl = new SMARTIdentityImplementation(forwarder);
-        IIdentity tokenIdentityImpl = new SMARTTokenIdentityImplementation(forwarder);
+        IIdentity identityImpl = new ATKIdentityImplementation(forwarder);
+        IIdentity tokenIdentityImpl = new ATKTokenIdentityImplementation(forwarder);
 
-        SMARTIdentityRegistryStorageImplementation storageImpl =
-            new SMARTIdentityRegistryStorageImplementation(forwarder);
-        SMARTTrustedIssuersRegistryImplementation issuersImpl = new SMARTTrustedIssuersRegistryImplementation(forwarder);
-        SMARTComplianceImplementation complianceImpl = new SMARTComplianceImplementation(forwarder);
-        SMARTIdentityRegistryImplementation registryImpl = new SMARTIdentityRegistryImplementation(forwarder);
-        SMARTIdentityFactoryImplementation factoryImpl = new SMARTIdentityFactoryImplementation(forwarder);
-        SMARTTokenAccessManagerImplementation accessManagerImpl = new SMARTTokenAccessManagerImplementation(forwarder);
-        SMARTTopicSchemeRegistryImplementation topicSchemeRegistryImpl =
-            new SMARTTopicSchemeRegistryImplementation(forwarder);
+        ATKIdentityRegistryStorageImplementation storageImpl = new ATKIdentityRegistryStorageImplementation(forwarder);
+        ATKTrustedIssuersRegistryImplementation issuersImpl = new ATKTrustedIssuersRegistryImplementation(forwarder);
+        ATKComplianceImplementation complianceImpl = new ATKComplianceImplementation(forwarder);
+        ATKIdentityRegistryImplementation registryImpl = new ATKIdentityRegistryImplementation(forwarder);
+        ATKIdentityFactoryImplementation factoryImpl = new ATKIdentityFactoryImplementation(forwarder);
+        ATKTokenAccessManagerImplementation accessManagerImpl = new ATKTokenAccessManagerImplementation(forwarder);
+        ATKTopicSchemeRegistryImplementation topicSchemeRegistryImpl =
+            new ATKTopicSchemeRegistryImplementation(forwarder);
 
         identityVerificationModule = new SMARTIdentityVerificationModule(forwarder);
         vm.label(address(identityVerificationModule), "Identity Verification Module");
 
-        systemFactory = new SMARTSystemFactory(
+        systemFactory = new ATKSystemFactory(
             address(complianceImpl),
             address(registryImpl),
             address(storageImpl),
@@ -106,7 +102,7 @@ contract SystemUtils is Test {
 
         vm.startPrank(platformAdmin); // Use admin for initialization and binding
         // --- During onboarding ---
-        system = ISMARTSystem(systemFactory.createSystem());
+        system = IATKSystem(systemFactory.createSystem());
         vm.label(address(system), "System");
         system.bootstrap();
 
@@ -120,7 +116,7 @@ contract SystemUtils is Test {
         vm.label(address(trustedIssuersRegistry), "Trusted Issuers Registry");
         topicSchemeRegistry = ISMARTTopicSchemeRegistry(system.topicSchemeRegistryProxy());
         vm.label(address(topicSchemeRegistry), "Topic Scheme Registry");
-        identityFactory = ISMARTIdentityFactory(system.identityFactoryProxy());
+        identityFactory = IATKIdentityFactory(system.identityFactoryProxy());
         vm.label(address(identityFactory), "Identity Factory");
 
         // --- Deploy Other Contracts ---
@@ -139,6 +135,6 @@ contract SystemUtils is Test {
     }
 
     function createTokenAccessManager(address initialAdmin) external returns (ISMARTTokenAccessManager) {
-        return ISMARTTokenAccessManager(address(new SMARTTokenAccessManagerProxy(address(system), initialAdmin)));
+        return ISMARTTokenAccessManager(address(new ATKTokenAccessManagerProxy(address(system), initialAdmin)));
     }
 }

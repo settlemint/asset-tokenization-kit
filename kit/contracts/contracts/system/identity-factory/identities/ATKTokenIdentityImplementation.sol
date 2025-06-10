@@ -8,7 +8,7 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ISMARTTokenAccessManaged } from "../../../smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
 import { ISMARTTokenAccessManager } from "../../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { ERC735 } from "./extensions/ERC735.sol";
+import { ERC735 } from "../../../onchainid/extensions/ERC735.sol";
 import { ATKSystemRoles } from "../../ATKSystemRoles.sol";
 
 /// @title ATK Token Identity Implementation Contract

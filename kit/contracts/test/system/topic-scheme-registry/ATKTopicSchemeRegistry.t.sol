@@ -5,13 +5,13 @@ import { Test } from "forge-std/Test.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";
 import { ISMARTTopicSchemeRegistry } from "../../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
-import { SMARTTopicSchemeRegistryImplementation } from
-    "../../../contracts/system/topic-scheme-registry/SMARTTopicSchemeRegistryImplementation.sol";
-import { SMARTSystemRoles } from "../../../contracts/system/SMARTSystemRoles.sol";
+import { ATKTopicSchemeRegistryImplementation } from
+    "../../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
+import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
-contract SMARTTopicSchemeRegistryTest is Test {
+contract ATKTopicSchemeRegistryTest is Test {
     SystemUtils public systemUtils;
     IdentityUtils public identityUtils;
     ISMARTTopicSchemeRegistry public topicSchemeRegistry;
@@ -55,7 +55,7 @@ contract SMARTTopicSchemeRegistryTest is Test {
 
         // Grant registrar role to test address
         vm.prank(admin);
-        IAccessControl(address(topicSchemeRegistry)).grantRole(SMARTSystemRoles.REGISTRAR_ROLE, registrar);
+        IAccessControl(address(topicSchemeRegistry)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, registrar);
     }
 
     function test_InitialState() public view {
@@ -273,9 +273,9 @@ contract SMARTTopicSchemeRegistryTest is Test {
 
     function test_AccessControl() public view {
         IAccessControl accessControl = IAccessControl(address(topicSchemeRegistry));
-        assertTrue(accessControl.hasRole(SMARTSystemRoles.DEFAULT_ADMIN_ROLE, admin));
-        assertTrue(accessControl.hasRole(SMARTSystemRoles.REGISTRAR_ROLE, registrar));
-        assertFalse(accessControl.hasRole(SMARTSystemRoles.REGISTRAR_ROLE, user));
+        assertTrue(accessControl.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(accessControl.hasRole(ATKSystemRoles.REGISTRAR_ROLE, registrar));
+        assertFalse(accessControl.hasRole(ATKSystemRoles.REGISTRAR_ROLE, user));
     }
 
     function test_ComplexWorkflow() public {

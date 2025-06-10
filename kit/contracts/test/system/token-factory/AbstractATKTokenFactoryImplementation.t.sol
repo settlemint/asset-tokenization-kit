@@ -2,15 +2,15 @@
 pragma solidity ^0.8.19;
 
 import "forge-std/Test.sol";
-import "../../../contracts/system/token-factory/AbstractSMARTTokenFactoryImplementation.sol";
-import "../../../contracts/system/token-factory/ISMARTTokenFactory.sol";
+import "../../../contracts/system/token-factory/AbstractATKTokenFactoryImplementation.sol";
+import "../../../contracts/system/token-factory/IATKTokenFactory.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/access/IAccessControl.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
 
 // Simple concrete implementation for testing
-contract TestableTokenFactory is AbstractSMARTTokenFactoryImplementation {
-    constructor(address forwarder) AbstractSMARTTokenFactoryImplementation(forwarder) { }
+contract TestableTokenFactory is AbstractATKTokenFactoryImplementation {
+    constructor(address forwarder) AbstractATKTokenFactoryImplementation(forwarder) { }
 
     function isValidTokenImplementation(address) external pure override returns (bool) {
         return true;
@@ -48,7 +48,7 @@ contract MockProxy {
     }
 }
 
-contract AbstractSMARTTokenFactoryImplementationSimpleTest is Test {
+contract AbstractATKTokenFactoryImplementationSimpleTest is Test {
     TestableTokenFactory public factory;
     address public admin;
 
@@ -64,7 +64,7 @@ contract AbstractSMARTTokenFactoryImplementationSimpleTest is Test {
     }
 
     function testSupportsInterface() public view {
-        assertTrue(factory.supportsInterface(type(ISMARTTokenFactory).interfaceId));
+        assertTrue(factory.supportsInterface(type(IATKTokenFactory).interfaceId));
         assertTrue(factory.supportsInterface(type(IERC165).interfaceId));
     }
 
@@ -127,10 +127,10 @@ contract AbstractSMARTTokenFactoryImplementationSimpleTest is Test {
 
     function testErrorSelectors() public pure {
         // Test that error selectors are properly defined
-        bytes4 invalidTokenSelector = AbstractSMARTTokenFactoryImplementation.InvalidTokenAddress.selector;
-        bytes4 invalidImplSelector = AbstractSMARTTokenFactoryImplementation.InvalidImplementationAddress.selector;
-        bytes4 proxyFailedSelector = AbstractSMARTTokenFactoryImplementation.ProxyCreationFailed.selector;
-        bytes4 addressDeployedSelector = AbstractSMARTTokenFactoryImplementation.AddressAlreadyDeployed.selector;
+        bytes4 invalidTokenSelector = IATKTokenFactory.InvalidTokenAddress.selector;
+        bytes4 invalidImplSelector = IATKTokenFactory.InvalidImplementationAddress.selector;
+        bytes4 proxyFailedSelector = IATKTokenFactory.ProxyCreationFailed.selector;
+        bytes4 addressDeployedSelector = IATKTokenFactory.AddressAlreadyDeployed.selector;
 
         assertTrue(invalidTokenSelector != bytes4(0));
         assertTrue(invalidImplSelector != bytes4(0));
@@ -148,7 +148,7 @@ contract AbstractSMARTTokenFactoryImplementationSimpleTest is Test {
 
     function testSupportsInterfaceOverride() public view {
         // Test that the abstract contract properly overrides supportsInterface
-        assertTrue(factory.supportsInterface(type(ISMARTTokenFactory).interfaceId));
+        assertTrue(factory.supportsInterface(type(IATKTokenFactory).interfaceId));
         assertTrue(factory.supportsInterface(type(IERC165).interfaceId));
         assertTrue(factory.supportsInterface(type(IAccessControl).interfaceId));
 

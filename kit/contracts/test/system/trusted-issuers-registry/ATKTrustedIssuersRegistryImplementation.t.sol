@@ -2,14 +2,14 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { SMARTTrustedIssuersRegistryImplementation } from
-    "../../../contracts/system/trusted-issuers-registry/SMARTTrustedIssuersRegistryImplementation.sol";
+import { ATKTrustedIssuersRegistryImplementation } from
+    "../../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
 import { IERC3643TrustedIssuersRegistry } from
     "../../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { SMARTSystemRoles } from "../../../contracts/system/SMARTSystemRoles.sol";
+import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Mock claim issuer for testing
@@ -20,8 +20,8 @@ contract MockClaimIssuer {
     }
 }
 
-contract SMARTTrustedIssuersRegistryImplementationTest is Test {
-    SMARTTrustedIssuersRegistryImplementation public implementation;
+contract ATKTrustedIssuersRegistryImplementationTest is Test {
+    ATKTrustedIssuersRegistryImplementation public implementation;
     IERC3643TrustedIssuersRegistry public registry;
 
     // Test addresses
@@ -52,7 +52,7 @@ contract SMARTTrustedIssuersRegistryImplementationTest is Test {
         issuer3 = new MockClaimIssuer();
 
         // Deploy implementation
-        implementation = new SMARTTrustedIssuersRegistryImplementation(forwarder);
+        implementation = new ATKTrustedIssuersRegistryImplementation(forwarder);
 
         // Deploy proxy with initialization data
         bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, admin);
@@ -61,16 +61,16 @@ contract SMARTTrustedIssuersRegistryImplementationTest is Test {
 
         // Grant registrar role
         vm.prank(admin);
-        IAccessControl(address(registry)).grantRole(SMARTSystemRoles.REGISTRAR_ROLE, registrar);
+        IAccessControl(address(registry)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, registrar);
     }
 
     function test_InitializeSuccess() public view {
         // Verify admin has both roles
-        assertTrue(IAccessControl(address(registry)).hasRole(SMARTSystemRoles.DEFAULT_ADMIN_ROLE, admin));
-        assertTrue(IAccessControl(address(registry)).hasRole(SMARTSystemRoles.REGISTRAR_ROLE, admin));
+        assertTrue(IAccessControl(address(registry)).hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(IAccessControl(address(registry)).hasRole(ATKSystemRoles.REGISTRAR_ROLE, admin));
 
         // Verify registrar has registrar role
-        assertTrue(IAccessControl(address(registry)).hasRole(SMARTSystemRoles.REGISTRAR_ROLE, registrar));
+        assertTrue(IAccessControl(address(registry)).hasRole(ATKSystemRoles.REGISTRAR_ROLE, registrar));
 
         // Verify initial state
         IClaimIssuer[] memory issuers = registry.getTrustedIssuers();
@@ -79,7 +79,7 @@ contract SMARTTrustedIssuersRegistryImplementationTest is Test {
 
     function test_CannotInitializeTwice() public {
         vm.expectRevert();
-        SMARTTrustedIssuersRegistryImplementation(address(registry)).initialize(user1);
+        ATKTrustedIssuersRegistryImplementation(address(registry)).initialize(user1);
     }
 
     function test_AddTrustedIssuerSuccess() public {
@@ -125,7 +125,7 @@ contract SMARTTrustedIssuersRegistryImplementationTest is Test {
         topics[0] = KYC_TOPIC;
 
         vm.prank(registrar);
-        vm.expectRevert(SMARTTrustedIssuersRegistryImplementation.InvalidIssuerAddress.selector);
+        vm.expectRevert(ATKTrustedIssuersRegistryImplementation.InvalidIssuerAddress.selector);
         registry.addTrustedIssuer(IClaimIssuer(address(0)), topics);
     }
 
@@ -133,7 +133,7 @@ contract SMARTTrustedIssuersRegistryImplementationTest is Test {
         uint256[] memory topics = new uint256[](0);
 
         vm.prank(registrar);
-        vm.expectRevert(SMARTTrustedIssuersRegistryImplementation.NoClaimTopicsProvided.selector);
+        vm.expectRevert(ATKTrustedIssuersRegistryImplementation.NoClaimTopicsProvided.selector);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
     }
 
@@ -149,7 +149,7 @@ contract SMARTTrustedIssuersRegistryImplementationTest is Test {
         vm.prank(registrar);
         vm.expectRevert(
             abi.encodeWithSelector(
-                SMARTTrustedIssuersRegistryImplementation.IssuerAlreadyExists.selector, address(issuer1)
+                ATKTrustedIssuersRegistryImplementation.IssuerAlreadyExists.selector, address(issuer1)
             )
         );
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
@@ -199,7 +199,7 @@ contract SMARTTrustedIssuersRegistryImplementationTest is Test {
         vm.prank(registrar);
         vm.expectRevert(
             abi.encodeWithSelector(
-                SMARTTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
+                ATKTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
             )
         );
         registry.removeTrustedIssuer(IClaimIssuer(address(issuer1)));
@@ -260,7 +260,7 @@ contract SMARTTrustedIssuersRegistryImplementationTest is Test {
         vm.prank(registrar);
         vm.expectRevert(
             abi.encodeWithSelector(
-                SMARTTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
+                ATKTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
             )
         );
         registry.updateIssuerClaimTopics(IClaimIssuer(address(issuer1)), newTopics);
@@ -278,7 +278,7 @@ contract SMARTTrustedIssuersRegistryImplementationTest is Test {
         uint256[] memory newTopics = new uint256[](0);
 
         vm.prank(registrar);
-        vm.expectRevert(SMARTTrustedIssuersRegistryImplementation.NoClaimTopicsProvided.selector);
+        vm.expectRevert(ATKTrustedIssuersRegistryImplementation.NoClaimTopicsProvided.selector);
         registry.updateIssuerClaimTopics(IClaimIssuer(address(issuer1)), newTopics);
     }
 
@@ -325,7 +325,7 @@ contract SMARTTrustedIssuersRegistryImplementationTest is Test {
     function test_GetTrustedIssuerClaimTopicsDoesNotExist() public {
         vm.expectRevert(
             abi.encodeWithSelector(
-                SMARTTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
+                ATKTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
             )
         );
         registry.getTrustedIssuerClaimTopics(IClaimIssuer(address(issuer1)));

@@ -42,7 +42,7 @@ import { SMARTCappedUpgradeable } from "../../smart/extensions/capped/SMARTCappe
 /// @dev Combines core SMART features (compliance, verification) with extensions for pausing,
 ///      burning, custodian actions, and collateral tracking. Access control uses custom roles.
 
-contract SMARTBondImplementation is
+contract ATKBondImplementation is
     Initializable,
     IATKBond,
     SMARTUpgradeable,

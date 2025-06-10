@@ -2,25 +2,25 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { SMARTTokenIdentityImplementation } from
-    "../../../../contracts/system/identity-factory/identities/SMARTTokenIdentityImplementation.sol";
-import { ISMARTTokenIdentity } from "../../../../contracts/system/identity-factory/identities/ISMARTTokenIdentity.sol";
+import { ATKTokenIdentityImplementation } from
+    "../../../../contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol";
+import { IATKTokenIdentity } from "../../../../contracts/system/identity-factory/identities/IATKTokenIdentity.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { SMARTTokenAccessManagerImplementation } from
-    "../../../../contracts/system/access-manager/SMARTTokenAccessManagerImplementation.sol";
+import { ATKTokenAccessManagerImplementation } from
+    "../../../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
 import { ISMARTTokenAccessManager } from
     "../../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMARTTokenAccessManaged } from
     "../../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManaged.sol";
-import { SMARTSystemRoles } from "../../../../contracts/system/SMARTSystemRoles.sol";
+import { ATKSystemRoles } from "../../../../contracts/system/ATKSystemRoles.sol";
 
-contract SMARTTokenIdentityImplementationTest is Test {
-    SMARTTokenIdentityImplementation public implementation;
-    ISMARTTokenIdentity public tokenIdentity;
+contract ATKTokenIdentityImplementationTest is Test {
+    ATKTokenIdentityImplementation public implementation;
+    IATKTokenIdentity public tokenIdentity;
     ISMARTTokenAccessManager public accessManager;
 
     // Test addresses
@@ -53,44 +53,44 @@ contract SMARTTokenIdentityImplementationTest is Test {
 
     function setUp() public {
         // Deploy access manager
-        SMARTTokenAccessManagerImplementation accessManagerImpl = new SMARTTokenAccessManagerImplementation(forwarder);
+        ATKTokenAccessManagerImplementation accessManagerImpl = new ATKTokenAccessManagerImplementation(forwarder);
         ERC1967Proxy accessManagerProxy = new ERC1967Proxy(
             address(accessManagerImpl), abi.encodeWithSelector(accessManagerImpl.initialize.selector, admin)
         );
         accessManager = ISMARTTokenAccessManager(address(accessManagerProxy));
 
         // Deploy token identity implementation
-        implementation = new SMARTTokenIdentityImplementation(forwarder);
+        implementation = new ATKTokenIdentityImplementation(forwarder);
 
         // Deploy proxy with initialization data
-        bytes memory initData = abi.encodeWithSelector(ISMARTTokenIdentity.initialize.selector, address(accessManager));
+        bytes memory initData = abi.encodeWithSelector(IATKTokenIdentity.initialize.selector, address(accessManager));
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
-        tokenIdentity = ISMARTTokenIdentity(address(proxy));
+        tokenIdentity = IATKTokenIdentity(address(proxy));
 
         // Grant claim manager role
         vm.prank(admin);
-        accessManager.grantRole(SMARTSystemRoles.CLAIM_MANAGER_ROLE, claimManager);
+        accessManager.grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, claimManager);
     }
 
     function test_InitializeSuccess() public view {
         // Verify access manager is set correctly
-        assertEq(SMARTTokenIdentityImplementation(address(tokenIdentity)).accessManager(), address(accessManager));
+        assertEq(ATKTokenIdentityImplementation(address(tokenIdentity)).accessManager(), address(accessManager));
 
         // Verify role checking works
         assertTrue(
-            SMARTTokenIdentityImplementation(address(tokenIdentity)).hasRole(
-                SMARTSystemRoles.CLAIM_MANAGER_ROLE, claimManager
+            ATKTokenIdentityImplementation(address(tokenIdentity)).hasRole(
+                ATKSystemRoles.CLAIM_MANAGER_ROLE, claimManager
             )
         );
         assertFalse(
-            SMARTTokenIdentityImplementation(address(tokenIdentity)).hasRole(SMARTSystemRoles.CLAIM_MANAGER_ROLE, user1)
+            ATKTokenIdentityImplementation(address(tokenIdentity)).hasRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, user1)
         );
     }
 
     function test_InitializeWithZeroAddress() public {
-        vm.expectRevert(SMARTTokenIdentityImplementation.InvalidAccessManager.selector);
+        vm.expectRevert(ATKTokenIdentityImplementation.InvalidAccessManager.selector);
         new ERC1967Proxy(
-            address(implementation), abi.encodeWithSelector(ISMARTTokenIdentity.initialize.selector, address(0))
+            address(implementation), abi.encodeWithSelector(IATKTokenIdentity.initialize.selector, address(0))
         );
     }
 
@@ -137,7 +137,7 @@ contract SMARTTokenIdentityImplementationTest is Test {
             abi.encodeWithSelector(
                 ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount.selector,
                 user1,
-                SMARTSystemRoles.CLAIM_MANAGER_ROLE
+                ATKSystemRoles.CLAIM_MANAGER_ROLE
             )
         );
         tokenIdentity.addClaim(1, 1, issuer, "signature", "data", "uri");
@@ -167,7 +167,7 @@ contract SMARTTokenIdentityImplementationTest is Test {
             abi.encodeWithSelector(
                 ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount.selector,
                 user1,
-                SMARTSystemRoles.CLAIM_MANAGER_ROLE
+                ATKSystemRoles.CLAIM_MANAGER_ROLE
             )
         );
         tokenIdentity.removeClaim(claimId);
@@ -176,69 +176,69 @@ contract SMARTTokenIdentityImplementationTest is Test {
     function test_HasRoleFunction() public view {
         // Test with initialized access manager
         assertTrue(
-            SMARTTokenIdentityImplementation(address(tokenIdentity)).hasRole(
-                SMARTSystemRoles.CLAIM_MANAGER_ROLE, claimManager
+            ATKTokenIdentityImplementation(address(tokenIdentity)).hasRole(
+                ATKSystemRoles.CLAIM_MANAGER_ROLE, claimManager
             )
         );
         assertFalse(
-            SMARTTokenIdentityImplementation(address(tokenIdentity)).hasRole(SMARTSystemRoles.CLAIM_MANAGER_ROLE, user1)
+            ATKTokenIdentityImplementation(address(tokenIdentity)).hasRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, user1)
         );
         assertTrue(
-            SMARTTokenIdentityImplementation(address(tokenIdentity)).hasRole(SMARTSystemRoles.DEFAULT_ADMIN_ROLE, admin)
+            ATKTokenIdentityImplementation(address(tokenIdentity)).hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin)
         );
     }
 
     function test_HasRoleWithUninitializedAccessManager() public {
         // Deploy a fresh implementation without access manager
-        SMARTTokenIdentityImplementation freshImpl = new SMARTTokenIdentityImplementation(forwarder);
+        ATKTokenIdentityImplementation freshImpl = new ATKTokenIdentityImplementation(forwarder);
 
         // hasRole should return false when access manager is not set
-        assertFalse(freshImpl.hasRole(SMARTSystemRoles.CLAIM_MANAGER_ROLE, claimManager));
+        assertFalse(freshImpl.hasRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, claimManager));
     }
 
     function test_AccessManagerGetter() public view {
-        assertEq(SMARTTokenIdentityImplementation(address(tokenIdentity)).accessManager(), address(accessManager));
+        assertEq(ATKTokenIdentityImplementation(address(tokenIdentity)).accessManager(), address(accessManager));
     }
 
     // Test all ERC734 functions that should revert with UnsupportedKeyOperation
     function test_AddKeyReverts() public {
-        vm.expectRevert(SMARTTokenIdentityImplementation.UnsupportedKeyOperation.selector);
+        vm.expectRevert(ATKTokenIdentityImplementation.UnsupportedKeyOperation.selector);
         tokenIdentity.addKey(bytes32(0), 1, 1);
     }
 
     function test_RemoveKeyReverts() public {
-        vm.expectRevert(SMARTTokenIdentityImplementation.UnsupportedKeyOperation.selector);
+        vm.expectRevert(ATKTokenIdentityImplementation.UnsupportedKeyOperation.selector);
         tokenIdentity.removeKey(bytes32(0), 1);
     }
 
     function test_GetKeyReverts() public {
-        vm.expectRevert(SMARTTokenIdentityImplementation.UnsupportedKeyOperation.selector);
+        vm.expectRevert(ATKTokenIdentityImplementation.UnsupportedKeyOperation.selector);
         tokenIdentity.getKey(bytes32(0));
     }
 
     function test_GetKeyPurposesReverts() public {
-        vm.expectRevert(SMARTTokenIdentityImplementation.UnsupportedKeyOperation.selector);
+        vm.expectRevert(ATKTokenIdentityImplementation.UnsupportedKeyOperation.selector);
         tokenIdentity.getKeyPurposes(bytes32(0));
     }
 
     function test_GetKeysByPurposeReverts() public {
-        vm.expectRevert(SMARTTokenIdentityImplementation.UnsupportedKeyOperation.selector);
+        vm.expectRevert(ATKTokenIdentityImplementation.UnsupportedKeyOperation.selector);
         tokenIdentity.getKeysByPurpose(1);
     }
 
     function test_KeyHasPurposeReverts() public {
-        vm.expectRevert(SMARTTokenIdentityImplementation.UnsupportedKeyOperation.selector);
+        vm.expectRevert(ATKTokenIdentityImplementation.UnsupportedKeyOperation.selector);
         tokenIdentity.keyHasPurpose(bytes32(0), 1);
     }
 
     // Test execution functions that should revert with UnsupportedExecutionOperation
     function test_ApproveReverts() public {
-        vm.expectRevert(SMARTTokenIdentityImplementation.UnsupportedExecutionOperation.selector);
+        vm.expectRevert(ATKTokenIdentityImplementation.UnsupportedExecutionOperation.selector);
         tokenIdentity.approve(0, true);
     }
 
     function test_ExecuteReverts() public {
-        vm.expectRevert(SMARTTokenIdentityImplementation.UnsupportedExecutionOperation.selector);
+        vm.expectRevert(ATKTokenIdentityImplementation.UnsupportedExecutionOperation.selector);
         tokenIdentity.execute(user1, 0, "");
     }
 
@@ -251,7 +251,7 @@ contract SMARTTokenIdentityImplementationTest is Test {
     function test_SupportsInterface() public view {
         // Test ERC165 support
         assertTrue(implementation.supportsInterface(type(IERC165).interfaceId));
-        assertTrue(implementation.supportsInterface(type(ISMARTTokenIdentity).interfaceId));
+        assertTrue(implementation.supportsInterface(type(IATKTokenIdentity).interfaceId));
         assertTrue(implementation.supportsInterface(type(IIdentity).interfaceId));
         assertTrue(implementation.supportsInterface(type(IERC735).interfaceId));
 
@@ -312,14 +312,12 @@ contract SMARTTokenIdentityImplementationTest is Test {
     function test_AccessControlWithDifferentRoles() public {
         // Grant another role to user1
         vm.prank(admin);
-        accessManager.grantRole(SMARTSystemRoles.REGISTRAR_ROLE, user1);
+        accessManager.grantRole(ATKSystemRoles.REGISTRAR_ROLE, user1);
 
         // Verify user1 has the registrar role but not claim manager role
-        assertTrue(
-            SMARTTokenIdentityImplementation(address(tokenIdentity)).hasRole(SMARTSystemRoles.REGISTRAR_ROLE, user1)
-        );
+        assertTrue(ATKTokenIdentityImplementation(address(tokenIdentity)).hasRole(ATKSystemRoles.REGISTRAR_ROLE, user1));
         assertFalse(
-            SMARTTokenIdentityImplementation(address(tokenIdentity)).hasRole(SMARTSystemRoles.CLAIM_MANAGER_ROLE, user1)
+            ATKTokenIdentityImplementation(address(tokenIdentity)).hasRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, user1)
         );
 
         // user1 still can't manage claims
@@ -328,7 +326,7 @@ contract SMARTTokenIdentityImplementationTest is Test {
             abi.encodeWithSelector(
                 ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount.selector,
                 user1,
-                SMARTSystemRoles.CLAIM_MANAGER_ROLE
+                ATKSystemRoles.CLAIM_MANAGER_ROLE
             )
         );
         tokenIdentity.addClaim(1, 1, issuer, "signature", "data", "uri");
@@ -347,7 +345,7 @@ contract SMARTTokenIdentityImplementationTest is Test {
             abi.encodeWithSelector(
                 ISMARTTokenAccessManaged.AccessControlUnauthorizedAccount.selector,
                 user1,
-                SMARTSystemRoles.CLAIM_MANAGER_ROLE
+                ATKSystemRoles.CLAIM_MANAGER_ROLE
             )
         );
         tokenIdentity.addClaim(1, 1, address(tokenIdentity), "signature", "data", "uri");

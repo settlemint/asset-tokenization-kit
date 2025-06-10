@@ -2,15 +2,15 @@
 pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { AbstractSMARTAssetTest } from "./AbstractSMARTAssetTest.sol";
+import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 
 import { ClaimUtils } from "../utils/ClaimUtils.sol";
-import { ISMARTDeposit } from "../../contracts/assets/deposit/ISMARTDeposit.sol";
-import { ISMARTDepositFactory } from "../../contracts/assets/deposit/ISMARTDepositFactory.sol";
-import { SMARTDepositFactoryImplementation } from "../../contracts/assets/deposit/SMARTDepositFactoryImplementation.sol";
-import { SMARTDepositImplementation } from "../../contracts/assets/deposit/SMARTDepositImplementation.sol";
-import { SMARTRoles } from "../../contracts/assets/SMARTRoles.sol";
-import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
+import { IATKDeposit } from "../../contracts/assets/deposit/IATKDeposit.sol";
+import { IATKDepositFactory } from "../../contracts/assets/deposit/IATKDepositFactory.sol";
+import { ATKDepositFactoryImplementation } from "../../contracts/assets/deposit/ATKDepositFactoryImplementation.sol";
+import { ATKDepositImplementation } from "../../contracts/assets/deposit/ATKDepositImplementation.sol";
+import { ATKRoles } from "../../contracts/assets/ATKRoles.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
@@ -21,9 +21,9 @@ import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { ISMARTCollateral } from "../../contracts/smart/extensions/collateral/ISMARTCollateral.sol";
 
-contract SMARTDepositTest is AbstractSMARTAssetTest {
-    ISMARTDepositFactory public depositFactory;
-    ISMARTDeposit public deposit;
+contract ATKDepositTest is AbstractATKAssetTest {
+    IATKDepositFactory public depositFactory;
+    IATKDeposit public deposit;
 
     address public owner;
     address public user1;
@@ -41,20 +41,20 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
         user2 = makeAddr("user2");
         spender = makeAddr("spender");
 
-        // Initialize SMART
-        setUpSMART(owner);
+        // Initialize ATK
+        setUpATK(owner);
 
         // Set up the Deposit Factory
-        SMARTDepositFactoryImplementation depositFactoryImpl = new SMARTDepositFactoryImplementation(address(forwarder));
-        SMARTDepositImplementation depositImpl = new SMARTDepositImplementation(address(forwarder));
+        ATKDepositFactoryImplementation depositFactoryImpl = new ATKDepositFactoryImplementation(address(forwarder));
+        ATKDepositImplementation depositImpl = new ATKDepositImplementation(address(forwarder));
 
         vm.startPrank(platformAdmin);
-        depositFactory = ISMARTDepositFactory(
+        depositFactory = IATKDepositFactory(
             systemUtils.system().createTokenFactory("Deposit", address(depositFactoryImpl), address(depositImpl))
         );
 
         // Grant registrar role to owner so that he can create the deposit
-        IAccessControl(address(depositFactory)).grantRole(SMARTSystemRoles.DEPLOYER_ROLE, owner);
+        IAccessControl(address(depositFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities
@@ -75,13 +75,13 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
         SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
         internal
-        returns (ISMARTDeposit result)
+        returns (IATKDeposit result)
     {
         vm.startPrank(owner);
 
         address depositAddress =
             depositFactory.createDeposit(name, symbol, decimals, requiredClaimTopics, initialModulePairs);
-        result = ISMARTDeposit(depositAddress);
+        result = IATKDeposit(depositAddress);
 
         vm.label(depositAddress, "Deposit");
         vm.stopPrank();
@@ -111,10 +111,10 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
         assertEq(deposit.symbol(), "DEP");
         assertEq(deposit.decimals(), DECIMALS);
         assertEq(deposit.totalSupply(), 0);
-        assertTrue(deposit.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(deposit.hasRole(SMARTRoles.TOKEN_GOVERNANCE_ROLE, owner));
-        assertTrue(deposit.hasRole(SMARTRoles.CUSTODIAN_ROLE, owner));
-        assertTrue(deposit.hasRole(SMARTRoles.EMERGENCY_ROLE, owner));
+        assertTrue(deposit.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
+        assertTrue(deposit.hasRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, owner));
+        assertTrue(deposit.hasRole(ATKRoles.CUSTODIAN_ROLE, owner));
+        assertTrue(deposit.hasRole(ATKRoles.EMERGENCY_ROLE, owner));
     }
 
     function test_DifferentDecimals() public {
@@ -124,7 +124,7 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
         decimalValues[2] = 8; // Test max decimals
 
         for (uint256 i = 0; i < decimalValues.length; ++i) {
-            ISMARTDeposit newToken = _createDeposit(
+            IATKDeposit newToken = _createDeposit(
                 string.concat("Deposit ", Strings.toString(decimalValues[i])),
                 string.concat("DEP_", Strings.toString(decimalValues[i])),
                 decimalValues[i],
@@ -156,7 +156,7 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTRoles.SUPPLY_MANAGEMENT_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.SUPPLY_MANAGEMENT_ROLE
             )
         );
         deposit.mint(user1, 100);
@@ -165,11 +165,11 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
 
     function test_RoleManagement() public {
         vm.startPrank(owner);
-        ISMARTTokenAccessManager(deposit.accessManager()).grantRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertTrue(deposit.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(deposit.accessManager()).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertTrue(deposit.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
 
-        ISMARTTokenAccessManager(deposit.accessManager()).revokeRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1);
-        assertFalse(deposit.hasRole(SMARTRoles.SUPPLY_MANAGEMENT_ROLE, user1));
+        ISMARTTokenAccessManager(deposit.accessManager()).revokeRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1);
+        assertFalse(deposit.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, user1));
         vm.stopPrank();
     }
 
@@ -185,7 +185,7 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
     function test_onlyAdminCanPause() public {
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, SMARTRoles.EMERGENCY_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.EMERGENCY_ROLE
             )
         );
         vm.prank(user1);
@@ -240,7 +240,7 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
         vm.prank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
             )
         );
         deposit.freezePartialTokens(user1, 100);
@@ -290,7 +290,7 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
         vm.prank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTRoles.CUSTODIAN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.CUSTODIAN_ROLE
             )
         );
         deposit.forcedTransfer(user1, user2, INITIAL_SUPPLY);
@@ -320,7 +320,7 @@ contract SMARTDepositTest is AbstractSMARTAssetTest {
         vm.startPrank(user2);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, SMARTRoles.EMERGENCY_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user2, ATKRoles.EMERGENCY_ROLE
             )
         );
         deposit.recoverERC20(address(mockToken), user1, 500);

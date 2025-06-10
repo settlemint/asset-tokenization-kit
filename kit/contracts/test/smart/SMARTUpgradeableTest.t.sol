@@ -11,7 +11,7 @@ import { SMARTCountryBlockListTest } from "./extensions/SMARTCountryBlockListTes
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { SMARTTokenUpgradeable } from "./examples/SMARTTokenUpgradeable.sol";
-import { SMARTTopics } from "../../contracts/system/SMARTTopics.sol";
+import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { SMARTIdentityVerificationTest } from "./extensions/SMARTIdentityVerificationTest.sol";
 
 // Contract for testing the UPGRADEABLE SMART token implementation
@@ -41,7 +41,7 @@ contract SMARTUpgradeableTest is
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
             modulePairs,
-            systemUtils.topicSchemeRegistry().getTopicId(SMARTTopics.TOPIC_COLLATERAL),
+            systemUtils.topicSchemeRegistry().getTopicId(ATKTopics.TOPIC_COLLATERAL),
             address(accessManager)
         );
 

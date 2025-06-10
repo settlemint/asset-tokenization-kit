@@ -4,16 +4,16 @@ pragma solidity ^0.8.28;
 import { Test, console } from "forge-std/Test.sol";
 import { SystemUtils } from "../utils/SystemUtils.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { SMARTTokenAccessManagerImplementation } from
-    "../../contracts/system/access-manager/SMARTTokenAccessManagerImplementation.sol";
-import { SMARTTokenAccessManagerProxy } from "../../contracts/system/access-manager/SMARTTokenAccessManagerProxy.sol";
+import { ATKTokenAccessManagerImplementation } from
+    "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+import { ATKTokenAccessManagerProxy } from "../../contracts/system/access-manager/ATKTokenAccessManagerProxy.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-contract SMARTTokenAccessManagerTest is Test {
+contract ATKTokenAccessManagerTest is Test {
     SystemUtils public systemUtils;
     ISMARTTokenAccessManager public accessManager;
-    SMARTTokenAccessManagerImplementation public implementation;
+    ATKTokenAccessManagerImplementation public implementation;
 
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
@@ -30,7 +30,7 @@ contract SMARTTokenAccessManagerTest is Test {
         accessManager = systemUtils.createTokenAccessManager(admin);
 
         // Get the implementation for direct testing
-        implementation = new SMARTTokenAccessManagerImplementation(forwarder);
+        implementation = new ATKTokenAccessManagerImplementation(forwarder);
     }
 
     function test_InitialState() public view {
@@ -116,7 +116,7 @@ contract SMARTTokenAccessManagerTest is Test {
 
     function test_ProxyFunctionality() public {
         // Test that the proxy correctly delegates to implementation
-        SMARTTokenAccessManagerProxy proxy = new SMARTTokenAccessManagerProxy(address(systemUtils.system()), admin);
+        ATKTokenAccessManagerProxy proxy = new ATKTokenAccessManagerProxy(address(systemUtils.system()), admin);
 
         // Verify it's a proxy by checking it has no direct code for the interface
         assertTrue(address(proxy) != address(0));

@@ -9,8 +9,7 @@ import { TestConstants } from "../../Constants.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
 
-import { CountryBlockListComplianceModule } from
-    "../../../contracts/system/compliance/modules/CountryBlockListComplianceModule.sol";
+import { CountryBlockListComplianceModule } from "../../../contracts/smart/modules/CountryBlockListComplianceModule.sol";
 
 abstract contract SMARTCountryBlockListTest is AbstractSMARTTest {
     // Module-specific variables

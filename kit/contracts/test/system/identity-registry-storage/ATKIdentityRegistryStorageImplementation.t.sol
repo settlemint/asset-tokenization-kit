@@ -2,8 +2,8 @@
 pragma solidity ^0.8.0;
 
 import { Test } from "forge-std/Test.sol";
-import { SMARTIdentityRegistryStorageImplementation } from
-    "../../../contracts/system/identity-registry-storage/SMARTIdentityRegistryStorageImplementation.sol";
+import { ATKIdentityRegistryStorageImplementation } from
+    "../../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -11,11 +11,11 @@ import { ISMARTIdentityRegistryStorage } from "../../../contracts/smart/interfac
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";
-import { SMARTSystemRoles } from "../../../contracts/system/SMARTSystemRoles.sol";
+import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 
-contract SMARTIdentityRegistryStorageImplementationTest is Test {
-    SMARTIdentityRegistryStorageImplementation public implementation;
-    SMARTIdentityRegistryStorageImplementation public storageContract;
+contract ATKIdentityRegistryStorageImplementationTest is Test {
+    ATKIdentityRegistryStorageImplementation public implementation;
+    ATKIdentityRegistryStorageImplementation public storageContract;
     SystemUtils public systemUtils;
     IdentityUtils public identityUtils;
 
@@ -63,13 +63,13 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
             admin, systemUtils.identityFactory(), systemUtils.identityRegistry(), systemUtils.trustedIssuersRegistry()
         );
 
-        implementation = new SMARTIdentityRegistryStorageImplementation(forwarder);
+        implementation = new ATKIdentityRegistryStorageImplementation(forwarder);
 
         bytes memory initData =
-            abi.encodeWithSelector(SMARTIdentityRegistryStorageImplementation.initialize.selector, system, admin);
+            abi.encodeWithSelector(ATKIdentityRegistryStorageImplementation.initialize.selector, system, admin);
 
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
-        storageContract = SMARTIdentityRegistryStorageImplementation(address(proxy));
+        storageContract = ATKIdentityRegistryStorageImplementation(address(proxy));
 
         identity1 = IIdentity(identityUtils.createIdentity(user1));
         identity2 = IIdentity(identityUtils.createIdentity(user2));
@@ -77,17 +77,16 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
     }
 
     function test_Constructor() public {
-        SMARTIdentityRegistryStorageImplementation impl = new SMARTIdentityRegistryStorageImplementation(forwarder);
+        ATKIdentityRegistryStorageImplementation impl = new ATKIdentityRegistryStorageImplementation(forwarder);
         assertEq(impl.isTrustedForwarder(forwarder), true);
     }
 
     function test_Initialize() public view {
-        assertTrue(storageContract.hasRole(SMARTSystemRoles.DEFAULT_ADMIN_ROLE, admin));
-        assertTrue(storageContract.hasRole(SMARTSystemRoles.STORAGE_MODIFIER_ROLE, admin));
-        assertTrue(storageContract.hasRole(SMARTSystemRoles.MANAGE_REGISTRIES_ROLE, system));
+        assertTrue(storageContract.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(storageContract.hasRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, admin));
+        assertTrue(storageContract.hasRole(ATKSystemRoles.MANAGE_REGISTRIES_ROLE, system));
         assertEq(
-            storageContract.getRoleAdmin(SMARTSystemRoles.STORAGE_MODIFIER_ROLE),
-            SMARTSystemRoles.MANAGE_REGISTRIES_ROLE
+            storageContract.getRoleAdmin(ATKSystemRoles.STORAGE_MODIFIER_ROLE), ATKSystemRoles.MANAGE_REGISTRIES_ROLE
         );
     }
 
@@ -113,7 +112,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
     function test_AddIdentityToStorage_InvalidWalletAddress_ShouldRevert() public {
         vm.prank(admin);
         vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryStorageImplementation.InvalidIdentityWalletAddress.selector)
+            abi.encodeWithSelector(ATKIdentityRegistryStorageImplementation.InvalidIdentityWalletAddress.selector)
         );
         storageContract.addIdentityToStorage(address(0), identity1, COUNTRY_US);
     }
@@ -121,7 +120,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
     function test_AddIdentityToStorage_InvalidIdentityAddress_ShouldRevert() public {
         vm.prank(admin);
         vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryStorageImplementation.InvalidIdentityAddress.selector)
+            abi.encodeWithSelector(ATKIdentityRegistryStorageImplementation.InvalidIdentityAddress.selector)
         );
         storageContract.addIdentityToStorage(user1, IIdentity(address(0)), COUNTRY_US);
     }
@@ -131,7 +130,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
         storageContract.addIdentityToStorage(user1, identity1, COUNTRY_US);
 
         vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryStorageImplementation.IdentityAlreadyExists.selector, user1)
+            abi.encodeWithSelector(ATKIdentityRegistryStorageImplementation.IdentityAlreadyExists.selector, user1)
         );
         storageContract.addIdentityToStorage(user1, identity2, COUNTRY_UK);
         vm.stopPrank();
@@ -249,7 +248,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
         emit IdentityRegistryBound(registry1);
         storageContract.bindIdentityRegistry(registry1);
 
-        assertTrue(storageContract.hasRole(SMARTSystemRoles.STORAGE_MODIFIER_ROLE, registry1));
+        assertTrue(storageContract.hasRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, registry1));
 
         address[] memory linkedRegistries = storageContract.linkedIdentityRegistries();
         assertEq(linkedRegistries.length, 1);
@@ -287,8 +286,8 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
         storageContract.unbindIdentityRegistry(registry1);
         vm.stopPrank();
 
-        assertFalse(storageContract.hasRole(SMARTSystemRoles.STORAGE_MODIFIER_ROLE, registry1));
-        assertTrue(storageContract.hasRole(SMARTSystemRoles.STORAGE_MODIFIER_ROLE, registry2));
+        assertFalse(storageContract.hasRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, registry1));
+        assertTrue(storageContract.hasRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, registry2));
 
         address[] memory linkedRegistries = storageContract.linkedIdentityRegistries();
         assertEq(linkedRegistries.length, 1);
@@ -413,7 +412,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
     }
 
     function test_ZeroAddressTrustedForwarder() public {
-        SMARTIdentityRegistryStorageImplementation impl = new SMARTIdentityRegistryStorageImplementation(address(0));
+        ATKIdentityRegistryStorageImplementation impl = new ATKIdentityRegistryStorageImplementation(address(0));
         assertTrue(impl.isTrustedForwarder(address(0)));
         assertFalse(impl.isTrustedForwarder(forwarder));
     }
@@ -447,7 +446,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
         vm.prank(system);
         storageContract.unbindIdentityRegistry(registry1);
 
-        assertFalse(storageContract.hasRole(SMARTSystemRoles.STORAGE_MODIFIER_ROLE, registry1));
+        assertFalse(storageContract.hasRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, registry1));
     }
 
     // --- Lost Wallet Management Tests ---
@@ -468,7 +467,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
     function test_MarkWalletAsLost_InvalidWalletAddress_ShouldRevert() public {
         vm.prank(admin);
         vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryStorageImplementation.InvalidIdentityWalletAddress.selector)
+            abi.encodeWithSelector(ATKIdentityRegistryStorageImplementation.InvalidIdentityWalletAddress.selector)
         );
         storageContract.markWalletAsLost(address(identity1), address(0));
     }
@@ -476,7 +475,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
     function test_MarkWalletAsLost_InvalidIdentityAddress_ShouldRevert() public {
         vm.prank(admin);
         vm.expectRevert(
-            abi.encodeWithSelector(SMARTIdentityRegistryStorageImplementation.InvalidIdentityAddress.selector)
+            abi.encodeWithSelector(ATKIdentityRegistryStorageImplementation.InvalidIdentityAddress.selector)
         );
         storageContract.markWalletAsLost(address(0), lostWallet1);
     }
@@ -486,7 +485,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
         vm.prank(admin);
         vm.expectRevert(
             abi.encodeWithSelector(
-                SMARTIdentityRegistryStorageImplementation.WalletNotAssociatedWithIdentity.selector,
+                ATKIdentityRegistryStorageImplementation.WalletNotAssociatedWithIdentity.selector,
                 address(identity1),
                 lostWallet1
             )
@@ -503,7 +502,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
         vm.prank(admin);
         vm.expectRevert(
             abi.encodeWithSelector(
-                SMARTIdentityRegistryStorageImplementation.WalletNotAssociatedWithIdentity.selector,
+                ATKIdentityRegistryStorageImplementation.WalletNotAssociatedWithIdentity.selector,
                 address(identity2),
                 lostWallet1
             )
@@ -600,7 +599,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
         // Now marking as lost for identity1 should fail
         vm.expectRevert(
             abi.encodeWithSelector(
-                SMARTIdentityRegistryStorageImplementation.WalletNotAssociatedWithIdentity.selector,
+                ATKIdentityRegistryStorageImplementation.WalletNotAssociatedWithIdentity.selector,
                 address(identity1),
                 lostWallet1
             )
@@ -625,7 +624,7 @@ contract SMARTIdentityRegistryStorageImplementationTest is Test {
         // Now marking as lost should fail
         vm.expectRevert(
             abi.encodeWithSelector(
-                SMARTIdentityRegistryStorageImplementation.WalletNotAssociatedWithIdentity.selector,
+                ATKIdentityRegistryStorageImplementation.WalletNotAssociatedWithIdentity.selector,
                 address(identity1),
                 lostWallet1
             )

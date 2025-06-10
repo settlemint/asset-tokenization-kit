@@ -2,17 +2,17 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { SMARTSystemProxy } from "../../contracts/system/SMARTSystemProxy.sol";
-import { ISMARTSystem } from "../../contracts/system/ISMARTSystem.sol";
+import { ATKSystemProxy } from "../../contracts/system/ATKSystemProxy.sol";
+import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {
     InvalidSystemAddress,
     ETHTransfersNotAllowed,
     InitializationWithZeroAddress
-} from "../../contracts/system/SMARTSystemErrors.sol";
+} from "../../contracts/system/ATKSystemErrors.sol";
 
 // Mock system for testing
-contract MockSMARTSystem is ISMARTSystem {
+contract MockATKSystem is IATKSystem {
     address public mockImplementation;
     bool public initializationShouldFail;
 
@@ -28,12 +28,12 @@ contract MockSMARTSystem is ISMARTSystem {
         initializationShouldFail = _shouldFail;
     }
 
-    // Implement ISMARTSystem interface
+    // Implement IATKSystem interface
     function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
-        return interfaceId == type(ISMARTSystem).interfaceId || interfaceId == type(IERC165).interfaceId;
+        return interfaceId == type(IATKSystem).interfaceId || interfaceId == type(IERC165).interfaceId;
     }
 
-    // Stub implementations for ISMARTSystem methods
+    // Stub implementations for IATKSystem methods
     function bootstrap() external pure {
         return; // Empty implementation instead of revert
     }
@@ -200,17 +200,17 @@ contract ERC165OnlyContract is IERC165 {
 // Custom error for testing
 error TestImplementationNotSet();
 
-// Concrete implementation of SMARTSystemProxy for testing
-contract TestableSMARTSystemProxy is SMARTSystemProxy {
+// Concrete implementation of ATKSystemProxy for testing
+contract TestableATKSystemProxy is ATKSystemProxy {
     bool public shouldRevertOnImplementation;
     bool public skipInitialization;
 
-    constructor(address systemAddress_, bool _skipInitialization) SMARTSystemProxy(systemAddress_) {
+    constructor(address systemAddress_, bool _skipInitialization) ATKSystemProxy(systemAddress_) {
         skipInitialization = _skipInitialization;
 
         // Only initialize if we have a valid implementation and not skipping
         if (!skipInitialization) {
-            try TestableSMARTSystemProxy(this).getImplementationPublic() returns (address implementation) {
+            try TestableATKSystemProxy(this).getImplementationPublic() returns (address implementation) {
                 if (implementation != address(0)) {
                     bytes memory initData = abi.encodeWithSelector(MockImplementation.initialize.selector, msg.sender);
                     _performInitializationDelegatecall(implementation, initData);
@@ -225,7 +225,7 @@ contract TestableSMARTSystemProxy is SMARTSystemProxy {
         shouldRevertOnImplementation = _shouldRevert;
     }
 
-    function _getSpecificImplementationAddress(ISMARTSystem system)
+    function _getSpecificImplementationAddress(IATKSystem system)
         internal
         view
         override
@@ -243,7 +243,7 @@ contract TestableSMARTSystemProxy is SMARTSystemProxy {
     }
 
     // Expose internal functions for testing
-    function getSystemPublic() external view returns (ISMARTSystem) {
+    function getSystemPublic() external view returns (IATKSystem) {
         return _getSystem();
     }
 
@@ -257,9 +257,9 @@ contract TestableSMARTSystemProxy is SMARTSystemProxy {
 }
 
 contract SMARTSystemProxyTest is Test {
-    MockSMARTSystem public mockSystem;
+    MockATKSystem public mockSystem;
     MockImplementation public mockImplementation;
-    TestableSMARTSystemProxy public proxy;
+    TestableATKSystemProxy public proxy;
     NonERC165Contract public nonERC165Contract;
     ERC165OnlyContract public erc165OnlyContract;
 
@@ -268,10 +268,10 @@ contract SMARTSystemProxyTest is Test {
 
     function setUp() public {
         mockImplementation = new MockImplementation();
-        mockSystem = new MockSMARTSystem(address(mockImplementation));
+        mockSystem = new MockATKSystem(address(mockImplementation));
 
         // Deploy proxy with valid system, skipping initialization for most tests
-        proxy = new TestableSMARTSystemProxy(address(mockSystem), true);
+        proxy = new TestableATKSystemProxy(address(mockSystem), true);
 
         nonERC165Contract = new NonERC165Contract();
         erc165OnlyContract = new ERC165OnlyContract();
@@ -285,21 +285,21 @@ contract SMARTSystemProxyTest is Test {
 
     function test_ConstructorWithZeroAddress() public {
         vm.expectRevert(InvalidSystemAddress.selector);
-        new TestableSMARTSystemProxy(address(0), true);
+        new TestableATKSystemProxy(address(0), true);
     }
 
     function test_ConstructorWithNonERC165Contract() public {
         vm.expectRevert();
-        new TestableSMARTSystemProxy(address(nonERC165Contract), true);
+        new TestableATKSystemProxy(address(nonERC165Contract), true);
     }
 
     function test_ConstructorWithERC165OnlyContract() public {
         vm.expectRevert(InvalidSystemAddress.selector);
-        new TestableSMARTSystemProxy(address(erc165OnlyContract), true);
+        new TestableATKSystemProxy(address(erc165OnlyContract), true);
     }
 
     function test_GetSystemReturnsCorrectSystem() public view {
-        ISMARTSystem retrievedSystem = proxy.getSystemPublic();
+        IATKSystem retrievedSystem = proxy.getSystemPublic();
         assertEq(address(retrievedSystem), address(mockSystem));
     }
 
@@ -402,7 +402,7 @@ contract SMARTSystemProxyTest is Test {
 
     function test_ProxyStoragePersistence() public {
         // Create another proxy with the same system
-        TestableSMARTSystemProxy proxy2 = new TestableSMARTSystemProxy(address(mockSystem), true);
+        TestableATKSystemProxy proxy2 = new TestableATKSystemProxy(address(mockSystem), true);
 
         // Both proxies should point to the same system
         assertEq(address(proxy.getSystemPublic()), address(proxy2.getSystemPublic()));
@@ -410,8 +410,8 @@ contract SMARTSystemProxyTest is Test {
     }
 
     function test_SystemInterfaceCompliance() public view {
-        // Verify the mock system properly implements ISMARTSystem
-        assertTrue(IERC165(address(mockSystem)).supportsInterface(type(ISMARTSystem).interfaceId));
+        // Verify the mock system properly implements IATKSystem
+        assertTrue(IERC165(address(mockSystem)).supportsInterface(type(IATKSystem).interfaceId));
         assertTrue(IERC165(address(mockSystem)).supportsInterface(type(IERC165).interfaceId));
     }
 
@@ -424,9 +424,9 @@ contract SMARTSystemProxyTest is Test {
             return;
         }
 
-        try new TestableSMARTSystemProxy(randomAddress, true) {
+        try new TestableATKSystemProxy(randomAddress, true) {
             // If construction succeeds, verify the address implements required interfaces
-            assertTrue(IERC165(randomAddress).supportsInterface(type(ISMARTSystem).interfaceId));
+            assertTrue(IERC165(randomAddress).supportsInterface(type(IATKSystem).interfaceId));
         } catch {
             // Expected to fail for most random addresses
             assertTrue(true);
@@ -436,7 +436,7 @@ contract SMARTSystemProxyTest is Test {
     function test_ConstructorValidationComplexCase() public {
         // Test with a contract that supports ERC165 but not ISMARTSystem
         vm.expectRevert(InvalidSystemAddress.selector);
-        new TestableSMARTSystemProxy(address(erc165OnlyContract), true);
+        new TestableATKSystemProxy(address(erc165OnlyContract), true);
     }
 
     function test_EdgeCaseEmptyInitData() public {

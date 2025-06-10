@@ -5,7 +5,7 @@ pragma solidity ^0.8.28;
 import { AbstractCountryComplianceModule } from "./AbstractCountryComplianceModule.sol";
 
 // Interface imports
-import { ISMARTComplianceModule } from "../../../smart/interface/ISMARTComplianceModule.sol"; // Needed for @inheritdoc
+import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"; // Needed for @inheritdoc
 
 /// @title Country Allow-List Compliance Module
 /// @author SettleMint Tokenization Services

@@ -5,9 +5,8 @@ import { Test } from "forge-std/Test.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 // ISMARTIdentityRegistry is not directly used for adding claims here, but good for context.
 // import { ISMARTIdentityRegistry } from "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
-import { SMARTIdentityVerificationModule } from
-    "../../../contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol";
-import { SMARTTopics } from "../../../contracts/system/SMARTTopics.sol"; // Import SMARTTopics
+import { SMARTIdentityVerificationModule } from "../../../contracts/smart/modules/SMARTIdentityVerificationModule.sol";
+import { ATKTopics } from "../../../contracts/system/ATKTopics.sol"; // Import ATKTopics
 import { TestConstants } from "../../Constants.sol"; // Keep if used, e.g. INITIAL_MINT_AMOUNT
 import { SystemUtils } from "../../utils/SystemUtils.sol"; // Keep for systemUtils access
 import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";

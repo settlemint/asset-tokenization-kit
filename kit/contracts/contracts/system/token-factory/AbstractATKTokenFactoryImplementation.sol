@@ -45,25 +45,6 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @dev Stores a boolean value for each access manager address, true if deployed by this factory.
     mapping(address accessManagerAddress => bool isFactoryAccessManager) public isFactoryAccessManager;
 
-    // -- Errors --
-    /// @notice Custom errors for the factory contract
-    /// @dev Defines custom error types used by the contract for various failure conditions.
-
-    error InvalidTokenAddress();
-    /// @notice Error for attempting to unregister a token that is not registered.
-    error InvalidImplementationAddress();
-    /// @notice Error for when the provided token implementation address is the zero address.
-    error ProxyCreationFailed(); // Added for CREATE2
-    /// @notice Error when a CREATE2 proxy deployment fails.
-    error AddressAlreadyDeployed(address predictedAddress); // Added for CREATE2
-    /// @notice Error when a predicted CREATE2 address for an access manager is already marked as deployed by this
-    /// factory.
-    error AccessManagerAlreadyDeployed(address predictedAddress);
-    /// @notice Error when a token identity address mismatch is detected.
-    error TokenIdentityAddressMismatch(address deployedTokenIdentityAddress, address tokenIdentityAddress);
-    /// @notice Error when the provided identity verification module address is the zero address.
-    error InvalidIdentityVerificationModuleAddress();
-
     // --- State Variables ---
 
     /// @dev The address of the `IATKSystem` contract.
