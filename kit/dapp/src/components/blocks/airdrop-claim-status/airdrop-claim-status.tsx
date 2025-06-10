@@ -5,85 +5,43 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { AirdropClaimStatus } from "@/lib/queries/airdrop/airdrop-schema";
-import type { UserAirdrop } from "@/lib/queries/airdrop/user-airdrop-schema";
-import { CalculatePushAirdropStatus } from "@/lib/queries/push-airdrop/push-airdrop-status";
-import { CalculateStandardAirdropStatus } from "@/lib/queries/standard-airdrop/standard-airdrop-status";
-import { CalculateVestingAirdropStatus } from "@/lib/queries/vesting-airdrop/vesting-airdrop-status";
+import type { AirdropStatus } from "@/lib/queries/airdrop/airdrop-schema";
 import { cn } from "@/lib/utils";
-import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
-import { CheckCircle, Clock, Info, Rocket, TriangleAlert } from "lucide-react";
+import { CalendarMinus2, Clock, Info, PlayCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactElement } from "react";
 
 type AirdropClaimStatusIndicatorProps = {
-  airdrop: UserAirdrop["airdrop"];
-  amountExact: string;
   asBadge?: boolean;
-};
-
-type StatusResult = {
-  status: AirdropClaimStatus;
+  status: AirdropStatus;
   message: string;
 };
 
-/**
- * Calculate airdrop status and message based on type
- */
-function calculateAirdropStatusAndMessage(
-  airdrop: UserAirdrop["airdrop"],
-  amountExact: string
-): StatusResult {
-  switch (airdrop.__typename) {
-    case "StandardAirdrop":
-      return CalculateStandardAirdropStatus(airdrop);
-
-    case "PushAirdrop":
-      return CalculatePushAirdropStatus(airdrop);
-
-    case "VestingAirdrop":
-      return CalculateVestingAirdropStatus(airdrop, amountExact);
-
-    default:
-      exhaustiveGuard(airdrop);
-  }
-}
-
 export function AirdropClaimStatusIndicator({
-  airdrop,
-  amountExact,
+  status,
+  message,
   asBadge = false,
 }: AirdropClaimStatusIndicatorProps): ReactElement {
   const t = useTranslations("portfolio.my-airdrops");
-  const { status, message } = calculateAirdropStatusAndMessage(
-    airdrop,
-    amountExact
-  );
 
   const statusConfig = {
-    READY: {
+    ENDED: {
       variant: "default",
       badgeClassName: "bg-primary/80 text-primary-foreground",
       iconClassName: "size-4 text-primary",
-      icon: Rocket,
+      icon: CalendarMinus2,
     },
-    PENDING: {
+    UPCOMING: {
       variant: "default",
       badgeClassName: "bg-warning/80 text-warning-foreground",
       iconClassName: "size-4 text-warning",
       icon: Clock,
     },
-    CLAIMED: {
+    ACTIVE: {
       variant: "default",
       badgeClassName: "bg-success/80 text-success-foreground",
       iconClassName: "size-4 text-success",
-      icon: CheckCircle,
-    },
-    EXPIRED: {
-      variant: "destructive",
-      badgeClassName: "bg-destructive/80 text-destructive-foreground",
-      iconClassName: "size-4 text-destructive",
-      icon: TriangleAlert,
+      icon: PlayCircle,
     },
   } as const;
 

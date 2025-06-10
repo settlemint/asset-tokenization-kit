@@ -1,12 +1,11 @@
-"use client";
+"use server";
 import { formatDate } from "@/lib/utils/date";
-import { addSeconds, isAfter } from "date-fns";
-import { useTranslations } from "next-intl";
-import type { AirdropClaimStatus } from "../airdrop/airdrop-schema";
-import type { VestingAirdropRecipient } from "../airdrop/user-airdrop-schema";
+import { addSeconds, isAfter, isBefore } from "date-fns";
+import { getTranslations } from "next-intl/server";
+import type { AirdropStatus } from "../airdrop/airdrop-schema";
 
 export type VestingAirdropStatusResult = {
-  status: AirdropClaimStatus;
+  status: AirdropStatus;
   message: string;
 };
 
@@ -51,6 +50,12 @@ function hasCliffPassed(vestingStart: Date, cliffDuration?: bigint): boolean {
   return isAfter(currentTime, cliffEnd);
 }
 
+export interface CalculateVestingAirdropStatusProps {
+  claimPeriodEndMicroSeconds: string;
+  vestingDurationSeconds: string;
+  cliffDurationSeconds: string;
+}
+
 /**
  * Calculates the status and tooltip message for a vesting airdrop (server-side version)
  *
@@ -60,135 +65,105 @@ function hasCliffPassed(vestingStart: Date, cliffDuration?: bigint): boolean {
  * @param recipient - The airdrop recipient data
  * @returns Object containing status and translated message
  */
-export function CalculateVestingAirdropStatus(
-  airdrop: VestingAirdropRecipient,
-  amountExact: string
-): VestingAirdropStatusResult {
-  const t = useTranslations("portfolio.my-airdrops.tooltip");
+export async function calculateVestingAirdropStatus({
+  claimPeriodEndMicroSeconds,
+  vestingDurationSeconds,
+  cliffDurationSeconds,
+}: CalculateVestingAirdropStatusProps) {
+  const t = await getTranslations("portfolio.my-airdrops.tooltip");
   const currentTime = new Date();
-  const { claimPeriodEnd, strategy, userVestingData } = airdrop;
 
-  // Early return: User hasn't initialized vesting
-  if (!userVestingData?.initialized) {
-    if (claimPeriodEnd && isAfter(currentTime, claimPeriodEnd)) {
-      return {
-        status: "EXPIRED",
-        message: t("vesting-airdrop.expired", {
-          date: formatDate(claimPeriodEnd),
-        }),
-      };
-    }
+  if (isBefore(currentTime, Number(claimPeriodEndMicroSeconds) * 1000)) {
     return {
-      status: "READY",
+      status: "UPCOMING" as const,
       message: t("vesting-airdrop.ready-initialize", {
-        date: formatDate(claimPeriodEnd),
+        date: formatDate(claimPeriodEndMicroSeconds, {
+          type: "absolute",
+        }),
       }),
     };
   }
 
-  const totalAllocatedExact = BigInt(amountExact);
-  const totalClaimedExact = userVestingData.claimedAmountTrackedByStrategyExact;
+  const startTime = addSeconds(
+    Number(claimPeriodEndMicroSeconds) * 1000,
+    Number(cliffDurationSeconds)
+  );
+  const endTime = addSeconds(startTime, Number(vestingDurationSeconds));
 
-  // Early return: All tokens claimed
-  if (totalClaimedExact >= totalAllocatedExact) {
+  if (isAfter(currentTime, endTime)) {
     return {
-      status: "CLAIMED",
-      message: t("vesting-airdrop.claimed"),
-    };
-  }
-
-  const vestingStart = userVestingData.vestingStart;
-  const cliffDuration = strategy?.cliffDuration;
-
-  // Early return: Waiting for cliff to pass
-  if (!hasCliffPassed(vestingStart, cliffDuration)) {
-    const cliffEnd = addSeconds(vestingStart, Number(cliffDuration));
-    return {
-      status: "PENDING",
-      message: t("vesting-airdrop.pending-cliff", {
-        date: formatDate(cliffEnd),
+      status: "ENDED" as const,
+      message: t("vesting-airdrop.ended", {
+        date: formatDate(endTime),
       }),
     };
   }
 
-  // Check if there are claimable tokens
-  const claimableAmount = calculateClaimableAmount(
-    vestingStart,
-    totalAllocatedExact,
-    totalClaimedExact,
-    strategy?.vestingDuration || BigInt(0)
-  );
-
-  if (claimableAmount > 0) {
-    return {
-      status: "READY",
-      message: t("vesting-airdrop.ready-claim"),
-    };
-  }
-
   return {
-    status: "PENDING",
-    message: t("vesting-airdrop.pending-vesting"),
+    status: "ACTIVE" as const,
+    message: t("vesting-airdrop.ready-claim", {
+      date: formatDate(endTime),
+    }),
   };
 }
 
-export function calculateVestingAirdropAmounts(
-  airdrop: VestingAirdropRecipient,
-  amountExact: bigint
-) {
-  const currentTime = new Date();
-  const { userVestingData } = airdrop;
+// export function calculateVestingAirdropAmounts(
+//   airdrop: VestingAirdropRecipient,
+//   amountExact: bigint
+// ) {
+//   const currentTime = new Date();
+//   const { userVestingData } = airdrop;
 
-  if (
-    !userVestingData?.initialized &&
-    isAfter(currentTime, airdrop.claimPeriodEnd)
-  ) {
-    return {
-      claimableExact: 0,
-      vestedExact: 0,
-      claimedExact: 0,
-      totalAllocatedExact: amountExact,
-    };
-  }
+//   if (
+//     !userVestingData?.initialized &&
+//     isAfter(currentTime, airdrop.claimPeriodEnd)
+//   ) {
+//     return {
+//       claimableExact: 0,
+//       vestedExact: 0,
+//       claimedExact: 0,
+//       totalAllocatedExact: amountExact,
+//     };
+//   }
 
-  // No vesting start -> claim has not been initialized
-  if (!userVestingData?.vestingStart) {
-    return {
-      claimableExact: 0,
-      vestedExact: 0,
-      claimedExact: 0,
-      totalAllocatedExact: amountExact,
-    };
-  }
+//   // No vesting start -> claim has not been initialized
+//   if (!userVestingData?.vestingStart) {
+//     return {
+//       claimableExact: 0,
+//       vestedExact: 0,
+//       claimedExact: 0,
+//       totalAllocatedExact: amountExact,
+//     };
+//   }
 
-  const vestingStart = userVestingData.vestingStart;
-  const cliffDuration = airdrop.strategy?.cliffDuration;
+//   const vestingStart = userVestingData.vestingStart;
+//   const cliffDuration = airdrop.strategy?.cliffDuration;
 
-  if (!hasCliffPassed(vestingStart, cliffDuration)) {
-    return {
-      claimedExact: 0,
-      claimableExact: 0,
-      vestedExact: amountExact,
-      totalAllocatedExact: amountExact,
-    };
-  }
+//   if (!hasCliffPassed(vestingStart, cliffDuration)) {
+//     return {
+//       claimedExact: 0,
+//       claimableExact: 0,
+//       vestedExact: amountExact,
+//       totalAllocatedExact: amountExact,
+//     };
+//   }
 
-  const claimableAmountExact = calculateClaimableAmount(
-    vestingStart,
-    amountExact,
-    userVestingData.claimedAmountTrackedByStrategyExact,
-    airdrop.strategy?.vestingDuration
-  );
+//   const claimableAmountExact = calculateClaimableAmount(
+//     vestingStart,
+//     amountExact,
+//     userVestingData.claimedAmountTrackedByStrategyExact,
+//     airdrop.strategy?.vestingDuration
+//   );
 
-  const vestedExact =
-    amountExact -
-    claimableAmountExact -
-    userVestingData.claimedAmountTrackedByStrategyExact;
+//   const vestedExact =
+//     amountExact -
+//     claimableAmountExact -
+//     userVestingData.claimedAmountTrackedByStrategyExact;
 
-  return {
-    claimableExact: claimableAmountExact,
-    vestedExact: vestedExact > BigInt(0) ? vestedExact : BigInt(0),
-    claimedExact: userVestingData.claimedAmountTrackedByStrategyExact,
-    totalAllocatedExact: amountExact,
-  };
-}
+//   return {
+//     claimableExact: claimableAmountExact,
+//     vestedExact: vestedExact > BigInt(0) ? vestedExact : BigInt(0),
+//     claimedExact: userVestingData.claimedAmountTrackedByStrategyExact,
+//     totalAllocatedExact: amountExact,
+//   };
+// }

@@ -1,6 +1,6 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import {
-  OffChainAirdropSchema,
+  OffChainAirdropDistributionSchema,
   OnChainAirdropSchema,
 } from "../airdrop/airdrop-schema";
 
@@ -29,7 +29,7 @@ export const OnChainStandardAirdropSchema = t.Object(
 export const StandardAirdropSchema = t.Object(
   {
     ...OnChainStandardAirdropSchema.properties,
-    ...OffChainAirdropSchema.properties,
+    ...OffChainAirdropDistributionSchema.properties,
   },
   {
     description:

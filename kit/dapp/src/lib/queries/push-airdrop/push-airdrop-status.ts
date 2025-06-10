@@ -1,11 +1,16 @@
-import { useTranslations } from "next-intl";
-import type { AirdropClaimStatus } from "../airdrop/airdrop-schema";
-import type { PushAirdropRecipient } from "../airdrop/user-airdrop-schema";
+"use server";
+import { getTranslations } from "next-intl/server";
+import type { AirdropStatus } from "../airdrop/airdrop-schema";
 
 export type PushAirdropStatusResult = {
-  status: AirdropClaimStatus;
+  status: AirdropStatus;
   message: string;
 };
+
+export interface CalculatePushAirdropStatusProps {
+  distributionCap: string;
+  totalDistributed: string;
+}
 
 /**
  * Calculates the status and tooltip message for a push airdrop (server-side version)
@@ -16,38 +21,24 @@ export type PushAirdropStatusResult = {
  * @param recipient - The airdrop recipient data
  * @returns Object containing status and translated message
  */
-export function CalculatePushAirdropStatus(
-  airdrop: PushAirdropRecipient
-): PushAirdropStatusResult {
-  const t = useTranslations("portfolio.my-airdrops.tooltip");
+export async function calculatePushAirdropStatus({
+  distributionCap,
+  totalDistributed,
+}: CalculatePushAirdropStatusProps) {
+  const t = await getTranslations("portfolio.my-airdrops.tooltip");
 
-  // Check if user has already claimed
-  const hasClaimed = !!airdrop.claimData?.firstClaimedTimestamp;
-
-  if (hasClaimed) {
+  if (
+    Number(distributionCap) > 0 &&
+    Number(totalDistributed) >= Number(distributionCap)
+  ) {
     return {
-      status: "CLAIMED",
-      message: t("push-airdrop.claimed"),
+      status: "ENDED" as const,
+      message: t("push-airdrop.ended"),
     };
   }
 
-  const totalDistributed = airdrop.totalDistributed;
-  const distributionCap = airdrop.distributionCap;
-
-  if (distributionCap > 0 && totalDistributed >= distributionCap) {
-    return {
-      status: "EXPIRED",
-      message: t("push-airdrop.expired", {
-        distributed: totalDistributed,
-        cap: distributionCap,
-      }),
-    };
-  }
-
-  // For push airdrops, if not expired and not claimed, it's typically pending
-  // since they don't have a specific "ready" state like standard airdrops
   return {
-    status: "PENDING",
-    message: t("push-airdrop.pending"),
+    status: "ACTIVE" as const,
+    message: t("push-airdrop.ready"),
   };
 }
