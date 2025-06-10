@@ -1715,7 +1715,16 @@
       },
       "detail": {
         "forms": {
-          "manage": "Manage"
+          "manage": "Manage",
+          "withdraw-tokens": {
+            "title": "Withdraw tokens",
+            "description": "Withdraw all tokens from the airdrop to your wallet",
+            "summary-title": "Review and confirm withdrawing tokens",
+            "summary-description": "Withdraw all tokens from the airdrop to your wallet",
+            "airdrop-label": "Airdrop",
+            "airdrop-asset-label": "Asset",
+            "withdraw-amount-label": "Balance"
+          }
         }
       }
     },
