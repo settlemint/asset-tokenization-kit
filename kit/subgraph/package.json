@@ -14,6 +14,7 @@
     "codegen:gql-tada": "gql-tada generate-schema http://localhost:8000/subgraphs/name/smart-protocol && gql-tada turbo && gql-tada generate-output",
     "format": "prettier --write .",
     "build": "bunx graph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 > subgraph-output.txt",
+    "postbuild": "yq eval '.services.graph-node.environment.SUBGRAPH = \"kit:'$(cat subgraph-output.txt | tr -d '\\n')'\"' -i ../../docker-compose.yml",
     "publish": "bun run tools/graph-deploy.ts --local",
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
     "test": "bun test --preload ./test/scripts/setup.ts || exit 0",
