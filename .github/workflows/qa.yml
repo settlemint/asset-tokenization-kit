@@ -32,13 +32,13 @@ jobs:
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
 
-      - name: Set up turbo caching
-        uses: namespace-actions/setup-turbocache@v0
-
       - name: Setup bun caches
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
+            ./node_modules
+            ./.turbo
+            ./**/.turbo
             ~/.bun/install/cache
 
       - name: Setup 1Password
