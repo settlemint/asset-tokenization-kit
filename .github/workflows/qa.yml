@@ -110,9 +110,8 @@ jobs:
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:
-          instance: standalone
-          dotEnvFile: ${{ secrets.ENV_FILE }}
-          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+          version: 2.3.11
+          instance: local
           command: "connect -a"
 
       - name: Turbo
