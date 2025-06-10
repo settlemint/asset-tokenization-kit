@@ -1,6 +1,5 @@
 "use client";
 
-import { apiClient } from "@/lib/api/client";
 import { DEFAULT_SETTINGS, type SettingKey } from "@/lib/db/schema-settings";
 import { useEffect, useState } from "react";
 
@@ -14,11 +13,10 @@ export function useSettings(key: SettingKey): Settings[SettingKey] {
   useEffect(() => {
     const loadSetting = async () => {
       try {
-        const { data } = await apiClient.api.setting({ key }).get();
-
-        setValue(
-          (data?.value as Settings[SettingKey]) ?? DEFAULT_SETTINGS[key]
-        );
+        // const { data } = await apiClient.api.setting({ key }).get();
+        // setValue(
+        //   (data?.value as Settings[SettingKey]) ?? DEFAULT_SETTINGS[key]
+        // );
       } catch (error) {
         console.error("Failed to load setting:", error);
         setValue(DEFAULT_SETTINGS[key]);

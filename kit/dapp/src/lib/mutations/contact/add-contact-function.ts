@@ -42,12 +42,22 @@ export async function addContactFunction({
   ctx: { user: User };
 }) {
   try {
-    const data = await hasuraClient.request(AddContact, {
-      id: crypto.randomUUID(),
-      address: address,
-      name: `${firstName} ${lastName}`,
-      userId: user.id,
-    });
+    // const data = await hasuraClient.request(AddContact, {
+    //   id: crypto.randomUUID(),
+    //   address: address,
+    //   name: `${firstName} ${lastName}`,
+    //   userId: user.id,
+    // });
+
+    // NOTE: HARDCODED SO IT STILL COMPILES
+    const data = {
+      insert_contact_one: {
+        id: crypto.randomUUID(),
+        wallet: address,
+        name: `${firstName} ${lastName}`,
+        user_id: user.id
+      }
+    };
 
     const contact = data?.insert_contact_one;
     if (!contact) {

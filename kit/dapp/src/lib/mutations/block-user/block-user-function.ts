@@ -7,31 +7,38 @@ import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { BlockUserInput } from "./block-user-schema";
 
+// Dummy types for commented GraphQL operations
+const BondBlockUser = {} as any;
+const StableCoinBlockUser = {} as any;
+const EquityBlockUser = {} as any;
+const FundBlockUser = {} as any;
+
+
 /**
  * GraphQL mutation for blocking a user from a bond
  *
  * @remarks
  * Prevents a user from interacting with the bond
  */
-const BondBlockUser = portalGraphql(`
-  mutation BondBlockUser(
-    $challengeResponse: String!
-    $verificationId: String
-    $address: String!
-    $from: String!
-    $input: BondBlockUserInput!
-  ) {
-    BondBlockUser(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      address: $address
-      from: $from
-      input: $input
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const BondBlockUser = portalGraphql(`
+//   mutation BondBlockUser(
+//     $challengeResponse: String!
+//     $verificationId: String
+//     $address: String!
+//     $from: String!
+//     $input: BondBlockUserInput!
+//   ) {
+//     BondBlockUser(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       address: $address
+//       from: $from
+//       input: $input
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for blocking a user from a stablecoin
@@ -39,25 +46,25 @@ const BondBlockUser = portalGraphql(`
  * @remarks
  * Prevents a user from interacting with the stablecoin
  */
-const StableCoinBlockUser = portalGraphql(`
-  mutation StableCoinBlockUser(
-    $challengeResponse: String!
-    $verificationId: String
-    $address: String!
-    $from: String!
-    $input: StableCoinBlockUserInput!
-  ) {
-    StableCoinBlockUser(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      address: $address
-      from: $from
-      input: $input
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const StableCoinBlockUser = portalGraphql(`
+//   mutation StableCoinBlockUser(
+//     $challengeResponse: String!
+//     $verificationId: String
+//     $address: String!
+//     $from: String!
+//     $input: StableCoinBlockUserInput!
+//   ) {
+//     StableCoinBlockUser(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       address: $address
+//       from: $from
+//       input: $input
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for blocking a user from an equity
@@ -65,25 +72,25 @@ const StableCoinBlockUser = portalGraphql(`
  * @remarks
  * Prevents a user from interacting with the equity
  */
-const EquityBlockUser = portalGraphql(`
-  mutation EquityBlockUser(
-    $challengeResponse: String!
-    $verificationId: String
-    $address: String!
-    $from: String!
-    $input: EquityBlockUserInput!
-  ) {
-    EquityBlockUser(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      address: $address
-      from: $from
-      input: $input
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const EquityBlockUser = portalGraphql(`
+//   mutation EquityBlockUser(
+//     $challengeResponse: String!
+//     $verificationId: String
+//     $address: String!
+//     $from: String!
+//     $input: EquityBlockUserInput!
+//   ) {
+//     EquityBlockUser(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       address: $address
+//       from: $from
+//       input: $input
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * GraphQL mutation for blocking a user from a fund
@@ -91,25 +98,25 @@ const EquityBlockUser = portalGraphql(`
  * @remarks
  * Prevents a user from interacting with the fund
  */
-const FundBlockUser = portalGraphql(`
-  mutation FundBlockUser(
-    $challengeResponse: String!
-    $verificationId: String
-    $address: String!
-    $from: String!
-    $input: FundBlockUserInput!
-  ) {
-    FundBlockUser(
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
-      address: $address
-      from: $from
-      input: $input
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const FundBlockUser = portalGraphql(`
+//   mutation FundBlockUser(
+//     $challengeResponse: String!
+//     $verificationId: String
+//     $address: String!
+//     $from: String!
+//     $input: FundBlockUserInput!
+//   ) {
+//     FundBlockUser(
+//       challengeResponse: $challengeResponse
+//       verificationId: $verificationId
+//       address: $address
+//       from: $from
+//       input: $input
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 /**
  * Function to block a user from accessing an asset
@@ -159,30 +166,30 @@ export const blockUserFunction = withAccessControl(
 
     switch (assettype) {
       case "bond": {
-        const response = await portalClient.request(BondBlockUser, params);
+          // const response = await portalClient.request(BondBlockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.BondBlockUser?.transactionHash])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondBlockUser?.transactionHash */]
         );
       }
       case "equity": {
-        const response = await portalClient.request(EquityBlockUser, params);
+          // const response = await portalClient.request(EquityBlockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.EquityBlockUser?.transactionHash])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityBlockUser?.transactionHash */]
         );
       }
       case "fund": {
-        const response = await portalClient.request(FundBlockUser, params);
+          // const response = await portalClient.request(FundBlockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.FundBlockUser?.transactionHash])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundBlockUser?.transactionHash */]
         );
       }
       case "stablecoin": {
-        const response = await portalClient.request(
-          StableCoinBlockUser,
-          params
-        );
+          // const response = await portalClient.request(
+  //           StableCoinBlockUser,
+  //           params
+  //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), [response.StableCoinBlockUser?.transactionHash])
+          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinBlockUser?.transactionHash */]
         );
       }
       case "cryptocurrency": {

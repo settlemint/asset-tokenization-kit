@@ -24,7 +24,7 @@ export async function MicaRegulationLayout({
 
   const regulationData = await getRegulationDetail({
     assetId: address,
-    regulationType: "mica",
+    // regulationType: "mica",
   });
 
   if (!regulationData?.mica_regulation_config) {

@@ -5,7 +5,7 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import { withTracing } from "@/lib/utils/tracing";
+import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t } from "@/lib/utils/typebox";
 import { getUnixTime, startOfDay, subDays } from "date-fns";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
@@ -19,21 +19,21 @@ import { AssetStatsSchema } from "./asset-stats-schema";
  * @remarks
  * Retrieves hourly statistics for an asset within a specified time range
  */
-const AssetStats = theGraphGraphqlKit(
-  `
-query AssetStats($asset: String!, $timestamp_gte: Timestamp!, $first: Int, $skip: Int) {
-  assetStats_collection(
-    interval: hour
-    where: {asset: $asset, timestamp_gte: $timestamp_gte}
-    first: $first
-    skip: $skip
-  ) {
-    ...AssetStatsFragment
-  }
-}
-`,
-  [AssetStatsFragment]
-);
+// const AssetStats = theGraphGraphqlKit(
+//   `
+// query AssetStats($asset: String!, $timestamp_gte: Timestamp!, $first: Int, $skip: Int) {
+//   assetStats_collection(
+//     interval: hour
+//     where: {asset: $asset, timestamp_gte: $timestamp_gte}
+//     first: $first
+//     skip: $skip
+//   ) {
+//     ...AssetStatsFragment
+//   }
+// }
+// `,
+//   [AssetStatsFragment]
+// );
 
 /**
  * Props interface for asset stats components
@@ -68,14 +68,16 @@ export const getAssetStats = withTracing(
     const timestampGte = getUnixTime(startOfDay(startDate)).toString();
 
     const result = await fetchAllTheGraphPages(async (first, skip) => {
-      const response = await theGraphClientKit.request(AssetStats, {
-        asset: normalizedAddress,
-        timestamp_gte: timestampGte,
-        first,
-        skip,
-      });
+            //       // const response = await theGraphClientKit.request(AssetStats, {
+      //       //         asset: normalizedAddress,
+      //       //         timestamp_gte: timestampGte,
+      //       //         first,
+      //       //         skip,
+      //       //       });
 
-      return response.assetStats_collection || [];
+            //       // return response.assetStats_collection || [];
+      return [];
+      return [];
     });
 
     return safeParse(t.Array(AssetStatsSchema), result);

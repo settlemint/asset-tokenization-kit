@@ -12,7 +12,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.required");
     });
 
@@ -24,7 +27,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidType.string");
     });
   });
@@ -38,7 +44,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidLiteral");
     });
   });
@@ -51,7 +60,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.unrecognizedKeys");
     });
   });
@@ -64,7 +76,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidUnion");
     });
   });
@@ -77,7 +92,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidUnionDiscriminator");
     });
   });
@@ -91,7 +109,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidEnumValue");
     });
   });
@@ -104,7 +125,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidArguments");
     });
   });
@@ -117,7 +141,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidReturnType");
     });
   });
@@ -129,7 +156,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidDate");
     });
   });
@@ -142,7 +172,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidEmail");
     });
 
@@ -153,7 +186,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidUrl");
     });
 
@@ -164,7 +200,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidUuid");
     });
 
@@ -175,7 +214,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidPattern");
     });
 
@@ -186,7 +228,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidCuid");
     });
 
@@ -197,7 +242,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidDatetime");
     });
 
@@ -208,7 +256,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidString.[object Object]");
     });
   });
@@ -225,7 +276,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.array.exactLength");
       });
 
@@ -239,7 +293,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.array.minLength");
       });
 
@@ -253,7 +310,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.array.minLengthExclusive");
       });
     });
@@ -269,7 +329,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.string.exactLength");
       });
 
@@ -283,7 +346,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.string.minLength");
       });
 
@@ -297,7 +363,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.string.minLengthExclusive");
       });
     });
@@ -313,7 +382,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.number.exact");
       });
 
@@ -327,7 +399,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.number.min");
       });
 
@@ -341,7 +416,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.number.minExclusive");
       });
     });
@@ -357,7 +435,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.date.exact");
       });
 
@@ -371,7 +452,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.date.min");
       });
 
@@ -385,7 +469,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.date.minExclusive");
       });
     });
@@ -400,7 +487,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.tooSmall");
     });
   });
@@ -417,7 +507,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.array.exactLength");
       });
 
@@ -431,7 +524,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.array.maxLength");
       });
 
@@ -445,7 +541,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.array.maxLengthExclusive");
       });
     });
@@ -461,7 +560,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.string.exactLength");
       });
 
@@ -475,7 +577,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.string.maxLength");
       });
 
@@ -489,7 +594,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.string.maxLengthExclusive");
       });
     });
@@ -505,7 +613,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.number.exact");
       });
 
@@ -519,7 +630,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.number.max");
       });
 
@@ -533,7 +647,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.number.maxExclusive");
       });
     });
@@ -549,7 +666,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.date.exact");
       });
 
@@ -563,7 +683,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.date.max");
       });
 
@@ -577,7 +700,10 @@ describe("zodErrorMap", () => {
           path: ["field"],
           message: "",
         };
-        const result = zodErrorMap(issue, { defaultError: "default" });
+        const result = zodErrorMap(issue, {
+          defaultError: "default",
+          data: undefined,
+        });
         expect(result.message).toBe("validation.date.maxExclusive");
       });
     });
@@ -592,7 +718,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.tooBig");
     });
   });
@@ -604,7 +733,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "validation.custom.myValidator.myError",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.custom.myValidator.myError");
     });
 
@@ -614,7 +746,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.custom.default");
     });
   });
@@ -626,7 +761,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.invalidIntersection");
     });
   });
@@ -639,7 +777,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.notMultipleOf");
     });
   });
@@ -651,7 +792,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.notFinite");
     });
   });
@@ -663,7 +807,10 @@ describe("zodErrorMap", () => {
         path: ["field"],
         message: "",
       };
-      const result = zodErrorMap(issue, { defaultError: "default" });
+      const result = zodErrorMap(issue, {
+        defaultError: "default",
+        data: undefined,
+      });
       expect(result.message).toBe("validation.default");
     });
   });
@@ -686,16 +833,18 @@ describe("customErrorKey", () => {
 describe("integration with z.setErrorMap", () => {
   it("should work when set globally", () => {
     const originalErrorMap = z.getErrorMap();
-    
+
     try {
       z.setErrorMap(zodErrorMap);
-      
+
       const schema = z.string().min(5);
       const result = schema.safeParse("abc");
-      
+
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe("validation.string.minLength");
+        expect(result.error.issues[0].message).toBe(
+          "validation.string.minLength"
+        );
       }
     } finally {
       // Restore original error map
@@ -706,7 +855,7 @@ describe("integration with z.setErrorMap", () => {
   it("should work when passed to safeParse", () => {
     const schema = z.string().email();
     const result = schema.safeParse("invalid-email", { errorMap: zodErrorMap });
-    
+
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0].message).toBe("validation.invalidEmail");

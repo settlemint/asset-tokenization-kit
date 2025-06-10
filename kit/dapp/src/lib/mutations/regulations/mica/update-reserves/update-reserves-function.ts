@@ -1,8 +1,6 @@
 "use server";
 
 import type { User } from "@/lib/auth/types";
-import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { UpdateReservesInput } from "./update-reserves-schema";
@@ -70,33 +68,33 @@ const calculateTotal = (value: Partial<Record<AssetFields, number>>) => {
  *
  * This would eliminate the need for the second query (GetMicaRegulationConfigId).
  */
-const GetRegulationConfigId = hasuraGraphql(`
-  query GetRegulationConfigId($assetId: String!) {
-    regulation_configs(
-      where: {
-        asset_id: { _eq: $assetId },
-        regulation_type: { _eq: "mica" }
-      },
-      limit: 1
-    ) {
-      id
-    }
-  }
-`);
+// const GetRegulationConfigId = hasuraGraphql(`
+//   query GetRegulationConfigId($assetId: String!) {
+//     regulation_configs(
+//       where: {
+//         asset_id: { _eq: $assetId },
+//         regulation_type: { _eq: "mica" }
+//       },
+//       limit: 1
+//     ) {
+//       id
+//     }
+//   }
+// `);
 
-// GraphQL query to get MICA regulation config ID
-const GetMicaRegulationConfigId = hasuraGraphql(`
-  query GetMicaRegulationConfigId($regulationConfigId: String!) {
-    mica_regulation_configs(
-      where: {
-        regulation_config_id: { _eq: $regulationConfigId }
-      },
-      limit: 1
-    ) {
-      id
-    }
-  }
-`);
+// // GraphQL query to get MICA regulation config ID
+// const GetMicaRegulationConfigId = hasuraGraphql(`
+//   query GetMicaRegulationConfigId($regulationConfigId: String!) {
+//     mica_regulation_configs(
+//       where: {
+//         regulation_config_id: { _eq: $regulationConfigId }
+//       },
+//       limit: 1
+//     ) {
+//       id
+//     }
+//   }
+// `);
 
 type GetRegulationConfigIdResponse = {
   regulation_configs: {
@@ -110,29 +108,29 @@ type GetMicaRegulationConfigIdResponse = {
   }[];
 };
 
-// GraphQL mutation for updating MICA regulation config
-const UpdateMicaRegulationConfig = hasuraGraphql(`
-  mutation UpdateMicaRegulationConfig(
-    $id: String!
-    $reserveComposition: jsonb!
-    $lastAuditDate: timestamptz
-    $reserveStatus: String!
-  ) {
-    update_mica_regulation_configs_by_pk(
-      pk_columns: { id: $id }
-      _set: {
-        reserve_composition: $reserveComposition
-        last_audit_date: $lastAuditDate
-        reserve_status: $reserveStatus
-      }
-    ) {
-      id
-      reserve_composition
-      last_audit_date
-      reserve_status
-    }
-  }
-`);
+// // GraphQL mutation for updating MICA regulation config
+// const UpdateMicaRegulationConfig = hasuraGraphql(`
+//   mutation UpdateMicaRegulationConfig(
+//     $id: String!
+//     $reserveComposition: jsonb!
+//     $lastAuditDate: timestamptz
+//     $reserveStatus: String!
+//   ) {
+//     update_mica_regulation_configs_by_pk(
+//       pk_columns: { id: $id }
+//       _set: {
+//         reserve_composition: $reserveComposition
+//         last_audit_date: $lastAuditDate
+//         reserve_status: $reserveStatus
+//       }
+//     ) {
+//       id
+//       reserve_composition
+//       last_audit_date
+//       reserve_status
+//     }
+//   }
+// `);
 
 export const updateReservesFunction = withAccessControl(
   {
@@ -152,59 +150,59 @@ export const updateReservesFunction = withAccessControl(
       throw new Error("Total percentage of all assets must equal 100%");
     }
 
-    // Get the regulation config ID for this asset
-    const regulationConfigResult =
-      await hasuraClient.request<GetRegulationConfigIdResponse>(
-        GetRegulationConfigId,
-        {
-          assetId: parsedInput.address,
-        }
-      );
+    // // Get the regulation config ID for this asset
+    // const regulationConfigResult =
+    //   await hasuraClient.request<GetRegulationConfigIdResponse>(
+    //     GetRegulationConfigId,
+    //     {
+    //       assetId: parsedInput.address,
+    //     }
+    //   );
 
-    const regulationConfig = regulationConfigResult.regulation_configs[0];
-    if (!regulationConfig?.id) {
-      throw new Error("Regulation config not found for this asset");
-    }
+    // const regulationConfig = regulationConfigResult.regulation_configs[0];
+    // if (!regulationConfig?.id) {
+    //   throw new Error("Regulation config not found for this asset");
+    // }
 
-    // Get the MICA regulation config ID
-    const micaConfigResult =
-      await hasuraClient.request<GetMicaRegulationConfigIdResponse>(
-        GetMicaRegulationConfigId,
-        {
-          regulationConfigId: regulationConfig.id,
-        }
-      );
+    // // Get the MICA regulation config ID
+    // const micaConfigResult =
+    //   await hasuraClient.request<GetMicaRegulationConfigIdResponse>(
+    //     GetMicaRegulationConfigId,
+    //     {
+    //       regulationConfigId: regulationConfig.id,
+    //     }
+    //   );
 
-    const micaConfig = micaConfigResult.mica_regulation_configs[0];
-    if (!micaConfig?.id) {
-      throw new Error("MICA regulation config not found for this asset");
-    }
+    // const micaConfig = micaConfigResult.mica_regulation_configs[0];
+    // if (!micaConfig?.id) {
+    //   throw new Error("MICA regulation config not found for this asset");
+    // }
 
-    const reserveComposition: NonNullable<
-      MicaRegulationConfig["reserveComposition"]
-    > = {
-      bankDeposits: parsedInput.bankDeposits,
-      governmentBonds: parsedInput.governmentBonds,
-      highQualityLiquidAssets: parsedInput.liquidAssets,
-      corporateBonds: parsedInput.corporateBonds,
-      centralBankAssets: parsedInput.centralBankAssets,
-      commodities: parsedInput.commodities,
-      otherAssets: parsedInput.otherAssets,
-    };
+    // const reserveComposition: NonNullable<
+    //   MicaRegulationConfig["reserveComposition"]
+    // > = {
+    //   bankDeposits: parsedInput.bankDeposits,
+    //   governmentBonds: parsedInput.governmentBonds,
+    //   highQualityLiquidAssets: parsedInput.liquidAssets,
+    //   corporateBonds: parsedInput.corporateBonds,
+    //   centralBankAssets: parsedInput.centralBankAssets,
+    //   commodities: parsedInput.commodities,
+    //   otherAssets: parsedInput.otherAssets,
+    // };
 
-    // Update the MICA regulation config in the database using Hasura
-    const result = await hasuraClient.request(UpdateMicaRegulationConfig, {
-      id: micaConfig.id,
-      reserveComposition: JSON.stringify(reserveComposition),
-      lastAuditDate: parsedInput.lastAuditDate
-        ? new Date(parsedInput.lastAuditDate).toISOString()
-        : null,
-      reserveStatus: parsedInput.reserveStatus,
-    });
+    // // Update the MICA regulation config in the database using Hasura
+    // const result = await hasuraClient.request(UpdateMicaRegulationConfig, {
+    //   id: micaConfig.id,
+    //   reserveComposition: JSON.stringify(reserveComposition),
+    //   lastAuditDate: parsedInput.lastAuditDate
+    //     ? new Date(parsedInput.lastAuditDate).toISOString()
+    //     : null,
+    //   reserveStatus: parsedInput.reserveStatus,
+    // });
 
-    if (!result.update_mica_regulation_configs_by_pk) {
-      throw new Error("Failed to update MICA regulation config");
-    }
+    // if (!result.update_mica_regulation_configs_by_pk) {
+    //   throw new Error("Failed to update MICA regulation config");
+    // }
 
     return safeParse(t.Hashes(), []);
   }

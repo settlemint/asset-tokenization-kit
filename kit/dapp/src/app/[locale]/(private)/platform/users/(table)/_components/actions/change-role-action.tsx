@@ -35,7 +35,7 @@ export function ChangeRoleAction({
 }) {
   const t = useTranslations("private.users");
   const [selectedRole, setSelectedRole] = useState<"user" | "issuer" | "admin">(
-    user.role || "user"
+    user.role as "user" | "issuer" | "admin"
   );
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();

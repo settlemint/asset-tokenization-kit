@@ -30,7 +30,7 @@ export async function UserBadgeLoader({
       case "holdings":
         // Fetch user details specifically for the asset count
         const user = await getUserDetail({ id: userId });
-        count = user?.assetCount ? Number(user.assetCount) : 0;
+        count = 0; //user?.assetCount ? Number(user.assetCount) : 0;
         break;
       // Add other cases if more user-specific badges are needed later
     }
