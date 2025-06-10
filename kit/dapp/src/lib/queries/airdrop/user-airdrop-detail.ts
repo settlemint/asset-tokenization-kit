@@ -7,18 +7,17 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getAddress, type Address } from "viem";
 import { getAssetsPricesInUserCurrency } from "../asset-price/asset-price";
 import { PushAirdropFragment } from "../push-airdrop/push-airdrop-fragment";
 import { StandardAirdropFragment } from "../standard-airdrop/standard-airdrop-fragment";
+import type { VestingData } from "../vesting-airdrop/linear-vesting-strategy-schema";
 import { VestingAirdropFragment } from "../vesting-airdrop/vesting-airdrop-fragment";
 import { AirdropClaimFragment } from "./airdrop-fragment";
 import { getUserAirdropDistribution } from "./user-airdrop-distribution";
 import {
   AirdropClaimSchema,
   UserAirdropDetailSchema,
-  type UserVestingData,
 } from "./user-airdrop-schema";
 
 /**
@@ -134,12 +133,13 @@ export const getUserAirdropDetail = withTracing(
     );
 
     // Get user vesting data if this is a vesting airdrop
-    let userVestingData: UserVestingData = null;
+    let userVestingData: VestingData | null = null;
     if (airdrop.type === "VestingAirdrop") {
       if (airdrop.strategy?.vestingData) {
-        userVestingData = airdrop.strategy.vestingData.find(
+        const data = airdrop.strategy.vestingData.find(
           (vd) => getAddress(vd.user.id) === getAddress(user.wallet)
         );
+        userVestingData = data ?? null;
       }
     }
 
