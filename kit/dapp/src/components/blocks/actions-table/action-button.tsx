@@ -13,13 +13,13 @@ interface ActionButtonProps {
 export function ActionButton({ actionName, target }: ActionButtonProps) {
   switch (actionName) {
     case "ApproveXvPSettlement":
-      return <ApproveForm xvp={getAddress(target)} asButton />;
+      return <ApproveForm xvp={getAddress(target)} asTableAction />;
 
     case "ExecuteXvPSettlement":
-      return <ExecuteForm xvp={getAddress(target)} asButton />;
+      return <ExecuteForm xvp={getAddress(target)} asTableAction />;
 
     case "MatureBond":
-      return <MatureForm address={getAddress(target)} asButton />;
+      return <MatureForm address={getAddress(target)} asTableAction />;
     default:
       exhaustiveGuard(actionName);
   }

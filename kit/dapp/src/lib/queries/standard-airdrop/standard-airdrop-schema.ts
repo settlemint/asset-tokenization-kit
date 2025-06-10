@@ -50,3 +50,7 @@ export const UserStandardAirdropSchema = t.Object(
       "Complete standard airdrop data including both on-chain and off-chain properties",
   }
 );
+
+export type UserStandardAirdrop = StaticDecode<
+  typeof UserStandardAirdropSchema
+>;

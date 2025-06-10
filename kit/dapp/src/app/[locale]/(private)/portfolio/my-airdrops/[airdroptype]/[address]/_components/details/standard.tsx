@@ -1,74 +1,94 @@
 "use client";
 
-import { AirdropClaimStatusIndicator } from "@/components/blocks/airdrop-claim-status/airdrop-claim-status";
+import { AirdropStatusIndicator } from "@/components/blocks/airdrop-claim-status/airdrop-claim-status";
+import { DataTable } from "@/components/blocks/data-table/data-table";
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import type { StandardAirdropRecipient } from "@/lib/queries/airdrop/user-airdrop-schema";
+import type { UserStandardAirdrop } from "@/lib/queries/standard-airdrop/standard-airdrop-schema";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
-import type { Price } from "@/lib/utils/typebox/price";
 import { useLocale, useTranslations } from "next-intl";
+import { Columns } from "./standard-claim-indices-columns";
 
 export function StandardAirdropDetails({
   airdrop,
-  amount,
-  price,
 }: {
-  airdrop: StandardAirdropRecipient;
-  amount: string;
-  index: number;
-  price: Price;
+  airdrop: UserStandardAirdrop;
 }) {
-  const t = useTranslations("private.airdrops.details.fields");
+  const t = useTranslations("private.airdrops.details");
   const locale = useLocale();
 
   return (
-    <DetailGrid>
-      <DetailGridItem label={t("contract-address")}>
-        <EvmAddress
-          address={airdrop.id}
-          prettyNames={false}
-          hoverCard={false}
-          copyToClipboard={true}
-        />
-      </DetailGridItem>
-      <DetailGridItem label={t("type")}>{t("type-standard")}</DetailGridItem>
-      <DetailGridItem label={t("asset")}>
-        <EvmAddress
-          address={airdrop.asset.id}
-          prettyNames={true}
-          hoverCard={true}
-          copyToClipboard={true}
-        />
-      </DetailGridItem>
+    <>
+      <DetailGrid>
+        <DetailGridItem label={t("fields.contract-address")}>
+          <EvmAddress
+            address={airdrop.id}
+            prettyNames={false}
+            hoverCard={false}
+            copyToClipboard={true}
+          />
+        </DetailGridItem>
+        <DetailGridItem label={t("fields.type")}>
+          {t("fields.type-standard")}
+        </DetailGridItem>
+        <DetailGridItem label={t("fields.asset")}>
+          <EvmAddress
+            address={airdrop.asset.id}
+            prettyNames={true}
+            hoverCard={true}
+            copyToClipboard={true}
+          />
+        </DetailGridItem>
 
-      <DetailGridItem label={t("start-time")}>
-        {formatDate(airdrop.startTime, {
-          locale: locale,
-        })}
-      </DetailGridItem>
-      <DetailGridItem label={t("end-time")}>
-        {formatDate(airdrop.endTime, {
-          locale: locale,
-        })}
-      </DetailGridItem>
-      <DetailGridItem label={t("status")}>
-        <AirdropClaimStatusIndicator airdrop={airdrop} amountExact={amount} />
-      </DetailGridItem>
-      <DetailGridItem label={t("amount")}>
-        {formatNumber(amount, {
-          locale: locale,
+        <DetailGridItem label={t("fields.start-time")}>
+          {formatDate(airdrop.startTime, {
+            locale: locale,
+          })}
+        </DetailGridItem>
+        <DetailGridItem label={t("fields.end-time")}>
+          {formatDate(airdrop.endTime, {
+            locale: locale,
+          })}
+        </DetailGridItem>
+        <DetailGridItem label={t("fields.status")}>
+          <AirdropStatusIndicator status={airdrop.status} type="standard" />
+        </DetailGridItem>
+        <DetailGridItem label={t("fields.amount")}>
+          {formatNumber(airdrop.recipient.totalAmountAllocated, {
+            locale: locale,
+            decimals: airdrop.asset.decimals,
+            token: airdrop.asset.symbol,
+          })}
+        </DetailGridItem>
+        <DetailGridItem label={t("fields.value")}>
+          {formatNumber(
+            BigInt(airdrop.price.amount) *
+              BigInt(airdrop.recipient.totalAmountAllocated),
+            {
+              locale: locale,
+              currency: airdrop.price.currency,
+            }
+          )}
+        </DetailGridItem>
+      </DetailGrid>
+
+      <div className="font-medium text-accent text-xl mt-6 mb-4">
+        {t("asset-allocation")}
+      </div>
+      <DataTable
+        columns={Columns}
+        toolbar={{
+          enableToolbar: false,
+        }}
+        columnParams={{
           decimals: airdrop.asset.decimals,
-          token: airdrop.asset.symbol,
-        })}
-      </DetailGridItem>
-      <DetailGridItem label={t("value")}>
-        {formatNumber(price.amount, {
-          locale: locale,
-          currency: price.currency,
-        })}
-      </DetailGridItem>
-    </DetailGrid>
+          symbol: airdrop.asset.symbol,
+        }}
+        data={airdrop.recipient.claimIndices}
+        name="Claim Indices"
+      />
+    </>
   );
 }

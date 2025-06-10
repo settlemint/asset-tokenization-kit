@@ -1186,7 +1186,9 @@
         "type-header": "Type",
         "amount-header": "Amount",
         "status-header": "Status",
-        "actions-header": "Actions"
+        "actions-header": "Actions",
+        "amount-claimed-header": "Amount Claimed",
+        "amount-allocated-header": "Amount Allocated"
       },
       "empty-state": {
         "title": "No airdrops found",
@@ -1727,7 +1729,8 @@
           "vesting-end-info": "The date and time when the vesting ends",
           "vesting-cliff-end": "Assets available from",
           "vesting-cliff-end-info": "You can claim your assets starting on this date. Before this date, the assets are locked and cannot be claimed."
-        }
+        },
+        "asset-allocation": "Asset Allocation"
       },
       "detail": {
         "forms": {

@@ -3,6 +3,7 @@ import { getUserStandardAirdropDetail } from "@/lib/queries/standard-airdrop/use
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
 import type { Address } from "viem";
+import { StandardAirdropDetails } from "./standard";
 
 interface DetailsProps {
   address: Address;
@@ -15,8 +16,7 @@ export async function MyAirdropDetails({ address, type }: DetailsProps) {
   switch (type) {
     case "standard":
       const airdropDetails = await getUserStandardAirdropDetail(address, user);
-      console.log(airdropDetails);
-      return <div></div>;
+      return <StandardAirdropDetails airdrop={airdropDetails} />;
     case "vesting":
       return <div></div>;
     case "push":
