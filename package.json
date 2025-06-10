@@ -63,7 +63,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@settlemint/sdk-cli": "2.3.12",
+    "@settlemint/sdk-cli": "2.3.14",
     "lefthook": "1.11.13",
     "prettier": "3.5.3",
     "turbo": "2.5.4",

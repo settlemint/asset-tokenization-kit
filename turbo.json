@@ -52,7 +52,7 @@
     "test": {},
     "artifacts": {},
     "typecheck": {
-      "dependsOn": ["dependencies", "codegen"]
+      "dependsOn": ["dependencies", "codegen", "subgraph#build"]
     }
   }
 }

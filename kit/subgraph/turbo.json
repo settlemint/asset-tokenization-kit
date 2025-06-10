@@ -28,6 +28,9 @@
     },
     "test": {
       "dependsOn": ["codegen:gql-tada"]
+    },
+    "artifacts": {
+      "dependsOn": ["build"]
     }
   }
 }
