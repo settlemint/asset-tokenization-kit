@@ -10,10 +10,12 @@
         "*-schema.graphql",
         "*-schema-*.graphql",
         "src/lib/settlemint/**"
-      ]
+      ],
+      "dependsOn": ["contracts#docker:up"]
     },
     "codegen:gql-tada": {
-      "outputs": ["*-cache.d.ts"]
+      "outputs": ["*-cache.d.ts"],
+      "dependsOn": ["contracts#docker:up"]
     },
     "build": {
       "outputs": [".next/**", "!.next/cache/**"]
