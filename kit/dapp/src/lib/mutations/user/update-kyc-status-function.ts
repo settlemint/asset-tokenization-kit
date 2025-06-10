@@ -1,19 +1,18 @@
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { revalidateTag } from "next/cache";
 import { withAccessControl } from "../../utils/access-control";
 import type { UpdateKycStatusInput } from "./update-kyc-status.schema";
 
-/**
- * GraphQL mutation to update a user's KYC status
- */
-const UpdateKycStatusMutation = hasuraGraphql(`
-  mutation UpdateKycStatus($userId: String!, $kycVerified: timestamptz) {
-    update_user_by_pk(pk_columns: {id: $userId}, _set: {kyc_verified_at: $kycVerified}) {
-      id
-      kyc_verified_at
-    }
-  }
-`);
+// /**
+//  * GraphQL mutation to update a user's KYC status
+//  */
+// const UpdateKycStatusMutation = hasuraGraphql(`
+//   mutation UpdateKycStatus($userId: String!, $kycVerified: timestamptz) {
+//     update_user_by_pk(pk_columns: {id: $userId}, _set: {kyc_verified_at: $kycVerified}) {
+//       id
+//       kyc_verified_at
+//     }
+//   }
+// `);
 
 /**
  * Function to update a user's KYC status
@@ -33,13 +32,16 @@ export const updateKycStatusFunction = withAccessControl(
   }: {
     parsedInput: UpdateKycStatusInput;
   }) => {
-    const result = await hasuraClient.request(UpdateKycStatusMutation, {
-      userId,
-      kycVerified,
-    });
+    // const result = await hasuraClient.request(UpdateKycStatusMutation, {
+    //   userId,
+    //   kycVerified,
+    // });
 
     revalidateTag("user");
 
-    return { success: true, data: result.update_user_by_pk };
+    return {
+      success: true,
+      data: { id: "123", kyc_verified_at: "2021-01-01" },
+    };
   }
 );

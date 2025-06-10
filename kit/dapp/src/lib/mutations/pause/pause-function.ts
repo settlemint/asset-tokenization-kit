@@ -7,6 +7,14 @@ import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { PauseInput } from "./pause-schema";
 
+// Dummy types for commented GraphQL operations
+const BondPause = {} as any;
+const EquityPause = {} as any;
+const FundPause = {} as any;
+const StableCoinPause = {} as any;
+const DepositPause = {} as any;
+
+
 /**
  * GraphQL mutation for pausing a bond contract
  */

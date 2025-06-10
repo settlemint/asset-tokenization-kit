@@ -9,6 +9,14 @@ import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { FreezeInput } from "./freeze-schema";
 
+// Dummy types for commented GraphQL operations
+const BondFreeze = {} as any;
+const EquityFreeze = {} as any;
+const FundFreeze = {} as any;
+const StableCoinFreeze = {} as any;
+const DepositFreeze = {} as any;
+
+
 /**
  * GraphQL mutation to freeze a specific user account from a bond
  */

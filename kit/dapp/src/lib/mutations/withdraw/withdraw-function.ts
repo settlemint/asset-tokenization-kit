@@ -1,14 +1,20 @@
 import type { User } from "@/lib/auth/types";
-import { handleChallenge } from "@/lib/challenge";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
-import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { WithdrawInput } from "./withdraw-schema";
+
+// Dummy types for commented GraphQL operations
+const BondWithdrawUnderlyingAsset = {} as any;
+const FixedYieldWithdrawUnderlyingAsset = {} as any;
+const EquityWithdrawToken = {} as any;
+const FundWithdrawToken = {} as any;
+const CryptoCurrencyWithdrawToken = {} as any;
+const StableCoinWithdrawToken = {} as any;
+const DepositWithdrawToken = {} as any;
 
 /**
  * GraphQL mutation for withdrawing the underlying asset of a bond
@@ -205,37 +211,37 @@ export const withdrawFunction = withAccessControl(
       assettype,
     });
 
-    // Token input format (for tokens)
-    const tokenInput: VariablesOf<
-      | typeof EquityWithdrawToken
-      | typeof FundWithdrawToken
-      | typeof CryptoCurrencyWithdrawToken
-      | typeof StableCoinWithdrawToken
-      | typeof DepositWithdrawToken
-    >["input"] = {
-      token: underlyingAssetAddress,
-      to,
-      amount: parseUnits(amount.toString(), asset.decimals).toString(),
-    };
+    // // Token input format (for tokens)
+    // const tokenInput: VariablesOf<
+    //   | typeof EquityWithdrawToken
+    //   | typeof FundWithdrawToken
+    //   | typeof CryptoCurrencyWithdrawToken
+    //   | typeof StableCoinWithdrawToken
+    //   | typeof DepositWithdrawToken
+    // >["input"] = {
+    //   token: underlyingAssetAddress,
+    //   to,
+    //   amount: parseUnits(amount.toString(), asset.decimals).toString(),
+    // };
 
     // Common parameters for token mutations
-    const tokenParams: VariablesOf<
-      | typeof EquityWithdrawToken
-      | typeof FundWithdrawToken
-      | typeof CryptoCurrencyWithdrawToken
-      | typeof StableCoinWithdrawToken
-      | typeof DepositWithdrawToken
-    > = {
-      address: targetAddress,
-      from: user.wallet,
-      input: tokenInput,
-      ...(await handleChallenge(
-        user,
-        user.wallet,
-        verificationCode,
-        verificationType
-      )),
-    };
+    // const tokenParams: VariablesOf<
+    //   | typeof EquityWithdrawToken
+    //   | typeof FundWithdrawToken
+    //   | typeof CryptoCurrencyWithdrawToken
+    //   | typeof StableCoinWithdrawToken
+    //   | typeof DepositWithdrawToken
+    // > = {
+    //   address: targetAddress,
+    //   from: user.wallet,
+    //   input: tokenInput,
+    //   ...(await handleChallenge(
+    //     user,
+    //     user.wallet,
+    //     verificationCode,
+    //     verificationType
+    //   )),
+    // };
 
     switch (assettype) {
       case "bond": {
@@ -255,102 +261,112 @@ export const withdrawFunction = withAccessControl(
         ).toString();
 
         if (isYield) {
-            // const response = await portalClient.request(
-  //             FixedYieldWithdrawUnderlyingAsset,
-  //             {
-  //               address: bondDetails.yieldSchedule!.id,
-  //               from: user.wallet,
-  //               input: {
-  //                 to,
-  //                 amount: bondFormattedAmount,
-  //               },
-  //               ...(await handleChallenge(
-  //                 user,
-  //                 user.wallet,
-  //                 verificationCode,
-  //                 verificationType
-  //               )),
-  //             }
-  //           );
+          // const response = await portalClient.request(
+          //             FixedYieldWithdrawUnderlyingAsset,
+          //             {
+          //               address: bondDetails.yieldSchedule!.id,
+          //               from: user.wallet,
+          //               input: {
+          //                 to,
+          //                 amount: bondFormattedAmount,
+          //               },
+          //               ...(await handleChallenge(
+          //                 user,
+          //                 user.wallet,
+          //                 verificationCode,
+          //                 verificationType
+          //               )),
+          //             }
+          //           );
 
           // NOTE: HARDCODED SO IT STILL COMPILES
-          const mockTxHash = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92";
+          const mockTxHash =
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92";
 
           return waitForIndexingTransactions(
-            safeParse(t.Hashes(), [mockTxHash
-            ])
+            safeParse(t.Hashes(), [mockTxHash])
           );
         } else {
-            // const response = await portalClient.request(
-  //             BondWithdrawUnderlyingAsset,
-  //             {
-  //               address: targetAddress,
-  //               from: user.wallet,
-  //               input: {
-  //                 to,
-  //                 amount: bondFormattedAmount,
-  //               },
-  //               ...(await handleChallenge(
-  //                 user,
-  //                 user.wallet,
-  //                 verificationCode,
-  //                 verificationType
-  //               )),
-  //             }
-  //           );
+          // const response = await portalClient.request(
+          //             BondWithdrawUnderlyingAsset,
+          //             {
+          //               address: targetAddress,
+          //               from: user.wallet,
+          //               input: {
+          //                 to,
+          //                 amount: bondFormattedAmount,
+          //               },
+          //               ...(await handleChallenge(
+          //                 user,
+          //                 user.wallet,
+          //                 verificationCode,
+          //                 verificationType
+          //               )),
+          //             }
+          //           );
 
           // NOTE: HARDCODED SO IT STILL COMPILES
-          const mockTxHash2 = "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92";
+          const mockTxHash2 =
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92";
 
           return waitForIndexingTransactions(
-            safeParse(t.Hashes(), [mockTxHash2
-            ])
+            safeParse(t.Hashes(), [mockTxHash2])
           );
         }
       }
       case "cryptocurrency": {
-          // const response = await portalClient.request(
-  //           CryptoCurrencyWithdrawToken,
-  //           tokenParams
-  //         );
+        // const response = await portalClient.request(
+        //           CryptoCurrencyWithdrawToken,
+        //           tokenParams
+        //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) /* response.CryptoCurrencyWithdrawToken?.transactionHash */
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) /* response.CryptoCurrencyWithdrawToken?.transactionHash */
         );
       }
       case "equity": {
-          // const response = await portalClient.request(
-  //           EquityWithdrawToken,
-  //           tokenParams
-  //         );
+        // const response = await portalClient.request(
+        //           EquityWithdrawToken,
+        //           tokenParams
+        //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityWithdrawToken?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityWithdrawToken?.transactionHash */]
         );
       }
       case "fund": {
-          // const response = await portalClient.request(
-  //           FundWithdrawToken,
-  //           tokenParams
-  //         );
+        // const response = await portalClient.request(
+        //           FundWithdrawToken,
+        //           tokenParams
+        //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundWithdrawToken?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundWithdrawToken?.transactionHash */]
         );
       }
       case "stablecoin": {
-          // const response = await portalClient.request(
-  //           StableCoinWithdrawToken,
-  //           tokenParams
-  //         );
+        // const response = await portalClient.request(
+        //           StableCoinWithdrawToken,
+        //           tokenParams
+        //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) /* response.StableCoinWithdrawToken?.transactionHash */
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) /* response.StableCoinWithdrawToken?.transactionHash */
         );
       }
       case "deposit": {
-          // const response = await portalClient.request(
-  //           DepositWithdrawToken,
-  //           tokenParams
-  //         );
+        // const response = await portalClient.request(
+        //           DepositWithdrawToken,
+        //           tokenParams
+        //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) /* response.DepositWithdrawToken?.transactionHash */
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) /* response.DepositWithdrawToken?.transactionHash */
         );
       }
       default:

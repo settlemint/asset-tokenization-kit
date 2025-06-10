@@ -10,6 +10,11 @@ import { getAddress, type Address } from "viem";
 import { approve } from "../../asset/approve/approve-action";
 import type { ApproveXvpInput } from "./approve-schema";
 
+// Dummy types for commented GraphQL operations
+const XvpApprove = {} as any;
+const XvpRevoke = {} as any;
+
+
 // const XvpApprove = portalGraphql(`
 //   mutation ApproveXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
 //     XvPSettlementApprove(

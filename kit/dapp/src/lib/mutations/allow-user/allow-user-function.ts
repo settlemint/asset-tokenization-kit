@@ -30,7 +30,7 @@ import type { AllowUserInput } from "./allow-user-schema";
 // `);
 
 // Dummy type for DepositAllowUser since it's commented out
-type DepositAllowUser = any;
+const DepositAllowUser = {} as any;
 
 /**
  * Function to allow a user to access an asset
@@ -59,7 +59,7 @@ export const allowUserFunction = withAccessControl(
     ctx: { user: User };
   }) => {
     // Common parameters for all mutations
-    const params: VariablesOf<DepositAllowUser> = {
+    const params: VariablesOf<any> = {
       address,
       from: user.wallet,
       input: {

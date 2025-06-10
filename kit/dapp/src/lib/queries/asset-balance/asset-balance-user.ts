@@ -2,11 +2,6 @@ import "server-only";
 
 import { ROLES, type Role } from "@/lib/config/roles";
 import { fetchAllTheGraphPages } from "@/lib/pagination";
-import { AssetBalanceFragment } from "@/lib/queries/asset-balance/asset-balance-fragment";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import BigNumber from "bignumber.js";
@@ -40,19 +35,19 @@ export const getUserAssetsBalance = withTracing(
     cacheTag("asset");
     const userAssetsBalance = await fetchAllTheGraphPages(
       async (first, skip) => {
-              //       // const pageResult = await theGraphClientKit.request(
-      //       //           UserAssetsBalance,
-      //       //           {
-      //       //             accountId: getAddress(wallet),
-      //       //             first,
-      //       //             skip,
-      //       //           },
-      //       //           {
-      //       //             "X-GraphQL-Operation-Name": "UserAssetsBalance",
-      //       //             "X-GraphQL-Operation-Type": "query",
-      //       //           }
-      //       //         );
-        return pageResult.account?.balances ?? [];
+        //       // const pageResult = await theGraphClientKit.request(
+        //       //           UserAssetsBalance,
+        //       //           {
+        //       //             accountId: getAddress(wallet),
+        //       //             first,
+        //       //             skip,
+        //       //           },
+        //       //           {
+        //       //             "X-GraphQL-Operation-Name": "UserAssetsBalance",
+        //       //             "X-GraphQL-Operation-Type": "query",
+        //       //           }
+        //       //         );
+        return [];
       }
     );
 

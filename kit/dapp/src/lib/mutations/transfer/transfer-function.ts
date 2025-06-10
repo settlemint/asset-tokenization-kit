@@ -9,6 +9,15 @@ import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { TransferInput } from "./transfer-schema";
 
+// Dummy types for commented GraphQL operations
+const BondTransfer = {} as any;
+const CryptoCurrencyTransfer = {} as any;
+const EquityTransfer = {} as any;
+const FundTransfer = {} as any;
+const StableCoinTransfer = {} as any;
+const DepositTransfer = {} as any;
+
+
 /**
  * GraphQL mutation to transfer bond tokens
  */

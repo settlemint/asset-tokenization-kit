@@ -125,8 +125,32 @@ const getUserDetailFromIdOrAddress = withTracing(
     // })();
     
     // NOTE: HARDCODED SO IT STILL COMPILES - user and account data
-    const user = null;
-    const account = undefined;
+    const user = {
+      id: "mock-user-id",
+      wallet: "0x0000000000000000000000000000000000000000" as Address,
+      email: "mock@example.com",
+      isActive: true,
+      isAdmin: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      kycStatus: "not_started" as const,
+      verified: false,
+      residency: "US",
+      deletedAt: null,
+      isHouseAccount: false,
+      name: "Mock User",
+      role: "user",
+      banned: false,
+      kycVerifiedAt: null,
+      lastActivity: null,
+      lastLoginAt: null
+    };
+    
+    const account = {
+      id: "0x0000000000000000000000000000000000000000",
+      transactionsSent: 0,
+      transactionsReceived: 0
+    };
 
     // Calculate additional fields
     const calculatedFields = userCalculateFields(user, account);

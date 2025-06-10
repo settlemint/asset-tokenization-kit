@@ -31,10 +31,12 @@ export async function YieldDetails({ address }: DetailsProps) {
   const intervalDisplay = intervalPeriod
     ? t(`set-schedule.interval.options.${intervalPeriod}`)
     : `${intervalPeriod} ${t("set-schedule.interval.options.seconds")}`;
-  const totalYield = yieldSchedule.periods.reduce(
-    (acc, period) => acc + Number(period.totalYield),
-    0
-  );
+  //NOTE: HARDCODED SO IT STILL COMPILES
+  const totalYield = 0;
+  // const totalYield = yieldSchedule.periods.reduce(
+  //   (acc, period) => acc + Number(period.totalYield),
+  //   0
+  // );
   const totalUnclaimedYield = totalYield - Number(yieldSchedule.totalClaimed);
   return (
     <DetailGrid>

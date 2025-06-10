@@ -5,6 +5,10 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { ExecuteXvpInput } from "./execute-schema";
 
+// Dummy types for commented GraphQL operations
+const ExecuteXvp = {} as any;
+
+
 // const ExecuteXvp = portalGraphql(`
 //   mutation ExecuteXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
 //     XvPSettlementExecute(

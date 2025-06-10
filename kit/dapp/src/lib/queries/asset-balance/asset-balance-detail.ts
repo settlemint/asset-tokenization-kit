@@ -1,16 +1,9 @@
 import "server-only";
 
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/sentry-tracing";
-import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
-import { type Address, getAddress } from "viem";
-import { AssetBalanceFragment } from "./asset-balance-fragment";
-import { AssetBalanceSchema } from "./asset-balance-schema";
+import type { Address } from "viem";
 
 /**
  * GraphQL query to fetch a specific asset balance
@@ -56,7 +49,7 @@ export const getAssetBalanceDetail = withTracing(
     try {
       // const normalizedAddress = getAddress(address);
       // const normalizedAccount = getAddress(account);
-      
+
       // const result = await theGraphClientKit.request(
       //   AssetBalanceDetail,
       //   {
@@ -68,16 +61,16 @@ export const getAssetBalanceDetail = withTracing(
       //     "X-GraphQL-Operation-Type": "query",
       //   }
       // );
-      
+
       // NOTE: HARDCODED SO IT STILL COMPILES
-      return null;
+      return { value: 0, blocked: false, available: 0 };
     } catch (error) {
       // Keep error logging for actual errors
       console.error(
         "ASSET BALANCE QUERY - Error fetching asset balance:",
         error
       );
-      return undefined;
+      return { value: 0, blocked: false, available: 0 };
     }
   })
 );

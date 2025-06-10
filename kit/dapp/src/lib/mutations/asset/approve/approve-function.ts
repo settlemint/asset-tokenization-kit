@@ -8,6 +8,15 @@ import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { ApproveInput } from "./approve-schema";
 
+// Dummy types for commented GraphQL operations
+const StableCoinApprove = {} as any;
+const BondApprove = {} as any;
+const CryptoCurrencyApprove = {} as any;
+const FundApprove = {} as any;
+const EquityApprove = {} as any;
+const DepositApprove = {} as any;
+
+
 /**
  * GraphQL mutation for approving a spend for a stablecoin
  *

@@ -2,19 +2,13 @@ import "server-only";
 
 import type { Role } from "@/lib/config/roles";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClientKit } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
-import {
-  AssetUsersFragment,
-  OffchainAssetFragment,
-} from "./asset-users-fragment";
+import { OffchainAssetFragment } from "./asset-users-fragment";
 import {
   AssetUsersSchema,
   OffchainAssetSchema,

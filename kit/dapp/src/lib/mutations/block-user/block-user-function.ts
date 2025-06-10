@@ -7,6 +7,13 @@ import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { BlockUserInput } from "./block-user-schema";
 
+// Dummy types for commented GraphQL operations
+const BondBlockUser = {} as any;
+const StableCoinBlockUser = {} as any;
+const EquityBlockUser = {} as any;
+const FundBlockUser = {} as any;
+
+
 /**
  * GraphQL mutation for blocking a user from a bond
  *

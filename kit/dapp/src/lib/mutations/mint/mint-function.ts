@@ -9,6 +9,15 @@ import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { MintInput } from "./mint-schema";
 
+// Dummy types for commented GraphQL operations
+const BondMint = {} as any;
+const CryptoCurrencyMint = {} as any;
+const EquityMint = {} as any;
+const FundMint = {} as any;
+const StableCoinMint = {} as any;
+const DepositMint = {} as any;
+
+
 /**
  * GraphQL mutation to mint new bond tokens
  */

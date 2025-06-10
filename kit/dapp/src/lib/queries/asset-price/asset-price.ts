@@ -1,33 +1,28 @@
 import "server-only";
 
-import { fetchAllHasuraPages } from "@/lib/pagination";
 import { getExchangeRate } from "@/lib/providers/exchange-rates/exchange-rates";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { withTracing } from "@/lib/utils/sentry-tracing";
-import { safeParse } from "@/lib/utils/typebox";
 import type { Price } from "@/lib/utils/typebox/price";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import type { CurrencyCode } from "../../db/schema-settings";
-import { AssetPriceFragment } from "./asset-price-fragment";
-import { AssetPriceSchema } from "./asset-price-schema";
 
-const AssetPrices = hasuraGraphql(
-  `
-  query AssetPrices($assetIds: [String!]!, $limit: Int, $offset: Int) {
-    asset_price(
-      where: { asset_id: { _in: $assetIds } }
-      order_by: { created_at: desc },
-      limit: $limit,
-      offset: $offset
-    ) {
-      ...AssetPriceFragment
-    }
-  }
-`,
-  [AssetPriceFragment]
-);
+// const AssetPrices = hasuraGraphql(
+//   `
+//   query AssetPrices($assetIds: [String!]!, $limit: Int, $offset: Int) {
+//     asset_price(
+//       where: { asset_id: { _in: $assetIds } }
+//       order_by: { created_at: desc },
+//       limit: $limit,
+//       offset: $offset
+//     ) {
+//       ...AssetPriceFragment
+//     }
+//   }
+// `,
+//   [AssetPriceFragment]
+// );
 
 export const getAssetsPricesInUserCurrency = withTracing(
   "queries",
@@ -76,38 +71,38 @@ export const getAssetsPrice = withTracing(
     const assetIds = Array.from(new Set(assets)).map((address) => {
       return getAddress(address);
     });
-    const assetPricesData = await fetchAllHasuraPages(
-      async (pageLimit, offset) => {
-        const pageResult = await hasuraClient.request(
-          AssetPrices,
-          {
-            assetIds,
-            limit: pageLimit,
-            offset,
-          },
-          {
-            "X-GraphQL-Operation-Name": "AssetPrices",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
+    // const assetPricesData = await fetchAllHasuraPages(
+    //   async (pageLimit, offset) => {
+    //     // const pageResult = await hasuraClient.request(
+    //     //   AssetPrices,
+    //     //   {
+    //     //     assetIds,
+    //     //     limit: pageLimit,
+    //     //     offset,
+    //     //   },
+    //     //   {
+    //     //     "X-GraphQL-Operation-Name": "AssetPrices",
+    //     //     "X-GraphQL-Operation-Type": "query",
+    //     //   }
+    //     // );
 
-        return pageResult.asset_price ?? [];
-      }
-    );
+    //     return [];
+    //   }
+    // );
     const pricesForAssetIds = new Map<Address, Price>();
 
     for (const assetId of assetIds) {
-      const assetPrice = assetPricesData.find((assetPrice) => {
-        return assetPrice.asset_id === assetId;
-      });
+      // const assetPrice = assetPricesData.find((assetPrice) => {
+      //   return assetPrice.asset_id === assetId;
+      // });
 
-      if (!assetPrice) {
-        console.log(`Asset price not found for ${assetId}`);
-        continue;
-      }
+      // if (!assetPrice) {
+      console.log(`Asset price not found for ${assetId}`);
+      continue;
+      // }
 
-      const validatedPrice = safeParse(AssetPriceSchema, assetPrice);
-      pricesForAssetIds.set(assetId, validatedPrice);
+      // const validatedPrice = safeParse(AssetPriceSchema, assetPrice);
+      // pricesForAssetIds.set(assetId, validatedPrice);
     }
 
     return pricesForAssetIds;

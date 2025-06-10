@@ -791,6 +791,7 @@ class GenesisGenerator {
     } catch (error) {
       this.failedCount++;
       log.error(`Failed to process ${contractName}: ${error}`);
+      console.error(error);
       throw error;
     }
   }
@@ -1081,7 +1082,6 @@ function parseCliArgs(): Config {
         process.exit(1);
     }
   }
-
   return config;
 }
 

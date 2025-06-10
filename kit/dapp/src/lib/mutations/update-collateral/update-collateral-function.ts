@@ -9,6 +9,11 @@ import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { UpdateCollateralInput } from "./update-collateral-schema";
 
+// Dummy types for commented GraphQL operations
+const StableCoinUpdateCollateral = {} as any;
+const DepositUpdateCollateral = {} as any;
+
+
 /**
  * GraphQL mutation for updating a stablecoin's collateral amount
  */

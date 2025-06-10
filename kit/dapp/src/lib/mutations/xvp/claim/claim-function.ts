@@ -4,6 +4,10 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { ClaimXvpInput } from "./claim-schema";
 
+// Dummy types for commented GraphQL operations
+const ClaimXvp = {} as any;
+
+
 // const ClaimXvp = portalGraphql(`
 //   mutation ClaimXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
 //     XvPSettlementExecute(

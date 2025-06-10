@@ -7,6 +7,15 @@ import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { GrantRoleInput } from "./grant-role-schema";
+
+// Dummy values for commented GraphQL operations
+const StableCoinGrantRole = {} as any;
+const BondGrantRole = {} as any;
+const CryptoCurrencyGrantRole = {} as any;
+const FundGrantRole = {} as any;
+const EquityGrantRole = {} as any;
+const DepositGrantRole = {} as any;
+
 /**
  * GraphQL mutation for granting a role to a user for a stablecoin
  *

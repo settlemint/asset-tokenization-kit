@@ -7,6 +7,10 @@ import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { DisallowUserInput } from "./disallow-user-schema";
 
+// Dummy types for commented GraphQL operations
+const DepositDisallowUser = {} as any;
+
+
 /**
  * GraphQL mutation to disallow a user from a tokenized deposit
  */

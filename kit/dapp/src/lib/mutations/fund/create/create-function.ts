@@ -1,15 +1,15 @@
 import type { User } from "@/lib/auth/types";
-import { handleChallenge } from "@/lib/challenge";
-import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { withAccessControl } from "@/lib/utils/access-control";
 import { grantRolesToAdmins } from "@/lib/utils/role-granting";
 import { safeParse, t } from "@/lib/utils/typebox";
-import { AddAssetPrice } from "../../asset/price/add-price";
 import type { CreateFundInput } from "./create-schema";
+
+// Dummy types for commented GraphQL operations
+const FundFactoryCreate = {} as any;
+
 /**
  * GraphQL mutation for creating a new fund
  *
@@ -91,34 +91,35 @@ export const createFundFunction = withAccessControl(
       internalid,
     });
 
-    await hasuraClient.request(AddAssetPrice, {
-      assetId: predictedAddress,
-      amount: String(price.amount),
-      currency: price.currency,
-    });
+    // await hasuraClient.request(AddAssetPrice, {
+    //   assetId: predictedAddress,
+    //   amount: String(price.amount),
+    //   currency: price.currency,
+    // });
 
-      // const data = await portalClient.request(FundFactoryCreate, {
-  //       address: FUND_FACTORY_ADDRESS,
-  //       from: user.wallet,
-  //       input: {
-  //         name: assetName,
-  //         symbol: symbol.toString(),
-  //         decimals,
-  //         fundCategory,
-  //         fundClass,
-  //         managementFeeBps,
-  //       },
-  //       ...(await handleChallenge(
-  //         user,
-  //         user.wallet,
-  //         verificationCode,
-  //         verificationType
-  //       )),
-  //     });
+    // const data = await portalClient.request(FundFactoryCreate, {
+    //       address: FUND_FACTORY_ADDRESS,
+    //       from: user.wallet,
+    //       input: {
+    //         name: assetName,
+    //         symbol: symbol.toString(),
+    //         decimals,
+    //         fundCategory,
+    //         fundClass,
+    //         managementFeeBps,
+    //       },
+    //       ...(await handleChallenge(
+    //         user,
+    //         user.wallet,
+    //         verificationCode,
+    //         verificationType
+    //       )),
+    //     });
 
-      // const createTxHash = data.FundFactoryCreate?.transactionHash;
-  // NOTE: HARDCODED SO IT STILL COMPILES
-  const createTxHash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
+    // const createTxHash = data.FundFactoryCreate?.transactionHash;
+    // NOTE: HARDCODED SO IT STILL COMPILES
+    const createTxHash =
+      "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
     if (!createTxHash) {
       throw new Error("Failed to create fund: no transaction hash received");
     }

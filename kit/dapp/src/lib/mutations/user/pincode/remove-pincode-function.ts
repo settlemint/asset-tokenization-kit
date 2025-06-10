@@ -4,6 +4,10 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { revalidateTag } from "next/cache";
 import { ApiError } from "next/dist/server/api-utils";
 
+// Dummy types for commented GraphQL operations
+const RemovePinCode = {} as any;
+
+
 /**
  * GraphQL mutation to remove a pincode for wallet verification
  */

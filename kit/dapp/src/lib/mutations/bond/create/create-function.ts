@@ -14,6 +14,11 @@ import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import type { CreateBondInput } from "./create-schema";
 
+
+// Dummy types for commented GraphQL operations
+const BondFactoryCreate = {} as any;
+
+
 /**
  * GraphQL mutation for creating a new bond
  *

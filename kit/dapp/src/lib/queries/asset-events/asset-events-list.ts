@@ -1,13 +1,8 @@
 import "server-only";
 
 import { fetchAllTheGraphPages } from "@/lib/pagination";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/sentry-tracing";
 import { safeParse, t as tTypebox } from "@/lib/utils/typebox";
-import type { VariablesOf } from "gql.tada";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -60,7 +55,7 @@ const fetchAssetEventsList = cache(
   ) => {
     "use cache";
     cacheTag("asset");
-    const where: VariablesOf<typeof AssetEventsList>["where"] = {};
+    const where: { emitter?: string; sender?: string } = {};
 
     if (asset) {
       where.emitter = asset.toLowerCase();
@@ -92,7 +87,7 @@ const fetchAssetEventsList = cache(
       // }
 
       // return events;
-      
+
       // NOTE: HARDCODED SO IT STILL COMPILES
       return [];
     }, limit);

@@ -11,6 +11,17 @@ import type { VariablesOf } from "@settlemint/sdk-hasura";
 import { parseUnits } from "viem";
 import type { TopUpInput } from "./top-up-schema";
 
+// Dummy types for commented GraphQL operations
+const BondApprove = {} as any;
+const CryptoCurrencyApprove = {} as any;
+const EquityApprove = {} as any;
+const FundApprove = {} as any;
+const StableCoinApprove = {} as any;
+const DepositApprove = {} as any;
+const BondTopUpUnderlyingAsset = {} as any;
+const FixedYieldTopUpUnderlyingAsset = {} as any;
+
+
 /**
  * GraphQL mutations for approving token spending for each asset type
  */

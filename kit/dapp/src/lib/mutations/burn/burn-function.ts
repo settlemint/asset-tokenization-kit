@@ -8,6 +8,14 @@ import type { VariablesOf } from "@settlemint/sdk-portal";
 import { parseUnits } from "viem";
 import type { BurnInput } from "./burn-schema";
 
+// Dummy types for commented GraphQL operations
+const BondBurn = {} as any;
+const EquityBurn = {} as any;
+const FundBurn = {} as any;
+const StableCoinBurn = {} as any;
+const DepositBurn = {} as any;
+
+
 /**
  * GraphQL mutation for burning bond tokens
  */

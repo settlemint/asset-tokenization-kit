@@ -6,6 +6,14 @@ import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { UnpauseInput } from "./unpause-schema";
+
+// Dummy types for commented GraphQL operations
+const BondUnpause = {} as any;
+const EquityUnpause = {} as any;
+const FundUnpause = {} as any;
+const StableCoinUnpause = {} as any;
+const DepositUnpause = {} as any;
+
 /**
  * GraphQL mutation for unpausing a bond contract
  */

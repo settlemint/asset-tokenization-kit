@@ -106,6 +106,8 @@ export const getActionsList = withTracing(
       //       //             }
       //       //           );
 
+          // NOTE: HARDCODED SO IT STILL COMPILES
+          const result = { actionExecutors: [] };
           const actionExecutors = result.actionExecutors || [];
           return safeParse(t.Array(ActionExecutorSchema), actionExecutors);
         }

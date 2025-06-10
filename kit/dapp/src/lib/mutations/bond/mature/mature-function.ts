@@ -6,6 +6,10 @@ import { withAccessControl } from "@/lib/utils/access-control";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { MatureFormInput } from "./mature-schema";
 
+// Dummy types for commented GraphQL operations
+const MatureBond = {} as any;
+
+
 /**
  * GraphQL mutation for maturing a bond
  *

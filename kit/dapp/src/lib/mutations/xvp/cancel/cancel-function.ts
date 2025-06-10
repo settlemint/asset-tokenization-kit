@@ -5,6 +5,10 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { CancelXvpInput } from "./cancel-schema";
 
+// Dummy types for commented GraphQL operations
+const CancelXvp = {} as any;
+
+
 // const CancelXvp = portalGraphql(`
 //   mutation CancelXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
 //     XvPSettlementCancel(

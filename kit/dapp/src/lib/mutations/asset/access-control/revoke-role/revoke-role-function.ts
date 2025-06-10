@@ -8,6 +8,15 @@ import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { RevokeRoleInput } from "./revoke-role-schema";
 
+// Dummy types for commented GraphQL operations
+const BondRevokeRole = {} as any;
+const CryptoCurrencyRevokeRole = {} as any;
+const StableCoinRevokeRole = {} as any;
+const FundRevokeRole = {} as any;
+const EquityRevokeRole = {} as any;
+const DepositRevokeRole = {} as any;
+
+
 /**
  * GraphQL mutation for revoking a role from a user for a bond
  *

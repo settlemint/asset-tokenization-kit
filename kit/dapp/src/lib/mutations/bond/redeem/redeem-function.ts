@@ -8,6 +8,10 @@ import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import type { RedeemBondInput } from "./redeem-schema";
 
+// Dummy types for commented GraphQL operations
+const BondRedeem = {} as any;
+
+
 /**
  * GraphQL mutation for redeeming a bond
  *

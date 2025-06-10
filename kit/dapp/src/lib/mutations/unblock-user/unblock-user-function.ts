@@ -7,6 +7,13 @@ import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import type { UnblockUserInput } from "./unblock-user-schema";
 
+// Dummy types for commented GraphQL operations
+const BondUnblockUser = {} as any;
+const StableCoinUnblockUser = {} as any;
+const EquityUnblockUser = {} as any;
+const FundUnblockUser = {} as any;
+
+
 /**
  * GraphQL mutation to unblock a user from a bond token
  */
