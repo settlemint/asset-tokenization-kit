@@ -1718,19 +1718,16 @@
           "manage": "Manage",
           "distribute": {
             "title": "Push tokens",
-            "description": "Push tokens to recipients of this airdrop.",
+            "description": "Push tokens to all recipients of this airdrop.",
             "push-tokens": "Push tokens",
-            "recipients": {
-              "title": "Recipients",
-              "description": "Select the recipient to push tokens to.",
-              "search-user-placeholder": "Search and select a user",
-              "search-user-description": "Search and select a user to push tokens to."
-            },
             "summary": {
               "title": "Review and confirm pushing tokens",
-              "description": "Push tokens to recipients of this airdrop.",
+              "description": "Push tokens to all recipients of this airdrop.",
               "airdrop": "Airdrop",
-              "recipients": "Recipients"
+              "recipients": "Recipients",
+              "recipients-preview": "Recipients preview",
+              "total-recipients": "Total recipients",
+              "total-amount": "Total amount"
             }
           }
         }

@@ -3,13 +3,12 @@
 import { Summary } from "@/app/[locale]/(private)/distribution/airdrops/[airdroptype]/[address]/_components/push-tokens-form/steps/summary";
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { distribute } from "@/lib/mutations/airdrop/distribute/distribute-action";
-import { distributeSchema } from "@/lib/mutations/airdrop/distribute/distribute-schema";
+import { batchDistribute } from "@/lib/mutations/airdrop/batch-distribute/batch-distribute-action";
+import { batchDistributeSchema } from "@/lib/mutations/airdrop/batch-distribute/batch-distribute-schema";
 import type { PushAirdrop } from "@/lib/queries/push-airdrop/push-airdrop-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Recipients } from "./steps/recipients";
 
 interface PushTokensFormProps {
   airdrop: PushAirdrop;
@@ -44,8 +43,8 @@ export function PushTokensForm({
       disabled={disabled}
     >
       <Form
-        action={distribute}
-        resolver={typeboxResolver(distributeSchema)}
+        action={batchDistribute}
+        resolver={typeboxResolver(batchDistributeSchema)}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
@@ -56,7 +55,6 @@ export function PushTokensForm({
           airdrop: airdrop.id,
         }}
       >
-        <Recipients airdrop={airdrop} />
         <Summary address={airdrop.id} airdrop={airdrop} />
       </Form>
     </FormSheet>
