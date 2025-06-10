@@ -10,7 +10,7 @@ data-path="/opt/besu/data"
 cache-last-blocks=1024
 
 # Transaction Pool
-min-gas-price=1000000000
+min-gas-price=0
 tx-pool="SEQUENCED"
 tx-pool-max-size=100000
 tx-pool-no-local-priority=true
