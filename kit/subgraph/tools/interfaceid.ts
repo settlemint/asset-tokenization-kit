@@ -148,17 +148,109 @@ async function cleanupTempFiles(tempContract: string): Promise<void> {
     join(CONTRACTS_ROOT, "contracts", "temp_script_output.txt"),
   ];
 
-  for (const tempFile of tempFiles) {
-    const file = Bun.file(tempFile);
-    if (await file.exists()) {
-      try {
-        await Bun.write(tempFile, ""); // Clear the file
-        await $`rm ${tempFile}`.quiet();
-        log.debug(`Cleaned up temporary file: ${tempFile}`);
-      } catch (error) {
-        log.warn(`Failed to clean up temporary file: ${tempFile}`);
+  const cleanupPromises = tempFiles.map(async (tempFile) => {
+    let cleanupSuccess = false;
+    const attempts = [];
+
+    try {
+      const file = Bun.file(tempFile);
+      const exists = await file.exists();
+
+      if (!exists) {
+        log.debug(`Temp file does not exist, skipping: ${tempFile}`);
+        return;
       }
+
+      // Method 1: Try to clear and remove with Bun and shell command
+      try {
+        await Bun.write(tempFile, ""); // Clear the file first
+        await $`rm -f ${tempFile}`.quiet(); // Force remove
+        cleanupSuccess = true;
+        attempts.push("bun-write + rm -f: SUCCESS");
+        log.debug(`Cleaned up temporary file (method 1): ${tempFile}`);
+      } catch (error) {
+        attempts.push(`bun-write + rm -f: FAILED (${error})`);
+      }
+
+      // Method 2: Try direct file system removal if method 1 failed
+      if (!cleanupSuccess) {
+        try {
+          await $`rm -rf ${tempFile}`.quiet(); // Force recursive remove
+          cleanupSuccess = true;
+          attempts.push("rm -rf: SUCCESS");
+          log.debug(`Cleaned up temporary file (method 2): ${tempFile}`);
+        } catch (error) {
+          attempts.push(`rm -rf: FAILED (${error})`);
+        }
+      }
+
+      // Method 3: Try Node.js fs unlink if shell commands failed
+      if (!cleanupSuccess) {
+        try {
+          const fs = await import("node:fs/promises");
+          await fs.unlink(tempFile);
+          cleanupSuccess = true;
+          attempts.push("fs.unlink: SUCCESS");
+          log.debug(`Cleaned up temporary file (method 3): ${tempFile}`);
+        } catch (error) {
+          attempts.push(`fs.unlink: FAILED (${error})`);
+        }
+      }
+
+      // Method 4: Try to overwrite with empty content and mark as deleted
+      if (!cleanupSuccess) {
+        try {
+          await Bun.write(
+            tempFile,
+            "// DELETED - This file should be removed\n"
+          );
+          attempts.push("overwrite-marker: SUCCESS");
+          log.debug(
+            `Marked temporary file for deletion (method 4): ${tempFile}`
+          );
+          cleanupSuccess = true;
+        } catch (error) {
+          attempts.push(`overwrite-marker: FAILED (${error})`);
+        }
+      }
+
+      // Method 5: Last resort - try to move to /tmp for OS cleanup
+      if (!cleanupSuccess) {
+        try {
+          const tmpName = `temp_cleanup_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.sol`;
+          const tmpPath = join("/tmp", tmpName);
+          await $`mv ${tempFile} ${tmpPath}`.quiet();
+          attempts.push("move-to-tmp: SUCCESS");
+          log.debug(
+            `Moved temporary file to /tmp (method 5): ${tempFile} -> ${tmpPath}`
+          );
+          cleanupSuccess = true;
+        } catch (error) {
+          attempts.push(`move-to-tmp: FAILED (${error})`);
+        }
+      }
+
+      if (!cleanupSuccess) {
+        log.warn(`All cleanup methods failed for: ${tempFile}`);
+        log.debug(`Cleanup attempts: ${attempts.join(", ")}`);
+      } else {
+        log.debug(
+          `Cleanup successful for: ${tempFile} (${attempts.filter((a) => a.includes("SUCCESS")).length}/${attempts.length} methods worked)`
+        );
+      }
+    } catch (error) {
+      log.warn(`Unexpected error during cleanup of ${tempFile}: ${error}`);
+      attempts.push(`unexpected-error: ${error}`);
     }
+  });
+
+  // Wait for all cleanup operations to complete, but don't fail if some don't work
+  try {
+    await Promise.allSettled(cleanupPromises);
+    log.debug("Temp file cleanup completed (all attempts finished)");
+  } catch (error) {
+    // This should never happen with Promise.allSettled, but just in case
+    log.warn(`Cleanup coordination error: ${error}`);
   }
 }
 
@@ -529,11 +621,46 @@ async function main() {
   log.info(`Output file: ${outputFile}`);
 
   try {
-    // Setup cleanup
-    process.on("exit", async () => await cleanupTempFiles(tempContract));
+    // Setup cleanup - ensure it runs no matter what happens
+    const forceCleanup = async () => {
+      try {
+        await cleanupTempFiles(tempContract);
+      } catch (error) {
+        // Even if cleanup fails, don't let it crash the process
+        console.error("Cleanup error (non-fatal):", error);
+      }
+    };
+
+    process.on("exit", () => {
+      // Note: exit event handlers must be synchronous, so we can't await
+      // But we'll still try to trigger cleanup
+      cleanupTempFiles(tempContract).catch(() => {
+        // Ignore cleanup errors on exit
+      });
+    });
+
     process.on("SIGINT", async () => {
-      await cleanupTempFiles(tempContract);
+      console.log("\nReceived SIGINT, cleaning up...");
+      await forceCleanup();
       process.exit(130);
+    });
+
+    process.on("SIGTERM", async () => {
+      console.log("\nReceived SIGTERM, cleaning up...");
+      await forceCleanup();
+      process.exit(143);
+    });
+
+    process.on("uncaughtException", async (error) => {
+      console.error("Uncaught exception:", error);
+      await forceCleanup();
+      process.exit(1);
+    });
+
+    process.on("unhandledRejection", async (reason) => {
+      console.error("Unhandled rejection:", reason);
+      await forceCleanup();
+      process.exit(1);
     });
 
     // Main workflow
@@ -573,15 +700,41 @@ async function main() {
     log.info("  - Example: InterfaceIds.ISMART");
   } catch (error) {
     log.error(`${error}`);
-    cleanupTempFiles(tempContract);
+
+    // Force cleanup before exiting, even if it fails
+    try {
+      await cleanupTempFiles(tempContract);
+    } catch (cleanupError) {
+      log.warn(`Cleanup failed during error handling: ${cleanupError}`);
+    }
+
     process.exit(1);
+  } finally {
+    // Final cleanup attempt - this runs regardless of success or failure
+    try {
+      await cleanupTempFiles(tempContract);
+    } catch (cleanupError) {
+      // Don't log this as it might be redundant, just ensure it doesn't crash
+    }
   }
 }
 
 // Only run main if script is executed directly
 if (import.meta.main) {
-  main().catch((error) => {
+  main().catch(async (error) => {
     console.error("Unhandled error:", error);
+
+    // Last-ditch cleanup attempt
+    try {
+      const tempContract = DEFAULT_TEMP_CONTRACT;
+      if (typeof CONTRACTS_ROOT !== "undefined") {
+        await cleanupTempFiles(tempContract);
+      }
+    } catch (cleanupError) {
+      // Don't let cleanup errors prevent error reporting
+      console.error("Final cleanup attempt failed:", cleanupError);
+    }
+
     process.exit(1);
   });
 }
