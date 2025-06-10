@@ -8,6 +8,26 @@ volumes:
   minio-data:
     driver: local
 services:
+  anvil:
+    image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.5
+    restart: always
+    # No Gas network
+    entrypoint:
+      [
+        "anvil",
+        "--host",
+        "0.0.0.0",
+        "--chain-id",
+        "31337",
+        "--gas-limit",
+        "5000000000000",
+        "--gas-price",
+        "0",
+        "--block-base-fee-per-gas",
+        "0",
+      ]
+    ports:
+      - "8545:8545" # Ethereum JSON-RPC
   besu:
     image: hyperledger/besu:25.6.0
     container_name: atk-besu

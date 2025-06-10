@@ -20,11 +20,6 @@ jobs:
     if:
       github.event_name == 'push' || github.event.action == 'opened' ||
       github.event.action == 'synchronize'
-    services:
-      foundry:
-        image: ghcr.io/settlemint/btp-anvil-test-node:latest
-        ports:
-          - "8545:8545"
     steps:
       - uses: fuxingloh/multi-labeler@v4
         if: github.event_name == 'pull_request'
