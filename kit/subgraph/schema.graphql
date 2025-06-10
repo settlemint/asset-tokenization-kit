@@ -184,8 +184,6 @@ type TokenBond @entity(immutable: false) {
   id: Bytes!
   faceValue: BigDecimal!
   faceValueExact: BigInt!
-  totalUnderlyingNeeded: BigDecimal!
-  totalUnderlyingNeededExact: BigInt!
   maturityDate: BigInt!
   isMatured: Boolean!
 }

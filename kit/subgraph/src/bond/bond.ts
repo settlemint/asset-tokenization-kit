@@ -16,7 +16,6 @@ export function handleBondCreated(event: BondCreated): void {
     event.params.faceValue,
     event.params.decimals
   );
-  //setBigNumber(bond, "totalUnderlyingNeeded", event.params.totalUnderlyingNeeded, event.params.decimals);
   bond.maturityDate = event.params.maturityDate;
   bond.isMatured = false;
   bond.save();

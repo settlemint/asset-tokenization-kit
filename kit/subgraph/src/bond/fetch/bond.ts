@@ -11,7 +11,6 @@ export function fetchBond(address: Address): TokenBond {
     bond = new TokenBond(address);
     const token = fetchToken(address);
     setBigNumber(bond, "faceValue", BigInt.zero(), token.decimals);
-    setBigNumber(bond, "totalUnderlyingNeeded", BigInt.zero(), token.decimals);
     bond.maturityDate = BigInt.zero();
     bond.isMatured = false;
     bond.save();
