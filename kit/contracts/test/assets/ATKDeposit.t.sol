@@ -20,6 +20,7 @@ import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { ISMARTCollateral } from "../../contracts/smart/extensions/collateral/ISMARTCollateral.sol";
+import { IATKStableCoin } from "../../contracts/assets/stable-coin/IATKStableCoin.sol";
 
 contract ATKDepositTest is AbstractATKAssetTest {
     IATKDepositFactory public depositFactory;
@@ -359,5 +360,17 @@ contract ATKDepositTest is AbstractATKAssetTest {
         vm.expectRevert(); // InsufficientTokenBalance
         deposit.recoverERC20(address(mockToken), user1, 200);
         vm.stopPrank();
+    }
+
+    // Test interface support
+    function test_SupportsInterface() public {
+        bytes4 interfaceId = type(IATKDeposit).interfaceId;
+        assertTrue(deposit.supportsInterface(interfaceId));
+
+        bytes4 smartInterfaceId = type(ISMART).interfaceId;
+        assertTrue(deposit.supportsInterface(smartInterfaceId));
+
+        bytes4 stableCoinInterfaceId = type(IATKStableCoin).interfaceId;
+        assertFalse(deposit.supportsInterface(stableCoinInterfaceId));
     }
 }
