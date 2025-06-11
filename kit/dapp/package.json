@@ -112,7 +112,7 @@
     "@better-auth/cli": "1.2.9",
     "@eslint/eslintrc": "3.3.1",
     "@eslint/js": "9.28.0",
-    "@tailwindcss/postcss": "4.1.8",
+    "@tailwindcss/postcss": "4.1.9",
     "@tanstack/eslint-plugin-query": "5.78.0",
     "@types/node": "24.0.0",
     "@types/pg": "8.15.4",
@@ -127,7 +127,7 @@
     "eslint-config-next": "15.3.3",
     "languine": "3.1.4",
     "postcss": "8.5.4",
-    "tailwindcss": "4.1.8",
+    "tailwindcss": "4.1.9",
     "typescript": "5.8.3"
   },
   "peerDependencies": {
