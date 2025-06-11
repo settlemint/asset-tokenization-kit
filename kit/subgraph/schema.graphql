@@ -121,6 +121,10 @@ type TokenFactory @entity(immutable: false) {
 
 type Token @entity(immutable: false) {
   id: Bytes!
+  createdAt: BigInt!
+  lastUpdatedAt: BigInt!
+  createdBy: Account!
+  lastUpdatedBy: Account!
   account: Account!
   accessControl: AccessControl
   identity: Identity
@@ -141,10 +145,14 @@ type Token @entity(immutable: false) {
   # Type specific
   bond: TokenBond
   fund: TokenFund
+  # Stats
+  stats: TokenStats
 }
 
 type TokenBalance @entity(immutable: false) {
   id: Bytes!
+  createdAt: BigInt!
+  lastUpdatedAt: BigInt!
   token: Token!
   account: Account!
   value: BigDecimal!
@@ -254,4 +262,61 @@ type IdentityClaimValue @entity(immutable: false) {
   claim: IdentityClaim!
   key: String!
   value: String!
+}
+
+type TokenTypeStats @entity(immutable: false) {
+  id: Bytes!
+  type: String!
+  count: Int!
+}
+
+type TokenStats @entity(immutable: false) {
+  id: Bytes!
+  token: Token!
+  # balances
+  balancesCount: Int!
+  # supply
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  # transfers
+  transfersCount: Int!
+  transfersVolume: BigDecimal!
+  transfersVolumeExact: BigInt!
+  # distribution
+  distribution: TokenDistributionStats!
+  # extensions
+  collateral: TokenCollateralStats
+}
+
+# https://github.com/settlemint/asset-tokenization-kit/blob/v1/kit/subgraph/src/assets/calculations/collateral.ts
+type TokenCollateralStats @entity(immutable: false) {
+  id: Bytes!
+  collateral: BigDecimal!
+  collateralExact: BigInt!
+  collateralAvailable: BigDecimal!
+  collateralAvailableExact: BigInt!
+  collateralUsed: BigDecimal!
+  collateralUsedExact: BigInt!
+}
+
+# https://github.com/settlemint/asset-tokenization-kit/blob/v1/kit/subgraph/src/assets/calculations/concentration.ts
+type TokenDistributionStats @entity(immutable: false) {
+  id: Bytes!
+  # 0-2%
+  totalValueSegment1: BigDecimal!
+  totalValueSegment1Exact: BigInt!
+  # 2-10%
+  totalValueSegment2: BigDecimal!
+  totalValueSegment2Exact: BigInt!
+  # 10-20%
+  totalValueSegment3: BigDecimal!
+  totalValueSegment3Exact: BigInt!
+  # 20-40%
+  totalValueSegment4: BigDecimal!
+  totalValueSegment4Exact: BigInt!
+  # 40-100%
+  totalValueSegment5: BigDecimal!
+  totalValueSegment5Exact: BigInt!
 }
