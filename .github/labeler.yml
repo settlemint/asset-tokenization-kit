@@ -13,3 +13,20 @@ labels:
   - label: "docs"
     matcher:
       title: "^docs:.*"
+  - label: "dependencies"
+    matcher:
+      title: "^chore(deps):.*"
+
+checks:
+  - context: "Semantic Pull Request"
+    url: "https://github.com/settlemint/asset-tokenization-kit/blob/main/.github/labeler.yml"
+    description:
+      success: Ready for review & merge.
+      failure: Missing semantic label for merge.
+    labels:
+      any:
+        - feat
+        - fix
+        - chore
+        - docs
+        - dependencies
