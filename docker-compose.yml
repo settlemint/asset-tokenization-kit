@@ -43,7 +43,7 @@ services:
       - ./tools/docker/besu/genesis.json:/opt/besu/genesis.json:ro
       - ./tools/docker/besu/anvil-test-key:/opt/besu/key:ro
   txsigner:
-    image: ghcr.io/settlemint/btp-signer:7.13.0
+    image: ghcr.io/settlemint/btp-signer:7.13.1
     container_name: atk-txsigner
     restart: unless-stopped
     depends_on:
