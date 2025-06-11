@@ -41,7 +41,7 @@ the kit simplifies the creation of secure and scalable tokenization solutions.
 # Install the dependencies
 bun install
 # Start the docker compose setup
-bun run dev:up
+bun run dev:up # dev:reset will clean up and do up if you need to start fresh
 # Generate the env files
 bunx settlemint connect --instance local
 ```
