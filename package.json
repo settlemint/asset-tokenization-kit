@@ -69,8 +69,6 @@
     "typescript": "5.8.3"
   },
   "trustedDependencies": [
-    "@prisma/client",
-    "@prisma/engines",
     "@sentry/cli",
     "@tailwindcss/oxide",
     "better-sqlite3",
@@ -79,8 +77,6 @@
     "esbuild",
     "keccak",
     "lefthook",
-    "libpq",
-    "prisma",
     "protobufjs",
     "secp256k1",
     "unrs-resolver",
