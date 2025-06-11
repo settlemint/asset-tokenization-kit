@@ -6,6 +6,7 @@ import {
   AirdropRecipientFragment,
 } from "@/lib/queries/airdrop/airdrop-fragment";
 import { getUserAirdropDistribution } from "@/lib/queries/airdrop/user-airdrop-distribution";
+import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
@@ -14,23 +15,21 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { getAddress, type Address } from "viem";
-import { getAssetsPricesInUserCurrency } from "../asset-price/asset-price";
-import { StandardAirdropFragment } from "./standard-airdrop-fragment";
-import { UserStandardAirdropSchema } from "./standard-airdrop-schema";
-import { calculateStandardAirdropStatus } from "./standard-airdrop-status";
+import { cache } from "react";
+import type { Address } from "viem";
+import { getAddress } from "viem";
+import { VestingAirdropFragment } from "./vesting-airdrop-fragment";
+import { UserVestingAirdropSchema } from "./vesting-airdrop-schema";
+import { calculateVestingAirdropStatus } from "./vesting-airdrop-status";
 
 /**
- * GraphQL query to fetch airdrop details from The Graph by IDs
- *
- * @remarks
- * Used to get complete airdrop information including asset details and type-specific fields
+ * GraphQL query to fetch on-chain vesting airdrop details from The Graph
  */
 const AirdropDetails = theGraphGraphqlKit(
   `
-  query AirdropDetails($airdrop: ID!, $user: String!) {
-    standardAirdrop(id: $airdrop) {
-      ...StandardAirdropFragment
+  query VestingAirdropDetail($airdrop: ID!, $user: String!) {
+    vestingAirdrop(id: $airdrop) {
+      ...VestingAirdropFragment
       recipients(where: { recipient: $user }) {
         ...AirdropRecipientFragment
         claimIndices {
@@ -40,13 +39,20 @@ const AirdropDetails = theGraphGraphqlKit(
     }
   }
 `,
-  [StandardAirdropFragment, AirdropRecipientFragment, AirdropClaimIndexFragment]
+  [VestingAirdropFragment, AirdropRecipientFragment, AirdropClaimIndexFragment]
 );
 
-export const getUserStandardAirdropDetail = withTracing(
+/**
+ * Fetches and combines on-chain and off-chain vesting airdrop data
+ *
+ * @param params - Object containing the vesting airdrop address
+ * @returns Combined vesting airdrop data
+ * @throws Error if fetching or parsing fails
+ */
+export const getUserVestingAirdropDetail = withTracing(
   "queries",
-  "getUserStandardAirdropDetail",
-  async (airdrop: Address, user: User) => {
+  "getUserVestingAirdropDetail",
+  cache(async (airdrop: Address, user: User) => {
     "use cache";
     cacheTag("airdrop");
 
@@ -82,7 +88,7 @@ export const getUserStandardAirdropDetail = withTracing(
       }
     );
 
-    if (!airdropDetails.standardAirdrop) {
+    if (!airdropDetails.vestingAirdrop) {
       throw new Error(`Airdrop not found for address ${airdrop}`);
     }
 
@@ -90,38 +96,41 @@ export const getUserStandardAirdropDetail = withTracing(
       totalAmountAllocated,
       totalAmountAllocatedExact,
       claimIndices: getClaimIndices(
-        airdropDetails.standardAirdrop,
+        airdropDetails.vestingAirdrop,
         amountIndexMap
       ),
     };
     const claimIndices = getClaimIndices(
-      airdropDetails.standardAirdrop,
+      airdropDetails.vestingAirdrop,
       amountIndexMap
     );
     const assetPrices = await getAssetsPricesInUserCurrency(
-      [airdropDetails.standardAirdrop.asset.id],
+      [airdropDetails.vestingAirdrop.asset.id],
       user.currency
     );
     const price = assetPrices.get(
-      getAddress(airdropDetails.standardAirdrop.asset.id)
+      getAddress(airdropDetails.vestingAirdrop.asset.id)
     );
-    const status = calculateStandardAirdropStatus({
-      startTimeMicroSeconds: airdropDetails.standardAirdrop.startTime,
-      endTimeMicroSeconds: airdropDetails.standardAirdrop.endTime,
+    const status = calculateVestingAirdropStatus({
+      claimPeriodEndMicroSeconds: airdropDetails.vestingAirdrop.claimPeriodEnd,
+      vestingDurationSeconds:
+        airdropDetails.vestingAirdrop.strategy.vestingDuration,
+      cliffDurationSeconds:
+        airdropDetails.vestingAirdrop.strategy.cliffDuration,
     });
 
-    return safeParse(UserStandardAirdropSchema, {
-      ...airdropDetails.standardAirdrop,
+    return safeParse(UserVestingAirdropSchema, {
+      ...airdropDetails.vestingAirdrop,
       recipient,
       status,
       claimIndices,
       price,
     });
-  }
+  })
 );
 
 function getClaimIndices(
-  airdrop: NonNullable<ResultOf<typeof AirdropDetails>["standardAirdrop"]>,
+  airdrop: NonNullable<ResultOf<typeof AirdropDetails>["vestingAirdrop"]>,
   amountIndexMap: Map<bigint, { amount: string; amountExact: string }>
 ) {
   const result = [];

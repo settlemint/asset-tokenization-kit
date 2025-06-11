@@ -52,17 +52,17 @@ export const createVestingAirdropFunction = async ({
         tokenAddress: asset.id,
         merkleRoot: getMerkleRoot(leaves),
         owner,
-        claimPeriodEnd: formatDate(claimPeriodEnd, {
-          type: "unixSeconds",
-        }),
-        cliffDuration: getTimeUnitSeconds(
-          cliffDuration.value,
-          cliffDuration.unit
-        ).toString(),
         vestingDuration: getTimeUnitSeconds(
           vestingDuration.value,
           vestingDuration.unit
         ).toString(),
+        cliffDuration: getTimeUnitSeconds(
+          cliffDuration.value,
+          cliffDuration.unit
+        ).toString(),
+        claimPeriodEnd: formatDate(claimPeriodEnd, {
+          type: "unixSeconds",
+        }),
       },
       ...(await handleChallenge(
         user,
@@ -88,7 +88,7 @@ export const createVestingAirdropFunction = async ({
       recipient: d.recipient,
       amount: d.amount.toString(),
       amount_exact: d.amountExact.toString(),
-      index: Number(d.index),
+      index: d.index.toString(),
     })),
   });
   return block;

@@ -15,7 +15,6 @@ import type { Address } from "viem";
 import { getAddress } from "viem";
 import { getAirdropDistribution } from "../airdrop/airdrop-distribution";
 import { VestingAirdropFragment } from "./vesting-airdrop-fragment";
-import { OnChainVestingAirdropSchema } from "./vesting-airdrop-schema";
 
 /**
  * GraphQL query to fetch on-chain vesting airdrop details from The Graph
@@ -66,7 +65,7 @@ export const getVestingAirdropDetail = withTracing(
             "X-GraphQL-Operation-Type": "query",
           }
         );
-        return safeParse(OnChainVestingAirdropSchema, response.vestingAirdrop);
+        return response.vestingAirdrop;
       })(),
       getAirdropDistribution(address),
     ]);

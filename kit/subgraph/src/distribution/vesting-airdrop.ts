@@ -26,7 +26,6 @@ import { createActivityLogEntry, EventType } from "../utils/activity-log";
 import {
   fetchAirdropClaimIndex,
   fetchAirdropRecipient,
-  fetchUserVestingData,
 } from "../utils/airdrop";
 import { toDecimals } from "../utils/decimals";
 
@@ -133,17 +132,9 @@ export function handleClaimed(event: Claimed): void {
     return;
   }
 
-  /*let token = Asset.load(airdrop.token);
-  if (!token) {
-    log.error(
-      "Token entity not found for address {}. Skipping Claimed event.",
-      [airdrop.token.toHex()]
-    );
-    return;
-  }*/
-
   let claimantAddress = event.params.claimant;
   let amount = event.params.amount;
+  let index = event.params.index;
 
   log.info(
     "Claimed event processed (Vesting): Airdrop {}, Claimant {}, Amount {}",
@@ -163,13 +154,22 @@ export function handleClaimed(event: Claimed): void {
     [event.params.claimant]
   );
 
-  // Check if this is a new recipient
   const recipient = fetchAirdropRecipient(
     airdrop.id,
     claimantAccount.id,
     event,
     amountBD,
     amount
+  );
+
+  // Update claimed amounts for the index
+  fetchAirdropClaimIndex(
+    airdrop.id,
+    recipient.id,
+    index,
+    amount,
+    decimals,
+    event
   );
 
   const isNewClaimant =
@@ -326,6 +326,7 @@ export function handleClaimInitialized(event: ClaimInitialized): void {
 
   let claimantAddress = event.params.claimant;
   let allocatedAmount = event.params.allocatedAmount;
+  let index = event.params.index;
 
   log.info(
     "ClaimInitialized event processed: Airdrop {}, Claimant {}, AllocatedAmount {}",
@@ -338,9 +339,7 @@ export function handleClaimInitialized(event: ClaimInitialized): void {
 
   let claimantAccount = fetchAccount(claimantAddress);
   let decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
-  let allocatedAmountBD = toDecimals(allocatedAmount, decimals);
 
-  // Update AirdropRecipient to track the initial allocation
   let recipient = fetchAirdropRecipient(
     airdrop.id,
     claimantAccount.id,
@@ -348,25 +347,16 @@ export function handleClaimInitialized(event: ClaimInitialized): void {
     BigDecimal.zero(),
     BigInt.zero()
   );
-  const isNewClaimant =
-    recipient.firstClaimedTimestamp === event.block.timestamp;
-  if (isNewClaimant) {
-    airdrop.totalRecipients = airdrop.totalRecipients + 1;
-  }
 
-  // If we have strategy info, update the UserVestingData
-  let strategy = LinearVestingStrategy.load(airdrop.strategy);
-  if (strategy) {
-    fetchUserVestingData(
-      strategy.id,
-      claimantAccount.id,
-      allocatedAmount,
-      allocatedAmountBD,
-      event
-    );
-  }
-
-  airdrop.save();
+  // Initialize the claim index
+  fetchAirdropClaimIndex(
+    airdrop.id,
+    recipient.id,
+    index,
+    BigInt.zero(),
+    decimals,
+    event
+  );
 
   // Update vesting stats on initialization
   updateVestingStats(airdrop, event);

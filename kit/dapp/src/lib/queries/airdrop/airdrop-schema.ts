@@ -152,6 +152,9 @@ export const OnChainAirdropClaimIndexSchema = t.Object({
   timestamp: t.Timestamp({
     description: "The timestamp of the claim",
   }),
+  initialized: t.Timestamp({
+    description: "When the claim is initialized",
+  }),
 });
 
 export type OnChainAirdropClaimIndex = StaticDecode<

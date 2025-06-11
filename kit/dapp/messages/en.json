@@ -1250,10 +1250,14 @@
               "claim": "Review your claim details and confirm the transaction to receive your assets."
             },
             "asset-label": "Asset",
-            "standard": {
+            "card": {
               "title": "Summary",
               "description": "Review the assets and amounts that will be transferred to your wallet."
             },
+            "claimable-amount-label": "Amount claimable",
+            "locked-amount-label": "Amount locked",
+            "allocated-amount-label": "Amount allocated",
+            "claimed-amount-label": "Amount claimed",
             "airdrop-contract-label": "Airdrop Contract",
             "amount-label": "Amount",
             "value-label": "Value"

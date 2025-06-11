@@ -45,6 +45,7 @@ export const AirdropClaimIndexFragment = theGraphGraphqlKit(`
     claimedAmount: amount
     claimedAmountExact: amountExact
     timestamp
+    initialized
   }
 `);
 

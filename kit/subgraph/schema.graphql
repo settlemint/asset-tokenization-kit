@@ -557,8 +557,9 @@ type VestingAirdrop implements Airdrop @entity(immutable: false) {
   totalClaims: Int!
   isWithdrawn: Boolean!
   trustedForwarder: Account!
-  # Vesting specific
   claimPeriodEnd: BigInt!
+
+  # Vesting specific
   strategy: VestingStrategy!
   recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 }
@@ -577,6 +578,7 @@ type PushAirdrop implements Airdrop @entity(immutable: false) {
   totalClaims: Int!
   isWithdrawn: Boolean!
   trustedForwarder: Account!
+
   # PushAirdrop specific
   distributionCap: BigInt!
   totalDistributed: BigInt!
@@ -594,13 +596,12 @@ type LinearVestingStrategy implements VestingStrategy
   @entity(immutable: false) {
   id: Bytes! # Strategy contract address
   type: String! # = "Linear"
-  airdrop: VestingAirdrop! @derivedFrom(field: "strategy") # Derived from VestingAirdrop linking
-  airdropRef: Bytes! # Direct reference to airdrop address
+  airdrop: VestingAirdrop!
   owner: Account!
+
   # Linear specific
   vestingDuration: BigInt!
   cliffDuration: BigInt!
-  vestingData: [UserVestingData!]! @derivedFrom(field: "strategy")
 }
 
 # Represents a potential recipient listed in the Merkle tree
@@ -621,24 +622,11 @@ type AirdropClaimIndex @entity(immutable: true) {
   id: Bytes! # airdropId-index
   index: BigInt!
   airdrop: Airdrop!
-  recipient: AirdropRecipient! # Who claimed this index
-  amount: BigDecimal! # Amount associated with this index (from claim event)
+  recipient: AirdropRecipient!
+  amount: BigDecimal! # Amount claimed by the recipient for this index
   amountExact: BigInt!
-  timestamp: BigInt!
-}
-
-# Specific vesting data per user for a LinearVestingStrategy
-type UserVestingData @entity(immutable: false) {
-  id: Bytes! # strategyId-userAddress
-  strategy: LinearVestingStrategy!
-  user: Account!
-  totalAmountAggregated: BigDecimal! # Total allocated amount across all indices for this user
-  totalAmountAggregatedExact: BigInt!
-  claimedAmountTrackedByStrategy: BigDecimal! # Internal tracking by strategy via recordClaim
-  claimedAmountTrackedByStrategyExact: BigInt!
-  vestingStart: BigInt!
-  initialized: Boolean!
-  lastUpdated: BigInt!
+  timestamp: BigInt! # Timestamp of the claim event
+  initialized: BigInt! # Mainly for VestingAirdrop, whether the recipient has initialized their vesting schedule for this index
 }
 
 # --------------------------------------------------

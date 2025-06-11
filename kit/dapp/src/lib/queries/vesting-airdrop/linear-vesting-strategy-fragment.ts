@@ -13,17 +13,5 @@ export const LinearVestingStrategyFragment = theGraphGraphqlKit(`
     id
     cliffDuration
     vestingDuration
-    vestingData {
-      id
-      user {
-        id
-      }
-      totalAmountAggregated
-      totalAmountAggregatedExact
-      claimedAmountTrackedByStrategy
-      claimedAmountTrackedByStrategyExact
-      vestingStart
-      initialized
-    }
   }
 `);

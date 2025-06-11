@@ -31,6 +31,9 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
     error ClaimPeriodEnded();
     error ClaimNotEligible();
     error ZeroAmountToTransfer();
+    error ZeroAddressClaimStrategy();
+    error InvalidClaimPeriod();
+    error InvalidClaimStrategy(address claimStrategy);
 
     // Events for claim initialization
     event ClaimInitialized(address indexed claimant, uint256 allocatedAmount, uint256 index);
@@ -54,10 +57,10 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
     )
         AirdropBase(tokenAddress, root, initialOwner, trustedForwarder)
     {
-        require(_claimStrategy != address(0), "Invalid claim strategy");
-        require(_claimPeriodEnd > block.timestamp, "Claim period must be in the future");
+        if (_claimStrategy == address(0)) revert ZeroAddressClaimStrategy();
+        if (_claimPeriodEnd <= block.timestamp) revert InvalidClaimPeriod();
         claimStrategy = IClaimStrategy(_claimStrategy);
-        require(claimStrategy.supportsMultipleClaims(), "Strategy must support vesting");
+        if (!claimStrategy.supportsMultipleClaims()) revert InvalidClaimStrategy(address(claimStrategy));
         claimPeriodEnd = _claimPeriodEnd;
     }
 
