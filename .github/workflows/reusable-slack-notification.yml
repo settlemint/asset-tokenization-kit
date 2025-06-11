@@ -178,38 +178,62 @@ jobs:
               "text": "PR: ${{ steps.build_status.outputs.pr_title }} - ${{ steps.build_status.outputs.pr_state }} - Build ${{ steps.build_status.outputs.build_result }}",
               "blocks": [
                 {
-                  "type": "section",
+                  "type": "header",
                   "text": {
-                    "type": "mrkdwn",
-                    "text": "*${{ steps.build_status.outputs.pr_title }}*\nby ${{ steps.build_status.outputs.pr_user }} in `${{ github.repository }}`"
-                  },
+                    "type": "plain_text",
+                    "text": "${{ steps.build_status.outputs.pr_title }}",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Author:*\n<https://github.com/${{ steps.build_status.outputs.pr_user }}|@${{ steps.build_status.outputs.pr_user }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Repository:*\n<https://github.com/${{ github.repository }}|${{ github.repository }}>"
+                    }
+                  ],
                   "accessory": {
                     "type": "button",
                     "text": {
                       "type": "plain_text",
-                      "text": "View PR"
+                      "text": "View PR",
+                      "emoji": true
                     },
                     "url": "${{ steps.build_status.outputs.pr_html_url || format('https://github.com/{0}/pull/{1}', github.repository, steps.build_status.outputs.pr_number) }}",
-                    "action_id": "view_pr"
+                    "action_id": "view_pr",
+                    "style": "primary"
                   }
                 },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*PR Status:*\n${{ steps.build_status.outputs.pr_draft == 'true' && ':memo: Draft' || steps.build_status.outputs.pr_state == 'open' && ':large_green_circle: Open' || (steps.build_status.outputs.pr_merged == 'true' && ':tada: Merged') || ':red_circle: Closed' }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Build Status:*\n${{ steps.build_status.outputs.build_result == 'success' && ':white_check_mark: Passed' || steps.build_status.outputs.build_result == 'failure' && ':x: Failed' || steps.build_status.outputs.build_result == 'cancelled' && ':no_entry_sign: Cancelled' || steps.build_status.outputs.build_result == 'skipped' && ':fast_forward: Skipped' || ':hourglass_flowing_sand: Running' }}"
+                    }
+                  ]
+                }${{ steps.build_status.outputs.pr_reviewers != '' && format(',
                 {
                   "type": "context",
                   "elements": [
                     {
                       "type": "mrkdwn",
-                      "text": "${{ steps.build_status.outputs.pr_draft == 'true' && ':memo:' || steps.build_status.outputs.pr_state == 'open' && ':large_green_circle:' || (steps.build_status.outputs.pr_merged == 'true' && ':tada:') || ':red_circle:' }} ${{ steps.build_status.outputs.pr_draft == 'true' && 'Draft' || steps.build_status.outputs.pr_state == 'open' && 'Open' || (steps.build_status.outputs.pr_merged == 'true' && 'Merged') || 'Closed' }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "${{ steps.build_status.outputs.build_result == 'success' && ':white_check_mark:' || steps.build_status.outputs.build_result == 'failure' && ':x:' || steps.build_status.outputs.build_result == 'cancelled' && ':no_entry_sign:' || steps.build_status.outputs.build_result == 'skipped' && ':fast_forward:' || ':hourglass_flowing_sand:' }} ${{ steps.build_status.outputs.build_result == 'success' && 'Build passed' || steps.build_status.outputs.build_result == 'failure' && 'Build failed' || steps.build_status.outputs.build_result == 'cancelled' && 'Build cancelled' || steps.build_status.outputs.build_result == 'skipped' && 'Build skipped' || 'Build running' }}"
-                    }${{ steps.build_status.outputs.pr_reviewers != '' && format(',
-                    {
-                      "type": "mrkdwn",
-                      "text": ":busts_in_silhouette: {0}"
-                    }', steps.build_status.outputs.pr_reviewers) || '' }}
+                      "text": ":busts_in_silhouette: *Reviewers:* {0}"
+                    }
                   ]
-                }
+                }', steps.build_status.outputs.pr_reviewers) || '' }}
               ]
             }
 
