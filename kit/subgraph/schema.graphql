@@ -606,7 +606,7 @@ type LinearVestingStrategy implements VestingStrategy
 # Represents a potential recipient listed in the Merkle tree
 # Primarily created/updated upon claim events
 type AirdropRecipient @entity(immutable: false) {
-  id: String! # airdropId-recipientAddress
+  id: Bytes! # airdropId-recipientAddress
   airdrop: Airdrop!
   recipient: Account!
   firstClaimedTimestamp: BigInt # Timestamp of the first claim event for this recipient
@@ -618,7 +618,7 @@ type AirdropRecipient @entity(immutable: false) {
 
 # Represents a specific index claimed by a recipient
 type AirdropClaimIndex @entity(immutable: true) {
-  id: String! # airdropId-index
+  id: Bytes! # airdropId-index
   index: BigInt!
   airdrop: Airdrop!
   recipient: AirdropRecipient! # Who claimed this index
@@ -629,7 +629,7 @@ type AirdropClaimIndex @entity(immutable: true) {
 
 # Specific vesting data per user for a LinearVestingStrategy
 type UserVestingData @entity(immutable: false) {
-  id: String! # strategyId-userAddress
+  id: Bytes! # strategyId-userAddress
   strategy: LinearVestingStrategy!
   user: Account!
   totalAmountAggregated: BigDecimal! # Total allocated amount across all indices for this user
