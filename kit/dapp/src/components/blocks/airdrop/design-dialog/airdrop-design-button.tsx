@@ -13,14 +13,17 @@ export function AirdropDesignButton({ currentUser }: { currentUser: User }) {
 
   return (
     <>
-      <Button
-        variant="secondary"
-        className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground"
-        onClick={() => setIsOpen(true)}
-      >
-        <PlusIcon className="mr-2 h-4 w-4" />
-        {t("design-button")}
-      </Button>
+      <div className="px-2 pt-1 pb-2">
+        <Button
+          variant="secondary"
+          size="sm"
+          className="w-full bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground"
+          onClick={() => setIsOpen(true)}
+        >
+          <PlusIcon className="mr-2 h-4 w-4" />
+          {t("design-button")}
+        </Button>
+      </div>
 
       <AirdropDesignerDialog
         open={isOpen}

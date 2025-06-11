@@ -13,7 +13,7 @@ interface AssetTypeIconProps {
 
 export function AssetTypeIcon({ type, size = "sm" }: AssetTypeIconProps) {
   const t = useTranslations("components.asset-type-icon");
-  const sizeClass = size === "sm" ? "size-4" : "size-6";
+  const sizeClass = size === "sm" ? "size-5" : "size-6";
 
   function getAssetInitials(type: AssetType): string {
     switch (type) {
@@ -37,10 +37,7 @@ export function AssetTypeIcon({ type, size = "sm" }: AssetTypeIconProps) {
   return (
     <Avatar className={`${sizeClass} border border-foreground-muted`}>
       <AvatarFallback
-        className={cn(
-          "font-bold text-[7px] text-foreground dark:text-sm-dark-gray",
-          getAssetColor(type)
-        )}
+        className={cn("font-bold text-[8px] text-sidebar", getAssetColor(type))}
       >
         {getAssetInitials(type)}
       </AvatarFallback>
