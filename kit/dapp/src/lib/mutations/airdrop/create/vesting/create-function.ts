@@ -87,7 +87,7 @@ export const createVestingAirdropFunction = async ({
       airdrop_id: predictedAddress,
       recipient: d.recipient,
       amount: d.amount.toString(),
-      amount_exact: d.amountExact,
+      amount_exact: d.amountExact.toString(),
       index: d.index.toString(),
     })),
   });
