@@ -32,6 +32,10 @@ export const PushAirdropSchema = t.Object(
   {
     ...OnChainPushAirdropSchema.properties,
     ...OffChainAirdropSchema.properties,
+    balance: t.BigDecimal({
+      description:
+        "The balance of the token in a human-readable decimal format",
+    }),
   },
   {
     description:

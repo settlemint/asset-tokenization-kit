@@ -48,6 +48,9 @@ export const OnChainAirdropSchema = t.Object(
         description: "The asset being airdropped",
       }
     ),
+    owner: t.Object({
+      id: t.EthereumAddress(),
+    }),
     totalClaimed: t.BigDecimal({
       description:
         "The total claimed amount of the token in a human-readable decimal format",
