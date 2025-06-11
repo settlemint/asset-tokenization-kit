@@ -51,6 +51,10 @@
     "docs": {},
     "test": {},
     "artifacts": {},
-    "test:integration": {}
+    "test:integration": {},
+    "db:studio": {
+      "cache": false,
+      "persistent": true
+    }
   }
 }

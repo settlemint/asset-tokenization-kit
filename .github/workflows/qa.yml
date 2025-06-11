@@ -104,7 +104,6 @@ jobs:
         uses: settlemint/settlemint-action@main
         with:
           instance: local
-          command: "connect -a"
 
       - name: Turbo
         run: |

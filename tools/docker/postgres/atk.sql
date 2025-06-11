@@ -1,3 +1,4 @@
+\c hasura;
 CREATE TYPE "public"."currency" AS ENUM('EUR', 'USD', 'GBP', 'CHF', 'JPY', 'AED', 'SGD', 'SAR');
 CREATE TABLE "regulation_configs" (
 	"id" text PRIMARY KEY NOT NULL,

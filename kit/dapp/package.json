@@ -22,7 +22,7 @@
     "test": "bun test",
     "db:check": "drizzle-kit check",
     "db:push": "drizzle-kit push",
-    "db:export": "drizzle-kit export | tee ../../tools/docker/postgres/atk.sql",
+    "db:export": "(echo \"\\c hasura;\" | tee ../../tools/docker/postgres/atk.sql) && (drizzle-kit export | tee -a ../../tools/docker/postgres/atk.sql)",
     "postdb:push": "settlemint hasura track -a",
     "db:studio": "drizzle-kit studio"
   },

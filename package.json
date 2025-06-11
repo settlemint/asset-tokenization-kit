@@ -57,8 +57,10 @@
     "helm": "turbo run helm",
     "predev:up": "docker compose -p atk down || true",
     "dev:up": "docker compose -p atk up -d",
+    "postdev:up": "settlemint connect --instance local && settlemint hasura track -a",
     "artifacts": "turbo run artifacts",
-    "extract-env": "bun run tools/extract-env.ts"
+    "extract-env": "bun run tools/extract-env.ts",
+    "db:studio": "turbo run db:studio"
   },
   "dependencies": {},
   "devDependencies": {
