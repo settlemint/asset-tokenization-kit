@@ -451,7 +451,6 @@ async function calculateInterfaceIds(
   log.info("Calculating interface IDs...");
 
   try {
-    const contractName = basename(tempContractPath, ".sol");
     const result =
       await $`forge script ${tempContractPath}:InterfaceIdCalculator`.cwd(
         CONTRACTS_ROOT
@@ -569,8 +568,7 @@ ${tsContent}
 
 async function validateOutputFile(
   outputDir: string,
-  outputFile: string,
-  interfaceCount: number
+  outputFile: string
 ): Promise<void> {
   const outputFilePath = join(SUBGRAPH_ROOT, outputDir, outputFile);
 
@@ -681,7 +679,7 @@ async function main() {
       outputFile,
       interfaces.length
     );
-    await validateOutputFile(outputDir, outputFile, interfaces.length);
+    await validateOutputFile(outputDir, outputFile);
 
     log.success("Interface ID calculation completed successfully!");
     console.log("\n");
