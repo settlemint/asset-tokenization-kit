@@ -99,7 +99,7 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
         if (amountToTransfer > 0) {
             token.safeTransfer(_msgSender(), amountToTransfer);
             claimStrategy.recordClaim(_msgSender(), amountToTransfer);
-            emit Claimed(_msgSender(), amountToTransfer);
+            emit Claimed(_msgSender(), amountToTransfer, index);
         } else if (!initializedClaims[index]) {
             // For zero amounts on first claim (e.g., cliff), still emit initialization event
             emit ClaimInitialized(_msgSender(), amount);
