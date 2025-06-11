@@ -1,4 +1,7 @@
-import { BondFactory as BondFactoryTemplate } from "../../generated/templates";
+import {
+  BondFactory as BondFactoryTemplate,
+  Fund as FundFactoryTemplate,
+} from "../../generated/templates";
 import {
   Bootstrapped,
   ComplianceImplementationUpdated,
@@ -86,6 +89,9 @@ export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
   tokenFactory.type = event.params.typeName;
   if (event.params.typeName == "bond") {
     BondFactoryTemplate.create(event.params.proxyAddress);
+  }
+  if (event.params.typeName == "fund") {
+    FundFactoryTemplate.create(event.params.proxyAddress);
   }
   tokenFactory.system = fetchSystem(event.address).id;
   tokenFactory.save();

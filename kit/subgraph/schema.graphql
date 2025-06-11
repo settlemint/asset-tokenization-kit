@@ -197,6 +197,7 @@ type TokenBond @entity(immutable: false) {
 type TokenFund @entity(immutable: false) {
   id: Bytes!
   managementFeeBps: Int!
+  lastFeeCollection: BigInt!
 }
 
 type TokenFixedYieldSchedule @entity(immutable: false) {

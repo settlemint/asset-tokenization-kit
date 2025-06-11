@@ -488,3 +488,39 @@ templates:
             address,string,string,uint8,uint256,uint256,uint256,address)
           handler: handleBondCreated
       file: ./src/token-assets/bond-factory/bond-factory.ts
+  - kind: ethereum
+    name: Fund
+    network: settlemint
+    source:
+      abi: Fund
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ManagementFeeCollected
+      abis:
+        - name: Fund
+          file: ../contracts/artifacts/contracts/assets/fund/IATKFund.sol/IATKFund.json
+      eventHandlers:
+        - event: ManagementFeeCollected(indexed address,uint256,uint256)
+          handler: handleManagementFeeCollected
+      file: ./src/token-assets/fund/fund.ts
+  - kind: ethereum
+    name: FundFactory
+    network: settlemint
+    source:
+      abi: FundFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - FundCreated
+      abis:
+        - name: FundFactory
+          file: ../contracts/artifacts/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json
+      eventHandlers:
+        - event: FundCreated(indexed address,indexed address,string,string,uint8,uint24)
+          handler: handleFundCreated
+      file: ./src/token-assets/fund-factory/fund-factory.ts

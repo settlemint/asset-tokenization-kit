@@ -68,20 +68,16 @@ export function fetchToken(address: Address): Token {
     if (tokenContract.supportsInterface(InterfaceIds.IATKBond)) {
       token.bond = fetchBond(address).id;
       token.save();
-    }
-    if (tokenContract.supportsInterface(InterfaceIds.IATKDeposit)) {
+    } else if (tokenContract.supportsInterface(InterfaceIds.IATKDeposit)) {
       token.deposit = true;
       token.save();
-    }
-    if (tokenContract.supportsInterface(InterfaceIds.IATKEquity)) {
+    } else if (tokenContract.supportsInterface(InterfaceIds.IATKEquity)) {
       token.equity = true;
       token.save();
-    }
-    if (tokenContract.supportsInterface(InterfaceIds.IATKFund)) {
+    } else if (tokenContract.supportsInterface(InterfaceIds.IATKFund)) {
       token.fund = fetchFund(address).id;
       token.save();
-    }
-    if (tokenContract.supportsInterface(InterfaceIds.IATKStableCoin)) {
+    } else if (tokenContract.supportsInterface(InterfaceIds.IATKStableCoin)) {
       token.stablecoin = true;
       token.save();
     }
