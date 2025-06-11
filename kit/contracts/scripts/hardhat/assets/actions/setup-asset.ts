@@ -13,6 +13,7 @@ import { issueIsinClaim } from "./core/issue-isin-claim";
 import { removeComplianceModule } from "./core/remove-compliance-module";
 import { setCountryParametersForComplianceModule } from "./core/set-country-parameters-for-compliance-module";
 import { updateRequiredTopics } from "./core/update-required-topic";
+import { unpauseAsset } from "./pausable/unpause-asset";
 
 export const setupAsset = async (
   asset: Asset<any>,
@@ -81,5 +82,8 @@ export const setupAsset = async (
   await grantRoles(asset, owner, [
     ATKRoles.supplyManagementRole,
     ATKRoles.custodianRole,
+    ATKRoles.emergencyRole, // for unpausing
   ]);
+
+  await unpauseAsset(asset);
 };

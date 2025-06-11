@@ -105,7 +105,7 @@ contract ATKFundImplementation is
         __SMART_init(name_, symbol_, decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_);
         __SMARTCustodian_init();
         __SMARTBurnable_init();
-        __SMARTPausable_init();
+        __SMARTPausable_init(true);
         __SMARTTokenAccessManaged_init(accessManager_);
 
         _managementFeeBps = managementFeeBps_;
