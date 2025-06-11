@@ -34,8 +34,6 @@ export const createPausedAsset = async () => {
 
   await grantRoles(pausedStableCoin, owner, [ATKRoles.emergencyRole]);
 
-  await pauseAsset(pausedStableCoin);
-
   // triggers Unpause event
   await unpauseAsset(pausedStableCoin);
 

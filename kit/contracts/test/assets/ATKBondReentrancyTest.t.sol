@@ -179,6 +179,9 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         _grantAllRoles(result.accessManager(), owner, owner);
 
         vm.prank(owner);
+        result.unpause();
+
+        vm.prank(owner);
         result.mint(owner, initialSupply);
 
         return result;
@@ -494,6 +497,9 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         vm.stopPrank();
 
         _grantAllRoles(normalBond.accessManager(), owner, owner);
+
+        vm.prank(owner);
+        normalBond.unpause();
 
         uint256 redeemAmount = 10 * 10 ** DECIMALS;
         uint256 underlyingNeeded = redeemAmount * faceValue / (10 ** DECIMALS);

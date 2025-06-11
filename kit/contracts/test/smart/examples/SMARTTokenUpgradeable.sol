@@ -130,7 +130,7 @@ contract SMARTTokenUpgradeable is
         __SMARTCustodian_init(); // Initializes custodian features
         __SMARTBurnable_init(); // Initializes burnable token features
         __SMARTRedeemable_init(); // Initializes redeemable token features
-        __SMARTPausable_init(); // Initializes pausable contract features
+        __SMARTPausable_init(false); // Initializes pausable contract features
         __SMARTCollateral_init(collateralProofTopic_); // Initializes collateral features
         __SMARTHistoricalBalances_init(); // Initializes historical balance tracking
     }
