@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address } from "@graphprotocol/graph-ts";
 import { TokenFund } from "../../../../generated/schema";
 import { Fund as FundTemplate } from "../../../../generated/templates";
 
@@ -8,7 +8,6 @@ export function fetchFund(address: Address): TokenFund {
   if (!fund) {
     fund = new TokenFund(address);
     fund.managementFeeBps = 0;
-    fund.lastFeeCollection = BigInt.zero();
     fund.save();
     FundTemplate.create(address);
   }

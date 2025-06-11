@@ -10,7 +10,6 @@ describe("Funds", () => {
           type
           fund {
             managementFeeBps
-            lastFeeCollection
           }
         }
       }
@@ -28,7 +27,6 @@ describe("Funds", () => {
         type: "fund",
         fund: {
           managementFeeBps: 20,
-          lastFeeCollection: "35074",
         },
       },
     ]);
