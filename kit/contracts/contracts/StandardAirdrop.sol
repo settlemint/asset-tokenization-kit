@@ -69,7 +69,7 @@ contract StandardAirdrop is AirdropBase {
         // Transfer tokens
         token.safeTransfer(_msgSender(), amount);
 
-        emit Claimed(_msgSender(), amount);
+        emit Claimed(_msgSender(), amount, index);
     }
 
     /**

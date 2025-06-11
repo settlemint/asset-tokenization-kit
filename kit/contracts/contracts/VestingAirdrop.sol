@@ -33,7 +33,7 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
     error ZeroAmountToTransfer();
 
     // Events for claim initialization
-    event ClaimInitialized(address indexed claimant, uint256 allocatedAmount);
+    event ClaimInitialized(address indexed claimant, uint256 allocatedAmount, uint256 index);
 
     /**
      * @dev Creates a vesting airdrop with a pluggable strategy
@@ -100,7 +100,7 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
             token.safeTransfer(_msgSender(), amountToTransfer);
             claimStrategy.recordClaim(_msgSender(), amountToTransfer);
 
-            emit Claimed(_msgSender(), amountToTransfer);
+            emit Claimed(_msgSender(), amountToTransfer, index);
         }
     }
 
@@ -129,7 +129,7 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
                 claimedAmounts[index] = amountToTransfer;
             }
 
-            emit ClaimInitialized(_msgSender(), amount);
+            emit ClaimInitialized(_msgSender(), amount, index);
         } else {
             // This is a subsequent claim for an already initialized vesting
 
@@ -191,12 +191,13 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
         }
 
         // Process vesting for each allocation
-        totalAmountToTransfer = _processBatchVestingClaim(indices, amounts);
+        uint256[] memory transferredAmounts;
+        (totalAmountToTransfer, transferredAmounts) = _processBatchVestingClaim(indices, amounts);
 
         // Transfer total tokens if not zero
         if (totalAmountToTransfer > 0) {
             token.safeTransfer(_msgSender(), totalAmountToTransfer);
-            emit BatchClaimed(_msgSender(), totalAmountToTransfer, indices, amounts);
+            emit BatchClaimed(_msgSender(), totalAmountToTransfer, indices, transferredAmounts);
         }
     }
 
@@ -205,15 +206,17 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
      * @param indices The indices in the Merkle tree
      * @param amounts The amounts allocated for each index
      * @return totalAmountToTransfer The total amount to transfer
+     * @return transferredAmounts The amounts transferred for each index
      */
     function _processBatchVestingClaim(
         uint256[] calldata indices,
         uint256[] calldata amounts
     )
         internal
-        returns (uint256 totalAmountToTransfer)
+        returns (uint256 totalAmountToTransfer, uint256[] memory transferredAmounts)
     {
         totalAmountToTransfer = 0;
+        transferredAmounts = new uint256[](indices.length);
 
         for (uint256 i = 0; i < indices.length; i++) {
             uint256 index = indices[i];
@@ -238,7 +241,8 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
                     totalAmountToTransfer += immediateAmount;
                     claimedAmounts[index] = immediateAmount;
                 }
-                emit ClaimInitialized(_msgSender(), amount);
+                transferredAmounts[i] = immediateAmount;
+                emit ClaimInitialized(_msgSender(), amount, index);
             } else {
                 // Process already initialized claim
                 uint256 vestingStart = claimTimestamps[index];
@@ -251,13 +255,14 @@ contract VestingAirdrop is AirdropBase, ReentrancyGuard {
                     totalAmountToTransfer += claimableAmount;
                     claimedAmounts[index] += claimableAmount;
                 }
+                transferredAmounts[i] = claimableAmount;
             }
         }
 
         // Finalize the batch in the strategy
         claimStrategy.finalizeBatch(_msgSender());
 
-        return totalAmountToTransfer;
+        return (totalAmountToTransfer, transferredAmounts);
     }
 
     /**

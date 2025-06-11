@@ -25,7 +25,7 @@ abstract contract AirdropBase is Ownable, ERC2771Context {
     mapping(uint256 => uint256) private claimedBitMap;
 
     // Events
-    event Claimed(address indexed claimant, uint256 amount);
+    event Claimed(address indexed claimant, uint256 amount, uint256 index);
     event TokensWithdrawn(address indexed to, uint256 amount);
     event BatchClaimed(address indexed claimant, uint256 totalAmount, uint256[] indices, uint256[] amounts);
 
