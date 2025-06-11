@@ -396,19 +396,22 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.warp(maturityDate + 2);
         vm.startPrank(owner);
 
+        uint256 requiredAmount = initialUnderlyingSupply;
+
         // Try to mature without any underlying assets
-        vm.expectRevert(IATKBond.InsufficientUnderlyingBalance.selector);
+        vm.expectRevert(abi.encodeWithSelector(IATKBond.InsufficientUnderlyingBalance.selector, 0, requiredAmount));
         bond.mature();
 
         // Add some underlying assets but not enough
-        uint256 requiredAmount = initialUnderlyingSupply;
         uint256 partialAmount = requiredAmount / 2;
         underlyingAsset.mint(owner, partialAmount);
         underlyingAsset.approve(address(bond), partialAmount);
         underlyingAsset.transfer(address(bond), partialAmount);
 
         // Try to mature with insufficient underlying assets
-        vm.expectRevert(IATKBond.InsufficientUnderlyingBalance.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(IATKBond.InsufficientUnderlyingBalance.selector, partialAmount, requiredAmount)
+        );
         bond.mature();
 
         vm.stopPrank();

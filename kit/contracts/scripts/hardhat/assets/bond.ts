@@ -11,8 +11,9 @@ import {
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
-import { getAnvilTimeMilliseconds } from "../utils/anvil";
+import { getAnvilTimeMilliseconds, getAnvilTimeSeconds } from "../utils/anvil";
 import { toDecimals } from "../utils/to-decimals";
+import { mature } from "./actions/bond/mature";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
@@ -20,6 +21,7 @@ import { forcedTransfer } from "./actions/custodian/forced-transfer";
 import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
+import { redeem } from "./actions/redeemable/redeem";
 import { setupAsset } from "./actions/setup-asset";
 import { claimYield } from "./actions/yield/claim-yield";
 import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
@@ -44,13 +46,16 @@ export const createBond = async (depositToken: Asset<any>) => {
     [[]]
   );
 
+  const anvilTimeSeconds = await getAnvilTimeSeconds(owner);
+  const faceValue = toDecimals(0.000123, depositToken.decimals);
+  const cap = toDecimals(1000000, bond.decimals);
   const transactionHash = await bondFactory.write.createBond([
     bond.name,
     bond.symbol,
     bond.decimals,
-    toDecimals(1000000, bond.decimals),
-    BigInt(Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60), // 1 year
-    BigInt(123),
+    cap,
+    BigInt(anvilTimeSeconds + 365 * 24 * 60 * 60), // 1 year
+    faceValue,
     depositToken.address!,
     [topicManager.getTopicId(ATKTopic.kyc)],
     [
@@ -108,7 +113,13 @@ export const createBond = async (depositToken: Asset<any>) => {
   }
   await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);
 
-  // TODO: execute all other functions of the bond
+  // mature bond
+  await mint(depositToken, bond.address, 150n);
+  await mature(bond);
+
+  // redeemable
+  await redeem(bond, owner, 10n);
+  await redeem(bond, investorB, 1n);
 
   return bond;
 };

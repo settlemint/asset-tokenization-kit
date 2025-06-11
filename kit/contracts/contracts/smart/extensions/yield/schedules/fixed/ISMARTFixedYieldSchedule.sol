@@ -40,12 +40,17 @@ interface ISMARTFixedYieldSchedule is ISMARTYieldSchedule, IERC165 {
     error ScheduleNotActive();
     /// @dev Reverted by `topUpUnderlyingAsset` or `withdrawUnderlyingAsset` if the underlying asset transfer fails or
     /// if there's not enough balance.
-    error InsufficientUnderlyingBalance(); // Could also be used if a transferFrom fails.
+    /// @param currentBalance The current balance of the underlying asset in the contract.
+    /// @param requiredBalance The required balance of the underlying asset for the operation.
+    error InsufficientUnderlyingBalance(uint256 currentBalance, uint256 requiredBalance); // Could also be used if a
+        // transferFrom fails.
     /// @dev Reverted if the `_underlyingAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to`
     /// address in withdrawal is zero.
     error InvalidUnderlyingAsset();
     /// @dev Reverted by `withdrawUnderlyingAsset` if the withdrawal `amount` is zero.
     error InvalidAmount();
+    /// @dev Reverted by `withdrawUnderlyingAsset` if the underlying asset balance is zero.
+    error NoUnderlyingBalance();
     /// @dev Reverted by `periodEnd` if an invalid period number (0 or out of bounds) is requested.
     error InvalidPeriod();
 

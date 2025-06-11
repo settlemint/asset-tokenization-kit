@@ -49,7 +49,7 @@ beforeAll(async () => {
         throw new Error("Subgraph has indexing errors");
       }
       if (
-        statusResponse._meta?.block.number &&
+        typeof statusResponse._meta?.block.number === "number" &&
         statusResponse._meta.block.number >= latestBlockNumber
       ) {
         console.log("Subgraph has indexed all blocks");
