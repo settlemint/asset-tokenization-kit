@@ -35,7 +35,7 @@ export const timeUnits = [
 /**
  * Creates a Zod schema that validates time measurement units.
  *
- * @returns A branded Zod enum schema for time unit validation
+ * @returns A Zod enum schema for time unit validation
  *
  * @example
  * ```typescript
@@ -52,11 +52,11 @@ export const timeUnits = [
  * ```
  */
 export const timeUnit = () =>
-  z.enum(timeUnits).describe("Unit of time measurement").brand<"TimeUnit">();
+  z.enum(timeUnits).describe("Unit of time measurement");
 
 /**
  * Type representing a validated time measurement unit.
- * Branded for additional type safety.
+ * Ensures type safety.
  */
 export type TimeUnit = z.infer<ReturnType<typeof timeUnit>>;
 

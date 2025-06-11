@@ -98,4 +98,86 @@ export const bc = oc.errors({
     status: 403,
     message: "Forbidden",
   },
+
+  /**
+   * Verification ID not found error.
+   *
+   * Thrown when a required verification ID is missing from the user's profile:
+   * - User hasn't set up the requested verification method
+   * - Verification method was disabled or removed
+   * - Invalid verification type requested
+   */
+  VERIFICATION_ID_NOT_FOUND: {
+    status: 404,
+    message: "Verification ID not found",
+    data: z.object({
+      verificationType: z.string().optional(),
+    }),
+  },
+
+  /**
+   * Challenge verification failed error.
+   *
+   * Thrown when wallet verification challenge fails:
+   * - Invalid verification code provided
+   * - Verification code expired
+   * - Portal service unavailable
+   * - Challenge response validation failed
+   */
+  CHALLENGE_FAILED: {
+    status: 401,
+    message: "Challenge verification failed",
+    data: z.object({
+      verificationType: z.string().optional(),
+    }),
+  },
+
+  /**
+   * Operation timeout error.
+   *
+   * Thrown when an operation exceeds its maximum allowed time:
+   * - Block indexing timeout
+   * - External service timeout
+   * - Database query timeout
+   */
+  TIMEOUT: {
+    status: 504,
+    message: "Operation timeout",
+    data: z.object({
+      details: z.unknown().optional(),
+    }),
+  },
+
+  /**
+   * Transaction failed error.
+   *
+   * Thrown when a blockchain transaction fails:
+   * - Transaction reverted
+   * - Insufficient gas
+   * - Contract execution error
+   * - Invalid transaction parameters
+   */
+  TRANSACTION_FAILED: {
+    status: 400,
+    message: "Transaction failed",
+    data: z.object({
+      details: z.unknown().optional(),
+    }),
+  },
+
+  /**
+   * Transaction confirmation timeout error.
+   *
+   * Thrown when waiting for transaction confirmation exceeds timeout:
+   * - Network congestion
+   * - Transaction stuck in mempool
+   * - Node synchronization issues
+   */
+  CONFIRMATION_TIMEOUT: {
+    status: 504,
+    message: "Transaction confirmation timeout",
+    data: z.object({
+      details: z.unknown().optional(),
+    }),
+  },
 });

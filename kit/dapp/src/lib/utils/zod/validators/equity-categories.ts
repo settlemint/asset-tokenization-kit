@@ -22,7 +22,7 @@ export const equityCategories = ["common", "preferred", "restricted"] as const;
 /**
  * Creates a Zod schema that validates equity categories.
  *
- * @returns A branded Zod enum schema for equity category validation
+ * @returns A Zod enum schema for equity category validation
  *
  * @example
  * ```typescript
@@ -38,14 +38,11 @@ export const equityCategories = ["common", "preferred", "restricted"] as const;
  * ```
  */
 export const equityCategory = () =>
-  z
-    .enum(equityCategories)
-    .describe("Category of equity")
-    .brand<"EquityCategory">();
+  z.enum(equityCategories).describe("Category of equity");
 
 /**
  * Type representing a validated equity category.
- * Branded for additional type safety.
+ * Ensures type safety.
  */
 export type EquityCategory = z.infer<ReturnType<typeof equityCategory>>;
 

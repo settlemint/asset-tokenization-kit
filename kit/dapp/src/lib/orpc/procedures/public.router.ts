@@ -1,6 +1,6 @@
-import { sessionMiddleware } from "../../middlewares/auth/session.middleware";
-import { errorMiddleware } from "../../middlewares/monitoring/error.middleware";
-import { sentryTracingMiddleware } from "../../middlewares/monitoring/sentry-tracing.middleware";
+import { sessionMiddleware } from "../middlewares/auth/session.middleware";
+import { errorMiddleware } from "../middlewares/monitoring/error.middleware";
+import { sentryTracingMiddleware } from "../middlewares/monitoring/sentry-tracing.middleware";
 import { br } from "./base.router";
 
 /**

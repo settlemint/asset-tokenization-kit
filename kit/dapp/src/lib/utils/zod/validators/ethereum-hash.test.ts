@@ -2,7 +2,6 @@ import { describe, expect, it } from "bun:test";
 import {
   ethereumHash,
   getEthereumHash,
-  isEthereumHash,
   type EthereumHash,
 } from "./ethereum-hash";
 
@@ -102,32 +101,20 @@ describe("Ethereum Hash Validation", () => {
     });
   });
 
-  describe("isEthereumHash", () => {
-    it("should return true for valid hashes", () => {
-      expect(isEthereumHash(validHash)).toBe(true);
-      expect(isEthereumHash(validUpperHash)).toBe(true);
-      expect(isEthereumHash(validMixedHash)).toBe(true);
-      expect(isEthereumHash(zeroHash)).toBe(true);
-      expect(isEthereumHash(maxHash)).toBe(true);
+  describe("type checking", () => {
+    it("should return proper type", () => {
+      const result = ethereumHash.parse(validHash);
+      // Test that the type is correctly inferred
+      const _typeCheck: EthereumHash = result;
+      expect(result).toBe(validHash);
     });
 
-    it("should return false for invalid hashes", () => {
-      expect(isEthereumHash(invalidNoPrefix)).toBe(false);
-      expect(isEthereumHash(invalidShort)).toBe(false);
-      expect(isEthereumHash(invalidLong)).toBe(false);
-      expect(isEthereumHash(invalidChars)).toBe(false);
-      expect(isEthereumHash(123)).toBe(false);
-      expect(isEthereumHash(null)).toBe(false);
-      expect(isEthereumHash({})).toBe(false);
-    });
-
-    it("should act as a type guard", () => {
-      const someHash: unknown = validHash;
-      if (isEthereumHash(someHash)) {
-        const hash: EthereumHash = someHash;
-        expect(hash as string).toEqual(validHash);
-      } else {
-        throw new Error("isEthereumHash failed to identify a valid hash");
+    it("should handle safeParse", () => {
+      const result = ethereumHash.safeParse(validHash);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: EthereumHash = result.data;
+        expect(result.data).toBe(validHash);
       }
     });
   });

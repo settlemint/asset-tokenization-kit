@@ -1,4 +1,4 @@
-import { br } from "./procedures/base.router";
+import { br } from "../procedures/base.router";
 
 /**
  * Main ORPC router configuration.

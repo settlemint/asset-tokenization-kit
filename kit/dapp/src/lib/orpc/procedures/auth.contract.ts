@@ -1,5 +1,5 @@
-import { bc } from "@/lib/orpc/routes/procedures/base.contract";
 import { oo } from "@orpc/openapi";
+import { bc } from "./base.contract";
 
 /**
  * Authenticated ORPC contract for protected procedures.

@@ -44,7 +44,10 @@
     "format": {},
     "lint": {},
     "dev": {
-      "dependsOn": ["dapp#codegen"],
+      "cache": false,
+      "persistent": true
+    },
+    "watch": {
       "cache": false,
       "persistent": true
     },

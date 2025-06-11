@@ -1,3 +1,14 @@
+volumes:
+  atk-besu:
+    driver: local
+  atk-minio:
+    driver: local
+  atk-postgres:
+    driver: local
+  atk-redis:
+    driver: local
+  atk-hasura:
+    driver: local
 services:
   anvil:
     image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.5
@@ -42,6 +53,7 @@ services:
       - ./tools/docker/besu/config.toml:/opt/besu/config.toml:ro
       - ./tools/docker/besu/genesis.json:/opt/besu/genesis.json:ro
       - ./tools/docker/besu/anvil-test-key:/opt/besu/key:ro
+      - atk-besu:/opt/besu/data
   txsigner:
     image: ghcr.io/settlemint/btp-signer:7.13.1
     container_name: atk-txsigner
@@ -97,6 +109,7 @@ services:
     volumes:
       - ./tools/docker/postgres/init.sql:/docker-entrypoint-initdb.d/1_init.sql:ro
       - ./tools/docker/postgres/atk.sql:/docker-entrypoint-initdb.d/2_atk.sql:ro
+      - atk-postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     environment:
@@ -121,9 +134,9 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./portal:/abis:ro
+      - ./tools/docker/portal:/abis:ro
     environment:
-      BLOCKCHAIN_JSON_RPC_ENDPOINT: http://txsigner:8545
+      BLOCKCHAIN_JSON_RPC_ENDPOINT: http://txsigner:3000
       BLOCKCHAIN_NETWORK_ID: "${CHAIN_ID:-1337}"
       BLOCKCHAIN_NETWORK_NAME: ${NETWORK_NAME:-ATK}
       CONTRACT_ABI_PATH: /abis
@@ -154,6 +167,8 @@ services:
       timeout: 2s
       retries: 5
       start_period: 5s
+    volumes:
+      - atk-redis:/data
   hasura:
     image: hasura/graphql-engine:v2.48.1
     container_name: atk-hasura
@@ -205,7 +220,7 @@ services:
       GRAPH_IPFS_TIMEOUT: 60
       GRAPH_MAX_IPFS_FILE_BYTES: 52428800
       GRAPH_IPFS_REQUEST_RETRIES: 10
-      SUBGRAPH: "kit:QmZdGBCn2sx8am9x1ZwNsBvoHDiRWnZ6nW8SPemQrsT4BB"
+      SUBGRAPH: "kit:QmXRc8QwAnJzVRPxbL8rVBbRaDZkrfFoQm3MLWgFyn5LQU"
     healthcheck:
       test: ["CMD-SHELL", "if timeout 1 bash -c '</dev/tcp/localhost/8000'; then echo 'Graph Node health check: SUCCESS'; else echo 'Graph Node health check: FAILED'; exit 1; fi"]
       interval: 2s
@@ -216,6 +231,8 @@ services:
     image: minio/minio:RELEASE.2025-05-24T17-08-30Z
     container_name: atk-minio
     restart: unless-stopped
+    volumes:
+      - atk-minio:/data
     ports:
       - "9000:9000"
       - "9001:9001"

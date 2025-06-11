@@ -17,20 +17,20 @@ import { z } from "zod";
  * - Length validation (exactly 66 characters including '0x' prefix)
  * - Hexadecimal format validation using regex pattern
  * - Hash validity check using viem's `isHash` function
- * - Type-safe output as a branded string for additional compile-time safety
+ * - Type-safe output as a validated string
  *
  * The validation process follows these steps:
  * 1. Check string length (must be exactly 66 characters)
  * 2. Validate hexadecimal format with regex
  * 3. Verify hash validity using viem's isHash
- * 4. Return as branded Hash type
+ * 4. Return as validated Hash type
  *
  * @example
  * ```typescript
  * // Valid hash parsing
  * const hash = ethereumHash.parse("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef");
  * // Returns: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
- * // Type: string & Brand<"Hash">
+ * // Type: string
  *
  * // Safe parsing with error handling
  * const result = ethereumHash.safeParse("invalid-hash");
@@ -54,15 +54,13 @@ export const ethereumHash = z
   )
   .refine(isHash, {
     message: "Invalid Ethereum hash format",
-  })
-  .brand<"Hash">();
+  });
 
 /**
  * Type representing a validated Ethereum hash
  *
- * This type is a branded string for additional
- * compile-time safety, ensuring that only validated hashes can be
- * assigned to variables of this type.
+ * This type represents a validated Ethereum hash
+ * as a string.
  */
 export type EthereumHash = z.output<typeof ethereumHash>;
 
