@@ -702,12 +702,14 @@ templates:
         - name: StandardAirdrop
           file: ../contracts/artifacts/contracts/StandardAirdrop.sol/StandardAirdrop.json
       eventHandlers:
-        - event: Claimed(indexed address,uint256)
+        - event: Claimed(indexed address,uint256,uint256)
           handler: handleClaimed
         - event: BatchClaimed(indexed address,uint256,uint256[],uint256[])
           handler: handleBatchClaimed
         - event: TokensWithdrawn(indexed address,uint256)
           handler: handleTokensWithdrawn
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
       file: ./src/distribution/standard-airdrop.ts
   - kind: ethereum/contract
     name: VestingAirdropTemplate
@@ -746,6 +748,8 @@ templates:
           handler: handleTokensWithdrawn
         - event: ClaimInitialized(indexed address,uint256,uint256)
           handler: handleClaimInitialized
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
       file: ./src/distribution/vesting-airdrop.ts
   - kind: ethereum/contract
     name: PushAirdropTemplate
@@ -778,6 +782,8 @@ templates:
           handler: handleMerkleRootUpdated
         - event: DistributionCapUpdated(uint256,uint256)
           handler: handleDistributionCapUpdated
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
       file: ./src/distribution/push-airdrop.ts
   - kind: ethereum
     name: Vault

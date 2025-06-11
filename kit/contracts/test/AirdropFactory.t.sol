@@ -175,7 +175,7 @@ contract AirdropFactoryTest is Test {
     function testDeployStandardAirdropWithInvalidTimeParameters() public {
         vm.startPrank(deployer);
 
-        vm.expectRevert("End time must be after start time");
+        vm.expectRevert(StandardAirdrop.InvalidEndTime.selector);
         // Remove trustedForwarder argument
         factory.deployStandardAirdrop(address(token), merkleRoot, owner, endTime, startTime);
 
@@ -186,7 +186,7 @@ contract AirdropFactoryTest is Test {
     function testDeployLinearVestingAirdropWithInvalidClaimPeriod() public {
         vm.startPrank(deployer);
 
-        vm.expectRevert("Claim period must be in the future");
+        vm.expectRevert(VestingAirdrop.InvalidClaimPeriod.selector);
         // Remove trustedForwarder argument
         factory.deployLinearVestingAirdrop(
             address(token), merkleRoot, owner, vestingDuration, cliffDuration, block.timestamp

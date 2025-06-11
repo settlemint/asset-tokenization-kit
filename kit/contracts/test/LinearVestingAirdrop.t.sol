@@ -141,7 +141,7 @@ contract LinearVestingAirdropTest is Test {
 
     function testConstructorRequiresFutureClaimPeriodEnd() public {
         vm.startPrank(owner);
-        vm.expectRevert("Claim period must be in the future");
+        vm.expectRevert(VestingAirdrop.InvalidClaimPeriod.selector);
         new VestingAirdrop(
             address(token),
             merkleRoot,

@@ -17,6 +17,7 @@ import {
   BatchClaimed,
   Claimed,
   ClaimInitialized,
+  OwnershipTransferred,
   TokensWithdrawn,
 } from "../../generated/templates/VestingAirdropTemplate/VestingAirdrop";
 
@@ -422,5 +423,16 @@ function processBatchClaim(
   airdrop.totalClaims = airdrop.totalClaims + 1;
   airdrop.totalClaimed = airdrop.totalClaimed.plus(totalAmountBD);
   airdrop.totalClaimedExact = airdrop.totalClaimedExact.plus(totalAmount);
+  airdrop.save();
+}
+
+export function handleOwnershipTransferred(event: OwnershipTransferred): void {
+  let airdrop = VestingAirdrop.load(event.address);
+  if (!airdrop) {
+    return;
+  }
+
+  // Update the owner using fetchAccount
+  airdrop.owner = fetchAccount(event.params.newOwner).id;
   airdrop.save();
 }

@@ -7,11 +7,12 @@ import {
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { withTracing } from "@/lib/utils/tracing";
-import { safeParse } from "@/lib/utils/typebox/index";
+import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import { getAirdropDistribution } from "../airdrop/airdrop-distribution";
+import { getAssetBalanceDetail } from "../asset-balance/asset-balance-detail";
 import { PushAirdropFragment } from "./push-airdrop-fragment";
 import { PushAirdropSchema, type PushAirdrop } from "./push-airdrop-schema";
 
@@ -59,9 +60,15 @@ export const getPushAirdropDetail = withTracing(
       })(),
       getAirdropDistribution(address),
     ]);
+
     if (!onChainPushAirdrop) {
       throw new Error(`Push airdrop not found for address ${address}`);
     }
+    // Get the token balance
+    const balance = await getAssetBalanceDetail({
+      address: getAddress(onChainPushAirdrop.asset.id),
+      account: address,
+    });
 
     const prices = await getAssetsPricesInUserCurrency(
       [onChainPushAirdrop.asset.id],
@@ -72,6 +79,7 @@ export const getPushAirdropDetail = withTracing(
       ...onChainPushAirdrop,
       distribution,
       price: prices.get(getAddress(onChainPushAirdrop.asset.id)),
+      balance: balance?.value ?? 0,
     });
   })
 );

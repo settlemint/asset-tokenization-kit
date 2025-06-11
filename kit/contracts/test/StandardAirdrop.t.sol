@@ -109,7 +109,7 @@ contract StandardAirdropTest is Test {
     // Test constructor constraints
     function testConstructorRequiresValidTimeframe() public {
         vm.startPrank(owner);
-        vm.expectRevert("End time must be after start time");
+        vm.expectRevert(StandardAirdrop.InvalidEndTime.selector);
         new StandardAirdrop(
             address(token),
             merkleRoot,
