@@ -1,6 +1,5 @@
 import type { User } from "@/lib/auth/types";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import type { EthereumAddress } from "@/lib/utils/zod/validators/ethereum-address";
 import type { VerificationCode } from "@/lib/utils/zod/validators/verification-code";
 import type { VerificationType } from "@/lib/utils/zod/validators/verification-type";
 import { ORPCError } from "@orpc/server";
@@ -60,28 +59,29 @@ const PORTAL_VERIFICATION_TYPE_MAP = {
  */
 export async function handleChallenge(
   user: User,
-  userWalletAddress: EthereumAddress,
-  code: VerificationCode,
-  verificationType: VerificationType
+  verification: {
+    code: VerificationCode;
+    type: VerificationType;
+  }
 ) {
-  const verificationId = getVerificationId(user, verificationType);
+  const verificationId = getVerificationId(user, verification.type);
 
   if (!verificationId) {
     throw new ORPCError("VERIFICATION_ID_NOT_FOUND", {
-      message: `Verification ID not found for ${verificationType} authentication`,
-      data: { verificationType },
+      message: `Verification ID not found for ${verification.type} authentication`,
+      data: { verificationType: verification.type },
     });
   }
 
   try {
     // Extract the underlying string value from the branded type
     const baseType =
-      verificationType as unknown as keyof typeof PORTAL_VERIFICATION_TYPE_MAP;
+      verification.type as unknown as keyof typeof PORTAL_VERIFICATION_TYPE_MAP;
 
     return await handleWalletVerificationChallenge({
       verificationId,
-      userWalletAddress,
-      code,
+      userWalletAddress: user.wallet,
+      code: verification.code,
       verificationType: PORTAL_VERIFICATION_TYPE_MAP[baseType],
       portalClient,
       portalGraphql,
@@ -89,7 +89,7 @@ export async function handleChallenge(
   } catch (error) {
     throw new ORPCError("CHALLENGE_FAILED", {
       message: `Challenge verification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-      data: { verificationType },
+      data: { verificationType: verification.type },
     });
   }
 }

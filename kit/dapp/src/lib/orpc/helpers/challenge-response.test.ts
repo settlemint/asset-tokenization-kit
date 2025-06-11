@@ -23,16 +23,17 @@ mock.module("@/lib/settlemint/portal", () => ({
 }));
 
 describe("challenge-response", () => {
+  const mockWalletAddress =
+    "0x1234567890123456789012345678901234567890" as EthereumAddress;
   const mockUser: User = {
     id: "user-123",
     email: "test@example.com",
     pincodeVerificationId: "pincode-verification-id",
     secretCodeVerificationId: "secret-code-verification-id",
     twoFactorVerificationId: "two-factor-verification-id",
+    wallet: mockWalletAddress,
   } as User;
 
-  const mockWalletAddress =
-    "0x1234567890123456789012345678901234567890" as EthereumAddress;
   const mockCode = "123456" as VerificationCode;
 
   beforeEach(() => {
@@ -51,12 +52,10 @@ describe("challenge-response", () => {
       mockedFunction.mockResolvedValueOnce(mockResponse);
 
       const verType = verificationType.parse("pincode");
-      const result = await handleChallenge(
-        mockUser,
-        mockWalletAddress,
-        mockCode,
-        verType
-      );
+      const result = await handleChallenge(mockUser, {
+        code: mockCode,
+        type: verType,
+      });
 
       expect(result).toEqual(mockResponse);
       expect(mockedFunction).toHaveBeenCalledWith({
@@ -80,12 +79,10 @@ describe("challenge-response", () => {
       mockedFunction.mockResolvedValueOnce(mockResponse);
 
       const verType = verificationType.parse("secret-code");
-      const result = await handleChallenge(
-        mockUser,
-        mockWalletAddress,
-        mockCode,
-        verType
-      );
+      const result = await handleChallenge(mockUser, {
+        code: mockCode,
+        type: verType,
+      });
 
       expect(result).toEqual(mockResponse);
       expect(mockedFunction).toHaveBeenCalledWith({
@@ -109,12 +106,10 @@ describe("challenge-response", () => {
       mockedFunction.mockResolvedValueOnce(mockResponse);
 
       const verType = verificationType.parse("two-factor");
-      const result = await handleChallenge(
-        mockUser,
-        mockWalletAddress,
-        mockCode,
-        verType
-      );
+      const result = await handleChallenge(mockUser, {
+        code: mockCode,
+        type: verType,
+      });
 
       expect(result).toEqual(mockResponse);
       expect(mockedFunction).toHaveBeenCalledWith({
@@ -136,21 +131,14 @@ describe("challenge-response", () => {
       const verType = verificationType.parse("pincode");
 
       await expect(
-        handleChallenge(
-          userWithoutPincode,
-          mockWalletAddress,
-          mockCode,
-          verType
-        )
+        handleChallenge(userWithoutPincode, { code: mockCode, type: verType })
       ).rejects.toThrow(ORPCError);
 
       try {
-        await handleChallenge(
-          userWithoutPincode,
-          mockWalletAddress,
-          mockCode,
-          verType
-        );
+        await handleChallenge(userWithoutPincode, {
+          code: mockCode,
+          type: verType,
+        });
       } catch (error) {
         expect(error).toBeInstanceOf(ORPCError);
         if (error instanceof ORPCError) {
@@ -173,11 +161,11 @@ describe("challenge-response", () => {
       const verType = verificationType.parse("pincode");
 
       await expect(
-        handleChallenge(mockUser, mockWalletAddress, mockCode, verType)
+        handleChallenge(mockUser, { code: mockCode, type: verType })
       ).rejects.toThrow(ORPCError);
 
       try {
-        await handleChallenge(mockUser, mockWalletAddress, mockCode, verType);
+        await handleChallenge(mockUser, { code: mockCode, type: verType });
       } catch (error) {
         expect(error).toBeInstanceOf(ORPCError);
         if (error instanceof ORPCError) {
@@ -199,11 +187,11 @@ describe("challenge-response", () => {
       const verType = verificationType.parse("pincode");
 
       await expect(
-        handleChallenge(mockUser, mockWalletAddress, mockCode, verType)
+        handleChallenge(mockUser, { code: mockCode, type: verType })
       ).rejects.toThrow(ORPCError);
 
       try {
-        await handleChallenge(mockUser, mockWalletAddress, mockCode, verType);
+        await handleChallenge(mockUser, { code: mockCode, type: verType });
       } catch (error) {
         expect(error).toBeInstanceOf(ORPCError);
         if (error instanceof ORPCError) {

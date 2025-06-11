@@ -7,11 +7,12 @@ export const CreateSchema = z.object({
   contract: ethereumAddress
     .optional()
     .describe("The address of the contract to call this function on"),
-  sender: ethereumAddress
-    .optional()
+  verification: z
+    .object({
+      code: verificationCode,
+      type: verificationType.default("pincode"),
+    })
     .describe(
-      "The address of the sender, defaults to the authenticated user's address"
+      "The two factor authentication to authorize signing of the transaction"
     ),
-  verificationCode,
-  verificationType: verificationType.default("pincode"),
 });
