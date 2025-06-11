@@ -72,13 +72,20 @@
   "trustedDependencies": [
     "@prisma/client",
     "@prisma/engines",
+    "@sentry/cli",
+    "@tailwindcss/oxide",
     "better-sqlite3",
+    "canvas",
+    "core-js",
     "esbuild",
     "keccak",
     "lefthook",
+    "libpq",
     "prisma",
     "protobufjs",
-    "secp256k1"
+    "secp256k1",
+    "unrs-resolver",
+    "vue-demi"
   ],
   "workspaces": [
     "kit/*"
