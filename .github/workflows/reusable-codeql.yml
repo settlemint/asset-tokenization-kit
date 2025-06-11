@@ -29,7 +29,9 @@ on:
   workflow_call:
     inputs:
       language:
-        description: "Language to analyze (cpp, csharp, go, java, javascript-typescript, python, ruby, swift)"
+        description:
+          "Language to analyze (cpp, csharp, go, java, javascript-typescript,
+          python, ruby, swift)"
         required: true
         type: string
       build-mode:
@@ -63,13 +65,13 @@ jobs:
         if: startsWith(inputs.runs-on, 'namespace-')
         uses: namespacelabs/nscloud-checkout-action@v7
         with:
-          fetch-depth: 1
+          fetch-depth: 0 # Full history needed for diff-informed queries
 
       - name: Checkout repository (standard)
         if: ${{ !startsWith(inputs.runs-on, 'namespace-') }}
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0 # Full history needed for diff-informed queries
 
       - name: Cache CodeQL (namespace)
         if: startsWith(inputs.runs-on, 'namespace-')

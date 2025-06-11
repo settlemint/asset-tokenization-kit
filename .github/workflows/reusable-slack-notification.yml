@@ -194,11 +194,15 @@ jobs:
                   }
                 },
                 {
-                  "type": "context",
-                  "elements": [
+                  "type": "section",
+                  "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "<https://github.com/${{ steps.build_status.outputs.pr_user }}|${{ steps.build_status.outputs.pr_user }}> • <https://github.com/${{ github.repository }}|${{ github.repository }}>"
+                      "text": "*Author:*\n<https://github.com/${{ steps.build_status.outputs.pr_user }}|${{ steps.build_status.outputs.pr_user }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Repository:*\n<https://github.com/${{ github.repository }}|${{ github.repository }}>"
                     }
                   ]
                 },
