@@ -64,7 +64,7 @@ async function main() {
   await grantRole(
     atkDeployer.getComplianceContract().address,
     owner,
-    ATKRoles.allowListManagerRole,
+    ATKRoles.bypassListManagerRole,
     atkDeployer.getFixedYieldScheduleFactoryContract().address
   );
 

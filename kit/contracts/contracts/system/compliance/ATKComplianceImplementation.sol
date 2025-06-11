@@ -11,7 +11,7 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 
 // Interface imports
 import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
-import { IATKComplianceAllowList } from "./IATKComplianceAllowList.sol";
+import { IATKComplianceBypassList } from "./IATKComplianceBypassList.sol";
 import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
@@ -30,20 +30,20 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 /// This contract is designed to be used behind a proxy (like `SMARTComplianceProxy`) to allow its logic to be upgraded.
 /// It supports meta-transactions via `ERC2771ContextUpgradeable` allowing a trusted forwarder to pay for gas fees.
 /// It also implements `ERC165Upgradeable` for interface detection.
-/// Additionally, it implements a allow list functionality that allows certain addresses (mainly contracts) to bypass
+/// Additionally, it implements a bypass list functionality that allows certain addresses (mainly contracts) to bypass
 /// compliance checks when they are the sender or receiver of a transfer.
 contract ATKComplianceImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
     ISMARTCompliance,
-    IATKComplianceAllowList
+    IATKComplianceBypassList
 {
     // --- Storage ---
-    /// @notice Mapping of addresses that are allow listed to bypass compliance checks
-    /// @dev When an address is allow listed, transfers involving this address (as sender or receiver) will skip
+    /// @notice Mapping of addresses that are on the bypass list to bypass compliance checks
+    /// @dev When an address is on the bypass list, transfers involving this address (as sender or receiver) will skip
     /// compliance module checks in the `canTransfer` function
-    mapping(address => bool) private _allowListedAddresses;
+    mapping(address => bool) private _bypassedAddresses;
 
     // --- Constructor ---
     /// @notice Constructor for the compliance implementation contract.
@@ -77,46 +77,46 @@ contract ATKComplianceImplementation is
         }
     }
 
-    // --- AllowList Management Functions ---
+    // --- Bypass List Management Functions ---
 
-    /// @notice Adds an address to the compliance allow list
-    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
-    /// AllowListed addresses can bypass compliance checks in canTransfer function.
-    /// @param account The address to add to the allow list
-    function addToAllowList(address account) external onlyRole(ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE) {
+    /// @notice Adds an address to the compliance bypass list
+    /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
+    /// Bypassed addresses can bypass compliance checks in canTransfer function.
+    /// @param account The address to add to the bypass list
+    function addToBypassList(address account) external onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE) {
         if (account == address(0)) revert ZeroAddressNotAllowed();
-        if (_allowListedAddresses[account]) revert AddressAlreadyAllowListed(account);
+        if (_bypassedAddresses[account]) revert AddressAlreadyOnBypassList(account);
 
-        _allowListedAddresses[account] = true;
-        emit AddressAllowListed(account, _msgSender());
+        _bypassedAddresses[account] = true;
+        emit AddressAddedToBypassList(account, _msgSender());
     }
 
-    /// @notice Removes an address from the compliance allow list
-    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
-    /// @param account The address to remove from the allow list
-    function removeFromAllowList(address account) external onlyRole(ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE) {
-        if (!_allowListedAddresses[account]) revert AddressNotAllowListed(account);
+    /// @notice Removes an address from the compliance bypass list
+    /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
+    /// @param account The address to remove from the bypass list
+    function removeFromBypassList(address account) external onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE) {
+        if (!_bypassedAddresses[account]) revert AddressNotOnBypassList(account);
 
-        _allowListedAddresses[account] = false;
-        emit AddressRemovedFromAllowList(account, _msgSender());
+        _bypassedAddresses[account] = false;
+        emit AddressRemovedFromBypassList(account, _msgSender());
     }
 
-    /// @notice Adds multiple addresses to the compliance allow list in a single transaction
-    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
-    /// This is a gas-efficient way to allow list multiple addresses at once.
-    /// @param accounts Array of addresses to add to the allow list
-    function addMultipleToAllowList(address[] calldata accounts)
+    /// @notice Adds multiple addresses to the compliance bypass list in a single transaction
+    /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
+    /// This is a gas-efficient way to add multiple addresses to the bypass list at once.
+    /// @param accounts Array of addresses to add to the bypass list
+    function addMultipleToBypassList(address[] calldata accounts)
         external
-        onlyRole(ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE)
+        onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE)
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
             address account = accounts[i];
             if (account == address(0)) revert ZeroAddressNotAllowed();
-            if (_allowListedAddresses[account]) revert AddressAlreadyAllowListed(account);
+            if (_bypassedAddresses[account]) revert AddressAlreadyOnBypassList(account);
 
-            _allowListedAddresses[account] = true;
-            emit AddressAllowListed(account, _msgSender());
+            _bypassedAddresses[account] = true;
+            emit AddressAddedToBypassList(account, _msgSender());
 
             unchecked {
                 ++i;
@@ -124,20 +124,20 @@ contract ATKComplianceImplementation is
         }
     }
 
-    /// @notice Removes multiple addresses from the compliance allow list in a single transaction
-    /// @dev Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.
-    /// @param accounts Array of addresses to remove from the allow list
-    function removeMultipleFromAllowList(address[] calldata accounts)
+    /// @notice Removes multiple addresses from the compliance bypass list in a single transaction
+    /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
+    /// @param accounts Array of addresses to remove from the bypass list
+    function removeMultipleFromBypassList(address[] calldata accounts)
         external
-        onlyRole(ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE)
+        onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE)
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
             address account = accounts[i];
-            if (!_allowListedAddresses[account]) revert AddressNotAllowListed(account);
+            if (!_bypassedAddresses[account]) revert AddressNotOnBypassList(account);
 
-            _allowListedAddresses[account] = false;
-            emit AddressRemovedFromAllowList(account, _msgSender());
+            _bypassedAddresses[account] = false;
+            emit AddressRemovedFromBypassList(account, _msgSender());
 
             unchecked {
                 ++i;
@@ -145,11 +145,11 @@ contract ATKComplianceImplementation is
         }
     }
 
-    /// @notice Checks if an address is allow listed
+    /// @notice Checks if an address is on the bypass list
     /// @param account The address to check
-    /// @return True if the address is allow listed, false otherwise
-    function isAllowListed(address account) external view returns (bool) {
-        return _allowListedAddresses[account];
+    /// @return True if the address is on the bypass list, false otherwise
+    function isBypassed(address account) external view returns (bool) {
+        return _bypassedAddresses[account];
     }
 
     // --- ISMARTCompliance Implementation (State-Changing) ---
@@ -271,7 +271,8 @@ contract ATKComplianceImplementation is
     /// @inheritdoc ISMARTCompliance
     /// @notice Checks if a proposed token transfer is compliant with all registered modules for a given token.
     /// @dev This function is typically called by an `ISMART` token contract *before* a transfer is executed.
-    /// It first checks if either the sender or receiver is allow listed - if so, the transfer is automatically allowed.
+    /// It first checks if either the sender or receiver is on the bypass list - if so, the transfer is automatically
+    /// allowed.
     /// Otherwise, it retrieves all compliance modules registered for the `_token` and calls the `canTransfer` view
     /// function on
     /// each module.
@@ -296,12 +297,12 @@ contract ATKComplianceImplementation is
         override
         returns (bool)
     {
-        // Check if receiver is allow listed - if so, bypass all compliance checks
-        if (_allowListedAddresses[_to]) {
+        // Check if receiver is on the bypass list - if so, bypass all compliance checks
+        if (_bypassedAddresses[_to]) {
             return true;
         }
 
-        // If neither address is allow listed, proceed with normal compliance module checks
+        // If neither address is on the bypass list, proceed with normal compliance module checks
         SMARTComplianceModuleParamPair[] memory modulePairs = ISMART(_token).complianceModules();
         uint256 modulePairsLength = modulePairs.length;
         for (uint256 i = 0; i < modulePairsLength;) {
@@ -355,7 +356,7 @@ contract ATKComplianceImplementation is
     // --- Overrides for ERC2771ContextUpgradeable ---
 
     /// @notice Override supportsInterface to support ERC165 interface detection
-    /// @dev Announces support for ISMARTCompliance and ISMARTComplianceAllowList interfaces
+    /// @dev Announces support for ISMARTCompliance and IATKComplianceBypassList interfaces
     /// @param interfaceId The interface identifier to check
     /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
@@ -366,7 +367,7 @@ contract ATKComplianceImplementation is
         returns (bool)
     {
         return interfaceId == type(ISMARTCompliance).interfaceId
-            || interfaceId == type(IATKComplianceAllowList).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(IATKComplianceBypassList).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /// @notice Override _msgSender to support meta-transactions via ERC2771
