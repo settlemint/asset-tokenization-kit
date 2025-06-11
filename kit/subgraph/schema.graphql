@@ -537,10 +537,11 @@ type StandardAirdrop implements Airdrop @entity(immutable: false) {
   totalClaims: Int!
   isWithdrawn: Boolean!
   trustedForwarder: Account!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
+
   # Standard specific
   startTime: BigInt!
   endTime: BigInt!
-  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 }
 
 type VestingAirdrop implements Airdrop @entity(immutable: false) {
@@ -557,11 +558,11 @@ type VestingAirdrop implements Airdrop @entity(immutable: false) {
   totalClaims: Int!
   isWithdrawn: Boolean!
   trustedForwarder: Account!
-  claimPeriodEnd: BigInt!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 
   # Vesting specific
+  claimPeriodEnd: BigInt!
   strategy: VestingStrategy!
-  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 }
 
 type PushAirdrop implements Airdrop @entity(immutable: false) {
@@ -578,11 +579,11 @@ type PushAirdrop implements Airdrop @entity(immutable: false) {
   totalClaims: Int!
   isWithdrawn: Boolean!
   trustedForwarder: Account!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 
   # PushAirdrop specific
   distributionCap: BigInt!
   totalDistributed: BigInt!
-  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 }
 
 interface VestingStrategy {
@@ -619,7 +620,7 @@ type AirdropRecipient @entity(immutable: false) {
 
 # Represents a specific index claimed by a recipient
 type AirdropClaimIndex @entity(immutable: true) {
-  id: Bytes! # airdropId-index
+  id: Bytes! # airdropId-recipientAddress-index
   index: BigInt!
   airdrop: Airdrop!
   recipient: AirdropRecipient!
