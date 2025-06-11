@@ -12,6 +12,10 @@ error InvalidSystemAddress();
 /// of a critical component if a required setup step could not be completed successfully.
 error InitializationFailed();
 
+/// @notice Error indicating that an action is being attempted on a system that has not been bootstrapped yet.
+/// @dev This is thrown when a function requires core proxy contracts to be deployed, but they haven't been.
+error SystemNotBootstrapped();
+
 /// @notice Error indicating that the system has already been bootstrapped and cannot be bootstrapped again.
 /// @dev This error is thrown if the `bootstrap` function is called when the system proxy contracts have already
 /// been deployed and initialized.

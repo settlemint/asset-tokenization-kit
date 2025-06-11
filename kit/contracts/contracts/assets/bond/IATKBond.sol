@@ -43,11 +43,15 @@ interface IATKBond is
     /// @notice Error an invalid face value was provided (e.g., zero).
     error InvalidFaceValue();
     /// @notice Error the contract does not hold enough underlying asset balance for an operation.
-    error InsufficientUnderlyingBalance();
+    /// @param currentBalance The current balance of the underlying asset in the contract.
+    /// @param requiredBalance The required balance of the underlying asset for the operation.
+    error InsufficientUnderlyingBalance(uint256 currentBalance, uint256 requiredBalance);
     /// @notice Error an invalid redemption amount was specified.
     error InvalidRedemptionAmount();
     /// @notice Error the caller does not have enough redeemable bond tokens for the operation.
-    error InsufficientRedeemableBalance();
+    /// @param currentBalance The current balance of the redeemable bond tokens in the contract.
+    /// @param requiredBalance The required balance of the redeemable bond tokens for the operation.
+    error InsufficientRedeemableBalance(uint256 currentBalance, uint256 requiredBalance);
 
     /// @notice Emitted when the bond reaches maturity and is closed
     /// @param timestamp The block timestamp when the bond matured

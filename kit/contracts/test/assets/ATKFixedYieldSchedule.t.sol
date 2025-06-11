@@ -513,7 +513,9 @@ contract SMARTFixedYieldScheduleTest is Test {
 
     function test_InsufficientUnderlyingBalance() public {
         vm.prank(owner);
-        vm.expectRevert(ISMARTFixedYieldSchedule.InsufficientUnderlyingBalance.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTFixedYieldSchedule.InsufficientUnderlyingBalance.selector, 0, 1000e18)
+        );
         yieldSchedule.withdrawUnderlyingAsset(user1, 1000e18);
     }
 }

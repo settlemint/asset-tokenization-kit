@@ -26,7 +26,7 @@
       "cache": false,
       "dependsOn": ["package", "^publish"]
     },
-    "test": {
+    "test:integration": {
       "dependsOn": ["codegen:gql-tada"]
     },
     "artifacts": {

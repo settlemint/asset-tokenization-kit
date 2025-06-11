@@ -25,13 +25,10 @@ jobs:
       packages: write
       id-token: write
     steps:
-      - uses: fuxingloh/multi-labeler@v4
-        if: ${{ github.event_name == 'pull_request' }}
-
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
@@ -99,18 +96,9 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
 
-      - uses: actions/setup-python@5db1cf9a59fb97c40a68accab29236f0da7e94db
-        with:
-          python-version: "3.13.4"
-          check-latest: true
-
-      - name: Set up chart-testing
-        uses: helm/chart-testing-action@0d28d3144d3a25ea2cc349d6e59901c4ff469b3b # v2.7.0
-
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:
-          version: 2.3.14
           instance: local
           command: "connect -a"
 
@@ -130,6 +118,8 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: settlemintcom
           SENTRY_PROJECT: atk
+          THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
+          THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
 
       - name: Store predeployed output
         uses: actions/upload-artifact@v4
@@ -140,58 +130,43 @@ jobs:
             kit/contracts/portal/*.json
             kit/subgraph/subgraph-output.txt
 
+  pr-labels:
+    name: PR Labels
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/reusable-pr-labels.yml
+
   secret-scanning:
     name: Secret Scanning
-    runs-on: namespace-profile-atk-services
-    if:
-      (github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]') &&
-      (github.event_name == 'push' || github.event.action == 'opened' ||
-      github.event.action == 'synchronize')
-    steps:
-      - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v7
-
-      - name: Secret Scanning (Trivy)
-        uses: aquasecurity/trivy-action@0.31.0
-        with:
-          scan-type: "fs"
-          scan-ref: "."
-          trivy-config: trivy-secret.yaml
-          severity: "HIGH,CRITICAL"
-          format: "table"
-          exit-code: "1"
-          scanners: "secret"
+    uses: ./.github/workflows/reusable-secret-scanning.yml
+    with:
+      trivy-config: trivy-secret.yaml
+      severity: "HIGH,CRITICAL"
 
   codeql:
-    name: CodeQL (${{ matrix.language }})
-    runs-on: namespace-profile-atk-services
-    if:
-      (github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]') &&
-      (github.event_name == 'push' || github.event.action == 'opened' ||
-      github.event.action == 'synchronize')
-    permissions:
-      security-events: write
-      packages: read
-      actions: read
-      contents: read
+    name: CodeQL
+    uses: ./.github/workflows/reusable-codeql.yml
+    with:
+      language: "javascript-typescript"
+      build-mode: "none"
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - language: javascript-typescript
-            build-mode: none
-    steps:
-      - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v7
+  slack-notification-start:
+    name: Slack Notification (Start)
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/reusable-slack-notification.yml
+    with:
+      workflow_conclusion: "running"
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@fca7ace96b7d713c7035871441bd52efbe39e27e # v3
-        with:
-          languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.build-mode }}
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@fca7ace96b7d713c7035871441bd52efbe39e27e # v3
-        with:
-          category: "/language:${{matrix.language}}"
+  slack-notification-end:
+    name: Slack Notification (End)
+    needs: [qa, secret-scanning, codeql, pr-labels]
+    if: always() && github.event_name == 'pull_request'
+    uses: ./.github/workflows/reusable-slack-notification.yml
+    with:
+      workflow_conclusion:
+        ${{ needs.qa.result == 'success' && needs.secret-scanning.result !=
+        'failure' && needs.codeql.result != 'failure' && needs.pr-labels.result
+        != 'failure' && 'success' || 'failure' }}
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}

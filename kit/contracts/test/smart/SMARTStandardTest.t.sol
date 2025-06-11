@@ -15,6 +15,7 @@ import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { SMARTToken } from "./examples/SMARTToken.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { SMARTIdentityVerificationTest } from "./extensions/SMARTIdentityVerificationTest.sol";
+import { SMARTCappedTest } from "./extensions/SMARTCappedTest.sol";
 // Rename contract to reflect its purpose
 
 contract SMARTStandardTest is
@@ -25,7 +26,8 @@ contract SMARTStandardTest is
     SMARTCollateralTest,
     SMARTCountryAllowListTest,
     SMARTCountryBlockListTest,
-    SMARTIdentityVerificationTest
+    SMARTIdentityVerificationTest,
+    SMARTCappedTest
 {
     function _setupToken() internal override {
         // 1. Create the token contract
@@ -34,6 +36,7 @@ contract SMARTStandardTest is
             "Test Bond",
             "TSTB",
             18,
+            DEFAULT_CAP,
             address(0),
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),

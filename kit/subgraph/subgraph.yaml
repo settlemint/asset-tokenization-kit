@@ -86,6 +86,8 @@ templates:
       abis:
         - name: System
           file: ../contracts/artifacts/contracts/system/IATKSystem.sol/IATKSystem.json
+        - name: BondFactory
+          file: ../contracts/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
             address,address,address,address,address,address)
@@ -426,3 +428,63 @@ templates:
             address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)
           handler: handleYieldClaimed
       file: ./src/fixed-yield-schedule/fixed-yield-schedule.ts
+  - kind: ethereum
+    name: Redeemable
+    network: settlemint
+    source:
+      abi: Redeemable
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Redeemed
+      abis:
+        - name: Redeemable
+          file: ../contracts/artifacts/contracts/smart/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json
+      eventHandlers:
+        - event: Redeemed(indexed address,uint256)
+          handler: handleRedeemed
+      file: ./src/redeemable/redeemable.ts
+  - kind: ethereum
+    name: Bond
+    network: settlemint
+    source:
+      abi: Bond
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - BondMatured
+        - BondRedeemed
+      abis:
+        - name: Bond
+          file: ../contracts/artifacts/contracts/assets/bond/IATKBond.sol/IATKBond.json
+      eventHandlers:
+        - event: BondMatured(indexed uint256)
+          handler: handleBondMatured
+        - event: BondRedeemed(indexed address,indexed address,uint256,uint256)
+          handler: handleBondRedeemed
+      file: ./src/bond/bond.ts
+  - kind: ethereum
+    name: BondFactory
+    network: settlemint
+    source:
+      abi: BondFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - BondCreated
+      abis:
+        - name: BondFactory
+          file: ../contracts/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
+        - name: Token
+          file: ../contracts/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
+      eventHandlers:
+        - event: BondCreated(indexed address,indexed
+            address,string,string,uint8,uint256,uint256,uint256,address)
+          handler: handleBondCreated
+      file: ./src/bond-factory/bond-factory.ts
