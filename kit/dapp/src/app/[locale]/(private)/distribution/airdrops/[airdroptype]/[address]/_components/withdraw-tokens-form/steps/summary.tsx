@@ -1,7 +1,7 @@
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import type { WithdrawTokensFromAirdropInput } from "@/lib/mutations/airdrop/withdraw-token/withdraw-token-schema";
+import type { WithdrawTokenFromAirdropInput } from "@/lib/mutations/airdrop/withdraw-token/withdraw-token-schema";
 import type { PushAirdrop } from "@/lib/queries/push-airdrop/push-airdrop-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { useLocale, useTranslations } from "next-intl";
@@ -39,8 +39,8 @@ export function Summary({ airdrop }: SummaryProps) {
 }
 
 type SummaryComponent = typeof Summary & {
-  validatedFields: (keyof WithdrawTokensFromAirdropInput)[];
+  validatedFields: (keyof WithdrawTokenFromAirdropInput)[];
 };
 
 (Summary as SummaryComponent).validatedFields =
-  [] satisfies (keyof WithdrawTokensFromAirdropInput)[];
+  [] satisfies (keyof WithdrawTokenFromAirdropInput)[];

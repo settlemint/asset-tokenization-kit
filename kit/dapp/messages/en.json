@@ -1724,6 +1724,14 @@
             "airdrop-label": "Airdrop",
             "airdrop-asset-label": "Asset",
             "withdraw-amount-label": "Balance"
+          },
+          "transfer-ownership": {
+            "title": "Transfer ownership",
+            "description": "Transfer ownership of the airdrop to a new user",
+            "summary-title": "Review and confirm transferring ownership",
+            "summary-description": "Transfer ownership of the airdrop to a new user",
+            "airdrop-label": "Airdrop",
+            "new-owner-label": "New owner"
           }
         }
       }
@@ -2083,7 +2091,8 @@
               "grant-role": "Enter a wallet address to grant roles to, or search for a user by their name, email or wallet address.",
               "mint": "Enter a wallet address to send assets directly, or search for a user by their name, email or wallet address.",
               "unblock": "Enter a wallet address to unblock, or search for a user by their name, email or wallet address.",
-              "withdraw": "Enter a wallet address to withdraw assets to, or search for a user by their name, email or wallet address."
+              "withdraw": "Enter a wallet address to withdraw assets to, or search for a user by their name, email or wallet address.",
+              "transfer-ownership": "Enter a wallet address to transfer ownership to, or search for a user by their name, email or wallet address."
             },
             "enter-user-address-manually": "Enter address manually...",
             "enter-wallet-address-placeholder": "Enter a wallet address",

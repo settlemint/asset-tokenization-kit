@@ -5,7 +5,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
-import type { WithdrawTokensFromAirdropInput } from "./withdraw-token-schema";
+import type { WithdrawTokenFromAirdropInput } from "./withdraw-token-schema";
 
 const PushAirdropWithdrawTokens = portalGraphql(`
   mutation PushAirdropWithdrawTokens($address: String!, $from: String!, $input: PushAirdropWithdrawTokensInput!, $challengeResponse: String!, $verificationId: String) {
@@ -25,7 +25,7 @@ export const withdrawTokensFromAirdropFunction = async ({
   parsedInput: { airdrop, verificationCode, verificationType },
   ctx: { user },
 }: {
-  parsedInput: WithdrawTokensFromAirdropInput;
+  parsedInput: WithdrawTokenFromAirdropInput;
   ctx: { user: User };
 }) => {
   const result = await portalClient.request(PushAirdropWithdrawTokens, {

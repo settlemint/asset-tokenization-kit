@@ -16,6 +16,7 @@ import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { getAddress } from "viem";
+import { TransferOwnershipForm } from "../transfer-ownership/form";
 import { WithdrawTokensForm } from "../withdraw-tokens-form/form";
 
 interface AirdropManageDropdownProps {
@@ -27,6 +28,11 @@ export function AirdropManageDropdown({ airdrop }: AirdropManageDropdownProps) {
   const { data: session } = authClient.useSession();
   const currentUserWallet = session?.user?.wallet;
 
+  const isOwner =
+    currentUserWallet &&
+    airdrop.owner.id &&
+    getAddress(currentUserWallet) === getAddress(airdrop.owner.id);
+
   const menuItems = [
     ...(airdrop.type === AirdropTypeEnum.push
       ? [
@@ -36,6 +42,10 @@ export function AirdropManageDropdown({ airdrop }: AirdropManageDropdownProps) {
           },
         ]
       : []),
+    {
+      id: "transfer-ownership",
+      label: t("transfer-ownership.title"),
+    },
   ];
 
   const [openMenuItem, setOpenMenuItem] = useState<
@@ -47,11 +57,6 @@ export function AirdropManageDropdown({ airdrop }: AirdropManageDropdownProps) {
       setOpenMenuItem(null);
     }
   };
-
-  const isOwner =
-    currentUserWallet &&
-    airdrop.owner.id &&
-    getAddress(currentUserWallet) === getAddress(airdrop.owner.id);
 
   return (
     <DropdownMenu>
@@ -78,6 +83,12 @@ export function AirdropManageDropdown({ airdrop }: AirdropManageDropdownProps) {
       <WithdrawTokensForm
         airdrop={airdrop as PushAirdrop}
         open={openMenuItem === "withdraw-tokens"}
+        onOpenChange={onFormOpenChange}
+        disabled={!isOwner}
+      />
+      <TransferOwnershipForm
+        airdrop={airdrop}
+        open={openMenuItem === "transfer-ownership"}
         onOpenChange={onFormOpenChange}
         disabled={!isOwner}
       />
