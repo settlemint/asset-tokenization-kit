@@ -19,7 +19,7 @@ import { z } from "zod";
  * - 18 decimals = maximum precision (Ethereum standard)
  * - Common values: 2 (fiat currencies), 6 (USDC), 18 (ETH)
  *
- * @returns A branded Zod schema for decimal validation
+ * @returns A Zod schema for decimal validation
  *
  * @example
  * ```typescript
@@ -43,12 +43,11 @@ export const decimals = () =>
     .int("Decimals must be a whole number (integer)")
     .min(0, "Decimals cannot be negative")
     .max(18, "Decimals cannot exceed 18 (ERC20 standard maximum)") // Standard ERC20 maximum
-    .describe("Number of decimal places for the asset")
-    .brand<"Decimals">();
+    .describe("Number of decimal places for the asset");
 
 /**
  * Type representing validated decimal precision.
- * Branded for additional type safety.
+ * Ensures type safety.
  */
 export type Decimals = z.infer<ReturnType<typeof decimals>>;
 

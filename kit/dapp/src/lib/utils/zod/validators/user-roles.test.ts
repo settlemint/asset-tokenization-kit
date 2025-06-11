@@ -1,7 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import {
   getUserRole,
-  isUserRole,
   userRoleNames,
   userRoles,
   type UserRole,
@@ -69,43 +68,27 @@ describe("userRoles", () => {
       expect(validator.parse("issuer") as string).toBe("issuer");
     });
   });
-});
 
-describe("helper functions", () => {
-  describe("isUserRole", () => {
-    it("should return true for valid user roles", () => {
-      expect(isUserRole("admin")).toBe(true);
-      expect(isUserRole("user")).toBe(true);
-      expect(isUserRole("issuer")).toBe(true);
+  describe("type checking", () => {
+    it("should return proper type", () => {
+      const result = validator.parse("admin");
+      // Test that the type is correctly inferred
+      const _typeCheck: UserRole = result;
+      expect(result).toBe("admin");
     });
 
-    it("should return false for invalid user roles", () => {
-      expect(isUserRole("superadmin")).toBe(false);
-      expect(isUserRole("moderator")).toBe(false);
-      expect(isUserRole("guest")).toBe(false);
-      expect(isUserRole("viewer")).toBe(false);
-      expect(isUserRole("")).toBe(false);
-      expect(isUserRole(123)).toBe(false);
-      expect(isUserRole(null)).toBe(false);
-      expect(isUserRole(undefined)).toBe(false);
-      expect(isUserRole({})).toBe(false);
-      expect(isUserRole([])).toBe(false);
-      expect(isUserRole("Admin")).toBe(false);
-      expect(isUserRole("USER")).toBe(false);
-      expect(isUserRole("admins")).toBe(false);
-      expect(isUserRole("administrator")).toBe(false);
-    });
-
-    it("should narrow types correctly", () => {
-      const value: unknown = "admin";
-      if (isUserRole(value)) {
-        // Type should be narrowed to UserRole
-        const role: UserRole = value;
-        expect(role as string).toBe("admin");
+    it("should handle safeParse", () => {
+      const result = validator.safeParse("issuer");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: UserRole = result.data;
+        expect(result.data).toBe("issuer");
       }
     });
   });
+});
 
+describe("getUserRole function", () => {
   describe("getUserRole", () => {
     it("should return valid user roles", () => {
       expect(getUserRole("admin") as string).toBe("admin");

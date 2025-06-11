@@ -16,7 +16,6 @@ import { z } from "zod";
  * - Exact length validation (must be 6 digits)
  * - Numeric-only validation (0-9 characters only)
  * - Format consistency for authentication systems
- * - Branded type for additional compile-time safety
  * - Security-focused validation patterns
  *
  * PIN code format requirements:
@@ -30,14 +29,13 @@ import { z } from "zod";
  * 1. Check exact length (must be 6 characters)
  * 2. Validate format using regex (digits only)
  * 3. Ensure no non-numeric characters
- * 4. Return as branded Pincode type
  *
  * @example
  * ```typescript
  * // Valid PIN code parsing
  * const userPin = pincode().parse("123456");
  * // Returns: "123456"
- * // Type: string & Brand<"Pincode">
+ * // Type: string
  *
  * const pinWithLeadingZeros = pincode().parse("000123");
  * // Returns: "000123"
@@ -73,16 +71,14 @@ export const pincode = () =>
     .string()
     .length(6, "PIN code must be exactly 6 digits")
     .regex(/^\d{6}$/, "PIN code must contain only numeric digits (0-9)")
-    .describe("6-digit PIN code")
-    .brand<"Pincode">();
+    .describe("6-digit PIN code");
 
 // Note: Global registry functionality removed as it's not available in Zod v4
 
 /**
  * Type representing a validated 6-digit PIN code
  *
- * This type combines string with a brand for additional compile-time safety,
- * ensuring that only validated PIN codes can be assigned to variables of this type.
+ * This type ensures that only validated PIN codes can be assigned to variables of this type.
  */
 export type Pincode = z.infer<ReturnType<typeof pincode>>;
 

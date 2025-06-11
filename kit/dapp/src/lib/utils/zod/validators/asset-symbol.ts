@@ -16,7 +16,7 @@ import { z } from "zod";
  * - Length validation (1-12 characters for compatibility with most exchanges)
  * - Format validation (uppercase letters and numbers only)
  * - Empty string rejection
- * - Branded type for additional compile-time safety
+ * - Type-safe string validation
  * - Market standard compliance
  *
  * Asset symbol format requirements:
@@ -30,14 +30,14 @@ import { z } from "zod";
  * 1. Check minimum length (at least 1 character)
  * 2. Check maximum length (at most 12 characters)
  * 3. Validate format using regex (uppercase alphanumeric only)
- * 4. Return as branded AssetSymbol type
+ * 4. Return as validated AssetSymbol type
  *
  * @example
  * ```typescript
  * // Valid asset symbol parsing
  * const appleSymbol = assetSymbol().parse("AAPL");
  * // Returns: "AAPL"
- * // Type: string & Brand<"AssetSymbol">
+ * // Type: string
  *
  * const bitcoinSymbol = assetSymbol().parse("BTC");
  * // Returns: "BTC"
@@ -75,16 +75,14 @@ export const assetSymbol = () =>
       /^[A-Z0-9]+$/,
       "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
     )
-    .describe("Trading symbol for the asset")
-    .brand<"AssetSymbol">();
+    .describe("Trading symbol for the asset");
 
 // Note: Global registry functionality removed as it's not available in Zod v4
 
 /**
  * Type representing a validated asset trading symbol
  *
- * This type combines string with a brand for additional compile-time safety,
- * ensuring that only validated asset symbols can be assigned to variables of this type.
+ * This type represents a validated asset trading symbol as a string.
  */
 export type AssetSymbol = z.infer<ReturnType<typeof assetSymbol>>;
 

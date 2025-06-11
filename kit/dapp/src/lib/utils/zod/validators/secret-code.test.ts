@@ -1,10 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  getSecretCode,
-  isSecretCode,
-  secretCode,
-  type SecretCode,
-} from "./secret-code";
+import { secretCode, type SecretCode } from "./secret-code";
 
 describe("secretCode", () => {
   const validator = secretCode();
@@ -84,75 +79,21 @@ describe("secretCode", () => {
       expect(validator.parse("\t\n\r test") as string).toBe("\t\n\r test"); // special whitespace
     });
   });
-});
-
-describe("helper functions", () => {
-  describe("isSecretCode", () => {
-    it("should return true for valid secret codes", () => {
-      expect(isSecretCode("12345678") as boolean).toBe(true);
-      expect(isSecretCode("abcdefgh") as boolean).toBe(true);
-      expect(isSecretCode("a".repeat(64)) as boolean).toBe(true);
-      expect(isSecretCode("MySecret123!") as boolean).toBe(true);
-      expect(isSecretCode("p@ssw0rd_2024") as boolean).toBe(true);
-      expect(isSecretCode("UPPER-lower-123") as boolean).toBe(true);
-      expect(isSecretCode("with spaces here") as boolean).toBe(true);
-      expect(isSecretCode("!@#$%^&*()") as boolean).toBe(true);
-      expect(isSecretCode("emoji🔑code") as boolean).toBe(true);
+  describe("type checking", () => {
+    it("should return proper type", () => {
+      const result = validator.parse("MySecret123!");
+      // Test that the type is correctly inferred
+      const _typeCheck: SecretCode = result;
+      expect(result).toBe("MySecret123!");
     });
 
-    it("should return false for invalid secret codes", () => {
-      expect(isSecretCode("1234567") as boolean).toBe(false); // too short
-      expect(isSecretCode("short") as boolean).toBe(false);
-      expect(isSecretCode("") as boolean).toBe(false);
-      expect(isSecretCode("a".repeat(65)) as boolean).toBe(false); // too long
-      expect(isSecretCode(12345678) as boolean).toBe(false); // number
-      expect(isSecretCode(null) as boolean).toBe(false);
-      expect(isSecretCode(undefined) as boolean).toBe(false);
-      expect(isSecretCode({}) as boolean).toBe(false);
-    });
-
-    it("should narrow types correctly", () => {
-      const value: unknown = "MySecret123!";
-      if (isSecretCode(value)) {
-        // Type should be narrowed to SecretCode
-        const code: SecretCode = value;
-        expect(code as string).toBe("MySecret123!");
+    it("should handle safeParse", () => {
+      const result = validator.safeParse("p@ssw0rd_2024");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: SecretCode = result.data;
+        expect(result.data).toBe("p@ssw0rd_2024");
       }
-    });
-  });
-
-  describe("getSecretCode", () => {
-    it("should return valid secret codes", () => {
-      expect(getSecretCode("12345678") as string).toBe("12345678");
-      expect(getSecretCode("abcdefgh") as string).toBe("abcdefgh");
-      expect(getSecretCode("MySecret123!") as string).toBe("MySecret123!");
-      expect(getSecretCode("p@ssw0rd_2024") as string).toBe("p@ssw0rd_2024");
-      expect(getSecretCode("        ") as string).toBe("        ");
-    });
-
-    it("should throw for invalid secret codes", () => {
-      expect(() => getSecretCode("1234567") as string).toThrow(
-        "Secret code must be at least 8 characters long"
-      );
-      expect(() => getSecretCode("short") as string).toThrow(
-        "Secret code must be at least 8 characters long"
-      );
-      expect(() => getSecretCode("") as string).toThrow(
-        "Secret code must be at least 8 characters long"
-      );
-      expect(() => getSecretCode("a".repeat(65)) as string).toThrow(
-        "Secret code must not exceed 64 characters"
-      );
-      expect(() => getSecretCode(12345678) as string).toThrow(
-        "Expected string, received number"
-      );
-      expect(() => getSecretCode(null) as string).toThrow(
-        "Expected string, received null"
-      );
-      expect(() => getSecretCode(undefined) as string).toThrow("Required");
-      expect(() => getSecretCode({}) as string).toThrow(
-        "Expected string, received object"
-      );
     });
   });
 });

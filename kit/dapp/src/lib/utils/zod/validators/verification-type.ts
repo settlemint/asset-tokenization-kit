@@ -27,7 +27,7 @@ export const verificationTypes = [
 /**
  * Creates a Zod schema that validates verification types.
  *
- * @returns A branded Zod enum schema for verification type validation
+ * @returns A Zod enum schema for verification type validation
  *
  * @example
  * ```typescript
@@ -44,12 +44,11 @@ export const verificationTypes = [
  */
 export const verificationType = z
   .enum(verificationTypes)
-  .describe("Type of verification")
-  .brand<"VerificationType">();
+  .describe("Type of verification");
 
 /**
  * Type representing a validated verification method type.
- * Branded for additional type safety.
+ * Ensures type safety.
  */
 export type VerificationType = z.infer<typeof verificationType>;
 

@@ -25,7 +25,7 @@ import { z } from "zod";
  * - Password reset codes
  * - Transaction confirmation codes
  *
- * @returns A branded Zod schema for verification code validation
+ * @returns A Zod schema for verification code validation
  *
  * @example
  * ```typescript
@@ -51,12 +51,11 @@ export const verificationCode = z
     /^[A-Z0-9]{8}$/,
     "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
   )
-  .describe("Verification code")
-  .brand<"VerificationCode">();
+  .describe("Verification code");
 
 /**
  * Type representing a validated 8-character verification code.
- * Branded for additional type safety in verification flows.
+ * Ensures type safety in verification flows.
  */
 export type VerificationCode = z.infer<typeof verificationCode>;
 

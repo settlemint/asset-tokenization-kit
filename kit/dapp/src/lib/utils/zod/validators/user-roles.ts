@@ -26,7 +26,7 @@ export const userRoleNames = ["admin", "user", "issuer"] as const;
 /**
  * Creates a Zod schema that validates user roles.
  *
- * @returns A branded Zod enum schema for user role validation
+ * @returns A Zod enum schema for user role validation
  *
  * @example
  * ```typescript
@@ -42,11 +42,11 @@ export const userRoleNames = ["admin", "user", "issuer"] as const;
  * ```
  */
 export const userRoles = () =>
-  z.enum(userRoleNames).describe("User role in the system").brand<"UserRole">();
+  z.enum(userRoleNames).describe("User role in the system");
 
 /**
  * Type representing a validated user role.
- * Branded for additional type safety in access control.
+ * Ensures type safety in access control.
  */
 export type UserRole = z.infer<ReturnType<typeof userRoles>>;
 
