@@ -409,18 +409,19 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     }
 
     /// @dev Implementation of `withdrawUnderlyingAsset` from `ISMARTFixedYieldSchedule`.
-    function _withdrawUnderlyingAsset(address to, uint256 amount) internal {
+    function _withdrawUnderlyingAsset(address to, uint256 underlyingAssetAmount) internal {
         if (to == address(0)) revert InvalidUnderlyingAsset(); // Cannot withdraw to zero
             // address.
-        if (amount == 0) revert InvalidAmount(); // Cannot withdraw zero amount.
+        if (underlyingAssetAmount == 0) revert InvalidAmount(); // Cannot withdraw zero amount.
 
-        uint256 balance = _underlyingAsset.balanceOf(address(this));
-        if (amount > balance) revert InsufficientUnderlyingBalance(); // Not enough funds in
-            // contract.
+        uint256 underlyingAssetBalance = _underlyingAsset.balanceOf(address(this));
+        if (underlyingAssetAmount > underlyingAssetBalance) {
+            revert InsufficientUnderlyingBalance(underlyingAssetBalance, underlyingAssetAmount);
+        } // Not enough funds in contract.
 
-        _underlyingAsset.safeTransfer(to, amount);
+        _underlyingAsset.safeTransfer(to, underlyingAssetAmount);
 
-        emit UnderlyingAssetWithdrawn(to, amount);
+        emit UnderlyingAssetWithdrawn(to, underlyingAssetAmount);
     }
 
     /// @dev Implementation of `withdrawAllUnderlyingAsset` from `ISMARTFixedYieldSchedule`.
@@ -429,7 +430,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             // address.
 
         uint256 balance = _underlyingAsset.balanceOf(address(this));
-        if (balance <= 0) revert InsufficientUnderlyingBalance(); // No funds to withdraw.
+        if (balance <= 0) revert NoUnderlyingBalance(); // No funds to withdraw.
 
         _underlyingAsset.safeTransfer(to, balance);
 

@@ -1,6 +1,7 @@
 import { makeQueryClient } from "@/lib/orpc/query/query.client";
-import { dehydrate, type FetchQueryOptions } from "@tanstack/react-query";
-import { type PropsWithChildren, type ReactNode } from "react";
+import type { FetchQueryOptions } from "@tanstack/react-query";
+import { dehydrate } from "@tanstack/react-query";
+import type { PropsWithChildren, ReactNode } from "react";
 import { AwaitClientWrapper } from "./AwaitClientWrapper";
 
 /**

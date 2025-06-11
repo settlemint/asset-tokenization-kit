@@ -70,7 +70,5 @@ export const createEquity = async () => {
   await freezePartialTokens(equity, owner, investorB, 25n);
   await unfreezePartialTokens(equity, owner, investorB, 12n);
 
-  // TODO: execute all other functions of the equity
-
   return equity;
 };

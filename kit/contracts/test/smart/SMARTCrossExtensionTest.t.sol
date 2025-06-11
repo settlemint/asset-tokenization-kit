@@ -195,6 +195,7 @@ contract SMARTCrossExtensionTest is Test {
             "Cross Extension Test Token",
             "CETT",
             18,
+            1_000_000 ether,
             address(0), // Temporary zero address
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),

@@ -13,3 +13,6 @@ labels:
   - label: "docs"
     matcher:
       title: "^docs:.*"
+  - label: "dependencies"
+    matcher:
+      title: "^chore(deps):.*"

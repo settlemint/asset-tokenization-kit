@@ -13,6 +13,7 @@ import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy
 import { SMARTTokenUpgradeable } from "./examples/SMARTTokenUpgradeable.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { SMARTIdentityVerificationTest } from "./extensions/SMARTIdentityVerificationTest.sol";
+import { SMARTCappedTest } from "./extensions/SMARTCappedTest.sol";
 
 // Contract for testing the UPGRADEABLE SMART token implementation
 
@@ -24,7 +25,8 @@ contract SMARTUpgradeableTest is
     SMARTCollateralTest,
     SMARTCountryAllowListTest,
     SMARTCountryBlockListTest,
-    SMARTIdentityVerificationTest
+    SMARTIdentityVerificationTest,
+    SMARTCappedTest
 {
     function _setupToken() internal override {
         // 1. Deploy the implementation contract (no constructor args for upgradeable)
@@ -37,6 +39,7 @@ contract SMARTUpgradeableTest is
             "Test Bond",
             "TSTB",
             18, // Standard decimals
+            DEFAULT_CAP,
             address(0), // onchainID will be set by _createAndSetTokenOnchainID via proxy
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),

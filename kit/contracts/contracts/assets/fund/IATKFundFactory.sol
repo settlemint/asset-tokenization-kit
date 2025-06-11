@@ -7,6 +7,22 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 /// @title Interface for the ATK Fund Factory
 /// @notice Defines the functions for creating and predicting addresses of ATK Fund instances.
 interface IATKFundFactory is IATKTokenFactory {
+    /// @notice Emitted when a new fund is created.
+    /// @param sender The address of the sender.
+    /// @param tokenAddress The address of the newly created token.
+    /// @param name The name of the fund.
+    /// @param symbol The symbol of the fund.
+    /// @param decimals The number of decimals for the fund tokens.
+    /// @param managementFeeBps The management fee in basis points.
+    event FundCreated(
+        address indexed sender,
+        address indexed tokenAddress,
+        string name,
+        string symbol,
+        uint8 decimals,
+        uint24 managementFeeBps
+    );
+
     /// @notice Creates a new ATK Fund.
     /// @param name_ The name of the fund.
     /// @param symbol_ The symbol of the fund.

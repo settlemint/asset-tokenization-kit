@@ -95,6 +95,9 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
 
         _grantAllRoles(result.accessManager(), owner, owner);
 
+        vm.prank(owner);
+        result.unpause();
+
         return result;
     }
 
