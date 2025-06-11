@@ -7,7 +7,6 @@ import type { ClaimXvpInput } from "./claim-schema";
 // Dummy types for commented GraphQL operations
 const ClaimXvp = {} as any;
 
-
 // const ClaimXvp = portalGraphql(`
 //   mutation ClaimXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
 //     XvPSettlementExecute(
@@ -42,6 +41,7 @@ export const claimXvpFunction = async ({
   //   from: user.wallet,
   // });
   // NOTE: HARDCODED SO IT STILL COMPILES
-  const mockTxHash = "0x567890123ef567890123ef567890123ef567890123ef567890123ef567890";
+  const mockTxHash =
+    "0x567890123ef567890123ef567890123ef567890123ef567890123ef567890";
   return safeParse(t.Hashes(), [mockTxHash]);
 };

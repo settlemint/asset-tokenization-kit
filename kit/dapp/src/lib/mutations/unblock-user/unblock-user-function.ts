@@ -13,7 +13,6 @@ const StableCoinUnblockUser = {} as any;
 const EquityUnblockUser = {} as any;
 const FundUnblockUser = {} as any;
 
-
 /**
  * GraphQL mutation to unblock a user from a bond token
  */
@@ -128,30 +127,38 @@ export const unblockUserFunction = withAccessControl(
 
     switch (assettype) {
       case "bond": {
-          // const response = await portalClient.request(BondUnblockUser, params);
+        // const response = await portalClient.request(BondUnblockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondUnblockUser?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondUnblockUser?.transactionHash */]
         );
       }
       case "equity": {
-          // const response = await portalClient.request(EquityUnblockUser, params);
+        // const response = await portalClient.request(EquityUnblockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityUnblockUser?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityUnblockUser?.transactionHash */]
         );
       }
       case "fund": {
-          // const response = await portalClient.request(FundUnblockUser, params);
+        // const response = await portalClient.request(FundUnblockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundUnblockUser?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundUnblockUser?.transactionHash */]
         );
       }
       case "stablecoin": {
-          // const response = await portalClient.request(
-  //           StableCoinUnblockUser,
-  //           params
-  //         );
+        // const response = await portalClient.request(
+        //           StableCoinUnblockUser,
+        //           params
+        //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) /* response.StableCoinUnblockUser?.transactionHash */
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) /* response.StableCoinUnblockUser?.transactionHash */
         );
       }
       case "cryptocurrency": {

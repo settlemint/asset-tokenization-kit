@@ -8,7 +8,6 @@ import type { ExecuteXvpInput } from "./execute-schema";
 // Dummy types for commented GraphQL operations
 const ExecuteXvp = {} as any;
 
-
 // const ExecuteXvp = portalGraphql(`
 //   mutation ExecuteXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
 //     XvPSettlementExecute(
@@ -43,8 +42,7 @@ export const executeXvpFunction = async ({
   //   from: user.wallet,
   // });
   // NOTE: HARDCODED SO IT STILL COMPILES
-  const mockTxHash = "0x3456789012cdef3456789012cdef3456789012cdef3456789012cdef012345";
-  return waitForIndexingTransactions(
-    safeParse(t.Hashes(), [mockTxHash])
-  );
+  const mockTxHash =
+    "0x3456789012cdef3456789012cdef3456789012cdef3456789012cdef012345";
+  return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
 };

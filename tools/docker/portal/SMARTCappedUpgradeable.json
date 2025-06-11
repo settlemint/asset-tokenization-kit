@@ -292,6 +292,19 @@
   },
   {
     "type": "function",
+    "name": "setCap",
+    "inputs": [
+      {
+        "name": "newCap",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "setCompliance",
     "inputs": [
       {

@@ -67,9 +67,9 @@ export const getBondList = withTracing(
     const [onChainBonds, offChainBonds] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         //       // const result = await theGraphClientKit.request(BondList, {
-      //         //   first,
-      //         //   skip,
-      //         // });
+        //         //   first,
+        //         //   skip,
+        //         // });
 
         // NOTE: HARDCODED SO IT STILL COMPILES
         return safeParse(t.Array(OnChainBondSchema), []);

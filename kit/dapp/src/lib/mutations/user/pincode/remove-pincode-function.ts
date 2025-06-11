@@ -7,7 +7,6 @@ import { ApiError } from "next/dist/server/api-utils";
 // Dummy types for commented GraphQL operations
 const RemovePinCode = {} as any;
 
-
 /**
  * GraphQL mutation to remove a pincode for wallet verification
  */
