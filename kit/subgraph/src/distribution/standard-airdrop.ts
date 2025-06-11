@@ -21,6 +21,7 @@ import {
 import {
   BatchClaimed,
   Claimed,
+  OwnershipTransferred,
   TokensWithdrawn,
 } from "../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
 
@@ -305,5 +306,16 @@ export function handleTokensWithdrawn(event: TokensWithdrawn): void {
 
   airdrop.isWithdrawn = true;
   // Optionally store withdrawn amount and recipient if needed in schema
+  airdrop.save();
+}
+
+export function handleOwnershipTransferred(event: OwnershipTransferred): void {
+  let airdrop = StandardAirdrop.load(event.address);
+  if (!airdrop) {
+    return;
+  }
+
+  // Update the owner using fetchAccount
+  airdrop.owner = fetchAccount(event.params.newOwner).id;
   airdrop.save();
 }
