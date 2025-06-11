@@ -132,6 +132,19 @@ jobs:
               exit 0
             fi
 
+            # If we have a PR number but no title, fetch it from the API
+            if [[ -n "$WR_PR_NUMBER" && -z "$WR_PR_TITLE" ]]; then
+              echo "Debug: PR number found but no title, fetching from API"
+              PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/pulls/$WR_PR_NUMBER")
+              
+              API_PR_TITLE=$(echo "$PR_DATA" | jq -r '.title // empty')
+              if [[ -n "$API_PR_TITLE" ]]; then
+                echo "Debug: Found PR title from API: $API_PR_TITLE"
+                WR_PR_TITLE="$API_PR_TITLE"
+              fi
+            fi
+
             if [[ "$WR_HAS_PRS" != "true" || -z "$WR_PR_NUMBER" ]]; then
               echo "Debug: No PR in workflow run data, checking commit message for PR number"
 
@@ -142,13 +155,28 @@ jobs:
                 echo "Debug: Found PR #$PR_FROM_COMMIT in commit message"
                 WR_PR_NUMBER="$PR_FROM_COMMIT"
 
-                # Extract PR title from commit message (everything before the PR number)
-                COMMIT_TITLE=$(echo "$WR_HEAD_COMMIT_MESSAGE" | head -1 | sed -E 's/ \(#[0-9]+\)$//')
-                WR_PR_TITLE="${COMMIT_TITLE:-PR #$WR_PR_NUMBER}"
+                # Fetch actual PR data from GitHub API
+                PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                  "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_FROM_COMMIT")
+                
+                # Extract PR title from API response
+                API_PR_TITLE=$(echo "$PR_DATA" | jq -r '.title // empty')
+                
+                if [[ -n "$API_PR_TITLE" ]]; then
+                  echo "Debug: Found PR title from API: $API_PR_TITLE"
+                  WR_PR_TITLE="$API_PR_TITLE"
+                else
+                  # Fallback to commit message if API call fails
+                  COMMIT_TITLE=$(echo "$WR_HEAD_COMMIT_MESSAGE" | head -1 | sed -E 's/ \(#[0-9]+\)$//')
+                  WR_PR_TITLE="${COMMIT_TITLE:-PR #$WR_PR_NUMBER}"
+                fi
 
-                # For merged PRs, set appropriate state
-                WR_PR_STATE="closed"
-                WR_PR_MERGED="true"
+                # Extract state and merged status from API response
+                API_PR_STATE=$(echo "$PR_DATA" | jq -r '.state // "closed"')
+                API_PR_MERGED=$(echo "$PR_DATA" | jq -r '.merged // false')
+                
+                WR_PR_STATE="$API_PR_STATE"
+                WR_PR_MERGED="$API_PR_MERGED"
               else
                 echo "Debug: No PR found in commit message, skipping"
                 echo "skip_notification=true" >> $GITHUB_OUTPUT
