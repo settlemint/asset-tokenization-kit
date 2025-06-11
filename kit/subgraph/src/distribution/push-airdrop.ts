@@ -11,6 +11,7 @@ import {
   BatchDistributed,
   DistributionCapUpdated,
   MerkleRootUpdated,
+  OwnershipTransferred,
   TokensDistributed,
   TokensWithdrawn,
 } from "../../generated/templates/PushAirdropTemplate/PushAirdrop";
@@ -254,5 +255,16 @@ export function handleDistributionCapUpdated(
   );
 
   airdrop.distributionCap = newCap;
+  airdrop.save();
+}
+
+export function handleOwnershipTransferred(event: OwnershipTransferred): void {
+  let airdrop = PushAirdrop.load(event.address);
+  if (!airdrop) {
+    return;
+  }
+
+  // Update the owner using fetchAccount
+  airdrop.owner = fetchAccount(event.params.newOwner).id;
   airdrop.save();
 }

@@ -67,6 +67,12 @@ export const getAirdropDistribution = withTracing(
       return result.airdrop_distribution;
     });
 
-    return safeParse(AirdropDistributionListSchema, distributions);
+    // Transform string indices to numbers before validation
+    const transformedDistributions = distributions.map((distribution) => ({
+      ...distribution,
+      index: Number(distribution.index),
+    }));
+
+    return safeParse(AirdropDistributionListSchema, transformedDistributions);
   }
 );

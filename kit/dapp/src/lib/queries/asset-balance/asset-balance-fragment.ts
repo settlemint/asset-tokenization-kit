@@ -19,6 +19,7 @@ export const AssetBalanceFragment = theGraphGraphqlKit(
     frozen
     lastActivity
     value
+    valueExact
     account {
       id
       lastActivity
