@@ -39,7 +39,7 @@ services:
       postgres_pass: thegraph
       postgres_db: graphanvil
       ipfs: "https://ipfs.console.settlemint.com"
-      ethereum: "settlemint:http://test-anvil:8545"
+      ethereum: "settlemint:http://anvil:8545"
       GRAPH_ETHEREUM_REQUEST_RETRIES: 10
       ETHEREUM_POLLING_INTERVAL: 1000
       GRAPH_IPFS_TIMEOUT: 60

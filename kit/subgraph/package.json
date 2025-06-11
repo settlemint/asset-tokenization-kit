@@ -10,14 +10,14 @@
   "scripts": {
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
-    "codegen:gql-tada": "gql-tada generate-schema http://localhost:8000/subgraphs/name/smart-protocol && gql-tada turbo && gql-tada generate-output",
+    "codegen:gql-tada": "gql-tada generate-schema http://localhost:${THE_GRAPH_PORT_LOCAL_QUERY:-8000}/subgraphs/name/smart-protocol && gql-tada turbo && gql-tada generate-output",
     "format": "prettier --write .",
     "build": "bunx graph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 > subgraph-output.txt",
     "postbuild": "yq eval '.services.graph-node.environment.SUBGRAPH = \"kit:'$(cat subgraph-output.txt | tr -d '\\n')'\"' -i ../../docker-compose.yml",
     "publish": "bun run tools/graph-deploy.ts --local",
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
     "test:integration": "bun test --preload ./test/scripts/setup.ts",
-    "test:integration:local": "bun codegen:interfaceid && LOCAL_THE_GRAPH_PORT=8120 bun run publish && bun run codegen:gql-tada && bun run test:integration"
+    "test:integration:local": "bun codegen:interfaceid && THE_GRAPH_PORT_LOCAL_DEPLOY=8120 bun run publish && THE_GRAPH_PORT_LOCAL_QUERY=8100 bun run codegen:gql-tada && bun run test:integration"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",

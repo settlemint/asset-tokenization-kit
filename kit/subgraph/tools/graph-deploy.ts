@@ -195,7 +195,7 @@ function parseArguments(): DeploymentConfig {
         port: {
           type: "string",
           short: "p",
-          default: process.env.LOCAL_THE_GRAPH_PORT || "8020",
+          default: process.env.THE_GRAPH_PORT_LOCAL_DEPLOY || "8020",
         },
       },
       allowPositionals: false,
