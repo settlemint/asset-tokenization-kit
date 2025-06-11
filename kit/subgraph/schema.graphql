@@ -520,6 +520,7 @@ interface Airdrop {
   totalClaims: Int! # Count of claim events
   isWithdrawn: Boolean!
   trustedForwarder: Account!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 }
 
 type StandardAirdrop implements Airdrop @entity(immutable: false) {
@@ -536,6 +537,8 @@ type StandardAirdrop implements Airdrop @entity(immutable: false) {
   totalClaims: Int!
   isWithdrawn: Boolean!
   trustedForwarder: Account!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
+
   # Standard specific
   startTime: BigInt!
   endTime: BigInt!
@@ -555,6 +558,8 @@ type VestingAirdrop implements Airdrop @entity(immutable: false) {
   totalClaims: Int!
   isWithdrawn: Boolean!
   trustedForwarder: Account!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
+
   # Vesting specific
   claimPeriodEnd: BigInt!
   strategy: VestingStrategy!
@@ -574,6 +579,8 @@ type PushAirdrop implements Airdrop @entity(immutable: false) {
   totalClaims: Int!
   isWithdrawn: Boolean!
   trustedForwarder: Account!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
+
   # PushAirdrop specific
   distributionCap: BigInt!
   totalDistributed: BigInt!
@@ -590,19 +597,18 @@ type LinearVestingStrategy implements VestingStrategy
   @entity(immutable: false) {
   id: Bytes! # Strategy contract address
   type: String! # = "Linear"
-  airdrop: VestingAirdrop! @derivedFrom(field: "strategy") # Derived from VestingAirdrop linking
-  airdropRef: Bytes! # Direct reference to airdrop address
+  airdrop: VestingAirdrop!
   owner: Account!
+
   # Linear specific
   vestingDuration: BigInt!
   cliffDuration: BigInt!
-  vestingData: [UserVestingData!]! @derivedFrom(field: "strategy")
 }
 
 # Represents a potential recipient listed in the Merkle tree
 # Primarily created/updated upon claim events
 type AirdropRecipient @entity(immutable: false) {
-  id: String! # airdropId-recipientAddress
+  id: Bytes! # airdropId-recipientAddress
   airdrop: Airdrop!
   recipient: Account!
   firstClaimedTimestamp: BigInt # Timestamp of the first claim event for this recipient
@@ -614,27 +620,14 @@ type AirdropRecipient @entity(immutable: false) {
 
 # Represents a specific index claimed by a recipient
 type AirdropClaimIndex @entity(immutable: true) {
-  id: String! # airdropId-index
+  id: Bytes! # airdropId-recipientAddress-index
   index: BigInt!
   airdrop: Airdrop!
-  recipient: AirdropRecipient! # Who claimed this index
-  amount: BigDecimal! # Amount associated with this index (from claim event)
+  recipient: AirdropRecipient!
+  amount: BigDecimal! # Amount claimed by the recipient for this index
   amountExact: BigInt!
-  timestamp: BigInt!
-}
-
-# Specific vesting data per user for a LinearVestingStrategy
-type UserVestingData @entity(immutable: false) {
-  id: String! # strategyId-userAddress
-  strategy: LinearVestingStrategy!
-  user: Account!
-  totalAmountAggregated: BigDecimal! # Total allocated amount across all indices for this user
-  totalAmountAggregatedExact: BigInt!
-  claimedAmountTrackedByStrategy: BigDecimal! # Internal tracking by strategy via recordClaim
-  claimedAmountTrackedByStrategyExact: BigInt!
-  vestingStart: BigInt!
-  initialized: Boolean!
-  lastUpdated: BigInt!
+  timestamp: BigInt! # Timestamp of the claim event
+  initialized: BigInt! # Mainly for VestingAirdrop, whether the recipient has initialized their vesting schedule for this index
 }
 
 # --------------------------------------------------
