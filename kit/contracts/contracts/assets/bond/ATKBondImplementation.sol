@@ -132,7 +132,7 @@ contract ATKBondImplementation is
         __SMARTTokenAccessManaged_init(accessManager_);
         __SMARTCustodian_init();
         __SMARTBurnable_init();
-        __SMARTPausable_init();
+        __SMARTPausable_init(true);
         __SMARTYield_init();
         __SMARTRedeemable_init();
         __SMARTHistoricalBalances_init();

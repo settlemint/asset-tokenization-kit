@@ -39,12 +39,13 @@ abstract contract SMARTPausable is SMARTExtension, _SMARTPausableLogic {
     //    which would internally call `_SMARTPausableLogic._smart_pause()` and `_smart_unpause()`.
 
     /// @notice Constructor for the standard Pausable extension.
+    /// @param initiallyPaused If true, the contract will be initialized in a paused state.
     /// @dev Calls the unchained initializer from `_SMARTPausableLogic`.
     ///      This is primarily to register the `ISMARTPausable` interface ID via `_registerInterface`,
     ///      making the extension discoverable through ERC165 `supportsInterface`.
-    constructor() {
+    constructor(bool initiallyPaused) {
         // Initialize the core pausable logic (mainly for ERC165 interface registration).
-        __SMARTPausable_init_unchained();
+        __SMARTPausable_init_unchained(initiallyPaused);
     }
 
     // -- Internal Hooks & Overrides --

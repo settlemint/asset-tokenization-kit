@@ -84,7 +84,7 @@ contract SMARTCappedToken is
         SMARTTokenAccessManaged(accessManager_)
         SMARTCustodian()
         SMARTCollateral(collateralProofTopic_)
-        SMARTPausable()
+        SMARTPausable(false)
         SMARTBurnable()
         SMARTRedeemable()
         SMARTHistoricalBalances()
