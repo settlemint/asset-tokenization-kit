@@ -46,7 +46,7 @@ dataSources:
       eventHandlers:
         - event: ATKFixedYieldScheduleCreated(indexed address,indexed address)
           handler: handleATKFixedYieldScheduleCreated
-      file: ./src/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
+      file: ./src/token-extensions/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
 templates:
   - kind: ethereum
     name: AccessControl
@@ -198,7 +198,7 @@ templates:
           handler: handlePaused
         - event: Unpaused(indexed address)
           handler: handleUnpaused
-      file: ./src/pausable/pausable.ts
+      file: ./src/token-extensions/pausable/pausable.ts
   - kind: ethereum
     name: Burnable
     network: settlemint
@@ -217,7 +217,7 @@ templates:
       eventHandlers:
         - event: BurnCompleted(indexed address,indexed address,uint256)
           handler: handleBurnCompleted
-      file: ./src/burnable/burnable.ts
+      file: ./src/token-extensions/burnable/burnable.ts
   - kind: ethereum
     name: Identity
     network: settlemint
@@ -360,7 +360,7 @@ templates:
           handler: handleTokensFrozen
         - event: TokensUnfrozen(indexed address,indexed address,uint256)
           handler: handleTokensUnfrozen
-      file: ./src/custodian/custodian.ts
+      file: ./src/token-extensions/custodian/custodian.ts
   - kind: ethereum
     name: Capped
     network: settlemint
@@ -378,7 +378,7 @@ templates:
       eventHandlers:
         - event: CapSet(indexed address,uint256)
           handler: handleCapSet
-      file: ./src/capped/capped.ts
+      file: ./src/token-extensions/capped/capped.ts
   - kind: ethereum
     name: Yield
     network: settlemint
@@ -399,7 +399,7 @@ templates:
           handler: handleCheckpointUpdated
         - event: YieldScheduleSet(indexed address,indexed address)
           handler: handleYieldScheduleSet
-      file: ./src/yield/yield.ts
+      file: ./src/token-extensions/yield/yield.ts
   - kind: ethereum
     name: FixedYieldSchedule
     network: settlemint
@@ -427,7 +427,7 @@ templates:
         - event: YieldClaimed(indexed
             address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)
           handler: handleYieldClaimed
-      file: ./src/fixed-yield-schedule/fixed-yield-schedule.ts
+      file: ./src/token-extensions/fixed-yield-schedule/fixed-yield-schedule.ts
   - kind: ethereum
     name: Redeemable
     network: settlemint
@@ -445,7 +445,7 @@ templates:
       eventHandlers:
         - event: Redeemed(indexed address,uint256)
           handler: handleRedeemed
-      file: ./src/redeemable/redeemable.ts
+      file: ./src/token-extensions/redeemable/redeemable.ts
   - kind: ethereum
     name: Bond
     network: settlemint
@@ -466,7 +466,7 @@ templates:
           handler: handleBondMatured
         - event: BondRedeemed(indexed address,indexed address,uint256,uint256)
           handler: handleBondRedeemed
-      file: ./src/bond/bond.ts
+      file: ./src/token-assets/bond/bond.ts
   - kind: ethereum
     name: BondFactory
     network: settlemint
@@ -487,4 +487,4 @@ templates:
         - event: BondCreated(indexed address,indexed
             address,string,string,uint8,uint256,uint256,uint256,address)
           handler: handleBondCreated
-      file: ./src/bond-factory/bond-factory.ts
+      file: ./src/token-assets/bond-factory/bond-factory.ts

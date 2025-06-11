@@ -9,11 +9,11 @@ import {
   KeyAdded,
   KeyRemoved,
 } from "../../generated/templates/Identity/Identity";
+import { fetchEvent } from "../event/fetch/event";
 import {
   isCollateralClaim,
   updateCollateral,
-} from "../collateral/utils/collateral-utils";
-import { fetchEvent } from "../event/fetch/event";
+} from "../token-extensions/collateral/utils/collateral-utils";
 import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
 import { decodeClaimValues } from "./utils/decode-claim";
