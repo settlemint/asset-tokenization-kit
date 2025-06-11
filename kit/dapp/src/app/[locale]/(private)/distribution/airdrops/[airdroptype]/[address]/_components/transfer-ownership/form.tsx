@@ -9,6 +9,7 @@ import type { StandardAirdrop } from "@/lib/queries/standard-airdrop/standard-ai
 import type { VestingAirdrop } from "@/lib/queries/vesting-airdrop/vesting-airdrop-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Recipient } from "./steps/recipient";
 import { Summary } from "./steps/summary";
@@ -29,6 +30,7 @@ export function TransferOwnershipForm({
   asButton = false,
 }: TransferOwnershipFormProps) {
   const t = useTranslations("private.airdrops.detail.forms.transfer-ownership");
+  const router = useRouter();
 
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
@@ -58,6 +60,9 @@ export function TransferOwnershipForm({
         defaultValues={{
           address: airdrop.id,
           type: airdrop.type,
+        }}
+        onSuccess={() => {
+          router.push("/distribution/airdrops");
         }}
       >
         <Recipient />
