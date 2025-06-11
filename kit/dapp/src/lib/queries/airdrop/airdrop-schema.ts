@@ -159,7 +159,7 @@ export type OnChainAirdropClaimIndex = StaticDecode<
 >;
 
 export const OffChainAirdropClaimIndexSchema = t.Object({
-  index: t.Number({
+  index: t.StringifiedBigInt({
     description: "The index of the claim",
   }),
   amount: t.BigDecimal({

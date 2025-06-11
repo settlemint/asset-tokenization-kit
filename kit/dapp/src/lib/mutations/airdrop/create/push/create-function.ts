@@ -75,8 +75,8 @@ export const createPushAirdropFunction = async ({
       airdrop_id: predictedAddress,
       recipient: d.recipient,
       amount: d.amount.toString(),
-      amount_exact: d.amountExact,
-      index: d.index,
+      amount_exact: d.amountExact.toString(),
+      index: Number(d.index),
     })),
   });
 

@@ -13,7 +13,7 @@ import { Summary } from "./steps/summary";
 
 interface ClaimFormProps {
   address: Address;
-  index: number;
+  index: bigint;
   amount: number;
   amountExact: bigint;
   recipient: Address;
@@ -68,7 +68,7 @@ export function ClaimForm({
           airdrop: address,
           index,
           amount,
-          amountExact: amountExact.toString(),
+          amountExact,
           recipient,
           airdropType,
         }}

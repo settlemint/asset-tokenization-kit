@@ -6,6 +6,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import { safeParse, t } from "@/lib/utils/typebox";
 import type { VariablesOf } from "@settlemint/sdk-portal";
+import { AirdropDistributionSchema } from "../create/common/airdrop-distribution-schema";
 import { createMerkleTree, getMerkleProof } from "../create/common/merkle-tree";
 import type { ClaimAirdropInput } from "./claim-schema";
 
@@ -84,16 +85,15 @@ export const claimAirdropFunction = async ({
   // Create the merkle tree from all distributions
   const tree = createMerkleTree(distributions);
 
+  const leaf = safeParse(AirdropDistributionSchema, {
+    index,
+    amount,
+    amountExact,
+    recipient,
+  });
+
   // Get the merkle proof for this specific leaf
-  const merkleProof = getMerkleProof(
-    {
-      index,
-      amount: Number(amount),
-      amountExact: BigInt(amountExact),
-      recipient,
-    },
-    tree
-  );
+  const merkleProof = getMerkleProof(leaf, tree);
 
   const baseParams:
     | VariablesOf<typeof ClaimStandardAirdrop>

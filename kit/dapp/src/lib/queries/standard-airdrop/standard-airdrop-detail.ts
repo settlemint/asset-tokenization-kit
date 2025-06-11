@@ -73,9 +73,7 @@ export const getStandardAirdropDetail = withTracing(
           );
           return response.standardAirdrop;
         })(),
-        (async () => {
-          return await getAirdropDistribution(address);
-        })(),
+        getAirdropDistribution(address),
       ]);
 
       if (!onChainStandardAirdrop) {
