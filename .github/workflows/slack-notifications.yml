@@ -47,7 +47,7 @@ jobs:
     if: |
       github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' &&
       (github.event_name == 'pull_request' ||
-       github.event_name == 'workflow_run')
+       (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request'))
     steps:
       - name: Debug workflow_run context
         if: github.event_name == 'workflow_run'
@@ -136,7 +136,7 @@ jobs:
               echo "Debug: No PR in workflow run data, checking commit message for PR number"
 
               # Try to extract PR number from commit message (format: "... (#123)")
-              PR_FROM_COMMIT=$(echo "$WR_HEAD_COMMIT_MESSAGE" | grep -oE '#[0-9]+' | tail -1 | tr -d '#')
+              PR_FROM_COMMIT=$(echo "$WR_HEAD_COMMIT_MESSAGE" | grep -oE '#[0-9]+' | tail -1 | tr -d '#' || true)
 
               if [[ -n "$PR_FROM_COMMIT" ]]; then
                 echo "Debug: Found PR #$PR_FROM_COMMIT in commit message"
