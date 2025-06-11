@@ -1,6 +1,5 @@
 "use client";
 
-import { Summary } from "@/app/[locale]/(private)/distribution/airdrops/[airdroptype]/[address]/_components/push-tokens-form/steps/summary";
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { pushAirdropDistribute } from "@/lib/mutations/push-airdrop/push-action";
@@ -50,7 +49,7 @@ export function PushTokensForm({
           address: airdrop.id,
         }}
       >
-        <Summary address={airdrop.id} airdrop={airdrop} />
+        <p>todo</p>
       </Form>
     </FormSheet>
   );

@@ -88,7 +88,7 @@ export const createVestingAirdropFunction = async ({
       recipient: d.recipient,
       amount: d.amount.toString(),
       amount_exact: d.amountExact,
-      index: d.index,
+      index: d.index.toString(),
     })),
   });
   return block;
