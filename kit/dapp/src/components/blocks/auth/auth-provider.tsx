@@ -119,6 +119,11 @@ export const AuthProvider = ({
             DELETE_ACCOUNT_INSTRUCTIONS: t("delete-account-instructions"),
             DELETE_ACCOUNT_VERIFY: t("delete-account-verify"),
             DELETE_ACCOUNT_SUCCESS: t("delete-account-success"),
+            DELETE_ACCOUNT_EMAIL: t("delete-account-email"),
+            DELETE_ACCOUNT_NOT_FRESH: t("delete-account-not-fresh"),
+            DISABLED_CREDENTIALS_DESCRIPTION: t(
+              "disabled-credentials-description"
+            ),
             DONT_HAVE_AN_ACCOUNT: t("dont-have-account"),
             DONE: t("done"),
             EMAIL: t("email"),
@@ -253,7 +258,15 @@ export const AuthProvider = ({
             PROTECTED_BY_RECAPTCHA: t("protected-by-recaptcha"),
             BY_CONTINUING_YOU_AGREE: t("by-continuing-you-agree"),
             MISSING_CAPTCHA_RESPONSE: t("missing-captcha-response"),
-          } as any
+            INVALID_PASSWORD: t("invalid-password"),
+            FAILED_TO_VALIDATE: t("failed-to-validate"),
+            PROVIDER_LINK_SUCCESS: t("provider-link-success"),
+            PROVIDER_UNLINK_SUCCESS: t("provider-unlink-success"),
+            PROVIDERS_LOADING_ERROR: t("providers-loading-error"),
+            BACKUP_CODE_ACTION: t("backup-code-action"),
+            SET_PASSWORD_EMAIL_SENT: t("set-password-email-sent"),
+            TRUST_THIS_DEVICE: t("trust-this-device"),
+          } as Record<string, string>
         }
       >
         <div className="AuthProvider">{children}</div>
