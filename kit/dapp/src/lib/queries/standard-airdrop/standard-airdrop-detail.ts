@@ -33,15 +33,6 @@ const StandardAirdropDetail = theGraphGraphqlKit(
 );
 
 /**
- * Props interface for standard airdrop detail components
- */
-export interface StandardAirdropDetailProps {
-  /** Ethereum address of the standard airdrop contract */
-  address: Address;
-  user: User;
-}
-
-/**
  * Fetches and combines on-chain and off-chain standard airdrop data
  *
  * @param params - Object containing the standard airdrop address
@@ -55,7 +46,10 @@ export const getStandardAirdropDetail = withTracing(
     async ({
       address,
       user,
-    }: StandardAirdropDetailProps): Promise<StandardAirdrop> => {
+    }: {
+      address: Address;
+      user: User;
+    }): Promise<StandardAirdrop> => {
       "use cache";
       cacheTag("airdrop");
 

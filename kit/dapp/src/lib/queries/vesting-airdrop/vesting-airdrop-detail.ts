@@ -31,15 +31,6 @@ const VestingAirdropDetail = theGraphGraphqlKit(
 );
 
 /**
- * Props interface for vesting airdrop detail components
- */
-export interface VestingAirdropDetailProps {
-  /** Ethereum address of the vesting airdrop contract */
-  address: Address;
-  user: User;
-}
-
-/**
  * Fetches and combines on-chain and off-chain vesting airdrop data
  *
  * @param params - Object containing the vesting airdrop address
@@ -49,7 +40,7 @@ export interface VestingAirdropDetailProps {
 export const getVestingAirdropDetail = withTracing(
   "queries",
   "getVestingAirdropDetail",
-  cache(async ({ address, user }: VestingAirdropDetailProps) => {
+  cache(async ({ address, user }: { address: Address; user: User }) => {
     "use cache";
     cacheTag("airdrop");
 

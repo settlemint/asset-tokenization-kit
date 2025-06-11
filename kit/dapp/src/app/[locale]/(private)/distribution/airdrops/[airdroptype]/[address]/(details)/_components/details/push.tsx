@@ -14,7 +14,7 @@ interface PushAirdropDetailsProps {
 export async function PushAirdropDetails({ address }: PushAirdropDetailsProps) {
   const user = await getUser();
   const [airdrop, t, locale] = await Promise.all([
-    getPushAirdropDetail(address, user),
+    getPushAirdropDetail({ address, user }),
     getTranslations("private.airdrops.details.fields"),
     getLocale(),
   ]);

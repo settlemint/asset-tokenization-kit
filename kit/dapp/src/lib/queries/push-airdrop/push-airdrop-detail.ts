@@ -40,46 +40,54 @@ const PushAirdropDetail = theGraphGraphqlKit(
 export const getPushAirdropDetail = withTracing(
   "queries",
   "getPushAirdropDetail",
-  cache(async (address: Address, user: User): Promise<PushAirdrop> => {
-    "use cache";
-    cacheTag("airdrop");
+  cache(
+    async ({
+      address,
+      user,
+    }: {
+      address: Address;
+      user: User;
+    }): Promise<PushAirdrop> => {
+      "use cache";
+      cacheTag("airdrop");
 
-    const [onChainPushAirdrop, distribution] = await Promise.all([
-      (async () => {
-        const response = await theGraphClientKit.request(
-          PushAirdropDetail,
-          {
-            id: address,
-          },
-          {
-            "X-GraphQL-Operation-Name": "PushAirdropDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
-        return response.pushAirdrop;
-      })(),
-      getAirdropDistribution(address),
-    ]);
+      const [onChainPushAirdrop, distribution] = await Promise.all([
+        (async () => {
+          const response = await theGraphClientKit.request(
+            PushAirdropDetail,
+            {
+              id: address,
+            },
+            {
+              "X-GraphQL-Operation-Name": "PushAirdropDetail",
+              "X-GraphQL-Operation-Type": "query",
+            }
+          );
+          return response.pushAirdrop;
+        })(),
+        getAirdropDistribution(address),
+      ]);
 
-    if (!onChainPushAirdrop) {
-      throw new Error(`Push airdrop not found for address ${address}`);
+      if (!onChainPushAirdrop) {
+        throw new Error(`Push airdrop not found for address ${address}`);
+      }
+
+      const balance = await getAssetBalanceDetail({
+        address: getAddress(onChainPushAirdrop.asset.id),
+        account: address,
+      });
+
+      const prices = await getAssetsPricesInUserCurrency(
+        [onChainPushAirdrop.asset.id],
+        user.currency
+      );
+
+      return safeParse(PushAirdropSchema, {
+        ...onChainPushAirdrop,
+        distribution,
+        price: prices.get(getAddress(onChainPushAirdrop.asset.id)),
+        balance: balance?.value ?? 0,
+      });
     }
-
-    const balance = await getAssetBalanceDetail({
-      address: getAddress(onChainPushAirdrop.asset.id),
-      account: address,
-    });
-
-    const prices = await getAssetsPricesInUserCurrency(
-      [onChainPushAirdrop.asset.id],
-      user.currency
-    );
-
-    return safeParse(PushAirdropSchema, {
-      ...onChainPushAirdrop,
-      distribution,
-      price: prices.get(getAddress(onChainPushAirdrop.asset.id)),
-      balance: balance?.value ?? 0,
-    });
-  })
+  )
 );
