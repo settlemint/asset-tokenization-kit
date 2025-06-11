@@ -328,7 +328,11 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Try to redeem with insufficient underlying balance
         vm.startPrank(user1);
-        vm.expectRevert(IATKBond.InsufficientUnderlyingBalance.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IATKBond.InsufficientUnderlyingBalance.selector, currentBalance - amountToRemove, 1000e18
+            )
+        );
         bond.redeem(redeemAmount);
         vm.stopPrank();
     }
@@ -429,7 +433,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Try to redeem when underlying transfer will fail
         vm.startPrank(user1);
-        vm.expectRevert(IATKBond.InsufficientUnderlyingBalance.selector);
+        vm.expectRevert(abi.encodeWithSelector(IATKBond.InsufficientUnderlyingBalance.selector, 0, 1000e18));
         bond.redeem(redeemAmount);
         vm.stopPrank();
 

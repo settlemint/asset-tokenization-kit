@@ -3,7 +3,6 @@
 import { Link } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import { AuthQueryProvider } from "@daveyplate/better-auth-tanstack";
-import type { AuthUIProviderProps } from "@daveyplate/better-auth-ui";
 import { AuthUIProviderTanstack } from "@daveyplate/better-auth-ui/tanstack";
 import { useTranslations } from "next-intl";
 // eslint-disable-next-line no-restricted-imports
@@ -30,7 +29,7 @@ export const AuthProvider = ({
   const router = useRouter();
   const t = useTranslations("private.auth");
 
-  const providers: AuthUIProviderProps["providers"] = [];
+  const providers: ("google" | "github")[] = [];
   if (googleEnabled) {
     providers.push("google");
   }
@@ -47,18 +46,27 @@ export const AuthProvider = ({
         replace={router.replace}
         onSessionChange={() => router.refresh()}
         Link={Link}
-        settingsURL="/portfolio/settings/profile"
-        redirectTo="/portfolio"
-        confirmPassword={true}
-        optimistic={true}
-        rememberMe={true}
-        forgotPassword={emailEnabled}
-        deleteAccountVerification={emailEnabled}
-        deleteUser={true}
+        settings={{
+          url: "/portfolio/settings",
+        }}
+        credentials={{
+          confirmPassword: true,
+          rememberMe: true,
+          forgotPassword: true,
+        }}
+        deleteUser={{
+          verification: emailEnabled,
+        }}
         avatar={false}
         magicLink={emailEnabled}
         passkey={true}
-        providers={providers.length > 0 ? providers : undefined}
+        social={
+          providers.length > 0
+            ? {
+                providers: providers,
+              }
+            : undefined
+        }
         toast={({ variant, message }) => {
           if (variant === "success") {
             toast.success(message);
@@ -70,356 +78,196 @@ export const AuthProvider = ({
             toast.info(message);
           }
         }}
-        localization={{
-          /** @default "Account" */
-          account: t("account"),
-          /** @default "Accounts" */
-          accounts: t("accounts"),
-          /** @default "Manage your currently signed in accounts." */
-          accountsDescription: t("accounts-description"),
-          /** @default "Sign in to an additional account." */
-          accountsInstructions: t("accounts-instructions"),
-          /** @default "Add Account" */
-          addAccount: t("add-account"),
-          /** @default "Add Passkey" */
-          addPasskey: t("add-passkey"),
-          /** @default "Already have an account?" */
-          alreadyHaveAnAccount: t("already-have-account"),
-          /** @default "Avatar" */
-          avatar: t("avatar"),
-          /** @default "Click on the avatar to upload a custom one from your files." */
-          avatarDescription: t("avatar-description"),
-          /** @default "An avatar is optional but strongly recommended." */
-          avatarInstructions: t("avatar-instructions"),
-          /** @default "Backup code is required" */
-          backupCodeRequired: t("backup-code-required"),
-          /** @default "Backup Codes" */
-          backupCodes: t("backup-codes"),
-          /** @default "Save these backup codes in a secure place. You can use them to access your account if you lose your two-factor authentication method." */
-          backupCodesDescription: t("backup-codes-description"),
-          /** @default "Enter one of your backup codes. Once used, each code can only be used once and will be invalidated after use." */
-          backupCodePlaceholder: t("backup-code-placeholder"),
-          /** @default "Backup Code" */
-          backupCode: t("backup-code"),
-          /** @default "Recover account" */
-          backupCodeAction: t("backup-code-action"),
-          /** @default "Cancel" */
-          cancel: t("cancel"),
-          /** @default "Change Password" */
-          changePassword: t("change-password"),
-          /** @default "Enter your current password and a new password." */
-          changePasswordDescription: t("change-password-description"),
-          /** @default "Please use 8 characters at minimum." */
-          changePasswordInstructions: t("change-password-instructions"),
-          /** @default "Your password has been changed." */
-          changePasswordSuccess: t("change-password-success"),
-          /** @default "Confirm Password" */
-          confirmPassword: t("confirm-password"),
-          /** @default "Confirm Password" */
-          confirmPasswordPlaceholder: t("confirm-password-placeholder"),
-          /** @default "Confirm password is required" */
-          confirmPasswordRequired: t("confirm-password-required"),
-          /** @default "Continue with Authenticator" */
-          continueWithAuthenticator: t("continue-with-authenticator"),
-          /** @default "Copied to clipboard" */
-          copiedToClipboard: t("copied-to-clipboard"),
-          /** @default "Copy to clipboard" */
-          copyToClipboard: t("copy-to-clipboard"),
-          /** @default "Copy all codes" */
-          copyAllCodes: t("copy-all-codes"),
-          /** @default "Continue" */
-          continue: t("continue"),
-          /** @default "Current Password" */
-          currentPassword: t("current-password"),
-          /** @default "Current Password" */
-          currentPasswordPlaceholder: t("current-password-placeholder"),
-          /** @default "Current Session" */
-          currentSession: t("current-session"),
-          /** @default "Delete" */
-          delete: t("delete"),
-          /** @default "Delete Avatar" */
-          deleteAvatar: t("delete-avatar"),
-          /** @default "Delete Account" */
-          deleteAccount: t("delete-account"),
-          /** @default "Permanently remove your account and all of its contents. This action is not reversible, so please continue with caution." */
-          deleteAccountDescription: t("delete-account-description"),
-          /** @default "Please confirm the deletion of your account. This action is not reversible, so please continue with caution." */
-          deleteAccountInstructions: t("delete-account-instructions"),
-          /** @default "Please check your email to verify the deletion of your account." */
-          deleteAccountVerify: t("delete-account-verify"),
-          /** @default "Your account has been deleted." */
-          deleteAccountSuccess: t("delete-account-success"),
-          /** @default "You must be recently logged in to delete your account." */
-          deleteAccountNotFresh: t("delete-account-not-fresh"),
-          /** @default "Disable" */
-          disable: t("disable"),
-          /** @default "Choose a provider to login to your account" */
-          disabledCredentialsDescription: t("disabled-credentials-description"),
-          /** @default "Don't have an account?" */
-          dontHaveAnAccount: t("dont-have-account"),
-          /** @default "Done" */
-          done: t("done"),
-          /** @default "Email" */
-          email: t("email"),
-          /** @default "Enter the email address you want to use to log in." */
-          emailDescription: t("email-description"),
-          /** @default "Please enter a valid email address." */
-          emailInstructions: t("email-instructions"),
-          /** @default "Email address is invalid" */
-          emailInvalid: t("email-invalid"),
-          /** @default "Email is the same" */
-          emailIsTheSame: t("email-is-the-same"),
-          /** @default "m@example.com" */
-          emailPlaceholder: t("email-placeholder"),
-          /** @default "Email address is required" */
-          emailRequired: t("email-required"),
-          /** @default "Please check your email to verify the change." */
-          emailVerifyChange: t("email-verify-change"),
-          /** @default "Please check your email for the verification link." */
-          emailVerification: t("email-verification"),
-          /** @default "Enable" */
-          enable: t("enable"),
-          /** @default "Error" */
-          error: t("error"),
-          /** @default "is invalid" */
-          isInvalid: t("is-invalid"),
-          /** @default "is required" */
-          isRequired: t("is-required"),
-          /** @default "is the same" */
-          isTheSame: t("is-the-same"),
-          /** @default "Forgot authenticator?" */
-          forgotAuthenticator: t("forgot-authenticator"),
-          /** @default "Forgot Password" */
-          forgotPassword: t("forgot-password"),
-          /** @default "Send reset link" */
-          forgotPasswordAction: t("forgot-password-action"),
-          /** @default "Enter your email to reset your password" */
-          forgotPasswordDescription: t("forgot-password-description"),
-          /** @default "Check your email for the password reset link." */
-          forgotPasswordEmail: t("forgot-password-email"),
-          /** @default "Forgot your password?" */
-          forgotPasswordLink: t("forgot-password-link"),
-          /** @default "Invalid two factor cookie" */
-          invalidTwoFactorCookie: t("invalid-two-factor-cookie"),
-          /** @default "Link" */
-          link: t("link"),
-          /** @default "Magic Link" */
-          magicLink: t("magic-link"),
-          /** @default "Send magic link" */
-          magicLinkAction: t("magic-link-action"),
-          /** @default "Enter your email to receive a magic link" */
-          magicLinkDescription: t("magic-link-description"),
-          /** @default "Check your email for the magic link" */
-          magicLinkEmail: t("magic-link-email"),
-          /** @default "Email Code" */
-          emailOTP: t("email-otp"),
-          /** @default "Send code" */
-          emailOTPSendAction: t("email-otp-send-action"),
-          /** @default "Verify code" */
-          emailOTPVerifyAction: t("email-otp-verify-action"),
-          /** @default "Enter your email to receive a code" */
-          emailOTPDescription: t("email-otp-description"),
-          /** @default "Please check your email for the verification code." */
-          emailOTPVerificationSent: t("email-otp-verification-sent"),
-          /** @default "Name" */
-          name: t("name"),
-          /** @default "Please enter your full name, or a display name." */
-          nameDescription: t("name-description"),
-          /** @default "Please use 32 characters at maximum." */
-          nameInstructions: t("name-instructions"),
-          /** @default "Name" */
-          namePlaceholder: t("name-placeholder"),
-          /** @default "New Password" */
-          newPassword: t("new-password"),
-          /** @default "New Password" */
-          newPasswordPlaceholder: t("new-password-placeholder"),
-          /** @default "New password is required" */
-          newPasswordRequired: t("new-password-required"),
-          /** @default "One-Time Password" */
-          oneTimePassword: t("one-time-password"),
-          /** @default "Or continue with" */
-          orContinueWith: t("or-continue-with"),
-          /** @default "Passkey" */
-          passkey: t("passkey"),
-          /** @default "Passkeys" */
-          passkeys: t("passkeys"),
-          /** @default "Manage your passkeys for secure access." */
-          passkeysDescription: t("passkeys-description"),
-          /** @default "Securely access your account without a password." */
-          passkeysInstructions: t("passkeys-instructions"),
-          /** @default "API Keys" */
-          apiKeys: t("api-keys"),
-          /** @default "Manage your API keys for secure access." */
-          apiKeysDescription: t("api-keys-description"),
-          /** @default "Generate API keys to access your account programmatically." */
-          apiKeysInstructions: t("api-keys-instructions"),
-          /** @default "Create API Key" */
-          createApiKey: t("create-api-key"),
-          /** @default "Enter a unique name for your API key to differentiate it from other keys." */
-          createApiKeyDescription: t("create-api-key-description"),
-          /** @default "New API Key" */
-          apiKeyNamePlaceholder: t("api-key-name-placeholder"),
-          /** @default "API Key Created" */
-          apiKeyCreated: t("api-key-created"),
-          /** @default "Please copy your API key and store it in a safe place. For security reasons we cannot show it again." */
-          apiKeyCreatedDescription: t("api-key-created-description"),
-          /** @default "Never Expires" */
-          neverExpires: t("never-expires"),
-          /** @default "Expires" */
-          expires: t("expires"),
-          /** @default "No Expiration" */
-          noExpiration: t("no-expiration"),
-          /** @default "Create" */
-          create: t("create"),
-          /** @default "Password" */
-          password: t("password"),
-          /** @default "Password" */
-          passwordPlaceholder: t("password-placeholder"),
-          /** @default "Password is required" */
-          passwordRequired: t("password-required"),
-          /** @default "Passwords do not match" */
-          passwordsDoNotMatch: t("passwords-do-not-match"),
-          /** @default "Providers" */
-          providers: t("providers"),
-          /** @default "Connect your account with a third-party service." */
-          providersDescription: t("providers-description"),
-          /** @default "Recover Account" */
-          recoverAccount: t("recover-account"),
-          /** @default "Recover account" */
-          recoverAccountAction: t("recover-account-action"),
-          /** @default "Please enter a backup code to access your account" */
-          recoverAccountDescription: t("recover-account-description"),
-          /** @default "Remember me" */
-          rememberMe: t("remember-me"),
-          /** @default "Resend code" */
-          resendCode: t("resend-code"),
-          /** @default "Resend verification email" */
-          resendVerificationEmail: t("resend-verification-email"),
-          /** @default "Reset Password" */
-          resetPassword: t("reset-password"),
-          /** @default "Save new password" */
-          resetPasswordAction: t("reset-password-action"),
-          /** @default "Enter your new password below" */
-          resetPasswordDescription: t("reset-password-description"),
-          /** @default "Invalid reset password link" */
-          resetPasswordInvalidToken: t("reset-password-invalid-token"),
-          /** @default "Password reset successfully" */
-          resetPasswordSuccess: t("reset-password-success"),
-          /** @default "Request failed" */
-          requestFailed: t("request-failed"),
-          /** @default "Revoke" */
-          revoke: t("revoke"),
-          /** @default "Delete API Key" */
-          deleteApiKey: t("delete-api-key"),
-          /** @default "Are you sure you want to delete this API key?" */
-          deleteApiKeyConfirmation: t("delete-api-key-confirmation"),
-          /** @default "API Key" */
-          apiKey: t("api-key"),
-          /** @default "Sign In" */
-          signIn: t("sign-in"),
-          /** @default "Login" */
-          signInAction: t("sign-in-action"),
-          /** @default "Enter your email below to login to your account" */
-          signInDescription: t("sign-in-description"),
-          /** @default "Enter your username or email below to login to your account" */
-          signInUsernameDescription: t("sign-in-username-description"),
-          /** @default "Sign in with" */
-          signInWith: t("sign-in-with"),
-          /** @default "Sign Out" */
-          signOut: t("sign-out"),
-          /** @default "Sign Up" */
-          signUp: t("sign-up"),
-          /** @default "Create an account" */
-          signUpAction: t("sign-up-action"),
-          /** @default "Enter your information to create an account" */
-          signUpDescription: t("sign-up-description"),
-          /** @default "Check your email for the verification link." */
-          signUpEmail: t("sign-up-email"),
-          /** @default "Sessions" */
-          sessions: t("sessions"),
-          /** @default "Manage your active sessions and revoke access." */
-          sessionsDescription: t("sessions-description"),
-          /** @default "Set Password" */
-          setPassword: t("set-password"),
-          /** @default "Click the button below to receive an email to set up a password for your account." */
-          setPasswordDescription: t("set-password-description"),
-          /** @default "Settings" */
-          settings: t("settings"),
-          /** @default "Save" */
-          save: t("save"),
-          /** @default "Security" */
-          security: t("security"),
-          /** @default "Switch Account" */
-          switchAccount: t("switch-account"),
-          /** @default "Trust this device" */
-          trustDevice: t("trust-device"),
-          /** @default "Two-Factor" */
-          twoFactor: t("two-factor"),
-          /** @default "Verify code" */
-          twoFactorAction: t("two-factor-action"),
-          /** @default "Please enter your one-time password to continue" */
-          twoFactorDescription: t("two-factor-description"),
-          /** @default "Add an extra layer of security to your account." */
-          twoFactorCardDescription: t("two-factor-card-description"),
-          /** @default "Please enter your password to disable 2FA." */
-          twoFactorDisableInstructions: t("two-factor-disable-instructions"),
-          /** @default "Please enter your password to enable 2FA" */
-          twoFactorEnableInstructions: t("two-factor-enable-instructions"),
-          /** @default "Two-factor authentication has been enabled" */
-          twoFactorEnabled: t("two-factor-enabled"),
-          /** @default "Two-Factor Authentication has been disabled" */
-          twoFactorDisabled: t("two-factor-disabled"),
-          /** @default "Two-Factor Authentication" */
-          twoFactorPrompt: t("two-factor-prompt"),
-          /** @default "Scan the QR Code with your Authenticator" */
-          twoFactorTotpLabel: t("two-factor-totp-label"),
-          /** @default "Send verification code" */
-          sendVerificationCode: t("send-verification-code"),
-          /** @default "Unlink" */
-          unlink: t("unlink"),
-          /** @default "Updated successfully" */
-          updatedSuccessfully: t("updated-successfully"),
-          /** @default "Username" */
-          username: t("username"),
-          /** @default "Enter the username you want to use to log in." */
-          usernameDescription: t("username-description"),
-          /** @default "Please use 32 characters at maximum." */
-          usernameInstructions: t("username-instructions"),
-          /** @default "Username" */
-          usernamePlaceholder: t("username-placeholder"),
-          /** @default "Username or email" */
-          signInUsernamePlaceholder: t("sign-in-username-placeholder"),
-          /** @default "Verify Your Email" */
-          verifyYourEmail: t("verify-your-email"),
-          /** @default "Please verify your email address. Check your inbox for the verification email. If you haven't received the email, click the button below to resend." */
-          verifyYourEmailDescription: t("verify-your-email-description"),
-          /** @default "Go back" */
-          goBack: t("go-back"),
-          /** @default "Invalid email or password" */
-          invalidEmailOrPassword: t("invalid-email-or-password"),
-          /** @default "Invalid password" */
-          passwordInvalid: t("password-invalid"),
-          /** @default "Your session is not fresh. Please sign in again." */
-          sessionNotFresh: t("session-not-fresh"),
-          /** @default "Session Expired" */
-          sessionExpired: t("session-expired"),
-          /** @default "Password too short" */
-          passwordTooShort: t("password-too-short"),
-          /** @default "Password too long" */
-          passwordTooLong: t("password-too-long"),
-          /** @default "Upload Avatar" */
-          uploadAvatar: t("upload-avatar"),
-          /** @default "Privacy Policy" */
-          privacyPolicy: t("privacy-policy"),
-          /** @default "Terms of Service" */
-          termsOfService: t("terms-of-service"),
-          /** @default "This site is protected by reCAPTCHA." */
-          protectedByRecaptcha: t("protected-by-recaptcha"),
-          /** @default "By continuing, you agree to the" */
-          byContinuingYouAgree: t("by-continuing-you-agree"),
-          /** @default "Missing CAPTCHA response" */
-          missingCaptchaResponse: t("missing-captcha-response"),
-        }}
+        localization={
+          {
+            // Map our existing translations to better-auth-ui v2's uppercase keys
+            ACCOUNT: t("account"),
+            ACCOUNTS: t("accounts"),
+            ACCOUNTS_DESCRIPTION: t("accounts-description"),
+            ACCOUNTS_INSTRUCTIONS: t("accounts-instructions"),
+            ADD_ACCOUNT: t("add-account"),
+            ADD_PASSKEY: t("add-passkey"),
+            ALREADY_HAVE_AN_ACCOUNT: t("already-have-account"),
+            AVATAR: t("avatar"),
+            AVATAR_DESCRIPTION: t("avatar-description"),
+            AVATAR_INSTRUCTIONS: t("avatar-instructions"),
+            BACKUP_CODE_REQUIRED: t("backup-code-required"),
+            BACKUP_CODES: t("backup-codes"),
+            BACKUP_CODES_DESCRIPTION: t("backup-codes-description"),
+            BACKUP_CODE_PLACEHOLDER: t("backup-code-placeholder"),
+            BACKUP_CODE: t("backup-code"),
+            CANCEL: t("cancel"),
+            CHANGE_PASSWORD: t("change-password"),
+            CHANGE_PASSWORD_DESCRIPTION: t("change-password-description"),
+            CHANGE_PASSWORD_INSTRUCTIONS: t("change-password-instructions"),
+            CHANGE_PASSWORD_SUCCESS: t("change-password-success"),
+            CONFIRM_PASSWORD: t("confirm-password"),
+            CONFIRM_PASSWORD_PLACEHOLDER: t("confirm-password-placeholder"),
+            CONFIRM_PASSWORD_REQUIRED: t("confirm-password-required"),
+            CONTINUE_WITH_AUTHENTICATOR: t("continue-with-authenticator"),
+            COPIED_TO_CLIPBOARD: t("copied-to-clipboard"),
+            COPY_TO_CLIPBOARD: t("copy-to-clipboard"),
+            COPY_ALL_CODES: t("copy-all-codes"),
+            CONTINUE: t("continue"),
+            CURRENT_PASSWORD: t("current-password"),
+            CURRENT_PASSWORD_PLACEHOLDER: t("current-password-placeholder"),
+            CURRENT_SESSION: t("current-session"),
+            DELETE: t("delete"),
+            DELETE_AVATAR: t("delete-avatar"),
+            DELETE_ACCOUNT: t("delete-account"),
+            DELETE_ACCOUNT_DESCRIPTION: t("delete-account-description"),
+            DELETE_ACCOUNT_INSTRUCTIONS: t("delete-account-instructions"),
+            DELETE_ACCOUNT_VERIFY: t("delete-account-verify"),
+            DELETE_ACCOUNT_SUCCESS: t("delete-account-success"),
+            DELETE_ACCOUNT_EMAIL: t("delete-account-email"),
+            DELETE_ACCOUNT_NOT_FRESH: t("delete-account-not-fresh"),
+            DISABLED_CREDENTIALS_DESCRIPTION: t(
+              "disabled-credentials-description"
+            ),
+            DONT_HAVE_AN_ACCOUNT: t("dont-have-account"),
+            DONE: t("done"),
+            EMAIL: t("email"),
+            EMAIL_DESCRIPTION: t("email-description"),
+            EMAIL_INSTRUCTIONS: t("email-instructions"),
+            EMAIL_INVALID: t("email-invalid"),
+            EMAIL_IS_THE_SAME: t("email-is-the-same"),
+            EMAIL_PLACEHOLDER: t("email-placeholder"),
+            EMAIL_REQUIRED: t("email-required"),
+            EMAIL_VERIFY_CHANGE: t("email-verify-change"),
+            EMAIL_VERIFICATION: t("email-verification"),
+            ENABLE: t("enable"),
+            ERROR: t("error"),
+            IS_INVALID: t("is-invalid"),
+            IS_REQUIRED: t("is-required"),
+            IS_THE_SAME: t("is-the-same"),
+            FORGOT_AUTHENTICATOR: t("forgot-authenticator"),
+            FORGOT_PASSWORD: t("forgot-password"),
+            FORGOT_PASSWORD_ACTION: t("forgot-password-action"),
+            FORGOT_PASSWORD_DESCRIPTION: t("forgot-password-description"),
+            FORGOT_PASSWORD_EMAIL: t("forgot-password-email"),
+            FORGOT_PASSWORD_LINK: t("forgot-password-link"),
+            INVALID_TWO_FACTOR_COOKIE: t("invalid-two-factor-cookie"),
+            LINK: t("link"),
+            MAGIC_LINK: t("magic-link"),
+            MAGIC_LINK_ACTION: t("magic-link-action"),
+            MAGIC_LINK_DESCRIPTION: t("magic-link-description"),
+            MAGIC_LINK_EMAIL: t("magic-link-email"),
+            EMAIL_OTP: t("email-otp"),
+            EMAIL_OTP_SEND_ACTION: t("email-otp-send-action"),
+            EMAIL_OTP_VERIFY_ACTION: t("email-otp-verify-action"),
+            EMAIL_OTP_DESCRIPTION: t("email-otp-description"),
+            EMAIL_OTP_VERIFICATION_SENT: t("email-otp-verification-sent"),
+            NAME: t("name"),
+            NAME_DESCRIPTION: t("name-description"),
+            NAME_INSTRUCTIONS: t("name-instructions"),
+            NAME_PLACEHOLDER: t("name-placeholder"),
+            NEW_PASSWORD: t("new-password"),
+            NEW_PASSWORD_PLACEHOLDER: t("new-password-placeholder"),
+            NEW_PASSWORD_REQUIRED: t("new-password-required"),
+            ONE_TIME_PASSWORD: t("one-time-password"),
+            OR_CONTINUE_WITH: t("or-continue-with"),
+            PASSKEY: t("passkey"),
+            PASSKEYS: t("passkeys"),
+            PASSKEYS_DESCRIPTION: t("passkeys-description"),
+            PASSKEYS_INSTRUCTIONS: t("passkeys-instructions"),
+            API_KEYS: t("api-keys"),
+            API_KEYS_DESCRIPTION: t("api-keys-description"),
+            API_KEYS_INSTRUCTIONS: t("api-keys-instructions"),
+            CREATE_API_KEY: t("create-api-key"),
+            CREATE_API_KEY_DESCRIPTION: t("create-api-key-description"),
+            API_KEY_NAME_PLACEHOLDER: t("api-key-name-placeholder"),
+            API_KEY_CREATED: t("api-key-created"),
+            API_KEY_CREATED_DESCRIPTION: t("api-key-created-description"),
+            NEVER_EXPIRES: t("never-expires"),
+            EXPIRES: t("expires"),
+            NO_EXPIRATION: t("no-expiration"),
+            CREATE: t("create"),
+            PASSWORD: t("password"),
+            PASSWORD_PLACEHOLDER: t("password-placeholder"),
+            PASSWORD_REQUIRED: t("password-required"),
+            PASSWORDS_DO_NOT_MATCH: t("passwords-do-not-match"),
+            PROVIDERS: t("providers"),
+            PROVIDERS_DESCRIPTION: t("providers-description"),
+            RECOVER_ACCOUNT: t("recover-account"),
+            RECOVER_ACCOUNT_ACTION: t("recover-account-action"),
+            RECOVER_ACCOUNT_DESCRIPTION: t("recover-account-description"),
+            REMEMBER_ME: t("remember-me"),
+            RESEND_CODE: t("resend-code"),
+            RESEND_VERIFICATION_EMAIL: t("resend-verification-email"),
+            RESET_PASSWORD: t("reset-password"),
+            RESET_PASSWORD_ACTION: t("reset-password-action"),
+            RESET_PASSWORD_DESCRIPTION: t("reset-password-description"),
+            RESET_PASSWORD_INVALID_TOKEN: t("reset-password-invalid-token"),
+            RESET_PASSWORD_SUCCESS: t("reset-password-success"),
+            REQUEST_FAILED: t("request-failed"),
+            REVOKE: t("revoke"),
+            DELETE_API_KEY: t("delete-api-key"),
+            DELETE_API_KEY_CONFIRMATION: t("delete-api-key-confirmation"),
+            API_KEY: t("api-key"),
+            SIGN_IN: t("sign-in"),
+            SIGN_IN_ACTION: t("sign-in-action"),
+            SIGN_IN_DESCRIPTION: t("sign-in-description"),
+            SIGN_IN_USERNAME_DESCRIPTION: t("sign-in-username-description"),
+            SIGN_IN_WITH: t("sign-in-with"),
+            SIGN_OUT: t("sign-out"),
+            SIGN_UP: t("sign-up"),
+            SIGN_UP_ACTION: t("sign-up-action"),
+            SIGN_UP_DESCRIPTION: t("sign-up-description"),
+            SIGN_UP_EMAIL: t("sign-up-email"),
+            SESSIONS: t("sessions"),
+            SESSIONS_DESCRIPTION: t("sessions-description"),
+            SET_PASSWORD: t("set-password"),
+            SET_PASSWORD_DESCRIPTION: t("set-password-description"),
+            SETTINGS: t("settings"),
+            SAVE: t("save"),
+            SECURITY: t("security"),
+            SWITCH_ACCOUNT: t("switch-account"),
+            TRUST_DEVICE: t("trust-device"),
+            TWO_FACTOR: t("two-factor"),
+            TWO_FACTOR_ACTION: t("two-factor-action"),
+            TWO_FACTOR_DESCRIPTION: t("two-factor-description"),
+            TWO_FACTOR_CARD_DESCRIPTION: t("two-factor-card-description"),
+            TWO_FACTOR_DISABLE_INSTRUCTIONS: t(
+              "two-factor-disable-instructions"
+            ),
+            TWO_FACTOR_ENABLE_INSTRUCTIONS: t("two-factor-enable-instructions"),
+            TWO_FACTOR_ENABLED: t("two-factor-enabled"),
+            TWO_FACTOR_DISABLED: t("two-factor-disabled"),
+            TWO_FACTOR_PROMPT: t("two-factor-prompt"),
+            TWO_FACTOR_TOTP_LABEL: t("two-factor-totp-label"),
+            SEND_VERIFICATION_CODE: t("send-verification-code"),
+            UNLINK: t("unlink"),
+            UPDATED_SUCCESSFULLY: t("updated-successfully"),
+            USERNAME: t("username"),
+            USERNAME_DESCRIPTION: t("username-description"),
+            USERNAME_INSTRUCTIONS: t("username-instructions"),
+            USERNAME_PLACEHOLDER: t("username-placeholder"),
+            SIGN_IN_USERNAME_PLACEHOLDER: t("sign-in-username-placeholder"),
+            VERIFY_YOUR_EMAIL: t("verify-your-email"),
+            VERIFY_YOUR_EMAIL_DESCRIPTION: t("verify-your-email-description"),
+            GO_BACK: t("go-back"),
+            INVALID_EMAIL_OR_PASSWORD: t("invalid-email-or-password"),
+            PASSWORD_INVALID: t("password-invalid"),
+            SESSION_NOT_FRESH: t("session-not-fresh"),
+            SESSION_EXPIRED: t("session-expired"),
+            PASSWORD_TOO_SHORT: t("password-too-short"),
+            PASSWORD_TOO_LONG: t("password-too-long"),
+            UPLOAD_AVATAR: t("upload-avatar"),
+            PRIVACY_POLICY: t("privacy-policy"),
+            TERMS_OF_SERVICE: t("terms-of-service"),
+            PROTECTED_BY_RECAPTCHA: t("protected-by-recaptcha"),
+            BY_CONTINUING_YOU_AGREE: t("by-continuing-you-agree"),
+            MISSING_CAPTCHA_RESPONSE: t("missing-captcha-response"),
+            INVALID_PASSWORD: t("invalid-password"),
+            FAILED_TO_VALIDATE: t("failed-to-validate"),
+            PROVIDER_LINK_SUCCESS: t("provider-link-success"),
+            PROVIDER_UNLINK_SUCCESS: t("provider-unlink-success"),
+            PROVIDERS_LOADING_ERROR: t("providers-loading-error"),
+            BACKUP_CODE_ACTION: t("backup-code-action"),
+            SET_PASSWORD_EMAIL_SENT: t("set-password-email-sent"),
+            TRUST_THIS_DEVICE: t("trust-this-device"),
+          } as Record<string, string>
+        }
       >
         <div className="AuthProvider">{children}</div>
       </AuthUIProviderTanstack>

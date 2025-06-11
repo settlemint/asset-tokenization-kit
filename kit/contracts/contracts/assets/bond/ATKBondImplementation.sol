@@ -203,7 +203,8 @@ contract ATKBondImplementation is
         if (isMatured) revert BondAlreadyMatured();
 
         uint256 needed = totalUnderlyingNeeded();
-        if (underlyingAssetBalance() < needed) revert InsufficientUnderlyingBalance();
+        uint256 current = underlyingAssetBalance();
+        if (current < needed) revert InsufficientUnderlyingBalance(current, needed);
 
         isMatured = true;
         emit BondMatured(block.timestamp);
@@ -542,7 +543,7 @@ contract ATKBondImplementation is
         virtual
         override(SMARTUpgradeable, SMARTCustodianUpgradeable, SMARTHooks)
     {
-        // If not a forced uptdate (recoverTokens or forcedTransfer) and the bond is matured,
+        // If not a forced update (recoverTokens or forcedTransfer) and the bond is matured,
         // we cannot transfer tokens anymore, only redeem them.
         if (!__isForcedUpdate && isMatured && (to != address(0))) {
             revert BondAlreadyMatured();
@@ -636,13 +637,13 @@ contract ATKBondImplementation is
         uint256 currentBalance = balanceOf(from);
 
         // Simple check: user can only redeem what they currently have
-        if (amount > currentBalance) revert InsufficientRedeemableBalance();
+        if (amount > currentBalance) revert InsufficientRedeemableBalance(currentBalance, amount);
 
         uint256 underlyingAmount = _calculateUnderlyingAmount(amount);
 
         uint256 contractBalance = underlyingAssetBalance();
         if (contractBalance < underlyingAmount) {
-            revert InsufficientUnderlyingBalance();
+            revert InsufficientUnderlyingBalance(contractBalance, underlyingAmount);
         }
 
         // State changes BEFORE external calls (checks-effects-interactions pattern)

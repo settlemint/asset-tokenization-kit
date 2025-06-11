@@ -4,6 +4,7 @@ import { ATKTopic } from "../../constants/topics";
 import { owner } from "../../entities/actors/owner";
 import type { Asset } from "../../entities/asset";
 import { atkDeployer } from "../../services/deployer";
+import { getAnvilTimeMilliseconds } from "../../utils/anvil";
 import { addCountryComplianceModule } from "./core/add-country-allow-list-compliance-module";
 import { grantRoles } from "./core/grant-roles";
 import { issueAssetClassificationClaim } from "./core/issue-asset-classification-claim";
@@ -62,11 +63,11 @@ export const setupAsset = async (
 
   if (collateral) {
     // Update collateral
-    const now = new Date();
+    const anvilTime = new Date(await getAnvilTimeMilliseconds(owner));
     const oneYearFromNow = new Date(
-      now.getFullYear() + 1,
-      now.getMonth(),
-      now.getDate()
+      anvilTime.getFullYear() + 1,
+      anvilTime.getMonth(),
+      anvilTime.getDate()
     );
     await issueCollateralClaim(
       asset,

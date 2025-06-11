@@ -16,6 +16,28 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param faceValue_ The face value of each bond token in the underlying asset's base units.
     /// @param underlyingAsset_ The address of the ERC20 token used as the underlying asset for the bond.
 
+    /// @notice Emitted when a new bond is created.
+    /// @param sender The address of the sender.
+    /// @param tokenAddress The address of the newly created token.
+    /// @param name The name of the bond.
+    /// @param symbol The symbol of the bond.
+    /// @param decimals The number of decimals for the bond tokens.
+    /// @param cap The maximum total supply of the bond tokens.
+    /// @param maturityDate The Unix timestamp representing the bond's maturity date.
+    /// @param faceValue The face value of each bond token in the underlying asset's base units.
+    /// @param underlyingAsset The address of the ERC20 token used as the underlying asset for the bond.
+    event BondCreated(
+        address indexed sender,
+        address indexed tokenAddress,
+        string name,
+        string symbol,
+        uint8 decimals,
+        uint256 cap,
+        uint256 maturityDate,
+        uint256 faceValue,
+        address underlyingAsset
+    );
+
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the bond.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @return deployedBondAddress The address of the newly deployed bond contract.

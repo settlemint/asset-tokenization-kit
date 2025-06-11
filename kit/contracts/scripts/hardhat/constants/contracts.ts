@@ -23,6 +23,7 @@ import {
   ismartCustodianAbi,
   ismartFixedYieldScheduleAbi,
   ismartPausableAbi,
+  ismartRedeemableAbi,
   ismartYieldAbi,
   stablecoinAbi,
   stablecoinFactoryAbi,
@@ -67,6 +68,7 @@ export const ATKContracts = {
   ismartYield: ismartYieldAbi,
   ismartFixedYieldSchedule: ismartFixedYieldScheduleAbi,
   ismartCapped: ismartCappedAbi,
+  ismartRedeemable: ismartRedeemableAbi,
   // compliance modules
   countryAllowListModule: countryAllowListAbi,
   countryBlockListModule: countryBlockListAbi,
