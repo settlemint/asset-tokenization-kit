@@ -93,6 +93,8 @@ jobs:
           BUILD_CONCLUSION: ${{ inputs.workflow_conclusion }}
         run: |
           echo "Debug: Processing pull_request event with build conclusion: $BUILD_CONCLUSION"
+          echo "Debug: Event name: ${{ github.event_name }}"
+          echo "Debug: PR data available: ${{ github.event.pull_request != null }}"
 
           # Map conclusion to build result
           if [[ "$BUILD_CONCLUSION" == "success" ]]; then
@@ -109,12 +111,27 @@ jobs:
 
           echo "build_result=$BUILD_RESULT" >> $GITHUB_OUTPUT
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
-          # Escape special characters in PR title to prevent GitHub Actions from interpreting them as commands
-          # Replace ::, --, and other special sequences that GitHub Actions might interpret
-          ESCAPED_TITLE=$(echo "$PR_TITLE" | sed -e 's/::/: :/g' -e 's/--/- -/g' -e 's/\r//g' -e 's/\n/ /g')
-          echo "pr_title<<EOF" >> $GITHUB_OUTPUT
-          echo "$ESCAPED_TITLE" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Debug: Show raw PR title
+          echo "Debug: Raw PR title: $PR_TITLE"
+          
+          # If PR title is empty, try to get it from the API
+          if [[ -z "$PR_TITLE" && -n "$PR_NUMBER" ]]; then
+            echo "Debug: PR title is empty, fetching from API..."
+            PR_DATA=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER")
+            PR_TITLE=$(echo "$PR_DATA" | jq -r '.title // empty')
+            echo "Debug: Fetched PR title from API: $PR_TITLE"
+          fi
+          
+          # Escape special characters in PR title for safe usage in JSON and shell
+          # This handles quotes, backslashes, newlines, and GitHub Actions special sequences
+          ESCAPED_TITLE=$(echo "$PR_TITLE" | jq -Rs '.')
+          # Remove the surrounding quotes that jq adds
+          ESCAPED_TITLE=${ESCAPED_TITLE:1:-1}
+          
+          echo "Debug: Escaped PR title: $ESCAPED_TITLE"
+          echo "pr_title=$ESCAPED_TITLE" >> $GITHUB_OUTPUT
           echo "pr_user=$PR_USER" >> $GITHUB_OUTPUT
           echo "pr_html_url=$PR_HTML_URL" >> $GITHUB_OUTPUT
           echo "pr_state=$PR_STATE" >> $GITHUB_OUTPUT
