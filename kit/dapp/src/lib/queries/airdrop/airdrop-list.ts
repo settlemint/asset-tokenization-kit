@@ -9,7 +9,7 @@ import { withTracing } from "@/lib/utils/tracing";
 import { t } from "@/lib/utils/typebox";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 import { AirdropFragment } from "./airdrop-fragment";
 import { OnChainAirdropSchema } from "./airdrop-schema";
 
@@ -55,7 +55,7 @@ export const getAirdropList = withTracing(
         {
           first,
           skip,
-          owner,
+          owner: getAddress(owner),
         },
         {
           "X-GraphQL-Operation-Name": "AirdropList",
