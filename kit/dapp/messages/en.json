@@ -1188,7 +1188,8 @@
         "status-header": "Status",
         "actions-header": "Actions",
         "amount-claimed-header": "Amount Claimed",
-        "amount-allocated-header": "Amount Allocated"
+        "amount-allocated-header": "Amount Allocated",
+        "claimed": "Claimed"
       },
       "empty-state": {
         "title": "No airdrops found",

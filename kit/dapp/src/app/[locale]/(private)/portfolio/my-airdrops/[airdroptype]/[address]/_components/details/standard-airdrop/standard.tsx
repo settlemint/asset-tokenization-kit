@@ -10,7 +10,7 @@ import type { UserStandardAirdrop } from "@/lib/queries/standard-airdrop/standar
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { useLocale, useTranslations } from "next-intl";
-import { Columns } from "./standard-allocation-columns";
+import { Columns } from "./allocation-columns";
 
 export function StandardAirdropDetails({
   airdrop,
@@ -84,13 +84,12 @@ export function StandardAirdropDetails({
         toolbar={{
           enableToolbar: false,
         }}
+        pagination={{
+          enablePagination: false,
+        }}
         columnParams={{
-          decimals: airdrop.asset.decimals,
-          symbol: airdrop.asset.symbol,
-          airdrop: airdrop.id,
-          recipient: session.data?.user.wallet,
-          asset: airdrop.asset.id,
-          airdropType: "standard",
+          airdropDetail: airdrop,
+          user: session.data?.user,
         }}
         data={airdrop.recipient.claimIndices}
         name={t("asset-allocation")}

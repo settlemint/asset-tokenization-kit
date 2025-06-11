@@ -3,7 +3,7 @@ import { getUserStandardAirdropDetail } from "@/lib/queries/standard-airdrop/use
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
 import type { Address } from "viem";
-import { StandardAirdropDetails } from "./standard";
+import { StandardAirdropDetails } from "./standard-airdrop/standard";
 
 interface DetailsProps {
   address: Address;
