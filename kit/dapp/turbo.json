@@ -23,7 +23,6 @@
       "inputs": ["src/lib/db/**"]
     },
     "dev": {
-      "dependsOn": ["db:migrate"],
       "cache": false
     },
     "artifacts": {
