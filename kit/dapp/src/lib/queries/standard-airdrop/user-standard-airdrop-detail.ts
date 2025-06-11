@@ -55,13 +55,13 @@ export const getUserStandardAirdropDetail = withTracing(
       user.wallet
     );
     const amountIndexMap = new Map<
-      number,
+      bigint,
       { amount: string; amountExact: string }
     >();
     let totalAmountAllocated = 0;
     let totalAmountAllocatedExact = 0n;
     for (const distribution of distributions) {
-      amountIndexMap.set(distribution.index, {
+      amountIndexMap.set(BigInt(distribution.index), {
         amount: distribution.amount,
         amountExact: distribution.amountExact,
       });
@@ -122,7 +122,7 @@ export const getUserStandardAirdropDetail = withTracing(
 
 function getClaimIndices(
   airdrop: NonNullable<ResultOf<typeof AirdropDetails>["standardAirdrop"]>,
-  amountIndexMap: Map<number, { amount: string; amountExact: string }>
+  amountIndexMap: Map<bigint, { amount: string; amountExact: string }>
 ) {
   const result = [];
   const recipient =
@@ -132,10 +132,11 @@ function getClaimIndices(
       (claim) => claim.index === index.toString()
     );
     if (claim) {
+      const claimIndex = BigInt(claim.index);
       result.push({
-        index: claim.index,
-        amount: amountIndexMap.get(Number(claim.index))?.amount,
-        amountExact: amountIndexMap.get(Number(claim.index))?.amountExact,
+        index: claimIndex,
+        amount: amountIndexMap.get(claimIndex)?.amount,
+        amountExact: amountIndexMap.get(claimIndex)?.amountExact,
         timestamp: claim.timestamp,
         claimedAmount: claim.claimedAmount,
         claimedAmountExact: claim.claimedAmountExact,

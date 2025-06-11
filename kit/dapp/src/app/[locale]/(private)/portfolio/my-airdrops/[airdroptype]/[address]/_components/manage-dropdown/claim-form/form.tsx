@@ -23,6 +23,7 @@ interface ClaimFormProps {
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
   asTableAction?: boolean;
+  disabled?: boolean;
 }
 
 export function ClaimForm({
@@ -37,6 +38,7 @@ export function ClaimForm({
   configurationCard,
   asButton,
   asTableAction,
+  disabled,
 }: ClaimFormProps) {
   const t = useTranslations("portfolio.my-airdrops.details.forms.form");
   const isExternallyControlled =
@@ -56,6 +58,7 @@ export function ClaimForm({
       description={t("description.claim")}
       asButton={asButton}
       asTableAction={asTableAction}
+      disabled={disabled}
     >
       <Form
         action={claimAirdrop}

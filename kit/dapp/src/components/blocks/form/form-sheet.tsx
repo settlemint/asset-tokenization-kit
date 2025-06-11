@@ -46,7 +46,12 @@ export function FormSheet({
       )}
       {triggerLabel && asTableAction && (
         <SheetTrigger asChild>
-          <Button variant="outline" size="sm" className="border-muted">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-muted"
+            disabled={disabled}
+          >
             {triggerLabel}
           </Button>
         </SheetTrigger>

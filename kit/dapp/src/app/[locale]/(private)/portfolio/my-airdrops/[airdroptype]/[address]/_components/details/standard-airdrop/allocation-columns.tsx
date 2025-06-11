@@ -62,6 +62,7 @@ export function Columns({
 
         return (
           <ClaimForm
+            disabled={airdropDetail.status !== "ACTIVE"}
             address={airdrop}
             index={row.original.index}
             amount={row.original.amount}
