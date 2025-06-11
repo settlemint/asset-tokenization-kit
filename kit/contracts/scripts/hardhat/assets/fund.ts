@@ -19,6 +19,7 @@ import { forcedTransfer } from "./actions/custodian/forced-transfer";
 import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
+import { collectManagementFee } from "./actions/fund/collect-management-fee";
 import { setupAsset } from "./actions/setup-asset";
 
 export const createFund = async () => {
@@ -73,7 +74,9 @@ export const createFund = async () => {
   await freezePartialTokens(fund, owner, investorB, 2n);
   await unfreezePartialTokens(fund, owner, investorB, 1n);
 
-  // TODO: execute all other functions of the fund
+  // management fee
+  await collectManagementFee(fund, 30);
+  await collectManagementFee(fund, 8);
 
   return fund;
 };

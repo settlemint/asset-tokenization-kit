@@ -69,7 +69,5 @@ export const createDeposit = async () => {
   await freezePartialTokens(deposit, owner, investorB, 250n);
   await unfreezePartialTokens(deposit, owner, investorB, 125n);
 
-  // TODO: execute all other functions of the deposit
-
   return deposit;
 };

@@ -20,9 +20,7 @@ export function Widget({ label, value, subtext }: WidgetProps) {
         <CardTitle>{label}</CardTitle>
       </CardHeader>
       <CardContent className="font-bold text-3xl">{value}</CardContent>
-      <CardFooter className="text-muted-foreground text-sm">
-        {subtext}
-      </CardFooter>
+      <CardFooter className="text-subtext text-sm">{subtext}</CardFooter>
     </Card>
   );
 }

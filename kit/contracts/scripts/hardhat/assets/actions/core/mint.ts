@@ -1,3 +1,4 @@
+import { Address, isAddress as isAddressViem } from "viem";
 import { ATKContracts } from "../../../constants/contracts";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import { owner } from "../../../entities/actors/owner";
@@ -9,7 +10,7 @@ import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const mint = async (
   asset: Asset<any>,
-  to: AbstractActor | Asset<any>,
+  to: AbstractActor | Asset<any> | Address,
   amount: bigint
 ) => {
   const tokenContract = owner.getContractInstance({
@@ -20,12 +21,16 @@ export const mint = async (
   const tokenAmount = toDecimals(amount, asset.decimals);
 
   const transactionHash = await withDecodedRevertReason(() =>
-    tokenContract.write.mint([to.address, tokenAmount])
+    tokenContract.write.mint([isAddress(to) ? to : to.address, tokenAmount])
   );
 
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Mint] ${formatDecimals(tokenAmount, asset.decimals)} ${asset.symbol} tokens to ${to.name} (${to.address})`
+    `[Mint] ${formatDecimals(tokenAmount, asset.decimals)} ${asset.symbol} tokens to ${isAddress(to) ? to : `${to.name} (${to.address})`}`
   );
 };
+
+function isAddress(address: unknown): address is Address {
+  return typeof address === "string" && isAddressViem(address);
+}

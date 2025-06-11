@@ -32,13 +32,18 @@ abstract contract _SMARTPausableLogic is _SMARTExtension, ISMARTPausable {
     // -- Internal Setup Function --
 
     /// @notice Internal initializer function for the pausable logic.
+    /// @param initiallyPaused If true, the contract will be initialized in a paused state.
     /// @dev This function should be called ONLY ONCE during the setup of the concrete pausable extension
     ///      (either in its constructor for non-upgradeable or initializer for upgradeable versions).
     ///      Its primary role is to register the `ISMARTPausable` interface ID using `_registerInterface`
-    ///      (from `_SMARTExtension`). This enables ERC165 introspection, allowing other contracts to
-    ///      discover that this token supports pausable functionalities.
-    function __SMARTPausable_init_unchained() internal {
+    ///      and optionally set the initial state to paused.
+    ///      If initialized as paused, it will emit a `Paused` event with `_smartSender()` as the initiator.
+    function __SMARTPausable_init_unchained(bool initiallyPaused) internal {
         _registerInterface(type(ISMARTPausable).interfaceId);
+        if (initiallyPaused) {
+            _paused = true;
+            emit Paused(_smartSender());
+        }
     }
 
     // -- View Functions (ISMARTPausable Implementation) --

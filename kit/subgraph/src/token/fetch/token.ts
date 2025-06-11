@@ -6,13 +6,16 @@ import {
 } from "../../../generated/templates";
 import { Token as TokenContract } from "../../../generated/templates/Token/Token";
 import { fetchAccount } from "../../account/fetch/account";
-import { fetchCapped } from "../../capped/fetch/capped";
-import { fetchCollateral } from "../../collateral/fetch/collateral";
-import { fetchCustodian } from "../../custodian/fetch/custodian";
 import { InterfaceIds } from "../../erc165/utils/interfaceids";
-import { fetchPausable } from "../../pausable/fetch/pausable";
+import { fetchBond } from "../../token-assets/bond/fetch/bond";
+import { fetchFund } from "../../token-assets/fund/fetch/fund";
+import { fetchCapped } from "../../token-extensions/capped/fetch/capped";
+import { fetchCollateral } from "../../token-extensions/collateral/fetch/collateral";
+import { fetchCustodian } from "../../token-extensions/custodian/fetch/custodian";
+import { fetchPausable } from "../../token-extensions/pausable/fetch/pausable";
+import { fetchRedeemable } from "../../token-extensions/redeemable/fetch/redeemable";
+import { fetchYield } from "../../token-extensions/yield/fetch/yield";
 import { setBigNumber } from "../../utils/bignumber";
-import { fetchYield } from "../../yield/fetch/yield";
 
 export function fetchToken(address: Address): Token {
   let token = Token.load(address);
@@ -56,6 +59,18 @@ export function fetchToken(address: Address): Token {
     }
     if (tokenContract.supportsInterface(InterfaceIds.ISMARTYield)) {
       token.yield_ = fetchYield(address).id;
+      token.save();
+    }
+    if (tokenContract.supportsInterface(InterfaceIds.ISMARTRedeemable)) {
+      token.redeemable = fetchRedeemable(address).id;
+      token.save();
+    }
+    if (tokenContract.supportsInterface(InterfaceIds.IATKBond)) {
+      token.bond = fetchBond(address).id;
+      token.save();
+    }
+    if (tokenContract.supportsInterface(InterfaceIds.IATKFund)) {
+      token.fund = fetchFund(address).id;
       token.save();
     }
   }

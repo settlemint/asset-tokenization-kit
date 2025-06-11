@@ -71,7 +71,5 @@ export const createStableCoin = async () => {
   await freezePartialTokens(stableCoin, owner, investorB, 250n);
   await unfreezePartialTokens(stableCoin, owner, investorB, 125n);
 
-  // TODO: execute all other functions of the stablecoin
-
   return stableCoin;
 };

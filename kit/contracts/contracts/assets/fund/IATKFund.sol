@@ -16,6 +16,12 @@ import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.s
 /// @title Interface for a ATK Fund
 /// @notice Defines the core functionality and extensions for a ATK Fund, including voting capabilities.
 interface IATKFund is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTPausable, ISMARTBurnable, IVotes {
+    /// @notice Emitted when management fees are collected
+    /// @param sender The address that collected the management fees
+    /// @param amount The amount of tokens minted as management fees
+    /// @param timestamp The timestamp when the fees were collected
+    event ManagementFeeCollected(address indexed sender, uint256 amount, uint256 timestamp);
+
     /// @notice Initializes the ATK Fund contract.
     /// @param name_ The name of the fund.
     /// @param symbol_ The symbol of the fund.

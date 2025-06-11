@@ -36,6 +36,7 @@ abstract contract SMARTPausableUpgradeable is Initializable, SMARTExtensionUpgra
     // -- Initializer --
 
     /// @notice Initializer for the Upgradeable Pausable extension.
+    /// @param initiallyPaused If true, the contract will be initialized in a paused state.
     /// @dev This function MUST be called once by the `initialize` function of the final concrete (and proxy-deployed)
     ///      contract. It uses the `onlyInitializing` modifier from `Initializable` to ensure it runs only during
     ///      the proxy setup or a reinitialization phase if allowed by the upgrade pattern.
@@ -44,9 +45,9 @@ abstract contract SMARTPausableUpgradeable is Initializable, SMARTExtensionUpgra
     ///      Note: OpenZeppelin's `PausableUpgradeable` itself doesn't have an explicit initializer; its state
     ///      (`_paused`) is managed directly by its `_pause()` and `_unpause()` internal functions. This custom
     ///      `__SMARTPausable_init` is mainly for our framework's ERC165 registration consistency.
-    function __SMARTPausable_init() internal onlyInitializing {
+    function __SMARTPausable_init(bool initiallyPaused) internal onlyInitializing {
         // Initialize the core pausable logic (mainly for ERC165 interface registration).
-        __SMARTPausable_init_unchained();
+        __SMARTPausable_init_unchained(initiallyPaused);
     }
 
     // -- Internal Hooks & Overrides --
