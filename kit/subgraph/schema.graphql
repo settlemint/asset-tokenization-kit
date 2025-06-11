@@ -542,7 +542,6 @@ type StandardAirdrop implements Airdrop @entity(immutable: false) {
   # Standard specific
   startTime: BigInt!
   endTime: BigInt!
-  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
 }
 
 type VestingAirdrop implements Airdrop @entity(immutable: false) {
