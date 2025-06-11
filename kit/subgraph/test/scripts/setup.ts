@@ -22,7 +22,8 @@ async function getLatestBlockNumber() {
     console.log("Latest block number:", latestBlockNumber);
     return latestBlockNumber;
   }
-  throw new Error("Failed to get latest block number");
+  console.error("Failed to get latest block number");
+  process.exit(1);
 }
 
 beforeAll(async () => {
