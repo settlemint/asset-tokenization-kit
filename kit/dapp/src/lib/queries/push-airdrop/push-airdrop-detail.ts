@@ -64,7 +64,7 @@ export const getPushAirdropDetail = withTracing(
     if (!onChainPushAirdrop) {
       throw new Error(`Push airdrop not found for address ${address}`);
     }
-    // Get the token balance
+
     const balance = await getAssetBalanceDetail({
       address: getAddress(onChainPushAirdrop.asset.id),
       account: address,
