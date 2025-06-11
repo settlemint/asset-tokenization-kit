@@ -13,7 +13,6 @@ name: Slack Notification (Reusable)
 #       runs-on: 'namespace-profile-atk'  # optional, defaults to 'ubuntu-latest'
 #     secrets:
 #       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-#       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 # ```
 #
 # Usage in external repositories:
@@ -26,7 +25,6 @@ name: Slack Notification (Reusable)
 #       runs-on: 'ubuntu-latest'  # use a standard runner for external repos
 #     secrets:
 #       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-#       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 # ```
 #
 # Note: External repositories must have access to the same 1Password service account
@@ -49,8 +47,6 @@ on:
         default: "ubuntu-latest"
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN:
-        required: true
-      GITHUB_TOKEN:
         required: true
 
 permissions:
@@ -135,7 +131,7 @@ jobs:
           steps.build_status.outputs.pr_draft != 'true'
         run: |
           # Check if there's an existing comment with Slack message timestamp
-          COMMENT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          COMMENT=$(curl -s -H "Authorization: token ${{ github.token }}" \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.build_status.outputs.pr_number }}/comments" \
             | jq -r '.[] | select(.body | startswith("<!-- slack-ts:")) | .body' | head -1)
 
