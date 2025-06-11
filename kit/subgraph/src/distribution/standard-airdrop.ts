@@ -6,15 +6,7 @@ import {
   log,
 } from "@graphprotocol/graph-ts";
 import {
-  AirdropClaimIndex,
-  AirdropRecipient,
   AirdropStatsData,
-  Bond,
-  CryptoCurrency,
-  Deposit,
-  Equity,
-  Fund,
-  StableCoin,
   // Asset is an interface and cannot be loaded directly
   StandardAirdrop,
 } from "../../generated/schema";
@@ -26,37 +18,14 @@ import {
 } from "../../generated/templates/StandardAirdropTemplate/StandardAirdrop";
 
 // Use fetchAccount and direct constants
+import { fetchAssetDecimals } from "../assets/fetch/asset";
 import { fetchAccount } from "../utils/account";
 import { createActivityLogEntry, EventType } from "../utils/activity-log";
+import {
+  fetchAirdropClaimIndex,
+  fetchAirdropRecipient,
+} from "../utils/airdrop";
 import { toDecimals } from "../utils/decimals";
-
-// Helper function to get token decimals from any asset type
-function getTokenDecimals(tokenAddress: Address): i32 {
-  // Try loading each possible asset type
-  let crypto = CryptoCurrency.load(tokenAddress);
-  if (crypto) return crypto.decimals;
-
-  let stable = StableCoin.load(tokenAddress);
-  if (stable) return stable.decimals;
-
-  let bond = Bond.load(tokenAddress);
-  if (bond) return bond.decimals;
-
-  let equity = Equity.load(tokenAddress);
-  if (equity) return equity.decimals;
-
-  let fund = Fund.load(tokenAddress);
-  if (fund) return fund.decimals;
-
-  let deposit = Deposit.load(tokenAddress);
-  if (deposit) return deposit.decimals;
-
-  // Default to 18 if not found
-  log.warning("Token not found for address {}, defaulting to 18 decimals", [
-    tokenAddress.toHex(),
-  ]);
-  return 18;
-}
 
 // Helper function to generate a unique ID for stats data
 function getStatsId(event: ethereum.Event): i64 {
@@ -80,6 +49,7 @@ export function handleClaimed(event: Claimed): void {
 
   let claimantAddress = event.params.claimant; // indexed address
   let amount = event.params.amount;
+  let index = event.params.index;
 
   log.info("Claimed event processed: Airdrop {}, Claimant {}, Amount {}", [
     airdropAddress.toHex(),
@@ -90,7 +60,7 @@ export function handleClaimed(event: Claimed): void {
   let claimantAccount = fetchAccount(claimantAddress);
 
   // Get the correct token decimals using our helper function
-  let decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  let decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
   let amountBD = toDecimals(amount, decimals);
 
   createActivityLogEntry(
@@ -100,30 +70,32 @@ export function handleClaimed(event: Claimed): void {
     [event.params.claimant]
   );
 
-  // Check if this is a new recipient
-  let recipientId = airdrop.id.concat(claimantAccount.id).toHex();
-  let recipient = AirdropRecipient.load(recipientId);
-  let isNewClaimant = recipient == null;
+  // Use the utility function to fetch or create recipient
+  const recipient = fetchAirdropRecipient(
+    airdrop.id,
+    claimantAccount.id,
+    event,
+    amountBD,
+    amount
+  );
 
-  // Update or Create AirdropRecipient
-  if (!recipient) {
-    recipient = new AirdropRecipient(recipientId);
-    recipient.airdrop = airdrop.id;
-    recipient.recipient = claimantAccount.id;
-    recipient.firstClaimedTimestamp = event.block.timestamp;
-    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
-    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
-    // Increment unique recipient count on airdrop
-    airdrop.totalRecipients = airdrop.totalRecipients + 1;
-  }
-  recipient.lastClaimedTimestamp = event.block.timestamp;
-  recipient.totalClaimedByRecipient =
-    recipient.totalClaimedByRecipient.plus(amountBD);
-  recipient.totalClaimedByRecipientExact =
-    recipient.totalClaimedByRecipientExact.plus(amount);
-  recipient.save();
+  // Use the utility function to create/update the claim index
+  fetchAirdropClaimIndex(
+    airdrop.id,
+    recipient.id,
+    index,
+    amount,
+    decimals,
+    event
+  );
 
   // Update Airdrop totals
+  const isNewClaimant =
+    recipient.firstClaimedTimestamp === event.block.timestamp;
+
+  if (isNewClaimant) {
+    airdrop.totalRecipients = airdrop.totalRecipients + 1;
+  }
   airdrop.totalClaims = airdrop.totalClaims + 1;
   airdrop.totalClaimed = airdrop.totalClaimed.plus(amountBD);
   airdrop.totalClaimedExact = airdrop.totalClaimedExact.plus(amount);
@@ -161,7 +133,7 @@ function processBatchClaim(
   const claimantAccount = fetchAccount(claimantAddress);
 
   // Get the correct token decimals
-  const decimals = getTokenDecimals(Address.fromBytes(airdrop.token));
+  const decimals = fetchAssetDecimals(Address.fromBytes(airdrop.token));
   const totalAmountBD = toDecimals(totalAmount, decimals);
 
   createActivityLogEntry(
@@ -171,56 +143,38 @@ function processBatchClaim(
     [claimantAddress]
   );
 
-  // Check if this is a new recipient
-  const recipientId = airdrop.id.concat(claimantAccount.id).toHex();
-  let recipient = AirdropRecipient.load(recipientId);
-  let isNewClaimant = recipient == null;
-
-  // Update or create AirdropRecipient
-  if (!recipient) {
-    recipient = new AirdropRecipient(recipientId);
-    recipient.airdrop = airdrop.id;
-    recipient.recipient = claimantAccount.id;
-    recipient.firstClaimedTimestamp = event.block.timestamp;
-    recipient.totalClaimedByRecipient = BigDecimal.fromString("0");
-    recipient.totalClaimedByRecipientExact = BigInt.fromI32(0);
-    // Increment unique recipient count on airdrop
-    airdrop.totalRecipients = airdrop.totalRecipients + 1;
-  }
-  recipient.lastClaimedTimestamp = event.block.timestamp;
-  recipient.totalClaimedByRecipient =
-    recipient.totalClaimedByRecipient.plus(totalAmountBD);
-  recipient.totalClaimedByRecipientExact =
-    recipient.totalClaimedByRecipientExact.plus(totalAmount);
-  recipient.save();
+  // Use the utility function to fetch or create recipient
+  const recipient = fetchAirdropRecipient(
+    airdrop.id,
+    claimantAccount.id,
+    event,
+    totalAmountBD,
+    totalAmount
+  );
 
   // Create/update AirdropClaimIndex entities with actual amounts
   for (let i = 0; i < indices.length; i++) {
     const index = indices[i];
     const amount = amounts[i];
-    const amountBD = toDecimals(amount, decimals); // Use actual token decimals
 
-    const claimIndexId = airdrop.id.toHex() + "-" + index.toString();
-    let claimIndex = AirdropClaimIndex.load(claimIndexId);
-    if (!claimIndex) {
-      claimIndex = new AirdropClaimIndex(claimIndexId);
-      claimIndex.index = index;
-      claimIndex.airdrop = airdrop.id;
-      claimIndex.recipient = recipient.id;
-      claimIndex.amount = amountBD;
-      claimIndex.amountExact = amount;
-      claimIndex.timestamp = event.block.timestamp;
-      claimIndex.save();
-    } else {
-      // If index was somehow claimed before (shouldn't happen)
-      claimIndex.timestamp = event.block.timestamp;
-      claimIndex.amount = amountBD;
-      claimIndex.amountExact = amount;
-      claimIndex.save();
-    }
+    // Use the utility function to create/update the claim index
+    fetchAirdropClaimIndex(
+      airdrop.id,
+      recipient.id,
+      index,
+      amount,
+      decimals,
+      event
+    );
   }
 
   // Update airdrop totals
+  const isNewClaimant =
+    recipient.firstClaimedTimestamp === event.block.timestamp;
+
+  if (isNewClaimant) {
+    airdrop.totalRecipients = airdrop.totalRecipients + 1;
+  }
   airdrop.totalClaims = airdrop.totalClaims + 1;
   airdrop.totalClaimed = airdrop.totalClaimed.plus(totalAmountBD);
   airdrop.totalClaimedExact = airdrop.totalClaimedExact.plus(totalAmount);
