@@ -2,8 +2,6 @@
 
 import type { User } from "@/lib/auth/types";
 import { handleChallenge } from "@/lib/challenge";
-import { getPushAirdropOwner } from "@/lib/queries/push-airdrop/get-owner";
-import { getPushAirdropOwnerOnChain } from "@/lib/queries/push-airdrop/get-owner-onchain";
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
@@ -95,29 +93,8 @@ export const airdropTransferOwnershipFunction = async ({
     )),
   };
 
-  console.log(type);
-  console.log(address);
-  console.log(newOwner);
-
   switch (type) {
     case AirdropTypeEnum.push: {
-      // Check both subgraph and on-chain owner
-      const [subgraphOwner, onChainOwner] = await Promise.all([
-        getPushAirdropOwner(address),
-        getPushAirdropOwnerOnChain(address),
-      ]);
-
-      console.log('Subgraph owner:', subgraphOwner);
-      console.log('On-chain owner:', onChainOwner);
-
-      if (onChainOwner.toLowerCase() !== user.wallet.toLowerCase()) {
-        throw new Error(`You are not the owner of this airdrop. Current on-chain owner is ${onChainOwner}`);
-      }
-
-      if (subgraphOwner.toLowerCase() !== onChainOwner.toLowerCase()) {
-        console.warn('Warning: Subgraph owner data is out of sync with blockchain');
-      }
-
       const response = await portalClient.request(
         PushAirdropTransferOwnership,
         params

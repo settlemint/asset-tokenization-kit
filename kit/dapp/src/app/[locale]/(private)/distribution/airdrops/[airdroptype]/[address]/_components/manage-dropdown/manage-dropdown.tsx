@@ -28,8 +28,6 @@ export function AirdropManageDropdown({ airdrop }: AirdropManageDropdownProps) {
   const { data: session } = authClient.useSession();
   const currentUserWallet = session?.user?.wallet;
 
-  console.log(airdrop);
-
   const isOwner =
     currentUserWallet &&
     airdrop.owner.id &&
