@@ -12,7 +12,6 @@ import type { SetYieldScheduleInput } from "./set-yield-schedule-schema";
 // Dummy types for commented GraphQL operations
 const FixedYieldFactoryCreate = {} as any;
 
-
 /**
  * GraphQL mutation for setting a fixed yield schedule for a bond
  *
@@ -74,27 +73,29 @@ export const setYieldScheduleFunction = withAccessControl(
       type: "unixSeconds",
     });
 
-      // const data = await portalClient.request(FixedYieldFactoryCreate, {
-  //       address: FIXED_YIELD_FACTORY_ADDRESS,
-  //       from: user.wallet,
-  //       input: {
-  //         token: address,
-  //         startTime: startTimeTimestamp,
-  //         endTime: endTimeTimestamp,
-  //         rate: percentageToBasisPoints(Number(rate)),
-  //         interval: intervalToSeconds(interval),
-  //       },
-  //       ...(await handleChallenge(
-  //         user,
-  //         user.wallet,
-  //         verificationCode,
-  //         verificationType
-  //       )),
-  //     });
+    // const data = await portalClient.request(FixedYieldFactoryCreate, {
+    //       address: FIXED_YIELD_FACTORY_ADDRESS,
+    //       from: user.wallet,
+    //       input: {
+    //         token: address,
+    //         startTime: startTimeTimestamp,
+    //         endTime: endTimeTimestamp,
+    //         rate: percentageToBasisPoints(Number(rate)),
+    //         interval: intervalToSeconds(interval),
+    //       },
+    //       ...(await handleChallenge(
+    //         user,
+    //         user.wallet,
+    //         verificationCode,
+    //         verificationType
+    //       )),
+    //     });
 
     // NOTE: HARDCODED SO IT STILL COMPILES
     return waitForIndexingTransactions(
-      safeParse(t.Hashes(), ["0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"])
+      safeParse(t.Hashes(), [
+        "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      ])
     );
   }
 );

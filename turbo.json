@@ -7,10 +7,13 @@
   ],
   "tasks": {
     "ci": {
+      "dependsOn": ["ci:base", "format"]
+    },
+    "ci:base": {
       "dependsOn": ["compile", "codegen", "lint", "test", "build"]
     },
     "ci:gha": {
-      "dependsOn": ["publish", "ci", "test:integration"]
+      "dependsOn": ["publish", "ci:base", "test:integration"]
     },
     "//#version": {
       "cache": false,

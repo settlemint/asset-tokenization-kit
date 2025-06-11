@@ -7,7 +7,6 @@ import { ApiError } from "next/dist/server/api-utils";
 // Dummy types for commented GraphQL operations
 const SetPinCode = {} as any;
 
-
 /**
  * GraphQL mutation to set a pincode for wallet verification
  */
@@ -47,12 +46,12 @@ export async function setPincodeFunction({
   //   address: currentUser.wallet,
   //   pincode: pincode.toString(),
   // });
-  
+
   // NOTE: HARDCODED SO IT STILL COMPILES
   const result = {
     createWalletVerification: {
-      id: "mock-pincode-verification-id"
-    }
+      id: "mock-pincode-verification-id",
+    },
   };
   const { createWalletVerification } = result;
   if (!createWalletVerification?.id) {

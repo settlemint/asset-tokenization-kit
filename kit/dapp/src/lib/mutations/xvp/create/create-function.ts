@@ -7,7 +7,6 @@ import type { CreateXvpInput } from "./create-schema";
 // Dummy types for commented GraphQL operations
 const XvpFactoryCreate = {} as any;
 
-
 // const XvpFactoryCreate = portalGraphql(`
 //   mutation XvPSettlementFactoryCreate($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!, $input: XvPSettlementFactoryCreateInput!) {
 //     XvPSettlementFactoryCreate(
