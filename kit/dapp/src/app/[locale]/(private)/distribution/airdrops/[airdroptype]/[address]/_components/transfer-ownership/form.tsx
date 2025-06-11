@@ -2,6 +2,7 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { useRouter } from "@/i18n/routing";
 import { airdropTransferOwnership } from "@/lib/mutations/airdrop/transfer-ownership/transfer-ownership-action";
 import { AirdropTransferOwnershipSchema } from "@/lib/mutations/airdrop/transfer-ownership/transfer-ownership-schema";
 import type { PushAirdrop } from "@/lib/queries/push-airdrop/push-airdrop-schema";
@@ -9,7 +10,6 @@ import type { StandardAirdrop } from "@/lib/queries/standard-airdrop/standard-ai
 import type { VestingAirdrop } from "@/lib/queries/vesting-airdrop/vesting-airdrop-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Recipient } from "./steps/recipient";
 import { Summary } from "./steps/summary";
