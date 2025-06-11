@@ -205,6 +205,9 @@
     "prisma",
   ],
   "overrides": {
+    "ws": "8.18.2",
+    "react-is": "19.1.0",
+    "undici": "7.10.0",
     "adm-zip": "0.5.16",
     "elliptic": "6.6.1",
     "graphql": "16.11.0",

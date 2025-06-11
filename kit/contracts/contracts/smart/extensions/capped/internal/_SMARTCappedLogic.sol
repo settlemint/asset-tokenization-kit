@@ -50,6 +50,19 @@ abstract contract _SMARTCappedLogic is _SMARTExtension, ISMARTCapped {
         emit ISMARTCapped.CapSet(_smartSender(), cap_);
     }
 
+    /// @notice Internal function to change the cap.
+    /// @dev This function allows updating the cap. It reverts with `InvalidCap` if `newCap` is 0
+    ///      or if it is less than the current total supply. Emits a `CapSet` event on success.
+    /// @param newCap The new maximum total supply for the token. Must be >= `__capped_totalSupply()`.
+    function _smart_setCap(uint256 newCap) internal {
+        uint256 currentTotalSupply = __capped_totalSupply();
+        if (newCap == 0 || newCap < currentTotalSupply) {
+            revert InvalidCap(newCap);
+        }
+        _cap = newCap;
+        emit ISMARTCapped.CapSet(_smartSender(), newCap);
+    }
+
     /// @notice Returns the maximum allowed total supply for this token (the "cap").
     /// @dev This public view function implements the `cap()` function from the `ISMARTCapped` interface.
     ///      It allows anyone to query the token's cap.

@@ -15,6 +15,7 @@ import { getAnvilTimeMilliseconds, getAnvilTimeSeconds } from "../utils/anvil";
 import { toDecimals } from "../utils/to-decimals";
 import { mature } from "./actions/bond/mature";
 import { burn } from "./actions/burnable/burn";
+import { setCap } from "./actions/capped/set-cap";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
 import { forcedTransfer } from "./actions/custodian/forced-transfer";
@@ -48,7 +49,7 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   const anvilTimeSeconds = await getAnvilTimeSeconds(owner);
   const faceValue = toDecimals(0.000123, depositToken.decimals);
-  const cap = toDecimals(1000000, bond.decimals);
+  const cap = toDecimals(1_000_000, bond.decimals);
   const transactionHash = await bondFactory.write.createBond([
     bond.name,
     bond.symbol,
@@ -77,6 +78,9 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   // burnable
   await burn(bond, investorB, 2n);
+
+  // capped
+  await setCap(bond, 1_500_000n);
 
   // custodian
   await forcedTransfer(bond, owner, investorA, investorB, 2n);

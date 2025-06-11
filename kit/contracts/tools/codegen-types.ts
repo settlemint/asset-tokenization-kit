@@ -77,6 +77,7 @@ const ABI_PATHS = {
   ismartPausable: `${ARTIFACTS_DIR}/contracts/smart/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json`,
   ismartYield: `${ARTIFACTS_DIR}/contracts/smart/extensions/yield/ISMARTYield.sol/ISMARTYield.json`,
   ismartFixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json`,
+  ismartCapped: `${ARTIFACTS_DIR}/contracts/smart/extensions/capped/ISMARTCapped.sol/ISMARTCapped.json`,
   ismartRedeemable: `${ARTIFACTS_DIR}/contracts/smart/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json`,
   // compliance modules
   identityVerification: `${ARTIFACTS_DIR}/contracts/smart/modules/SMARTIdentityVerificationModule.sol/SMARTIdentityVerificationModule.json`,
@@ -110,6 +111,7 @@ const AVAILABLE_ABIS = {
     "ismartPausable",
     "ismartYield",
     "ismartFixedYieldSchedule",
+    "ismartCapped",
     "ismartRedeemable",
   ],
   complianceModules: [

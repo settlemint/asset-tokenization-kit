@@ -750,6 +750,67 @@ contract ATKBondTest is AbstractATKAssetTest {
         assertTrue(bond.totalSupply() <= CAP, "Total supply should still be within cap");
     }
 
+    function test_SetCap_Success() public {
+        vm.startPrank(owner);
+        uint256 newCap = CAP * 2;
+
+        vm.expectEmit(true, true, true, true);
+        emit ISMARTCapped.CapSet(owner, newCap);
+        bond.setCap(newCap);
+
+        assertEq(bond.cap(), newCap, "Cap should be updated to the new value");
+        vm.stopPrank();
+    }
+
+    function test_SetCap_Lower_Success() public {
+        // Lower the cap, but keep it above total supply
+        uint256 currentSupply = bond.totalSupply();
+        uint256 newCap = currentSupply + toDecimals(50);
+        require(newCap < CAP, "Test setup: new cap should be lower than original CAP");
+
+        vm.startPrank(owner);
+        bond.setCap(newCap);
+        assertEq(bond.cap(), newCap, "Cap should be lowered");
+
+        // Minting up to the new cap should work
+        uint256 remaining = newCap - currentSupply;
+        bond.mint(owner, remaining);
+        assertEq(bond.totalSupply(), newCap, "Total supply should match new cap");
+
+        // Minting over the new cap should fail
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.ExceededCap.selector, newCap + 1, newCap));
+        bond.mint(owner, 1);
+        vm.stopPrank();
+    }
+
+    function test_SetCap_Unauthorized_Reverts() public {
+        vm.startPrank(user1); // user1 does not have SUPPLY_MANAGEMENT_ROLE
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.SUPPLY_MANAGEMENT_ROLE
+            )
+        );
+        bond.setCap(CAP * 2);
+        vm.stopPrank();
+    }
+
+    function test_SetCap_BelowTotalSupply_Reverts() public {
+        uint256 currentSupply = bond.totalSupply();
+        uint256 newCap = currentSupply - 1;
+
+        vm.startPrank(owner);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.InvalidCap.selector, newCap));
+        bond.setCap(newCap);
+        vm.stopPrank();
+    }
+
+    function test_SetCap_ToZero_Reverts() public {
+        vm.startPrank(owner);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.InvalidCap.selector, 0));
+        bond.setCap(0);
+        vm.stopPrank();
+    }
+
     function test_BondYieldScheduleFlow() public {
         // Deploy necessary contracts (using the existing Bond from setUp())
         vm.startPrank(owner);

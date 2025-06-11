@@ -5,7 +5,7 @@ import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ISMARTCapped } from "../../../contracts/smart/extensions/capped/ISMARTCapped.sol";
-import { SMARTCappedToken } from "../examples/SMARTCappedToken.sol";
+import { SMARTToken } from "../examples/SMARTToken.sol";
 
 abstract contract SMARTCappedTest is AbstractSMARTTest {
     uint256 internal constant DEFAULT_CAP = 1_000_000 ether;
@@ -255,7 +255,7 @@ abstract contract SMARTCappedTest is AbstractSMARTTest {
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector,
                 clientBE,
-                SMARTCappedToken(address(token)).MINTER_ROLE()
+                SMARTToken(address(token)).MINTER_ROLE()
             )
         );
         ISMARTCapped(address(token)); // Just to silence compiler about unused import
@@ -340,5 +340,83 @@ abstract contract SMARTCappedTest is AbstractSMARTTest {
         // No more minting should be possible
         vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.ExceededCap.selector, capValue + 1, capValue));
         tokenUtils.mintToken(address(token), tokenIssuer, clientBE, 1);
+    }
+
+    // --- Set Cap Tests ---
+
+    function test_SetCap_AsManager_Success() public {
+        _setUpCappedTest();
+        uint256 newCap = DEFAULT_CAP * 2;
+
+        vm.startPrank(tokenIssuer);
+        vm.expectEmit(true, true, true, true);
+        emit ISMARTCapped.CapSet(tokenIssuer, newCap);
+        SMARTToken(address(token)).setCap(newCap);
+        vm.stopPrank();
+
+        assertEq(ISMARTCapped(address(token)).cap(), newCap, "Cap should be updated to the new value");
+    }
+
+    function test_SetCap_LowerCap_Valid_Success() public {
+        _setUpCappedTest();
+        uint256 mintAmount = 100_000 ether;
+        tokenUtils.mintToken(address(token), tokenIssuer, clientBE, mintAmount);
+
+        uint256 newCap = mintAmount + 50_000 ether; // Lower than default, but higher than supply
+        require(newCap < DEFAULT_CAP, "Test setup error: new cap should be lower than default");
+        require(newCap > token.totalSupply(), "Test setup error: new cap must be > total supply");
+
+        vm.startPrank(tokenIssuer);
+        SMARTToken(address(token)).setCap(newCap);
+        vm.stopPrank();
+
+        assertEq(ISMARTCapped(address(token)).cap(), newCap, "Cap should be lowered");
+
+        // Minting up to the new cap should succeed
+        uint256 remaining = newCap - token.totalSupply();
+        tokenUtils.mintToken(address(token), tokenIssuer, clientBE, remaining);
+        assertEq(token.totalSupply(), newCap, "Total supply should equal the new cap");
+
+        // Minting over the new cap should fail
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.ExceededCap.selector, newCap + 1, newCap));
+        tokenUtils.mintToken(address(token), tokenIssuer, clientBE, 1);
+    }
+
+    function test_SetCap_AsNonManager_Reverts() public {
+        _setUpCappedTest();
+        uint256 newCap = DEFAULT_CAP * 2;
+
+        vm.startPrank(clientBE); // Unauthorized user
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector,
+                clientBE,
+                SMARTToken(address(token)).CAP_MANAGEMENT_ROLE()
+            )
+        );
+        SMARTToken(address(token)).setCap(newCap);
+        vm.stopPrank();
+    }
+
+    function test_SetCap_BelowTotalSupply_Reverts() public {
+        _setUpCappedTest();
+        uint256 mintAmount = 500_000 ether;
+        tokenUtils.mintToken(address(token), tokenIssuer, clientBE, mintAmount);
+
+        uint256 newCap = mintAmount - 1; // Set cap just below total supply
+
+        vm.startPrank(tokenIssuer);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.InvalidCap.selector, newCap));
+        SMARTToken(address(token)).setCap(newCap);
+        vm.stopPrank();
+    }
+
+    function test_SetCap_ToZero_Reverts() public {
+        _setUpCappedTest();
+
+        vm.startPrank(tokenIssuer);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCapped.InvalidCap.selector, 0));
+        SMARTToken(address(token)).setCap(0);
+        vm.stopPrank();
     }
 }

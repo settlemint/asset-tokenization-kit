@@ -18,16 +18,16 @@ interface ISMARTCapped {
     /// @param cap The hard-coded maximum allowed total supply for the token.
     error ExceededCap(uint256 newSupply, uint256 cap);
 
-    /// @notice Error: An invalid cap value was provided during initialization.
-    /// @dev This error is typically thrown by the constructor or initializer of a capped token extension
-    ///      if the provided `cap` value is not valid. The most common invalid value is zero, as a cap of zero
-    ///      would mean no tokens could ever be minted.
-    /// @param cap The invalid cap value that was attempted to be set during initialization (e.g., 0).
+    /// @notice Error: An invalid cap value was provided.
+    /// @dev This error is thrown if the cap is set to an invalid value, either during
+    ///      initialization or when calling `setCap`. An invalid value is either zero or a
+    ///      value below the current total supply of tokens.
+    /// @param cap The invalid cap value that was attempted to be set.
     error InvalidCap(uint256 cap);
 
-    /// @notice Emitted when the cap is set.
-    /// @param sender The address that set the cap.
-    /// @param cap The new cap.
+    /// @notice Emitted when the cap is set or changed.
+    /// @param sender The address that set/changed the cap.
+    /// @param cap The new cap value.
     event CapSet(address indexed sender, uint256 cap);
 
     /// @notice Returns the maximum allowed total supply for this token (the "cap").
@@ -36,4 +36,12 @@ interface ISMARTCapped {
     ///      cost gas when called externally as a read-only operation (e.g., from a user interface).
     /// @return uint256 The maximum number of tokens that can be in circulation.
     function cap() external view returns (uint256);
+
+    /// @notice Sets or updates the maximum total supply (cap) for the token.
+    /// @dev Allows an authorized caller to change the cap. The new cap cannot be zero or less
+    ///      than the current total supply of the token. Emits a {CapSet} event on success.
+    ///      The authorization logic for who can call this function is handled by the contract
+    ///      implementing this interface.
+    /// @param newCap The new maximum total supply. Must be >= the current total supply.
+    function setCap(uint256 newCap) external;
 }
