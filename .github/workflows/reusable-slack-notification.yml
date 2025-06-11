@@ -19,7 +19,7 @@ name: Slack Notification (Reusable)
 # ```yaml
 # jobs:
 #   notify-slack:
-#     uses: settlemint/starterkit-asset-tokenization/.github/workflows/reusable-slack-notification.yml@main
+#     uses: settlemint/asset-tokenization-kit/.github/workflows/reusable-slack-notification.yml@main
 #     with:
 #       workflow_conclusion: 'success'
 #       runs-on: 'ubuntu-latest'  # use a standard runner for external repos
