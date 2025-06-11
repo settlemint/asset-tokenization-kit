@@ -2,7 +2,7 @@ import { t } from "@/lib/utils/typebox";
 import type { StaticDecode } from "@sinclair/typebox";
 
 export const AirdropDistributionSchema = t.Object({
-  index: t.Number({
+  index: t.StringifiedBigInt({
     description: "The index of the recipient in the Merkle tree",
   }),
   amount: t.BigDecimal({
