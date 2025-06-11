@@ -1057,6 +1057,11 @@
   },
   {
     "type": "error",
+    "name": "SystemNotBootstrapped",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "TokenAccessManagerImplementationNotSet",
     "inputs": []
   },

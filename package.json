@@ -34,7 +34,6 @@
     "turbo.json"
   ],
   "scripts": {
-    "typecheck": "turbo run typecheck",
     "postinstall": "turbo run dependencies",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
@@ -58,8 +57,10 @@
     "helm": "turbo run helm",
     "predev:up": "docker compose -p atk down || true",
     "dev:up": "docker compose -p atk up -d",
+    "postdev:up": "settlemint connect --instance local && settlemint hasura track -a",
     "artifacts": "turbo run artifacts",
-    "extract-env": "bun run tools/extract-env.ts"
+    "extract-env": "bun run tools/extract-env.ts",
+    "db:studio": "turbo run db:studio"
   },
   "dependencies": {},
   "devDependencies": {
@@ -70,18 +71,13 @@
     "typescript": "5.8.3"
   },
   "trustedDependencies": [
-    "@prisma/client",
-    "@prisma/engines",
     "@sentry/cli",
     "@tailwindcss/oxide",
-    "better-sqlite3",
     "canvas",
     "core-js",
     "esbuild",
     "keccak",
     "lefthook",
-    "libpq",
-    "prisma",
     "protobufjs",
     "secp256k1",
     "unrs-resolver",

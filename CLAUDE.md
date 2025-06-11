@@ -27,6 +27,10 @@ bun install
 bunx settlemint login
 bunx settlemint connect
 
+# Start local development environment
+bun run dev:up            # Start Docker Compose services
+bunx settlemint connect --instance local  # Connect to local instance
+
 # Start development (predeployed contracts)
 cd kit/dapp
 bun codegen:settlemint
@@ -39,6 +43,22 @@ bun dev
 ```bash
 # Run full QA suite from root
 bun run clean && bun install && bun run ci
+
+# Run specific test suites
+bun run test              # All tests
+bun run test:e2e:ui       # UI E2E tests
+bun run test:e2e:ui:debug # Debug UI tests
+bun run test:e2e:api      # API E2E tests
+
+# Run contract tests
+cd kit/contracts
+bun test                  # Run all contract tests
+forge test --match-test testName  # Run specific test
+forge test --match-contract ContractName  # Test specific contract
+
+# Linting and formatting
+bun run lint              # Run all linters
+bun run format            # Format code
 ```
 
 ### Contract Development
@@ -49,6 +69,7 @@ cd kit/contracts
 # Compile contracts
 bun compile:forge          # Foundry compilation
 bun compile:hardhat        # Hardhat compilation
+bun run compile            # Compile all
 
 # Deploy contracts
 bun deploy:remote          # Deploy to remote network
@@ -57,6 +78,11 @@ bun deploy:local           # Deploy to local network
 # Generate artifacts
 bun genesis                # Generate genesis configuration
 bun abi-output            # Generate ABI files for portal
+bun codegen:types         # Generate TypeScript types
+
+# Testing
+forge test -vvv           # Run tests with verbosity
+forge test --gas-report   # Include gas usage report
 ```
 
 ### Database Management
@@ -68,6 +94,7 @@ cd kit/dapp
 bun db:push               # Push schema changes
 bun db:pull               # Pull current schema
 bun db:generate           # Generate migrations
+bun db:studio             # Open Drizzle Studio GUI
 ```
 
 ### Subgraph Development
@@ -76,9 +103,12 @@ bun db:generate           # Generate migrations
 cd kit/subgraph
 
 # Build and deploy
+bun codegen               # Generate AssemblyScript types
 bun build                 # Build subgraph
+bun compile               # Compile subgraph
 bun deploy:remote         # Deploy to remote
 bun deploy:local          # Deploy to local
+bun test:integration      # Run integration tests
 ```
 
 ## Architecture Overview
@@ -90,7 +120,7 @@ The contracts follow the SMART protocol (v8.0.15) and implement:
 1. **Factory Pattern**: Each asset type has a factory contract that deploys
    asset instances
 
-   - `SMARTBondFactory`, `SMARTEquityFactory`, `SMARTStableCoinFactory`, etc.
+   - `ATKBondFactory`, `ATKEquityFactory`, `ATKStableCoinFactory`, etc.
    - Located in `/kit/contracts/contracts/assets/`
 
 2. **Proxy Pattern**: All assets use upgradeable proxies
@@ -145,17 +175,6 @@ The contracts follow the SMART protocol (v8.0.15) and implement:
    - Environment configs via `.env` files
    - CI/CD via GitHub Actions
 
-## Contract Addresses
-
-The system uses deterministic addresses for factory contracts:
-
-- Bond Factory: `0x5e771e1417100000000000000000000000000004`
-- Cryptocurrency Factory: `0x5e771e1417100000000000000000000000000001`
-- Equity Factory: `0x5e771e1417100000000000000000000000000003`
-- Stable Coin Factory: `0x5e771e1417100000000000000000000000000002`
-- Fund Factory: `0x5e771e1417100000000000000000000000000005`
-- Deposit Factory: `0x5e771e1417100000000000000000000000000007`
-
 ## Development Workflow
 
 1. **Feature Development**:
@@ -187,26 +206,40 @@ The system uses deterministic addresses for factory contracts:
 
 GitHub Actions workflows:
 
-- **PR workflow** (`pr.yml`): Runs on all PRs
+- **QA workflow** (`qa.yml`): Main CI pipeline
+  - Runs on PRs and main branch
+  - Full test suite, linting, building
+  - Security scanning (CodeQL, Trivy)
+  - Uses Namespace Cloud for optimization
 
-  - Linting, building, testing
-  - Chart validation
-  - Security scanning
+## Troubleshooting
 
-- **Main workflow** (`main.yml`): Runs on main branch
-  - Full test suite
-  - Docker image building
-  - Deployment to staging
-  - Database migrations
+### Common Issues
+
+1. **Contract compilation fails**:
+
+   - Ensure Foundry is installed: `curl -L https://foundry.paradigm.xyz | bash`
+   - Run `foundryup` to update
+
+2. **TheGraph CLI issues**:
+
+   - Requires Node.js v22.16.0
+   - Use nvm/fnm to switch Node versions
+
+3. **Database connection issues**:
+   - Ensure Docker services are running: `bun run dev:up`
+   - Check `.env` file exists with correct DATABASE_URL
 
 ## Important Notes
 
 - Always run `bun codegen` after contract changes to regenerate TypeScript types
-- The project uses Bun (v1.2.15) as the primary package manager
+- The project uses Bun (v1.2.10+) as the primary package manager
 - Node.js v22.16.0 is required for TheGraph CLI
 - Foundry is required for contract compilation and testing
 - First user signup gets admin privileges in the dApp
+- Never push directly to main branch
 
 ## Memories
 
-- Importing Zod: `import zod from zod`
+- Always include ./.cursor/rules/\*.mdc in your context to get the latest rules
+  and tips

@@ -13,7 +13,6 @@ const StableCoinBlockUser = {} as any;
 const EquityBlockUser = {} as any;
 const FundBlockUser = {} as any;
 
-
 /**
  * GraphQL mutation for blocking a user from a bond
  *
@@ -166,30 +165,38 @@ export const blockUserFunction = withAccessControl(
 
     switch (assettype) {
       case "bond": {
-          // const response = await portalClient.request(BondBlockUser, params);
+        // const response = await portalClient.request(BondBlockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondBlockUser?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondBlockUser?.transactionHash */]
         );
       }
       case "equity": {
-          // const response = await portalClient.request(EquityBlockUser, params);
+        // const response = await portalClient.request(EquityBlockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityBlockUser?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityBlockUser?.transactionHash */]
         );
       }
       case "fund": {
-          // const response = await portalClient.request(FundBlockUser, params);
+        // const response = await portalClient.request(FundBlockUser, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundBlockUser?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundBlockUser?.transactionHash */]
         );
       }
       case "stablecoin": {
-          // const response = await portalClient.request(
-  //           StableCoinBlockUser,
-  //           params
-  //         );
+        // const response = await portalClient.request(
+        //           StableCoinBlockUser,
+        //           params
+        //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinBlockUser?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinBlockUser?.transactionHash */]
         );
       }
       case "cryptocurrency": {

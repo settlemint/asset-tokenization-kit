@@ -85,8 +85,7 @@ export abstract class AbstractActor {
     this._identityPromise = new Promise((resolve, reject) => {
       // Internal function to create the identity
       const createIdentity = async (): Promise<`0x${string}`> => {
-        const identityFactory =
-          atkDeployer.getIdentityFactoryContract();
+        const identityFactory = atkDeployer.getIdentityFactoryContract();
         const transactionHash = await withDecodedRevertReason(() =>
           identityFactory.write.createIdentity([this.address, []])
         );

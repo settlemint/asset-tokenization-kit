@@ -52,27 +52,21 @@ export const getAssetBalanceList = withTracing(
   cache(async ({ address, wallet }: AssetBalanceListProps) => {
     "use cache";
     cacheTag("asset");
-          //       // const result = await theGraphClientKit.request(
-      //       //       AssetBalanceList,
-      //       //       {
-      //       //         address: address,
-      //       //         wallet: wallet,
-      //       //       },
-      //       //       {
-      //       //         "X-GraphQL-Operation-Name": "AssetBalanceList",
-      //       //         "X-GraphQL-Operation-Type": "query",
-      //       //       }
-      //       //     );
+    //       // const result = await theGraphClientKit.request(
+    //       //       AssetBalanceList,
+    //       //       {
+    //       //         address: address,
+    //       //         wallet: wallet,
+    //       //       },
+    //       //       {
+    //       //         "X-GraphQL-Operation-Name": "AssetBalanceList",
+    //       //         "X-GraphQL-Operation-Type": "query",
+    //       //       }
+    //       //     );
 
     // NOTE: HARDCODED SO IT STILL COMPILES
-    const balances = safeParse(
-      t.Array(AssetBalanceSchema),
-      []
-    );
-    const userBalances = safeParse(
-      t.Array(AssetBalanceSchema),
-      []
-    );
+    const balances = safeParse(t.Array(AssetBalanceSchema), []);
+    const userBalances = safeParse(t.Array(AssetBalanceSchema), []);
 
     if (wallet) {
       return userBalances;

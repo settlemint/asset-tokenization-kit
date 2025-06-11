@@ -46,16 +46,16 @@ export const getPortfolioStats = withTracing(
     const startTime = Math.floor(Date.now() / 1000) - days * 24 * 60 * 60;
 
     //       // const data = await theGraphClientKit.request(
-      //     //   PortfolioHistoryQuery,
-      //     //   {
-      //     //     account: getAddress(address),
-      //     //     startTime: startTime.toString(),
-      //     //   },
-      //     //   {
-      //     //     "X-GraphQL-Operation-Name": "PortfolioHistory",
-      //     //     "X-GraphQL-Operation-Type": "query",
-      //     //   }
-      //     // );
+    //     //   PortfolioHistoryQuery,
+    //     //   {
+    //     //     account: getAddress(address),
+    //     //     startTime: startTime.toString(),
+    //     //   },
+    //     //   {
+    //     //     "X-GraphQL-Operation-Name": "PortfolioHistory",
+    //     //     "X-GraphQL-Operation-Type": "query",
+    //     //   }
+    //     // );
 
     // NOTE: HARDCODED SO IT STILL COMPILES
     return safeParse(PortfolioStatsCollectionSchema, []);

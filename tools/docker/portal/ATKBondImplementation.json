@@ -853,6 +853,19 @@
   },
   {
     "type": "function",
+    "name": "setCap",
+    "inputs": [
+      {
+        "name": "newCap",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "setCompliance",
     "inputs": [
       {
@@ -2004,7 +2017,18 @@
   {
     "type": "error",
     "name": "InsufficientRedeemableBalance",
-    "inputs": []
+    "inputs": [
+      {
+        "name": "currentBalance",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "requiredBalance",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
   },
   {
     "type": "error",
@@ -2014,7 +2038,18 @@
   {
     "type": "error",
     "name": "InsufficientUnderlyingBalance",
-    "inputs": []
+    "inputs": [
+      {
+        "name": "currentBalance",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "requiredBalance",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
   },
   {
     "type": "error",

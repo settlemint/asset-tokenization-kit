@@ -114,45 +114,27 @@ export const getSidebarAssets = withTracing(
     cacheTag("asset");
     const { limit = 10 } = options || {};
     //       // const result = await theGraphClientKit.request(SidebarAssets, {
-      //     //   limit,
-      //     // });
+    //     //   limit,
+    //     // });
 
     // NOTE: HARDCODED SO IT STILL COMPILES
-    const validatedStableCoins = safeParse(
-      t.Array(SidebarAssetSchema),
-      []
-    );
+    const validatedStableCoins = safeParse(t.Array(SidebarAssetSchema), []);
 
-    const validatedBonds = safeParse(
-      t.Array(SidebarAssetSchema),
-      []
-    );
+    const validatedBonds = safeParse(t.Array(SidebarAssetSchema), []);
 
-    const validatedEquities = safeParse(
-      t.Array(SidebarAssetSchema),
-      []
-    );
+    const validatedEquities = safeParse(t.Array(SidebarAssetSchema), []);
 
-    const validatedFunds = safeParse(
-      t.Array(SidebarAssetSchema),
-      []
-    );
+    const validatedFunds = safeParse(t.Array(SidebarAssetSchema), []);
 
     const validatedCryptoCurrencies = safeParse(
       t.Array(SidebarAssetSchema),
       []
     );
 
-    const validatedDeposits = safeParse(
-      t.Array(SidebarAssetSchema),
-      []
-    );
+    const validatedDeposits = safeParse(t.Array(SidebarAssetSchema), []);
 
     // Validate assetCounts with TypeBox schema
-    const validatedAssetCounts = safeParse(
-      t.Array(AssetCountSchema),
-      []
-    );
+    const validatedAssetCounts = safeParse(t.Array(AssetCountSchema), []);
 
     /**
      * Helper function to get the count for a specific asset type

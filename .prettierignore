@@ -3,3 +3,5 @@ kit/subgraph/subgraph.yaml
 bun.lock
 .gitignore
 .prettierignore
+*.d.ts
+*.graphql
