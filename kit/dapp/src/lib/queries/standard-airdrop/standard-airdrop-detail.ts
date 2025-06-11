@@ -80,7 +80,7 @@ export const getStandardAirdropDetail = withTracing(
         throw new Error(`Standard airdrop not found for address ${address}`);
       }
 
-      const price = await getAssetsPricesInUserCurrency(
+      const prices = await getAssetsPricesInUserCurrency(
         [onChainStandardAirdrop.asset.id],
         user.currency
       );
@@ -88,7 +88,7 @@ export const getStandardAirdropDetail = withTracing(
       return safeParse(StandardAirdropSchema, {
         ...onChainStandardAirdrop,
         distribution,
-        price: price.get(getAddress(onChainStandardAirdrop.asset.id)),
+        price: prices.get(getAddress(onChainStandardAirdrop.asset.id)),
       });
     }
   )

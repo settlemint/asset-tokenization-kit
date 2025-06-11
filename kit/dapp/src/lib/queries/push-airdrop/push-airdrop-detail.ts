@@ -1,5 +1,7 @@
 import "server-only";
 
+import type { User } from "@/lib/auth/types";
+import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
@@ -8,13 +10,10 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 import { getAirdropDistribution } from "../airdrop/airdrop-distribution";
 import { PushAirdropFragment } from "./push-airdrop-fragment";
-import {
-  OnChainPushAirdropSchema,
-  type PushAirdrop,
-} from "./push-airdrop-schema";
+import { PushAirdropSchema, type PushAirdrop } from "./push-airdrop-schema";
 
 /**
  * GraphQL query to fetch on-chain push airdrop details from The Graph
@@ -31,14 +30,6 @@ const PushAirdropDetail = theGraphGraphqlKit(
 );
 
 /**
- * Props interface for push airdrop detail components
- */
-export interface PushAirdropDetailProps {
-  /** Ethereum address of the push airdrop contract */
-  address: Address;
-}
-
-/**
  * Fetches and combines on-chain and off-chain push airdrop data
  *
  * @param params - Object containing the push airdrop address
@@ -48,11 +39,11 @@ export interface PushAirdropDetailProps {
 export const getPushAirdropDetail = withTracing(
   "queries",
   "getPushAirdropDetail",
-  cache(async ({ address }: PushAirdropDetailProps): Promise<PushAirdrop> => {
+  cache(async (address: Address, user: User): Promise<PushAirdrop> => {
     "use cache";
     cacheTag("airdrop");
 
-    const [onChainPushAirdrop, offChainPushAirdrop] = await Promise.all([
+    const [onChainPushAirdrop, distribution] = await Promise.all([
       (async () => {
         const response = await theGraphClientKit.request(
           PushAirdropDetail,
@@ -64,19 +55,23 @@ export const getPushAirdropDetail = withTracing(
             "X-GraphQL-Operation-Type": "query",
           }
         );
-        return safeParse(OnChainPushAirdropSchema, response.pushAirdrop);
+        return response.pushAirdrop;
       })(),
-      (async () => {
-        const response = await getAirdropDistribution(address);
-        return {
-          distribution: response,
-        };
-      })(),
+      getAirdropDistribution(address),
     ]);
+    if (!onChainPushAirdrop) {
+      throw new Error(`Push airdrop not found for address ${address}`);
+    }
 
-    return {
+    const prices = await getAssetsPricesInUserCurrency(
+      [onChainPushAirdrop.asset.id],
+      user.currency
+    );
+
+    return safeParse(PushAirdropSchema, {
       ...onChainPushAirdrop,
-      ...offChainPushAirdrop,
-    };
+      distribution,
+      price: prices.get(getAddress(onChainPushAirdrop.asset.id)),
+    });
   })
 );

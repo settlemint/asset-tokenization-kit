@@ -1,6 +1,7 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { getUser } from "@/lib/auth/utils";
 import { getPushAirdropDetail } from "@/lib/queries/push-airdrop/push-airdrop-detail";
 import { formatNumber } from "@/lib/utils/number";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -11,8 +12,9 @@ interface PushAirdropDetailsProps {
 }
 
 export async function PushAirdropDetails({ address }: PushAirdropDetailsProps) {
+  const user = await getUser();
   const [airdrop, t, locale] = await Promise.all([
-    getPushAirdropDetail({ address }),
+    getPushAirdropDetail(address, user),
     getTranslations("private.airdrops.details.fields"),
     getLocale(),
   ]);
