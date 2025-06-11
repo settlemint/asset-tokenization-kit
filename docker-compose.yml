@@ -259,7 +259,7 @@ services:
       GRAPH_IPFS_TIMEOUT: 60
       GRAPH_MAX_IPFS_FILE_BYTES: 52428800
       GRAPH_IPFS_REQUEST_RETRIES: 10
-      SUBGRAPH: "kit:QmQ24ocgNxGiwby54MvEmHb1ZUBPR81KcfxLWFk43KyaMs"
+      SUBGRAPH: "kit:Qme5HDL4NktXvN3EbikZrPoUS2k3GdChkMHNE7rCij8SUr"
     healthcheck:
       test:
         [
