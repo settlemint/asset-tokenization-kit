@@ -111,10 +111,10 @@ jobs:
 
           echo "build_result=$BUILD_RESULT" >> $GITHUB_OUTPUT
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
-          
+
           # Debug: Show raw PR title
           echo "Debug: Raw PR title: $PR_TITLE"
-          
+
           # If PR title is empty, try to get it from the API
           if [[ -z "$PR_TITLE" && -n "$PR_NUMBER" ]]; then
             echo "Debug: PR title is empty, fetching from API..."
@@ -123,13 +123,11 @@ jobs:
             PR_TITLE=$(echo "$PR_DATA" | jq -r '.title // empty')
             echo "Debug: Fetched PR title from API: $PR_TITLE"
           fi
-          
-          # Escape special characters in PR title for safe usage in JSON and shell
-          # This handles quotes, backslashes, newlines, and GitHub Actions special sequences
-          ESCAPED_TITLE=$(echo "$PR_TITLE" | jq -Rs '.')
-          # Remove the surrounding quotes that jq adds
-          ESCAPED_TITLE=${ESCAPED_TITLE:1:-1}
-          
+
+          # For Slack, we need to preserve markdown but escape only problematic characters
+          # Escape only what's necessary for JSON while preserving Slack markdown
+          ESCAPED_TITLE=$(echo "$PR_TITLE" | sed 's/"/\\"/g' | sed "s/'/\\\\'/g" | tr -d '\n\r')
+
           echo "Debug: Escaped PR title: $ESCAPED_TITLE"
           echo "pr_title=$ESCAPED_TITLE" >> $GITHUB_OUTPUT
           echo "pr_user=$PR_USER" >> $GITHUB_OUTPUT
@@ -178,25 +176,11 @@ jobs:
               "text": "PR: ${{ steps.build_status.outputs.pr_title }} - ${{ steps.build_status.outputs.pr_state }} - Build ${{ steps.build_status.outputs.build_result }}",
               "blocks": [
                 {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "${{ steps.build_status.outputs.pr_title }}",
-                    "emoji": true
-                  }
-                },
-                {
                   "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Author:*\n<https://github.com/${{ steps.build_status.outputs.pr_user }}|@${{ steps.build_status.outputs.pr_user }}>"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Repository:*\n<https://github.com/${{ github.repository }}|${{ github.repository }}>"
-                    }
-                  ],
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*${{ steps.build_status.outputs.pr_title }}*"
+                  },
                   "accessory": {
                     "type": "button",
                     "text": {
@@ -210,7 +194,13 @@ jobs:
                   }
                 },
                 {
-                  "type": "divider"
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "<https://github.com/${{ steps.build_status.outputs.pr_user }}|${{ steps.build_status.outputs.pr_user }}> • <https://github.com/${{ github.repository }}|${{ github.repository }}>"
+                    }
+                  ]
                 },
                 {
                   "type": "section",
