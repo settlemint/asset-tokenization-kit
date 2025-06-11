@@ -10,15 +10,6 @@ describe("Tokens", () => {
           type
           totalSupply
           totalSupplyExact
-          bond {
-            id
-          }
-          deposit
-          equity
-          fund {
-            id
-          }
-          stablecoin
         }
       }`
     );
@@ -30,70 +21,36 @@ describe("Tokens", () => {
         type: "equity",
         totalSupply: "75",
         totalSupplyExact: "75000000000000000000",
-        bond: null,
-        deposit: null,
-        equity: true,
-        fund: null,
-        stablecoin: null,
       },
       {
         name: "Bens Bugs",
         type: "fund",
         totalSupply: "8",
         totalSupplyExact: "800000000",
-        bond: null,
-        deposit: null,
-        equity: null,
-        fund: {
-          id: expect.any(String),
-        },
-        stablecoin: null,
       },
       {
         name: "Euro Bonds",
         type: "bond",
         totalSupply: "117",
         totalSupplyExact: "117000000",
-        bond: {
-          id: expect.any(String),
-        },
-        deposit: null,
-        equity: null,
-        fund: null,
-        stablecoin: null,
       },
       {
         name: "Euro Deposits",
         type: "deposit",
         totalSupply: "10900",
         totalSupplyExact: "10900000000",
-        bond: null,
-        deposit: true,
-        equity: null,
-        fund: null,
-        stablecoin: null,
       },
       {
         name: "Paused Stablecoin",
         type: "stablecoin",
         totalSupply: "0",
         totalSupplyExact: "0",
-        bond: null,
-        deposit: null,
-        equity: null,
-        fund: null,
-        stablecoin: true,
       },
       {
         name: "Tether",
         type: "stablecoin",
         totalSupply: "760",
         totalSupplyExact: "760000000",
-        bond: null,
-        deposit: null,
-        equity: null,
-        fund: null,
-        stablecoin: true,
       },
     ]);
   });

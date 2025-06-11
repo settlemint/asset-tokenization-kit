@@ -140,10 +140,7 @@ type Token @entity(immutable: false) {
   redeemable: TokenRedeemable
   # Type specific
   bond: TokenBond
-  deposit: Boolean
-  equity: Boolean
   fund: TokenFund
-  stablecoin: Boolean
 }
 
 type TokenBalance @entity(immutable: false) {

@@ -24,11 +24,11 @@ describe("Funds", () => {
     expect(response.tokens.length).toBe(1);
     expect(response.tokens).toEqual([
       {
-        name: "Euro Bonds",
-        type: "bond",
+        name: "Bens Bugs",
+        type: "fund",
         fund: {
           managementFeeBps: 20,
-          lastFeeCollection: 35074,
+          lastFeeCollection: "35074",
         },
       },
     ]);
