@@ -166,7 +166,7 @@ contract VestingAirdropTest is Test {
     // Test constructor constraints
     function testConstructorRequiresValidStrategy() public {
         vm.startPrank(owner);
-        vm.expectRevert("Invalid claim strategy");
+        vm.expectRevert(VestingAirdrop.ZeroAddressClaimStrategy.selector);
         new VestingAirdrop(
             address(token),
             merkleRoot,
@@ -180,7 +180,7 @@ contract VestingAirdropTest is Test {
 
     function testConstructorRequiresFutureClaimPeriodEnd() public {
         vm.startPrank(owner);
-        vm.expectRevert("Claim period must be in the future");
+        vm.expectRevert(VestingAirdrop.InvalidClaimPeriod.selector);
         new VestingAirdrop(
             address(token),
             merkleRoot,

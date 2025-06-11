@@ -19,6 +19,8 @@ contract StandardAirdrop is AirdropBase {
     // Additional errors
     error AirdropNotStarted();
     error AirdropEnded();
+    error InvalidStartTime();
+    error InvalidEndTime();
 
     /**
      * @dev Creates a standard airdrop with time-bound claiming
@@ -39,7 +41,8 @@ contract StandardAirdrop is AirdropBase {
     )
         AirdropBase(tokenAddress, root, initialOwner, trustedForwarder)
     {
-        require(_endTime > _startTime, "End time must be after start time");
+        if (_startTime < block.timestamp) revert InvalidStartTime();
+        if (_endTime <= _startTime) revert InvalidEndTime();
         startTime = _startTime;
         endTime = _endTime;
     }
