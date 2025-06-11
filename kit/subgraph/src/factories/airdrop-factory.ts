@@ -184,7 +184,7 @@ export function handleVestingAirdropDeployed(
   let strategyOwnerResult = strategyContract.try_owner();
 
   strategy.type = "Linear";
-  strategy.airdropRef = airdropAddress; // Add direct reference to airdrop
+  strategy.airdrop = airdrop.id;
 
   if (!strategyOwnerResult.reverted) {
     strategy.owner = fetchAccount(strategyOwnerResult.value).id;
