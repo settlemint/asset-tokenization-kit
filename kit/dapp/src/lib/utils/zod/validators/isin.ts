@@ -67,7 +67,6 @@ function validateIsinChecksum(isin: string): boolean {
  * - Country code validation (first 2 characters)
  * - National Securities Identifying Number validation (middle 9 characters)
  * - Check digit validation (last character)
- * - Branded type for additional compile-time safety
  *
  * ISIN format breakdown:
  * - Characters 1-2: ISO 3166-1 alpha-2 country code (e.g., "US", "GB", "DE")
@@ -87,7 +86,7 @@ function validateIsinChecksum(isin: string): boolean {
  * // Valid ISIN parsing
  * const appleISIN = isin().parse("US0378331005");
  * // Returns: "US0378331005" (Apple Inc.)
- * // Type: string & Brand<"ISIN">
+ * // Type: string
  *
  * const microsoftISIN = isin().parse("US5949181045");
  * // Returns: "US5949181045" (Microsoft Corp.)
@@ -127,16 +126,14 @@ export const isin = () =>
         )
         .refine(validateIsinChecksum, "Invalid ISIN checksum")
     )
-    .describe("International Securities Identification Number")
-    .brand<"ISIN">();
+    .describe("International Securities Identification Number");
 
 // Note: Global registry functionality removed as it's not available in Zod v4
 
 /**
  * Type representing a validated International Securities Identification Number
  *
- * This type combines string with a brand for additional compile-time safety,
- * ensuring that only validated ISIN codes can be assigned to variables of this type.
+ * This type ensures that only validated ISIN codes can be assigned to variables of this type.
  */
 export type ISIN = z.infer<ReturnType<typeof isin>>;
 

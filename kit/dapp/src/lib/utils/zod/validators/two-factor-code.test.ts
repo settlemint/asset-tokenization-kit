@@ -1,10 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  getTwoFactorCode,
-  isTwoFactorCode,
-  twoFactorCode,
-  type TwoFactorCode,
-} from "./two-factor-code";
+import { twoFactorCode, type TwoFactorCode } from "./two-factor-code";
 
 describe("twoFactorCode", () => {
   const validator = twoFactorCode();
@@ -100,91 +95,22 @@ describe("twoFactorCode", () => {
       expect(validator.parse("000000") as string).toBe("000000"); // All zeros
     });
   });
-});
 
-describe("helper functions", () => {
-  describe("isTwoFactorCode", () => {
-    it("should return true for valid 2FA codes", () => {
-      expect(isTwoFactorCode("123456")).toBe(true);
-      expect(isTwoFactorCode("000000")).toBe(true);
-      expect(isTwoFactorCode("999999")).toBe(true);
-      expect(isTwoFactorCode("567890")).toBe(true);
-      expect(isTwoFactorCode("000001")).toBe(true);
-      expect(isTwoFactorCode("001234")).toBe(true);
-      expect(isTwoFactorCode("012345")).toBe(true);
+  describe("type checking", () => {
+    it("should return proper type", () => {
+      const result = validator.parse("123456");
+      // Test that the type is correctly inferred
+      const _typeCheck: TwoFactorCode = result;
+      expect(result).toBe("123456");
     });
 
-    it("should return false for invalid 2FA codes", () => {
-      expect(isTwoFactorCode("12345")).toBe(false); // too short
-      expect(isTwoFactorCode("1234567")).toBe(false); // too long
-      expect(isTwoFactorCode("")).toBe(false);
-      expect(isTwoFactorCode("1")).toBe(false);
-      expect(isTwoFactorCode("12345a")).toBe(false); // contains letter
-      expect(isTwoFactorCode("a23456")).toBe(false);
-      expect(isTwoFactorCode("12-456")).toBe(false); // contains dash
-      expect(isTwoFactorCode("12 456")).toBe(false); // contains space
-      expect(isTwoFactorCode("!23456")).toBe(false); // special character
-      expect(isTwoFactorCode("12.456")).toBe(false); // contains dot
-      expect(isTwoFactorCode(123456)).toBe(false); // number type
-      expect(isTwoFactorCode(null)).toBe(false);
-      expect(isTwoFactorCode(undefined)).toBe(false);
-      expect(isTwoFactorCode({})).toBe(false);
-    });
-
-    it("should narrow types correctly", () => {
-      const value: unknown = "123456";
-      if (isTwoFactorCode(value)) {
-        // Type should be narrowed to TwoFactorCode
-        const code: TwoFactorCode = value;
-        expect(code as string).toBe("123456");
+    it("should handle safeParse", () => {
+      const result = validator.safeParse("567890");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: TwoFactorCode = result.data;
+        expect(result.data).toBe("567890");
       }
-    });
-  });
-
-  describe("getTwoFactorCode", () => {
-    it("should return valid 2FA codes", () => {
-      expect(getTwoFactorCode("123456") as string).toBe("123456");
-      expect(getTwoFactorCode("000000") as string).toBe("000000");
-      expect(getTwoFactorCode("999999") as string).toBe("999999");
-      expect(getTwoFactorCode("567890") as string).toBe("567890");
-      expect(getTwoFactorCode("012024") as string).toBe("012024");
-    });
-
-    it("should throw for invalid 2FA codes", () => {
-      expect(() => getTwoFactorCode("12345")).toThrow(
-        "Two-factor code must be exactly 6 digits"
-      );
-      expect(() => getTwoFactorCode("1234567")).toThrow(
-        "Two-factor code must be exactly 6 digits"
-      );
-      expect(() => getTwoFactorCode("")).toThrow(
-        "Two-factor code must be exactly 6 digits"
-      );
-      expect(() => getTwoFactorCode("12345a")).toThrow(
-        "Two-factor code must contain only numeric digits (0-9)"
-      );
-      expect(() => getTwoFactorCode("a23456")).toThrow(
-        "Two-factor code must contain only numeric digits (0-9)"
-      );
-      expect(() => getTwoFactorCode("12-456")).toThrow(
-        "Two-factor code must contain only numeric digits (0-9)"
-      );
-      expect(() => getTwoFactorCode("12 456")).toThrow(
-        "Two-factor code must contain only numeric digits (0-9)"
-      );
-      expect(() => getTwoFactorCode("!23456")).toThrow(
-        "Two-factor code must contain only numeric digits (0-9)"
-      );
-      expect(() => getTwoFactorCode(123456)).toThrow(
-        "Expected string, received number"
-      );
-      expect(() => getTwoFactorCode(null)).toThrow(
-        "Expected string, received null"
-      );
-      expect(() => getTwoFactorCode(undefined)).toThrow("Required");
-      expect(() => getTwoFactorCode({})).toThrow(
-        "Expected string, received object"
-      );
     });
   });
 });

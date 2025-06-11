@@ -1,6 +1,6 @@
 import { permissionsMiddleware } from "@/lib/orpc/middlewares/auth/permissions.middleware";
 import { theGraphMiddleware } from "@/lib/orpc/middlewares/services/the-graph.middleware";
-import { ar } from "@/lib/orpc/routes/procedures/auth.router";
+import { ar } from "@/lib/orpc/procedures/auth.router";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 
 /**
@@ -14,7 +14,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
  * Systems represent deployed SMART protocol instances that manage
  * tokenized assets and their associated compliance infrastructure.
  */
-const listSystemQuery = theGraphGraphql(`
+const LIST_SYSTEM_QUERY = theGraphGraphql(`
   query ListSystemQuery($skip: Int!, $orderDirection: OrderDirection = asc, $orderBy: System_orderBy = id, $first: Int = 20) {
     systems(
         first: $first
@@ -70,12 +70,15 @@ export const list = ar.system.list
     const { offset, limit, orderDirection, orderBy } = input;
 
     // Execute TheGraph query with pagination and sorting parameters
-    const { systems } = await context.theGraphClient.request(listSystemQuery, {
-      skip: offset,
-      orderDirection,
-      orderBy: orderBy as any, // Type assertion needed due to TheGraph's dynamic schema
-      first: limit,
-    });
+    const { systems } = await context.theGraphClient.request(
+      LIST_SYSTEM_QUERY,
+      {
+        skip: offset,
+        orderDirection,
+        orderBy: orderBy as any, // Type assertion needed due to TheGraph's dynamic schema
+        first: limit,
+      }
+    );
 
     // Return the array of system contracts
     return systems;

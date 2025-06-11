@@ -1,4 +1,4 @@
-import { bc } from "@/lib/orpc/routes/procedures/base.contract";
+import { bc } from "./base.contract";
 
 /**
  * Public ORPC contract for unauthenticated procedures.

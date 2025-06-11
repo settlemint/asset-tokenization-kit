@@ -23,7 +23,7 @@ export const fundClasses = ["institutional", "retail", "accredited"] as const;
 /**
  * Creates a Zod schema that validates fund share classes.
  *
- * @returns A branded Zod enum schema for fund class validation
+ * @returns A Zod enum schema for fund class validation
  *
  * @example
  * ```typescript
@@ -39,11 +39,11 @@ export const fundClasses = ["institutional", "retail", "accredited"] as const;
  * ```
  */
 export const fundClass = () =>
-  z.enum(fundClasses).describe("Class of fund shares").brand<"FundClass">();
+  z.enum(fundClasses).describe("Class of fund shares");
 
 /**
  * Type representing a validated fund share class.
- * Branded for additional type safety.
+ * Ensures type safety.
  */
 export type FundClass = z.infer<ReturnType<typeof fundClass>>;
 

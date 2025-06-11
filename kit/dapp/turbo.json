@@ -22,9 +22,6 @@
     "db:export": {
       "inputs": ["src/lib/db/**"]
     },
-    "dev": {
-      "cache": false
-    },
     "artifacts": {
       "dependsOn": ["db:export"]
     }

@@ -1,20 +1,12 @@
 import { describe, expect, it } from "bun:test";
-import {
-  fundClass,
-  fundClasses,
-  getFundClass,
-  isFundClass,
-  type FundClass,
-} from "./fund-classes";
+import { fundClass, fundClasses, type FundClass } from "./fund-classes";
 
 describe("fundClass", () => {
   const validator = fundClass();
 
   describe("valid fund classes", () => {
     it.each(fundClasses.map((c) => [c]))("should accept '%s'", (cls) => {
-      expect(validator.parse(cls)).toBe(getFundClass(cls));
-      expect(isFundClass(cls)).toBe(true);
-      expect(getFundClass(cls)).toBe(getFundClass(cls));
+      expect(validator.parse(cls)).toBe(cls);
     });
   });
 
@@ -32,7 +24,7 @@ describe("fundClass", () => {
       const result = validator.safeParse("retail");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe(getFundClass("retail"));
+        expect(result.data).toBe("retail");
       }
     });
 
@@ -42,28 +34,21 @@ describe("fundClass", () => {
     });
   });
 
-  describe("helper functions", () => {
-    it("isFundClass should work as type guard", () => {
-      const value: unknown = "accredited";
-      if (isFundClass(value)) {
-        // TypeScript should recognize value as FundClass here
-        const _typeCheck: FundClass = value;
-      }
-    });
-
-    it("getFundClass should return typed value", () => {
-      const result = getFundClass("institutional");
-      // TypeScript should recognize result as FundClass
+  describe("type checking", () => {
+    it("should return proper type", () => {
+      const result = validator.parse("institutional");
+      // Test that the type is correctly inferred
       const _typeCheck: FundClass = result;
-      expect(result).toBe(getFundClass("institutional"));
+      expect(result).toBe("institutional");
     });
 
-    it("getFundClass should throw error for invalid fund class", () => {
-      expect(() => getFundClass("invalid")).toThrow();
-      expect(() => getFundClass(null)).toThrow();
-      expect(() => getFundClass(undefined)).toThrow();
-      expect(() => getFundClass(123)).toThrow();
-      expect(() => getFundClass({})).toThrow();
+    it("should handle safeParse", () => {
+      const result = validator.safeParse("accredited");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: FundClass = result.data;
+        expect(result.data).toBe("accredited");
+      }
     });
   });
 });

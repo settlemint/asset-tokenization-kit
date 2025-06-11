@@ -1,10 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  assetSymbol,
-  getAssetSymbol,
-  isAssetSymbol,
-  type AssetSymbol,
-} from "./asset-symbol";
+import { assetSymbol, type AssetSymbol } from "./asset-symbol";
 
 describe("assetSymbol", () => {
   const validator = assetSymbol();
@@ -14,65 +9,33 @@ describe("assetSymbol", () => {
       expect(validator.parse("BTC")).toBe("BTC" as AssetSymbol);
       expect(validator.parse("ETH")).toBe("ETH" as AssetSymbol);
       expect(validator.parse("USDT")).toBe("USDT" as AssetSymbol);
-
-      expect(isAssetSymbol("BTC")).toBe(true);
-      expect(isAssetSymbol("ETH")).toBe(true);
-      expect(isAssetSymbol("USDT")).toBe(true);
-
-      expect(getAssetSymbol("BTC")).toBe("BTC" as AssetSymbol);
-      expect(getAssetSymbol("ETH")).toBe("ETH" as AssetSymbol);
-      expect(getAssetSymbol("USDT")).toBe("USDT" as AssetSymbol);
     });
 
     it("should accept symbols with numbers", () => {
       expect(validator.parse("USDC6")).toBe("USDC6" as AssetSymbol);
       expect(validator.parse("1INCH")).toBe("1INCH" as AssetSymbol);
       expect(validator.parse("C98")).toBe("C98" as AssetSymbol);
-
-      expect(isAssetSymbol("USDC6")).toBe(true);
-      expect(isAssetSymbol("1INCH")).toBe(true);
-      expect(isAssetSymbol("C98")).toBe(true);
-
-      expect(getAssetSymbol("USDC6")).toBe("USDC6" as AssetSymbol);
-      expect(getAssetSymbol("1INCH")).toBe("1INCH" as AssetSymbol);
-      expect(getAssetSymbol("C98")).toBe("C98" as AssetSymbol);
     });
 
     it("should accept single character symbols", () => {
       expect(validator.parse("X")).toBe("X" as AssetSymbol);
       expect(validator.parse("1")).toBe("1" as AssetSymbol);
-
-      expect(isAssetSymbol("X")).toBe(true);
-      expect(isAssetSymbol("1")).toBe(true);
-
-      expect(getAssetSymbol("X")).toBe("X" as AssetSymbol);
-      expect(getAssetSymbol("1")).toBe("1" as AssetSymbol);
     });
 
     it("should accept maximum length symbols", () => {
       expect(validator.parse("VERYLONGSYMB")).toBe(
         "VERYLONGSYMB" as AssetSymbol
       ); // 12 chars
-      expect(isAssetSymbol("VERYLONGSYMB")).toBe(true);
-      expect(getAssetSymbol("VERYLONGSYMB")).toBe(
-        "VERYLONGSYMB" as AssetSymbol
-      );
     });
   });
 
   describe("invalid asset symbols", () => {
     it("should reject empty string", () => {
       expect(() => validator.parse("")).toThrow("Asset symbol is required");
-      expect(isAssetSymbol("")).toBe(false);
-      expect(() => getAssetSymbol("")).toThrow("Asset symbol is required");
     });
 
     it("should reject symbols longer than 12 characters", () => {
       expect(() => validator.parse("VERYLONGSYMBOL")).toThrow(
-        "Asset symbol must not exceed 12 characters"
-      );
-      expect(isAssetSymbol("VERYLONGSYMBOL")).toBe(false);
-      expect(() => getAssetSymbol("VERYLONGSYMBOL")).toThrow(
         "Asset symbol must not exceed 12 characters"
       );
     });
@@ -85,20 +48,6 @@ describe("assetSymbol", () => {
         "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
       expect(() => validator.parse("BTc")).toThrow(
-        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
-      );
-
-      expect(isAssetSymbol("btc")).toBe(false);
-      expect(isAssetSymbol("Btc")).toBe(false);
-      expect(isAssetSymbol("BTc")).toBe(false);
-
-      expect(() => getAssetSymbol("btc")).toThrow(
-        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
-      );
-      expect(() => getAssetSymbol("Btc")).toThrow(
-        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
-      );
-      expect(() => getAssetSymbol("BTc")).toThrow(
         "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
     });
@@ -116,24 +65,6 @@ describe("assetSymbol", () => {
       expect(() => validator.parse("BTC$")).toThrow(
         "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
-
-      expect(isAssetSymbol("BTC-USD")).toBe(false);
-      expect(isAssetSymbol("BTC_USD")).toBe(false);
-      expect(isAssetSymbol("BTC.USD")).toBe(false);
-      expect(isAssetSymbol("BTC$")).toBe(false);
-
-      expect(() => getAssetSymbol("BTC-USD")).toThrow(
-        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
-      );
-      expect(() => getAssetSymbol("BTC_USD")).toThrow(
-        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
-      );
-      expect(() => getAssetSymbol("BTC.USD")).toThrow(
-        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
-      );
-      expect(() => getAssetSymbol("BTC$")).toThrow(
-        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
-      );
     });
 
     it("should reject spaces", () => {
@@ -146,20 +77,6 @@ describe("assetSymbol", () => {
       expect(() => validator.parse("BTC ")).toThrow(
         "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
       );
-
-      expect(isAssetSymbol("BTC USD")).toBe(false);
-      expect(isAssetSymbol(" BTC")).toBe(false);
-      expect(isAssetSymbol("BTC ")).toBe(false);
-
-      expect(() => getAssetSymbol("BTC USD")).toThrow(
-        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
-      );
-      expect(() => getAssetSymbol(" BTC")).toThrow(
-        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
-      );
-      expect(() => getAssetSymbol("BTC ")).toThrow(
-        "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
-      );
     });
 
     it("should reject non-string types", () => {
@@ -167,22 +84,6 @@ describe("assetSymbol", () => {
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
-
-      expect(isAssetSymbol(123)).toBe(false);
-      expect(isAssetSymbol(null)).toBe(false);
-      expect(isAssetSymbol(undefined)).toBe(false);
-      expect(isAssetSymbol({})).toBe(false);
-
-      expect(() => getAssetSymbol(123)).toThrow(
-        "Expected string, received number"
-      );
-      expect(() => getAssetSymbol(null)).toThrow(
-        "Expected string, received null"
-      );
-      expect(() => getAssetSymbol(undefined)).toThrow("Required");
-      expect(() => getAssetSymbol({})).toThrow(
-        "Expected string, received object"
-      );
     });
   });
 
@@ -191,7 +92,7 @@ describe("assetSymbol", () => {
       const result = validator.safeParse("BTC");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe(getAssetSymbol("BTC"));
+        expect(result.data).toBe("BTC" as AssetSymbol);
       }
     });
 
@@ -201,20 +102,12 @@ describe("assetSymbol", () => {
     });
   });
 
-  describe("helper functions", () => {
-    it("isAssetSymbol should work as type guard", () => {
-      const value: unknown = "BTC";
-      if (isAssetSymbol(value)) {
-        // TypeScript should recognize value as AssetSymbol here
-        const _typeCheck: AssetSymbol = value;
-      }
-    });
-
-    it("getAssetSymbol should return typed value", () => {
-      const result = getAssetSymbol("ETH");
-      // TypeScript should recognize result as AssetSymbol
+  describe("type checking", () => {
+    it("should return proper type", () => {
+      const result = validator.parse("BTC");
+      // Test that the type is correctly inferred
       const _typeCheck: AssetSymbol = result;
-      expect(result).toBe(getAssetSymbol("ETH"));
+      expect(result).toBe("BTC" as AssetSymbol);
     });
   });
 });

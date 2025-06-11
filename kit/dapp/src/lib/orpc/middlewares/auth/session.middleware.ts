@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth/auth";
-import { br } from "@/lib/orpc/routes/procedures/base.router";
+import type { Session, User } from "@/lib/auth/types";
+import { br } from "../../procedures/base.router";
 
 /**
  * Session middleware for optional authentication context.
@@ -43,9 +44,12 @@ export const sessionMiddleware = br.middleware(async ({ context, next }) => {
       // Use existing auth context if available, otherwise attempt to load session
       auth:
         context.auth ??
-        (await auth.api.getSession({
+        ((await auth.api.getSession({
           headers: context.headers,
-        })),
+        })) as unknown as {
+          user: User;
+          session: Session;
+        }),
     },
   });
 });

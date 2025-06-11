@@ -18,7 +18,7 @@ import { z } from "zod";
  * - Common use cases: animation durations, API timeouts, polling intervals
  * - For human-readable time periods, convert: 1000ms = 1s, 60000ms = 1m
  *
- * @returns A branded Zod schema for duration validation
+ * @returns A Zod schema for duration validation
  *
  * @example
  * ```typescript
@@ -41,12 +41,11 @@ export const duration = () =>
     .number()
     .int("Duration must be a whole number of milliseconds")
     .positive("Duration must be greater than zero") // Greater than 0
-    .describe("Duration in milliseconds")
-    .brand<"Duration">();
+    .describe("Duration in milliseconds");
 
 /**
  * Type representing a validated duration in milliseconds.
- * Branded for additional type safety.
+ * Ensures type safety.
  */
 export type Duration = z.infer<ReturnType<typeof duration>>;
 

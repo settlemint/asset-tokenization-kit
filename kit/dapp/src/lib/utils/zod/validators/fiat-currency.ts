@@ -36,7 +36,7 @@ export const fiatCurrencies = [
  * Creates a Zod schema that validates fiat currency codes.
  * Automatically converts input to uppercase before validation.
  *
- * @returns A branded Zod schema for fiat currency validation
+ * @returns A Zod schema for fiat currency validation
  *
  * @example
  * ```typescript
@@ -58,12 +58,11 @@ export const fiatCurrency = () =>
     .string()
     .transform((val) => val.toUpperCase()) // Normalize to uppercase
     .pipe(z.enum(fiatCurrencies)) // Validate against allowed currencies
-    .describe("Fiat currency code")
-    .brand<"FiatCurrency">();
+    .describe("Fiat currency code");
 
 /**
  * Type representing a validated fiat currency code.
- * Branded for additional type safety.
+ * Ensures type safety.
  */
 export type FiatCurrency = z.infer<ReturnType<typeof fiatCurrency>>;
 

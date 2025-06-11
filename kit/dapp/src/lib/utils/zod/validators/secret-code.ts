@@ -25,7 +25,7 @@ import { z } from "zod";
  * - Two-factor backup codes
  * - Webhook signing secrets
  *
- * @returns A branded Zod schema for secret code validation
+ * @returns A Zod schema for secret code validation
  *
  * @example
  * ```typescript
@@ -47,12 +47,11 @@ export const secretCode = () =>
     .string()
     .min(8, "Secret code must be at least 8 characters long")
     .max(64, "Secret code must not exceed 64 characters")
-    .describe("Secret authentication code")
-    .brand<"SecretCode">();
+    .describe("Secret authentication code");
 
 /**
  * Type representing a validated secret authentication code.
- * Branded for additional type safety in security-sensitive contexts.
+ * Ensures type safety in security-sensitive contexts.
  */
 export type SecretCode = z.infer<ReturnType<typeof secretCode>>;
 

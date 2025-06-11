@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { br } from "@/lib/orpc/routes/procedures/base.router";
+import { br } from "../../procedures/base.router";
 
 /**
  * Database connection middleware.

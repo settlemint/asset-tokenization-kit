@@ -10,6 +10,7 @@
   },
   "scripts": {
     "compile": "tsc --noEmit",
+    "watch": "tsc --noEmit --watch",
     "codegen:settlemint": "settlemint codegen",
     "codegen:gql-tada": "gql-tada turbo",
     "format": "prettier --write .",

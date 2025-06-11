@@ -4,6 +4,8 @@ import type { TadaDocumentNode, $tada } from 'gql.tada';
 
 declare module 'gql.tada' {
  interface setupCache {
+    "\n  query GetIndexingStatus {\n    _meta {\n      block {\n        number\n      }\n    }\n  }\n":
+      TadaDocumentNode<{ _meta: { block: { number: number; }; } | null; }, {}, void>;
     "\n  query ListSystemQuery($skip: Int!, $orderDirection: OrderDirection = asc, $orderBy: System_orderBy = id, $first: Int = 20) {\n    systems(\n        first: $first\n        orderBy: $orderBy\n        orderDirection: $orderDirection\n        skip: $skip\n      ) {\n      id\n    }\n  }\n":
       TadaDocumentNode<{ systems: unknown; }, { first?: number | null | undefined; orderBy?: null | undefined; orderDirection?: "asc" | "desc" | null | undefined; skip: number; }, void>;
     "\n  fragment IndexingFragment on _Block_ {\n    number\n  }\n":
