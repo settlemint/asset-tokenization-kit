@@ -7,6 +7,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+<<<<<<< HEAD
+=======
+import { authClient } from "@/lib/auth/client";
+>>>>>>> origin/v1
 import type { PushAirdrop } from "@/lib/queries/push-airdrop/push-airdrop-schema";
 import type { StandardAirdrop } from "@/lib/queries/standard-airdrop/standard-airdrop-schema";
 import type { VestingAirdrop } from "@/lib/queries/vesting-airdrop/vesting-airdrop-schema";
@@ -15,6 +19,9 @@ import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { PushTokensForm } from "../push-tokens-form/form";
+import { getAddress } from "viem";
+import { WithdrawTokensForm } from "../withdraw-tokens-form/form";
+import { authClient } from "@/lib/auth/client";
 
 interface AirdropManageDropdownProps {
   airdrop: PushAirdrop | StandardAirdrop | VestingAirdrop;
@@ -22,13 +29,19 @@ interface AirdropManageDropdownProps {
 
 export function AirdropManageDropdown({ airdrop }: AirdropManageDropdownProps) {
   const t = useTranslations("private.airdrops.detail.forms");
+  const { data: session } = authClient.useSession();
+  const currentUserWallet = session?.user?.wallet;
 
   const menuItems = [
     ...(airdrop.type === AirdropTypeEnum.push
       ? [
           {
+            id: "withdraw-tokens",
+            label: t("withdraw-tokens.title"),
+          },
+          {
             id: "push",
-            label: "Push tokens to all recipients",
+            label: t("distribute.title"),
           },
         ]
       : []),
@@ -43,6 +56,15 @@ export function AirdropManageDropdown({ airdrop }: AirdropManageDropdownProps) {
       setOpenMenuItem(null);
     }
   };
+
+  const isOwner =
+    currentUserWallet &&
+    airdrop.owner.id &&
+    getAddress(currentUserWallet) === getAddress(airdrop.owner.id);
+
+  if (menuItems.length === 0) {
+    return null;
+  }
 
   return (
     <DropdownMenu>
@@ -71,6 +93,12 @@ export function AirdropManageDropdown({ airdrop }: AirdropManageDropdownProps) {
         open={openMenuItem === "push"}
         onOpenChange={onFormOpenChange}
         disabled={airdrop.type !== AirdropTypeEnum.push}
+      />
+      <WithdrawTokensForm
+        airdrop={airdrop as PushAirdrop}
+        open={openMenuItem === "withdraw-tokens"}
+        onOpenChange={onFormOpenChange}
+        disabled={!isOwner}
       />
     </DropdownMenu>
   );
