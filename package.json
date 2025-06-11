@@ -34,6 +34,7 @@
     "turbo.json"
   ],
   "scripts": {
+    "typecheck": "turbo run typecheck",
     "postinstall": "turbo run dependencies",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
@@ -62,7 +63,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@settlemint/sdk-cli": "2.3.8",
+    "@settlemint/sdk-cli": "2.3.14",
     "lefthook": "1.11.13",
     "prettier": "3.5.3",
     "turbo": "2.5.4",
@@ -71,13 +72,20 @@
   "trustedDependencies": [
     "@prisma/client",
     "@prisma/engines",
+    "@sentry/cli",
+    "@tailwindcss/oxide",
     "better-sqlite3",
+    "canvas",
+    "core-js",
     "esbuild",
     "keccak",
     "lefthook",
+    "libpq",
     "prisma",
     "protobufjs",
-    "secp256k1"
+    "secp256k1",
+    "unrs-resolver",
+    "vue-demi"
   ],
   "workspaces": [
     "kit/*"
@@ -90,6 +98,7 @@
     "ws": "8.18.2",
     "adm-zip": "0.5.16",
     "undici": "7.10.0",
-    "prettier": "3.5.3"
+    "prettier": "3.5.3",
+    "zod": "3.25.55"
   }
 }
