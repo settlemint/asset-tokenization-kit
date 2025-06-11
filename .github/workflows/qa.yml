@@ -164,7 +164,7 @@ jobs:
     with:
       workflow_conclusion:
         ${{ needs.qa.result == 'success' && needs.secret-scanning.result !=
-        'failure' && needs.codeql.result != 'failure' && 'success' || 'failure'
-        }}
+        'failure' && needs.codeql.result != 'failure' && needs.pr-labels.result
+        != 'failure' && 'success' || 'failure' }}
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
