@@ -80,12 +80,27 @@ export const getUserAirdropList = withTracing(
       string,
       { amount: string; amountExact: string }
     >();
+
     for (const distribution of distributions) {
-      totalAmountAllocatedMap.set(distribution.airdrop, {
-        amount: distribution.amount,
-        amountExact: distribution.amountExact,
-      });
+      const airdrop = distribution.airdrop;
+      const allocation = totalAmountAllocatedMap.get(airdrop);
+      if (allocation) {
+        totalAmountAllocatedMap.set(airdrop, {
+          amount: (
+            BigInt(allocation.amount) + BigInt(distribution.amount)
+          ).toString(),
+          amountExact: (
+            BigInt(allocation.amountExact) + BigInt(distribution.amountExact)
+          ).toString(),
+        });
+      } else {
+        totalAmountAllocatedMap.set(airdrop, {
+          amount: distribution.amount,
+          amountExact: distribution.amountExact,
+        });
+      }
     }
+
     const uniqueAirdropIds = Array.from(totalAmountAllocatedMap.keys());
 
     // Fetch both airdrop details and recipient claim status concurrently

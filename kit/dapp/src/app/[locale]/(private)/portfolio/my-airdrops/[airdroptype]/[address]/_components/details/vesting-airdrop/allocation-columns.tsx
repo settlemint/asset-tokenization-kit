@@ -2,10 +2,12 @@
 
 import type { User } from "@/lib/auth/types";
 import type { AirdropClaimIndex } from "@/lib/queries/airdrop/airdrop-schema";
+import { calculateClaimableAmount } from "@/lib/queries/vesting-airdrop/vesting-airdrop-amount";
 import type { UserVestingAirdrop } from "@/lib/queries/vesting-airdrop/vesting-airdrop-schema";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
+import { isAfter } from "date-fns";
 import { CheckCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { ClaimForm } from "../../manage-dropdown/claim-form/form";
@@ -22,7 +24,7 @@ export function Columns({
 }) {
   const t = useTranslations("portfolio.my-airdrops");
   const locale = useLocale();
-  const { asset, recipient, id: airdrop, type: airdropType } = airdropDetail;
+  const { asset, id: airdrop, type: airdropType } = airdropDetail;
   const { symbol, decimals } = asset;
   return [
     columnHelper.display({
@@ -59,14 +61,34 @@ export function Columns({
             </div>
           );
         }
-        const shouldInitialize =
-          airdropDetail.status !== "ACTIVE" && !row.original.initialized;
-        console.log({ shouldInitialize, x: row.original });
+
+        const isInitialized = !!row.original.initialized;
+        const isPastDeadline = isAfter(
+          new Date(),
+          airdropDetail.claimPeriodEnd
+        );
+
+        // If not initialized and past deadline, show expired
+        if (!isInitialized && isPastDeadline) {
+          return <span className="text-muted-foreground">Expired</span>;
+        }
+
+        let isDisabled = false;
+
+        // If initialized, check claimable amount
+        if (isInitialized) {
+          const { claimableAmountExact } = calculateClaimableAmount(
+            row.original.amountExact,
+            row.original.claimedAmountExact ?? 0n,
+            airdropDetail.strategy.vestingDuration,
+            row.original.initialized!
+          );
+          isDisabled = claimableAmountExact === 0n;
+        }
+
         return (
           <ClaimForm
-            disabled={
-              airdropDetail.status === "ACTIVE" ? false : !shouldInitialize
-            }
+            disabled={isDisabled}
             address={airdrop}
             index={row.original.index}
             amount={row.original.amount}
