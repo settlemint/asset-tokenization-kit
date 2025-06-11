@@ -139,6 +139,46 @@ jobs:
           echo "pr_reviewers=$PR_REVIEWERS" >> $GITHUB_OUTPUT
           echo "skip_notification=false" >> $GITHUB_OUTPUT
 
+          # Get review status
+          if [[ -n "$PR_NUMBER" ]]; then
+            echo "Debug: Fetching review status for PR #$PR_NUMBER"
+            REVIEWS=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews")
+
+                        # Check if reviews exist and get their states
+            if [[ "$REVIEWS" != "null" && "$REVIEWS" != "[]" ]]; then
+              APPROVED_COUNT=$(echo "$REVIEWS" | jq -r '[.[] | select(.state == "APPROVED")] | length')
+              CHANGES_REQUESTED_COUNT=$(echo "$REVIEWS" | jq -r '[.[] | select(.state == "CHANGES_REQUESTED")] | length')
+              TOTAL_REVIEWS=$(echo "$REVIEWS" | jq -r 'length')
+
+              echo "Debug: Total reviews: $TOTAL_REVIEWS, Approved: $APPROVED_COUNT, Changes requested: $CHANGES_REQUESTED_COUNT"
+
+              if [[ "$APPROVED_COUNT" -gt 0 ]]; then
+                if [[ "$CHANGES_REQUESTED_COUNT" -gt 0 ]]; then
+                  REVIEW_STATUS=":warning: Mixed reviews (approved + changes requested)"
+                else
+                  REVIEW_STATUS=":white_check_mark: Approved ($APPROVED_COUNT)"
+                fi
+              elif [[ "$CHANGES_REQUESTED_COUNT" -gt 0 ]]; then
+                REVIEW_STATUS=":x: Changes requested ($CHANGES_REQUESTED_COUNT)"
+              else
+                REVIEW_STATUS=":eyes: Under review"
+              fi
+            else
+              # No reviews yet
+              if [[ -n "$PR_REVIEWERS" && "$PR_REVIEWERS" != "" ]]; then
+                REVIEW_STATUS=":hourglass_flowing_sand: Waiting for review"
+              else
+                REVIEW_STATUS=":question: No reviewers assigned"
+              fi
+            fi
+          else
+            REVIEW_STATUS=":question: Unknown"
+          fi
+
+          echo "Debug: Review status: $REVIEW_STATUS"
+          echo "review_status=$REVIEW_STATUS" >> $GITHUB_OUTPUT
+
       - name: Check for existing Slack message
         id: check_message
         if: |
@@ -215,19 +255,23 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*Build Status:*\n${{ steps.build_status.outputs.build_result == 'success' && ':white_check_mark: Passed' || steps.build_status.outputs.build_result == 'failure' && ':x: Failed' || steps.build_status.outputs.build_result == 'cancelled' && ':no_entry_sign: Cancelled' || steps.build_status.outputs.build_result == 'skipped' && ':fast_forward: Skipped' || ':hourglass_flowing_sand: Running' }}"
+                                        "text": "*Build Status:*\n${{ steps.build_status.outputs.build_result == 'success' && ':white_check_mark: Passed' || steps.build_status.outputs.build_result == 'failure' && ':x: Failed' || steps.build_status.outputs.build_result == 'cancelled' && ':no_entry_sign: Cancelled' || steps.build_status.outputs.build_result == 'skipped' && ':fast_forward: Skipped' || ':hourglass_flowing_sand: Running' }}"
                     }
                   ]
-                }${{ steps.build_status.outputs.pr_reviewers != '' && format(',
+                },
                 {
-                  "type": "context",
-                  "elements": [
+                  "type": "section",
+                  "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": ":busts_in_silhouette: *Reviewers:* {0}"
+                      "text": "*Reviewers:*\n${{ steps.build_status.outputs.pr_reviewers || 'None assigned' }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Review Status:*\n${{ steps.build_status.outputs.review_status || ':hourglass_flowing_sand: Waiting for review' }}"
                     }
                   ]
-                }', steps.build_status.outputs.pr_reviewers) || '' }}
+                }
               ]
             }
 
