@@ -1,0 +1,103 @@
+name: CodeQL (Reusable)
+
+# This is a reusable workflow for running CodeQL security analysis.
+# It can be used both within this repository and by external repositories.
+#
+# Usage in this repository:
+# ```yaml
+# jobs:
+#   codeql:
+#     uses: ./.github/workflows/reusable-codeql.yml
+#     with:
+#       language: 'javascript-typescript'  # required
+#       build-mode: 'none'  # optional, defaults to 'none'
+#       runs-on: 'ubuntu-latest'  # optional, defaults to 'ubuntu-latest'
+# ```
+#
+# Usage in external repositories:
+# ```yaml
+# jobs:
+#   codeql:
+#     uses: settlemint/starterkit-asset-tokenization/.github/workflows/reusable-codeql.yml@main
+#     with:
+#       language: 'javascript-typescript'
+# ```
+#
+# Available build-modes: none, autobuild, manual
+
+on:
+  workflow_call:
+    inputs:
+      language:
+        description: "Language to analyze (cpp, csharp, go, java, javascript-typescript, python, ruby, swift)"
+        required: true
+        type: string
+      build-mode:
+        description: "Build mode for the analysis"
+        required: false
+        type: string
+        default: "none"
+      runs-on:
+        description: "Runner to use for the job"
+        required: false
+        type: string
+        default: "ubuntu-latest"
+
+permissions:
+  security-events: write
+  packages: read
+  actions: read
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ inputs.language }})
+    runs-on: ${{ inputs.runs-on }}
+    timeout-minutes: 30
+    if: |
+      github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' &&
+      (github.event_name == 'push' || github.event.action == 'opened' ||
+      github.event.action == 'synchronize')
+    steps:
+      - name: Checkout repository (namespace)
+        if: startsWith(inputs.runs-on, 'namespace-')
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          fetch-depth: 1
+
+      - name: Checkout repository (standard)
+        if: ${{ !startsWith(inputs.runs-on, 'namespace-') }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Cache CodeQL (namespace)
+        if: startsWith(inputs.runs-on, 'namespace-')
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            ~/.codeql/packages
+            ~/.codeql/query-packs
+
+      - name: Cache CodeQL (standard)
+        if: ${{ !startsWith(inputs.runs-on, 'namespace-') }}
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.codeql/packages
+            ~/.codeql/query-packs
+          key: ${{ runner.os }}-codeql-${{ inputs.language }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-codeql-${{ inputs.language }}-
+            ${{ runner.os }}-codeql-
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@fca7ace96b7d713c7035871441bd52efbe39e27e # v3
+        with:
+          languages: ${{ inputs.language }}
+          build-mode: ${{ inputs.build-mode }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@fca7ace96b7d713c7035871441bd52efbe39e27e # v3
+        with:
+          category: "/language:${{ inputs.language }}"
