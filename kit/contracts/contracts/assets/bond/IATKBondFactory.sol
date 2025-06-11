@@ -7,15 +7,6 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 /// @title Interface for the ATK Bond Factory
 /// @notice Defines the functions for creating and predicting addresses of ATK Bond instances.
 interface IATKBondFactory is IATKTokenFactory {
-    /// @notice Creates a new ATK Bond.
-    /// @param name_ The name of the bond.
-    /// @param symbol_ The symbol of the bond.
-    /// @param decimals_ The number of decimals for the bond tokens.
-    /// @param cap_ The maximum total supply of the bond tokens.
-    /// @param maturityDate_ The Unix timestamp representing the bond's maturity date.
-    /// @param faceValue_ The face value of each bond token in the underlying asset's base units.
-    /// @param underlyingAsset_ The address of the ERC20 token used as the underlying asset for the bond.
-
     /// @notice Emitted when a new bond is created.
     /// @param sender The address of the sender.
     /// @param tokenAddress The address of the newly created token.
@@ -38,6 +29,14 @@ interface IATKBondFactory is IATKTokenFactory {
         address underlyingAsset
     );
 
+    /// @notice Creates a new ATK Bond.
+    /// @param name_ The name of the bond.
+    /// @param symbol_ The symbol of the bond.
+    /// @param decimals_ The number of decimals for the bond tokens.
+    /// @param cap_ The maximum total supply of the bond tokens.
+    /// @param maturityDate_ The Unix timestamp representing the bond's maturity date.
+    /// @param faceValue_ The face value of each bond token in the underlying asset's base units.
+    /// @param underlyingAsset_ The address of the ERC20 token used as the underlying asset for the bond.
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the bond.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @return deployedBondAddress The address of the newly deployed bond contract.

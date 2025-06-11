@@ -10,11 +10,11 @@ import {
   UpdatedTokenInformation,
 } from "../../generated/templates/Token/Token";
 import { fetchEvent } from "../event/fetch/event";
-import { updateYield } from "../fixed-yield-schedule/utils/fixed-yield-schedule-utils";
 import {
   decreaseTokenBalanceValue,
   increaseTokenBalanceValue,
 } from "../token-balance/utils/token-balance-utils";
+import { updateYield } from "../token-extensions/fixed-yield-schedule/utils/fixed-yield-schedule-utils";
 import { fetchToken } from "./fetch/token";
 import { increaseTokenSupply } from "./utils/token-utils";
 
