@@ -1,6 +1,7 @@
 import { ListSchema } from "@/lib/orpc/routes/common/list.schema";
-import { ac } from "@/lib/orpc/routes/procedures/auth.contract";
+import { SystemCreateSchema } from "@/lib/orpc/routes/system/schemas/system.create.schema";
 import { z } from "zod";
+import { ac } from "../../procedures/auth.contract";
 import { SystemSchema } from "./schemas/system.schema";
 
 /**
@@ -26,6 +27,17 @@ const list = ac
   .input(ListSchema) // Standard list query parameters (pagination, filters, etc.)
   .output(z.array(SystemSchema)); // Return array of system objects
 
+const create = ac
+  .route({
+    method: "POST",
+    path: "/systems",
+    description: "Create a new SMART system",
+    successDescription: "New SMART system created",
+    tags: ["system"],
+  })
+  .input(SystemCreateSchema)
+  .output(SystemSchema);
+
 /**
  * System API contract collection.
  *
@@ -40,4 +52,5 @@ const list = ac
  */
 export const systemContract = {
   list,
+  create,
 };

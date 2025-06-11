@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth/auth";
-import { br } from "../../routes/procedures/base.router";
+import { br } from "../../procedures/base.router";
 
 /**
  * CRUD permission types for API key authorization.

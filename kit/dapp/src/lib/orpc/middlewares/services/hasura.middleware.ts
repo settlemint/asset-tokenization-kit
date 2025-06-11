@@ -1,5 +1,5 @@
-import { br } from "@/lib/orpc/routes/procedures/base.router";
 import { hasuraClient } from "@/lib/settlemint/hasura";
+import { br } from "../../procedures/base.router";
 
 /**
  * ORPC middleware that injects the Hasura GraphQL client into the procedure context.

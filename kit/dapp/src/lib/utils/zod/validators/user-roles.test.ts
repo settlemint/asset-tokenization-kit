@@ -21,7 +21,7 @@ describe("userRoles", () => {
     it("should accept all defined roles", () => {
       expect(validator.parse("admin") as string).toBe("admin");
       expect(validator.parse("user") as string).toBe("user");
-      expect(validator.parse("viewer") as string).toBe("viewer");
+      expect(validator.parse("issuer") as string).toBe("issuer");
     });
   });
 
@@ -30,6 +30,7 @@ describe("userRoles", () => {
       expect(() => validator.parse("superadmin")).toThrow();
       expect(() => validator.parse("moderator")).toThrow();
       expect(() => validator.parse("guest")).toThrow();
+      expect(() => validator.parse("viewer")).toThrow();
       expect(() => validator.parse("")).toThrow();
     });
 
@@ -44,14 +45,14 @@ describe("userRoles", () => {
     it("should be case-sensitive", () => {
       expect(() => validator.parse("Admin")).toThrow();
       expect(() => validator.parse("USER")).toThrow();
-      expect(() => validator.parse("Viewer")).toThrow();
+      expect(() => validator.parse("Issuer")).toThrow();
       expect(() => validator.parse("ADMIN")).toThrow();
     });
 
     it("should reject similar but incorrect values", () => {
       expect(() => validator.parse("admins")).toThrow();
       expect(() => validator.parse("users")).toThrow();
-      expect(() => validator.parse("view")).toThrow();
+      expect(() => validator.parse("issuers")).toThrow();
       expect(() => validator.parse("administrator")).toThrow();
     });
   });
@@ -64,8 +65,8 @@ describe("userRoles", () => {
       // User has standard permissions
       expect(validator.parse("user") as string).toBe("user");
 
-      // Viewer has read-only permissions
-      expect(validator.parse("viewer") as string).toBe("viewer");
+      // Issuer has asset issuance permissions
+      expect(validator.parse("issuer") as string).toBe("issuer");
     });
   });
 });
@@ -75,23 +76,24 @@ describe("helper functions", () => {
     it("should return true for valid user roles", () => {
       expect(isUserRole("admin")).toBe(true);
       expect(isUserRole("user")).toBe(true);
-      expect(isUserRole("viewer")).toBe(true);
+      expect(isUserRole("issuer")).toBe(true);
     });
 
     it("should return false for invalid user roles", () => {
       expect(isUserRole("superadmin")).toBe(false);
       expect(isUserRole("moderator")).toBe(false);
       expect(isUserRole("guest")).toBe(false);
+      expect(isUserRole("viewer")).toBe(false);
       expect(isUserRole("")).toBe(false);
       expect(isUserRole(123)).toBe(false);
       expect(isUserRole(null)).toBe(false);
       expect(isUserRole(undefined)).toBe(false);
       expect(isUserRole({})).toBe(false);
       expect(isUserRole([])).toBe(false);
-      expect(isUserRole("Admin")).toBe(false); // wrong case
+      expect(isUserRole("Admin")).toBe(false);
       expect(isUserRole("USER")).toBe(false);
-      expect(isUserRole("admins")).toBe(false); // plural
-      expect(isUserRole("administrator")).toBe(false); // different word
+      expect(isUserRole("admins")).toBe(false);
+      expect(isUserRole("administrator")).toBe(false);
     });
 
     it("should narrow types correctly", () => {
@@ -108,23 +110,24 @@ describe("helper functions", () => {
     it("should return valid user roles", () => {
       expect(getUserRole("admin") as string).toBe("admin");
       expect(getUserRole("user") as string).toBe("user");
-      expect(getUserRole("viewer") as string).toBe("viewer");
+      expect(getUserRole("issuer") as string).toBe("issuer");
     });
 
     it("should throw for invalid user roles", () => {
       expect(() => getUserRole("superadmin")).toThrow();
       expect(() => getUserRole("moderator")).toThrow();
       expect(() => getUserRole("guest")).toThrow();
+      expect(() => getUserRole("viewer")).toThrow();
       expect(() => getUserRole("")).toThrow();
       expect(() => getUserRole(123)).toThrow(
-        "Expected 'admin' | 'user' | 'viewer', received number"
+        "Expected 'admin' | 'user' | 'issuer', received number"
       );
       expect(() => getUserRole(null)).toThrow(
-        "Expected 'admin' | 'user' | 'viewer', received null"
+        "Expected 'admin' | 'user' | 'issuer', received null"
       );
       expect(() => getUserRole(undefined)).toThrow("Required");
       expect(() => getUserRole({})).toThrow(
-        "Expected 'admin' | 'user' | 'viewer', received object"
+        "Expected 'admin' | 'user' | 'issuer', received object"
       );
       expect(() => getUserRole("Admin")).toThrow();
       expect(() => getUserRole("USER")).toThrow();

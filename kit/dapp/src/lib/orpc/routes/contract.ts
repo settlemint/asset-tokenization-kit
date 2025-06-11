@@ -1,4 +1,4 @@
-import { planetContract } from "@/lib/orpc/routes/planet/planet.contract";
+import { planetContract } from "./planet/planet.contract";
 import { systemContract } from "./system/system.contract";
 
 /**

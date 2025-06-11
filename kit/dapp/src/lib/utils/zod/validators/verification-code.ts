@@ -44,22 +44,21 @@ import { z } from "zod";
  * schema.parse("ABC-1234");  // Throws - contains hyphen
  * ```
  */
-export const verificationCode = () =>
-  z
-    .string()
-    .length(8, "Verification code must be exactly 8 characters")
-    .regex(
-      /^[A-Z0-9]{8}$/,
-      "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
-    )
-    .describe("Email verification code")
-    .brand<"VerificationCode">();
+export const verificationCode = z
+  .string()
+  .length(8, "Verification code must be exactly 8 characters")
+  .regex(
+    /^[A-Z0-9]{8}$/,
+    "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
+  )
+  .describe("Verification code")
+  .brand<"VerificationCode">();
 
 /**
  * Type representing a validated 8-character verification code.
  * Branded for additional type safety in verification flows.
  */
-export type VerificationCode = z.infer<ReturnType<typeof verificationCode>>;
+export type VerificationCode = z.infer<typeof verificationCode>;
 
 /**
  * Type guard to check if a value is a valid verification code.
@@ -85,7 +84,7 @@ export type VerificationCode = z.infer<ReturnType<typeof verificationCode>>;
  * ```
  */
 export function isVerificationCode(value: unknown): value is VerificationCode {
-  return verificationCode().safeParse(value).success;
+  return verificationCode.safeParse(value).success;
 }
 
 /**
@@ -115,5 +114,5 @@ export function isVerificationCode(value: unknown): value is VerificationCode {
  * ```
  */
 export function getVerificationCode(value: unknown): VerificationCode {
-  return verificationCode().parse(value);
+  return verificationCode.parse(value);
 }

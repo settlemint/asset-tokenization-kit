@@ -8,7 +8,7 @@ import {
 } from "./verification-type";
 
 describe("verificationType", () => {
-  const validator = verificationType();
+  const validator = verificationType;
 
   describe("valid verification types", () => {
     it.each(verificationTypes.map((type) => [type]))(
@@ -19,9 +19,9 @@ describe("verificationType", () => {
     );
 
     it("should accept all defined verification types", () => {
-      expect(validator.parse("email") as string).toBe("email");
-      expect(validator.parse("phone") as string).toBe("phone");
-      expect(validator.parse("identity") as string).toBe("identity");
+      expect(validator.parse("two-factor") as string).toBe("two-factor");
+      expect(validator.parse("pincode") as string).toBe("pincode");
+      expect(validator.parse("secret-code") as string).toBe("secret-code");
     });
   });
 
@@ -58,13 +58,13 @@ describe("verificationType", () => {
   describe("verification type contexts", () => {
     it("should support different verification methods", () => {
       // Email verification for account confirmation
-      expect(validator.parse("email") as string).toBe("email");
+      expect(validator.parse("two-factor") as string).toBe("two-factor");
 
       // Phone verification for 2FA or SMS codes
-      expect(validator.parse("phone") as string).toBe("phone");
+      expect(validator.parse("pincode") as string).toBe("pincode");
 
       // Identity verification for KYC/AML
-      expect(validator.parse("identity") as string).toBe("identity");
+      expect(validator.parse("secret-code") as string).toBe("secret-code");
     });
   });
 });
@@ -72,9 +72,9 @@ describe("verificationType", () => {
 describe("helper functions", () => {
   describe("isVerificationType", () => {
     it("should return true for valid verification types", () => {
-      expect(isVerificationType("email")).toBe(true);
-      expect(isVerificationType("phone")).toBe(true);
-      expect(isVerificationType("identity")).toBe(true);
+      expect(isVerificationType("two-factor")).toBe(true);
+      expect(isVerificationType("pincode")).toBe(true);
+      expect(isVerificationType("secret-code")).toBe(true);
     });
 
     it("should return false for invalid verification types", () => {
@@ -95,20 +95,20 @@ describe("helper functions", () => {
     });
 
     it("should narrow types correctly", () => {
-      const value: unknown = "email";
+      const value: unknown = "two-factor";
       if (isVerificationType(value)) {
         // Type should be narrowed to VerificationType
         const type: VerificationType = value;
-        expect(type as string).toBe("email");
+        expect(type as string).toBe("two-factor");
       }
     });
   });
 
   describe("getVerificationType", () => {
     it("should return valid verification types", () => {
-      expect(getVerificationType("email") as string).toBe("email");
-      expect(getVerificationType("phone") as string).toBe("phone");
-      expect(getVerificationType("identity") as string).toBe("identity");
+      expect(getVerificationType("two-factor") as string).toBe("two-factor");
+      expect(getVerificationType("pincode") as string).toBe("pincode");
+      expect(getVerificationType("secret-code") as string).toBe("secret-code");
     });
 
     it("should throw for invalid verification types", () => {
@@ -117,14 +117,14 @@ describe("helper functions", () => {
       expect(() => getVerificationType("biometric")).toThrow();
       expect(() => getVerificationType("")).toThrow();
       expect(() => getVerificationType(123)).toThrow(
-        "Expected 'email' | 'phone' | 'identity', received number"
+        "Expected 'two-factor' | 'pincode' | 'secret-code', received number"
       );
       expect(() => getVerificationType(null)).toThrow(
-        "Expected 'email' | 'phone' | 'identity', received null"
+        "Expected 'two-factor' | 'pincode' | 'secret-code', received null"
       );
       expect(() => getVerificationType(undefined)).toThrow("Required");
       expect(() => getVerificationType({})).toThrow(
-        "Expected 'email' | 'phone' | 'identity', received object"
+        "Expected 'two-factor' | 'pincode' | 'secret-code', received object"
       );
       expect(() => getVerificationType("Email")).toThrow();
       expect(() => getVerificationType("e-mail")).toThrow();

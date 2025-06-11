@@ -18,7 +18,11 @@ import { z } from "zod";
  * - `phone`: Phone number verification via SMS or voice call
  * - `identity`: Identity document verification (passport, ID card, etc.)
  */
-export const verificationTypes = ["email", "phone", "identity"] as const;
+export const verificationTypes = [
+  "two-factor",
+  "pincode",
+  "secret-code",
+] as const;
 
 /**
  * Creates a Zod schema that validates verification types.
@@ -38,17 +42,16 @@ export const verificationTypes = ["email", "phone", "identity"] as const;
  * schema.parse("biometric"); // Throws ZodError
  * ```
  */
-export const verificationType = () =>
-  z
-    .enum(verificationTypes)
-    .describe("Type of verification")
-    .brand<"VerificationType">();
+export const verificationType = z
+  .enum(verificationTypes)
+  .describe("Type of verification")
+  .brand<"VerificationType">();
 
 /**
  * Type representing a validated verification method type.
  * Branded for additional type safety.
  */
-export type VerificationType = z.infer<ReturnType<typeof verificationType>>;
+export type VerificationType = z.infer<typeof verificationType>;
 
 /**
  * Type guard to check if a value is a valid verification type.
@@ -79,7 +82,7 @@ export type VerificationType = z.infer<ReturnType<typeof verificationType>>;
  * ```
  */
 export function isVerificationType(value: unknown): value is VerificationType {
-  return verificationType().safeParse(value).success;
+  return verificationType.safeParse(value).success;
 }
 
 /**
@@ -110,5 +113,5 @@ export function isVerificationType(value: unknown): value is VerificationType {
  * ```
  */
 export function getVerificationType(value: unknown): VerificationType {
-  return verificationType().parse(value);
+  return verificationType.parse(value);
 }

@@ -7,7 +7,7 @@ import {
 } from "./verification-code";
 
 describe("verificationCode", () => {
-  const validator = verificationCode();
+  const validator = verificationCode;
 
   describe("valid verification codes", () => {
     it("should accept valid 8-character alphanumeric codes", () => {

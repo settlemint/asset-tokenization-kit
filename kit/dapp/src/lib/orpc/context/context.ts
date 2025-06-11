@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth/auth";
+import type { Session, User } from "@/lib/auth/types";
 import type { db } from "@/lib/db";
 import type { hasuraClient } from "@/lib/settlemint/hasura";
 import type { client as minioClient } from "@/lib/settlemint/minio";
@@ -44,7 +44,10 @@ export type Context = {
    *
    * @see {@link @/lib/auth/auth} - Authentication system implementation
    */
-  auth?: Awaited<ReturnType<typeof auth.api.getSession>>;
+  auth?: {
+    user: User;
+    session: Session;
+  };
 
   /**
    * Database connection instance.
