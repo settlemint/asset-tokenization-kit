@@ -16,6 +16,10 @@
       "outputs": ["artifacts/**", "cache/**"],
       "inputs": ["**/*.sol"]
     },
+    "compile:typescript": {
+      "outputs": [".tsbuildinfo"],
+      "inputs": ["**/*.ts"]
+    },
     "codegen": {
       "dependsOn": ["codegen:types"]
     },

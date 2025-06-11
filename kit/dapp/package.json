@@ -9,7 +9,7 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "compile": "tsc --noEmit",
     "codegen:settlemint": "settlemint codegen",
     "codegen:gql-tada": "gql-tada turbo",
     "format": "prettier --write .",
@@ -21,10 +21,10 @@
     "start": "next start",
     "test": "bun test",
     "db:check": "drizzle-kit check",
-    "db:migrate": "drizzle-kit migrate",
-    "postdb:migrate": "settlemint hasura track -a",
-    "db:studio": "drizzle-kit studio",
-    "db:generate": "drizzle-kit generate"
+    "db:push": "drizzle-kit push",
+    "db:export": "drizzle-kit export | tee ../../tools/docker/postgres/atk.sql",
+    "postdb:push": "settlemint hasura track -a",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@daveyplate/better-auth-ui": "2.0.2",

@@ -7,7 +7,7 @@
   ],
   "tasks": {
     "ci": {
-      "dependsOn": ["compile", "codegen", "lint", "test", "typecheck", "build"]
+      "dependsOn": ["compile", "codegen", "lint", "test", "build"]
     },
     "ci:gha": {
       "dependsOn": ["publish", "ci", "test:integration"]
@@ -27,7 +27,7 @@
       "dependsOn": ["dependencies", "docs"]
     },
     "compile": {
-      "dependsOn": ["dependencies"]
+      "dependsOn": ["dependencies", "codegen", "^compile"]
     },
     "package": {
       "cache": false,
@@ -39,9 +39,7 @@
     },
     "dependencies": {},
     "format": {},
-    "lint": {
-      "dependsOn": ["//#version"]
-    },
+    "lint": {},
     "dev": {
       "dependsOn": ["dapp#codegen"],
       "cache": false,
@@ -50,14 +48,9 @@
     "helm": {
       "cache": false
     },
-    "docs": {
-      "cache": false
-    },
+    "docs": {},
     "test": {},
     "artifacts": {},
-    "typecheck": {
-      "dependsOn": ["dependencies", "codegen", "subgraph#build"]
-    },
     "test:integration": {}
   }
 }
