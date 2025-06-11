@@ -1,6 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { TokenRedeemable } from "../../../../generated/schema";
 import { Redeemable as RedeemableTemplate } from "../../../../generated/templates";
-import { TokenRedeemable } from "../../../generated/schema";
 import { fetchToken } from "../../../token/fetch/token";
 import { setBigNumber } from "../../../utils/bignumber";
 

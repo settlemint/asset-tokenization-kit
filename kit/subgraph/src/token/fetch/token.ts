@@ -8,6 +8,7 @@ import { Token as TokenContract } from "../../../generated/templates/Token/Token
 import { fetchAccount } from "../../account/fetch/account";
 import { InterfaceIds } from "../../erc165/utils/interfaceids";
 import { fetchBond } from "../../token-assets/bond/fetch/bond";
+import { fetchFund } from "../../token-assets/fund/fetch/fund";
 import { fetchCapped } from "../../token-extensions/capped/fetch/capped";
 import { fetchCollateral } from "../../token-extensions/collateral/fetch/collateral";
 import { fetchCustodian } from "../../token-extensions/custodian/fetch/custodian";
@@ -66,6 +67,22 @@ export function fetchToken(address: Address): Token {
     }
     if (tokenContract.supportsInterface(InterfaceIds.IATKBond)) {
       token.bond = fetchBond(address).id;
+      token.save();
+    }
+    if (tokenContract.supportsInterface(InterfaceIds.IATKDeposit)) {
+      token.deposit = true;
+      token.save();
+    }
+    if (tokenContract.supportsInterface(InterfaceIds.IATKEquity)) {
+      token.equity = true;
+      token.save();
+    }
+    if (tokenContract.supportsInterface(InterfaceIds.IATKFund)) {
+      token.fund = fetchFund(address).id;
+      token.save();
+    }
+    if (tokenContract.supportsInterface(InterfaceIds.IATKStableCoin)) {
+      token.stablecoin = true;
       token.save();
     }
   }

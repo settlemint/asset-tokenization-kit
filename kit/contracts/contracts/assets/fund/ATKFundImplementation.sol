@@ -64,12 +64,6 @@ contract ATKFundImplementation is
     /// @dev Set at deployment and cannot be changed
     uint16 private _managementFeeBps;
 
-    /// @notice Emitted when management fees are collected
-    /// @param sender The address that collected the management fees
-    /// @param amount The amount of tokens minted as management fees
-    /// @param timestamp The timestamp when the fees were collected
-    event ManagementFeeCollected(address indexed sender, uint256 amount, uint256 timestamp);
-
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
