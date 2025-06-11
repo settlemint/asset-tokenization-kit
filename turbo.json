@@ -6,7 +6,7 @@
       "dependsOn": ["compile", "codegen", "lint", "test", "typecheck", "build"]
     },
     "ci:gha": {
-      "dependsOn": ["publish", "ci"]
+      "dependsOn": ["publish", "ci", "test:e2e"]
     },
     "//#version": {
       "cache": false,
@@ -53,6 +53,7 @@
     "artifacts": {},
     "typecheck": {
       "dependsOn": ["dependencies", "codegen", "subgraph#build"]
-    }
+    },
+    "test:e2e": {}
   }
 }
