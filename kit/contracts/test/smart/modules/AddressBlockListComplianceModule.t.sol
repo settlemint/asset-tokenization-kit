@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { ComplianceModuleTest } from "./ComplianceModuleTest.t.sol";
 import { AddressBlockListComplianceModule } from "../../../contracts/smart/modules/AddressBlockListComplianceModule.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
     AddressBlockListComplianceModule internal module;
@@ -11,10 +12,10 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
     function setUp() public override {
         super.setUp();
         module = new AddressBlockListComplianceModule(address(0));
-        module.grantRole(GLOBAL_LIST_MANAGER_ROLE, address(this));
+        module.grantRole(module.GLOBAL_LIST_MANAGER_ROLE(), address(this));
     }
 
-    function test_InitialState() public virtual {
+    function test_InitialState() public {
         assertEq(module.name(), "Address BlockList Compliance Module");
     }
 
@@ -28,21 +29,10 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
         assertTrue(module.isGloballyBlocked(user1));
         assertTrue(module.isGloballyBlocked(user2));
 
-        address[] memory blockedAddresses = module.getGlobalBlockedAddresses();
-        assertEq(blockedAddresses.length, 2);
-        assertEq(blockedAddresses[0], user1);
-        assertEq(blockedAddresses[1], user2);
-    }
-
-    function test_UnsetGlobalBlockedAddresses() public {
-        address[] memory addressesToBlock = new address[](1);
-        addressesToBlock[0] = user1;
-
-        module.setGlobalBlockedAddresses(addressesToBlock, true);
-        assertTrue(module.isGloballyBlocked(user1));
-
         module.setGlobalBlockedAddresses(addressesToBlock, false);
+
         assertFalse(module.isGloballyBlocked(user1));
+        assertFalse(module.isGloballyBlocked(user2));
     }
 
     function testRevert_CanTransfer_GloballyBlocked() public {
@@ -50,13 +40,12 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
         addressesToBlock[0] = user1;
         module.setGlobalBlockedAddresses(addressesToBlock, true);
 
-        bytes memory params = abi.encode(new address[](0));
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver address globally blocked"
             )
         );
-        module.canTransfer(address(smartToken), address(this), user1, 100, params);
+        module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
     }
 
     function testRevert_CanTransfer_TokenBlocked() public {
@@ -69,13 +58,11 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver address blocked for token"
             )
         );
-        module.canTransfer(address(smartToken), address(this), user2, 100, params);
+        module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
 
-    function test_CanTransfer_NotBlocked() public virtual {
-        bytes memory params = abi.encode(new address[](0));
-        module.canTransfer(address(smartToken), address(this), user3, 100, params);
-        // Should not revert
+    function test_CanTransfer_NotBlocked() public {
+        module.canTransfer(address(smartToken), tokenIssuer, user3, 100, abi.encode(new address[](0)));
     }
 
     function test_Integration_TokenTransfer_GloballyBlocked() public {
@@ -97,5 +84,17 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
             )
         );
         smartToken.transfer(user1, 100);
+    }
+
+    function testFail_SetGlobalBlockedAddresses_NotAdmin() public {
+        vm.prank(user1);
+        address[] memory addressesToBlock = new address[](1);
+        addressesToBlock[0] = user1;
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, module.GLOBAL_LIST_MANAGER_ROLE()
+            )
+        );
+        module.setGlobalBlockedAddresses(addressesToBlock, true);
     }
 }

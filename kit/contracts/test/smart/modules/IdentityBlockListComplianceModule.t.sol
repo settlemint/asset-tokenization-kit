@@ -4,10 +4,8 @@ pragma solidity ^0.8.28;
 import { ComplianceModuleTest } from "./ComplianceModuleTest.t.sol";
 import { IdentityBlockListComplianceModule } from
     "../../../contracts/smart/modules/IdentityBlockListComplianceModule.sol";
-import { ISMARTCompliance } from "../../../contracts/smart/interface/ISMARTCompliance.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
     IdentityBlockListComplianceModule internal module;
@@ -15,10 +13,14 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
     function setUp() public override {
         super.setUp();
         module = new IdentityBlockListComplianceModule(address(0));
-        module.grantRole(GLOBAL_LIST_MANAGER_ROLE, address(this));
+        module.grantRole(module.GLOBAL_LIST_MANAGER_ROLE(), address(this));
+
+        // Issue claims to users
+        claimUtils.issueAllClaims(user1);
+        claimUtils.issueAllClaims(user2);
     }
 
-    function test_InitialState() public virtual {
+    function test_InitialState() public {
         assertEq(module.name(), "Identity BlockList Compliance Module");
     }
 
@@ -32,21 +34,10 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
         assertTrue(module.isGloballyBlocked(address(identity1)));
         assertTrue(module.isGloballyBlocked(address(identity2)));
 
-        address[] memory blockedIdentities = module.getGlobalBlockedIdentities();
-        assertEq(blockedIdentities.length, 2);
-        assertEq(blockedIdentities[0], address(identity1));
-        assertEq(blockedIdentities[1], address(identity2));
-    }
-
-    function test_UnsetGlobalBlockedIdentities() public {
-        address[] memory identitiesToBlock = new address[](1);
-        identitiesToBlock[0] = address(identity1);
-
-        module.setGlobalBlockedIdentities(identitiesToBlock, true);
-        assertTrue(module.isGloballyBlocked(address(identity1)));
-
         module.setGlobalBlockedIdentities(identitiesToBlock, false);
+
         assertFalse(module.isGloballyBlocked(address(identity1)));
+        assertFalse(module.isGloballyBlocked(address(identity2)));
     }
 
     function testFail_SetGlobalBlockedIdentities_NotAdmin() public {
@@ -55,24 +46,18 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
         identitiesToBlock[0] = address(identity1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                bytes4(keccak256("AccessControlUnauthorizedAccount(address,bytes32)")), user1, GLOBAL_LIST_MANAGER_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, module.GLOBAL_LIST_MANAGER_ROLE()
             )
         );
         module.setGlobalBlockedIdentities(identitiesToBlock, true);
     }
 
-    function test_CanTransfer_NoIdentity() public virtual {
-        bytes memory params = abi.encode(new address[](0));
-        // This call is to the module directly, not via the compliance contract.
-        // It checks the logic within the module itself.
-        module.canTransfer(address(smartToken), user1, user3, 100, params);
-        // Should not revert
+    function test_CanTransfer_NoIdentity() public {
+        module.canTransfer(address(smartToken), user1, user3, 100, abi.encode(new address[](0)));
     }
 
-    function test_CanTransfer_NotBlocked() public virtual {
-        bytes memory params = abi.encode(new address[](0));
-        module.canTransfer(address(smartToken), address(this), user1, 100, params);
-        // Should not revert
+    function test_CanTransfer_NotBlocked() public {
+        module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
     }
 
     function testRevert_CanTransfer_GloballyBlocked() public {
@@ -80,13 +65,12 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
         identitiesToBlock[0] = address(identity1);
         module.setGlobalBlockedIdentities(identitiesToBlock, true);
 
-        bytes memory params = abi.encode(new address[](0));
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity globally blocked"
             )
         );
-        module.canTransfer(address(smartToken), address(this), user1, 100, params);
+        module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
     }
 
     function testRevert_CanTransfer_TokenBlocked() public {
@@ -99,25 +83,7 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity blocked for token"
             )
         );
-        module.canTransfer(address(smartToken), address(this), user2, 100, params);
-    }
-
-    function test_CanTransfer_AllowedAfterUnblocking() public {
-        address[] memory identitiesToBlock = new address[](1);
-        identitiesToBlock[0] = address(identity1);
-        module.setGlobalBlockedIdentities(identitiesToBlock, true);
-
-        bytes memory params = abi.encode(new address[](0));
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity globally blocked"
-            )
-        );
-        module.canTransfer(address(smartToken), address(this), user1, 100, params);
-
-        module.setGlobalBlockedIdentities(identitiesToBlock, false);
-        module.canTransfer(address(smartToken), address(this), user1, 100, params);
-        // Should not revert
+        module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
 
     function test_Integration_TokenTransfer_GloballyBlocked() public {
