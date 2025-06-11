@@ -25,6 +25,7 @@ import {
     InvalidTokenImplementationInterface,
     TokenAccessManagerImplementationNotSet,
     SystemAlreadyBootstrapped,
+    SystemNotBootstrapped,
     TopicSchemeRegistryImplementationNotSet,
     IdentityVerificationModuleNotSet
 } from "./ATKSystemErrors.sol";
@@ -84,6 +85,9 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
 
     // --- State Variables ---
     // State variables store data persistently on the blockchain.
+
+    /// @dev Flag to indicate if the system has been bootstrapped.
+    bool private _bootstrapped;
 
     // Addresses for the compliance module: one for the logic, one for the proxy.
     /// @dev Stores the address of the current compliance logic contract.
@@ -294,12 +298,8 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// factory)
     /// is not set (i.e., is the zero address) before calling this function.
     function bootstrap() external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
-        // Check if system is already bootstrapped by verifying if any proxy is already deployed
-        if (
-            _complianceProxy != address(0) || _identityRegistryProxy != address(0)
-                || _identityRegistryStorageProxy != address(0) || _trustedIssuersRegistryProxy != address(0)
-                || _topicSchemeRegistryProxy != address(0) || _identityFactoryProxy != address(0)
-        ) {
+        // Check if system is already bootstrapped.
+        if (_bootstrapped) {
             revert SystemAlreadyBootstrapped();
         }
 
@@ -377,6 +377,9 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
             ATKTopics.names(), ATKTopics.signatures()
         );
 
+        // Mark the system as bootstrapped
+        _bootstrapped = true;
+
         // Emit an event to log that bootstrapping is complete and to provide the addresses of the deployed proxies.
         emit Bootstrapped(
             _msgSender(),
@@ -401,6 +404,11 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         onlyRole(DEFAULT_ADMIN_ROLE)
         returns (address)
     {
+        // System must be bootstrapped before creating token factories, as factories need to interact with core proxies.
+        if (!_bootstrapped) {
+            revert SystemNotBootstrapped();
+        }
+
         if (address(_factoryImplementation) == address(0)) revert InvalidTokenFactoryAddress();
         _checkInterface(_factoryImplementation, _IATK_TOKEN_FACTORY_ID);
 

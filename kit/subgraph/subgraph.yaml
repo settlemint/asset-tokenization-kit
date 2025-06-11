@@ -46,7 +46,7 @@ dataSources:
       eventHandlers:
         - event: ATKFixedYieldScheduleCreated(indexed address,indexed address)
           handler: handleATKFixedYieldScheduleCreated
-      file: ./src/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
+      file: ./src/token-extensions/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
 templates:
   - kind: ethereum
     name: AccessControl
@@ -86,6 +86,8 @@ templates:
       abis:
         - name: System
           file: ../contracts/artifacts/contracts/system/IATKSystem.sol/IATKSystem.json
+        - name: BondFactory
+          file: ../contracts/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
             address,address,address,address,address,address)
@@ -196,7 +198,7 @@ templates:
           handler: handlePaused
         - event: Unpaused(indexed address)
           handler: handleUnpaused
-      file: ./src/pausable/pausable.ts
+      file: ./src/token-extensions/pausable/pausable.ts
   - kind: ethereum
     name: Burnable
     network: settlemint
@@ -215,7 +217,7 @@ templates:
       eventHandlers:
         - event: BurnCompleted(indexed address,indexed address,uint256)
           handler: handleBurnCompleted
-      file: ./src/burnable/burnable.ts
+      file: ./src/token-extensions/burnable/burnable.ts
   - kind: ethereum
     name: Identity
     network: settlemint
@@ -358,7 +360,7 @@ templates:
           handler: handleTokensFrozen
         - event: TokensUnfrozen(indexed address,indexed address,uint256)
           handler: handleTokensUnfrozen
-      file: ./src/custodian/custodian.ts
+      file: ./src/token-extensions/custodian/custodian.ts
   - kind: ethereum
     name: Capped
     network: settlemint
@@ -376,7 +378,7 @@ templates:
       eventHandlers:
         - event: CapSet(indexed address,uint256)
           handler: handleCapSet
-      file: ./src/capped/capped.ts
+      file: ./src/token-extensions/capped/capped.ts
   - kind: ethereum
     name: Yield
     network: settlemint
@@ -397,7 +399,7 @@ templates:
           handler: handleCheckpointUpdated
         - event: YieldScheduleSet(indexed address,indexed address)
           handler: handleYieldScheduleSet
-      file: ./src/yield/yield.ts
+      file: ./src/token-extensions/yield/yield.ts
   - kind: ethereum
     name: FixedYieldSchedule
     network: settlemint
@@ -425,4 +427,100 @@ templates:
         - event: YieldClaimed(indexed
             address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)
           handler: handleYieldClaimed
-      file: ./src/fixed-yield-schedule/fixed-yield-schedule.ts
+      file: ./src/token-extensions/fixed-yield-schedule/fixed-yield-schedule.ts
+  - kind: ethereum
+    name: Redeemable
+    network: settlemint
+    source:
+      abi: Redeemable
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Redeemed
+      abis:
+        - name: Redeemable
+          file: ../contracts/artifacts/contracts/smart/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json
+      eventHandlers:
+        - event: Redeemed(indexed address,uint256)
+          handler: handleRedeemed
+      file: ./src/token-extensions/redeemable/redeemable.ts
+  - kind: ethereum
+    name: Bond
+    network: settlemint
+    source:
+      abi: Bond
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - BondMatured
+        - BondRedeemed
+      abis:
+        - name: Bond
+          file: ../contracts/artifacts/contracts/assets/bond/IATKBond.sol/IATKBond.json
+      eventHandlers:
+        - event: BondMatured(indexed uint256)
+          handler: handleBondMatured
+        - event: BondRedeemed(indexed address,indexed address,uint256,uint256)
+          handler: handleBondRedeemed
+      file: ./src/token-assets/bond/bond.ts
+  - kind: ethereum
+    name: BondFactory
+    network: settlemint
+    source:
+      abi: BondFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - BondCreated
+      abis:
+        - name: BondFactory
+          file: ../contracts/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
+        - name: Token
+          file: ../contracts/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
+      eventHandlers:
+        - event: BondCreated(indexed address,indexed
+            address,string,string,uint8,uint256,uint256,uint256,address)
+          handler: handleBondCreated
+      file: ./src/token-assets/bond-factory/bond-factory.ts
+  - kind: ethereum
+    name: Fund
+    network: settlemint
+    source:
+      abi: Fund
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ManagementFeeCollected
+      abis:
+        - name: Fund
+          file: ../contracts/artifacts/contracts/assets/fund/IATKFund.sol/IATKFund.json
+      eventHandlers:
+        - event: ManagementFeeCollected(indexed address,uint256,uint256)
+          handler: handleManagementFeeCollected
+      file: ./src/token-assets/fund/fund.ts
+  - kind: ethereum
+    name: FundFactory
+    network: settlemint
+    source:
+      abi: FundFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - FundCreated
+      abis:
+        - name: FundFactory
+          file: ../contracts/artifacts/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json
+      eventHandlers:
+        - event: FundCreated(indexed address,indexed address,string,string,uint8,uint24)
+          handler: handleFundCreated
+      file: ./src/token-assets/fund-factory/fund-factory.ts

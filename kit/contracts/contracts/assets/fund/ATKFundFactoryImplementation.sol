@@ -74,6 +74,8 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
             revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
         }
 
+        emit FundCreated(_msgSender(), deployedFundAddress, name_, symbol_, decimals_, managementFeeBps_);
+
         return deployedFundAddress;
     }
 

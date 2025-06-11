@@ -210,6 +210,7 @@ abstract contract AbstractSMARTTest is Test {
         IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).FORCED_TRANSFER_ROLE(), tokenIssuer_);
         IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).RECOVERY_ROLE(), tokenIssuer_);
         IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).PAUSER_ROLE(), tokenIssuer_);
+        IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).CAP_MANAGEMENT_ROLE(), tokenIssuer_);
         IAccessControl(accessManager).grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, tokenIssuer_);
         vm.stopPrank();
     }

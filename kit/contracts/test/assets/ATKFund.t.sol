@@ -98,6 +98,9 @@ contract ATKFundTest is AbstractATKAssetTest {
         _grantAllRoles(result.accessManager(), owner, owner);
 
         vm.prank(owner);
+        result.unpause();
+
+        vm.prank(owner);
         result.mint(owner, INITIAL_SUPPLY);
 
         return result;

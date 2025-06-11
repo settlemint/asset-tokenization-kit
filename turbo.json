@@ -1,12 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalPassThroughEnv": [
+    "THE_GRAPH_PORT_LOCAL_DEPLOY",
+    "THE_GRAPH_PORT_LOCAL_QUERY"
+  ],
   "tasks": {
     "ci": {
       "dependsOn": ["compile", "codegen", "lint", "test", "typecheck", "build"]
     },
     "ci:gha": {
-      "dependsOn": ["publish", "ci"]
+      "dependsOn": ["publish", "ci", "test:integration"]
     },
     "//#version": {
       "cache": false,
@@ -53,6 +57,7 @@
     "artifacts": {},
     "typecheck": {
       "dependsOn": ["dependencies", "codegen", "subgraph#build"]
-    }
+    },
+    "test:integration": {}
   }
 }
