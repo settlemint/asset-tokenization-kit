@@ -18,7 +18,7 @@ name: CodeQL (Reusable)
 # ```yaml
 # jobs:
 #   codeql:
-#     uses: settlemint/starterkit-asset-tokenization/.github/workflows/reusable-codeql.yml@main
+#     uses: settlemint/asset-tokenization-kit/.github/workflows/reusable-codeql.yml@main
 #     with:
 #       language: 'javascript-typescript'
 # ```

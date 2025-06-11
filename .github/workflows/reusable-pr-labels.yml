@@ -16,7 +16,7 @@ name: PR Labels (Reusable)
 # ```yaml
 # jobs:
 #   label-pr:
-#     uses: settlemint/starterkit-asset-tokenization/.github/workflows/reusable-pr-labels.yml@main
+#     uses: settlemint/asset-tokenization-kit/.github/workflows/reusable-pr-labels.yml@main
 #     with:
 #       runs-on: 'ubuntu-latest'  # optional, defaults to 'ubuntu-latest'
 # ```
