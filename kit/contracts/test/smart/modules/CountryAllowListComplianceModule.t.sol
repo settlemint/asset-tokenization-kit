@@ -71,9 +71,7 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
 
     function test_CountryAllowList_RevertWhen_Integration_TokenTransferToNotAllowed() public {
         vm.startPrank(tokenIssuer);
-        uint16[] memory allowed = new uint16[](1);
-        allowed[0] = TestConstants.COUNTRY_CODE_BE; // tokenIssuer is from Belgium, needed for minting
-        smartToken.addComplianceModule(address(module), abi.encode(allowed));
+        smartToken.addComplianceModule(address(module), abi.encode(new uint16[](0)));
         vm.stopPrank();
 
         // mint is not working because tokenIssuer country is not in the allowlist

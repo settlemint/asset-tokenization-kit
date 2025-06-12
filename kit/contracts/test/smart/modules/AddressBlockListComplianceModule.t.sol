@@ -87,7 +87,7 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
     }
 
     function test_AddressBlockList_FailWhen_SetGlobalBlockedAddressesFromNonAdmin() public {
-        vm.prank(user1);
+        vm.startPrank(user1);
         address[] memory addressesToBlock = new address[](1);
         addressesToBlock[0] = user1;
         vm.expectRevert(
@@ -96,5 +96,6 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
             )
         );
         module.setGlobalBlockedAddresses(addressesToBlock, true);
+        vm.stopPrank();
     }
 }
