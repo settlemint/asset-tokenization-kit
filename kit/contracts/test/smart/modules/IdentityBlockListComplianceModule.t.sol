@@ -20,11 +20,11 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
         claimUtils.issueAllClaims(user2);
     }
 
-    function test_InitialState() public {
+    function test_IdentityBlockList_InitialState() public {
         assertEq(module.name(), "Identity BlockList Compliance Module");
     }
 
-    function test_SetGlobalBlockedIdentities() public {
+    function test_IdentityBlockList_SetGlobalBlockedIdentities() public {
         address[] memory identitiesToBlock = new address[](2);
         identitiesToBlock[0] = address(identity1);
         identitiesToBlock[1] = address(identity2);
@@ -40,7 +40,7 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
         assertFalse(module.isGloballyBlocked(address(identity2)));
     }
 
-    function testFail_SetGlobalBlockedIdentities_NotAdmin() public {
+    function test_IdentityBlockList_FailWhen_SetGlobalBlockedIdentitiesFromNonAdmin() public {
         vm.prank(user1);
         address[] memory identitiesToBlock = new address[](1);
         identitiesToBlock[0] = address(identity1);
@@ -52,15 +52,15 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
         module.setGlobalBlockedIdentities(identitiesToBlock, true);
     }
 
-    function test_CanTransfer_NoIdentity() public {
+    function test_IdentityBlockList_CanTransfer_NoIdentity() public {
         module.canTransfer(address(smartToken), user1, user3, 100, abi.encode(new address[](0)));
     }
 
-    function test_CanTransfer_NotBlocked() public {
+    function test_IdentityBlockList_CanTransfer_NotBlocked() public {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
     }
 
-    function testRevert_CanTransfer_GloballyBlocked() public {
+    function test_IdentityBlockList_RevertWhen_TransferToGloballyBlockedIdentity() public {
         address[] memory identitiesToBlock = new address[](1);
         identitiesToBlock[0] = address(identity1);
         module.setGlobalBlockedIdentities(identitiesToBlock, true);
@@ -73,7 +73,7 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
     }
 
-    function testRevert_CanTransfer_TokenBlocked() public {
+    function test_IdentityBlockList_RevertWhen_TransferToTokenBlockedIdentity() public {
         address[] memory additionalBlocked = new address[](1);
         additionalBlocked[0] = address(identity2);
         bytes memory params = abi.encode(additionalBlocked);
@@ -86,7 +86,7 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
 
-    function test_Integration_TokenTransfer_GloballyBlocked() public {
+    function test_IdentityBlockList_Integration_TokenTransfer_GloballyBlocked() public {
         // Add the module to the token's compliance settings
         vm.startPrank(tokenIssuer);
         smartToken.addComplianceModule(address(module), abi.encode(new address[](0)));
@@ -111,7 +111,7 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
         smartToken.transfer(user1, 100);
     }
 
-    function test_Integration_TokenTransfer_TokenBlocked() public {
+    function test_IdentityBlockList_Integration_TokenTransfer_TokenBlocked() public {
         // Add the module to the token's compliance settings with token-specific blocked identities
         address[] memory additionalBlocked = new address[](1);
         additionalBlocked[0] = address(identity2);

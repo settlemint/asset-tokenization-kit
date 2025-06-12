@@ -15,11 +15,11 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
         module.grantRole(module.GLOBAL_LIST_MANAGER_ROLE(), address(this));
     }
 
-    function test_InitialState() public {
+    function test_AddressBlockList_InitialState() public {
         assertEq(module.name(), "Address BlockList Compliance Module");
     }
 
-    function test_SetGlobalBlockedAddresses() public {
+    function test_AddressBlockList_SetGlobalBlockedAddresses() public {
         address[] memory addressesToBlock = new address[](2);
         addressesToBlock[0] = user1;
         addressesToBlock[1] = user2;
@@ -35,7 +35,7 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
         assertFalse(module.isGloballyBlocked(user2));
     }
 
-    function testRevert_CanTransfer_GloballyBlocked() public {
+    function test_AddressBlockList_RevertWhen_TransferToGloballyBlocked() public {
         address[] memory addressesToBlock = new address[](1);
         addressesToBlock[0] = user1;
         module.setGlobalBlockedAddresses(addressesToBlock, true);
@@ -48,7 +48,7 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
     }
 
-    function testRevert_CanTransfer_TokenBlocked() public {
+    function test_AddressBlockList_RevertWhen_TransferToTokenBlocked() public {
         address[] memory additionalBlocked = new address[](1);
         additionalBlocked[0] = user2;
         bytes memory params = abi.encode(additionalBlocked);
@@ -61,11 +61,11 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
 
-    function test_CanTransfer_NotBlocked() public {
+    function test_AddressBlockList_CanTransfer_NotBlocked() public {
         module.canTransfer(address(smartToken), tokenIssuer, user3, 100, abi.encode(new address[](0)));
     }
 
-    function test_Integration_TokenTransfer_GloballyBlocked() public {
+    function test_AddressBlockList_Integration_TokenTransfer_GloballyBlocked() public {
         vm.startPrank(tokenIssuer);
         smartToken.addComplianceModule(address(module), abi.encode(new address[](0)));
         vm.stopPrank();
@@ -86,7 +86,7 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
         smartToken.transfer(user1, 100);
     }
 
-    function testFail_SetGlobalBlockedAddresses_NotAdmin() public {
+    function test_AddressBlockList_FailWhen_SetGlobalBlockedAddressesFromNonAdmin() public {
         vm.prank(user1);
         address[] memory addressesToBlock = new address[](1);
         addressesToBlock[0] = user1;

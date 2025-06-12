@@ -20,11 +20,11 @@ contract IdentityAllowListComplianceModuleTest is ComplianceModuleTest {
         claimUtils.issueAllClaims(user2);
     }
 
-    function test_InitialState() public {
+    function test_IdentityAllowList_InitialState() public {
         assertEq(module.name(), "Identity AllowList Compliance Module");
     }
 
-    function test_SetGlobalAllowedIdentities() public {
+    function test_IdentityAllowList_SetGlobalAllowedIdentities() public {
         address[] memory identitiesToAllow = new address[](2);
         identitiesToAllow[0] = address(identity1);
         identitiesToAllow[1] = address(identity2);
@@ -40,7 +40,7 @@ contract IdentityAllowListComplianceModuleTest is ComplianceModuleTest {
         assertFalse(module.isGloballyAllowed(address(identity2)));
     }
 
-    function testRevert_CanTransfer_NotOnAllowList() public {
+    function test_IdentityAllowList_RevertWhen_TransferToNotAllowedIdentity() public {
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity not in allowlist"
@@ -49,7 +49,7 @@ contract IdentityAllowListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
     }
 
-    function test_CanTransfer_GloballyAllowed() public {
+    function test_IdentityAllowList_CanTransfer_GloballyAllowed() public {
         address[] memory identitiesToAllow = new address[](1);
         identitiesToAllow[0] = address(identity1);
         module.setGlobalAllowedIdentities(identitiesToAllow, true);
@@ -57,7 +57,7 @@ contract IdentityAllowListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
     }
 
-    function test_CanTransfer_TokenAllowed() public {
+    function test_IdentityAllowList_CanTransfer_TokenAllowed() public {
         address[] memory additionalAllowed = new address[](1);
         additionalAllowed[0] = address(identity1);
         bytes memory params = abi.encode(additionalAllowed);
@@ -65,7 +65,7 @@ contract IdentityAllowListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
     }
 
-    function testRevert_Integration_TokenTransfer_NotAllowed() public {
+    function test_IdentityAllowList_RevertWhen_Integration_TokenTransferToNotAllowed() public {
         // Add the module to the token's compliance settings
         vm.startPrank(tokenIssuer);
         smartToken.addComplianceModule(address(module), abi.encode(new address[](0)));
@@ -87,7 +87,7 @@ contract IdentityAllowListComplianceModuleTest is ComplianceModuleTest {
         smartToken.transfer(user1, 100);
     }
 
-    function testFail_SetGlobalAllowedIdentities_NotAdmin() public {
+    function test_IdentityAllowList_FailWhen_SetGlobalAllowedIdentitiesFromNonAdmin() public {
         vm.prank(user1);
         address[] memory identitiesToAllow = new address[](1);
         identitiesToAllow[0] = address(identity1);

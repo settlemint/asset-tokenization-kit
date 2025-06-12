@@ -20,11 +20,11 @@ contract CountryBlockListComplianceModuleTest is ComplianceModuleTest {
         claimUtils.issueAllClaims(user2);
     }
 
-    function test_InitialState() public {
+    function test_CountryBlockList_InitialState() public {
         assertEq(module.name(), "Country BlockList Compliance Module");
     }
 
-    function test_SetGlobalBlockedCountries() public {
+    function test_CountryBlockList_SetGlobalBlockedCountries() public {
         uint16[] memory countriesToBlock = new uint16[](2);
         countriesToBlock[0] = TestConstants.COUNTRY_CODE_US;
         countriesToBlock[1] = TestConstants.COUNTRY_CODE_JP;
@@ -40,7 +40,7 @@ contract CountryBlockListComplianceModuleTest is ComplianceModuleTest {
         assertFalse(module.isGloballyBlocked(TestConstants.COUNTRY_CODE_JP));
     }
 
-    function testFail_SetGlobalBlockedCountries_NotAdmin() public {
+    function test_CountryBlockList_FailWhen_SetGlobalBlockedCountriesFromNonAdmin() public {
         vm.prank(user1);
         uint16[] memory countriesToBlock = new uint16[](1);
         countriesToBlock[0] = TestConstants.COUNTRY_CODE_US;
@@ -52,15 +52,15 @@ contract CountryBlockListComplianceModuleTest is ComplianceModuleTest {
         module.setGlobalBlockedCountries(countriesToBlock, true);
     }
 
-    function test_CanTransfer_NoIdentity() public {
+    function test_CountryBlockList_CanTransfer_NoIdentity() public {
         module.canTransfer(address(smartToken), user1, user3, 100, abi.encode(new uint16[](0)));
     }
 
-    function test_CanTransfer_NotBlocked() public {
+    function test_CountryBlockList_CanTransfer_NotBlocked() public {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new uint16[](0)));
     }
 
-    function testRevert_CanTransfer_GloballyBlocked() public {
+    function test_CountryBlockList_RevertWhen_TransferToGloballyBlockedCountry() public {
         uint16[] memory countriesToBlock = new uint16[](1);
         countriesToBlock[0] = TestConstants.COUNTRY_CODE_US; // user1 is from US
         module.setGlobalBlockedCountries(countriesToBlock, true);
@@ -73,7 +73,7 @@ contract CountryBlockListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new uint16[](0)));
     }
 
-    function testRevert_CanTransfer_TokenBlocked() public {
+    function test_CountryBlockList_RevertWhen_TransferToTokenBlockedCountry() public {
         uint16[] memory additionalBlocked = new uint16[](1);
         additionalBlocked[0] = TestConstants.COUNTRY_CODE_BE; // user2 is from Belgium
         bytes memory params = abi.encode(additionalBlocked);
@@ -86,7 +86,7 @@ contract CountryBlockListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
 
-    function test_Integration_TokenTransfer_GloballyBlocked() public {
+    function test_CountryBlockList_Integration_TokenTransfer_GloballyBlocked() public {
         vm.startPrank(tokenIssuer);
         smartToken.addComplianceModule(address(module), abi.encode(new uint16[](0)));
         vm.stopPrank();

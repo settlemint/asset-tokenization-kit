@@ -20,11 +20,11 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
         claimUtils.issueAllClaims(user2);
     }
 
-    function test_InitialState() public {
+    function test_CountryAllowList_InitialState() public {
         assertEq(module.name(), "Country AllowList Compliance Module");
     }
 
-    function test_SetGlobalAllowedCountries() public {
+    function test_CountryAllowList_SetGlobalAllowedCountries() public {
         uint16[] memory countriesToAllow = new uint16[](2);
         countriesToAllow[0] = TestConstants.COUNTRY_CODE_US;
         countriesToAllow[1] = TestConstants.COUNTRY_CODE_JP;
@@ -40,12 +40,12 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
         assertFalse(module.isGloballyAllowed(TestConstants.COUNTRY_CODE_JP));
     }
 
-    function test_CanTransfer_NoIdentity() public {
+    function test_CountryAllowList_CanTransfer_NoIdentity() public {
         // A transfer to an address with no identity should be allowed by this module.
         module.canTransfer(address(smartToken), user1, user3, 100, abi.encode(new uint16[](0)));
     }
 
-    function testRevert_CanTransfer_NotAllowed() public {
+    function test_CountryAllowList_RevertWhen_TransferToNotAllowedCountry() public {
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver country not in allowlist"
@@ -54,7 +54,7 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new uint16[](0)));
     }
 
-    function test_CanTransfer_GloballyAllowed() public {
+    function test_CountryAllowList_CanTransfer_GloballyAllowed() public {
         uint16[] memory countriesToAllow = new uint16[](1);
         countriesToAllow[0] = TestConstants.COUNTRY_CODE_US; // user1 is from US
         module.setGlobalAllowedCountries(countriesToAllow, true);
@@ -62,16 +62,18 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new uint16[](0)));
     }
 
-    function test_CanTransfer_TokenAllowed() public {
+    function test_CountryAllowList_CanTransfer_TokenAllowed() public view {
         uint16[] memory additionalAllowed = new uint16[](1);
-        additionalAllowed[0] = TestConstants.COUNTRY_CODE_BE; // user2 is from Belgium
+        additionalAllowed[0] = TestConstants.COUNTRY_CODE_JP; // user2 is from Japan
         bytes memory params = abi.encode(additionalAllowed);
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
 
-    function testRevert_Integration_TokenTransfer_NotAllowed() public {
+    function test_CountryAllowList_RevertWhen_Integration_TokenTransferToNotAllowed() public {
         vm.startPrank(tokenIssuer);
-        smartToken.addComplianceModule(address(module), abi.encode(new uint16[](0)));
+        uint16[] memory allowed = new uint16[](1);
+        allowed[0] = TestConstants.COUNTRY_CODE_BE; // tokenIssuer is from Belgium, needed for minting
+        smartToken.addComplianceModule(address(module), abi.encode(allowed));
         vm.stopPrank();
 
         // mint is not working because tokenIssuer country is not in the allowlist
@@ -88,7 +90,7 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
         smartToken.transfer(user2, 100); // user2 is from Belgium, which is not in the allowlist
     }
 
-    function testFail_SetGlobalAllowedCountries_NotAdmin() public {
+    function test_CountryAllowList_FailWhen_SetGlobalAllowedCountriesFromNonAdmin() public {
         vm.prank(user1);
         uint16[] memory countriesToAllow = new uint16[](1);
         countriesToAllow[0] = TestConstants.COUNTRY_CODE_US;
