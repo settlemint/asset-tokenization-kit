@@ -2,9 +2,8 @@
 
 import { useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
+import type { UserRole } from "@/lib/utils/zod/validators/user-roles";
 import { useEffect, type PropsWithChildren } from "react";
-
-type UserRole = "admin" | "issuer" | "user";
 
 interface RoleGuardProps extends PropsWithChildren {
   /**

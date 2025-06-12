@@ -25,7 +25,7 @@ export const equityClasses = ["A", "B", "C"] as const;
 /**
  * Creates a Zod schema that validates equity share classes.
  *
- * @returns A branded Zod enum schema for equity class validation
+ * @returns A Zod enum schema for equity class validation
  *
  * @example
  * ```typescript
@@ -42,14 +42,11 @@ export const equityClasses = ["A", "B", "C"] as const;
  * ```
  */
 export const equityClass = () =>
-  z
-    .enum(equityClasses)
-    .describe("Class of equity shares")
-    .brand<"EquityClass">();
+  z.enum(equityClasses).describe("Class of equity shares");
 
 /**
  * Type representing a validated equity share class.
- * Branded for additional type safety.
+ * Ensures type safety.
  */
 export type EquityClass = z.infer<ReturnType<typeof equityClass>>;
 

@@ -33,7 +33,7 @@ export const roleNames = [
 /**
  * Creates a Zod schema that validates system roles.
  *
- * @returns A branded Zod enum schema for role validation
+ * @returns A Zod enum schema for role validation
  *
  * @example
  * ```typescript
@@ -49,8 +49,7 @@ export const roleNames = [
  * schema.parse("superuser"); // Throws ZodError
  * ```
  */
-export const roles = () =>
-  z.enum(roleNames).describe("System role").brand<"Role">();
+export const roles = () => z.enum(roleNames).describe("System role");
 
 /**
  * Creates a Zod schema for validating role mappings.
@@ -80,7 +79,7 @@ export const roleMap = () =>
 
 /**
  * Type representing a validated system role.
- * Branded for additional type safety.
+ * Ensures type safety.
  */
 export type Role = z.infer<ReturnType<typeof roles>>;
 

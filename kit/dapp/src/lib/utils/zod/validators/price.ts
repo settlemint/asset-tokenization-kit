@@ -24,7 +24,7 @@ import { z } from "zod";
  * - Forex markets (4-5 pips)
  * - Most cryptocurrency exchanges
  *
- * @returns A branded Zod schema for price validation
+ * @returns A Zod schema for price validation
  *
  * @example
  * ```typescript
@@ -54,12 +54,11 @@ export const price = () =>
       const decimalPlaces = (value.toString().split(".")[1] || "").length;
       return decimalPlaces <= 4;
     }, "Price cannot have more than 4 decimal places")
-    .describe("Asset price")
-    .brand<"Price">();
+    .describe("Asset price");
 
 /**
  * Type representing a validated price value.
- * Branded for additional type safety in financial calculations.
+ * Ensures type safety in financial calculations.
  */
 export type Price = z.infer<ReturnType<typeof price>>;
 

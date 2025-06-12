@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   type AssetType,
   type AssetTypeArray,
+  type AssetTypeSet,
   AssetTypeEnum,
   assetType,
   assetTypeArray,
@@ -10,12 +11,6 @@ import {
   assetTypeSet,
   assetTypeWithDefault,
   assetTypes,
-  getAssetType,
-  getAssetTypeArray,
-  getAssetTypeSet,
-  isAssetType,
-  isAssetTypeArray,
-  isAssetTypeSet,
 } from "./asset-types";
 
 describe("assetType", () => {
@@ -23,9 +18,7 @@ describe("assetType", () => {
 
   describe("valid asset types", () => {
     it.each([...assetTypes])("should accept '%s'", (type) => {
-      expect(validator.parse(type)).toBe(getAssetType(type));
-      expect(isAssetType(type)).toBe(true);
-      expect(getAssetType(type)).toBe(getAssetType(type));
+      expect(validator.parse(type)).toBe(type);
     });
   });
 
@@ -34,14 +27,6 @@ describe("assetType", () => {
       expect(() => validator.parse("invalid")).toThrow();
       expect(() => validator.parse("stock")).toThrow();
       expect(() => validator.parse("")).toThrow();
-
-      expect(isAssetType("invalid")).toBe(false);
-      expect(isAssetType("stock")).toBe(false);
-      expect(isAssetType("")).toBe(false);
-
-      expect(() => getAssetType("invalid")).toThrow();
-      expect(() => getAssetType("stock")).toThrow();
-      expect(() => getAssetType("")).toThrow();
     });
 
     it("should reject non-string types", () => {
@@ -49,36 +34,12 @@ describe("assetType", () => {
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
-
-      expect(isAssetType(123)).toBe(false);
-      expect(isAssetType(null)).toBe(false);
-      expect(isAssetType(undefined)).toBe(false);
-      expect(isAssetType({})).toBe(false);
-
-      expect(() => getAssetType(123)).toThrow(
-        "Expected 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin' | 'deposit', received number"
-      );
-      expect(() => getAssetType(null)).toThrow(
-        "Expected 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin' | 'deposit', received null"
-      );
-      expect(() => getAssetType(undefined)).toThrow("Required");
-      expect(() => getAssetType({})).toThrow(
-        "Expected 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin' | 'deposit', received object"
-      );
     });
 
     it("should be case-sensitive", () => {
       expect(() => validator.parse("Bond")).toThrow();
       expect(() => validator.parse("EQUITY")).toThrow();
       expect(() => validator.parse("StableCoin")).toThrow();
-
-      expect(isAssetType("Bond")).toBe(false);
-      expect(isAssetType("EQUITY")).toBe(false);
-      expect(isAssetType("StableCoin")).toBe(false);
-
-      expect(() => getAssetType("Bond")).toThrow();
-      expect(() => getAssetType("EQUITY")).toThrow();
-      expect(() => getAssetType("StableCoin")).toThrow();
     });
   });
 });
@@ -103,64 +64,35 @@ describe("assetTypeArray", () => {
   const validator = assetTypeArray();
 
   it("should accept valid arrays", () => {
-    const single = ["bond"];
-    const multiple = ["bond", "equity", "fund"];
+    const single: AssetType[] = ["bond"];
+    const multiple: AssetType[] = ["bond", "equity", "fund"];
     const all = [...assetTypes];
 
-    expect(validator.parse(single)).toEqual(getAssetTypeArray(single));
-    expect(validator.parse(multiple)).toEqual(getAssetTypeArray(multiple));
-    expect(validator.parse(all)).toEqual(getAssetTypeArray(all));
-
-    expect(isAssetTypeArray(single)).toBe(true);
-    expect(isAssetTypeArray(multiple)).toBe(true);
-    expect(isAssetTypeArray(all)).toBe(true);
-
-    expect(getAssetTypeArray(single)).toEqual(getAssetTypeArray(single));
-    expect(getAssetTypeArray(multiple)).toEqual(getAssetTypeArray(multiple));
-    expect(getAssetTypeArray(all)).toEqual(getAssetTypeArray(all));
+    expect(validator.parse(single)).toEqual(single);
+    expect(validator.parse(multiple)).toEqual(multiple);
+    expect(validator.parse(all)).toEqual(all);
   });
 
   it("should allow duplicates", () => {
-    const duplicates = ["bond", "bond"];
-    expect(validator.parse(duplicates)).toEqual(getAssetTypeArray(duplicates));
-    expect(isAssetTypeArray(duplicates)).toBe(true);
-    expect(getAssetTypeArray(duplicates)).toEqual(
-      getAssetTypeArray(duplicates)
-    );
+    const duplicates: AssetType[] = ["bond", "bond"];
+    expect(validator.parse(duplicates)).toEqual(duplicates);
   });
 
   it("should reject empty arrays", () => {
     expect(() => validator.parse([])).toThrow(
       "At least one asset type must be selected"
     );
-    expect(isAssetTypeArray([])).toBe(false);
-    expect(() => getAssetTypeArray([])).toThrow(
-      "At least one asset type must be selected"
-    );
   });
 
   it("should reject invalid asset types in array", () => {
     expect(() => validator.parse(["bond", "invalid"])).toThrow();
-    expect(isAssetTypeArray(["bond", "invalid"])).toBe(false);
-    expect(() => getAssetTypeArray(["bond", "invalid"])).toThrow();
   });
 
   it("should reject non-array types", () => {
-    expect(isAssetTypeArray("bond")).toBe(false);
-    expect(isAssetTypeArray(123)).toBe(false);
-    expect(isAssetTypeArray(null)).toBe(false);
-    expect(isAssetTypeArray(undefined)).toBe(false);
-
-    expect(() => getAssetTypeArray("bond")).toThrow(
-      "Expected array, received string"
-    );
-    expect(() => getAssetTypeArray(123)).toThrow(
-      "Expected array, received number"
-    );
-    expect(() => getAssetTypeArray(null)).toThrow(
-      "Expected array, received null"
-    );
-    expect(() => getAssetTypeArray(undefined)).toThrow("Required");
+    expect(() => validator.parse("bond")).toThrow();
+    expect(() => validator.parse(123)).toThrow();
+    expect(() => validator.parse(null)).toThrow();
+    expect(() => validator.parse(undefined)).toThrow();
   });
 });
 
@@ -174,20 +106,12 @@ describe("assetTypeSet", () => {
     expect(result.size).toBe(2);
     expect(result.has("bond" as AssetType)).toBe(true);
     expect(result.has("equity" as AssetType)).toBe(true);
-
-    expect(isAssetTypeSet(testSet)).toBe(true);
-    const getResult = getAssetTypeSet(testSet);
-    expect(getResult).toBeInstanceOf(Set);
-    expect(getResult.size).toBe(2);
   });
 
   it("should deduplicate values", () => {
     const testSet = new Set(["bond", "bond", "equity"]);
     const result = validator.parse(testSet);
     expect(result.size).toBe(2);
-
-    expect(isAssetTypeSet(testSet)).toBe(true);
-    expect(getAssetTypeSet(testSet).size).toBe(2);
   });
 
   it("should reject empty sets", () => {
@@ -195,33 +119,18 @@ describe("assetTypeSet", () => {
     expect(() => validator.parse(emptySet)).toThrow(
       "At least one asset type must be selected"
     );
-    expect(isAssetTypeSet(emptySet)).toBe(false);
-    expect(() => getAssetTypeSet(emptySet)).toThrow(
-      "At least one asset type must be selected"
-    );
   });
 
   it("should reject sets with invalid values", () => {
     const invalidSet = new Set(["bond", "invalid"]);
     expect(() => validator.parse(invalidSet)).toThrow();
-    expect(isAssetTypeSet(invalidSet)).toBe(false);
-    expect(() => getAssetTypeSet(invalidSet)).toThrow();
   });
 
   it("should reject non-set types", () => {
-    expect(isAssetTypeSet(["bond"])).toBe(false);
-    expect(isAssetTypeSet("bond")).toBe(false);
-    expect(isAssetTypeSet(123)).toBe(false);
-    expect(isAssetTypeSet(null)).toBe(false);
-
-    expect(() => getAssetTypeSet(["bond"])).toThrow(
-      "Expected set, received array"
-    );
-    expect(() => getAssetTypeSet("bond")).toThrow(
-      "Expected set, received string"
-    );
-    expect(() => getAssetTypeSet(123)).toThrow("Expected set, received number");
-    expect(() => getAssetTypeSet(null)).toThrow("Expected set, received null");
+    expect(() => validator.parse(["bond"])).toThrow();
+    expect(() => validator.parse("bond")).toThrow();
+    expect(() => validator.parse(123)).toThrow();
+    expect(() => validator.parse(null)).toThrow();
   });
 });
 
@@ -283,80 +192,62 @@ describe("assetTypeRecord", () => {
   });
 });
 
-describe("helper functions", () => {
-  it("isAssetType should work as type guard", () => {
-    const value: unknown = "bond";
-    if (isAssetType(value)) {
-      // TypeScript should recognize value as AssetType here
-      const _typeCheck:
-        | "bond"
-        | "cryptocurrency"
-        | "equity"
-        | "fund"
-        | "stablecoin"
-        | "deposit" = value;
-    }
+describe("type checking", () => {
+  describe("assetType", () => {
+    it("should return proper type", () => {
+      const result = assetType().parse("bond");
+      // Test that the type is correctly inferred
+      const _typeCheck: AssetType = result;
+      expect(result).toBe("bond");
+    });
+
+    it("should handle safeParse", () => {
+      const result = assetType().safeParse("equity");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: AssetType = result.data;
+        expect(result.data).toBe("equity");
+      }
+    });
   });
 
-  it("getAssetType should return typed value", () => {
-    const result = getAssetType("equity");
-    // TypeScript should recognize result as AssetType
-    const _typeCheck:
-      | "bond"
-      | "cryptocurrency"
-      | "equity"
-      | "fund"
-      | "stablecoin"
-      | "deposit" = result;
-    expect(result).toBe(getAssetType("equity"));
+  describe("assetTypeArray", () => {
+    it("should return proper type", () => {
+      const result = assetTypeArray().parse(["bond", "equity"]);
+      // Test that the type is correctly inferred
+      const _typeCheck: AssetTypeArray = result;
+      expect(result).toEqual(["bond", "equity"]);
+    });
+
+    it("should handle safeParse", () => {
+      const result = assetTypeArray().safeParse(["fund", "deposit"]);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: AssetTypeArray = result.data;
+        expect(result.data).toEqual(["fund", "deposit"]);
+      }
+    });
   });
 
-  it("isAssetTypeArray should work as type guard", () => {
-    const value: unknown = ["bond", "equity"];
-    if (isAssetTypeArray(value)) {
-      // TypeScript should recognize value as AssetTypeArray here
-      const _typeCheck: (
-        | "bond"
-        | "cryptocurrency"
-        | "equity"
-        | "fund"
-        | "stablecoin"
-        | "deposit"
-      )[] = value;
-    }
-  });
+  describe("assetTypeSet", () => {
+    it("should return proper type", () => {
+      const result = assetTypeSet().parse(new Set(["bond", "equity"]));
+      // Test that the type is correctly inferred
+      const _typeCheck: AssetTypeSet = result;
+      expect(result.has("bond")).toBe(true);
+      expect(result.has("equity")).toBe(true);
+    });
 
-  it("getAssetTypeArray should return typed value", () => {
-    const result = getAssetTypeArray(["fund", "deposit"]);
-    // TypeScript should recognize result as AssetTypeArray
-    const _typeCheck: (
-      | "bond"
-      | "cryptocurrency"
-      | "equity"
-      | "fund"
-      | "stablecoin"
-      | "deposit"
-    )[] = result;
-    expect(result).toEqual(["fund", "deposit"] as AssetTypeArray);
-  });
-
-  it("isAssetTypeSet should work as type guard", () => {
-    const value: unknown = new Set(["bond", "equity"]);
-    if (isAssetTypeSet(value)) {
-      // TypeScript should recognize value as AssetTypeSet here
-      const _typeCheck: Set<
-        "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin" | "deposit"
-      > = value;
-    }
-  });
-
-  it("getAssetTypeSet should return typed value", () => {
-    const result = getAssetTypeSet(new Set(["stablecoin", "cryptocurrency"]));
-    // TypeScript should recognize result as AssetTypeSet
-    const _typeCheck: Set<
-      "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin" | "deposit"
-    > = result;
-    expect(result.has("stablecoin" as AssetType)).toBe(true);
-    expect(result.has("cryptocurrency" as AssetType)).toBe(true);
+    it("should handle safeParse", () => {
+      const result = assetTypeSet().safeParse(
+        new Set(["stablecoin", "cryptocurrency"])
+      );
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: AssetTypeSet = result.data;
+        expect(result.data.has("stablecoin")).toBe(true);
+        expect(result.data.has("cryptocurrency")).toBe(true);
+      }
+    });
   });
 });

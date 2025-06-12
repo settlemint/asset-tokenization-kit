@@ -1,4 +1,4 @@
-import { br } from "../../routes/procedures/base.router";
+import { br } from "../../procedures/base.router";
 
 /**
  * Authentication enforcement middleware.

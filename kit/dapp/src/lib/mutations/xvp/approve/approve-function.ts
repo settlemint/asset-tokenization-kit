@@ -14,7 +14,6 @@ import type { ApproveXvpInput } from "./approve-schema";
 const XvpApprove = {} as any;
 const XvpRevoke = {} as any;
 
-
 // const XvpApprove = portalGraphql(`
 //   mutation ApproveXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
 //     XvPSettlementApprove(
@@ -104,7 +103,8 @@ export const approveXvpFunction = async ({
     //   from: user.wallet,
     // });
     // NOTE: HARDCODED SO IT STILL COMPILES
-    const mockTxHash = "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01";
+    const mockTxHash =
+      "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01";
     const hashes = safeParse(t.Hashes(), [mockTxHash]);
     return await waitForIndexingTransactions(hashes);
   }
@@ -116,7 +116,8 @@ export const approveXvpFunction = async ({
   //   from: user.wallet,
   // });
   // NOTE: HARDCODED SO IT STILL COMPILES
-  const mockTxHash = "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01";
+  const mockTxHash =
+    "0x2345678901bcdef2345678901bcdef2345678901bcdef2345678901bcdef01";
   const hashes = safeParse(t.Hashes(), [mockTxHash]);
   return await waitForIndexingTransactions(hashes);
 };

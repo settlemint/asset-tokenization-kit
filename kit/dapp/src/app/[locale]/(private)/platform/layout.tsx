@@ -1,5 +1,6 @@
 import { RoleGuard } from "@/components/blocks/auth/role-guard";
 import NavInset from "@/components/layout/nav-inset";
+import { getUserRole } from "@/lib/utils/zod/validators/user-roles";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -27,7 +28,10 @@ export async function generateMetadata({
 export default function PlatformLayout({ children }: LayoutProps) {
   return (
     <>
-      <RoleGuard allowedRoles={["admin"]} redirectTo="/portfolio" />
+      <RoleGuard
+        allowedRoles={[getUserRole("admin")]}
+        redirectTo="/portfolio"
+      />
       <PlatformSidebar />
       <NavInset>{children}</NavInset>
     </>

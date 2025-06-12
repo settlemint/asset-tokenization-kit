@@ -55,8 +55,8 @@ export async function addContactFunction({
         id: crypto.randomUUID(),
         wallet: address,
         name: `${firstName} ${lastName}`,
-        user_id: user.id
-      }
+        user_id: user.id,
+      },
     };
 
     const contact = data?.insert_contact_one;

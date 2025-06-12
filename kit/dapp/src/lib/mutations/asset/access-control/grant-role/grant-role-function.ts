@@ -188,43 +188,43 @@ export const grantRoleFunction = withAccessControl(
 
       switch (assettype) {
         case "stablecoin": {
-            // const response = await portalClient.request(
-  //             StableCoinGrantRole,
-  //             params
-  //           );
+          // const response = await portalClient.request(
+          //             StableCoinGrantRole,
+          //             params
+          //           );
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinGrantRole?.transactionHash */,
           ]);
         }
         case "bond": {
-            // const response = await portalClient.request(BondGrantRole, params);
+          // const response = await portalClient.request(BondGrantRole, params);
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondGrantRole?.transactionHash */,
           ]);
         }
         case "cryptocurrency": {
-            // const response = await portalClient.request(
-  //             CryptoCurrencyGrantRole,
-  //             params
-  //           );
+          // const response = await portalClient.request(
+          //             CryptoCurrencyGrantRole,
+          //             params
+          //           );
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.CryptoCurrencyGrantRole?.transactionHash */,
           ]);
         }
         case "fund": {
-            // const response = await portalClient.request(FundGrantRole, params);
+          // const response = await portalClient.request(FundGrantRole, params);
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundGrantRole?.transactionHash */,
           ]);
         }
         case "equity": {
-            // const response = await portalClient.request(EquityGrantRole, params);
+          // const response = await portalClient.request(EquityGrantRole, params);
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityGrantRole?.transactionHash */,
           ]);
         }
         case "deposit": {
-            // const response = await portalClient.request(DepositGrantRole, params);
+          // const response = await portalClient.request(DepositGrantRole, params);
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositGrantRole?.transactionHash */,
           ]);

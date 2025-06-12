@@ -8,7 +8,6 @@ import type { CancelXvpInput } from "./cancel-schema";
 // Dummy types for commented GraphQL operations
 const CancelXvp = {} as any;
 
-
 // const CancelXvp = portalGraphql(`
 //   mutation CancelXvp($challengeResponse: String!, $verificationId: String, $address: String!, $from: String!) {
 //     XvPSettlementCancel(
@@ -43,8 +42,7 @@ export const cancelXvpFunction = async ({
   //   from: user.wallet,
   // });
   // NOTE: HARDCODED SO IT STILL COMPILES
-  const mockTxHash = "0x4567890123def4567890123def4567890123def4567890123def0123456789";
-  return waitForIndexingTransactions(
-    safeParse(t.Hashes(), [mockTxHash])
-  );
+  const mockTxHash =
+    "0x4567890123def4567890123def4567890123def4567890123def0123456789";
+  return waitForIndexingTransactions(safeParse(t.Hashes(), [mockTxHash]));
 };

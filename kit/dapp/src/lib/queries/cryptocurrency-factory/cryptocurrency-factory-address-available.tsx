@@ -31,11 +31,11 @@ export const isAddressAvailable = withTracing(
     "use cache";
     cacheTag("asset");
     try {
-            //       // const data = await theGraphClientKit.request(CryptocurrencyExists, {
+      //       // const data = await theGraphClientKit.request(CryptocurrencyExists, {
       //       //         token: address,
       //       //       });
-    // NOTE: HARDCODED SO IT STILL COMPILES
-    const data = { cryptoCurrency: null };
+      // NOTE: HARDCODED SO IT STILL COMPILES
+      const data = { cryptoCurrency: null };
 
       const cryptocurrencyExists = safeParse(CryptocurrencyExistsSchema, data);
 
