@@ -57,7 +57,7 @@
     "helm": "turbo run helm",
     "dev:up": "docker compose -p atk up -d",
     "postdev:up": "settlemint connect --instance local && settlemint hasura track -a",
-    "dev:reset": "(docker compose -p atk down || true) && (docker volume ls -q --filter name=^atk- | xargs -r docker volume rm || true)",
+    "dev:reset": "(docker compose -p atk down || true) && (docker volume ls -q --filter name=^atk | xargs -r docker volume rm || true)",
     "postdev:reset": "bun run dev:up",
     "artifacts": "turbo run artifacts",
     "extract-env": "bun run tools/extract-env.ts",
