@@ -12,6 +12,7 @@ type Account @entity(immutable: false) {
   identity: Identity
   country: Int
   balances: [TokenBalance!]! @derivedFrom(field: "account")
+  stats: AccountStats!
 }
 
 type Event @entity(immutable: true) {
@@ -187,7 +188,7 @@ type Token @entity(immutable: false) {
   bond: TokenBond
   fund: TokenFund
   # Stats
-  stats: TokenStats
+  stats: TokenStats!
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -203,6 +204,7 @@ type TokenBalance @entity(immutable: false) {
   frozenExact: BigInt!
   available: BigDecimal!
   availableExact: BigInt!
+  stats: TokenBalanceStats!
 }
 
 # ==================================================
@@ -278,7 +280,7 @@ type TokenFixedYieldSchedule @entity(immutable: false) {
   currentPeriod: TokenFixedYieldSchedulePeriod
   nextPeriod: TokenFixedYieldSchedulePeriod
   periods: [TokenFixedYieldSchedulePeriod!]! @derivedFrom(field: "schedule")
-  stats: TokenFixedYieldScheduleStats
+  stats: TokenFixedYieldScheduleStats!
 }
 
 type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
@@ -301,13 +303,22 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
 type SystemStats @entity(immutable: false) {
   id: Bytes!
   system: System!
-  totalValueInBaseCurrency: BigDecimal!
+  totalValueInBaseCurrency: BigDecimal! # Value of all tokens in the system in base FIAT currency
 }
 
 type AccountStats @entity(immutable: false) {
   id: Bytes!
   account: Account!
+
+  # Value of all tokens for the account in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
+
+  # Balance metrics
+  balancesCount: Int!
+
+  # Event metrics
+  eventsCount: Int!
+  mostRecentEventAt: BigInt!
 }
 
 # ==================================================
@@ -327,8 +338,15 @@ type TokenStats @entity(immutable: false) {
   id: Bytes!
   token: Token!
 
+  # Value metrics (in base FIAT currency)
+  valueInBaseCurrency: BigDecimal!
+  valueTotalSupplyInBaseCurrency: BigDecimal!
+
   # Balance metrics
   balancesCount: Int!
+
+  # Event metrics
+  eventsCount: Int!
 
   # Supply metrics
   mintCount: Int!
@@ -411,4 +429,15 @@ type TokenDistributionStats @entity(immutable: false) {
   balancesCountSegment5: Int!
   totalValueSegment5: BigDecimal!
   totalValueSegment5Exact: BigInt!
+}
+
+# ==================================================
+# TOKEN BALANCE STATISTICS
+# ==================================================
+
+type TokenBalanceStats @entity(immutable: false) {
+  id: Bytes!
+
+  # Value metrics (in base FIAT currency)
+  valueInBaseCurrency: BigDecimal!
 }
