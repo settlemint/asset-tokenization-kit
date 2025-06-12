@@ -33,6 +33,11 @@
       "matchPackageNames": ["/^@orpc//"]
     },
     {
+      "groupName": "Bun",
+      "groupSlug": "bun",
+      "matchPackageNames": ["/^bun/", "/^oven/bun/"]
+    },
+    {
       "groupName": "Tanstack",
       "groupSlug": "tanstack",
       "matchPackageNames": ["/^@tanstack//"]
