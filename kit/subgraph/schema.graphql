@@ -164,9 +164,7 @@ type TokenFactory @entity(immutable: false) {
 type Token @entity(immutable: false) {
   id: Bytes!
   createdAt: BigInt!
-  lastUpdatedAt: BigInt!
   createdBy: Account!
-  lastUpdatedBy: Account!
   account: Account!
   accessControl: AccessControl
   identity: Identity
