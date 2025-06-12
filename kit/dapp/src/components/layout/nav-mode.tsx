@@ -16,6 +16,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
@@ -37,6 +38,7 @@ export function NavMode() {
   const settingsGearRef = useRef<SettingsGearIconHandle>(null);
 
   const { data: session } = authClient.useSession();
+  const { state } = useSidebar();
   const userRole = session?.user?.role;
   const mode =
     pathname.includes("/assets") || pathname.includes("/actions")
@@ -44,6 +46,8 @@ export function NavMode() {
       : pathname.includes("/platform")
         ? "platform"
         : "portfolio";
+
+  const isCollapsed = state === "collapsed";
 
   function handleMouseEnter() {
     if (mode === "assets") {
@@ -72,7 +76,9 @@ export function NavMode() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="default"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${
+                isCollapsed ? "justify-center gap-0" : ""
+              }`}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
@@ -94,14 +100,18 @@ export function NavMode() {
                   className="size-6 p-1 bg-accent text-white cursor-pointer select-none rounded transition-colors duration-200 flex items-center justify-center"
                 />
               )}
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {mode === "assets" && t("assets")}
-                  {mode === "portfolio" && t("portfolio")}
-                  {mode === "platform" && t("platform")}
-                </span>
-              </div>
-              <ChevronsUpDownIcon className="ml-auto size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+              {!isCollapsed && (
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">
+                    {mode === "assets" && t("assets")}
+                    {mode === "portfolio" && t("portfolio")}
+                    {mode === "platform" && t("platform")}
+                  </span>
+                </div>
+              )}
+              {!isCollapsed && (
+                <ChevronsUpDownIcon className="ml-auto size-4 cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center" />
+              )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
