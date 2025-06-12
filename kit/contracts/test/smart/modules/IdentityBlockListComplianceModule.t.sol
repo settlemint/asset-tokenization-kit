@@ -20,7 +20,7 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
         claimUtils.issueAllClaims(user2);
     }
 
-    function test_IdentityBlockList_InitialState() public {
+    function test_IdentityBlockList_InitialState() public view {
         assertEq(module.name(), "Identity BlockList Compliance Module");
     }
 
@@ -41,7 +41,7 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
     }
 
     function test_IdentityBlockList_FailWhen_SetGlobalBlockedIdentitiesFromNonAdmin() public {
-        vm.prank(user1);
+        vm.startPrank(user1);
         address[] memory identitiesToBlock = new address[](1);
         identitiesToBlock[0] = address(identity1);
         vm.expectRevert(
@@ -50,13 +50,14 @@ contract IdentityBlockListComplianceModuleTest is ComplianceModuleTest {
             )
         );
         module.setGlobalBlockedIdentities(identitiesToBlock, true);
+        vm.stopPrank();
     }
 
-    function test_IdentityBlockList_CanTransfer_NoIdentity() public {
+    function test_IdentityBlockList_CanTransfer_NoIdentity() public view {
         module.canTransfer(address(smartToken), user1, user3, 100, abi.encode(new address[](0)));
     }
 
-    function test_IdentityBlockList_CanTransfer_NotBlocked() public {
+    function test_IdentityBlockList_CanTransfer_NotBlocked() public view {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
     }
 

@@ -20,7 +20,7 @@ contract IdentityAllowListComplianceModuleTest is ComplianceModuleTest {
         claimUtils.issueAllClaims(user2);
     }
 
-    function test_IdentityAllowList_InitialState() public {
+    function test_IdentityAllowList_InitialState() public view {
         assertEq(module.name(), "Identity AllowList Compliance Module");
     }
 
@@ -57,7 +57,7 @@ contract IdentityAllowListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new address[](0)));
     }
 
-    function test_IdentityAllowList_CanTransfer_TokenAllowed() public {
+    function test_IdentityAllowList_CanTransfer_TokenAllowed() public view {
         address[] memory additionalAllowed = new address[](1);
         additionalAllowed[0] = address(identity1);
         bytes memory params = abi.encode(additionalAllowed);
@@ -88,7 +88,7 @@ contract IdentityAllowListComplianceModuleTest is ComplianceModuleTest {
     }
 
     function test_IdentityAllowList_FailWhen_SetGlobalAllowedIdentitiesFromNonAdmin() public {
-        vm.prank(user1);
+        vm.startPrank(user1);
         address[] memory identitiesToAllow = new address[](1);
         identitiesToAllow[0] = address(identity1);
         vm.expectRevert(
@@ -97,5 +97,6 @@ contract IdentityAllowListComplianceModuleTest is ComplianceModuleTest {
             )
         );
         module.setGlobalAllowedIdentities(identitiesToAllow, true);
+        vm.stopPrank();
     }
 }

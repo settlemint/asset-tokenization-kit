@@ -15,7 +15,7 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
         module.grantRole(module.GLOBAL_LIST_MANAGER_ROLE(), address(this));
     }
 
-    function test_AddressBlockList_InitialState() public {
+    function test_AddressBlockList_InitialState() public view {
         assertEq(module.name(), "Address BlockList Compliance Module");
     }
 
@@ -61,7 +61,7 @@ contract AddressBlockListComplianceModuleTest is ComplianceModuleTest {
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
 
-    function test_AddressBlockList_CanTransfer_NotBlocked() public {
+    function test_AddressBlockList_CanTransfer_NotBlocked() public view {
         module.canTransfer(address(smartToken), tokenIssuer, user3, 100, abi.encode(new address[](0)));
     }
 

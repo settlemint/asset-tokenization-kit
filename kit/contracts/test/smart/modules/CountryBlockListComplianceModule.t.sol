@@ -20,7 +20,7 @@ contract CountryBlockListComplianceModuleTest is ComplianceModuleTest {
         claimUtils.issueAllClaims(user2);
     }
 
-    function test_CountryBlockList_InitialState() public {
+    function test_CountryBlockList_InitialState() public view {
         assertEq(module.name(), "Country BlockList Compliance Module");
     }
 
@@ -41,7 +41,7 @@ contract CountryBlockListComplianceModuleTest is ComplianceModuleTest {
     }
 
     function test_CountryBlockList_FailWhen_SetGlobalBlockedCountriesFromNonAdmin() public {
-        vm.prank(user1);
+        vm.startPrank(user1);
         uint16[] memory countriesToBlock = new uint16[](1);
         countriesToBlock[0] = TestConstants.COUNTRY_CODE_US;
         vm.expectRevert(
@@ -50,13 +50,14 @@ contract CountryBlockListComplianceModuleTest is ComplianceModuleTest {
             )
         );
         module.setGlobalBlockedCountries(countriesToBlock, true);
+        vm.stopPrank();
     }
 
-    function test_CountryBlockList_CanTransfer_NoIdentity() public {
+    function test_CountryBlockList_CanTransfer_NoIdentity() public view {
         module.canTransfer(address(smartToken), user1, user3, 100, abi.encode(new uint16[](0)));
     }
 
-    function test_CountryBlockList_CanTransfer_NotBlocked() public {
+    function test_CountryBlockList_CanTransfer_NotBlocked() public view {
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, abi.encode(new uint16[](0)));
     }
 

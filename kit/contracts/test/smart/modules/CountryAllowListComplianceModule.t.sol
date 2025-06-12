@@ -20,7 +20,7 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
         claimUtils.issueAllClaims(user2);
     }
 
-    function test_CountryAllowList_InitialState() public {
+    function test_CountryAllowList_InitialState() public view {
         assertEq(module.name(), "Country AllowList Compliance Module");
     }
 
@@ -40,7 +40,7 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
         assertFalse(module.isGloballyAllowed(TestConstants.COUNTRY_CODE_JP));
     }
 
-    function test_CountryAllowList_CanTransfer_NoIdentity() public {
+    function test_CountryAllowList_CanTransfer_NoIdentity() public view {
         // A transfer to an address with no identity should be allowed by this module.
         module.canTransfer(address(smartToken), user1, user3, 100, abi.encode(new uint16[](0)));
     }
@@ -64,7 +64,7 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
 
     function test_CountryAllowList_CanTransfer_TokenAllowed() public view {
         uint16[] memory additionalAllowed = new uint16[](1);
-        additionalAllowed[0] = TestConstants.COUNTRY_CODE_JP; // user2 is from Japan
+        additionalAllowed[0] = TestConstants.COUNTRY_CODE_BE; // user2 is from Belgium
         bytes memory params = abi.encode(additionalAllowed);
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
@@ -73,8 +73,6 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
         vm.startPrank(tokenIssuer);
         smartToken.addComplianceModule(address(module), abi.encode(new uint16[](0)));
         vm.stopPrank();
-
-        // mint is not working because tokenIssuer country is not in the allowlist
 
         vm.prank(tokenIssuer);
         smartToken.mint(tokenIssuer, 1000);
@@ -89,7 +87,7 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
     }
 
     function test_CountryAllowList_FailWhen_SetGlobalAllowedCountriesFromNonAdmin() public {
-        vm.prank(user1);
+        vm.startPrank(user1);
         uint16[] memory countriesToAllow = new uint16[](1);
         countriesToAllow[0] = TestConstants.COUNTRY_CODE_US;
         vm.expectRevert(
@@ -98,5 +96,6 @@ contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
             )
         );
         module.setGlobalAllowedCountries(countriesToAllow, true);
+        vm.stopPrank();
     }
 }
