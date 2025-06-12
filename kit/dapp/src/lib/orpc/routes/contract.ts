@@ -1,5 +1,5 @@
-import { planetContract } from "./planet/planet.contract";
 import { systemContract } from "./system/system.contract";
+import { transactionContract } from "./transaction/transaction.contract";
 
 /**
  * Main ORPC contract definition.
@@ -20,19 +20,6 @@ import { systemContract } from "./system/system.contract";
  */
 export const contract = {
   /**
-   * Planet-related API contract.
-   *
-   * Contains type definitions for all planet-specific procedures including
-   * input/output schemas, error types, and procedure metadata. This contract
-   * ensures that client calls to planet procedures are type-safe and that
-   * the server implementation matches the expected interface.
-   *
-   * @see {@link ./planet/planet.contract} - Planet contract implementation
-   * @see {@link ./planet/planet.router} - Corresponding router implementation
-   */
-  planet: planetContract,
-
-  /**
    * System-related API contract.
    *
    * Contains type definitions for SMART system management procedures.
@@ -44,4 +31,14 @@ export const contract = {
    * @see {@link ./system/system.router} - Corresponding router implementation
    */
   system: systemContract,
+
+  /**
+   * Transaction-related API contract.
+   *
+   * Contains type definitions for transaction-related procedures.
+   *
+   * @see {@link ./transaction/transaction.contract} - Transaction contract implementation
+   * @see {@link ./transaction/transaction.router} - Corresponding router implementation
+   */
+  transaction: transactionContract,
 };

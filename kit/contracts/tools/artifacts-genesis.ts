@@ -10,8 +10,8 @@
  * Optimized for Bun runtime with native file operations and efficient JSON handling.
  */
 
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { $ } from "bun";
-import { logger, LogLevel } from "../../../tools/logging";
 import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -32,7 +32,12 @@ const defaultConfig: Config = {
   showOutput: false,
 };
 
-const log = logger;
+const logger = createLogger({
+  level:
+    (process.env.LOG_LEVEL as LogLevel) ||
+    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+    "info",
+});
 
 // File paths
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
@@ -136,6 +141,20 @@ const CONTRACT_FILES = {
 } as const;
 
 // =============================================================================
+// HELPER FUNCTIONS
+// =============================================================================
+
+/**
+ * Check if debug logging is enabled
+ */
+function isDebugEnabled(): boolean {
+  return (
+    process.env.LOG_LEVEL === "debug" ||
+    process.env.SETTLEMINT_LOG_LEVEL === "debug"
+  );
+}
+
+// =============================================================================
 // ANVIL NODE MANAGER
 // =============================================================================
 
@@ -166,22 +185,22 @@ class AnvilManager {
 
       if (response.ok) {
         const data = await response.json();
-        log.debug(`Anvil response: ${JSON.stringify(data)}`);
+        logger.debug(`Anvil response: ${JSON.stringify(data)}`);
         return true;
       }
 
-      log.debug(
+      logger.debug(
         `Anvil HTTP response not OK: ${response.status} ${response.statusText}`
       );
       return false;
     } catch (error) {
-      log.debug(`Anvil connection check failed: ${error}`);
+      logger.debug(`Anvil connection check failed: ${error}`);
       return false;
     }
   }
 
   async stopExistingAnvil(): Promise<void> {
-    log.info("Stopping existing Anvil instances...");
+    logger.info("Stopping existing Anvil instances...");
 
     try {
       // Kill any existing anvil processes
@@ -199,11 +218,11 @@ class AnvilManager {
       );
     }
 
-    log.debug("Existing Anvil instances stopped");
+    logger.debug("Existing Anvil instances stopped");
   }
 
   async startAnvil(): Promise<void> {
-    log.info(`Starting Anvil on port ${this.config.anvilPort}...`);
+    logger.info(`Starting Anvil on port ${this.config.anvilPort}...`);
 
     // Check if anvil is available
     try {
@@ -211,18 +230,19 @@ class AnvilManager {
       if (anvilCheck.exitCode !== 0) {
         throw new Error("Anvil not found in PATH. Please install Foundry.");
       }
-      log.debug(`Anvil found at: ${anvilCheck.stdout.toString().trim()}`);
+      logger.debug(`Anvil found at: ${anvilCheck.stdout.toString().trim()}`);
     } catch (error) {
       throw new Error("Anvil not found in PATH. Please install Foundry.");
     }
 
     const anvilArgs = ["anvil", "--port", this.config.anvilPort.toString()];
 
-    log.debug(`Starting Anvil with args: ${anvilArgs.join(" ")}`);
+    logger.debug(`Starting Anvil with args: ${anvilArgs.join(" ")}`);
 
     // Capture stdout and stderr for debugging
-    const stdout = log.isLevelEnabled(LogLevel.DEBUG) ? "inherit" : "pipe";
-    const stderr = log.isLevelEnabled(LogLevel.DEBUG) ? "inherit" : "pipe";
+    // Note: SettleMint SDK logger doesn't have isLevelEnabled
+    const stdout = isDebugEnabled() ? "inherit" : "pipe";
+    const stderr = isDebugEnabled() ? "inherit" : "pipe";
 
     // Start anvil in background
     this.anvilProcess = Bun.spawn(anvilArgs, {
@@ -245,7 +265,7 @@ class AnvilManager {
         const exitCode = this.anvilProcess.exitCode;
         let errorOutput = "";
 
-        if (!log.isLevelEnabled(LogLevel.DEBUG) && this.anvilProcess.stderr) {
+        if (!isDebugEnabled() && this.anvilProcess.stderr) {
           try {
             const stderr = await new Response(this.anvilProcess.stderr).text();
             errorOutput = stderr;
@@ -262,21 +282,21 @@ class AnvilManager {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       if (await this.isAnvilRunning()) {
-        log.success(
+        logger.info(
           `Anvil started successfully on port ${this.config.anvilPort}`
         );
         return;
       }
 
       attempts++;
-      log.debug(
+      logger.debug(
         `Waiting for Anvil to start... (attempt ${attempts}/${maxAttempts})`
       );
     }
 
     // If we get here, Anvil failed to start
     let errorOutput = "";
-    if (!log.isLevelEnabled(LogLevel.DEBUG) && this.anvilProcess.stderr) {
+    if (!isDebugEnabled() && this.anvilProcess.stderr) {
       try {
         const stderr = await new Response(this.anvilProcess.stderr).text();
         errorOutput = stderr;
@@ -292,22 +312,22 @@ class AnvilManager {
 
   async stopAnvil(): Promise<void> {
     if (this.anvilProcess) {
-      log.info("Stopping Anvil...");
+      logger.info("Stopping Anvil...");
       this.anvilProcess.kill();
       this.anvilProcess = null;
 
       // Wait a bit for graceful shutdown
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      log.debug("Anvil stopped");
+      logger.debug("Anvil stopped");
     }
   }
 
   async testAnvilCommand(): Promise<void> {
-    log.debug("Testing Anvil command...");
+    logger.debug("Testing Anvil command...");
     try {
       const testResult = await $`anvil --version`.quiet();
       if (testResult.exitCode === 0) {
-        log.debug(`Anvil version: ${testResult.stdout.toString().trim()}`);
+        logger.debug(`Anvil version: ${testResult.stdout.toString().trim()}`);
       } else {
         throw new Error(`Anvil version check failed: ${testResult.stderr}`);
       }
@@ -317,7 +337,7 @@ class AnvilManager {
   }
 
   async checkPortAvailability(): Promise<void> {
-    log.debug(`Checking if port ${this.config.anvilPort} is available...`);
+    logger.debug(`Checking if port ${this.config.anvilPort} is available...`);
     try {
       // Try to connect to the port to see if something is already running
       const response = await fetch(
@@ -328,12 +348,12 @@ class AnvilManager {
       );
 
       // If we get a response, something is running on this port
-      log.warn(
+      logger.warn(
         `Port ${this.config.anvilPort} is already in use by another service`
       );
     } catch (error) {
       // If connection fails, port is likely available
-      log.debug(`Port ${this.config.anvilPort} appears to be available`);
+      logger.debug(`Port ${this.config.anvilPort} appears to be available`);
     }
   }
 
@@ -344,7 +364,7 @@ class AnvilManager {
     const isRunning = await this.isAnvilRunning();
 
     if (isRunning && !this.config.forceRestartAnvil) {
-      log.info(`Anvil already running on port ${this.config.anvilPort}`);
+      logger.info(`Anvil already running on port ${this.config.anvilPort}`);
       return;
     }
 
@@ -362,7 +382,7 @@ class AnvilManager {
     if (!this.config.keepAnvilRunning) {
       await this.stopAnvil();
     } else {
-      log.info(
+      logger.info(
         `Keeping Anvil running on port ${this.config.anvilPort} as requested`
       );
     }
@@ -417,9 +437,9 @@ class ContractDeployer {
   }
 
   async validateBytecode(solFile: string, contractName: string): Promise<void> {
-    log.debug(`Validating bytecode for ${contractName}...`);
+    logger.debug(`Validating bytecode for ${contractName}...`);
 
-    const result = log.isLevelEnabled(LogLevel.DEBUG)
+    const result = isDebugEnabled()
       ? await $`forge inspect ${solFile}:${contractName} bytecode --out ${FORGE_OUT_DIR}`.cwd(
           CONTRACTS_ROOT
         )
@@ -428,14 +448,18 @@ class ContractDeployer {
           .quiet();
 
     if (result.exitCode !== 0) {
-      log.error(`Forge inspect failed for ${contractName}: ${result.stderr}`);
+      logger.error(
+        `Forge inspect failed for ${contractName}: ${result.stderr}`
+      );
       throw new Error(
         `Error getting bytecode for ${contractName}: ${result.stderr}`
       );
     }
 
     const bytecode = result.stdout.toString().trim();
-    log.debug(`Raw bytecode for ${contractName}: ${bytecode.slice(0, 100)}...`);
+    logger.debug(
+      `Raw bytecode for ${contractName}: ${bytecode.slice(0, 100)}...`
+    );
 
     if (!bytecode || bytecode === "0x") {
       throw new Error(`Empty bytecode for ${contractName}`);
@@ -444,7 +468,9 @@ class ContractDeployer {
     const bytecodeSize = (bytecode.length - 2) / 2; // Remove 0x and divide by 2
     const maxSize = 24576; // 24KB EIP-170 limit
 
-    log.debug(`Contract ${contractName} bytecode size: ${bytecodeSize} bytes`);
+    logger.debug(
+      `Contract ${contractName} bytecode size: ${bytecodeSize} bytes`
+    );
 
     if (bytecodeSize > maxSize) {
       throw new Error(
@@ -454,7 +480,7 @@ class ContractDeployer {
   }
 
   async deployContract(solFile: string, contractName: string): Promise<string> {
-    log.debug(`Deploying ${contractName}...`);
+    logger.debug(`Deploying ${contractName}...`);
 
     const args = this.getConstructorArgs(contractName);
     const forgeArgs = [
@@ -475,15 +501,15 @@ class ContractDeployer {
 
     if (args.length > 0) {
       forgeArgs.push("--constructor-args", ...args);
-      log.debug(`Using constructor args: ${args.join(" ")}`);
+      logger.debug(`Using constructor args: ${args.join(" ")}`);
     }
 
-    log.debug(`Forge command: ${forgeArgs.join(" ")}`);
-    log.debug(`Working directory: ${CONTRACTS_ROOT}`);
+    logger.debug(`Forge command: ${forgeArgs.join(" ")}`);
+    logger.debug(`Working directory: ${CONTRACTS_ROOT}`);
 
     let result;
     if (args.length > 0) {
-      result = log.isLevelEnabled(LogLevel.DEBUG)
+      result = isDebugEnabled()
         ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --constructor-args ${args}`.cwd(
             CONTRACTS_ROOT
           )
@@ -491,7 +517,7 @@ class ContractDeployer {
             .cwd(CONTRACTS_ROOT)
             .quiet();
     } else {
-      result = log.isLevelEnabled(LogLevel.DEBUG)
+      result = isDebugEnabled()
         ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR}`.cwd(
             CONTRACTS_ROOT
           )
@@ -503,9 +529,9 @@ class ContractDeployer {
     const output = result.stdout.toString();
     const errorOutput = result.stderr.toString();
 
-    log.debug(`Deployment exit code: ${result.exitCode}`);
-    log.debug(`Deployment stdout: ${output}`);
-    log.debug(`Deployment stderr: ${errorOutput}`);
+    logger.debug(`Deployment exit code: ${result.exitCode}`);
+    logger.debug(`Deployment stdout: ${output}`);
+    logger.debug(`Deployment stderr: ${errorOutput}`);
 
     if (result.exitCode !== 0) {
       throw new Error(
@@ -515,10 +541,10 @@ class ContractDeployer {
 
     // Check if output looks like bytecode instead of JSON
     if (output.startsWith("0x") && !output.includes("{")) {
-      log.warn(
+      logger.warn(
         `Received bytecode instead of JSON for ${contractName}. This might indicate a compilation issue.`
       );
-      log.debug(`Raw output: ${output.slice(0, 200)}...`);
+      logger.debug(`Raw output: ${output.slice(0, 200)}...`);
       throw new Error(
         `Deployment failed - received bytecode instead of deployment JSON for ${contractName}`
       );
@@ -528,8 +554,8 @@ class ContractDeployer {
     try {
       deployData = JSON.parse(output);
     } catch (error) {
-      log.error(`Error parsing JSON output for ${contractName}`);
-      log.error(`Raw output: ${output}`);
+      logger.error(`Error parsing JSON output for ${contractName}`);
+      logger.error(`Raw output: ${output}`);
       throw new Error(
         `Error parsing deployment output for ${contractName}: ${output.slice(0, 500)}...`
       );
@@ -537,13 +563,13 @@ class ContractDeployer {
 
     const deployedAddress = deployData.deployedTo;
     if (!deployedAddress) {
-      log.error(`Deployment data for ${contractName}:`, deployData);
+      logger.error(`Deployment data for ${contractName}:`, deployData);
       throw new Error(
         `Unable to get deployed address for ${contractName}. Full output: ${JSON.stringify(deployData, null, 2)}`
       );
     }
 
-    log.debug(`${contractName} deployed to: ${deployedAddress}`);
+    logger.debug(`${contractName} deployed to: ${deployedAddress}`);
     return deployedAddress;
   }
 
@@ -552,10 +578,10 @@ class ContractDeployer {
     contractName: string,
     deployedAddress: string
   ): Promise<Record<string, string>> {
-    log.debug(`Getting storage layout for ${contractName}...`);
+    logger.debug(`Getting storage layout for ${contractName}...`);
 
     // Get storage layout from contract
-    const layoutResult = log.isLevelEnabled(LogLevel.DEBUG)
+    const layoutResult = isDebugEnabled()
       ? await $`forge inspect ${solFile}:${contractName} storageLayout --force --json --out ${FORGE_OUT_DIR}`.cwd(
           CONTRACTS_ROOT
         )
@@ -573,14 +599,14 @@ class ContractDeployer {
     const storage: Record<string, string> = {};
 
     if (!storageLayout.storage || storageLayout.storage.length === 0) {
-      log.warn(`No storage slots found for ${contractName}`);
+      logger.warn(`No storage slots found for ${contractName}`);
       return storage;
     }
 
     // Process storage slots
     for (const slot of storageLayout.storage) {
       try {
-        const slotResult = log.isLevelEnabled(LogLevel.DEBUG)
+        const slotResult = isDebugEnabled()
           ? await $`cast storage --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress} ${slot.slot}`
           : await $`cast storage --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress} ${slot.slot}`.quiet();
 
@@ -597,12 +623,12 @@ class ContractDeployer {
           const paddedSlot = `0x${slot.slot.toString().padStart(64, "0")}`;
           storage[paddedSlot] = slotValue;
         } else {
-          log.warn(
+          logger.warn(
             `Error reading storage slot ${slot.slot} for ${contractName}`
           );
         }
       } catch (error) {
-        log.warn(
+        logger.warn(
           `Error processing storage slot ${slot.slot} for ${contractName}: ${error}`
         );
       }
@@ -615,9 +641,9 @@ class ContractDeployer {
     contractName: string,
     deployedAddress: string
   ): Promise<string> {
-    log.debug(`Getting deployed bytecode for ${contractName}...`);
+    logger.debug(`Getting deployed bytecode for ${contractName}...`);
 
-    const result = log.isLevelEnabled(LogLevel.DEBUG)
+    const result = isDebugEnabled()
       ? await $`cast code --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress}`
       : await $`cast code --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress}`.quiet();
 
@@ -695,22 +721,22 @@ class GenesisGenerator {
   }
 
   async initializeGenesisFile(): Promise<void> {
-    log.info("Initializing genesis allocation file...");
+    logger.info("Initializing genesis allocation file...");
 
     // Create forge output directory
     await $`mkdir -p ${FORGE_OUT_DIR}`.quiet();
-    log.debug(`Created forge output directory: ${FORGE_OUT_DIR}`);
+    logger.debug(`Created forge output directory: ${FORGE_OUT_DIR}`);
 
     // Remove existing file if it exists
     const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
     if (await allocFile.exists()) {
       await $`rm -f ${ALL_ALLOCATIONS_FILE}`.quiet();
-      log.debug("Removed existing genesis file");
+      logger.debug("Removed existing genesis file");
     }
 
     // Initialize empty JSON object
     await Bun.write(ALL_ALLOCATIONS_FILE, "{}");
-    log.success("Genesis allocation file initialized");
+    logger.info("Genesis allocation file initialized");
   }
 
   async addToGenesis(
@@ -719,7 +745,7 @@ class GenesisGenerator {
     bytecode: string,
     storage: Record<string, string>
   ): Promise<void> {
-    log.debug(`Adding ${contractName} to genesis allocation...`);
+    logger.debug(`Adding ${contractName} to genesis allocation...`);
 
     // Read current genesis file
     const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
@@ -737,7 +763,7 @@ class GenesisGenerator {
       ALL_ALLOCATIONS_FILE,
       JSON.stringify(currentGenesis, null, 2)
     );
-    log.debug(`Added ${contractName} to genesis allocation`);
+    logger.debug(`Added ${contractName} to genesis allocation`);
   }
 
   async processContract(
@@ -746,7 +772,7 @@ class GenesisGenerator {
   ): Promise<void> {
     const targetAddress = CONTRACT_ADDRESSES[contractName];
     if (!targetAddress) {
-      log.debug(`Skipping ${contractName}: Not in CONTRACT_ADDRESSES list`);
+      logger.debug(`Skipping ${contractName}: Not in CONTRACT_ADDRESSES list`);
       this.skippedCount++;
       return;
     }
@@ -756,7 +782,7 @@ class GenesisGenerator {
       ((this.processedCount + this.failedCount + this.skippedCount) * 100) /
         totalContracts
     );
-    log.debug(`[${progressPct}%] Processing ${contractName}...`);
+    logger.debug(`[${progressPct}%] Processing ${contractName}...`);
 
     try {
       const solFile = `${CONTRACTS_ROOT}/${CONTRACT_FILES[contractName]}`;
@@ -778,27 +804,27 @@ class GenesisGenerator {
       );
 
       this.processedCount++;
-      log.debug(`Successfully processed ${contractName}`);
+      logger.debug(`Successfully processed ${contractName}`);
 
       // Show concise progress
       const totalProcessed = this.processedCount + this.failedCount;
-      log.info(
+      logger.info(
         `Progress: ${totalProcessed}/${Object.keys(CONTRACT_ADDRESSES).length} contracts completed`
       );
     } catch (error) {
       this.failedCount++;
-      log.error(`Failed to process ${contractName}: ${error}`);
-      console.error(error);
+      logger.error(`Failed to process ${contractName}: ${error}`);
+      logger.debug(`${error as Error}.message`);
       throw error;
     }
   }
 
   async processAllContracts(): Promise<void> {
-    log.info("Processing all contracts...");
+    logger.info("Processing all contracts...");
 
     const contractNames = Object.keys(CONTRACT_ADDRESSES);
     const totalContracts = contractNames.length;
-    log.info(`Processing ${totalContracts} contracts...`);
+    logger.info(`Processing ${totalContracts} contracts...`);
 
     // Process ATKForwarder first (no dependencies)
     if (CONTRACT_ADDRESSES.ATKForwarder) {
@@ -817,7 +843,7 @@ class GenesisGenerator {
           totalContracts
         );
       } catch (error) {
-        log.error(`Error processing ${contractName}: ${error}`);
+        logger.error(`Error processing ${contractName}: ${error}`);
       }
     }
 
@@ -827,7 +853,7 @@ class GenesisGenerator {
   }
 
   async verifyAllContractsProcessed(): Promise<void> {
-    log.info("Verifying all contracts were processed...");
+    logger.info("Verifying all contracts were processed...");
 
     const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
     if (!(await allocFile.exists())) {
@@ -852,24 +878,26 @@ class GenesisGenerator {
       }
     }
 
-    log.debug(`Expected contracts: ${expectedTotal}`);
-    log.debug(`Processed contracts: ${genesisAddresses.length}`);
+    logger.debug(`Expected contracts: ${expectedTotal}`);
+    logger.debug(`Processed contracts: ${genesisAddresses.length}`);
 
     if (missingContracts.length > 0) {
-      log.error("The following contracts are missing from the genesis file:");
+      logger.error(
+        "The following contracts are missing from the genesis file:"
+      );
       for (const contract of missingContracts) {
-        log.error(`  - ${contract}`);
+        logger.error(`  - ${contract}`);
       }
       throw new Error(
         "Genesis generation incomplete - not all contracts were processed"
       );
     }
 
-    log.success(`All ${expectedTotal} contracts were successfully processed!`);
+    logger.info(`All ${expectedTotal} contracts were successfully processed!`);
   }
 
   async generateFinalGenesis(): Promise<void> {
-    log.info("Generating final genesis.json file...");
+    logger.info("Generating final genesis.json file...");
 
     // Check if template exists
     const genesisFile = Bun.file(GENESIS_FILE);
@@ -888,10 +916,10 @@ class GenesisGenerator {
       const template = await genesisFile.json();
       const contractAllocations = await allocFile.json();
 
-      log.debug(
+      logger.debug(
         `Template allocations: ${Object.keys(template.alloc || {}).length}`
       );
-      log.debug(
+      logger.debug(
         `Contract allocations: ${Object.keys(contractAllocations).length}`
       );
 
@@ -913,8 +941,8 @@ class GenesisGenerator {
       // Write final genesis file
       await Bun.write(GENESIS_FILE, JSON.stringify(finalGenesis, null, 2));
 
-      log.success(`Final genesis file written to: ${GENESIS_FILE}`);
-      log.info(
+      logger.info(`Final genesis file written to: ${GENESIS_FILE}`);
+      logger.info(
         `Total allocations: ${Object.keys(finalGenesis.alloc).length} (${
           Object.keys(template.alloc || {}).length
         } from template + ${Object.keys(contractAllocations).length} contracts)`
@@ -926,23 +954,23 @@ class GenesisGenerator {
       if (!verification.config || !verification.alloc) {
         throw new Error("Written genesis file is invalid");
       }
-      log.debug("Genesis file verification passed");
+      logger.debug("Genesis file verification passed");
     } catch (error) {
       throw new Error(`Failed to generate final genesis file: ${error}`);
     }
   }
 
   async cleanupForgeOutput(): Promise<void> {
-    log.info("Cleaning up forge output directory...");
+    logger.info("Cleaning up forge output directory...");
 
     try {
       const forgeDir = Bun.file(FORGE_OUT_DIR);
       if (await forgeDir.exists()) {
         await $`rm -rf ${FORGE_OUT_DIR}`.quiet();
-        log.debug(`Removed forge output directory: ${FORGE_OUT_DIR}`);
+        logger.debug(`Removed forge output directory: ${FORGE_OUT_DIR}`);
       }
     } catch (error) {
-      log.warn(`Failed to cleanup forge output directory: ${error}`);
+      logger.warn(`Failed to cleanup forge output directory: ${error}`);
     }
   }
 
@@ -960,7 +988,7 @@ class GenesisGenerator {
 // =============================================================================
 
 function showUsage(): void {
-  console.log(`
+  logger.info(`
 Usage: bun run codegen-genesis.ts [OPTIONS]
 
 This script deploys contracts to a temporary blockchain and generates genesis allocations.
@@ -1008,7 +1036,8 @@ function parseCliArgs(): Config {
   if (process.env.LOG_LEVEL) {
     const level = process.env.LOG_LEVEL.toUpperCase();
     if (["DEBUG", "INFO", "WARN", "ERROR"].includes(level)) {
-      log.setLevel(level);
+      // Note: SettleMint SDK logger level is set at creation time
+      // Use LOG_LEVEL or SETTLEMINT_LOG_LEVEL env var instead
     }
   }
   if (process.env.ANVIL_PORT) {
@@ -1035,19 +1064,21 @@ function parseCliArgs(): Config {
 
       case "-v":
       case "--verbose":
-        log.setLevel(LogLevel.DEBUG);
+        // Note: SettleMint SDK logger level is set at creation time
+        // Use LOG_LEVEL=debug env var instead
         break;
 
       case "-q":
       case "--quiet":
-        log.setLevel(LogLevel.ERROR);
+        // Note: SettleMint SDK logger level is set at creation time
+        // Use LOG_LEVEL=error env var instead
         break;
 
       case "-p":
       case "--port":
         const port = parseInt(args[++i] ?? "", 10);
         if (isNaN(port)) {
-          console.error("Option --port requires a valid port number");
+          logger.error("Option --port requires a valid port number");
           process.exit(1);
         }
         config.anvilPort = port;
@@ -1068,7 +1099,7 @@ function parseCliArgs(): Config {
         break;
 
       default:
-        console.error(`Unknown option: ${arg}`);
+        logger.error(`Unknown option: ${arg}`);
         showUsage();
         process.exit(1);
     }
@@ -1083,29 +1114,29 @@ function parseCliArgs(): Config {
 async function main(): Promise<void> {
   const config = parseCliArgs();
 
-  log.info("Starting Genesis Output Generator...");
-  log.info(`Contracts root: ${CONTRACTS_ROOT}`);
-  log.info(`Anvil port: ${config.anvilPort}`);
+  logger.info("Starting Genesis Output Generator...");
+  logger.info(`Contracts root: ${CONTRACTS_ROOT}`);
+  logger.info(`Anvil port: ${config.anvilPort}`);
 
   // Check prerequisites
-  log.info("Checking prerequisites...");
+  logger.info("Checking prerequisites...");
 
   // Check if forge is available
   try {
-    const forgeResult = log.isLevelEnabled(LogLevel.DEBUG)
+    const forgeResult = isDebugEnabled()
       ? await $`forge --version`.cwd(CONTRACTS_ROOT)
       : await $`forge --version`.cwd(CONTRACTS_ROOT).quiet();
-    log.debug(`Forge version: ${forgeResult.stdout}`);
+    logger.debug(`Forge version: ${forgeResult.stdout}`);
   } catch (error) {
     throw new Error("Forge not found. Please install Foundry.");
   }
 
   // Check if anvil is available
   try {
-    const anvilResult = log.isLevelEnabled(LogLevel.DEBUG)
+    const anvilResult = isDebugEnabled()
       ? await $`anvil --version`
       : await $`anvil --version`.quiet();
-    log.debug(`Anvil version: ${anvilResult.stdout}`);
+    logger.debug(`Anvil version: ${anvilResult.stdout}`);
   } catch (error) {
     throw new Error("Anvil not found. Please install Foundry.");
   }
@@ -1136,19 +1167,19 @@ async function main(): Promise<void> {
     await generator.stopAnvil();
 
     const stats = generator.getStats();
-    log.success("Genesis generation completed successfully!");
-    log.info(
+    logger.info("Genesis generation completed successfully!");
+    logger.info(
       `Processing summary: ${stats.processed} processed, ${stats.skipped} skipped, ${stats.failed} failed`
     );
-    log.info(`Contract allocations written to: ${ALL_ALLOCATIONS_FILE}`);
-    log.info(`Final genesis file written to: ${GENESIS_FILE}`);
+    logger.info(`Contract allocations written to: ${ALL_ALLOCATIONS_FILE}`);
+    logger.info(`Final genesis file written to: ${GENESIS_FILE}`);
 
     // Show output if requested
     if (config.showOutput) {
-      console.log("=== FINAL GENESIS OUTPUT ===");
+      logger.info("=== FINAL GENESIS OUTPUT ===");
       const genesisFile = Bun.file(GENESIS_FILE);
       const genesisContent = await genesisFile.text();
-      console.log(genesisContent);
+      logger.info(genesisContent);
     }
   } catch (error) {
     // Cleanup on error
@@ -1156,10 +1187,10 @@ async function main(): Promise<void> {
       await generator.cleanupForgeOutput();
       await generator.stopAnvil();
     } catch (cleanupError) {
-      log.warn(`Failed to cleanup on error: ${cleanupError}`);
+      logger.warn(`Failed to cleanup on error: ${cleanupError}`);
     }
 
-    log.error(`Genesis generation failed: ${error}`);
+    logger.error(`Genesis generation failed: ${error}`);
     process.exit(1);
   }
 }
@@ -1169,24 +1200,24 @@ let globalGenerator: GenesisGenerator | null = null;
 
 // Handle process interruption
 process.on("SIGINT", async () => {
-  log.info("Received SIGINT, cleaning up...");
+  logger.info("Received SIGINT, cleaning up...");
   if (globalGenerator) {
     try {
       await globalGenerator.stopAnvil();
     } catch (error) {
-      log.warn(`Error during cleanup: ${error}`);
+      logger.warn(`Error during cleanup: ${error}`);
     }
   }
   process.exit(0);
 });
 
 process.on("SIGTERM", async () => {
-  log.info("Received SIGTERM, cleaning up...");
+  logger.info("Received SIGTERM, cleaning up...");
   if (globalGenerator) {
     try {
       await globalGenerator.stopAnvil();
     } catch (error) {
-      log.warn(`Error during cleanup: ${error}`);
+      logger.warn(`Error during cleanup: ${error}`);
     }
   }
   process.exit(0);
@@ -1195,7 +1226,7 @@ process.on("SIGTERM", async () => {
 // Run the script
 if (import.meta.main) {
   main().catch((error) => {
-    console.error("Unhandled error:", error);
+    logger.error("Unhandled error:", error);
     process.exit(1);
   });
 }

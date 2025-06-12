@@ -1,8 +1,9 @@
-import { ListSchema } from "@/lib/orpc/routes/common/list.schema";
-import { SystemCreateSchema } from "@/lib/orpc/routes/system/schemas/system.create.schema";
+import { ListSchema } from "@/lib/orpc/routes/common/schemas/list.schema";
+import { SystemCreateSchema } from "@/lib/orpc/routes/system/routes/system.create.schema";
+import { ethereumHash } from "@/lib/utils/zod/validators/ethereum-hash";
 import { z } from "zod";
 import { ac } from "../../procedures/auth.contract";
-import { SystemSchema } from "./schemas/system.schema";
+import { SystemSchema } from "./routes/system.list.schema";
 
 /**
  * Contract definition for the system list endpoint.
@@ -36,7 +37,7 @@ const create = ac
     tags: ["system"],
   })
   .input(SystemCreateSchema)
-  .output(SystemSchema);
+  .output(ethereumHash);
 
 /**
  * System API contract collection.

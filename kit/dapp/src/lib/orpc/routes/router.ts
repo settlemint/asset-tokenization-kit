@@ -14,18 +14,6 @@ import { br } from "../procedures/base.router";
  */
 export const router = br.router({
   /**
-   * Planet-related API procedures.
-   *
-   * Lazy-loaded module containing all planet-specific operations such as
-   * retrieving planet information, updating planet data, and managing
-   * planet-related resources. The lazy loading ensures this module is
-   * only bundled and loaded when planet procedures are actually called.
-   *
-   * @see {@link ./planet/planet.router} - Planet router implementation
-   */
-  planet: br.planet.lazy(() => import("./planet/planet.router")),
-
-  /**
    * System-related API procedures.
    *
    * Lazy-loaded module containing SMART system management operations.
@@ -37,4 +25,16 @@ export const router = br.router({
    * @see {@link ./system/system.router} - System router implementation
    */
   system: br.system.lazy(() => import("./system/system.router")),
+
+  /**
+   * Transaction-related API procedures.
+   *
+   * Lazy-loaded module containing transaction-related operations such as
+   * tracking transactions and managing transaction-related resources.
+   *
+   * @see {@link ./transaction/transaction.router} - Transaction router implementation
+   */
+  transaction: br.transaction.lazy(
+    () => import("./transaction/transaction.router")
+  ),
 });

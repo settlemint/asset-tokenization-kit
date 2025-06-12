@@ -1,4 +1,9 @@
 import { dirname, join, resolve } from "node:path";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+
+const logger = createLogger({
+  level: process.env.LOG_LEVEL as LogLevel || process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
+});
 
 /**
  * Finds the root of a turbo monorepo project
@@ -55,7 +60,7 @@ export async function findTurboRoot(startPath?: string) {
           }
         } catch (error) {
           // Continue searching if package.json is malformed
-          console.warn(
+          logger.warn(
             `Malformed package.json at ${packageJsonPath}, continuing search...`
           );
         }
@@ -94,7 +99,7 @@ export async function findTurboRoot(startPath?: string) {
             break;
           }
         } catch (error) {
-          console.warn(
+          logger.warn(
             `Malformed package.json at ${packageJsonPath}, continuing search...`
           );
         }
@@ -124,7 +129,7 @@ export async function findTurboRoot(startPath?: string) {
   }
 
   if (!kitExists) {
-    console.warn(
+    logger.warn(
       `Kit directory not found at ${kitRootPath}, but continuing with monorepo root`
     );
   }

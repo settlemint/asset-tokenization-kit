@@ -1,5 +1,5 @@
 import { ethereumAddress } from "@/lib/utils/zod/validators/ethereum-address";
-import { CreateSchema } from "../../common/create.schema";
+import { CreateSchema } from "../../common/schemas/create.schema";
 
 export const SystemCreateSchema = CreateSchema.extend({
   contract: ethereumAddress

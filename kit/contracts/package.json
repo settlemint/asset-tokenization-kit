@@ -18,7 +18,7 @@
     "artifacts:abi": "bun run tools/artifacts-abi.ts",
     "lint": "solhint --config .solhint.json ./contracts/**/*.sol",
     "format:forge": "settlemint scs foundry format",
-    "format:prettier": "prettier --write .",
+    "format:prettier": "prettier -l --write .",
     "publish": "settlemint scs hardhat script local --script scripts/hardhat/main.ts",
     "abi-output": "bash tools/abi-output.sh",
     "test": "settlemint scs foundry test -vvv",
