@@ -246,6 +246,7 @@ type TokenBond @entity(immutable: false) {
   faceValueExact: BigInt!
   maturityDate: BigInt!
   isMatured: Boolean!
+  underlyingAsset: Token!
 }
 
 type TokenFund @entity(immutable: false) {
@@ -259,6 +260,8 @@ type TokenFund @entity(immutable: false) {
 
 type TokenFixedYieldSchedule @entity(immutable: false) {
   id: Bytes!
+  createdAt: BigInt!
+  createdBy: Account!
   account: Account!
   token: Token!
   startDate: BigInt!
@@ -272,11 +275,10 @@ type TokenFixedYieldSchedule @entity(immutable: false) {
   totalYield: BigDecimal!
   totalYieldExact: BigInt!
   underlyingAsset: Token!
-  underlyingAssetBalanceAvailable: BigDecimal!
-  underlyingAssetBalanceAvailableExact: BigInt!
   currentPeriod: TokenFixedYieldSchedulePeriod
   nextPeriod: TokenFixedYieldSchedulePeriod
   periods: [TokenFixedYieldSchedulePeriod!]! @derivedFrom(field: "schedule")
+  stats: TokenFixedYieldScheduleStats
 }
 
 type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
@@ -342,15 +344,14 @@ type TokenStats @entity(immutable: false) {
   transfersVolumeExact: BigInt!
 
   # Distribution metrics
-  distribution: TokenDistributionStats!
+  distribution: TokenDistributionStats
 
   # Extension metrics
   collateral: TokenCollateralStats
-}
 
-# ==================================================
-# TOKEN EXTENSION STATISTICS
-# ==================================================
+  # Type specific metrics
+  bond: TokenBondStats
+}
 
 # Collateral statistics for tokens
 type TokenCollateralStats @entity(immutable: false) {
@@ -361,6 +362,21 @@ type TokenCollateralStats @entity(immutable: false) {
   collateralAvailableExact: BigInt!
   collateralUsed: BigDecimal!
   collateralUsedExact: BigInt!
+}
+
+# Bond statistics for tokens
+type TokenBondStats @entity(immutable: false) {
+  id: Bytes!
+  underlyingAssetBalanceAvailable: BigDecimal!
+  underlyingAssetBalanceAvailableExact: BigInt!
+  underlyingAssetBalanceRequired: BigDecimal!
+  underlyingAssetBalanceRequiredExact: BigInt!
+}
+
+# Fixed yield schedule statistics for tokens
+type TokenFixedYieldScheduleStats @entity(immutable: false) {
+  id: Bytes!
+  coveredPercentage: BigDecimal!
 }
 
 # Token distribution statistics by concentration segments
