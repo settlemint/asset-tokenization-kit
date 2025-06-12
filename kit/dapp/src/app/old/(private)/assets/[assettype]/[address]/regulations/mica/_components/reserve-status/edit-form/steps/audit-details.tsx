@@ -1,12 +1,12 @@
 "use client";
 
-import { uploadDocument } from "@/app/actions/upload-document";
 import { DocumentUploadDialog } from "@/components/blocks/asset-designer/components/document-upload-dialog";
 import type { UploadedDocument } from "@/components/blocks/asset-designer/types";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import { FormLabel } from "@/components/ui/form";
+import { uploadDocument } from "@/lib/actions/upload-document";
 import {
   DocumentStatus,
   MicaDocumentType,

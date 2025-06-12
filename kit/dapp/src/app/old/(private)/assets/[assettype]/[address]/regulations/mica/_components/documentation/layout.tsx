@@ -1,14 +1,14 @@
 "use client";
 
-import type { MicaDocument } from "@/app/actions/get-mica-documents";
-import { getMicaDocumentsAction } from "@/app/actions/get-mica-documents";
-import { getMicaRegulationConfigAction } from "@/app/actions/get-mica-regulation-config";
-import { uploadDocument } from "@/app/actions/upload-document";
 import { DocumentUploadDialog } from "@/components/blocks/asset-designer/components/document-upload-dialog";
 import type { UploadedDocument } from "@/components/blocks/asset-designer/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { MicaDocument } from "@/lib/actions/get-mica-documents";
+import { getMicaDocumentsAction } from "@/lib/actions/get-mica-documents";
+import { getMicaRegulationConfigAction } from "@/lib/actions/get-mica-regulation-config";
+import { uploadDocument } from "@/lib/actions/upload-document";
 import {
   DocumentStatus,
   MicaDocumentType,

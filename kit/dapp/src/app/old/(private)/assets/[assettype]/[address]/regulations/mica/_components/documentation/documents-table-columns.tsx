@@ -1,6 +1,5 @@
 "use client";
 
-import { deleteDocumentAction } from "@/app/actions/delete-document";
 import { PDFViewer } from "@/components/blocks/pdf-viewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { deleteDocumentAction } from "@/lib/actions/delete-document";
 import { defineMeta, filterFn } from "@/lib/filters";
 import type { MicaDocument } from "@/lib/queries/regulations/mica-documents";
 import { formatDate } from "@/lib/utils/date";

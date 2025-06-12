@@ -1,7 +1,7 @@
 "use client";
 
-import { deleteDocument } from "@/app/actions/delete-document";
-import { uploadDocument } from "@/app/actions/upload-document";
+import { deleteDocument } from "@/lib/actions/delete-document";
+import { uploadDocument } from "@/lib/actions/upload-document";
 import {
   AlertCircleIcon,
   FileArchiveIcon,
