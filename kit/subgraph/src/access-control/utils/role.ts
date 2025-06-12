@@ -55,7 +55,7 @@ export const Roles = [
   new RoleConfig("CUSTODIAN_ROLE", "custodian"),
   new RoleConfig("EMERGENCY_ROLE", "emergency"),
   new RoleConfig("IMPLEMENTATION_MANAGER_ROLE", "implementationManager"),
-  new RoleConfig("ALLOW_LIST_MANAGER_ROLE", "allowListManager"),
+  new RoleConfig("BYPASS_LIST_MANAGER_ROLE", "bypassListManager"),
 ];
 
 export function getRoleConfigFromBytes(bytes: Bytes): RoleConfig {

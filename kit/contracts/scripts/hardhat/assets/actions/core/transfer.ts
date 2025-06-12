@@ -2,8 +2,8 @@ import { ATKContracts } from "../../../constants/contracts";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import type { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatDecimals } from "../../../utils/format-decimals";
-import { toDecimals } from "../../../utils/to-decimals";
+import { formatBaseUnits } from "../../../utils/format-base-units";
+import { toBaseUnits } from "../../../utils/to-base-units";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const transfer = async (
@@ -17,7 +17,7 @@ export const transfer = async (
     abi: ATKContracts.ismart,
   });
 
-  const tokenAmount = toDecimals(amount, asset.decimals);
+  const tokenAmount = toBaseUnits(amount, asset.decimals);
 
   const transactionHash = await withDecodedRevertReason(() =>
     tokenContract.write.transfer([to.address, tokenAmount])
@@ -26,6 +26,6 @@ export const transfer = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Transfer] ${formatDecimals(tokenAmount, asset.decimals)} ${asset.symbol} tokens from ${from.name} (${from.address}) to ${to.name} (${to.address})`
+    `[Transfer] ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens from ${from.name} (${from.address}) to ${to.name} (${to.address})`
   );
 };

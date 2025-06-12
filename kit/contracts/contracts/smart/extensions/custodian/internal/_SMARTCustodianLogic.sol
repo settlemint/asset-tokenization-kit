@@ -218,6 +218,8 @@ abstract contract _SMARTCustodianLogic is _SMARTExtension, ISMARTCustodian {
         __custodian_executeTransferUpdate(from, to, amount);
         __isForcedUpdate = false;
 
+        emit ISMARTCustodian.ForcedTransfer(_smartSender(), from, to, amount);
+
         return true;
     }
 

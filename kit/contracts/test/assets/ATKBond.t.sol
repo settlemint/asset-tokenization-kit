@@ -829,7 +829,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         vm.startPrank(platformAdmin);
         IAccessControl(address(systemUtils.compliance())).grantRole(
-            ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(factory)
+            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, address(factory)
         );
         vm.stopPrank();
 
@@ -875,7 +875,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         vm.startPrank(platformAdmin);
         IAccessControl(address(systemUtils.compliance())).grantRole(
-            ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(factory)
+            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, address(factory)
         );
         vm.stopPrank();
 

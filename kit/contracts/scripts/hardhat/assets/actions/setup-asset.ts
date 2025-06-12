@@ -8,6 +8,7 @@ import { getAnvilTimeMilliseconds } from "../../utils/anvil";
 import { addCountryComplianceModule } from "./core/add-country-allow-list-compliance-module";
 import { grantRoles } from "./core/grant-roles";
 import { issueAssetClassificationClaim } from "./core/issue-asset-classification-claim";
+import { issueBasePriceClaim } from "./core/issue-base-price-claim";
 import { issueCollateralClaim } from "./core/issue-collateral-claim";
 import { issueIsinClaim } from "./core/issue-isin-claim";
 import { removeComplianceModule } from "./core/remove-compliance-module";
@@ -21,10 +22,12 @@ export const setupAsset = async (
     collateral,
     assetClass,
     assetCategory,
+    basePrice,
   }: {
-    collateral?: bigint;
+    collateral?: number | bigint;
     assetClass?: string;
     assetCategory?: string;
+    basePrice?: number;
   } = {}
 ) => {
   // needs to be done so that he can update the topics and compliance modules
@@ -70,13 +73,14 @@ export const setupAsset = async (
       anvilTime.getMonth(),
       anvilTime.getDate()
     );
-    await issueCollateralClaim(
-      asset,
-      collateral,
-      asset.decimals,
-      oneYearFromNow
-    );
+    await issueCollateralClaim(asset, collateral, oneYearFromNow);
   }
+
+  if (basePrice) {
+    // issue base price claim
+    await issueBasePriceClaim(asset, basePrice);
+  }
+
   // needs supply management role to mint
   // needs custodian role for custodian actions
   await grantRoles(asset, owner, [

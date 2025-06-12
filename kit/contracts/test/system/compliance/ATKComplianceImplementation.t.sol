@@ -8,7 +8,7 @@ import { ATKComplianceImplementation } from "../../../contracts/system/complianc
 import { ATKComplianceProxy } from "../../../contracts/system/compliance/ATKComplianceProxy.sol";
 import { ISMARTCompliance } from "../../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
-import { IATKComplianceAllowList } from "../../../contracts/system/compliance/IATKComplianceAllowList.sol";
+import { IATKComplianceBypassList } from "../../../contracts/system/compliance/IATKComplianceBypassList.sol";
 import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
@@ -105,7 +105,7 @@ contract ATKComplianceImplementationTest is Test {
     MockNonCompliantModule public nonCompliantModule;
 
     address public admin = makeAddr("admin");
-    address public allowListManager = makeAddr("allowListManager");
+    address public bypassListManager = makeAddr("bypassListManager");
     address public unauthorizedUser = makeAddr("unauthorizedUser");
     address public trustedForwarder = address(0x1234);
     address public alice = address(0xa11ce);
@@ -125,9 +125,9 @@ contract ATKComplianceImplementationTest is Test {
         // Access proxy as SMARTComplianceImplementation
         compliance = ATKComplianceImplementation(address(proxy));
 
-        // Grant allow list manager role
+        // Grant bypass list manager role
         vm.prank(admin);
-        compliance.grantRole(ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE, allowListManager);
+        compliance.grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, bypassListManager);
 
         // Deploy mock token
         token = new MockATKToken(address(compliance));
@@ -147,7 +147,7 @@ contract ATKComplianceImplementationTest is Test {
 
     function testSupportsInterface() public view {
         assertTrue(compliance.supportsInterface(type(ISMARTCompliance).interfaceId));
-        assertTrue(compliance.supportsInterface(type(IATKComplianceAllowList).interfaceId));
+        assertTrue(compliance.supportsInterface(type(IATKComplianceBypassList).interfaceId));
         assertTrue(compliance.supportsInterface(type(IERC165).interfaceId));
         assertFalse(compliance.supportsInterface(0xdeadbeef));
     }
@@ -250,7 +250,6 @@ contract ATKComplianceImplementationTest is Test {
         vm.prank(address(token));
         ISMARTCompliance(address(compliance)).transferred(address(token), alice, bob, 100);
 
-        // Verify modules were called
         assertEq(validModule.transferredCallCount(), 1);
         assertEq(module2.transferredCallCount(), 1);
     }
@@ -347,175 +346,133 @@ contract ATKComplianceImplementationTest is Test {
 
     // --- AllowList Management Tests ---
 
-    function testAddToAllowListSuccess() public {
-        vm.prank(allowListManager);
-        vm.expectEmit(true, true, false, true);
-        emit IATKComplianceAllowList.AddressAllowListed(alice, allowListManager);
-        compliance.addToAllowList(alice);
-
-        assertTrue(compliance.isAllowListed(alice));
+    function testAddToBypassListAsManager() public {
+        vm.prank(bypassListManager);
+        vm.expectEmit(true, true, true, true);
+        emit IATKComplianceBypassList.AddressAddedToBypassList(charlie, bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(charlie);
+        assertTrue(IATKComplianceBypassList(address(compliance)).isBypassed(charlie));
     }
 
-    function testAddToAllowListUnauthorized() public {
+    function testAddToBypassListAsUnauthorized() public {
         vm.prank(unauthorizedUser);
         vm.expectRevert(
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector,
                 unauthorizedUser,
-                ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE
+                ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE
             )
         );
-        compliance.addToAllowList(alice);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(charlie);
     }
 
-    function testAddToAllowListZeroAddress() public {
-        vm.prank(allowListManager);
-        vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
-        compliance.addToAllowList(address(0));
+    function testAddAlreadyBypassedAddress() public {
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(charlie);
+
+        vm.prank(bypassListManager);
+        vm.expectRevert(abi.encodeWithSelector(IATKComplianceBypassList.AddressAlreadyOnBypassList.selector, charlie));
+        IATKComplianceBypassList(address(compliance)).addToBypassList(charlie);
     }
 
-    function testAddToAllowListAlreadyAllowListed() public {
-        vm.prank(allowListManager);
-        compliance.addToAllowList(alice);
-
-        vm.prank(allowListManager);
-        vm.expectRevert(abi.encodeWithSelector(IATKComplianceAllowList.AddressAlreadyAllowListed.selector, alice));
-        compliance.addToAllowList(alice);
+    function testAddZeroAddressToBypassList() public {
+        vm.prank(bypassListManager);
+        vm.expectRevert(abi.encodeWithSelector(ISMARTCompliance.ZeroAddressNotAllowed.selector));
+        IATKComplianceBypassList(address(compliance)).addToBypassList(address(0));
     }
 
-    function testRemoveFromAllowListSuccess() public {
-        // First add to allow list
-        vm.prank(allowListManager);
-        compliance.addToAllowList(alice);
-        assertTrue(compliance.isAllowListed(alice));
+    function testRemoveFromBypassListAsManager() public {
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(charlie);
 
-        // Then remove
-        vm.prank(allowListManager);
-        vm.expectEmit(true, true, false, true);
-        emit IATKComplianceAllowList.AddressRemovedFromAllowList(alice, allowListManager);
-        compliance.removeFromAllowList(alice);
-
-        assertFalse(compliance.isAllowListed(alice));
+        vm.prank(bypassListManager);
+        vm.expectEmit(true, true, true, true);
+        emit IATKComplianceBypassList.AddressRemovedFromBypassList(charlie, bypassListManager);
+        IATKComplianceBypassList(address(compliance)).removeFromBypassList(charlie);
+        assertFalse(IATKComplianceBypassList(address(compliance)).isBypassed(charlie));
     }
 
-    function testRemoveFromAllowListUnauthorized() public {
-        vm.prank(allowListManager);
-        compliance.addToAllowList(alice);
+    function testRemoveFromBypassListAsUnauthorized() public {
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(charlie);
 
         vm.prank(unauthorizedUser);
         vm.expectRevert(
             abi.encodeWithSelector(
                 IAccessControl.AccessControlUnauthorizedAccount.selector,
                 unauthorizedUser,
-                ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE
+                ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE
             )
         );
-        compliance.removeFromAllowList(alice);
+        IATKComplianceBypassList(address(compliance)).removeFromBypassList(charlie);
     }
 
-    function testRemoveFromAllowListNotAllowListed() public {
-        vm.prank(allowListManager);
-        vm.expectRevert(abi.encodeWithSelector(IATKComplianceAllowList.AddressNotAllowListed.selector, alice));
-        compliance.removeFromAllowList(alice);
+    function testRemoveNonBypassedAddress() public {
+        vm.prank(bypassListManager);
+        vm.expectRevert(abi.encodeWithSelector(IATKComplianceBypassList.AddressNotOnBypassList.selector, charlie));
+        IATKComplianceBypassList(address(compliance)).removeFromBypassList(charlie);
     }
 
-    function testAddMultipleToAllowListSuccess() public {
-        address[] memory accounts = new address[](3);
-        accounts[0] = alice;
-        accounts[1] = bob;
-        accounts[2] = charlie;
+    function testAddMultipleToBypassList() public {
+        address[] memory addresses = new address[](2);
+        addresses[0] = alice;
+        addresses[1] = bob;
 
-        vm.prank(allowListManager);
-        for (uint256 i = 0; i < accounts.length; i++) {
-            vm.expectEmit(true, true, false, true);
-            emit IATKComplianceAllowList.AddressAllowListed(accounts[i], allowListManager);
-        }
-        compliance.addMultipleToAllowList(accounts);
+        vm.prank(bypassListManager);
+        vm.expectEmit(true, true, true, true);
+        emit IATKComplianceBypassList.AddressAddedToBypassList(alice, bypassListManager);
+        vm.expectEmit(true, true, true, true);
+        emit IATKComplianceBypassList.AddressAddedToBypassList(bob, bypassListManager);
 
-        assertTrue(compliance.isAllowListed(alice));
-        assertTrue(compliance.isAllowListed(bob));
-        assertTrue(compliance.isAllowListed(charlie));
+        IATKComplianceBypassList(address(compliance)).addMultipleToBypassList(addresses);
+        assertTrue(IATKComplianceBypassList(address(compliance)).isBypassed(alice));
+        assertTrue(IATKComplianceBypassList(address(compliance)).isBypassed(bob));
     }
 
-    function testAddMultipleToAllowListWithZeroAddress() public {
-        address[] memory accounts = new address[](3);
-        accounts[0] = alice;
-        accounts[1] = address(0); // Zero address
-        accounts[2] = charlie;
+    function testRemoveMultipleFromBypassList() public {
+        address[] memory addresses = new address[](2);
+        addresses[0] = alice;
+        addresses[1] = bob;
 
-        vm.prank(allowListManager);
-        vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
-        compliance.addMultipleToAllowList(accounts);
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addMultipleToBypassList(addresses);
 
-        // None should be allow listed due to revert
-        assertFalse(compliance.isAllowListed(alice));
-        assertFalse(compliance.isAllowListed(charlie));
+        vm.prank(bypassListManager);
+        vm.expectEmit(true, true, true, true);
+        emit IATKComplianceBypassList.AddressRemovedFromBypassList(alice, bypassListManager);
+        vm.expectEmit(true, true, true, true);
+        emit IATKComplianceBypassList.AddressRemovedFromBypassList(bob, bypassListManager);
+
+        IATKComplianceBypassList(address(compliance)).removeMultipleFromBypassList(addresses);
+        assertFalse(IATKComplianceBypassList(address(compliance)).isBypassed(alice));
+        assertFalse(IATKComplianceBypassList(address(compliance)).isBypassed(bob));
     }
 
-    function testAddMultipleToAllowListWithDuplicate() public {
-        // First add alice
-        vm.prank(allowListManager);
-        compliance.addToAllowList(alice);
+    function testCanTransferToBypassedAddress() public {
+        // Add a failing module to ensure canTransfer would normally fail
+        token.addModule(address(failingModule), "");
 
-        address[] memory accounts = new address[](3);
-        accounts[0] = bob;
-        accounts[1] = alice; // Already allow listed
-        accounts[2] = charlie;
+        // Add bob to the bypass list
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(bob);
 
-        vm.prank(allowListManager);
-        vm.expectRevert(abi.encodeWithSelector(IATKComplianceAllowList.AddressAlreadyAllowListed.selector, alice));
-        compliance.addMultipleToAllowList(accounts);
-
-        // Bob should not be allow listed due to revert
-        assertFalse(compliance.isAllowListed(bob));
-        assertFalse(compliance.isAllowListed(charlie));
+        // Transfer should succeed because bob is on the bypass list
+        assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
     }
 
-    function testRemoveMultipleFromAllowListSuccess() public {
-        // First add all to allow list
-        address[] memory accounts = new address[](3);
-        accounts[0] = alice;
-        accounts[1] = bob;
-        accounts[2] = charlie;
+    function testCanTransferFromBypassedAddress() public {
+        // Add a failing module to ensure canTransfer would normally fail
+        token.addModule(address(failingModule), "");
 
-        vm.prank(allowListManager);
-        compliance.addMultipleToAllowList(accounts);
+        // Add alice to the bypass list
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(alice);
 
-        // Then remove all
-        vm.prank(allowListManager);
-        for (uint256 i = 0; i < accounts.length; i++) {
-            vm.expectEmit(true, true, false, true);
-            emit IATKComplianceAllowList.AddressRemovedFromAllowList(accounts[i], allowListManager);
-        }
-        compliance.removeMultipleFromAllowList(accounts);
-
-        assertFalse(compliance.isAllowListed(alice));
-        assertFalse(compliance.isAllowListed(bob));
-        assertFalse(compliance.isAllowListed(charlie));
-    }
-
-    function testRemoveMultipleFromAllowListWithNotAllowListed() public {
-        // Only add alice to allow list
-        vm.prank(allowListManager);
-        compliance.addToAllowList(alice);
-
-        address[] memory accounts = new address[](3);
-        accounts[0] = alice;
-        accounts[1] = bob; // Not allow listed
-        accounts[2] = charlie;
-
-        vm.prank(allowListManager);
-        vm.expectRevert(abi.encodeWithSelector(IATKComplianceAllowList.AddressNotAllowListed.selector, bob));
-        compliance.removeMultipleFromAllowList(accounts);
-
-        // Alice should still be allow listed due to revert
-        assertTrue(compliance.isAllowListed(alice));
-    }
-
-    function testIsAllowListedInitiallyFalse() public view {
-        assertFalse(compliance.isAllowListed(alice));
-        assertFalse(compliance.isAllowListed(bob));
-        assertFalse(compliance.isAllowListed(address(0)));
+        // Transfer should NOT succeed because only the receiver is checked
+        vm.expectRevert(
+            abi.encodeWithSelector(ISMARTComplianceModule.ComplianceCheckFailed.selector, "Transfer not allowed")
+        );
+        ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100);
     }
 
     // --- AllowList Effect on canTransfer Tests ---
@@ -525,8 +482,8 @@ contract ATKComplianceImplementationTest is Test {
         token.addModule(address(failingModule), abi.encode(uint256(100)));
 
         // AllowList the receiver
-        vm.prank(allowListManager);
-        compliance.addToAllowList(bob);
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(bob);
 
         // Transfer should succeed despite failing module because receiver is allow listed
         assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
@@ -550,8 +507,8 @@ contract ATKComplianceImplementationTest is Test {
         token.addModule(address(failingModule2), abi.encode(uint256(200)));
 
         // AllowList receiver
-        vm.prank(allowListManager);
-        compliance.addToAllowList(bob);
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(bob);
 
         // Should succeed despite multiple failing modules
         assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
@@ -562,8 +519,8 @@ contract ATKComplianceImplementationTest is Test {
         token.addModule(address(failingModule), abi.encode(uint256(100)));
 
         // AllowList receiver for mint (from = address(0))
-        vm.prank(allowListManager);
-        compliance.addToAllowList(alice);
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(alice);
 
         // Mint should succeed despite failing module
         assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), address(0), alice, 1000));
@@ -587,8 +544,8 @@ contract ATKComplianceImplementationTest is Test {
         }
 
         // AllowList receiver
-        vm.prank(allowListManager);
-        compliance.addToAllowList(bob);
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(bob);
 
         // Measure gas - should be much lower due to early return
         uint256 gasBefore = gasleft();
@@ -596,8 +553,8 @@ contract ATKComplianceImplementationTest is Test {
         uint256 gasUsedAllowListed = gasBefore - gasleft();
 
         // Remove from allow list and measure gas for normal flow
-        vm.prank(allowListManager);
-        compliance.removeFromAllowList(bob);
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).removeFromBypassList(bob);
 
         gasBefore = gasleft();
         assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, bob, 100));
@@ -612,13 +569,13 @@ contract ATKComplianceImplementationTest is Test {
 
     // --- Fuzz tests for allow list ---
 
-    function testFuzzAddToAllowList(address account) public {
+    function testFuzzAddToBypassList(address account) public {
         vm.assume(account != address(0));
 
-        vm.prank(allowListManager);
-        compliance.addToAllowList(account);
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(account);
 
-        assertTrue(compliance.isAllowListed(account));
+        assertTrue(IATKComplianceBypassList(address(compliance)).isBypassed(account));
     }
 
     function testFuzzAllowListCanTransfer(address receiver, uint256 amount) public {
@@ -628,8 +585,8 @@ contract ATKComplianceImplementationTest is Test {
         token.addModule(address(failingModule), abi.encode(uint256(100)));
 
         // AllowList receiver
-        vm.prank(allowListManager);
-        compliance.addToAllowList(receiver);
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(receiver);
 
         // Should always succeed with allow listed receiver
         assertTrue(ISMARTCompliance(address(compliance)).canTransfer(address(token), alice, receiver, amount));
@@ -642,8 +599,8 @@ contract ATKComplianceImplementationTest is Test {
         token.addModule(address(validModule), abi.encode(uint256(100)));
 
         // AllowList receiver
-        vm.prank(allowListManager);
-        compliance.addToAllowList(bob);
+        vm.prank(bypassListManager);
+        IATKComplianceBypassList(address(compliance)).addToBypassList(bob);
 
         // Even with allow listed receiver, transferred callback should still work
         vm.prank(address(token));
