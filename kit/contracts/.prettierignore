@@ -1,0 +1,11 @@
+.turbo/
+node_modules/
+.env
+.env.local
+artifacts/
+cache/
+cache_forge/
+dependencies/
+out/
+out-genesis/
+portal/

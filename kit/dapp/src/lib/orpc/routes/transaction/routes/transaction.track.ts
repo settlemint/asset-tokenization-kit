@@ -3,6 +3,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { EthereumHash } from "@/lib/utils/zod/validators/ethereum-hash";
 import { ORPCError } from "@orpc/server";
+import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { ar } from "../../../procedures/auth.router";
 
@@ -27,7 +28,13 @@ export const track = ar.transaction.track
   .handler(async function* ({ input, context }) {
     const { transactionHash, messages } = input;
 
-    let receiptFound = false;
+    let receipt:
+      | NonNullable<
+          NonNullable<
+            ResultOf<typeof GET_TRANSACTION_QUERY>["getTransaction"]
+          >["receipt"]
+        >
+      | undefined = undefined;
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       const { getTransaction } = await context.portalClient.request(
         GET_TRANSACTION_QUERY,
@@ -36,7 +43,7 @@ export const track = ar.transaction.track
         }
       );
 
-      const receipt = getTransaction?.receipt;
+      receipt = getTransaction?.receipt ?? undefined;
       if (!receipt) {
         yield {
           status: "pending",
@@ -46,8 +53,6 @@ export const track = ar.transaction.track
         await delay(DELAY_MS);
         continue;
       }
-
-      receiptFound = true;
 
       if (receipt.status !== "Success") {
         yield {
@@ -59,7 +64,7 @@ export const track = ar.transaction.track
       }
     }
 
-    if (!receiptFound) {
+    if (!receipt) {
       yield {
         status: "failed",
         reason: messages.transaction.dropped,
@@ -69,10 +74,38 @@ export const track = ar.transaction.track
     }
 
     yield {
-      status: "confirmed",
-      message: messages.transaction.success,
+      status: "pending",
+      message: messages.indexing.pending,
       transactionHash,
     };
+
+    const startTime = Date.now();
+    const timeoutMs = 180_000;
+    const pollingIntervalMs = 500;
+
+    while (true) {
+      if (Date.now() - startTime > timeoutMs) {
+        yield {
+          status: "failed",
+          reason: messages.indexing.timeout,
+          transactionHash,
+        };
+        return;
+      }
+
+      const { _meta } = await theGraphClient.request(GET_INDEXING_STATUS_QUERY);
+      const indexedBlock = _meta?.block?.number ?? 0;
+
+      if (indexedBlock >= Number(receipt.blockNumber)) {
+        yield {
+          status: "confirmed",
+          message: messages.indexing.success,
+          transactionHash,
+        };
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
+    }
   });
 
 // Create logger instance with configurable log level

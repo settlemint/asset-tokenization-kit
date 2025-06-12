@@ -1,4 +1,5 @@
 import { dirname, join, resolve } from "node:path";
+import { warn } from "./logging";
 
 /**
  * Finds the root of a turbo monorepo project
@@ -55,7 +56,7 @@ export async function findTurboRoot(startPath?: string) {
           }
         } catch (error) {
           // Continue searching if package.json is malformed
-          console.warn(
+          warn(
             `Malformed package.json at ${packageJsonPath}, continuing search...`
           );
         }
@@ -94,7 +95,7 @@ export async function findTurboRoot(startPath?: string) {
             break;
           }
         } catch (error) {
-          console.warn(
+          warn(
             `Malformed package.json at ${packageJsonPath}, continuing search...`
           );
         }
@@ -124,7 +125,7 @@ export async function findTurboRoot(startPath?: string) {
   }
 
   if (!kitExists) {
-    console.warn(
+    warn(
       `Kit directory not found at ${kitRootPath}, but continuing with monorepo root`
     );
   }

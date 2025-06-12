@@ -284,24 +284,24 @@ async function compileContracts(): Promise<boolean> {
 function listAbiNames(): void {
   log.info("Available ABI names:");
 
-  console.log("\n📦 Onboarding:");
+  console.log("\nOnboarding:");
   AVAILABLE_ABIS.onboarding.forEach((name) => console.log(`  • ${name}`));
 
-  console.log("\n🔗 Token Infrastructure:");
+  console.log("\nToken Infrastructure:");
   AVAILABLE_ABIS.tokenInfrastructure.forEach((name) =>
     console.log(`  • ${name}`)
   );
 
-  console.log("\n💰 Asset Tokens:");
+  console.log("\nAsset Tokens:");
   AVAILABLE_ABIS.assetTokens.forEach((name) => console.log(`  • ${name}`));
 
-  console.log("\n🧠 Core ATK:");
+  console.log("\nCore ATK:");
   AVAILABLE_ABIS.coreSmart.forEach((name) => console.log(`  • ${name}`));
 
-  console.log("\n🔒 Open Zeppelin:");
+  console.log("\nOpen Zeppelin:");
   AVAILABLE_ABIS.openZeppelin.forEach((name) => console.log(`  • ${name}`));
 
-  console.log("\n🔒 Compliance Modules:");
+  console.log("\nCompliance Modules:");
   AVAILABLE_ABIS.complianceModules.forEach((name) =>
     console.log(`  • ${name}`)
   );
@@ -485,10 +485,6 @@ async function main(): Promise<void> {
   } catch (error) {
     log.error(`Unexpected error: ${error}`);
     exitCode = 1;
-  }
-
-  if (exitCode === 0) {
-    log.info("ABI typings generation completed successfully");
   }
 
   process.exit(exitCode);

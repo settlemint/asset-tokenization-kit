@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun";
-import { existsSync, mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { logger, info, warn, error, success } from "../../../tools/logging";
 
 interface ExtractOptions {
   releaseName?: string;
@@ -19,8 +19,8 @@ async function extractEnvFromHelmNotes(options: ExtractOptions = {}) {
 
   try {
     // Get the helm notes output
-    console.log(
-      `📋 Extracting environment configuration from Helm release '${releaseName}' in namespace '${namespace}'...`
+    info(
+      `Extracting environment configuration from Helm release '${releaseName}' in namespace '${namespace}'...`
     );
 
     const notesResult =
@@ -60,40 +60,43 @@ async function extractEnvFromHelmNotes(options: ExtractOptions = {}) {
       .substring(envLocalStart + envLocalStartMarker.length, envLocalEndSearch)
       .trim();
 
-    // Ensure output directory exists
-    if (!existsSync(outputDir)) {
-      mkdirSync(outputDir, { recursive: true });
+    // Ensure output directory exists using Bun's file I/O
+    const outputDirFile = Bun.file(join(outputDir, ".gitkeep"));
+    if (!(await outputDirFile.exists())) {
+      // Create directory by writing a temp file
+      await Bun.write(join(outputDir, ".gitkeep"), "");
+      await Bun.file(join(outputDir, ".gitkeep")).unlink();
     }
 
     // Write .env file
     const envPath = join(outputDir, ".env");
     await Bun.write(envPath, envContent + "\n");
-    console.log(`✅ Created ${envPath}`);
+    info(`Created ${envPath}`);
 
     // Write .env.local file
     const envLocalPath = join(outputDir, ".env.local");
     await Bun.write(envLocalPath, envLocalContent + "\n");
-    console.log(`✅ Created ${envLocalPath}`);
+    info(`Created ${envLocalPath}`);
 
     // Display a summary
-    console.log("\n📝 Environment files created successfully!");
-    console.log("\n⚠️  Important notes:");
-    console.log(
+    success("\nEnvironment files created successfully!");
+    warn("\nImportant notes:");
+    warn(
       "   - Review and update the MinIO credentials (marked with <MINIO_ACCESS_KEY> and <MINIO_SECRET_KEY>)"
     );
-    console.log(
+    warn(
       "   - These files contain sensitive information - do not commit them to version control"
     );
-    console.log(
+    warn(
       "   - Add .env and .env.local to your .gitignore if not already present"
     );
-  } catch (error) {
-    console.error("❌ Error extracting environment configuration:", error);
-    if (error instanceof Error && error.message.includes("not found")) {
-      console.error("\n💡 Make sure:");
-      console.error("   - Helm is installed and available in your PATH");
-      console.error("   - The release name and namespace are correct");
-      console.error(
+  } catch (err) {
+    error("Error extracting environment configuration:", err);
+    if (err instanceof Error && err.message.includes("not found")) {
+      error("\nMake sure:");
+      error("   - Helm is installed and available in your PATH");
+      error("   - The release name and namespace are correct");
+      error(
         "   - You have the necessary permissions to access the release"
       );
     }
@@ -121,7 +124,7 @@ for (let i = 0; i < args.length; i++) {
       break;
     case "--help":
     case "-h":
-      console.log(`
+      info(`
 Usage: bun run extract-env.ts [options]
 
 Options:

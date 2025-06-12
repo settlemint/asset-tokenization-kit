@@ -1,172 +1,95 @@
 /**
- * Optimized Bun Logging Library
- * Provides colorful, emoji-enhanced logging with configurable levels
+ * Standardized Bun Logging Library using Pino
+ * Provides consistent logging with pino-pretty formatter
  */
 
+import type { LoggerOptions } from "pino";
+import pino from "pino";
+
 /**
- * Available log levels with their priority values
+ * Available log levels matching pino's levels
  */
 export enum LogLevel {
-  TRACE = 0,
-  DEBUG = 1,
-  INFO = 2,
-  WARN = 3,
-  ERROR = 4,
-  SUCCESS = 5,
-  SILENT = 6,
+  TRACE = 10,
+  DEBUG = 20,
+  INFO = 30,
+  WARN = 40,
+  ERROR = 50,
+  FATAL = 60,
+  SILENT = Infinity,
 }
 
 /**
- * ANSI color codes for terminal output
+ * Map string levels to numeric values
  */
-const Colors = {
-  reset: "\x1b[0m",
-  bright: "\x1b[1m",
-  dim: "\x1b[2m",
-
-  // Text colors
-  black: "\x1b[30m",
-  red: "\x1b[31m",
-  green: "\x1b[32m",
-  yellow: "\x1b[33m",
-  blue: "\x1b[34m",
-  magenta: "\x1b[35m",
-  cyan: "\x1b[36m",
-  white: "\x1b[37m",
-  gray: "\x1b[90m",
-
-  // Background colors
-  bgBlack: "\x1b[40m",
-  bgRed: "\x1b[41m",
-  bgGreen: "\x1b[42m",
-  bgYellow: "\x1b[43m",
-  bgBlue: "\x1b[44m",
-  bgMagenta: "\x1b[45m",
-  bgCyan: "\x1b[46m",
-  bgWhite: "\x1b[47m",
-} as const;
-
-/**
- * Log level configuration with emojis and colors
- */
-const LOG_CONFIG = {
-  [LogLevel.TRACE]: {
-    emoji: "🔍",
-    color: Colors.gray,
-    name: "TRACE",
-    method: "log" as const,
-  },
-  [LogLevel.DEBUG]: {
-    emoji: "🐛",
-    color: Colors.cyan,
-    name: "DEBUG",
-    method: "debug" as const,
-  },
-  [LogLevel.INFO]: {
-    emoji: "ℹ️",
-    color: Colors.blue,
-    name: "INFO",
-    method: "info" as const,
-  },
-  [LogLevel.WARN]: {
-    emoji: "⚠️",
-    color: Colors.yellow,
-    name: "WARN",
-    method: "warn" as const,
-  },
-  [LogLevel.ERROR]: {
-    emoji: "❌",
-    color: Colors.red,
-    name: "ERROR",
-    method: "error" as const,
-  },
-  [LogLevel.SUCCESS]: {
-    emoji: "✅",
-    color: Colors.green,
-    name: "SUCCESS",
-    method: "log" as const,
-  },
-  [LogLevel.SILENT]: null,
-} as const;
+const LOG_LEVEL_MAP: Record<string, number> = {
+  TRACE: LogLevel.TRACE,
+  DEBUG: LogLevel.DEBUG,
+  INFO: LogLevel.INFO,
+  WARN: LogLevel.WARN,
+  ERROR: LogLevel.ERROR,
+  FATAL: LogLevel.FATAL,
+  SILENT: LogLevel.SILENT,
+};
 
 /**
  * Parse log level from environment variable or return default
  */
-function parseLogLevel(level: string | undefined): LogLevel {
-  switch (level) {
-    case "TRACE":
-      return LogLevel.TRACE;
-    case "DEBUG":
-      return LogLevel.DEBUG;
-    case "INFO":
-      return LogLevel.INFO;
-    case "WARN":
-      return LogLevel.WARN;
-    case "ERROR":
-      return LogLevel.ERROR;
-    case "SUCCESS":
-      return LogLevel.SUCCESS;
-    case "SILENT":
-      return LogLevel.SILENT;
-    default:
-      return LogLevel.WARN; // Default level - shows WARN, ERROR, SUCCESS
+function parseLogLevel(level: string | undefined): number {
+  if (!level) {
+    return LogLevel.INFO; // Default to INFO level for debugging
+  }
+
+  const upperLevel = level.toUpperCase();
+  return LOG_LEVEL_MAP[upperLevel] ?? LogLevel.INFO;
+}
+
+/**
+ * Get pino configuration based on environment
+ */
+function getPinoConfig(): LoggerOptions {
+  const isCI = process.env.CI === "true";
+  const level = parseLogLevel(process.env.LOG_LEVEL);
+
+  // In development/local, use pretty printing with default colors
+  return {
+    level: pino.levels.labels[level] || "info",
+    transport: {
+      target: "pino-pretty",
+      options: {
+        colorize: true,
+        translateTime: "HH:MM:ss.l",
+        ignore: "pid,hostname",
+      },
+    },
+  };
+}
+
+/**
+ * Create the pino logger instance
+ */
+const pinoLogger = pino(getPinoConfig());
+
+/**
+ * Success is not a standard pino level, so we'll use info with a special prefix
+ */
+function logSuccess(message: string, ...args: unknown[]): void {
+  // Only show party emoji for final success messages
+  const isImportantSuccess =
+    message.toLowerCase().includes("success") ||
+    message.toLowerCase().includes("complete") ||
+    message.toLowerCase().includes("done") ||
+    message.toLowerCase().includes("finished");
+
+  if (isImportantSuccess && args.length === 0) {
+    pinoLogger.info(`${message} 🎉`);
+  } else {
+    pinoLogger.info(message, ...args);
   }
 }
 
 /**
- * Current active log level
- */
-const currentLogLevel = parseLogLevel(process.env.LOG_LEVEL?.toUpperCase());
-
-/**
- * Format timestamp for log output
- */
-function formatTimestamp(): string {
-  const now = new Date();
-  const hours = now.getHours().toString().padStart(2, "0");
-  const minutes = now.getMinutes().toString().padStart(2, "0");
-  const seconds = now.getSeconds().toString().padStart(2, "0");
-  const milliseconds = now.getMilliseconds().toString().padStart(3, "0");
-
-  return `${Colors.gray}${hours}:${minutes}:${seconds}.${milliseconds}${Colors.reset}`;
-}
-
-/**
- * Format log level badge
- */
-function formatLogLevel(level: LogLevel): string {
-  const config = LOG_CONFIG[level];
-  if (!config) {
-    return "";
-  }
-  return `${config.emoji} ${config.color}${Colors.bright}${config.name}${Colors.reset}`;
-}
-
-/**
- * Core logging function
- */
-function log(level: LogLevel, message: string, ...args: unknown[]): void {
-  // Check if this log level should be output
-  if (level < currentLogLevel || level === LogLevel.SILENT) {
-    return;
-  }
-
-  const config = LOG_CONFIG[level];
-  const timestamp = formatTimestamp();
-  const levelBadge = formatLogLevel(level);
-
-  // Format the message with colors
-  const coloredMessage = `${config.color}${message}${Colors.reset}`;
-
-  // Use appropriate console method
-  console[config.method](
-    `${timestamp} ${levelBadge} ${coloredMessage}`,
-    ...args
-  );
-}
-
-/**
- * Logging interface with all available methods
+ * Logging interface matching the existing API
  */
 export interface Logger {
   trace: (message: string, ...args: unknown[]) => void;
@@ -175,84 +98,54 @@ export interface Logger {
   warn: (message: string, ...args: unknown[]) => void;
   error: (message: string, ...args: unknown[]) => void;
   success: (message: string, ...args: unknown[]) => void;
+  fatal: (message: string, ...args: unknown[]) => void;
   setLevel: (level: LogLevel | string) => void;
-  getLevel: () => LogLevel;
+  getLevel: () => string;
   isLevelEnabled: (level: LogLevel) => boolean;
 }
 
 /**
- * Set the current log level programmatically
- */
-function setLogLevel(level: LogLevel | string): void {
-  if (typeof level === "string") {
-    level = parseLogLevel(level);
-  }
-  // We'll store this in a module variable since we can't modify the const
-  Object.defineProperty(logger, "_currentLevel", {
-    value: level,
-    writable: true,
-    enumerable: false,
-  });
-}
-
-/**
- * Get the current log level
- */
-function getLogLevel(): LogLevel {
-  return (logger as any)._currentLevel ?? currentLogLevel;
-}
-
-/**
- * Check if a log level is enabled
- */
-function isLevelEnabled(level: LogLevel): boolean {
-  const logLevel = getLogLevel();
-  return level >= logLevel && level !== LogLevel.SILENT;
-}
-
-/**
- * Main logger instance
+ * Main logger instance wrapping pino
  */
 export const logger: Logger = {
   trace: (message: string, ...args: unknown[]) => {
-    if (isLevelEnabled(LogLevel.TRACE)) {
-      log(LogLevel.TRACE, message, ...args);
-    }
+    pinoLogger.trace(message, ...args);
   },
 
   debug: (message: string, ...args: unknown[]) => {
-    if (isLevelEnabled(LogLevel.DEBUG)) {
-      log(LogLevel.DEBUG, message, ...args);
-    }
+    pinoLogger.debug(message, ...args);
   },
 
   info: (message: string, ...args: unknown[]) => {
-    if (isLevelEnabled(LogLevel.INFO)) {
-      log(LogLevel.INFO, message, ...args);
-    }
+    pinoLogger.info(message, ...args);
   },
 
   warn: (message: string, ...args: unknown[]) => {
-    if (isLevelEnabled(LogLevel.WARN)) {
-      log(LogLevel.WARN, message, ...args);
-    }
+    pinoLogger.warn(message, ...args);
   },
 
   error: (message: string, ...args: unknown[]) => {
-    if (isLevelEnabled(LogLevel.ERROR)) {
-      log(LogLevel.ERROR, message, ...args);
-    }
+    pinoLogger.error(message, ...args);
   },
 
-  success: (message: string, ...args: unknown[]) => {
-    if (isLevelEnabled(LogLevel.SUCCESS)) {
-      log(LogLevel.SUCCESS, message, ...args);
-    }
+  success: logSuccess,
+
+  fatal: (message: string, ...args: unknown[]) => {
+    pinoLogger.fatal(message, ...args);
   },
 
-  setLevel: setLogLevel,
-  getLevel: getLogLevel,
-  isLevelEnabled,
+  setLevel: (level: LogLevel | string) => {
+    const numericLevel =
+      typeof level === "string" ? parseLogLevel(level) : level;
+    pinoLogger.level = pino.levels.labels[numericLevel] || "info";
+  },
+
+  getLevel: () => pinoLogger.level,
+
+  isLevelEnabled: (level: LogLevel) => {
+    const currentLevel = pino.levels.values[pinoLogger.level] || LogLevel.INFO;
+    return level >= currentLevel;
+  },
 };
 
 /**
@@ -264,6 +157,7 @@ export const info = logger.info;
 export const warn = logger.warn;
 export const error = logger.error;
 export const success = logger.success;
+export const fatal = logger.fatal;
 
 /**
  * Default export is the logger instance

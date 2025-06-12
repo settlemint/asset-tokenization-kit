@@ -435,10 +435,10 @@ async function compileContracts(skipBuild: boolean): Promise<void> {
     return;
   }
 
-  log.info("Compiling contracts...");
+  log.info("Compiling contracts... (this can take a while)");
 
   try {
-    await $`forge build --silent`.cwd(CONTRACTS_ROOT);
+    await $`forge build --silent`.cwd(CONTRACTS_ROOT).quiet();
     log.success("Contracts compiled successfully");
   } catch (error) {
     throw new Error(`Contract compilation failed: ${error}`);
@@ -448,13 +448,13 @@ async function compileContracts(skipBuild: boolean): Promise<void> {
 async function calculateInterfaceIds(
   tempContractPath: string
 ): Promise<string> {
-  log.info("Calculating interface IDs...");
+  log.info("Calculating interface IDs... (this can take a while)");
 
   try {
     const result =
-      await $`forge script ${tempContractPath}:InterfaceIdCalculator`.cwd(
-        CONTRACTS_ROOT
-      );
+      await $`forge script ${tempContractPath}:InterfaceIdCalculator`
+        .cwd(CONTRACTS_ROOT)
+        .quiet();
 
     const output = result.stdout.toString();
 

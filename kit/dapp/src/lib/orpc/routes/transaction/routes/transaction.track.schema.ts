@@ -23,14 +23,16 @@ export const TransactionStatusInputSchema = z.object({
   transactionHash: ethereumHash,
   messages: z.object({
     transaction: z.object({
-      pending: z.string().default("Transaction is sent to the network"),
-      success: z.string().default("Transaction is included in a block"),
-      dropped: z.string().default("Transaction is dropped from the mempool"),
+      pending: z.string().default("Transaction is sent to the network."),
+      success: z.string().default("Transaction is included in a block."),
+      dropped: z.string().default("Transaction is dropped from the mempool."),
     }),
     indexing: z.object({
-      pending: z.string().default("Transaction is pending"),
-      success: z.string().default("Transaction is confirmed"),
-      dropped: z.string().default("Transaction is dropped"),
+      pending: z.string().default("Smart contract indexing is in progress."),
+      success: z.string().default("Smart contract indexing is complete."),
+      timeout: z
+        .string()
+        .default("Smart contract indexing timed out, please try again later."),
     }),
   }),
 });
