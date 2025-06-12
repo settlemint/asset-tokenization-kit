@@ -1,5 +1,5 @@
-import { br } from "@/lib/orpc/routes/procedures/base.router";
 import { client as minioClient } from "@/lib/settlemint/minio";
+import { br } from "../../procedures/base.router";
 
 /**
  * ORPC middleware that injects the MinIO client into the procedure context.

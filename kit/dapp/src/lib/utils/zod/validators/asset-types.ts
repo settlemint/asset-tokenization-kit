@@ -67,11 +67,11 @@ export const AssetTypeEnum = {
  * @remarks
  * Features:
  * - Strict enum validation against predefined asset types
- * - Type-safe inference with branding
+ * - Type-safe inference
  * - Descriptive error messages for invalid inputs
  * - Case-sensitive matching (must be lowercase)
  *
- * @returns A branded Zod enum schema for asset type validation
+ * @returns A Zod enum schema for asset type validation
  *
  * @example
  * ```typescript
@@ -87,7 +87,7 @@ export const AssetTypeEnum = {
  * ```
  */
 export const assetType = () =>
-  z.enum(assetTypes).describe("Type of financial asset").brand<"AssetType">();
+  z.enum(assetTypes).describe("Type of financial asset");
 
 /**
  * Creates an array validator for multiple asset types.
@@ -188,7 +188,7 @@ export const assetTypeRecord = <T extends z.ZodType>(valueSchema: T) =>
 // Export types
 /**
  * Type representing a validated asset type.
- * Branded for additional type safety.
+ * Ensures type safety.
  */
 export type AssetType = z.infer<ReturnType<typeof assetType>>;
 

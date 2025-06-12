@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getPincode, isPincode, pincode, type Pincode } from "./pincode";
+import { pincode, type Pincode } from "./pincode";
 
 describe("pincode", () => {
   const validator = pincode();
@@ -11,10 +11,10 @@ describe("pincode", () => {
       const pincode3 = validator.parse("999999");
       const pincode4 = validator.parse("567890");
 
-      expect(pincode1).toBe(getPincode("123456"));
-      expect(pincode2).toBe(getPincode("000000"));
-      expect(pincode3).toBe(getPincode("999999"));
-      expect(pincode4).toBe(getPincode("567890"));
+      expect(pincode1).toBe("123456");
+      expect(pincode2).toBe("000000");
+      expect(pincode3).toBe("999999");
+      expect(pincode4).toBe("567890");
     });
 
     it("should accept pincodes with leading zeros", () => {
@@ -22,9 +22,9 @@ describe("pincode", () => {
       const pincode2 = validator.parse("001234");
       const pincode3 = validator.parse("012345");
 
-      expect(pincode1).toBe(getPincode("000001"));
-      expect(pincode2).toBe(getPincode("001234"));
-      expect(pincode3).toBe(getPincode("012345"));
+      expect(pincode1).toBe("000001");
+      expect(pincode2).toBe("001234");
+      expect(pincode3).toBe("012345");
     });
   });
 
@@ -97,7 +97,7 @@ describe("pincode", () => {
       const result = validator.safeParse("123456");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe(getPincode("123456"));
+        expect(result.data).toBe("123456");
       }
     });
 
@@ -106,74 +106,22 @@ describe("pincode", () => {
       expect(result.success).toBe(false);
     });
   });
-});
 
-describe("helper functions", () => {
-  describe("isPincode", () => {
-    it("should return true for valid pincodes", () => {
-      expect(isPincode("123456")).toBe(true);
-      expect(isPincode("000000")).toBe(true);
-      expect(isPincode("999999")).toBe(true);
-      expect(isPincode("567890")).toBe(true);
-    });
-
-    it("should return false for invalid pincodes", () => {
-      expect(isPincode("12345")).toBe(false); // too short
-      expect(isPincode("1234567")).toBe(false); // too long
-      expect(isPincode("")).toBe(false);
-      expect(isPincode("12345a")).toBe(false); // contains letter
-      expect(isPincode("123 45")).toBe(false); // contains space
-      expect(isPincode("123-45")).toBe(false); // contains dash
-      expect(isPincode(123456)).toBe(false);
-      expect(isPincode(null)).toBe(false);
-      expect(isPincode(undefined)).toBe(false);
-      expect(isPincode({})).toBe(false);
-    });
-
-    it("should return valid pincodes when input is valid", () => {
-      const validPincode = "123456";
-      const result = getPincode(validPincode);
-      // Test that the function returns the same result for the same input
-      expect(typeof result).toBe("string");
-      expect(result.length).toBe(6);
-    });
-
-    it("should throw for invalid pincodes", () => {
-      expect(() => getPincode("12345")).toThrow(
-        "PIN code must be exactly 6 digits"
-      );
-      expect(() => getPincode("")).toThrow("PIN code must be exactly 6 digits");
-      expect(() => getPincode("12345a")).toThrow(
-        "PIN code must contain only numeric digits (0-9)"
-      );
-      expect(() => getPincode("123 45")).toThrow(
-        "PIN code must contain only numeric digits (0-9)"
-      );
-      expect(() => getPincode("123-45")).toThrow(
-        "PIN code must contain only numeric digits (0-9)"
-      );
-      expect(() => getPincode(123456)).toThrow(
-        "Expected string, received number"
-      );
-      expect(() => getPincode(null)).toThrow("Expected string, received null");
-      expect(() => getPincode(undefined)).toThrow("Required");
-      expect(() => getPincode({})).toThrow("Expected string, received object");
-    });
-
-    it("isPincode should work as type guard", () => {
-      const value: unknown = "567890";
-      if (isPincode(value)) {
-        // TypeScript should recognize value as Pincode here
-        const _typeCheck: Pincode = value;
-      }
-    });
-
-    it("getPincode should return typed value", () => {
-      const validPincode = "987654";
-      const result = getPincode(validPincode);
-      // TypeScript should recognize result as Pincode
+  describe("type checking", () => {
+    it("should return proper type", () => {
+      const result = validator.parse("567890");
+      // Test that the type is correctly inferred
       const _typeCheck: Pincode = result;
-      expect(result).toBe(getPincode(validPincode));
+      expect(result).toBe("567890");
+    });
+
+    it("should handle safeParse", () => {
+      const result = validator.safeParse("987654");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: Pincode = result.data;
+        expect(result.data).toBe("987654");
+      }
     });
   });
 });

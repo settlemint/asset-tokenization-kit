@@ -16,17 +16,17 @@ import { z } from "zod";
  * Simple role hierarchy for application access:
  * - `admin`: Full administrative access, can manage users and settings
  * - `user`: Standard user access, can perform regular operations
- * - `viewer`: Read-only access, can view but not modify data
+ * - `issuer`: Asset issuance permissions, can create and manage assets
  *
  * Note: This is separate from system roles (roles.ts) which handle
  * blockchain/smart contract permissions.
  */
-export const userRoleNames = ["admin", "user", "viewer"] as const;
+export const userRoleNames = ["admin", "user", "issuer"] as const;
 
 /**
  * Creates a Zod schema that validates user roles.
  *
- * @returns A branded Zod enum schema for user role validation
+ * @returns A Zod enum schema for user role validation
  *
  * @example
  * ```typescript
@@ -35,18 +35,18 @@ export const userRoleNames = ["admin", "user", "viewer"] as const;
  * // Valid roles
  * schema.parse("admin");  // Administrative access
  * schema.parse("user");   // Standard user access
- * schema.parse("viewer"); // Read-only access
+ * schema.parse("issuer"); // Asset issuance access
  *
  * // Invalid role
  * schema.parse("moderator"); // Throws ZodError
  * ```
  */
 export const userRoles = () =>
-  z.enum(userRoleNames).describe("User role in the system").brand<"UserRole">();
+  z.enum(userRoleNames).describe("User role in the system");
 
 /**
  * Type representing a validated user role.
- * Branded for additional type safety in access control.
+ * Ensures type safety in access control.
  */
 export type UserRole = z.infer<ReturnType<typeof userRoles>>;
 
@@ -66,8 +66,8 @@ export type UserRole = z.infer<ReturnType<typeof userRoles>>;
  *   // Apply role-based logic
  *   if (role === "admin") {
  *     showAdminDashboard();
- *   } else if (role === "viewer") {
- *     hideEditButtons();
+ *   } else if (role === "issuer") {
+ *     showAssetCreationTools();
  *   }
  * }
  * ```
@@ -90,8 +90,8 @@ export function isUserRole(value: unknown): value is UserRole {
  *   const invalid = getUserRole("superuser"); // Throws Error
  * } catch (error) {
  *   console.error("Invalid user role provided");
- *   // Default to viewer for safety
- *   assignRole("viewer");
+ *   // Default to user for safety
+ *   assignRole("user");
  * }
  *
  * // Use in middleware
@@ -103,6 +103,7 @@ export function isUserRole(value: unknown): value is UserRole {
  * // Permission checks
  * const role = getUserRole(currentUser.role);
  * const canEdit = role === "admin" || role === "user";
+ * const canCreateAssets = role === "admin" || role === "issuer";
  * ```
  */
 export function getUserRole(value: unknown): UserRole {

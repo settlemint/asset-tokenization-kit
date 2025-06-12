@@ -24,7 +24,7 @@ export const fundCategories = ["mutual", "hedge", "etf", "index"] as const;
 /**
  * Creates a Zod schema that validates fund categories.
  *
- * @returns A branded Zod enum schema for fund category validation
+ * @returns A Zod enum schema for fund category validation
  *
  * @example
  * ```typescript
@@ -41,14 +41,11 @@ export const fundCategories = ["mutual", "hedge", "etf", "index"] as const;
  * ```
  */
 export const fundCategory = () =>
-  z
-    .enum(fundCategories)
-    .describe("Category of investment fund")
-    .brand<"FundCategory">();
+  z.enum(fundCategories).describe("Category of investment fund");
 
 /**
  * Type representing a validated fund category.
- * Branded for additional type safety.
+ * Ensures type safety.
  */
 export type FundCategory = z.infer<ReturnType<typeof fundCategory>>;
 

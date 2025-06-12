@@ -14,7 +14,6 @@ const FundPause = {} as any;
 const StableCoinPause = {} as any;
 const DepositPause = {} as any;
 
-
 /**
  * GraphQL mutation for pausing a bond contract
  */
@@ -160,36 +159,46 @@ export const pauseFunction = withAccessControl(
 
     switch (assettype) {
       case "bond": {
-          // const response = await portalClient.request(BondPause, params);
+        // const response = await portalClient.request(BondPause, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondPause?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondPause?.transactionHash */]
         );
       }
       case "cryptocurrency": {
         throw new Error("Cryptocurrency does not support pause operations");
       }
       case "equity": {
-          // const response = await portalClient.request(EquityPause, params);
+        // const response = await portalClient.request(EquityPause, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityPause?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityPause?.transactionHash */]
         );
       }
       case "fund": {
-          // const response = await portalClient.request(FundPause, params);
+        // const response = await portalClient.request(FundPause, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundPause?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundPause?.transactionHash */]
         );
       }
       case "stablecoin": {
-          // const response = await portalClient.request(StableCoinPause, params);
+        // const response = await portalClient.request(StableCoinPause, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinPause?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinPause?.transactionHash */]
         );
       }
       case "deposit": {
-          // const response = await portalClient.request(DepositPause, params);
+        // const response = await portalClient.request(DepositPause, params);
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositPause?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositPause?.transactionHash */]
         );
       }
       default:

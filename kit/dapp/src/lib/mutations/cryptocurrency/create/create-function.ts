@@ -9,10 +9,8 @@ import { safeParse, t } from "@/lib/utils/typebox";
 import { parseUnits } from "viem";
 import type { CreateCryptoCurrencyInput } from "./create-schema";
 
-
 // Dummy types for commented GraphQL operations
 const CryptoCurrencyFactoryCreate = {} as any;
-
 
 /**
  * GraphQL mutation for creating a new cryptocurrency

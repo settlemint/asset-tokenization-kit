@@ -16,7 +16,6 @@ const FundRevokeRole = {} as any;
 const EquityRevokeRole = {} as any;
 const DepositRevokeRole = {} as any;
 
-
 /**
  * GraphQL mutation for revoking a role from a user for a bond
  *
@@ -189,46 +188,46 @@ export const revokeRoleFunction = withAccessControl(
 
       switch (assettype) {
         case "stablecoin": {
-            // const response = await portalClient.request(
-  //             StableCoinRevokeRole,
-  //             params
-  //           );
+          // const response = await portalClient.request(
+          //             StableCoinRevokeRole,
+          //             params
+          //           );
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.StableCoinRevokeRole?.transactionHash */,
           ]);
         }
         case "bond": {
-            // const response = await portalClient.request(BondRevokeRole, params);
+          // const response = await portalClient.request(BondRevokeRole, params);
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.BondRevokeRole?.transactionHash */,
           ]);
         }
         case "cryptocurrency": {
-            // const response = await portalClient.request(
-  //             CryptoCurrencyRevokeRole,
-  //             params
-  //           );
+          // const response = await portalClient.request(
+          //             CryptoCurrencyRevokeRole,
+          //             params
+          //           );
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.CryptoCurrencyRevokeRole?.transactionHash */,
           ]);
         }
         case "fund": {
-            // const response = await portalClient.request(FundRevokeRole, params);
+          // const response = await portalClient.request(FundRevokeRole, params);
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.FundRevokeRole?.transactionHash */,
           ]);
         }
         case "equity": {
-            // const response = await portalClient.request(EquityRevokeRole, params);
+          // const response = await portalClient.request(EquityRevokeRole, params);
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.EquityRevokeRole?.transactionHash */,
           ]);
         }
         case "deposit": {
-            // const response = await portalClient.request(
-  //             DepositRevokeRole,
-  //             params
-  //           );
+          // const response = await portalClient.request(
+          //             DepositRevokeRole,
+          //             params
+          //           );
           return safeParse(t.Hashes(), [
             "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositRevokeRole?.transactionHash */,
           ]);

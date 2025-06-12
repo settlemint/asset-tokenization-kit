@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getISIN, isin, isISIN, type ISIN } from "./isin";
+import { isin, type ISIN } from "./isin";
 
 describe("isin", () => {
   const validator = isin();
@@ -26,16 +26,12 @@ describe("isin", () => {
     it("should accept a valid ISIN", () => {
       const validIsin = "US0378331005";
       expect(validator.parse(validIsin)).toBe(validIsin as ISIN);
-      expect(isISIN(validIsin)).toBe(true);
-      expect(getISIN(validIsin)).toBe(validIsin as ISIN);
     });
 
     it("should transform a lowercase ISIN to uppercase", () => {
       const lowerIsin = "us0378331005";
       const upperIsin = "US0378331005";
       expect(validator.parse(lowerIsin)).toBe(upperIsin as ISIN);
-      expect(isISIN(lowerIsin)).toBe(true);
-      expect(getISIN(lowerIsin)).toBe(upperIsin as ISIN);
     });
 
     it("should accept ISIN with different country codes", () => {
@@ -43,17 +39,11 @@ describe("isin", () => {
       const gbIsin = "GB00B03MLX29";
       expect(validator.parse(deIsin)).toBe(deIsin as ISIN);
       expect(validator.parse(gbIsin)).toBe(gbIsin as ISIN);
-      expect(isISIN(deIsin)).toBe(true);
-      expect(isISIN(gbIsin)).toBe(true);
-      expect(getISIN(deIsin)).toBe(deIsin as ISIN);
-      expect(getISIN(gbIsin)).toBe(gbIsin as ISIN);
     });
 
     it("should handle ISIN with check digit 0", () => {
       const zeroCheckDigit = "DE0005557508";
       expect(validator.parse(zeroCheckDigit)).toBe(zeroCheckDigit as ISIN);
-      expect(isISIN(zeroCheckDigit)).toBe(true);
-      expect(getISIN(zeroCheckDigit)).toBe(zeroCheckDigit as ISIN);
     });
   });
 
@@ -146,64 +136,21 @@ describe("isin", () => {
     });
   });
 
-  describe("helper functions", () => {
-    it("should return true for valid ISINs", () => {
-      expect(isISIN("US0378331005")).toBe(true);
-      expect(isISIN("GB0002634946")).toBe(true);
-      expect(isISIN("DE0005557508")).toBe(true);
-      expect(isISIN("FR0000120271")).toBe(true);
-      expect(isISIN("CA0679011084")).toBe(true);
-    });
-
-    it("should return false for invalid ISINs", () => {
-      expect(isISIN("US037833100")).toBe(false); // wrong length
-      expect(isISIN("US03783310055")).toBe(false); // wrong length
-      expect(isISIN("")).toBe(false);
-      expect(isISIN("1S0378331005")).toBe(false); // invalid country code
-      expect(isISIN("U10378331005")).toBe(false); // invalid country code
-      expect(isISIN("us0378331005")).toBe(true); // lowercase is accepted and transformed
-      expect(isISIN("US037833100-")).toBe(false); // invalid character
-      expect(isISIN("US037833100$")).toBe(false); // invalid character
-      expect(isISIN("US037833100 ")).toBe(false); // space
-      expect(isISIN("US037833100A")).toBe(false); // non-numeric check digit
-      expect(isISIN(123456789012)).toBe(false);
-      expect(isISIN(null)).toBe(false);
-      expect(isISIN(undefined)).toBe(false);
-      expect(isISIN({})).toBe(false);
-    });
-
-    it("should return valid ISINs when input is valid", () => {
-      const validIsin = "US0378331005";
-      const result = getISIN(validIsin);
-      expect(result).toBe(validIsin as ISIN);
-    });
-
-    it("should throw for invalid ISINs", () => {
-      expect(() => getISIN("US037833100")).toThrow();
-      expect(() => getISIN("")).toThrow();
-      expect(() => getISIN("1S0378331005")).toThrow();
-      expect(() => getISIN("US037833100-")).toThrow();
-      expect(() => getISIN("US037833100A")).toThrow();
-      expect(() => getISIN(123456789012)).toThrow();
-      expect(() => getISIN(null)).toThrow();
-      expect(() => getISIN(undefined)).toThrow();
-      expect(() => getISIN({})).toThrow();
-    });
-
-    it("isISIN should work as type guard", () => {
-      const value: unknown = "GB00B03MLX29";
-      if (isISIN(value)) {
-        // TypeScript should recognize value as ISIN here
-        const _typeCheck: ISIN = value;
-      }
-    });
-
-    it("getISIN should return typed value", () => {
-      const validIsin = "US0378331005";
-      const result = getISIN(validIsin);
-      // TypeScript should recognize result as ISIN
+  describe("type checking", () => {
+    it("should return proper type", () => {
+      const result = validator.parse("US0378331005");
+      // Test that the type is correctly inferred
       const _typeCheck: ISIN = result;
-      expect(result).toBe(validIsin as ISIN);
+      expect(result).toBe("US0378331005" as ISIN);
+    });
+
+    it("should handle safeParse", () => {
+      const result = validator.safeParse("GB00B03MLX29");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: ISIN = result.data;
+        expect(result.data).toBe("GB00B03MLX29" as ISIN);
+      }
     });
   });
 });

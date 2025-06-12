@@ -1,6 +1,6 @@
-import { br } from "@/lib/orpc/routes/procedures/base.router";
 import * as Sentry from "@sentry/nextjs";
 import SuperJSON from "superjson";
+import { br } from "../../procedures/base.router";
 
 /**
  * Maximum size in characters for serialized results in trace attributes.

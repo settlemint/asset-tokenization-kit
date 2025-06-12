@@ -7,7 +7,6 @@ import { ApiError } from "next/dist/server/api-utils";
 // Dummy types for commented GraphQL operations
 const DisableTwoFactor = {} as any;
 
-
 /**
  * GraphQL mutation to disable a two-factor authentication for wallet verification
  */
@@ -36,14 +35,14 @@ export async function disableTwoFactorFunction({
   if (!currentUser.twoFactorVerificationId) {
     throw new ApiError(400, "Two-factor verification ID is not set");
   }
-    // const result = await portalClient.request(DisableTwoFactor, {
+  // const result = await portalClient.request(DisableTwoFactor, {
   //     address: currentUser.wallet,
   //     verificationId: currentUser.twoFactorVerificationId,
   //   });
-  
+
   // NOTE: HARDCODED SO IT STILL COMPILES
   const result = { deleteWalletVerification: true };
-  
+
   revalidateTag("user");
   return result.deleteWalletVerification;
 }

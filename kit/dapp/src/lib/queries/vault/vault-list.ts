@@ -35,7 +35,7 @@ export const getVaultList = withTracing("queries", "getVaultList", async () => {
   //   });
   //   return safeParse(t.Array(VaultListSchema), result.vaults);
   // });
-  
+
   // NOTE: HARDCODED SO IT STILL COMPILES
   return [];
 });

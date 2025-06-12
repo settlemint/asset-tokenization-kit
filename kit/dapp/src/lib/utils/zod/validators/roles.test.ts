@@ -1,14 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { z } from "zod";
-import {
-  getRole,
-  getRoleMap,
-  isRole,
-  isRoleMap,
-  roleMap,
-  roleNames,
-  roles,
-} from "./roles";
+import { roleMap, roleNames, roles, type Role, type RoleMap } from "./roles";
 
 describe("roles", () => {
   const validator = roles();
@@ -121,129 +113,46 @@ describe("roleMap", () => {
   });
 });
 
-describe("helper functions", () => {
-  describe("isRole", () => {
-    it("should return true for valid roles", () => {
-      expect(isRole("admin")).toBe(true);
-      expect(isRole("issuer")).toBe(true);
-      expect(isRole("manager")).toBe(true);
-      expect(isRole("compliance")).toBe(true);
-      expect(isRole("auditor")).toBe(true);
-      expect(isRole("investor")).toBe(true);
+describe("type checking", () => {
+  describe("roles type", () => {
+    it("should return proper type", () => {
+      const result = roles().parse("admin");
+      // Test that the type is correctly inferred
+      const _typeCheck: Role = result;
+      expect(result).toBe("admin");
     });
 
-    it("should return false for invalid roles", () => {
-      expect(isRole("superadmin")).toBe(false);
-      expect(isRole("user")).toBe(false);
-      expect(isRole("viewer")).toBe(false);
-      expect(isRole("")).toBe(false);
-      expect(isRole(123)).toBe(false);
-      expect(isRole(null)).toBe(false);
-      expect(isRole(undefined)).toBe(false);
-      expect(isRole({})).toBe(false);
-      expect(isRole("Admin")).toBe(false);
-      expect(isRole("MANAGER")).toBe(false);
-    });
-
-    it("should narrow types correctly", () => {
-      const value: unknown = "admin";
-      if (isRole(value)) {
-        // Type should be narrowed to Role
-        const role: z.infer<ReturnType<typeof roles>> = value;
-        expect(role as string).toBe("admin");
+    it("should handle safeParse", () => {
+      const result = roles().safeParse("manager");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: Role = result.data;
+        expect(result.data).toBe("manager");
       }
     });
   });
 
-  describe("getRole", () => {
-    it("should return valid roles", () => {
-      expect(getRole("admin") as string).toBe("admin");
-      expect(getRole("issuer") as string).toBe("issuer");
-      expect(getRole("manager") as string).toBe("manager");
-      expect(getRole("compliance") as string).toBe("compliance");
-      expect(getRole("auditor") as string).toBe("auditor");
-      expect(getRole("investor") as string).toBe("investor");
+  describe("roleMap type", () => {
+    it("should return proper type", () => {
+      const result = roleMap().parse({ "0x123": "admin" });
+      // Test that the type is correctly inferred
+      const _typeCheck: RoleMap = result;
+      expect(result).toEqual({ "0x123": "admin" });
     });
 
-    it("should throw for invalid roles", () => {
-      expect(() => getRole("superadmin")).toThrow();
-      expect(() => getRole("user")).toThrow();
-      expect(() => getRole("")).toThrow();
-      expect(() => getRole(123)).toThrow(
-        "Expected 'admin' | 'issuer' | 'manager' | 'compliance' | 'auditor' | 'investor', received number"
-      );
-      expect(() => getRole(null)).toThrow(
-        "Expected 'admin' | 'issuer' | 'manager' | 'compliance' | 'auditor' | 'investor', received null"
-      );
-      expect(() => getRole(undefined)).toThrow("Required");
-      expect(() => getRole({})).toThrow(
-        "Expected 'admin' | 'issuer' | 'manager' | 'compliance' | 'auditor' | 'investor', received object"
-      );
-      expect(() => getRole("Admin")).toThrow();
-    });
-  });
-
-  describe("isRoleMap", () => {
-    it("should return true for valid role maps", () => {
-      expect(isRoleMap({})).toBe(true);
-      expect(isRoleMap({ "0x123": "admin" })).toBe(true);
-      expect(
-        isRoleMap({
-          "0x1234567890123456789012345678901234567890": "admin",
-          "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd": "manager",
-          user123: "investor",
-        })
-      ).toBe(true);
-    });
-
-    it("should return false for invalid role maps", () => {
-      expect(isRoleMap({ address1: "superuser" })).toBe(false);
-      expect(isRoleMap({ address1: 123 })).toBe(false);
-      expect(isRoleMap({ address1: null })).toBe(false);
-      expect(isRoleMap(["admin", "manager"])).toBe(false);
-      expect(isRoleMap("admin")).toBe(false);
-      expect(isRoleMap(123)).toBe(false);
-      expect(isRoleMap(null)).toBe(false);
-    });
-
-    it("should narrow types correctly", () => {
-      const value: unknown = { "0x123": "admin" };
-      if (isRoleMap(value)) {
-        // Type should be narrowed to RoleMap
-        const map: z.infer<ReturnType<typeof roleMap>> = value;
-        expect(map as any).toEqual({ "0x123": "admin" });
-      }
-    });
-  });
-
-  describe("getRoleMap", () => {
-    it("should return valid role maps", () => {
-      expect(getRoleMap({})).toEqual({});
-      expect(getRoleMap({ "0x123": "admin" }) as any).toEqual({
-        "0x123": "admin",
-      });
-      expect(
-        getRoleMap({
-          "0x1234567890123456789012345678901234567890": "admin",
-          "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd": "manager",
-        }) as any
-      ).toEqual({
+    it("should handle safeParse", () => {
+      const result = roleMap().safeParse({
         "0x1234567890123456789012345678901234567890": "admin",
         "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd": "manager",
       });
-    });
-
-    it("should throw for invalid role maps", () => {
-      expect(() => getRoleMap({ address1: "superuser" })).toThrow();
-      expect(() => getRoleMap({ address1: 123 })).toThrow();
-      expect(() => getRoleMap(["admin", "manager"])).toThrow(
-        "Expected object, received array"
-      );
-      expect(() => getRoleMap("admin")).toThrow(
-        "Expected object, received string"
-      );
-      expect(() => getRoleMap(123)).toThrow("Expected object, received number");
-      expect(() => getRoleMap(null)).toThrow("Expected object, received null");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: RoleMap = result.data;
+        expect(result.data).toEqual({
+          "0x1234567890123456789012345678901234567890": "admin",
+          "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd": "manager",
+        });
+      }
     });
   });
 });

@@ -86,6 +86,10 @@ jobs:
         with:
           version: stable
 
+      - name: Install Helm Docs
+        run: |
+          brew install norwoodj/tap/helm-docs
+
       - name: Install Bun dependencies
         run: bun install
 
@@ -100,7 +104,6 @@ jobs:
         uses: settlemint/settlemint-action@main
         with:
           instance: local
-          command: "connect -a"
 
       - name: Turbo
         run: |

@@ -1,5 +1,5 @@
-import { br } from "@/lib/orpc/routes/procedures/base.router";
 import { theGraphClient } from "@/lib/settlemint/the-graph";
+import { br } from "../../procedures/base.router";
 
 /**
  * ORPC middleware that injects The Graph client into the procedure context.

@@ -34,7 +34,6 @@
     "turbo.json"
   ],
   "scripts": {
-    "typecheck": "turbo run typecheck",
     "postinstall": "turbo run dependencies",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
@@ -45,7 +44,7 @@
     "ci:publish": "turbo run ci:publish",
     "version": "bun run tools/version.ts",
     "clean": "git clean -fdX -e '.env' -e '.env.*' -e '!.env' -e '!.env.*' && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' -o -name 'bun.lock' \\) -exec rm -f {} + && bun install",
-    "dev": "turbo dev",
+    "dev": "turbo dev watch",
     "lint": "turbo lint",
     "format": "turbo format",
     "test": "turbo test",
@@ -56,10 +55,13 @@
     "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
     "test:e2e:api:debug": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests --ui",
     "helm": "turbo run helm",
-    "predev:up": "docker compose -p atk down || true",
     "dev:up": "docker compose -p atk up -d",
+    "postdev:up": "settlemint connect --instance local && settlemint hasura track -a",
+    "dev:reset": "(docker compose -p atk down || true) && (docker volume ls -q --filter name=^atk- | xargs -r docker volume rm || true)",
+    "postdev:reset": "bun run dev:up",
     "artifacts": "turbo run artifacts",
-    "extract-env": "bun run tools/extract-env.ts"
+    "extract-env": "bun run tools/extract-env.ts",
+    "db:studio": "turbo run db:studio"
   },
   "dependencies": {},
   "devDependencies": {
@@ -70,18 +72,13 @@
     "typescript": "5.8.3"
   },
   "trustedDependencies": [
-    "@prisma/client",
-    "@prisma/engines",
     "@sentry/cli",
     "@tailwindcss/oxide",
-    "better-sqlite3",
     "canvas",
     "core-js",
     "esbuild",
     "keccak",
     "lefthook",
-    "libpq",
-    "prisma",
     "protobufjs",
     "secp256k1",
     "unrs-resolver",
@@ -99,6 +96,10 @@
     "adm-zip": "0.5.16",
     "undici": "7.10.0",
     "prettier": "3.5.3",
-    "zod": "3.25.60"
+    "zod": "3.25.62",
+    "@tanstack/query-sync-storage-persister": "5.80.6",
+    "@tanstack/react-query": "5.80.6",
+    "@tanstack/react-query-devtools": "5.80.6",
+    "@tanstack/react-query-persist-client": "5.80.6"
   }
 }

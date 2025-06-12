@@ -41,15 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 # codegen
-*-cache.d.ts
-
-
-*-env.d.ts
-*-schema.graphql
-the-graph-cache-*.d.ts
-the-graph-env-*.d.ts
-the-graph-schema-*.graphql
-src/lib/settlemint
 .env.local
 # Sentry Config File
 .env.sentry-build-plugin

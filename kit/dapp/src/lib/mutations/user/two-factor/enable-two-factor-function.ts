@@ -9,7 +9,6 @@ import type { EnableTwoFactorInput } from "./enable-two-factor-schema";
 // Dummy types for commented GraphQL operations
 const EnableTwoFactor = {} as any;
 
-
 /**
  * GraphQL mutation to enable a two-factor authentication for wallet verification
  */
@@ -59,24 +58,24 @@ export async function enableTwoFactorFunction({
   if (currentUser.twoFactorEnabled && currentUser.twoFactorVerificationId) {
     throw new ApiError(400, "Two-factor verification already enabled");
   }
-    // const result = await portalClient.request(EnableTwoFactor, {
+  // const result = await portalClient.request(EnableTwoFactor, {
   //     address: currentUser.wallet,
   //     algorithm,
   //     digits,
   //     period,
   //     issuer: metadata.title.default,
   //   });
-  
+
   // NOTE: HARDCODED SO IT STILL COMPILES
   const result = {
     createWalletVerification: {
       id: "mock-verification-id",
       parameters: {
-        uri: "otpauth://totp/MockApp:user@example.com?secret=MOCKSECRET&issuer=MockApp"
-      }
-    }
+        uri: "otpauth://totp/MockApp:user@example.com?secret=MOCKSECRET&issuer=MockApp",
+      },
+    },
   };
-  
+
   const parameters = result.createWalletVerification?.parameters as {
     uri?: string;
   };

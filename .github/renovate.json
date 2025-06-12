@@ -28,9 +28,19 @@
       "matchPackageNames": ["/^@settlemint//"]
     },
     {
-      "groupName": "ORPC / Tanstack",
+      "groupName": "ORPC",
       "groupSlug": "orpc",
-      "matchPackageNames": ["/^@orpc//", "/^@tanstack//"]
+      "matchPackageNames": ["/^@orpc//"]
+    },
+    {
+      "groupName": "Bun",
+      "groupSlug": "bun",
+      "matchPackageNames": ["/^bun/", "/^oven/bun/"]
+    },
+    {
+      "groupName": "Tanstack",
+      "groupSlug": "tanstack",
+      "matchPackageNames": ["/^@tanstack//"]
     },
     {
       "groupName": "Better Auth",

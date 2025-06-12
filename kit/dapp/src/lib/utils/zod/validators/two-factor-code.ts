@@ -25,7 +25,7 @@ import { z } from "zod";
  * - Authy
  * - Most TOTP-based 2FA systems
  *
- * @returns A branded Zod schema for 2FA code validation
+ * @returns A Zod schema for 2FA code validation
  *
  * @example
  * ```typescript
@@ -48,12 +48,11 @@ export const twoFactorCode = () =>
     .string()
     .length(6, "Two-factor code must be exactly 6 digits")
     .regex(/^\d{6}$/, "Two-factor code must contain only numeric digits (0-9)")
-    .describe("Two-factor authentication code")
-    .brand<"TwoFactorCode">();
+    .describe("Two-factor authentication code");
 
 /**
  * Type representing a validated 6-digit 2FA code.
- * Branded for additional type safety in authentication flows.
+ * Ensures type safety in authentication flows.
  */
 export type TwoFactorCode = z.infer<ReturnType<typeof twoFactorCode>>;
 
