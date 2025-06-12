@@ -298,9 +298,9 @@
         "settings": "Settings"
       },
       "trade-management": {
-        "xvp-settlement": "XvP Settlement",
+        "airdrop-designer": "Airdrops",
         "group-title": "Trade management",
-        "airdrop-designer": "Airdrops"
+        "xvp-settlement": "XvP Settlement"
       }
     }
   },
@@ -362,8 +362,56 @@
     "address-avatar": {
       "avatar": "Avatar"
     },
+    "airdrop-type-icon": {
+      "not-available-initials": "NA",
+      "push-initials": "PS",
+      "standard-initials": "ST",
+      "vesting-initials": "VS"
+    },
     "asset-events-table": {
       "asset": "Asset",
+      "detail-sheet": {
+        "AUDITOR_ROLE": "Auditor Role",
+        "DEFAULT_ADMIN_ROLE": "Default Admin Role",
+        "SIGNER_ROLE": "Signer Role",
+        "SUPPLY_MANAGEMENT_ROLE": "Supply Management Role",
+        "USER_MANAGEMENT_ROLE": "User Management Role",
+        "asset": "Asset",
+        "asset-type": "Asset type",
+        "date": "Date",
+        "details": "Event details",
+        "details-button": "Details",
+        "details-for-event": "Details for {event} event",
+        "event-details": "Event Details",
+        "event-parameters": "Event parameters",
+        "sender": "Sender",
+        "transaction-hash": "Transaction Hash"
+      },
+      "details": {
+        "account": "Account",
+        "amount": "Amount",
+        "asset": "Asset",
+        "bond-amount": "Bond Amount",
+        "burned": "Burned",
+        "details-header": "Details",
+        "from": "From",
+        "holder": "Holder",
+        "new-admin-role": "New Admin Role",
+        "new-amount": "New Amount",
+        "new-mint": "New Mint",
+        "old-amount": "Old Amount",
+        "previous-admin-role": "Previous Admin Role",
+        "role": "Role",
+        "to": "To",
+        "underlying-amount": "Underlying Amount",
+        "user": "User",
+        "value": "Value"
+      },
+      "empty-state": {
+        "description": "Events will appear here once you perform actions.",
+        "title": "No activity yet"
+      },
+      "event": "Event",
       "event-names": {
         "Approval": "Approval",
         "AssetCreated": "Asset created",
@@ -411,48 +459,6 @@
         "XvPSettlementExecuted": "Settlement executed",
         "YieldClaimed": "Yield claimed"
       },
-      "empty-state": {
-        "title": "No activity yet",
-        "description": "Events will appear here once you perform actions."
-      },
-      "detail-sheet": {
-        "AUDITOR_ROLE": "Auditor Role",
-        "DEFAULT_ADMIN_ROLE": "Default Admin Role",
-        "SIGNER_ROLE": "Signer Role",
-        "SUPPLY_MANAGEMENT_ROLE": "Supply Management Role",
-        "USER_MANAGEMENT_ROLE": "User Management Role",
-        "asset": "Asset",
-        "asset-type": "Asset type",
-        "date": "Date",
-        "details": "Event details",
-        "details-button": "Details",
-        "details-for-event": "Details for {event} event",
-        "event-details": "Event Details",
-        "event-parameters": "Event parameters",
-        "sender": "Sender",
-        "transaction-hash": "Transaction Hash"
-      },
-      "details": {
-        "account": "Account",
-        "amount": "Amount",
-        "asset": "Asset",
-        "bond-amount": "Bond Amount",
-        "burned": "Burned",
-        "details-header": "Details",
-        "from": "From",
-        "holder": "Holder",
-        "new-admin-role": "New Admin Role",
-        "new-amount": "New Amount",
-        "new-mint": "New Mint",
-        "old-amount": "Old Amount",
-        "previous-admin-role": "Previous Admin Role",
-        "role": "Role",
-        "to": "To",
-        "underlying-amount": "Underlying Amount",
-        "user": "User",
-        "value": "Value"
-      },
-      "event": "Event",
       "events": "Events",
       "sender": "Sender",
       "timestamp": "Timestamp"
@@ -468,12 +474,6 @@
       "not-available-initials": "NA",
       "stablecoin-initials": "SC",
       "tokenized-deposit-initials": "TD"
-    },
-    "airdrop-type-icon": {
-      "standard-initials": "ST",
-      "vesting-initials": "VS",
-      "push-initials": "PS",
-      "not-available-initials": "NA"
     },
     "chart": {
       "info-icon-label": "Info",
@@ -614,6 +614,9 @@
       "sort-descending": "Sort Descending",
       "toggle-columns": "Toggle columns",
       "view": "View"
+    },
+    "date-picker": {
+      "pick-date": "Pick a date"
     },
     "detail-grid": {
       "info-icon-label": "Additional information"
@@ -769,14 +772,11 @@
         "status": "Status",
         "transaction-hash": "Transaction Hash"
       },
-      "title": "Transactions",
       "empty-state": {
-        "title": "No recent transactions",
-        "description": "Recent transactions will appear here when you perform actions."
-      }
-    },
-    "date-picker": {
-      "pick-date": "Pick a date"
+        "description": "Recent transactions will appear here when you perform actions.",
+        "title": "No recent transactions"
+      },
+      "title": "Transactions"
     }
   },
   "creator-owner": "Creator / Owner",
@@ -798,6 +798,89 @@
         "vaults-description": "Multisig vaults to securely store assets"
       }
     }
+  },
+  "error": {
+    "amount-required": "Amount is required",
+    "array": "Please provide a list of items",
+    "array-contains": "Please select at least one item from the list",
+    "array-max-contains": "Please select no more than {maxContains} items",
+    "array-max-items": "Please select no more than {maxItems} items",
+    "array-min-contains": "Please select at least {minContains} items",
+    "array-min-items": "Please select at least {minItems} items",
+    "array-unique-items": "Please ensure all selected items are unique",
+    "asset-required": "Asset is required",
+    "async-iterator": "Invalid data format",
+    "at-least-two-asset-flows": "Please provide at least two flows to proceed",
+    "bigint": "Please enter a whole number",
+    "bigint-exclusive-maximum": "Please enter a number smaller than {exclusiveMaximum}",
+    "bigint-exclusive-minimum": "Please enter a number larger than {exclusiveMinimum}",
+    "bigint-maximum": "Please enter a number no larger than {maximum}",
+    "bigint-minimum": "Please enter a number no smaller than {minimum}",
+    "bigint-multiple-of": "Please enter a number that is divisible by {multipleOf}",
+    "boolean": "Please select Yes or No",
+    "date": "Please select a valid date",
+    "date-exclusive-maximum-timestamp": "Please select a date before {exclusiveMaximumTimestamp}",
+    "date-exclusive-minimum-timestamp": "Please select a date after {exclusiveMinimumTimestamp}",
+    "date-maximum-timestamp": "Please select a date on or before {maximumTimestamp}",
+    "date-minimum-timestamp": "Please select a date on or after {minimumTimestamp}",
+    "date-multiple-of-timestamp": "Please select a valid date",
+    "error-id": "Error ID",
+    "expiry-required": "Expiry is required",
+    "from-address-required": "From address is required and must be a valid EVM address",
+    "function": "Invalid format",
+    "go-home": "Go home",
+    "integer": "Please enter a whole number (no decimals)",
+    "integer-exclusive-maximum": "Please enter a whole number less than {exclusiveMaximum}",
+    "integer-exclusive-minimum": "Please enter a whole number greater than {exclusiveMinimum}",
+    "integer-maximum": "Please enter a whole number no greater than {maximum}",
+    "integer-minimum": "Please enter a whole number no less than {minimum}",
+    "integer-multiple-of": "Please enter a whole number divisible by {multipleOf}",
+    "intersect": "Please ensure all information is valid",
+    "intersect-unevaluated-properties": "Unexpected information provided",
+    "iterator": "Invalid data format",
+    "kind": "Invalid format",
+    "literal": "Please enter exactly {const}",
+    "never": "This field cannot be filled",
+    "not": "This value is not accepted",
+    "null": "This field should be empty",
+    "number": "Please enter a valid number",
+    "number-exclusive-maximum": "Please enter a number less than {exclusiveMaximum}",
+    "number-exclusive-minimum": "Please enter a number greater than {exclusiveMinimum}",
+    "number-maximum": "Please enter a number no greater than {maximum}",
+    "number-minimum": "Please enter a number no less than {minimum}",
+    "number-multiple-of": "Please enter a number divisible by {multipleOf}",
+    "object": "Please provide all required information",
+    "object-additional-properties": "Unknown field provided",
+    "object-max-properties": "Too many fields provided (maximum is {maxProperties})",
+    "object-min-properties": "Please fill out at least {minProperties} fields",
+    "object-required-property": "This field is required",
+    "promise": "Invalid data format",
+    "regexp": "Please enter text in the correct format",
+    "sending": "Sending",
+    "string": "Please enter text",
+    "string-format": "Please enter text in the correct {format} format",
+    "string-format-asset-symbol": "Please enter a valid asset symbol (uppercase letters and numbers)",
+    "string-format-isin": "Please enter a valid ISIN. Format: 2 letters (country code), 9 alphanumeric characters, and 1 check digit (e.g., US0378331005)",
+    "string-format-unknown": "Unknown format '{format}'",
+    "string-max-length": "Please enter no more than {maxLength} characters",
+    "string-min-length": "Please enter at least {minLength} characters",
+    "string-pattern": "Please follow the required pattern",
+    "success": "Success",
+    "symbol": "Invalid format",
+    "title": "Something went wrong!",
+    "to-address-required": "To address is required and must be a valid EVM address",
+    "try-again": "Try again",
+    "tuple": "Please provide all required items in the correct order",
+    "tuple-length": "Please provide exactly {maxItems} items",
+    "uint8array": "Invalid file format",
+    "uint8array-max-byte-length": "File is too large",
+    "uint8array-min-byte-length": "File is too small",
+    "undefined": "This field should be empty",
+    "union": "Please enter a valid value",
+    "union-min-max": "Please enter a value between {min} and {max}",
+    "unknown": "Invalid value entered",
+    "validation-errors": "Validation error",
+    "void": "This field should be empty"
   },
   "error-pages": {
     "forbidden": {
@@ -931,7 +1014,7 @@
   },
   "layout": {
     "header": {
-      "app-description": "Asset Tokenization",
+      "app-description": "Asset Tokenization Kit",
       "app-name": "SettleMint",
       "home": "Home"
     },
@@ -1259,130 +1342,22 @@
   },
   "private": {
     "airdrops": {
-      "design-button": "Airdrop Designer",
       "create": {
-        "general": {
-          "title": {
-            "standard": "Create a new standard airdrop",
-            "vesting": "Create a new vesting airdrop",
-            "push": "Create a new push airdrop"
-          },
-          "description": {
-            "standard": "Distribute tokens that users claim within a set timeframe using Merkle proofs.",
-            "vesting": "Release tokens gradually over time according to a vesting schedule.",
-            "push": "Directly transfer tokens to recipients, initiated by an administrator."
-          }
-        },
-        "form": {
-          "description": {
-            "standard": "Distribute tokens that users claim within a set timeframe using Merkle proofs.",
-            "vesting": "Release tokens gradually over time according to a vesting schedule.",
-            "push": "Directly transfer tokens to recipients, initiated by an administrator."
-          },
-          "errors": {
-            "address-prediction-failed": "Failed to predict address. Please try again.",
-            "duplicate-airdrop": "An airdrop with these parameters already exists. Please change at least one parameter and try again.",
-            "validation-failed": "A validation error occurred."
-          },
-          "steps": {
-            "basics": {
-              "title": "Basic information",
-              "description": "Specify the basic information for this airdrop."
-            },
-            "configuration": {
-              "title": "Configuration",
-              "description": "Configure the parameters for this airdrop."
-            },
-            "summary": {
-              "title": "Summary",
-              "description": "Review all the details you have entered."
-            }
-          },
-          "title": {
-            "standard": "Design a new standard airdrop",
-            "vesting": "Design a new vesting airdrop",
-            "push": "Design a new push airdrop"
-          },
-          "toasts": {
-            "submitting": "Creating airdrop... This process may take a moment.",
-            "failed": "Failed to create airdrop. Please try again.",
-            "success": "Airdrop was created successfully!",
-            "push": {
-              "submitting": "Creating push airdrop... This process may take a moment.",
-              "failed": "Failed to create push airdrop. Please try again.",
-              "success": "Push airdrop was created successfully!"
-            },
-            "vesting": {
-              "submitting": "Creating vesting airdrop... This process may take a moment.",
-              "failed": "Failed to create vesting airdrop. Please try again.",
-              "success": "Vesting airdrop was created successfully!"
-            },
-            "standard": {
-              "submitting": "Creating standard airdrop... This process may take a moment.",
-              "failed": "Failed to create standard airdrop. Please try again.",
-              "success": "Standard airdrop was created successfully!"
-            }
-          },
-          "button-labels": {
-            "general": {
-              "next": "Next",
-              "previous": "Previous",
-              "processing": "Processing..."
-            },
-            "push": {
-              "create": "Create push airdrop",
-              "submitting": "Creating push airdrop..."
-            },
-            "vesting": {
-              "create": "Create vesting airdrop",
-              "submitting": "Creating vesting airdrop..."
-            },
-            "standard": {
-              "create": "Create standard airdrop",
-              "submitting": "Creating standard airdrop..."
-            }
-          },
-          "toast-action": {
-            "bonds": "View bond",
-            "cryptocurrencies": "View cryptocurrency",
-            "deposits": "View deposit",
-            "equities": "View equity",
-            "funds": "View fund",
-            "stablecoins": "View stablecoin"
-          },
-          "trigger-label": {
-            "bonds": "Issue a new bond",
-            "cryptocurrencies": "Issue a new cryptocurrency",
-            "deposits": "Issue a new deposit",
-            "equities": "Issue a new equity",
-            "funds": "Issue a new fund",
-            "stablecoins": "Issue a new stablecoin"
-          }
-        },
         "basics": {
-          "title": "Basic information",
-          "description": "Specify the basic information for this airdrop.",
+          "asset-description": "The asset that will be distributed in this airdrop.",
           "asset-label": "Asset",
           "asset-placeholder": "Select asset",
-          "asset-description": "The asset that will be distributed in this airdrop.",
+          "description": "Specify the basic information for this airdrop.",
+          "end-time-description": "The date and time when the airdrop claim period ends.",
+          "end-time-error": "End time must be at least 1 hour after start time",
+          "end-time-label": "End time",
+          "owner-description": "The account that will own and manage this airdrop contract.",
           "owner-label": "Owner",
           "owner-placeholder": "Select owner",
-          "owner-description": "The account that will own and manage this airdrop contract.",
-          "start-time-label": "Start time",
           "start-time-description": "The date and time when users can start claiming tokens.",
           "start-time-error": "Start time must be at least 1 hour in the future",
-          "end-time-label": "End time",
-          "end-time-description": "The date and time when the airdrop claim period ends.",
-          "end-time-error": "End time must be at least 1 hour after start time"
-        },
-        "distribution": {
-          "title": "Distribution",
-          "description": "Specify the distribution for this airdrop.",
-          "distribution-label": "Distribution (csv)",
-          "distribution-description": "The distribution of the airdrop. The CSV file must have the columns 'amount' and 'recipient'.",
-          "distribution-cap-label": "Distribution limit",
-          "distribution-cap-description": "The maximum number of tokens that can be distributed in this airdrop.",
-          "distribution-cap-error": "Total distribution amount exceeds the distribution limit"
+          "start-time-label": "Start time",
+          "title": "Basic information"
         },
         "button-labels": {
           "general": {
@@ -1394,58 +1369,193 @@
             "create": "Create push airdrop",
             "submitting": "Creating push airdrop..."
           },
-          "vesting": {
-            "create": "Create vesting airdrop",
-            "submitting": "Creating vesting airdrop..."
-          },
           "standard": {
             "create": "Create standard airdrop",
             "submitting": "Creating standard airdrop..."
+          },
+          "vesting": {
+            "create": "Create vesting airdrop",
+            "submitting": "Creating vesting airdrop..."
           }
         },
-        "type-selection": {
-          "general": {
-            "title": "Select airdrop type",
-            "description": "Choose the type of airdrop you want to create."
+        "distribution": {
+          "description": "Specify the distribution for this airdrop.",
+          "distribution-cap-description": "The maximum number of tokens that can be distributed in this airdrop.",
+          "distribution-cap-error": "Total distribution amount exceeds the distribution limit",
+          "distribution-cap-label": "Distribution limit",
+          "distribution-description": "The distribution of the airdrop. The CSV file must have the columns 'amount' and 'recipient'.",
+          "distribution-label": "Distribution (csv)",
+          "title": "Distribution"
+        },
+        "form": {
+          "button-labels": {
+            "general": {
+              "next": "Next",
+              "previous": "Previous",
+              "processing": "Processing..."
+            },
+            "push": {
+              "create": "Create push airdrop",
+              "submitting": "Creating push airdrop..."
+            },
+            "standard": {
+              "create": "Create standard airdrop",
+              "submitting": "Creating standard airdrop..."
+            },
+            "vesting": {
+              "create": "Create vesting airdrop",
+              "submitting": "Creating vesting airdrop..."
+            }
           },
-          "title": "Create an airdrop",
+          "description": {
+            "push": "Directly transfer tokens to recipients, initiated by an administrator.",
+            "standard": "Distribute tokens that users claim within a set timeframe using Merkle proofs.",
+            "vesting": "Release tokens gradually over time according to a vesting schedule."
+          },
+          "errors": {
+            "address-prediction-failed": "Failed to predict address. Please try again.",
+            "duplicate-airdrop": "An airdrop with these parameters already exists. Please change at least one parameter and try again.",
+            "validation-failed": "A validation error occurred."
+          },
+          "steps": {
+            "basics": {
+              "description": "Specify the basic information for this airdrop.",
+              "title": "Basic information"
+            },
+            "configuration": {
+              "description": "Configure the parameters for this airdrop.",
+              "title": "Configuration"
+            },
+            "summary": {
+              "description": "Review all the details you have entered.",
+              "title": "Summary"
+            }
+          },
+          "title": {
+            "push": "Design a new push airdrop",
+            "standard": "Design a new standard airdrop",
+            "vesting": "Design a new vesting airdrop"
+          },
+          "toast-action": {
+            "bonds": "View bond",
+            "cryptocurrencies": "View cryptocurrency",
+            "deposits": "View deposit",
+            "equities": "View equity",
+            "funds": "View fund",
+            "stablecoins": "View stablecoin"
+          },
+          "toasts": {
+            "failed": "Failed to create airdrop. Please try again.",
+            "push": {
+              "failed": "Failed to create push airdrop. Please try again.",
+              "submitting": "Creating push airdrop... This process may take a moment.",
+              "success": "Push airdrop was created successfully!"
+            },
+            "standard": {
+              "failed": "Failed to create standard airdrop. Please try again.",
+              "submitting": "Creating standard airdrop... This process may take a moment.",
+              "success": "Standard airdrop was created successfully!"
+            },
+            "submitting": "Creating airdrop... This process may take a moment.",
+            "success": "Airdrop was created successfully!",
+            "vesting": {
+              "failed": "Failed to create vesting airdrop. Please try again.",
+              "submitting": "Creating vesting airdrop... This process may take a moment.",
+              "success": "Vesting airdrop was created successfully!"
+            }
+          },
+          "trigger-label": {
+            "bonds": "Issue a new bond",
+            "cryptocurrencies": "Issue a new cryptocurrency",
+            "deposits": "Issue a new deposit",
+            "equities": "Issue a new equity",
+            "funds": "Issue a new fund",
+            "stablecoins": "Issue a new stablecoin"
+          }
+        },
+        "general": {
+          "description": {
+            "push": "Directly transfer tokens to recipients, initiated by an administrator.",
+            "standard": "Distribute tokens that users claim within a set timeframe using Merkle proofs.",
+            "vesting": "Release tokens gradually over time according to a vesting schedule."
+          },
+          "title": {
+            "push": "Create a new push airdrop",
+            "standard": "Create a new standard airdrop",
+            "vesting": "Create a new vesting airdrop"
+          }
+        },
+        "summary": {
+          "basics": {
+            "asset-label": "Asset",
+            "description": "General information about your airdrop.",
+            "owner-label": "Owner",
+            "title": "Basic Information"
+          },
+          "configuration": {
+            "description": "Configuration parameters for the airdrop distribution.",
+            "distribution-cap-label": "Distribution Cap",
+            "distribution-recipients-label": "Number of Recipients",
+            "title": "Distribution Configuration",
+            "total-distribution-amount-label": "Total Distribution Amount"
+          },
+          "description": "Review all the details you have entered for your airdrop.",
+          "disclaimer": "By creating this airdrop, you confirm that all information provided is accurate and that you have the necessary permissions to deploy this airdrop. This action cannot be undone.",
+          "not-specified": "Not specified",
+          "recipients": {
+            "and-more": "and {count} more recipients...",
+            "description": "List of recipients who will receive tokens in this airdrop.",
+            "title": "Distribution Recipients"
+          },
+          "timing": {
+            "claim-duration-label": "Claim Duration",
+            "description": "Timing parameters for the airdrop claim period.",
+            "end-time-label": "End Time",
+            "start-time-label": "Start Time",
+            "title": "Time Configuration"
+          },
+          "title": "Summary"
+        },
+        "type-selection": {
           "description": "Choose the type of airdrop you want to create.",
-          "key-features": "Key features:",
           "features": {
-            "user-initiated-claim": "User claims",
             "batch-operations": "Batch operations",
             "gasless-transactions": "Gasless transactions",
             "time-bound": "Time-bound",
+            "user-initiated-claim": "User claims",
             "vesting-schedule": "Vesting schedule"
           },
+          "general": {
+            "description": "Choose the type of airdrop you want to create.",
+            "title": "Select airdrop type"
+          },
+          "key-features": "Key features:",
+          "title": "Create an airdrop",
           "types": {
+            "push": {
+              "description": "Admin-initiated airdrop where tokens are directly transferred to recipients.",
+              "extended-description": "A Push Airdrop allows an administrator (owner) to directly send tokens to a list of recipients. The admin verifies eligibility using Merkle proofs and can distribute tokens individually or in batches. This type is useful when users are not expected to actively claim tokens. Supports ERC2771 for meta-transactions by the admin.",
+              "title": "Push"
+            },
             "standard": {
-              "title": "Standard",
               "description": "Simple, time-bound airdrop where users claim tokens using a Merkle proof.",
-              "extended-description": "A Standard Airdrop allows for a straightforward distribution of tokens to a list of recipients. Users can claim their allocated tokens within a defined start and end time by providing a cryptographic (Merkle) proof of their inclusion in the airdrop list. It supports individual and batch claims."
+              "extended-description": "A Standard Airdrop allows for a straightforward distribution of tokens to a list of recipients. Users can claim their allocated tokens within a defined start and end time by providing a cryptographic (Merkle) proof of their inclusion in the airdrop list. It supports individual and batch claims.",
+              "title": "Standard"
             },
             "vesting": {
-              "title": "Vesting",
               "description": "Airdrop with tokens released over time according to a vesting schedule.",
-              "extended-description": "A Vesting Airdrop distributes tokens that are released to recipients gradually over a defined period, following a specific vesting schedule. It uses a pluggable claim strategy to define how vesting occurs (e.g., linear, cliff). Users initialize their claim, and then can claim available tokens as they vest. Supports ERC2771 for meta-transactions."
-            },
-            "push": {
-              "title": "Push",
-              "description": "Admin-initiated airdrop where tokens are directly transferred to recipients.",
-              "extended-description": "A Push Airdrop allows an administrator (owner) to directly send tokens to a list of recipients. The admin verifies eligibility using Merkle proofs and can distribute tokens individually or in batches. This type is useful when users are not expected to actively claim tokens. Supports ERC2771 for meta-transactions by the admin."
+              "extended-description": "A Vesting Airdrop distributes tokens that are released to recipients gradually over a defined period, following a specific vesting schedule. It uses a pluggable claim strategy to define how vesting occurs (e.g., linear, cliff). Users initialize their claim, and then can claim available tokens as they vest. Supports ERC2771 for meta-transactions.",
+              "title": "Vesting"
             }
           }
         },
         "vesting": {
-          "title": "Vesting Schedule",
-          "description": "Configure the vesting parameters for the airdrop.",
-          "claim-period-end-label": "Claim Period End",
           "claim-period-end-description": "Deadline for users to claim their airdrop. After this date, unclaimed tokens are forfeited.",
           "claim-period-end-error": "Claim period end must be at least 1 hour in the future",
-          "cliff-duration-label": "Cliff Duration",
+          "claim-period-end-label": "Claim Period End",
           "cliff-duration-description": "Waiting period after claiming before any tokens can be withdrawn.",
-          "vesting-duration-label": "Vesting Duration",
-          "vesting-duration-description": "Total time for all tokens to unlock gradually after claiming.",
+          "cliff-duration-label": "Cliff Duration",
+          "description": "Configure the vesting parameters for the airdrop.",
           "time-units": {
             "plural": {
               "days": "days",
@@ -1461,40 +1571,13 @@
               "seconds": "second",
               "weeks": "week"
             }
-          }
-        },
-        "summary": {
-          "title": "Summary",
-          "description": "Review all the details you have entered for your airdrop.",
-          "basics": {
-            "title": "Basic Information",
-            "description": "General information about your airdrop.",
-            "asset-label": "Asset",
-            "owner-label": "Owner"
           },
-          "timing": {
-            "title": "Time Configuration",
-            "description": "Timing parameters for the airdrop claim period.",
-            "start-time-label": "Start Time",
-            "end-time-label": "End Time",
-            "claim-duration-label": "Claim Duration"
-          },
-          "configuration": {
-            "title": "Distribution Configuration",
-            "description": "Configuration parameters for the airdrop distribution.",
-            "distribution-cap-label": "Distribution Cap",
-            "distribution-recipients-label": "Number of Recipients",
-            "total-distribution-amount-label": "Total Distribution Amount"
-          },
-          "recipients": {
-            "title": "Distribution Recipients",
-            "description": "List of recipients who will receive tokens in this airdrop.",
-            "and-more": "and {count} more recipients..."
-          },
-          "not-specified": "Not specified",
-          "disclaimer": "By creating this airdrop, you confirm that all information provided is accurate and that you have the necessary permissions to deploy this airdrop. This action cannot be undone."
+          "title": "Vesting Schedule",
+          "vesting-duration-description": "Total time for all tokens to unlock gradually after claiming.",
+          "vesting-duration-label": "Vesting Duration"
         }
-      }
+      },
+      "design-button": "Airdrop Designer"
     },
     "assets": {
       "asset-statistics-title": "Statistics",
@@ -1570,6 +1653,10 @@
             "title-supply": "Supply",
             "title-value": "Denomination"
           }
+        },
+        "documents": {
+          "description": "Upload supporting documents for this asset (optional)",
+          "title": "Supporting Documents"
         },
         "form": {
           "button-labels": {
@@ -1795,6 +1882,10 @@
             "symbol-placeholder": "SAFU"
           }
         },
+        "regulation": {
+          "description": "Upload required compliance documents and select applicable regulations for your asset.",
+          "title": "Regulation & Compliance"
+        },
         "select-asset-type": {
           "description": "Choose the type of digital asset you want to create.",
           "title": "Select asset type"
@@ -1813,14 +1904,6 @@
           "issue": "Issue",
           "not-specified": "Not specified",
           "title": "Summary"
-        },
-        "documents": {
-          "title": "Supporting Documents",
-          "description": "Upload supporting documents for this asset (optional)"
-        },
-        "regulation": {
-          "title": "Regulation & Compliance",
-          "description": "Upload required compliance documents and select applicable regulations for your asset."
         }
       },
       "detail": {
@@ -2119,10 +2202,10 @@
           "details": "Details",
           "events": "Events",
           "holders": "Holders",
+          "mica": "MiCA compliance",
           "permissions": "Permissions",
           "underlying-assets": "Underlying assets",
-          "yield": "Yield",
-          "mica": "MiCA compliance"
+          "yield": "Yield"
         }
       },
       "fields": {
@@ -2806,187 +2889,155 @@
   "regular": "User",
   "regulations": {
     "mica": {
-      "name": "MiCA",
-      "description": "Markets in Crypto-Assets (MiCA) is the EU's comprehensive regulatory framework designed to regulate cryptocurrencies, stablecoins, and other digital assets, providing legal certainty for crypto-asset issuers and service providers.",
-      "not_configured": "MICA regulation has not been configured for this asset yet.",
       "basic_info": "Basic Information",
-      "created_at": "Created At",
-      "updated_at": "Last Updated",
-      "token_info": "Token Information",
-      "token_type": "Token Type",
-      "reserve_status": "Reserve Status",
-      "last_audit": "Last Audit Date",
-      "documents": {
-        "title": "Compliance Documents",
-        "description": "Upload and manage compliance documents required by MICA regulation",
-        "upload": "Upload Document",
-        "no_documents": "No documents uploaded yet",
-        "upload_success": "Document uploaded successfully",
-        "delete_success": "Document deleted successfully",
-        "delete_error": "Failed to delete document",
-        "types": {
-          "white_paper": "White Paper",
-          "audit": "Audit Report",
-          "policy": "Policy Document",
-          "governance": "Governance Document",
-          "procedure": "Procedure Document"
-        },
-        "table": {
-          "document": "Document",
-          "type": "Type",
-          "date": "Date",
-          "status": "Status",
-          "actions": "Actions",
-          "download": "Download",
-          "more_options": "More options",
-          "delete": "Delete",
-          "deleting": "Deleting...",
-          "empty_state": "No documents found. Upload documents for MiCA compliance verification."
-        },
-        "card": {
-          "title": "Documentation",
-          "refresh": "Refresh documents",
-          "upload": "Upload Document",
-          "loading": "Loading documents..."
-        }
-      },
       "compliance": {
-        "title": "Compliance Form",
         "description": "Update MICA compliance information",
         "save": "Save Changes",
-        "saving": "Saving...",
-        "save_success": "Changes saved successfully",
         "save_error": "Failed to save changes",
+        "save_success": "Changes saved successfully",
+        "saving": "Saving...",
         "sections": {
-          "reserve": {
-            "title": "Reserve Composition",
-            "description": "Specify the composition of your reserve assets",
-            "fields": {
-              "bankDeposits": "Bank Deposits",
-              "governmentBonds": "Government Bonds",
-              "highQualityLiquidAssets": "High Quality Liquid Assets",
-              "corporateBonds": "Corporate Bonds",
-              "centralBankAssets": "Central Bank Assets",
-              "commodities": "Commodities",
-              "otherAssets": "Other Assets"
-            }
-          },
           "legal_entity": {
-            "title": "Legal Entity Information",
             "description": "Provide information about your legal entity",
             "fields": {
               "leiCode": "LEI Code",
-              "registrationNumber": "Registration Number",
               "registeredOffice": {
-                "title": "Registered Office Address",
-                "street": "Street",
                 "city": "City",
+                "country": "Country",
                 "postalCode": "Postal Code",
-                "country": "Country"
-              }
-            }
+                "street": "Street",
+                "title": "Registered Office Address"
+              },
+              "registrationNumber": "Registration Number"
+            },
+            "title": "Legal Entity Information"
+          },
+          "reserve": {
+            "description": "Specify the composition of your reserve assets",
+            "fields": {
+              "bankDeposits": "Bank Deposits",
+              "centralBankAssets": "Central Bank Assets",
+              "commodities": "Commodities",
+              "corporateBonds": "Corporate Bonds",
+              "governmentBonds": "Government Bonds",
+              "highQualityLiquidAssets": "High Quality Liquid Assets",
+              "otherAssets": "Other Assets"
+            },
+            "title": "Reserve Composition"
           }
-        }
+        },
+        "title": "Compliance Form"
       },
+      "created_at": "Created At",
       "dashboard": {
+        "authorization-status": {
+          "additional-details": "Additional details",
+          "approval-date": "Approval date",
+          "authorized": "Authorized",
+          "description": "The authorization status of the asset",
+          "form": {
+            "description": "Update the regulatory approval information for MiCA compliance.",
+            "fields": {
+              "additional-details": {
+                "description": "Include any conditions, restrictions, or special notes",
+                "label": "Additional details"
+              },
+              "approval-date": {
+                "description": "When the approval was granted",
+                "label": "Approval date"
+              },
+              "licence-number": {
+                "description": "Your MICA license or application ID",
+                "label": "License number"
+              },
+              "regulatory-authority": {
+                "description": "The authority that granted the approval",
+                "label": "Regulatory authority"
+              }
+            },
+            "save": "Save changes",
+            "saving": "Saving...",
+            "success": "Authorization status updated successfully",
+            "title": "Edit authorization status"
+          },
+          "license-number": "License number",
+          "no-authorization-data": "No authorization data available",
+          "not-specified": "Not specified",
+          "pending-authorization": "Pending authorization",
+          "regulatory-authority": "Regulatory authority",
+          "title": "Authorization status",
+          "update": "Update"
+        },
         "compliance-status": {
-          "title": "Compliance status",
-          "of": "of",
-          "requirements-compliant": "Requirements compliant",
-          "compliant": "Compliant",
-          "non-compliant": "Non-compliant",
-          "view-details": "View details",
-          "reserve-status": "Reserve status",
-          "reserve-status-description": "Reserve status must be marked as compliant",
           "authorization-status": "Authorization status",
           "authorization-status-description": "Requires valid license number, regulatory authority, and approval date",
-          "kyc-aml-monitoring": "KYC/AML monitoring",
-          "kyc-aml-monitoring-description": "Always compliant by default for this platform",
+          "compliant": "Compliant",
           "consumer-protection": "Consumer protection",
           "consumer-protection-description": "Always compliant by default for this platform",
           "documentation": "Documentation",
-          "documentation-description": "Requires both white paper and reserve audit documents to be uploaded"
+          "documentation-description": "Requires both white paper and reserve audit documents to be uploaded",
+          "kyc-aml-monitoring": "KYC/AML monitoring",
+          "kyc-aml-monitoring-description": "Always compliant by default for this platform",
+          "non-compliant": "Non-compliant",
+          "of": "of",
+          "requirements-compliant": "Requirements compliant",
+          "reserve-status": "Reserve status",
+          "reserve-status-description": "Reserve status must be marked as compliant",
+          "title": "Compliance status",
+          "view-details": "View details"
+        },
+        "consumer-protection": {
+          "average-redemption-time": "Average redemption time",
+          "completed-within-24-hours": "Completed within 24 hours",
+          "compliant": "Compliant",
+          "description": "The consumer protection status of the asset",
+          "non-compliant": "Non-compliant",
+          "redemptions-at-par-value": "Redemptions at par value",
+          "redemptions-at-par-value-info": "Par value is the original issued price of a token, regardless of its current market value",
+          "title": "Consumer protection",
+          "total-redemptions": "Total redemptions"
+        },
+        "kyc-monitoring": {
+          "active-monitoring": "Active Monitoring",
+          "compliance-features": {
+            "address-blocklist": "Address Blocklist",
+            "asset-freezing": "Asset Freezing",
+            "enabled": "Enabled",
+            "sanction-lists": "Sanction Lists",
+            "title": "Compliance Features"
+          },
+          "user-kyc-status": {
+            "blocked-holders": "Blocked Holders",
+            "pending-verification": "Pending Verification",
+            "title": "User KYC Status",
+            "verified-holders": "KYC Verified Holders"
+          }
         },
         "reserve-status": {
-          "title": "Reserve status",
-          "ratio": {
-            "title": "Reserve ratio",
-            "description": "The ratio of the reserve assets to the circulating supply"
-          },
           "composition": {
-            "title": "Reserve composition",
             "description": "The composition of the reserve assets",
-            "no-data": "No data available"
+            "no-data": "No data available",
+            "title": "Reserve composition"
           },
           "details": {
-            "title": "Reserve details",
             "description": "Provide information about the reserve assets",
             "fields": {
               "circulating-supply": {
-                "title": "Circulating supply",
-                "description": "The total number of tokens in circulation"
+                "description": "The total number of tokens in circulation",
+                "title": "Circulating supply"
               },
               "reserve-value": {
-                "title": "Reserve value",
-                "description": "The total value of the reserve assets"
+                "description": "The total value of the reserve assets",
+                "title": "Reserve value"
               }
-            }
+            },
+            "title": "Reserve details"
           },
           "form": {
-            "saving": "Saving...",
-            "save": "Save",
-            "trigger-label": "Update",
-            "title": "Reserve management",
             "description": "Update reserve information and compliance data",
             "fields": {
-              "token-type": {
-                "title": "Token type",
-                "description": "Defines the regulatory category of your stablecoin",
-                "options": {
-                  "electronic-money": "Electronic Money Token (EMT) - Single currency",
-                  "asset-referenced-token": "Asset-Referenced Token (ART) - Multi-asset"
-                }
-              },
-              "reserve-composition": {
-                "errors": {
-                  "total-percentage": "Total percentage of all assets must equal 100%"
-                },
-                "title": "Reserve composition",
-                "total-percentage": "Total",
-                "description": "Only assets with non-zero percentages will be shown in the reserve status. Active composition items must total 100%.",
-                "fields": {
-                  "bank-deposits": {
-                    "title": "Bank deposits",
-                    "description": "Cash deposits held at credit institutions in segregated accounts"
-                  },
-                  "government-bonds": {
-                    "title": "Government bonds",
-                    "description": "Sovereign debt instruments issued by governmental entities"
-                  },
-                  "high-quality-liquid-assets": {
-                    "title": "High quality liquid assets",
-                    "description": "Highly liquid financial instruments with minimal risk"
-                  },
-                  "corporate-bonds": {
-                    "title": "Corporate bonds",
-                    "description": "High-grade corporate debt or covered bonds (limited to 10%)"
-                  },
-                  "central-bank-assets": {
-                    "title": "Central bank assets",
-                    "description": "Assets held directly at central banks"
-                  },
-                  "commodities": {
-                    "title": "Commodities",
-                    "description": "Physical commodities like gold, held in custody"
-                  },
-                  "other-assets": {
-                    "title": "Other assets",
-                    "description": "Other eligible assets that meet regulatory requirements"
-                  }
-                }
-              },
               "audit-details": {
-                "title": "Audit details",
+                "audit-documents": "Audit documents",
                 "description": "Provide information about the latest audit of the reserve assets",
                 "last-audit-date": "Last audit date",
                 "last-audit-date-placeholder": "Select audit date",
@@ -2994,82 +3045,114 @@
                 "reserve-status-placeholder": "Select reserve status",
                 "status": {
                   "compliant": "Compliant",
-                  "pending-review": "Pending review",
-                  "under-investigation": "Under investigation",
                   "non-compliant": "Non-compliant",
-                  "pending-setup": "Pending setup"
+                  "pending-review": "Pending review",
+                  "pending-setup": "Pending setup",
+                  "under-investigation": "Under investigation"
                 },
-                "audit-documents": "Audit documents"
+                "title": "Audit details"
+              },
+              "reserve-composition": {
+                "description": "Only assets with non-zero percentages will be shown in the reserve status. Active composition items must total 100%.",
+                "errors": {
+                  "total-percentage": "Total percentage of all assets must equal 100%"
+                },
+                "fields": {
+                  "bank-deposits": {
+                    "description": "Cash deposits held at credit institutions in segregated accounts",
+                    "title": "Bank deposits"
+                  },
+                  "central-bank-assets": {
+                    "description": "Assets held directly at central banks",
+                    "title": "Central bank assets"
+                  },
+                  "commodities": {
+                    "description": "Physical commodities like gold, held in custody",
+                    "title": "Commodities"
+                  },
+                  "corporate-bonds": {
+                    "description": "High-grade corporate debt or covered bonds (limited to 10%)",
+                    "title": "Corporate bonds"
+                  },
+                  "government-bonds": {
+                    "description": "Sovereign debt instruments issued by governmental entities",
+                    "title": "Government bonds"
+                  },
+                  "high-quality-liquid-assets": {
+                    "description": "Highly liquid financial instruments with minimal risk",
+                    "title": "High quality liquid assets"
+                  },
+                  "other-assets": {
+                    "description": "Other eligible assets that meet regulatory requirements",
+                    "title": "Other assets"
+                  }
+                },
+                "title": "Reserve composition",
+                "total-percentage": "Total"
+              },
+              "token-type": {
+                "description": "Defines the regulatory category of your stablecoin",
+                "options": {
+                  "asset-referenced-token": "Asset-Referenced Token (ART) - Multi-asset",
+                  "electronic-money": "Electronic Money Token (EMT) - Single currency"
+                },
+                "title": "Token type"
               }
-            }
-          }
-        },
-        "authorization-status": {
-          "title": "Authorization status",
-          "description": "The authorization status of the asset",
-          "authorized": "Authorized",
-          "pending-authorization": "Pending authorization",
-          "license-number": "License number",
-          "regulatory-authority": "Regulatory authority",
-          "approval-date": "Approval date",
-          "additional-details": "Additional details",
-          "not-specified": "Not specified",
-          "no-authorization-data": "No authorization data available",
-          "update": "Update",
-          "form": {
-            "title": "Edit authorization status",
-            "description": "Update the regulatory approval information for MiCA compliance.",
-            "save": "Save changes",
+            },
+            "save": "Save",
             "saving": "Saving...",
-            "success": "Authorization status updated successfully",
-            "fields": {
-              "licence-number": {
-                "label": "License number",
-                "description": "Your MICA license or application ID"
-              },
-              "regulatory-authority": {
-                "label": "Regulatory authority",
-                "description": "The authority that granted the approval"
-              },
-              "approval-date": {
-                "label": "Approval date",
-                "description": "When the approval was granted"
-              },
-              "additional-details": {
-                "label": "Additional details",
-                "description": "Include any conditions, restrictions, or special notes"
-              }
-            }
-          }
-        },
-        "consumer-protection": {
-          "title": "Consumer protection",
-          "description": "The consumer protection status of the asset",
-          "total-redemptions": "Total redemptions",
-          "average-redemption-time": "Average redemption time",
-          "completed-within-24-hours": "Completed within 24 hours",
-          "redemptions-at-par-value": "Redemptions at par value",
-          "redemptions-at-par-value-info": "Par value is the original issued price of a token, regardless of its current market value",
-          "compliant": "Compliant",
-          "non-compliant": "Non-compliant"
-        },
-        "kyc-monitoring": {
-          "active-monitoring": "Active Monitoring",
-          "user-kyc-status": {
-            "title": "User KYC Status",
-            "verified-holders": "KYC Verified Holders",
-            "pending-verification": "Pending Verification",
-            "blocked-holders": "Blocked Holders"
+            "title": "Reserve management",
+            "trigger-label": "Update"
           },
-          "compliance-features": {
-            "title": "Compliance Features",
-            "address-blocklist": "Address Blocklist",
-            "asset-freezing": "Asset Freezing",
-            "sanction-lists": "Sanction Lists",
-            "enabled": "Enabled"
-          }
+          "ratio": {
+            "description": "The ratio of the reserve assets to the circulating supply",
+            "title": "Reserve ratio"
+          },
+          "title": "Reserve status"
         }
-      }
+      },
+      "description": "Markets in Crypto-Assets (MiCA) is the EU's comprehensive regulatory framework designed to regulate cryptocurrencies, stablecoins, and other digital assets, providing legal certainty for crypto-asset issuers and service providers.",
+      "documents": {
+        "card": {
+          "loading": "Loading documents...",
+          "refresh": "Refresh documents",
+          "title": "Documentation",
+          "upload": "Upload Document"
+        },
+        "delete_error": "Failed to delete document",
+        "delete_success": "Document deleted successfully",
+        "description": "Upload and manage compliance documents required by MICA regulation",
+        "no_documents": "No documents uploaded yet",
+        "table": {
+          "actions": "Actions",
+          "date": "Date",
+          "delete": "Delete",
+          "deleting": "Deleting...",
+          "document": "Document",
+          "download": "Download",
+          "empty_state": "No documents found. Upload documents for MiCA compliance verification.",
+          "more_options": "More options",
+          "status": "Status",
+          "type": "Type"
+        },
+        "title": "Compliance Documents",
+        "types": {
+          "audit": "Audit Report",
+          "governance": "Governance Document",
+          "policy": "Policy Document",
+          "procedure": "Procedure Document",
+          "white_paper": "White Paper"
+        },
+        "upload": "Upload Document",
+        "upload_success": "Document uploaded successfully"
+      },
+      "last_audit": "Last Audit Date",
+      "name": "MiCA",
+      "not_configured": "MICA regulation has not been configured for this asset yet.",
+      "reserve_status": "Reserve Status",
+      "token_info": "Token Information",
+      "token_type": "Token Type",
+      "updated_at": "Last Updated"
     }
   },
   "supply-manager": "Supply Manager",
@@ -3215,169 +3298,66 @@
     "validation-errors": "Validation error"
   },
   "validation": {
-    "required": "This field is required",
-    "default": "Invalid input",
-    "invalidType": {
-      "string": "Please enter text",
-      "number": "Please enter a number",
-      "boolean": "Please select yes or no",
-      "date": "Please enter a valid date",
-      "array": "Please provide a list",
-      "object": "Please provide valid data"
-    },
-    "invalidLiteral": "Invalid value provided",
-    "unrecognizedKeys": "Unrecognized fields in data",
-    "invalidUnion": "Invalid input format",
-    "invalidUnionDiscriminator": "Invalid type specified",
-    "invalidEnumValue": "Please select a valid option",
-    "invalidArguments": "Invalid arguments provided",
-    "invalidReturnType": "Invalid return value",
-    "invalidDate": "Please enter a valid date",
-    "invalidEmail": "Please enter a valid email address",
-    "invalidUrl": "Please enter a valid URL",
-    "invalidUuid": "Please enter a valid UUID",
-    "invalidPattern": "Invalid format",
-    "invalidCuid": "Please enter a valid CUID",
-    "invalidDatetime": "Please enter a valid date and time",
-    "invalidString": {
-      "email": "Please enter a valid email address",
-      "url": "Please enter a valid URL",
-      "emoji": "Please enter a valid emoji",
-      "uuid": "Please enter a valid UUID",
-      "cuid": "Please enter a valid CUID",
-      "cuid2": "Please enter a valid CUID2",
-      "ulid": "Please enter a valid ULID",
-      "regex": "Invalid format",
-      "datetime": "Please enter a valid date and time",
-      "ip": "Please enter a valid IP address"
-    },
     "array": {
       "exactLength": "Please provide exactly {{expected}} items",
-      "minLength": "Please provide at least {{minimum}} items",
-      "minLengthExclusive": "Please provide more than {{minimum}} items",
       "maxLength": "Please provide at most {{maximum}} items",
-      "maxLengthExclusive": "Please provide fewer than {{maximum}} items"
+      "maxLengthExclusive": "Please provide fewer than {{maximum}} items",
+      "minLength": "Please provide at least {{minimum}} items",
+      "minLengthExclusive": "Please provide more than {{minimum}} items"
     },
-    "string": {
-      "exactLength": "Please enter exactly {{expected}} characters",
-      "minLength": "Please enter at least {{minimum}} characters",
-      "minLengthExclusive": "Please enter more than {{minimum}} characters",
-      "maxLength": "Please enter at most {{maximum}} characters",
-      "maxLengthExclusive": "Please enter fewer than {{maximum}} characters"
-    },
-    "number": {
-      "exact": "Please enter exactly {{expected}}",
-      "min": "Please enter a number at least {{minimum}}",
-      "minExclusive": "Please enter a number greater than {{minimum}}",
-      "max": "Please enter a number at most {{maximum}}",
-      "maxExclusive": "Please enter a number less than {{maximum}}"
-    },
-    "date": {
-      "exact": "Please enter the date {{expected}}",
-      "min": "Please enter a date on or after {{minimum}}",
-      "minExclusive": "Please enter a date after {{minimum}}",
-      "max": "Please enter a date on or before {{maximum}}",
-      "maxExclusive": "Please enter a date before {{maximum}}"
-    },
-    "tooSmall": "Value is too small",
-    "tooBig": "Value is too large",
-    "invalidIntersection": "Invalid data combination",
-    "notMultipleOf": "Please enter a multiple of {{multipleOf}}",
-    "notFinite": "Please enter a finite number",
     "custom": {
-      "default": "Invalid input",
-      "ethereumAddress": {
-        "invalid": "Please enter a valid Ethereum address",
-        "invalidFormat": "Please enter an address starting with '0x' followed by 40 hexadecimal characters",
-        "tooShort": "Ethereum addresses must be 42 characters long",
-        "tooLong": "Ethereum addresses must be 42 characters long"
-      },
-      "ethereumHash": {
-        "invalid": "Please enter a valid transaction hash",
-        "invalidFormat": "Please enter a hash starting with '0x' followed by 64 hexadecimal characters",
-        "tooShort": "Transaction hashes must be 66 characters long",
-        "tooLong": "Transaction hashes must be 66 characters long"
-      },
-      "isin": {
-        "invalid": "Please enter a valid 12-character security identifier",
-        "invalidFormat": "Please enter an identifier starting with 2 letters followed by 9 characters and a check digit",
-        "invalidCountryCode": "Please enter a valid country code (2 letters)",
-        "invalidCheckDigit": "Invalid security identifier - check digit verification failed"
-      },
-      "assetSymbol": {
-        "tooShort": "Symbol must be at least 2 characters",
-        "tooLong": "Symbol must be at most 10 characters",
-        "invalidFormat": "Please use only letters and numbers (e.g., AAPL, BTC)"
-      },
-      "pincode": {
-        "invalid": "Please enter exactly 8 digits"
-      },
-      "verificationCode": {
-        "invalid": "Please enter 8 characters using only letters and numbers"
-      },
-      "twoFactorCode": {
-        "invalid": "Please enter exactly 6 digits"
-      },
-      "secretCode": {
-        "tooShort": "Please enter at least 8 characters",
-        "tooLong": "Please enter at most 64 characters"
-      },
-      "fiatCurrency": {
-        "invalid": "Please use a valid 3-letter currency code (e.g., USD, EUR, GBP)"
+      "airdropType": {
+        "invalid": "Please select a valid airdrop type",
+        "invalidFormat": "Airdrop type must be one of: whitelist, merkle, or claim"
       },
       "amount": {
         "invalid": "Please enter a valid amount",
         "negative": "Amount cannot be negative",
-        "tooSmall": "Amount is too small",
         "tooLarge": "Amount is too large",
-        "tooManyDecimals": "Too many decimal places for this precision"
+        "tooManyDecimals": "Too many decimal places for this precision",
+        "tooSmall": "Amount is too small"
       },
-      "price": {
-        "invalid": "Please enter a valid price",
-        "zero": "Price must be greater than zero",
-        "negative": "Price cannot be negative",
-        "tooManyDecimals": "Please use at most 4 decimal places",
-        "notFinite": "Please enter a valid price"
+      "assetSymbol": {
+        "invalidFormat": "Please use only letters and numbers (e.g., AAPL, BTC)",
+        "tooLong": "Symbol must be at most 10 characters",
+        "tooShort": "Symbol must be at least 2 characters"
       },
-      "decimals": {
-        "invalid": "Please enter a number between 0 and 18",
-        "tooSmall": "Decimal places cannot be negative",
-        "tooLarge": "Maximum 18 decimal places allowed"
-      },
-      "duration": {
-        "invalid": "Please enter a valid duration",
-        "zero": "Duration must be at least 1 millisecond",
-        "negative": "Duration cannot be negative",
-        "notInteger": "Duration must be a whole number of milliseconds",
-        "notFinite": "Please enter a valid duration"
-      },
-      "bigint": {
-        "empty": "Please enter a number",
-        "invalidFormat": "Please enter a valid number",
-        "scientificNotation": "Scientific notation is not supported",
-        "multipleDecimals": "Invalid number format",
-        "positive": "Please enter a positive number",
-        "nonNegative": "Please enter zero or a positive number"
+      "assetType": {
+        "invalid": "Please select a valid asset type",
+        "invalidBond": "Please select 'bond' as the asset type",
+        "invalidCryptocurrency": "Please select 'cryptocurrency' as the asset type",
+        "invalidDeposit": "Please select 'deposit' as the asset type",
+        "invalidEquity": "Please select 'equity' as the asset type",
+        "invalidFormat": "Asset type must be one of: bond, cryptocurrency, deposit, equity, fund, or stablecoin",
+        "invalidFund": "Please select 'fund' as the asset type",
+        "invalidStablecoin": "Please select 'stablecoin' as the asset type"
       },
       "bigdecimal": {
         "empty": "Please enter a number",
         "invalidFormat": "Please enter a valid number",
-        "scientificNotation": "Scientific notation is not supported",
-        "multipleDecimals": "Invalid number format"
+        "multipleDecimals": "Invalid number format",
+        "scientificNotation": "Scientific notation is not supported"
       },
-      "timestamp": {
-        "invalid": "Please enter a valid date",
-        "invalidString": "Please enter a valid date",
-        "negative": "Please enter a date after January 1, 1970",
-        "outOfRange": "Please enter a date between 1970 and 9999"
+      "bigint": {
+        "empty": "Please enter a number",
+        "invalidFormat": "Please enter a valid number",
+        "multipleDecimals": "Invalid number format",
+        "nonNegative": "Please enter zero or a positive number",
+        "positive": "Please enter a positive number",
+        "scientificNotation": "Scientific notation is not supported"
       },
-      "fundClass": {
-        "invalid": "Please select a valid fund class",
-        "invalidFormat": "Fund class must be one of: institutional, retail, or accredited"
+      "decimals": {
+        "invalid": "Please enter a number between 0 and 18",
+        "tooLarge": "Maximum 18 decimal places allowed",
+        "tooSmall": "Decimal places cannot be negative"
       },
-      "airdropType": {
-        "invalid": "Please select a valid airdrop type",
-        "invalidFormat": "Airdrop type must be one of: whitelist, merkle, or claim"
+      "default": "Invalid input",
+      "duration": {
+        "invalid": "Please enter a valid duration",
+        "negative": "Duration cannot be negative",
+        "notFinite": "Please enter a valid duration",
+        "notInteger": "Duration must be a whole number of milliseconds",
+        "zero": "Duration must be at least 1 millisecond"
       },
       "equityCategory": {
         "invalid": "Please select a valid equity category",
@@ -3387,119 +3367,139 @@
         "invalid": "Please select a valid equity class",
         "invalidFormat": "Equity class must be one of: A, B, or C"
       },
+      "ethereumAddress": {
+        "invalid": "Please enter a valid Ethereum address",
+        "invalidFormat": "Please enter an address starting with '0x' followed by 40 hexadecimal characters",
+        "tooLong": "Ethereum addresses must be 42 characters long",
+        "tooShort": "Ethereum addresses must be 42 characters long"
+      },
+      "ethereumHash": {
+        "invalid": "Please enter a valid transaction hash",
+        "invalidFormat": "Please enter a hash starting with '0x' followed by 64 hexadecimal characters",
+        "tooLong": "Transaction hashes must be 66 characters long",
+        "tooShort": "Transaction hashes must be 66 characters long"
+      },
+      "fiatCurrency": {
+        "invalid": "Please use a valid 3-letter currency code (e.g., USD, EUR, GBP)"
+      },
       "fundCategory": {
         "invalid": "Please select a valid fund category",
         "invalidFormat": "Fund category must be one of: mutual, hedge, etf, or index"
+      },
+      "fundClass": {
+        "invalid": "Please select a valid fund class",
+        "invalidFormat": "Fund class must be one of: institutional, retail, or accredited"
+      },
+      "isin": {
+        "invalid": "Please enter a valid 12-character security identifier",
+        "invalidCheckDigit": "Invalid security identifier - check digit verification failed",
+        "invalidCountryCode": "Please enter a valid country code (2 letters)",
+        "invalidFormat": "Please enter an identifier starting with 2 letters followed by 9 characters and a check digit"
+      },
+      "pincode": {
+        "invalid": "Please enter exactly 8 digits"
+      },
+      "price": {
+        "invalid": "Please enter a valid price",
+        "negative": "Price cannot be negative",
+        "notFinite": "Please enter a valid price",
+        "tooManyDecimals": "Please use at most 4 decimal places",
+        "zero": "Price must be greater than zero"
+      },
+      "role": {
+        "invalid": "Please select a valid system role",
+        "invalidFormat": "Role must be one of: admin, issuer, manager, compliance, auditor, or investor"
+      },
+      "secretCode": {
+        "tooLong": "Please enter at most 64 characters",
+        "tooShort": "Please enter at least 8 characters"
       },
       "timeUnit": {
         "invalid": "Please select a valid time unit",
         "invalidFormat": "Time unit must be one of: seconds, minutes, hours, days, weeks, months, or years"
       },
-      "verificationType": {
-        "invalid": "Please select a valid verification type",
-        "invalidFormat": "Verification type must be one of: email, phone, or identity"
+      "timestamp": {
+        "invalid": "Please enter a valid date",
+        "invalidString": "Please enter a valid date",
+        "negative": "Please enter a date after January 1, 1970",
+        "outOfRange": "Please enter a date between 1970 and 9999"
       },
-      "assetType": {
-        "invalid": "Please select a valid asset type",
-        "invalidFormat": "Asset type must be one of: bond, cryptocurrency, deposit, equity, fund, or stablecoin",
-        "invalidBond": "Please select 'bond' as the asset type",
-        "invalidCryptocurrency": "Please select 'cryptocurrency' as the asset type",
-        "invalidDeposit": "Please select 'deposit' as the asset type",
-        "invalidEquity": "Please select 'equity' as the asset type",
-        "invalidFund": "Please select 'fund' as the asset type",
-        "invalidStablecoin": "Please select 'stablecoin' as the asset type"
+      "twoFactorCode": {
+        "invalid": "Please enter exactly 6 digits"
       },
       "userRole": {
         "invalid": "Please select a valid user role",
         "invalidFormat": "User role must be one of: admin, user, or viewer"
       },
-      "role": {
-        "invalid": "Please select a valid system role",
-        "invalidFormat": "Role must be one of: admin, issuer, manager, compliance, auditor, or investor"
+      "verificationCode": {
+        "invalid": "Please enter 8 characters using only letters and numbers"
+      },
+      "verificationType": {
+        "invalid": "Please select a valid verification type",
+        "invalidFormat": "Verification type must be one of: email, phone, or identity"
       }
-    }
-  },
-  "error": {
-    "amount-required": "Amount is required",
-    "array": "Please provide a list of items",
-    "array-contains": "Please select at least one item from the list",
-    "array-max-contains": "Please select no more than {maxContains} items",
-    "array-max-items": "Please select no more than {maxItems} items",
-    "array-min-contains": "Please select at least {minContains} items",
-    "array-min-items": "Please select at least {minItems} items",
-    "array-unique-items": "Please ensure all selected items are unique",
-    "asset-required": "Asset is required",
-    "async-iterator": "Invalid data format",
-    "at-least-two-asset-flows": "Please provide at least two flows to proceed",
-    "bigint": "Please enter a whole number",
-    "bigint-exclusive-maximum": "Please enter a number smaller than {exclusiveMaximum}",
-    "bigint-exclusive-minimum": "Please enter a number larger than {exclusiveMinimum}",
-    "bigint-maximum": "Please enter a number no larger than {maximum}",
-    "bigint-minimum": "Please enter a number no smaller than {minimum}",
-    "bigint-multiple-of": "Please enter a number that is divisible by {multipleOf}",
-    "boolean": "Please select Yes or No",
-    "date": "Please select a valid date",
-    "date-exclusive-maximum-timestamp": "Please select a date before {exclusiveMaximumTimestamp}",
-    "date-exclusive-minimum-timestamp": "Please select a date after {exclusiveMinimumTimestamp}",
-    "date-maximum-timestamp": "Please select a date on or before {maximumTimestamp}",
-    "date-minimum-timestamp": "Please select a date on or after {minimumTimestamp}",
-    "date-multiple-of-timestamp": "Please select a valid date",
-    "error-id": "Error ID",
-    "expiry-required": "Expiry is required",
-    "from-address-required": "From address is required and must be a valid EVM address",
-    "function": "Invalid format",
-    "go-home": "Go home",
-    "integer": "Please enter a whole number (no decimals)",
-    "integer-exclusive-maximum": "Please enter a whole number less than {exclusiveMaximum}",
-    "integer-exclusive-minimum": "Please enter a whole number greater than {exclusiveMinimum}",
-    "integer-maximum": "Please enter a whole number no greater than {maximum}",
-    "integer-minimum": "Please enter a whole number no less than {minimum}",
-    "integer-multiple-of": "Please enter a whole number divisible by {multipleOf}",
-    "intersect": "Please ensure all information is valid",
-    "intersect-unevaluated-properties": "Unexpected information provided",
-    "iterator": "Invalid data format",
-    "kind": "Invalid format",
-    "literal": "Please enter exactly {const}",
-    "never": "This field cannot be filled",
-    "not": "This value is not accepted",
-    "null": "This field should be empty",
-    "number": "Please enter a valid number",
-    "number-exclusive-maximum": "Please enter a number less than {exclusiveMaximum}",
-    "number-exclusive-minimum": "Please enter a number greater than {exclusiveMinimum}",
-    "number-maximum": "Please enter a number no greater than {maximum}",
-    "number-minimum": "Please enter a number no less than {minimum}",
-    "number-multiple-of": "Please enter a number divisible by {multipleOf}",
-    "object": "Please provide all required information",
-    "object-additional-properties": "Unknown field provided",
-    "object-max-properties": "Too many fields provided (maximum is {maxProperties})",
-    "object-min-properties": "Please fill out at least {minProperties} fields",
-    "object-required-property": "This field is required",
-    "promise": "Invalid data format",
-    "regexp": "Please enter text in the correct format",
-    "sending": "Sending",
-    "string": "Please enter text",
-    "string-format": "Please enter text in the correct {format} format",
-    "string-format-asset-symbol": "Please enter a valid asset symbol (uppercase letters and numbers)",
-    "string-format-isin": "Please enter a valid ISIN. Format: 2 letters (country code), 9 alphanumeric characters, and 1 check digit (e.g., US0378331005)",
-    "string-format-unknown": "Unknown format '{format}'",
-    "string-max-length": "Please enter no more than {maxLength} characters",
-    "string-min-length": "Please enter at least {minLength} characters",
-    "string-pattern": "Please follow the required pattern",
-    "success": "Success",
-    "symbol": "Invalid format",
-    "title": "Something went wrong!",
-    "to-address-required": "To address is required and must be a valid EVM address",
-    "try-again": "Try again",
-    "tuple": "Please provide all required items in the correct order",
-    "tuple-length": "Please provide exactly {maxItems} items",
-    "uint8array": "Invalid file format",
-    "uint8array-max-byte-length": "File is too large",
-    "uint8array-min-byte-length": "File is too small",
-    "undefined": "This field should be empty",
-    "union": "Please enter a valid value",
-    "union-min-max": "Please enter a value between {min} and {max}",
-    "unknown": "Invalid value entered",
-    "validation-errors": "Validation error",
-    "void": "This field should be empty"
+    },
+    "date": {
+      "exact": "Please enter the date {{expected}}",
+      "max": "Please enter a date on or before {{maximum}}",
+      "maxExclusive": "Please enter a date before {{maximum}}",
+      "min": "Please enter a date on or after {{minimum}}",
+      "minExclusive": "Please enter a date after {{minimum}}"
+    },
+    "default": "Invalid input",
+    "invalidArguments": "Invalid arguments provided",
+    "invalidCuid": "Please enter a valid CUID",
+    "invalidDate": "Please enter a valid date",
+    "invalidDatetime": "Please enter a valid date and time",
+    "invalidEmail": "Please enter a valid email address",
+    "invalidEnumValue": "Please select a valid option",
+    "invalidIntersection": "Invalid data combination",
+    "invalidLiteral": "Invalid value provided",
+    "invalidPattern": "Invalid format",
+    "invalidReturnType": "Invalid return value",
+    "invalidString": {
+      "cuid": "Please enter a valid CUID",
+      "cuid2": "Please enter a valid CUID2",
+      "datetime": "Please enter a valid date and time",
+      "email": "Please enter a valid email address",
+      "emoji": "Please enter a valid emoji",
+      "ip": "Please enter a valid IP address",
+      "regex": "Invalid format",
+      "ulid": "Please enter a valid ULID",
+      "url": "Please enter a valid URL",
+      "uuid": "Please enter a valid UUID"
+    },
+    "invalidType": {
+      "array": "Please provide a list",
+      "boolean": "Please select yes or no",
+      "date": "Please enter a valid date",
+      "number": "Please enter a number",
+      "object": "Please provide valid data",
+      "string": "Please enter text"
+    },
+    "invalidUnion": "Invalid input format",
+    "invalidUnionDiscriminator": "Invalid type specified",
+    "invalidUrl": "Please enter a valid URL",
+    "invalidUuid": "Please enter a valid UUID",
+    "notFinite": "Please enter a finite number",
+    "notMultipleOf": "Please enter a multiple of {{multipleOf}}",
+    "number": {
+      "exact": "Please enter exactly {{expected}}",
+      "max": "Please enter a number at most {{maximum}}",
+      "maxExclusive": "Please enter a number less than {{maximum}}",
+      "min": "Please enter a number at least {{minimum}}",
+      "minExclusive": "Please enter a number greater than {{minimum}}"
+    },
+    "required": "This field is required",
+    "string": {
+      "exactLength": "Please enter exactly {{expected}} characters",
+      "maxLength": "Please enter at most {{maximum}} characters",
+      "maxLengthExclusive": "Please enter fewer than {{maximum}} characters",
+      "minLength": "Please enter at least {{minimum}} characters",
+      "minLengthExclusive": "Please enter more than {{minimum}} characters"
+    },
+    "tooBig": "Value is too large",
+    "tooSmall": "Value is too small",
+    "unrecognizedKeys": "Unrecognized fields in data"
   }
 }
