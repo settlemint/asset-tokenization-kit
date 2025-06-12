@@ -125,31 +125,14 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         // Reverting here prevents deploying a factory that would create non-functional ATKSystem instances.
         if (complianceImplementation_ == address(0)) revert ComplianceImplementationNotSet();
         if (identityRegistryImplementation_ == address(0)) revert IdentityRegistryImplementationNotSet();
-        if (identityRegistryStorageImplementation_ == address(0)) {
-            revert IdentityRegistryStorageImplementationNotSet();
-        }
-        if (trustedIssuersRegistryImplementation_ == address(0)) {
-            revert TrustedIssuersRegistryImplementationNotSet();
-        }
-        if (topicSchemeRegistryImplementation_ == address(0)) {
-            revert TopicSchemeRegistryImplementationNotSet();
-        }
-        if (identityFactoryImplementation_ == address(0)) {
-            revert IdentityFactoryImplementationNotSet();
-        }
-        if (identityImplementation_ == address(0)) {
-            revert IdentityImplementationNotSet(); // Assumes this custom error is defined in ATKSystemErrors.sol
-        }
-        if (tokenIdentityImplementation_ == address(0)) {
-            revert TokenIdentityImplementationNotSet(); // Assumes this custom error is defined in ATKSystemErrors.sol
-        }
-        if (tokenAccessManagerImplementation_ == address(0)) {
-            revert TokenAccessManagerImplementationNotSet(); // Assumes this custom error is defined in
-                // ATKSystemErrors.sol
-        }
-        if (identityVerificationModule_ == address(0)) {
-            revert IdentityVerificationModuleNotSet();
-        }
+        if (identityRegistryStorageImplementation_ == address(0)) revert IdentityRegistryStorageImplementationNotSet();
+        if (trustedIssuersRegistryImplementation_ == address(0)) revert TrustedIssuersRegistryImplementationNotSet();
+        if (topicSchemeRegistryImplementation_ == address(0)) revert TopicSchemeRegistryImplementationNotSet();
+        if (identityFactoryImplementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
+        if (identityImplementation_ == address(0)) revert IdentityImplementationNotSet();
+        if (tokenIdentityImplementation_ == address(0)) revert TokenIdentityImplementationNotSet();
+        if (tokenAccessManagerImplementation_ == address(0)) revert TokenAccessManagerImplementationNotSet();
+        if (identityVerificationModule_ == address(0)) revert IdentityVerificationModuleNotSet();
 
         // Set the immutable state variables with the provided addresses.
         defaultComplianceImplementation = complianceImplementation_;

@@ -89,9 +89,6 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     // --- State Variables ---
     // State variables store data persistently on the blockchain.
 
-    /// @dev Flag to indicate if the system has been bootstrapped.
-    bool private _bootstrapped;
-
     // Addresses for the compliance module: one for the logic, one for the proxy.
     /// @dev Stores the address of the current compliance logic contract.
     address private _complianceImplementation;
@@ -139,6 +136,9 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
 
     /// @dev Stores the address of the current identity verification module instance.
     address private _identityVerificationModule;
+
+    /// @dev Flag to indicate if the system has been bootstrapped.
+    bool private _bootstrapped;
 
     // Token Factories by Type
     mapping(bytes32 typeHash => address tokenFactoryImplementationAddress) private tokenFactoryImplementationsByType;
