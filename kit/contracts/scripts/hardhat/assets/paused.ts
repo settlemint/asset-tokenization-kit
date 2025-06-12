@@ -33,9 +33,14 @@ export const createPausedAsset = async () => {
 
   await pausedStableCoin.waitUntilDeployed(transactionHash);
 
-  await issueBasePriceClaim(pausedStableCoin, 1);
+  // needs to be done so that he can add the claims and also pause the asset
+  await grantRoles(pausedStableCoin, owner, [
+    ATKRoles.claimManagerRole,
+    ATKRoles.emergencyRole,
+  ]);
 
-  await grantRoles(pausedStableCoin, owner, [ATKRoles.emergencyRole]);
+  // issue base price claim
+  await issueBasePriceClaim(pausedStableCoin, 1);
 
   // triggers Unpause event
   await unpauseAsset(pausedStableCoin);
