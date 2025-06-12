@@ -4,7 +4,11 @@ import { Glob } from "bun";
 import { relative } from "path";
 import { parse, stringify } from "yaml";
 import { findTurboRoot } from "./root";
-import { logger, info, warn, error, success } from "./logging";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+
+const logger = createLogger({
+  level: (process.env.LOG_LEVEL as LogLevel) || (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info",
+});
 
 interface VersionInfo {
   tag: "latest" | "main" | "pr";
@@ -129,8 +133,8 @@ export async function getVersionInfoWithLogging(
 ): Promise<VersionInfo> {
   const result = await getVersionInfo(params);
 
-  info(`TAG=${result.tag}`);
-  info(`VERSION=${result.version}`);
+  logger.info(`TAG=${result.tag}`);
+  logger.info(`VERSION=${result.version}`);
 
   return result;
 }
@@ -158,7 +162,7 @@ function updateWorkspaceDependencies(
   }
 
   if (workspaceCount > 0) {
-    info(
+    logger.info(
       `    Updated ${workspaceCount} workspace:* references in ${depType}`
     );
   }
@@ -189,7 +193,7 @@ function updateChartDependencies(
   }
 
   if (dependencyCount > 0) {
-    info(
+    logger.info(
       `    Updated ${dependencyCount} "*" version references in chart dependencies`
     );
   }
@@ -211,7 +215,7 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
     const versionInfo = await getVersionInfo({ startPath });
     const newVersion = versionInfo.version;
 
-    info(`Updating all package.json files to version: ${newVersion}`);
+    logger.info(`Updating all package.json files to version: ${newVersion}`);
 
     // Find all package.json files in the workspace, excluding node_modules
     const glob = new Glob("**/package.json");
@@ -229,29 +233,29 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
     }
 
     if (packageFiles.length === 0) {
-      warn("No package.json files found");
+      logger.warn("No package.json files found");
       return;
     }
 
-    info(`Found ${packageFiles.length} package.json files:`);
+    logger.info(`Found ${packageFiles.length} package.json files:`);
 
     let updatedCount = 0;
 
     for (const packagePath of packageFiles) {
       try {
-        info(`  Processing: ${packagePath}`);
+        logger.info(`  Processing: ${packagePath}`);
 
         // Read the current package.json file
         const packageJsonFile = Bun.file(packagePath);
         if (!(await packageJsonFile.exists())) {
-          warn(`    Skipping: File does not exist`);
+          logger.warn(`    Skipping: File does not exist`);
           continue;
         }
 
         const packageJson = (await packageJsonFile.json()) as PackageJson;
 
         if (!packageJson.version) {
-          warn(`    Skipping: No version field found`);
+          logger.warn(`    Skipping: No version field found`);
           continue;
         }
 
@@ -298,24 +302,24 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
             JSON.stringify(packageJson, null, 2) + "\n"
           );
 
-          info(`    Updated version: ${oldVersion} -> ${newVersion}`);
+          logger.info(`    Updated version: ${oldVersion} -> ${newVersion}`);
           if (totalWorkspaceUpdates > 0) {
-            info(
+            logger.info(
               `    Updated ${totalWorkspaceUpdates} total workspace:* references`
             );
           }
           updatedCount++;
         } else {
-          info(`    No changes needed`);
+          logger.info(`    No changes needed`);
         }
       } catch (err) {
-        error(`    Error processing ${packagePath}:`, err);
+        logger.error(`    Error processing ${packagePath}:`, err);
       }
     }
 
-    success(`\nSuccessfully updated ${updatedCount} package.json files`);
+    logger.info(`\nSuccessfully updated ${updatedCount} package.json files`);
   } catch (err) {
-    error("Failed to update package versions:", err);
+    logger.error("Failed to update package versions:", err);
     process.exit(1);
   }
 }
@@ -329,7 +333,7 @@ async function updateChartVersions(): Promise<void> {
     const versionInfo = await getVersionInfo();
     const newVersion = versionInfo.version;
 
-    info(`Updating charts to version: ${newVersion}`);
+    logger.info(`Updating charts to version: ${newVersion}`);
 
     // Find all Chart.yaml files in the ATK directory
     const glob = new Glob("kit/charts/**/Chart.yaml");
@@ -340,23 +344,23 @@ async function updateChartVersions(): Promise<void> {
     }
 
     if (chartFiles.length === 0) {
-      warn("No Chart.yaml files found in kit/charts/");
+      logger.warn("No Chart.yaml files found in kit/charts/");
       return;
     }
 
-    info(`Found ${chartFiles.length} Chart.yaml files:`);
+    logger.info(`Found ${chartFiles.length} Chart.yaml files:`);
 
     let updatedCount = 0;
 
     for (const chartPath of chartFiles) {
       try {
         const relativePath = relative(process.cwd(), chartPath);
-        info(`  Processing: ${relativePath}`);
+        logger.info(`  Processing: ${relativePath}`);
 
         // Read the current Chart.yaml file
         const file = Bun.file(chartPath);
         if (!(await file.exists())) {
-          warn(`    Skipping: File does not exist`);
+          logger.warn(`    Skipping: File does not exist`);
           continue;
         }
 
@@ -365,7 +369,7 @@ async function updateChartVersions(): Promise<void> {
 
         // Check if version fields exist
         if (!chart.version && !chart.appVersion) {
-          warn(`    Skipping: No version or appVersion fields found`);
+          logger.warn(`    Skipping: No version or appVersion fields found`);
           continue;
         }
 
@@ -398,24 +402,24 @@ async function updateChartVersions(): Promise<void> {
           const updatedContent = stringify(chart);
           await Bun.write(chartPath, updatedContent);
 
-          info(`    Updated version: ${oldVersion} -> ${newVersion}`);
+          logger.info(`    Updated version: ${oldVersion} -> ${newVersion}`);
           if (oldAppVersion !== oldVersion) {
-            info(
+            logger.info(
               `    Updated appVersion: ${oldAppVersion} -> ${newVersion}`
             );
           }
           updatedCount++;
         } else {
-          info(`    No changes needed`);
+          logger.info(`    No changes needed`);
         }
       } catch (err) {
-        error(`    Error processing ${chartPath}:`, err);
+        logger.error(`    Error processing ${chartPath}:`, err);
       }
     }
 
-    success(`\nSuccessfully updated ${updatedCount} Chart.yaml files`);
+    logger.info(`\nSuccessfully updated ${updatedCount} Chart.yaml files`);
   } catch (err) {
-    error("Failed to update chart versions:", err);
+    logger.error("Failed to update chart versions:", err);
     process.exit(1);
   }
 }
@@ -424,7 +428,7 @@ async function updateChartVersions(): Promise<void> {
 if (import.meta.main) {
   // Check if running in CI environment
   if (!process.env.CI) {
-    info("Set the CI environment variable to run this script.");
+    logger.info("Set the CI environment variable to run this script.");
     process.exit(0);
   }
 
