@@ -1,13 +1,18 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { ERC2771Context, Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {
+    ERC2771ContextUpgradeable,
+    ContextUpgradeable
+} from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 import { IATKSystem } from "./IATKSystem.sol";
 import {
@@ -71,7 +76,15 @@ import { ATKTokenFactoryProxy } from "./token-factory/ATKTokenFactoryProxy.sol";
 /// trusted forwarder is used) and AccessControl for role-based permissions (restricting sensitive functions to
 /// authorized
 /// administrators). It also inherits ReentrancyGuard to protect against reentrancy attacks on certain functions.
-contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, ReentrancyGuard {
+contract ATKSystemImplementation is
+    Initializable,
+    IATKSystem,
+    ERC165Upgradeable,
+    ERC2771ContextUpgradeable,
+    AccessControlUpgradeable,
+    ReentrancyGuardUpgradeable,
+    UUPSUpgradeable
+{
     // Expected interface IDs used for validating implementation contracts.
     // These are unique identifiers for Solidity interfaces, ensuring that a contract claiming to be, for example,
     // an ISMARTCompliance implementation actually supports the functions defined in that interface.
@@ -171,15 +184,17 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         }
     }
 
-    // --- Constructor ---
-    /// @notice Initializes the ATKSystem contract upon deployment.
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
+        _disableInitializers();
+    }
+
+    /// @notice Initializes the ATKSystem contract.
     /// @dev Sets up the initial administrator, validates and stores the initial implementation addresses for all
     /// modules
     /// and identity types, and sets the trusted forwarder for meta-transactions.
     /// It performs interface checks on all provided implementation addresses to ensure they conform to the required
     /// standards.
-    /// This constructor is `payable`, meaning it can receive Ether upon deployment, though it's not strictly necessary
-    /// for its function.
     /// @param initialAdmin_ The address that will be granted the `DEFAULT_ADMIN_ROLE`, giving it administrative control
     /// over this contract.
     /// @param complianceImplementation_ The initial address of the compliance module's logic contract.
@@ -199,8 +214,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// be ISMARTTokenAccessManager compliant.
     /// @param identityVerificationModule_ The initial address of the identity verification module
     /// contract's logic.
-    /// @param forwarder_ The address of the trusted forwarder contract for ERC2771 meta-transaction support.
-    constructor(
+    function initialize(
         address initialAdmin_,
         address complianceImplementation_,
         address identityRegistryImplementation_,
@@ -211,11 +225,15 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         address identityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
-        address identityVerificationModule_,
-        address forwarder_
+        address identityVerificationModule_
     )
-        ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
+        public
+        initializer
     {
+        __AccessControl_init();
+        __ReentrancyGuard_init();
+        __UUPSUpgradeable_init();
+
         // Grant the DEFAULT_ADMIN_ROLE to the initial administrator address.
         // This role typically has permissions to call sensitive functions like setting implementation addresses.
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin_);
@@ -288,6 +306,11 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         }
         _identityVerificationModule = identityVerificationModule_;
     }
+
+    /// @dev Authorizes an upgrade to a new implementation contract.
+    /// The UUPS upgrade mechanism is used.
+    /// Only the `DEFAULT_ADMIN_ROLE` can authorize an upgrade.
+    function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) { }
 
     // --- Bootstrap Function ---
     /// @notice Deploys and initializes the proxy contracts for all core ATK modules.
@@ -752,7 +775,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// rather than the forwarder contract that relayed it.
     /// If not a meta-transaction, it behaves like the standard `msg.sender`.
     /// @return The address of the original transaction sender (user) or the direct caller.
-    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
         return super._msgSender(); // Calls the ERC2771Context implementation.
     }
 
@@ -761,7 +784,12 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// refers to the original call data from the user in a meta-transaction context.
     /// If not a meta-transaction, it behaves like the standard `msg.data`.
     /// @return The original call data of the transaction.
-    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
         return super._msgData(); // Calls the ERC2771Context implementation.
     }
 
@@ -770,7 +798,12 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// appended to the call data by a forwarder, which typically contains the original sender's address.
     /// The base `ERC2771Context` implementation handles this correctly.
     /// @return The length of the context suffix in the call data for meta-transactions.
-    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+    function _contextSuffixLength()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
         return super._contextSuffixLength();
     }
 
@@ -781,7 +814,12 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// like `IERC165` (from `ERC165`) and `IAccessControl` (from `AccessControl`).
     /// @param interfaceId The 4-byte interface identifier to check.
     /// @return `true` if the contract supports the interface, `false` otherwise.
-    function supportsInterface(bytes4 interfaceId) public view override(ERC165, AccessControl) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC165Upgradeable, AccessControlUpgradeable, IERC165)
+        returns (bool)
+    {
         return interfaceId == _IATK_SYSTEM_ID || super.supportsInterface(interfaceId);
     }
 }

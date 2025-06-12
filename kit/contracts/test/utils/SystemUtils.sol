@@ -8,6 +8,7 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 // System
 import { ATKSystemFactory } from "../../contracts/system/ATKSystemFactory.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
+import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 
 // Implementations
 import { ATKIdentityRegistryStorageImplementation } from
@@ -73,6 +74,8 @@ contract SystemUtils is Test {
         IIdentity identityImpl = new ATKIdentityImplementation(forwarder);
         IIdentity tokenIdentityImpl = new ATKTokenIdentityImplementation(forwarder);
 
+        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
+
         ATKIdentityRegistryStorageImplementation storageImpl = new ATKIdentityRegistryStorageImplementation(forwarder);
         ATKTrustedIssuersRegistryImplementation issuersImpl = new ATKTrustedIssuersRegistryImplementation(forwarder);
         ATKComplianceImplementation complianceImpl = new ATKComplianceImplementation(forwarder);
@@ -86,6 +89,7 @@ contract SystemUtils is Test {
         vm.label(address(identityVerificationModule), "Identity Verification Module");
 
         systemFactory = new ATKSystemFactory(
+            address(systemImplementation),
             address(complianceImpl),
             address(registryImpl),
             address(storageImpl),

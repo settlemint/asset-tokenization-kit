@@ -126,3 +126,7 @@ error InvalidTokenImplementationInterface();
 /// @dev This typically occurs in proxy constructors if the logic contract address fetched from the system is
 /// address(0).
 error InitializationWithZeroAddress();
+
+/// @notice Error indicating that an invalid ATKSystem implementation address was provided.
+/// @dev This error is thrown if the ATKSystem implementation address is the zero address.
+error InvalidSystemImplementation();

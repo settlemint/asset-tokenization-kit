@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { Test, console } from "forge-std/Test.sol";
-import { ATKSystem } from "../../contracts/system/ATKSystem.sol";
+import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
 import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -57,7 +57,7 @@ contract MockInvalidContract {
 
 contract ATKSystemTest is Test {
     SystemUtils public systemUtils;
-    ATKSystem public atkSystem;
+    IATKSystem public atkSystem;
 
     address public admin = address(0x1);
     address public user = address(0x2);
@@ -79,7 +79,7 @@ contract ATKSystemTest is Test {
 
     function setUp() public {
         systemUtils = new SystemUtils(admin);
-        atkSystem = ATKSystem(address(systemUtils.system()));
+        atkSystem = IATKSystem(address(systemUtils.system()));
         mockInvalidContract = new MockInvalidContract();
 
         // Deploy actual implementations for testing updates
@@ -135,7 +135,8 @@ contract ATKSystemTest is Test {
         address newTokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
         address newIdentityVerificationModule = address(new SMARTIdentityVerificationModule(forwarder));
 
-        ATKSystem newSystem = new ATKSystem(
+        ATKSystemImplementation newSystem = new ATKSystemImplementation(forwarder);
+        newSystem.initialize(
             admin,
             newComplianceImpl,
             newIdentityRegistryImpl,
@@ -146,8 +147,7 @@ contract ATKSystemTest is Test {
             newIdentityImplAddr,
             newTokenIdentityImpl,
             newTokenAccessManagerImpl,
-            address(newIdentityVerificationModule),
-            forwarder
+            address(newIdentityVerificationModule)
         );
 
         vm.prank(user);
@@ -167,26 +167,26 @@ contract ATKSystemTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IATKSystem.ComplianceImplementationUpdated(admin, address(complianceImpl));
 
-        atkSystem.setComplianceImplementation(address(complianceImpl));
-        assertEq(atkSystem.complianceImplementation(), address(complianceImpl));
+        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(complianceImpl));
+        assertEq(ATKSystemImplementation(address(atkSystem)).complianceImplementation(), address(complianceImpl));
     }
 
     function test_SetComplianceImplementation_OnlyAdmin() public {
         vm.prank(user);
         vm.expectRevert();
-        atkSystem.setComplianceImplementation(address(complianceImpl));
+        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(complianceImpl));
     }
 
     function test_SetComplianceImplementation_ZeroAddress() public {
         vm.prank(admin);
         vm.expectRevert();
-        atkSystem.setComplianceImplementation(address(0));
+        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(0));
     }
 
     function test_SetComplianceImplementation_InvalidInterface() public {
         vm.prank(admin);
         vm.expectRevert();
-        atkSystem.setComplianceImplementation(address(mockInvalidContract));
+        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(mockInvalidContract));
     }
 
     function test_SetIdentityRegistryImplementation() public {
@@ -194,20 +194,22 @@ contract ATKSystemTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IATKSystem.IdentityRegistryImplementationUpdated(admin, address(identityRegistryImpl));
 
-        atkSystem.setIdentityRegistryImplementation(address(identityRegistryImpl));
-        assertEq(atkSystem.identityRegistryImplementation(), address(identityRegistryImpl));
+        ATKSystemImplementation(address(atkSystem)).setIdentityRegistryImplementation(address(identityRegistryImpl));
+        assertEq(
+            ATKSystemImplementation(address(atkSystem)).identityRegistryImplementation(), address(identityRegistryImpl)
+        );
     }
 
     function test_SetIdentityRegistryImplementation_ZeroAddress() public {
         vm.prank(admin);
         vm.expectRevert();
-        atkSystem.setIdentityRegistryImplementation(address(0));
+        ATKSystemImplementation(address(atkSystem)).setIdentityRegistryImplementation(address(0));
     }
 
     function test_SetIdentityRegistryImplementation_InvalidInterface() public {
         vm.prank(admin);
         vm.expectRevert();
-        atkSystem.setIdentityRegistryImplementation(address(mockInvalidContract));
+        ATKSystemImplementation(address(atkSystem)).setIdentityRegistryImplementation(address(mockInvalidContract));
     }
 
     function test_SetIdentityRegistryStorageImplementation() public {
@@ -215,8 +217,13 @@ contract ATKSystemTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IATKSystem.IdentityRegistryStorageImplementationUpdated(admin, address(identityRegistryStorageImpl));
 
-        atkSystem.setIdentityRegistryStorageImplementation(address(identityRegistryStorageImpl));
-        assertEq(atkSystem.identityRegistryStorageImplementation(), address(identityRegistryStorageImpl));
+        ATKSystemImplementation(address(atkSystem)).setIdentityRegistryStorageImplementation(
+            address(identityRegistryStorageImpl)
+        );
+        assertEq(
+            ATKSystemImplementation(address(atkSystem)).identityRegistryStorageImplementation(),
+            address(identityRegistryStorageImpl)
+        );
     }
 
     function test_SetTrustedIssuersRegistryImplementation() public {
@@ -224,8 +231,13 @@ contract ATKSystemTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IATKSystem.TrustedIssuersRegistryImplementationUpdated(admin, address(trustedIssuersRegistryImpl));
 
-        atkSystem.setTrustedIssuersRegistryImplementation(address(trustedIssuersRegistryImpl));
-        assertEq(atkSystem.trustedIssuersRegistryImplementation(), address(trustedIssuersRegistryImpl));
+        ATKSystemImplementation(address(atkSystem)).setTrustedIssuersRegistryImplementation(
+            address(trustedIssuersRegistryImpl)
+        );
+        assertEq(
+            ATKSystemImplementation(address(atkSystem)).trustedIssuersRegistryImplementation(),
+            address(trustedIssuersRegistryImpl)
+        );
     }
 
     function test_SetIdentityFactoryImplementation() public {
@@ -233,8 +245,10 @@ contract ATKSystemTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IATKSystem.IdentityFactoryImplementationUpdated(admin, address(identityFactoryImpl));
 
-        atkSystem.setIdentityFactoryImplementation(address(identityFactoryImpl));
-        assertEq(atkSystem.identityFactoryImplementation(), address(identityFactoryImpl));
+        ATKSystemImplementation(address(atkSystem)).setIdentityFactoryImplementation(address(identityFactoryImpl));
+        assertEq(
+            ATKSystemImplementation(address(atkSystem)).identityFactoryImplementation(), address(identityFactoryImpl)
+        );
     }
 
     function test_SetIdentityImplementation() public {
@@ -242,8 +256,8 @@ contract ATKSystemTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IATKSystem.IdentityImplementationUpdated(admin, address(identityImpl));
 
-        atkSystem.setIdentityImplementation(address(identityImpl));
-        assertEq(atkSystem.identityImplementation(), address(identityImpl));
+        ATKSystemImplementation(address(atkSystem)).setIdentityImplementation(address(identityImpl));
+        assertEq(ATKSystemImplementation(address(atkSystem)).identityImplementation(), address(identityImpl));
     }
 
     function test_SetTokenIdentityImplementation() public {
@@ -251,8 +265,8 @@ contract ATKSystemTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IATKSystem.TokenIdentityImplementationUpdated(admin, address(tokenIdentityImpl));
 
-        atkSystem.setTokenIdentityImplementation(address(tokenIdentityImpl));
-        assertEq(atkSystem.tokenIdentityImplementation(), address(tokenIdentityImpl));
+        ATKSystemImplementation(address(atkSystem)).setTokenIdentityImplementation(address(tokenIdentityImpl));
+        assertEq(ATKSystemImplementation(address(atkSystem)).tokenIdentityImplementation(), address(tokenIdentityImpl));
     }
 
     function test_SetTokenAccessManagerImplementation() public {
@@ -260,8 +274,11 @@ contract ATKSystemTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IATKSystem.TokenAccessManagerImplementationUpdated(admin, address(tokenAccessManagerImpl));
 
-        atkSystem.setTokenAccessManagerImplementation(address(tokenAccessManagerImpl));
-        assertEq(atkSystem.tokenAccessManagerImplementation(), address(tokenAccessManagerImpl));
+        ATKSystemImplementation(address(atkSystem)).setTokenAccessManagerImplementation(address(tokenAccessManagerImpl));
+        assertEq(
+            ATKSystemImplementation(address(atkSystem)).tokenAccessManagerImplementation(),
+            address(tokenAccessManagerImpl)
+        );
     }
 
     function test_CreateTokenFactory_OnlyAdmin() public {
@@ -290,9 +307,10 @@ contract ATKSystemTest is Test {
     }
 
     function test_ConstructorWithZeroAddresses() public {
+        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
         // Test various zero address scenarios
         vm.expectRevert();
-        new ATKSystem(
+        systemImplementation.initialize(
             admin,
             address(0), // compliance
             address(identityRegistryImpl),
@@ -303,12 +321,11 @@ contract ATKSystemTest is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(tokenAccessManagerImpl),
-            address(identityVerificationModule),
-            forwarder
+            address(identityVerificationModule)
         );
 
         vm.expectRevert();
-        new ATKSystem(
+        systemImplementation.initialize(
             admin,
             address(complianceImpl),
             address(0), // identity registry
@@ -319,14 +336,14 @@ contract ATKSystemTest is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(tokenAccessManagerImpl),
-            address(identityVerificationModule),
-            forwarder
+            address(identityVerificationModule)
         );
     }
 
     function test_ConstructorWithInvalidInterfaces() public {
+        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
         vm.expectRevert();
-        new ATKSystem(
+        systemImplementation.initialize(
             admin,
             address(mockInvalidContract), // Invalid compliance
             address(identityRegistryImpl),
@@ -337,8 +354,7 @@ contract ATKSystemTest is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(tokenAccessManagerImpl),
-            address(identityVerificationModule),
-            forwarder
+            address(identityVerificationModule)
         );
     }
 
@@ -378,7 +394,7 @@ contract ATKSystemTest is Test {
         ATKComplianceImplementation newImpl = new ATKComplianceImplementation(forwarder);
 
         vm.prank(admin);
-        atkSystem.setComplianceImplementation(address(newImpl));
+        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(newImpl));
 
         assertEq(atkSystem.complianceImplementation(), address(newImpl));
         assertTrue(atkSystem.complianceImplementation() != oldImpl);
@@ -388,15 +404,21 @@ contract ATKSystemTest is Test {
         vm.startPrank(admin);
 
         // Test all implementation setters with actual implementations
-        atkSystem.setComplianceImplementation(address(complianceImpl));
-        atkSystem.setIdentityRegistryImplementation(address(identityRegistryImpl));
-        atkSystem.setIdentityRegistryStorageImplementation(address(identityRegistryStorageImpl));
-        atkSystem.setTrustedIssuersRegistryImplementation(address(trustedIssuersRegistryImpl));
-        atkSystem.setTopicSchemeRegistryImplementation(address(topicSchemeRegistryImpl));
-        atkSystem.setIdentityFactoryImplementation(address(identityFactoryImpl));
-        atkSystem.setIdentityImplementation(address(identityImpl));
-        atkSystem.setTokenIdentityImplementation(address(tokenIdentityImpl));
-        atkSystem.setTokenAccessManagerImplementation(address(tokenAccessManagerImpl));
+        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(complianceImpl));
+        ATKSystemImplementation(address(atkSystem)).setIdentityRegistryImplementation(address(identityRegistryImpl));
+        ATKSystemImplementation(address(atkSystem)).setIdentityRegistryStorageImplementation(
+            address(identityRegistryStorageImpl)
+        );
+        ATKSystemImplementation(address(atkSystem)).setTrustedIssuersRegistryImplementation(
+            address(trustedIssuersRegistryImpl)
+        );
+        ATKSystemImplementation(address(atkSystem)).setTopicSchemeRegistryImplementation(
+            address(topicSchemeRegistryImpl)
+        );
+        ATKSystemImplementation(address(atkSystem)).setIdentityFactoryImplementation(address(identityFactoryImpl));
+        ATKSystemImplementation(address(atkSystem)).setIdentityImplementation(address(identityImpl));
+        ATKSystemImplementation(address(atkSystem)).setTokenIdentityImplementation(address(tokenIdentityImpl));
+        ATKSystemImplementation(address(atkSystem)).setTokenAccessManagerImplementation(address(tokenAccessManagerImpl));
 
         // Verify all implementations are set correctly
         assertEq(atkSystem.complianceImplementation(), address(complianceImpl));
@@ -417,26 +439,30 @@ contract ATKSystemTest is Test {
         vm.expectEmit(true, true, false, false);
         emit IATKSystem.TopicSchemeRegistryImplementationUpdated(admin, address(topicSchemeRegistryImpl));
 
-        atkSystem.setTopicSchemeRegistryImplementation(address(topicSchemeRegistryImpl));
+        ATKSystemImplementation(address(atkSystem)).setTopicSchemeRegistryImplementation(
+            address(topicSchemeRegistryImpl)
+        );
         assertEq(atkSystem.topicSchemeRegistryImplementation(), address(topicSchemeRegistryImpl));
     }
 
     function test_SetTopicSchemeRegistryImplementation_OnlyAdmin() public {
         vm.prank(user);
         vm.expectRevert();
-        atkSystem.setTopicSchemeRegistryImplementation(address(topicSchemeRegistryImpl));
+        ATKSystemImplementation(address(atkSystem)).setTopicSchemeRegistryImplementation(
+            address(topicSchemeRegistryImpl)
+        );
     }
 
     function test_SetTopicSchemeRegistryImplementation_ZeroAddress() public {
         vm.prank(admin);
         vm.expectRevert();
-        atkSystem.setTopicSchemeRegistryImplementation(address(0));
+        ATKSystemImplementation(address(atkSystem)).setTopicSchemeRegistryImplementation(address(0));
     }
 
     function test_SetTopicSchemeRegistryImplementation_InvalidInterface() public {
         vm.prank(admin);
         vm.expectRevert();
-        atkSystem.setTopicSchemeRegistryImplementation(address(mockInvalidContract));
+        ATKSystemImplementation(address(atkSystem)).setTopicSchemeRegistryImplementation(address(mockInvalidContract));
     }
 
     // --- Identity Verification Module Tests ---
@@ -456,9 +482,10 @@ contract ATKSystemTest is Test {
     }
 
     function test_Constructor_IdentityVerificationModule_ZeroAddress() public {
+        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
         // Test constructor reverts with zero address for identity verification module
         vm.expectRevert(IdentityVerificationModuleNotSet.selector);
-        new ATKSystem(
+        systemImplementation.initialize(
             admin,
             address(complianceImpl),
             address(identityRegistryImpl),
@@ -469,8 +496,7 @@ contract ATKSystemTest is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(tokenAccessManagerImpl),
-            address(0), // Zero address for identity verification module
-            forwarder
+            address(0) // Zero address for identity verification module
         );
     }
 
@@ -478,7 +504,8 @@ contract ATKSystemTest is Test {
         // Test constructor succeeds with valid identity verification module address
         SMARTIdentityVerificationModule newModule = new SMARTIdentityVerificationModule(forwarder);
 
-        ATKSystem newSystem = new ATKSystem(
+        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
+        systemImplementation.initialize(
             admin,
             address(complianceImpl),
             address(identityRegistryImpl),
@@ -489,11 +516,10 @@ contract ATKSystemTest is Test {
             address(identityImpl),
             address(tokenIdentityImpl),
             address(tokenAccessManagerImpl),
-            address(newModule),
-            forwarder
+            address(newModule)
         );
 
-        assertEq(newSystem.identityVerificationModule(), address(newModule));
+        assertEq(systemImplementation.identityVerificationModule(), address(newModule));
     }
 
     function test_IdentityVerificationModule_UsedInBootstrap() public {
@@ -509,7 +535,8 @@ contract ATKSystemTest is Test {
         address newTokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
         SMARTIdentityVerificationModule newModule = new SMARTIdentityVerificationModule(forwarder);
 
-        ATKSystem newSystem = new ATKSystem(
+        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
+        systemImplementation.initialize(
             admin,
             newComplianceImpl,
             newIdentityRegistryImpl,
@@ -520,19 +547,18 @@ contract ATKSystemTest is Test {
             newIdentityImplAddr,
             newTokenIdentityImpl,
             newTokenAccessManagerImpl,
-            address(newModule),
-            forwarder
+            address(newModule)
         );
 
         // Verify module is set before bootstrap
-        assertEq(newSystem.identityVerificationModule(), address(newModule));
+        assertEq(systemImplementation.identityVerificationModule(), address(newModule));
 
         // Bootstrap the system
         vm.prank(admin);
-        newSystem.bootstrap();
+        systemImplementation.bootstrap();
 
         // Verify module is still accessible after bootstrap
-        assertEq(newSystem.identityVerificationModule(), address(newModule));
+        assertEq(systemImplementation.identityVerificationModule(), address(newModule));
     }
 
     function test_IdentityVerificationModule_ConsistencyAcrossSystemOperations() public {
@@ -545,8 +571,8 @@ contract ATKSystemTest is Test {
         vm.startPrank(admin);
 
         // Update some implementations
-        atkSystem.setComplianceImplementation(address(complianceImpl));
-        atkSystem.setIdentityRegistryImplementation(address(identityRegistryImpl));
+        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(complianceImpl));
+        ATKSystemImplementation(address(atkSystem)).setIdentityRegistryImplementation(address(identityRegistryImpl));
 
         vm.stopPrank();
 
@@ -559,7 +585,8 @@ contract ATKSystemTest is Test {
         // Test constructor with all valid parameters including identity verification module
         SMARTIdentityVerificationModule newModule = new SMARTIdentityVerificationModule(forwarder);
 
-        ATKSystem newSystem = new ATKSystem(
+        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
+        systemImplementation.initialize(
             admin,
             address(new ATKComplianceImplementation(forwarder)),
             address(new ATKIdentityRegistryImplementation(forwarder)),
@@ -570,20 +597,19 @@ contract ATKSystemTest is Test {
             address(new ATKIdentityImplementation(forwarder)),
             address(new ATKTokenIdentityImplementation(forwarder)),
             address(new ATKTokenAccessManagerImplementation(forwarder)),
-            address(newModule),
-            forwarder
+            address(newModule)
         );
 
         // Verify all components are properly set including identity verification module
-        assertTrue(newSystem.complianceImplementation() != address(0));
-        assertTrue(newSystem.identityRegistryImplementation() != address(0));
-        assertTrue(newSystem.identityRegistryStorageImplementation() != address(0));
-        assertTrue(newSystem.trustedIssuersRegistryImplementation() != address(0));
-        assertTrue(newSystem.topicSchemeRegistryImplementation() != address(0));
-        assertTrue(newSystem.identityFactoryImplementation() != address(0));
-        assertTrue(newSystem.identityImplementation() != address(0));
-        assertTrue(newSystem.tokenIdentityImplementation() != address(0));
-        assertTrue(newSystem.tokenAccessManagerImplementation() != address(0));
-        assertEq(newSystem.identityVerificationModule(), address(newModule));
+        assertTrue(systemImplementation.complianceImplementation() != address(0));
+        assertTrue(systemImplementation.identityRegistryImplementation() != address(0));
+        assertTrue(systemImplementation.identityRegistryStorageImplementation() != address(0));
+        assertTrue(systemImplementation.trustedIssuersRegistryImplementation() != address(0));
+        assertTrue(systemImplementation.topicSchemeRegistryImplementation() != address(0));
+        assertTrue(systemImplementation.identityFactoryImplementation() != address(0));
+        assertTrue(systemImplementation.identityImplementation() != address(0));
+        assertTrue(systemImplementation.tokenIdentityImplementation() != address(0));
+        assertTrue(systemImplementation.tokenAccessManagerImplementation() != address(0));
+        assertEq(systemImplementation.identityVerificationModule(), address(newModule));
     }
 }
