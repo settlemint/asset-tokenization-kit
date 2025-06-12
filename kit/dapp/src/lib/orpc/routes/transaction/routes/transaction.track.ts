@@ -1,3 +1,4 @@
+import { portalMiddleware } from "@/lib/orpc/middlewares/services/portal.middleware";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { EthereumHash } from "@/lib/utils/zod/validators/ethereum-hash";
@@ -5,12 +6,74 @@ import { ORPCError } from "@orpc/server";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { ar } from "../../../procedures/auth.router";
 
-export const track = ar.transaction.track.handler(async function* ({
-  input,
-  signal,
-}) {
-  // todo
-});
+const GET_TRANSACTION_QUERY = portalGraphql(`
+  query GetTransaction($transactionHash: String!) {
+    getTransaction(transactionHash: $transactionHash) {
+      receipt {
+        status
+        revertReasonDecoded
+        revertReason
+        blockNumber
+      }
+    }
+  }
+`);
+
+const MAX_ATTEMPTS = 30;
+const DELAY_MS = 2000;
+
+export const track = ar.transaction.track
+  .use(portalMiddleware)
+  .handler(async function* ({ input, context }) {
+    const { transactionHash, messages } = input;
+
+    let receiptFound = false;
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      const { getTransaction } = await context.portalClient.request(
+        GET_TRANSACTION_QUERY,
+        {
+          transactionHash,
+        }
+      );
+
+      const receipt = getTransaction?.receipt;
+      if (!receipt) {
+        yield {
+          status: "pending",
+          message: messages.transaction.pending,
+          transactionHash,
+        };
+        await delay(DELAY_MS);
+        continue;
+      }
+
+      receiptFound = true;
+
+      if (receipt.status !== "Success") {
+        yield {
+          status: "failed",
+          reason: receipt.revertReasonDecoded ?? "",
+          transactionHash,
+        };
+        break;
+      }
+    }
+
+    if (!receiptFound) {
+      yield {
+        status: "failed",
+        reason: messages.transaction.dropped,
+        transactionHash,
+      };
+      return;
+    }
+
+    yield {
+      status: "confirmed",
+      message: messages.transaction.success,
+      transactionHash,
+    };
+  });
 
 // Create logger instance with configurable log level
 const logger = createLogger({
@@ -23,21 +86,6 @@ const GET_INDEXING_STATUS_QUERY = theGraphGraphql(
     _meta {
       block {
         number
-      }
-    }
-  }
-`
-);
-
-const GET_TRANSACTION_QUERY = portalGraphql(
-  `
-  query GetTransaction($transactionHash: String!) {
-    getTransaction(transactionHash: $transactionHash) {
-      receipt {
-        status
-        revertReasonDecoded
-        revertReason
-        blockNumber
       }
     }
   }
