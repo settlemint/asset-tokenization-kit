@@ -1,6 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import ATKModule from "../main";
-import ForwarderModule from "../predeployed/forwarder";
 
 const ATKOnboardingSystemModule = buildModule(
   "ATKOnboardingSystemModule",
@@ -96,13 +95,6 @@ const ATKOnboardingSystemModule = buildModule(
       { id: "identityFactory" }
     );
 
-    const { forwarder } = m.useModule(ForwarderModule);
-    // For now do it this way, will be integrated into system completely
-    const fixedYieldScheduleFactory = m.contract(
-      "ATKFixedYieldScheduleFactory",
-      [system.address, forwarder]
-    );
-
     return {
       system,
       compliance,
@@ -111,7 +103,6 @@ const ATKOnboardingSystemModule = buildModule(
       trustedIssuersRegistry,
       topicSchemeRegistry,
       identityFactory,
-      fixedYieldScheduleFactory,
     };
   }
 );
