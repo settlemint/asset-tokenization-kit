@@ -12,6 +12,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
@@ -43,7 +44,20 @@ export function ContextualSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="pt-4"></SidebarContent>
+      <SidebarContent className="pt-4">
+        <Tabs defaultValue="issuer" className="w-full">
+          <TabsList className="w-full bg-sidebar">
+            <TabsTrigger value="investor">Investor</TabsTrigger>
+            <TabsTrigger value="issuer">Issuer</TabsTrigger>
+            <TabsTrigger value="platform">Platform</TabsTrigger>
+          </TabsList>
+          <TabsContent value="investor">
+            Make changes to your account here.
+          </TabsContent>
+          <TabsContent value="issuer">Change your password here.</TabsContent>
+          <TabsContent value="admin">Admin</TabsContent>
+        </Tabs>
+      </SidebarContent>
       <SidebarFooter>
         <Separator />
         <OrganizationSwitcher

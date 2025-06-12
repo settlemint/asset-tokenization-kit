@@ -1,13 +1,18 @@
 import { ContextualSidebar } from "@/components/blocks/contextual-sidebar/contextual-sidebar";
-import NavInset from "@/components/layout/nav-inset";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import Header from "@/components/layout/header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { PropsWithChildren } from "react";
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
     <SidebarProvider className="SidebarProvider" defaultOpen={true}>
       <ContextualSidebar />
-      <NavInset>{children}</NavInset>
+      <SidebarInset className="bg-sidebar">
+        <Header />
+        <main className="flex min-h-[calc(100vh-90px)] flex-1 flex-col rounded-tl-xl bg-background p-8">
+          {children}
+        </main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }
