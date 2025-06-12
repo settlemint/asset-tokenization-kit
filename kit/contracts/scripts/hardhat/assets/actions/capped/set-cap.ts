@@ -2,8 +2,8 @@ import { ATKContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatDecimals } from "../../../utils/format-decimals";
-import { toDecimals } from "../../../utils/to-decimals";
+import { formatBaseUnits } from "../../../utils/format-base-units";
+import { toBaseUnits } from "../../../utils/to-base-units";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const setCap = async (asset: Asset<any>, amount: bigint) => {
@@ -12,7 +12,7 @@ export const setCap = async (asset: Asset<any>, amount: bigint) => {
     abi: ATKContracts.ismartCapped,
   });
 
-  const tokenAmount = toDecimals(amount, asset.decimals);
+  const tokenAmount = toBaseUnits(amount, asset.decimals);
 
   const transactionHash = await withDecodedRevertReason(() =>
     tokenContract.write.setCap([tokenAmount])
@@ -21,6 +21,6 @@ export const setCap = async (asset: Asset<any>, amount: bigint) => {
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Set Cap] ${formatDecimals(tokenAmount, asset.decimals)} ${asset.symbol} tokens`
+    `[Set Cap] ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens`
   );
 };

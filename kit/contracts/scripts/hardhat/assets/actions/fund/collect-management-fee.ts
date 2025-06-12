@@ -2,7 +2,7 @@ import { ATKContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
 import { increaseAnvilTime } from "../../../utils/anvil";
-import { formatDecimals } from "../../../utils/format-decimals";
+import { formatBaseUnits } from "../../../utils/format-base-units";
 import { waitForEvent } from "../../../utils/wait-for-event";
 
 export const collectManagementFee = async (
@@ -25,6 +25,6 @@ export const collectManagementFee = async (
   })) as { amount: bigint };
 
   console.log(
-    `[Fund management fee collected] ${formatDecimals(amount, 0)} collected for ${asset.name} (${asset.address})`
+    `[Fund management fee collected] ${formatBaseUnits(amount, 0)} collected for ${asset.name} (${asset.address})`
   );
 };
