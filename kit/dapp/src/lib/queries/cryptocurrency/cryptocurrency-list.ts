@@ -73,23 +73,20 @@ export const getCryptoCurrencyList = withTracing(
     const [onChainCryptoCurrencies, offChainCryptoCurrencies] =
       await Promise.all([
         fetchAllTheGraphPages(async (first, skip) => {
-                //       // const result = await theGraphClientKit.request(
-      //       //             CryptoCurrencyList,
-      //       //             {
-      //       //               first,
-      //       //               skip,
-      //       //             },
-      //       //             {
-      //       //               "X-GraphQL-Operation-Name": "CryptoCurrencyList",
-      //       //               "X-GraphQL-Operation-Type": "query",
-      //       //             }
-      //       //           );
+          //       // const result = await theGraphClientKit.request(
+          //       //             CryptoCurrencyList,
+          //       //             {
+          //       //               first,
+          //       //               skip,
+          //       //             },
+          //       //             {
+          //       //               "X-GraphQL-Operation-Name": "CryptoCurrencyList",
+          //       //               "X-GraphQL-Operation-Type": "query",
+          //       //             }
+          //       //           );
 
           // NOTE: HARDCODED SO IT STILL COMPILES
-          return safeParse(
-            t.Array(OnChainCryptoCurrencySchema),
-            []
-          );
+          return safeParse(t.Array(OnChainCryptoCurrencySchema), []);
         }),
 
         fetchAllHasuraPages(async (pageLimit, offset) => {

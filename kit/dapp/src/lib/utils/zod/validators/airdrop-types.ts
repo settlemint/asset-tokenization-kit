@@ -14,7 +14,7 @@ export const airdropTypes = ["whitelist", "merkle", "claim"] as const;
 /**
  * Creates a Zod schema for validating airdrop types.
  *
- * @returns A branded Zod enum schema that validates airdrop type values
+ * @returns A Zod enum schema that validates airdrop type values
  *
  * @example
  * ```typescript
@@ -24,14 +24,11 @@ export const airdropTypes = ["whitelist", "merkle", "claim"] as const;
  * ```
  */
 export const airdropType = () =>
-  z
-    .enum(airdropTypes)
-    .describe("Type of airdrop mechanism")
-    .brand<"AirdropType">();
+  z.enum(airdropTypes).describe("Type of airdrop mechanism");
 
 /**
  * Type representing valid airdrop mechanisms.
- * Inferred from the airdropType schema with branding for type safety.
+ * Inferred from the airdropType schema with type safety.
  */
 export type AirdropType = z.infer<ReturnType<typeof airdropType>>;
 

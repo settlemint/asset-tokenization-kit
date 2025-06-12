@@ -1,39 +1,20 @@
 import { describe, expect, it } from "bun:test";
-import {
-  fiatCurrency,
-  getFiatCurrency,
-  isFiatCurrency,
-  type FiatCurrency,
-} from "./fiat-currency";
+import { fiatCurrency, type FiatCurrency } from "./fiat-currency";
 
 describe("fiatCurrency", () => {
   const validator = fiatCurrency();
 
   describe("valid currencies", () => {
     it("should accept common 3-letter currency codes", () => {
-      expect(validator.parse("USD")).toBe(getFiatCurrency("USD"));
-      expect(validator.parse("EUR")).toBe(getFiatCurrency("EUR"));
-      expect(validator.parse("GBP")).toBe(getFiatCurrency("GBP"));
-      expect(validator.parse("JPY")).toBe(getFiatCurrency("JPY"));
-
-      expect(isFiatCurrency("USD")).toBe(true);
-      expect(isFiatCurrency("EUR")).toBe(true);
-      expect(isFiatCurrency("GBP")).toBe(true);
-      expect(isFiatCurrency("JPY")).toBe(true);
-
-      expect(getFiatCurrency("USD")).toBe(getFiatCurrency("USD"));
-      expect(getFiatCurrency("EUR")).toBe(getFiatCurrency("EUR"));
-      expect(getFiatCurrency("GBP")).toBe(getFiatCurrency("GBP"));
-      expect(getFiatCurrency("JPY")).toBe(getFiatCurrency("JPY"));
+      expect(validator.parse("USD")).toBe("USD");
+      expect(validator.parse("EUR")).toBe("EUR");
+      expect(validator.parse("GBP")).toBe("GBP");
+      expect(validator.parse("JPY")).toBe("JPY");
     });
 
     it("should transform to uppercase", () => {
-      expect(validator.parse("usd")).toBe(getFiatCurrency("USD"));
-      expect(validator.parse("eur")).toBe(getFiatCurrency("EUR"));
-      expect(isFiatCurrency("usd")).toBe(true);
-      expect(isFiatCurrency("eur")).toBe(true);
-      expect(getFiatCurrency("usd")).toBe(getFiatCurrency("USD"));
-      expect(getFiatCurrency("eur")).toBe(getFiatCurrency("EUR"));
+      expect(validator.parse("usd")).toBe("USD");
+      expect(validator.parse("eur")).toBe("EUR");
     });
   });
 
@@ -43,44 +24,18 @@ describe("fiatCurrency", () => {
       expect(() => validator.parse("BTC")).toThrow(); // Crypto, not fiat
       expect(() => validator.parse("USDT")).toThrow(); // Stablecoin, not fiat
       expect(() => validator.parse("")).toThrow();
-
-      expect(isFiatCurrency("XXX")).toBe(false);
-      expect(isFiatCurrency("BTC")).toBe(false);
-      expect(isFiatCurrency("USDT")).toBe(false);
-      expect(isFiatCurrency("")).toBe(false);
-
-      expect(() => getFiatCurrency("XXX")).toThrow();
-      expect(() => getFiatCurrency("BTC")).toThrow();
-      expect(() => getFiatCurrency("USDT")).toThrow();
-      expect(() => getFiatCurrency("")).toThrow();
     });
 
     it("should accept and transform mixed case codes", () => {
-      expect(validator.parse("usd")).toBe(getFiatCurrency("USD"));
-      expect(validator.parse("eur")).toBe(getFiatCurrency("EUR"));
-      expect(validator.parse("Usd")).toBe(getFiatCurrency("USD"));
-
-      expect(isFiatCurrency("usd")).toBe(true);
-      expect(isFiatCurrency("eur")).toBe(true);
-      expect(isFiatCurrency("Usd")).toBe(true);
-
-      expect(getFiatCurrency("usd")).toBe(getFiatCurrency("USD"));
-      expect(getFiatCurrency("eur")).toBe(getFiatCurrency("EUR"));
-      expect(getFiatCurrency("Usd")).toBe(getFiatCurrency("USD"));
+      expect(validator.parse("usd")).toBe("USD");
+      expect(validator.parse("eur")).toBe("EUR");
+      expect(validator.parse("Usd")).toBe("USD");
     });
 
     it("should reject non-3-letter codes", () => {
       expect(() => validator.parse("US")).toThrow();
       expect(() => validator.parse("USDD")).toThrow();
       expect(() => validator.parse("$")).toThrow();
-
-      expect(isFiatCurrency("US")).toBe(false);
-      expect(isFiatCurrency("USDD")).toBe(false);
-      expect(isFiatCurrency("$")).toBe(false);
-
-      expect(() => getFiatCurrency("US")).toThrow();
-      expect(() => getFiatCurrency("USDD")).toThrow();
-      expect(() => getFiatCurrency("$")).toThrow();
     });
 
     it("should reject non-string types", () => {
@@ -88,22 +43,6 @@ describe("fiatCurrency", () => {
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
-
-      expect(isFiatCurrency(123)).toBe(false);
-      expect(isFiatCurrency(null)).toBe(false);
-      expect(isFiatCurrency(undefined)).toBe(false);
-      expect(isFiatCurrency({})).toBe(false);
-
-      expect(() => getFiatCurrency(123)).toThrow(
-        "Expected string, received number"
-      );
-      expect(() => getFiatCurrency(null)).toThrow(
-        "Expected string, received null"
-      );
-      expect(() => getFiatCurrency(undefined)).toThrow("Required");
-      expect(() => getFiatCurrency({})).toThrow(
-        "Expected string, received object"
-      );
     });
   });
 
@@ -112,7 +51,7 @@ describe("fiatCurrency", () => {
       const result = validator.safeParse("chf");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe(getFiatCurrency("CHF"));
+        expect(result.data).toBe("CHF");
       }
     });
 
@@ -122,20 +61,21 @@ describe("fiatCurrency", () => {
     });
   });
 
-  describe("helper functions", () => {
-    it("isFiatCurrency should work as type guard", () => {
-      const value: unknown = "CAD";
-      if (isFiatCurrency(value)) {
-        // TypeScript should recognize value as FiatCurrency here
-        const _typeCheck: FiatCurrency = value;
-      }
+  describe("type checking", () => {
+    it("should return proper type", () => {
+      const result = validator.parse("CAD");
+      // Test that the type is correctly inferred
+      const _typeCheck: FiatCurrency = result;
+      expect(result).toBe("CAD");
     });
 
-    it("getFiatCurrency should return typed value", () => {
-      const result = getFiatCurrency("aud");
-      // TypeScript should recognize result as FiatCurrency
-      const _typeCheck: FiatCurrency = result;
-      expect(result).toBe(getFiatCurrency("AUD"));
+    it("should handle safeParse", () => {
+      const result = validator.safeParse("aud");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: FiatCurrency = result.data;
+        expect(result.data).toBe("AUD");
+      }
     });
   });
 });

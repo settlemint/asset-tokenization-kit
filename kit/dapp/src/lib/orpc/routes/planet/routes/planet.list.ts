@@ -1,5 +1,5 @@
 import { permissionsMiddleware } from "@/lib/orpc/middlewares/auth/permissions.middleware";
-import { ar } from "@/lib/orpc/routes/procedures/auth.router";
+import { ar } from "@/lib/orpc/procedures/auth.router";
 
 /**
  * Planet listing route handler.

@@ -30,9 +30,9 @@ export const isAddressAvailable = withTracing(
   async (address: Address) => {
     "use cache";
     cacheTag("airdrop");
-          //       // const data = await theGraphClientKit.request(VestingAirdropExists, {
-      //       //       airdropAddress: address,
-      //       //     });
+    //       // const data = await theGraphClientKit.request(VestingAirdropExists, {
+    //       //       airdropAddress: address,
+    //       //     });
     // NOTE: HARDCODED SO IT STILL COMPILES
     const data = { vestingAirdrop: null };
 

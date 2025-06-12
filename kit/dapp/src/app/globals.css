@@ -13,6 +13,7 @@ h3: text-xl
   /* SettleMint Brand Colors */
   --sm-text: oklch(0.2264 0 87);
   --sm-text-contrast: oklch(1 0 87);
+  --sm-text-subtext: oklch(60.03% 0.006 274.91);
   --sm-accent: oklch(0.5745 0.2028 263.15);
   --sm-accent-hover: oklch(0.5745 0.2028 263.15 / 0.2);
   --sm-background-darkest: oklch(0.9359 0.0275 265.45);
@@ -81,6 +82,7 @@ h3: text-xl
   /* SettleMint Brand Colors */
   --sm-text: oklch(1 0 87);
   --sm-text-contrast: oklch(0.2264 0 87);
+  --sm-text-subtext: oklch(68.62% 0 0);
   --sm-accent: oklch(0.6219 0.1772 263.65);
   --sm-accent-hover: oklch(0.5745 0.2028 263.15 / 0.2);
   --sm-background-darkest: oklch(0.2264 0 0);

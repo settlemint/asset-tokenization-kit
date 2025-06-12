@@ -1,5 +1,5 @@
-import { br } from "@/lib/orpc/routes/procedures/base.router";
 import { portalClient } from "@/lib/settlemint/portal";
+import { br } from "../../procedures/base.router";
 
 /**
  * ORPC middleware that injects the SettleMint Portal client into the procedure context.

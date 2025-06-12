@@ -18,7 +18,6 @@ import { z } from "zod";
  * - Validation against special values (NaN, Infinity, -Infinity)
  * - Support for scientific notation (e.g., "1.23e10")
  * - Automatic transformation to dnum's Dnum type for precise calculations
- * - Branded type for additional compile-time safety
  * - Integration with dnum library for arbitrary precision arithmetic
  *
  * The validation process follows these steps:
@@ -26,7 +25,6 @@ import { z } from "zod";
  * 2. Reject special string values (NaN, Infinity, -Infinity)
  * 3. Validate numeric format using dnum's from() function
  * 4. Transform to Dnum type for precise arithmetic operations
- * 5. Return as branded BigDecimal type
  *
  * Supported formats:
  * - Standard decimal: "123.456"
@@ -41,7 +39,7 @@ import { z } from "zod";
  * // Valid decimal parsing
  * const decimal = bigDecimal().parse("123.456789012345678901234567890");
  * // Returns: Dnum representing the exact decimal value
- * // Type: Dnum & Brand<"BigDecimal">
+ * // Type: Dnum
  *
  * // Scientific notation support
  * const scientific = bigDecimal().parse("1.23e10");
@@ -92,15 +90,13 @@ export const bigDecimal = () =>
         });
         return z.NEVER;
       }
-    })
-    .brand<"BigDecimal">();
+    });
 
 /**
  * Type representing a validated arbitrary precision decimal number
  *
- * This type combines dnum's Dnum type with a brand for additional
- * compile-time safety, ensuring that only validated big decimals can be
- * assigned to variables of this type.
+ * This type represents dnum's Dnum type, ensuring that only validated
+ * big decimals can be assigned to variables of this type.
  */
 export type BigDecimal = z.infer<ReturnType<typeof bigDecimal>>;
 

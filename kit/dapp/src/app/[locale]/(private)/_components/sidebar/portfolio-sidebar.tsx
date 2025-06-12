@@ -9,6 +9,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { getUserRole } from "@/lib/utils/zod/validators/user-roles";
 import { PortfolioManagement } from "./items/portfolio-management";
 import { TradeManagement } from "./items/trade-management";
 
@@ -22,7 +23,7 @@ export async function PortfolioSidebar() {
         <PortfolioManagement />
         <TradeManagement />
       </SidebarContent>
-      <RoleGuard allowedRoles={["admin", "issuer"]}>
+      <RoleGuard allowedRoles={[getUserRole("admin"), getUserRole("issuer")]}>
         <SidebarFooter>
           <Separator />
           <NavMode />

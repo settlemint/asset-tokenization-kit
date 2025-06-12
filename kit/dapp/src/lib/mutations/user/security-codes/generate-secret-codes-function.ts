@@ -8,7 +8,6 @@ import { ApiError } from "next/dist/server/api-utils";
 const GenerateSecretCodes = {} as any;
 const RemoveSecretCodes = {} as any;
 
-
 /**
  * GraphQL mutation to get secret codes
  */
@@ -64,15 +63,24 @@ export async function generateSecretCodesFunction({
   //     address: currentUser.wallet,
   //   }
   // );
-  
+
   // NOTE: HARDCODED SO IT STILL COMPILES
   const result = {
     createWalletVerification: {
       id: "mock-secret-codes-verification-id",
       parameters: {
-        codes: ["CODE1", "CODE2", "CODE3", "CODE4", "CODE5", "CODE6", "CODE7", "CODE8"]
-      }
-    }
+        codes: [
+          "CODE1",
+          "CODE2",
+          "CODE3",
+          "CODE4",
+          "CODE5",
+          "CODE6",
+          "CODE7",
+          "CODE8",
+        ],
+      },
+    },
   };
   const { createWalletVerification } = result;
   if (!createWalletVerification?.id) {

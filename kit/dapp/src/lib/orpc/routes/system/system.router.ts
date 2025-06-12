@@ -1,3 +1,4 @@
+import { create } from "./routes/system.create";
 import { list } from "./routes/system.list";
 
 /**
@@ -15,6 +16,7 @@ import { list } from "./routes/system.list";
  */
 const routes = {
   list,
+  create,
 };
 
 export default routes;

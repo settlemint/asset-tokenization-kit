@@ -30,9 +30,9 @@ export const isAddressAvailable = withTracing(
   async (address: Address) => {
     "use cache";
     cacheTag("asset");
-          //       // const data = await theGraphClientKit.request(StableCoinExists, {
-      //       //       token: address,
-      //       //     });
+    //       // const data = await theGraphClientKit.request(StableCoinExists, {
+    //       //       token: address,
+    //       //     });
     // NOTE: HARDCODED SO IT STILL COMPILES
     const data = { stableCoin: null };
 

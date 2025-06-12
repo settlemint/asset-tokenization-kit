@@ -99,10 +99,10 @@ export const getPortfolioHistory = withTracing(
     const startTime = Math.floor(Date.now() / 1000) - days * 24 * 60 * 60;
 
     //       // const data = await theGraphClientKit.request(PortfolioHistoryQuery, {
-      //     //   account: getAddress(address),
-      //     //   interval,
-      //     //   startTime: startTime.toString(),
-      //     // });
+    //     //   account: getAddress(address),
+    //     //   interval,
+    //     //   startTime: startTime.toString(),
+    //     // });
 
     // NOTE: HARDCODED SO IT STILL COMPILES
     return [];

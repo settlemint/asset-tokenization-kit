@@ -68,14 +68,14 @@ export const getAssetStats = withTracing(
     const timestampGte = getUnixTime(startOfDay(startDate)).toString();
 
     const result = await fetchAllTheGraphPages(async (first, skip) => {
-            //       // const response = await theGraphClientKit.request(AssetStats, {
+      //       // const response = await theGraphClientKit.request(AssetStats, {
       //       //         asset: normalizedAddress,
       //       //         timestamp_gte: timestampGte,
       //       //         first,
       //       //         skip,
       //       //       });
 
-            //       // return response.assetStats_collection || [];
+      //       // return response.assetStats_collection || [];
       return [];
       return [];
     });

@@ -10,7 +10,6 @@ import type { DisallowUserInput } from "./disallow-user-schema";
 // Dummy types for commented GraphQL operations
 const DepositDisallowUser = {} as any;
 
-
 /**
  * GraphQL mutation to disallow a user from a tokenized deposit
  */
@@ -77,12 +76,14 @@ export const disallowUserFunction = withAccessControl(
 
     switch (assettype) {
       case "deposit": {
-          // const response = await portalClient.request(
-  //           DepositDisallowUser,
-  //           params
-  //         );
+        // const response = await portalClient.request(
+        //           DepositDisallowUser,
+        //           params
+        //         );
         return waitForIndexingTransactions(
-          safeParse(t.Hashes(), ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92"]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositDisallowUser?.transactionHash */]
+          safeParse(t.Hashes(), [
+            "0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92",
+          ]) // ["0x8fba129ea4afb26988c3d9c32b576d5fceefa3aa7bf9357d4348547c3a11af92" /* response.DepositDisallowUser?.transactionHash */]
         );
       }
       default:

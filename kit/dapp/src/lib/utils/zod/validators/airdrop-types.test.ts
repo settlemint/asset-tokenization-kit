@@ -1,19 +1,12 @@
 import { describe, expect, it } from "bun:test";
-import {
-  airdropType,
-  airdropTypes,
-  getAirdropType,
-  isAirdropType,
-} from "./airdrop-types";
+import { airdropType, airdropTypes, type AirdropType } from "./airdrop-types";
 
 describe("airdropType", () => {
   const validator = airdropType();
 
   describe("valid airdrop types", () => {
     it.each(airdropTypes.map((t) => [t]))("should accept '%s'", (type) => {
-      expect(validator.parse(type)).toBe(getAirdropType(type));
-      expect(isAirdropType(type)).toBe(true);
-      expect(getAirdropType(type)).toBe(getAirdropType(type));
+      expect(validator.parse(type)).toBe(type);
     });
   });
 
@@ -22,14 +15,6 @@ describe("airdropType", () => {
       expect(() => validator.parse("invalid")).toThrow();
       expect(() => validator.parse("random")).toThrow();
       expect(() => validator.parse("")).toThrow();
-
-      expect(isAirdropType("invalid")).toBe(false);
-      expect(isAirdropType("random")).toBe(false);
-      expect(isAirdropType("")).toBe(false);
-
-      expect(() => getAirdropType("invalid")).toThrow();
-      expect(() => getAirdropType("random")).toThrow();
-      expect(() => getAirdropType("")).toThrow();
     });
 
     it("should reject non-string types", () => {
@@ -37,11 +22,6 @@ describe("airdropType", () => {
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
-
-      expect(isAirdropType(123)).toBe(false);
-      expect(isAirdropType(null)).toBe(false);
-      expect(isAirdropType(undefined)).toBe(false);
-      expect(isAirdropType({})).toBe(false);
     });
 
     it("should be case-sensitive", () => {
@@ -56,7 +36,7 @@ describe("airdropType", () => {
       const result = validator.safeParse("whitelist");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe(getAirdropType("whitelist"));
+        expect(result.data).toBe("whitelist");
       }
     });
 
@@ -66,20 +46,21 @@ describe("airdropType", () => {
     });
   });
 
-  describe("helper functions", () => {
-    it("isAirdropType should work as type guard", () => {
-      const value: unknown = "whitelist";
-      if (isAirdropType(value)) {
-        // TypeScript should recognize value as AirdropType here
-        const _typeCheck: "whitelist" | "merkle" | "claim" = value;
-      }
+  describe("type checking", () => {
+    it("should return proper type", () => {
+      const result = validator.parse("whitelist");
+      // Test that the type is correctly inferred
+      const _typeCheck: AirdropType = result;
+      expect(result).toBe("whitelist");
     });
 
-    it("getAirdropType should return typed value", () => {
-      const result = getAirdropType("merkle");
-      // TypeScript should recognize result as AirdropType
-      const _typeCheck: "whitelist" | "merkle" | "claim" = result;
-      expect(result).toBe(getAirdropType("merkle"));
+    it("should handle safeParse", () => {
+      const result = validator.safeParse("merkle");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const _typeCheck: AirdropType = result.data;
+        expect(result.data).toBe("merkle");
+      }
     });
   });
 });

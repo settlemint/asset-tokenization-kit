@@ -1,11 +1,8 @@
 import { makeQueryClient } from "@/lib/orpc/query/query.client";
-import {
-  dehydrate,
-  HydrationBoundary,
-  type FetchQueryOptions,
-} from "@tanstack/react-query";
-import { Suspense, type PropsWithChildren, type ReactNode } from "react";
-import { ErrorBoundary } from "react-error-boundary";
+import type { FetchQueryOptions } from "@tanstack/react-query";
+import { dehydrate } from "@tanstack/react-query";
+import type { PropsWithChildren, ReactNode } from "react";
+import { AwaitClientWrapper } from "./AwaitClientWrapper";
 
 /**
  * Props for the Await component.
@@ -88,45 +85,6 @@ type AwaitProps<TData = unknown, TError = Error> = PropsWithChildren<{
     resetErrorBoundary: () => void;
   }>;
 }>;
-
-/**
- * Error fallback component that renders a ReactNode.
- * Used when the error prop is provided as a ReactNode instead of a component.
- */
-function ReactNodeErrorFallback({
-  reactNode,
-}: {
-  reactNode: ReactNode;
-  error: Error;
-  resetErrorBoundary: () => void;
-}) {
-  return <>{reactNode}</>;
-}
-
-/**
- * Default error fallback component with retry functionality.
- */
-function DefaultErrorFallback({
-  error,
-  resetErrorBoundary,
-}: {
-  error: Error;
-  resetErrorBoundary: () => void;
-}) {
-  return (
-    <div className="flex min-h-[200px] flex-col items-center justify-center p-4">
-      <p className="mb-4 text-center text-sm text-destructive">
-        {error.message || "An error occurred while loading data"}
-      </p>
-      <button
-        onClick={resetErrorBoundary}
-        className="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90"
-      >
-        Try again
-      </button>
-    </div>
-  );
-}
 
 /**
  * Server-side data prefetching component with hydration support.
@@ -269,56 +227,21 @@ export async function Await<TData = unknown, TError = Error>({
     shouldDehydrateQuery: (query: any) => query.state.status === "success",
   };
 
-  // Determine which error boundary to use for runtime errors (not prefetch errors)
-  const shouldUseErrorBoundary = !!(error || errorFallbackComponent);
-
-  if (shouldUseErrorBoundary) {
-    // If error prop is provided as ReactNode without errorFallbackComponent,
-    // create a wrapper component that renders it
-    const FallbackComponent =
-      errorFallbackComponent ||
-      (error
-        ? ({
-            error: err,
-            resetErrorBoundary,
-          }: {
-            error: Error;
-            resetErrorBoundary: () => void;
-          }) => (
-            <ReactNodeErrorFallback
-              reactNode={error}
-              error={err}
-              resetErrorBoundary={resetErrorBoundary}
-            />
-          )
-        : DefaultErrorFallback);
-    return (
-      <ErrorBoundary
-        FallbackComponent={FallbackComponent}
-        resetKeys={resetKeys}
-      >
-        {/* HydrationBoundary transfers server-prefetched data to client */}
-        <HydrationBoundary
-          state={dehydrate(
-            queryClient,
-            dehydrateOptions || defaultDehydrateOptions
-          )}
-        >
-          {/* Suspense handles any remaining async operations during hydration */}
-          <Suspense fallback={fallback}>{children}</Suspense>
-        </HydrationBoundary>
-      </ErrorBoundary>
-    );
-  }
+  // Dehydrate the query cache for client transfer
+  const dehydratedState = dehydrate(
+    queryClient,
+    dehydrateOptions || defaultDehydrateOptions
+  );
 
   return (
-    <HydrationBoundary
-      state={dehydrate(
-        queryClient,
-        dehydrateOptions || defaultDehydrateOptions
-      )}
+    <AwaitClientWrapper
+      dehydratedState={dehydratedState}
+      error={error}
+      fallback={fallback}
+      resetKeys={resetKeys}
+      errorFallbackComponent={errorFallbackComponent}
     >
-      <Suspense fallback={fallback}>{children}</Suspense>
-    </HydrationBoundary>
+      {children}
+    </AwaitClientWrapper>
   );
 }

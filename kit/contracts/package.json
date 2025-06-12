@@ -9,7 +9,7 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "compile:typescript": "tsc --noEmit",
     "dependencies": "bun run tools/dependencies.ts",
     "compile:forge": "settlemint scs foundry build --sizes",
     "compile:hardhat": "settlemint scs hardhat build",

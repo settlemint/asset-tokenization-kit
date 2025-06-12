@@ -29,7 +29,7 @@ import { z } from "zod";
  * - Microseconds: 16 digits (converted to milliseconds)
  * - Nanoseconds: 19 digits (converted to milliseconds)
  *
- * @returns A branded Zod schema that transforms various inputs to Date objects
+ * @returns A Zod schema that transforms various inputs to Date objects
  *
  * @example
  * ```typescript
@@ -114,14 +114,12 @@ export const timestamp = () =>
         message:
           "Timestamp is out of valid range (must be between 1970 and 9999)",
       }
-    )
-    .brand<"Timestamp">();
+    );
 
 // Export types
 /**
  * Type representing a validated and normalized timestamp.
  * Always resolves to a Date object regardless of input format.
- * Branded for additional type safety.
  */
 export type Timestamp = z.infer<ReturnType<typeof timestamp>>;
 

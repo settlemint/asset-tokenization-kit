@@ -20,7 +20,7 @@ export default async function AuthLayout({ children }: PropsWithChildren) {
             <span className="font-bold text-lg text-primary-foreground">
               {t("app-name")}
             </span>
-            <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-sm leading-snug text-primary-foreground">
+            <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-sm leading-snug text-foreground">
               {t("app-description")}
             </span>
           </div>
