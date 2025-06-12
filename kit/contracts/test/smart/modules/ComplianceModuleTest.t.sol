@@ -17,6 +17,7 @@ import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { TestConstants } from "../../Constants.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { IATKComplianceAllowList } from "../../../contracts/system/compliance/IATKComplianceAllowList.sol";
 
 abstract contract ComplianceModuleTest is Test {
     SystemUtils internal systemUtils;
@@ -96,6 +97,14 @@ abstract contract ComplianceModuleTest is Test {
         identity1 = IIdentity(identityUtils.createClientIdentity(user1, TestConstants.COUNTRY_CODE_US)); // USA
         identity2 = IIdentity(identityUtils.createClientIdentity(user2, TestConstants.COUNTRY_CODE_BE)); // Belgium
         // user3 has no identity
+
+        // Add token issuer to the bypass list so that he is allowed to do things for testing
+        vm.startPrank(platformAdmin);
+        IAccessControl(address(systemUtils.compliance())).grantRole(
+            ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE, platformAdmin
+        );
+        IATKComplianceAllowList(address(systemUtils.compliance())).addToAllowList(tokenIssuer);
+        vm.stopPrank();
 
         // Create token
         vm.startPrank(tokenIssuer);
