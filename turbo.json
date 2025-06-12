@@ -3,7 +3,11 @@
   "ui": "tui",
   "globalPassThroughEnv": [
     "THE_GRAPH_PORT_LOCAL_DEPLOY",
-    "THE_GRAPH_PORT_LOCAL_QUERY"
+    "THE_GRAPH_PORT_LOCAL_QUERY",
+    "FORCE_COLOR",
+    "NO_COLOR",
+    "TERM",
+    "CI"
   ],
   "tasks": {
     "ci": {

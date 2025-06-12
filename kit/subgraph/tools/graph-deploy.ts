@@ -28,7 +28,7 @@
 import { join, relative } from "path";
 import { parseArgs } from "util";
 import { parse, stringify } from "yaml";
-import { logger, LogLevel } from "../../../tools/logging";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
 
 // ============================================================================
@@ -83,6 +83,14 @@ type ExitCode = (typeof EXIT_CODES)[keyof typeof EXIT_CODES];
 const GRAPH_NAME = "smart-protocol";
 const GRAPH_VERSION_PREFIX = "v1.0.0";
 
+// Create logger instance
+const logger = createLogger({
+  level:
+    (process.env.LOG_LEVEL as LogLevel) ||
+    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+    "info",
+});
+
 // ============================================================================
 // GLOBAL STATE AND CLEANUP
 // ============================================================================
@@ -101,7 +109,7 @@ async function cleanup(): Promise<void> {
         graphPaths.subgraphConfig,
         JSON.stringify(originalAddresses, null, 2)
       );
-      logger.success("Original configuration restored");
+      logger.info("Original configuration restored");
     } catch (error) {
       logger.error("Failed to restore original configuration:", error);
     }
@@ -149,7 +157,7 @@ function setupCleanup(): void {
  * Show script usage information
  */
 function showUsage(): void {
-  console.log(`
+  logger.info(`
 Usage: bun run graph-deploy.ts --local|--remote [OPTIONS]
 
 Deploy the SMART Protocol subgraph to a Graph node.
@@ -222,12 +230,15 @@ function parseArguments(): DeploymentConfig {
     }
 
     // Set log level based on flags
-    if (values.debug) {
-      logger.setLevel(LogLevel.DEBUG);
-    } else if (values.verbose) {
-      logger.setLevel(LogLevel.INFO);
-    } else if (values.quiet) {
-      logger.setLevel(LogLevel.ERROR);
+    // Note: SettleMint SDK logger level is set at creation time
+    // Use LOG_LEVEL or SETTLEMINT_LOG_LEVEL env vars to control logging level
+    if (values.debug || values.verbose || values.quiet) {
+      const levelHint = values.debug
+        ? "debug"
+        : values.verbose
+          ? "info"
+          : "error";
+      logger.debug(`Log level hint: ${levelHint} (set via env vars)`);
     }
 
     return {
@@ -308,7 +319,7 @@ async function validateEnvironment(config: DeploymentConfig): Promise<void> {
     await validateRemoteEnvironment();
   }
 
-  logger.success("Environment validation completed");
+  logger.info("Environment validation completed");
 }
 
 /**
@@ -328,7 +339,7 @@ async function validateLocalEnvironment(node: string): Promise<void> {
       throw new Error(`Graph node responded with status: ${response.status}`);
     }
 
-    logger.success(`Local Graph node (${node}) is accessible`);
+    logger.info(`Local Graph node (${node}) is accessible`);
   } catch (error) {
     logger.error("Failed to connect to local Graph node:", error);
     logger.error(`Make sure Graph node is running at ${node}`);
@@ -344,7 +355,7 @@ async function validateRemoteEnvironment(): Promise<void> {
 
   try {
     await Bun.$`settlemint --version`.quiet();
-    logger.success("SettleMint CLI is available");
+    logger.info("SettleMint CLI is available");
   } catch (error) {
     logger.error("SettleMint CLI validation failed:", error);
     logger.error("Please install and authenticate SettleMint CLI");
@@ -363,7 +374,7 @@ async function readDeployedAddresses(): Promise<DeployedAddresses> {
     const addresses = (await addressesFile.json()) as DeployedAddresses;
 
     logger.debug("Deployed addresses:", addresses);
-    logger.success(`Found ${Object.keys(addresses).length} deployed contracts`);
+    logger.info(`Found ${Object.keys(addresses).length} deployed contracts`);
 
     return addresses;
   } catch (error) {
@@ -395,7 +406,7 @@ async function updateSubgraphConfig(
       JSON.stringify(addresses, null, 2)
     );
 
-    logger.success("Subgraph configuration updated");
+    logger.info("Subgraph configuration updated");
   } catch (error) {
     logger.error("Failed to update subgraph configuration:", error);
     throw error;
@@ -451,7 +462,7 @@ async function updateSubgraphYaml(addresses: DeployedAddresses): Promise<void> {
       stringify(updatedSubgraphYamlConfig)
     );
 
-    logger.success("Subgraph yaml updated");
+    logger.info("Subgraph yaml updated");
   } catch (error) {
     logger.error("Failed to update subgraph yaml:", error);
     throw error;
@@ -467,7 +478,7 @@ async function generateCode(): Promise<void> {
 
     await Bun.$`bun run codegen`.cwd(graphPaths!.subgraphRoot);
 
-    logger.success("TypeScript code generation completed");
+    logger.info("TypeScript code generation completed");
   } catch (error) {
     logger.error("Failed to generate TypeScript code:", error);
     throw error;
@@ -488,7 +499,7 @@ async function createLocalSubgraph(
     await Bun.$`bunx graph create --node ${node} ${graphName}`.cwd(
       graphPaths!.subgraphRoot
     );
-    logger.success(`Created subgraph: ${graphName}`);
+    logger.info(`Created subgraph: ${graphName}`);
   } catch (err) {
     const error = err as Error;
     logger.warn(
@@ -510,7 +521,7 @@ async function removeLocalSubgraph(
     await Bun.$`bunx graph remove --node ${node} ${graphName}`.cwd(
       graphPaths!.subgraphRoot
     );
-    logger.success(`Removed subgraph: ${graphName}`);
+    logger.info(`Removed subgraph: ${graphName}`);
   } catch (err) {
     const error = err as Error;
     logger.warn(
@@ -545,7 +556,7 @@ async function deployLocal(config: DeploymentConfig): Promise<void> {
       graphPaths!.subgraphRoot
     );
 
-    logger.success("Subgraph deployed successfully!");
+    logger.info("Subgraph deployed successfully!");
     logger.info(
       `  Access your subgraph at: ${node}/subgraphs/name/${graphName}`
     );
@@ -567,7 +578,7 @@ async function deployRemote(): Promise<void> {
       graphPaths!.projectRoot
     );
 
-    logger.success("Subgraph deployed to SettleMint successfully!");
+    logger.info("Subgraph deployed to SettleMint successfully!");
   } catch (error) {
     logger.error("SettleMint deployment failed:", error);
     throw error;
@@ -655,7 +666,7 @@ async function main(): Promise<void> {
       await executeRemoteWorkflow();
     }
 
-    logger.success("Deployment completed successfully!");
+    logger.info("Deployment completed successfully!");
   } catch (error) {
     logger.error("Deployment failed:", error);
     exitCode = EXIT_CODES.ERROR;

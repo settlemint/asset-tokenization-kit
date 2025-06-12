@@ -2,7 +2,11 @@
 
 import { $ } from "bun";
 import { join, resolve } from "node:path";
-import { logger, info, warn, error, success } from "../../../tools/logging";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+
+const logger = createLogger({
+  level: process.env.LOG_LEVEL as LogLevel || process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
+});
 
 interface ExtractOptions {
   releaseName?: string;
@@ -19,7 +23,7 @@ async function extractEnvFromHelmNotes(options: ExtractOptions = {}) {
 
   try {
     // Get the helm notes output
-    info(
+    logger.info(
       `Extracting environment configuration from Helm release '${releaseName}' in namespace '${namespace}'...`
     );
 
@@ -71,32 +75,32 @@ async function extractEnvFromHelmNotes(options: ExtractOptions = {}) {
     // Write .env file
     const envPath = join(outputDir, ".env");
     await Bun.write(envPath, envContent + "\n");
-    info(`Created ${envPath}`);
+    logger.info(`Created ${envPath}`);
 
     // Write .env.local file
     const envLocalPath = join(outputDir, ".env.local");
     await Bun.write(envLocalPath, envLocalContent + "\n");
-    info(`Created ${envLocalPath}`);
+    logger.info(`Created ${envLocalPath}`);
 
     // Display a summary
-    success("\nEnvironment files created successfully!");
-    warn("\nImportant notes:");
-    warn(
+    logger.info("\nEnvironment files created successfully!");
+    logger.warn("\nImportant notes:");
+    logger.warn(
       "   - Review and update the MinIO credentials (marked with <MINIO_ACCESS_KEY> and <MINIO_SECRET_KEY>)"
     );
-    warn(
+    logger.warn(
       "   - These files contain sensitive information - do not commit them to version control"
     );
-    warn(
+    logger.warn(
       "   - Add .env and .env.local to your .gitignore if not already present"
     );
   } catch (err) {
-    error("Error extracting environment configuration:", err);
+    logger.error("Error extracting environment configuration:", err);
     if (err instanceof Error && err.message.includes("not found")) {
-      error("\nMake sure:");
-      error("   - Helm is installed and available in your PATH");
-      error("   - The release name and namespace are correct");
-      error(
+      logger.error("\nMake sure:");
+      logger.error("   - Helm is installed and available in your PATH");
+      logger.error("   - The release name and namespace are correct");
+      logger.error(
         "   - You have the necessary permissions to access the release"
       );
     }
@@ -124,7 +128,7 @@ for (let i = 0; i < args.length; i++) {
       break;
     case "--help":
     case "-h":
-      info(`
+      logger.info(`
 Usage: bun run extract-env.ts [options]
 
 Options:

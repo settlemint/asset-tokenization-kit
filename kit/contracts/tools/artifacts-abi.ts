@@ -13,7 +13,7 @@ import { $, Glob } from "bun";
 import { existsSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
-import { logger } from "../../../tools/logging";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -30,7 +30,12 @@ const defaultConfig: Config = {
   cleanPortalDir: true,
 };
 
-const log = logger;
+const logger = createLogger({
+  level:
+    (process.env.LOG_LEVEL as LogLevel) ||
+    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+    "info",
+});
 
 // File paths
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
@@ -63,7 +68,7 @@ class AbiCollector {
   }
 
   async findContractFiles(): Promise<string[]> {
-    log.debug("Finding contract files in contracts directory...");
+    logger.debug("Finding contract files in contracts directory...");
 
     // Use Bun's Glob API to find all .sol files
     const glob = new Glob("**/*.sol");
@@ -74,12 +79,12 @@ class AbiCollector {
       contractFiles.push(fullPath);
     }
 
-    log.debug(`Found ${contractFiles.length} contract files`);
+    logger.debug(`Found ${contractFiles.length} contract files`);
     return contractFiles;
   }
 
   async findAbiFiles(): Promise<AbiFile[]> {
-    log.debug("Finding ABI files in out directory...");
+    logger.debug("Finding ABI files in out directory...");
     const abiFiles: AbiFile[] = [];
 
     if (!existsSync(OUT_DIR)) {
@@ -125,7 +130,7 @@ class AbiCollector {
       }
     }
 
-    log.debug(`Found ${abiFiles.length} ABI files`);
+    logger.debug(`Found ${abiFiles.length} ABI files`);
     return abiFiles;
   }
 
@@ -140,16 +145,16 @@ class AbiCollector {
         return true;
       }
 
-      log.warn(`File ${abiPath} does not appear to be a valid ABI file`);
+      logger.warn(`File ${abiPath} does not appear to be a valid ABI file`);
       return false;
     } catch (error) {
-      log.warn(`Error validating ABI file ${abiPath}: ${error}`);
+      logger.warn(`Error validating ABI file ${abiPath}: ${error}`);
       return false;
     }
   }
 
   async copyAbiFile(abiFile: AbiFile): Promise<void> {
-    log.debug(`Processing ${abiFile.contractName}...`);
+    logger.debug(`Processing ${abiFile.contractName}...`);
 
     try {
       // Validate ABI file
@@ -172,49 +177,49 @@ class AbiCollector {
       await Bun.write(abiFile.rootOutputPath, JSON.stringify(abi, null, 2));
 
       this.collectedCount++;
-      log.debug(`Successfully copied ${abiFile.contractName} ABI`);
+      logger.debug(`Successfully copied ${abiFile.contractName} ABI`);
     } catch (error) {
       this.failedCount++;
-      log.error(`Failed to copy ${abiFile.contractName}: ${error}`);
+      logger.error(`Failed to copy ${abiFile.contractName}: ${error}`);
     }
   }
 
   async initializeRootPortalDir(): Promise<void> {
-    log.info("Initializing root portal directory...");
+    logger.info("Initializing root portal directory...");
 
     if (this.config.cleanPortalDir && existsSync(ROOT_PORTAL_DIR)) {
-      log.debug("Cleaning existing portal directory...");
+      logger.debug("Cleaning existing portal directory...");
       await $`rm -rf ${ROOT_PORTAL_DIR}`.quiet();
     }
 
     await mkdir(ROOT_PORTAL_DIR, { recursive: true });
-    log.success("Root portal directory initialized");
+    logger.info("Root portal directory initialized");
   }
 
   async initializePortalDir(): Promise<void> {
-    log.info("Initializing portal directory...");
+    logger.info("Initializing portal directory...");
 
     if (this.config.cleanPortalDir && existsSync(PORTAL_DIR)) {
-      log.debug("Cleaning existing portal directory...");
+      logger.debug("Cleaning existing portal directory...");
       await $`rm -rf ${PORTAL_DIR}`.quiet();
     }
 
     await mkdir(PORTAL_DIR, { recursive: true });
-    log.success("Portal directory initialized");
+    logger.info("Portal directory initialized");
   }
 
   async processAllAbis(): Promise<void> {
-    log.info("Processing all ABI files...");
+    logger.info("Processing all ABI files...");
 
     const abiFiles = await this.findAbiFiles();
     const totalFiles = abiFiles.length;
 
     if (totalFiles === 0) {
-      log.warn("No ABI files found to process");
+      logger.warn("No ABI files found to process");
       return;
     }
 
-    log.info(`Processing ${totalFiles} ABI files...`);
+    logger.info(`Processing ${totalFiles} ABI files...`);
 
     for (let i = 0; i < abiFiles.length; i++) {
       const abiFile = abiFiles[i];
@@ -223,14 +228,16 @@ class AbiCollector {
       }
       const progressPct = Math.floor(((i + 1) * 100) / totalFiles);
 
-      log.debug(`[${progressPct}%] Processing ${abiFile.contractName}...`);
+      logger.debug(`[${progressPct}%] Processing ${abiFile.contractName}...`);
       await this.copyAbiFile(abiFile);
 
       // Show progress every 10 files or at the end
       if ((i + 1) % 10 === 0 || i === abiFiles.length - 1) {
         const totalProcessed =
           this.collectedCount + this.failedCount + this.skippedCount;
-        log.info(`Progress: ${totalProcessed}/${totalFiles} files processed`);
+        logger.info(
+          `Progress: ${totalProcessed}/${totalFiles} files processed`
+        );
       }
     }
 
@@ -240,7 +247,7 @@ class AbiCollector {
   }
 
   async verifyCollection(): Promise<void> {
-    log.info("Verifying ABI collection...");
+    logger.info("Verifying ABI collection...");
 
     if (!existsSync(PORTAL_DIR)) {
       throw new Error(`Portal directory not found: ${PORTAL_DIR}`);
@@ -254,10 +261,10 @@ class AbiCollector {
       abiFiles.push(file);
     }
 
-    log.debug(`Portal directory contains ${abiFiles.length} ABI files`);
+    logger.debug(`Portal directory contains ${abiFiles.length} ABI files`);
 
     if (abiFiles.length !== this.collectedCount) {
-      log.warn(
+      logger.warn(
         `Expected ${this.collectedCount} files, but found ${abiFiles.length} in portal directory`
       );
     }
@@ -276,13 +283,13 @@ class AbiCollector {
         const file = Bun.file(filePath);
         const content = await file.text();
         JSON.parse(content);
-        log.debug(`Validated ${randomFile}`);
+        logger.debug(`Validated ${randomFile}`);
       } catch (error) {
         throw new Error(`Invalid JSON in ${randomFile}: ${error}`);
       }
     }
 
-    log.success(
+    logger.info(
       `Successfully verified ${abiFiles.length} ABI files in portal directory`
     );
   }
@@ -290,7 +297,7 @@ class AbiCollector {
   async showPortalContents(): Promise<void> {
     if (!this.config.showOutput) return;
 
-    log.info("Portal directory contents:");
+    logger.info("Portal directory contents:");
     // Use Bun's Glob API to find and sort JSON files
     const glob = new Glob("*.json");
     const abiFiles: string[] = [];
@@ -302,7 +309,7 @@ class AbiCollector {
     abiFiles.sort();
 
     for (const file of abiFiles) {
-      console.log(`  ${file}`);
+      logger.info(`  ${file}`);
     }
   }
 
@@ -320,7 +327,7 @@ class AbiCollector {
 // =============================================================================
 
 function showUsage(): void {
-  console.log(`
+  logger.info(`
 Usage: bun run codegen-abi.ts [OPTIONS]
 
 This script collects all ABI files from ./out where the contract is in ./contracts,
@@ -360,7 +367,8 @@ function parseCliArgs(): Config {
   if (process.env.LOG_LEVEL) {
     const level = process.env.LOG_LEVEL.toUpperCase();
     if (["DEBUG", "INFO", "WARN", "ERROR"].includes(level)) {
-      log.setLevel(level as any);
+      // Note: SettleMint SDK logger level is set at creation time
+      // Use LOG_LEVEL or SETTLEMINT_LOG_LEVEL env var instead
     }
   }
 
@@ -378,12 +386,14 @@ function parseCliArgs(): Config {
 
       case "-v":
       case "--verbose":
-        log.setLevel("DEBUG" as any);
+        // Note: SettleMint SDK logger level is set at creation time
+        // Use LOG_LEVEL=debug env var instead
         break;
 
       case "-q":
       case "--quiet":
-        log.setLevel("ERROR" as any);
+        // Note: SettleMint SDK logger level is set at creation time
+        // Use LOG_LEVEL=error env var instead
         break;
 
       case "--show-output":
@@ -395,7 +405,7 @@ function parseCliArgs(): Config {
         break;
 
       default:
-        console.error(`Unknown option: ${arg}`);
+        logger.error(`Unknown option: ${arg}`);
         showUsage();
         process.exit(1);
     }
@@ -411,13 +421,13 @@ function parseCliArgs(): Config {
 async function main(): Promise<void> {
   const config = parseCliArgs();
 
-  log.info("Starting ABI Collection Generator...");
-  log.info(`Contracts root: ${CONTRACTS_ROOT}`);
-  log.info(`Out directory: ${OUT_DIR}`);
-  log.info(`Portal directory: ${PORTAL_DIR}`);
+  logger.info("Starting ABI Collection Generator...");
+  logger.info(`Contracts root: ${CONTRACTS_ROOT}`);
+  logger.info(`Out directory: ${OUT_DIR}`);
+  logger.info(`Portal directory: ${PORTAL_DIR}`);
 
   // Check prerequisites
-  log.info("Checking prerequisites...");
+  logger.info("Checking prerequisites...");
 
   if (!existsSync(CONTRACTS_DIR)) {
     throw new Error(`Contracts directory not found: ${CONTRACTS_DIR}`);
@@ -446,13 +456,13 @@ async function main(): Promise<void> {
     await collector.showPortalContents();
 
     const stats = collector.getStats();
-    log.success("ABI collection completed successfully!");
-    log.info(
+    logger.info("ABI collection completed successfully!");
+    logger.info(
       `Collection summary: ${stats.collected} collected, ${stats.skipped} skipped, ${stats.failed} failed`
     );
-    log.info(`ABI files written to: ${PORTAL_DIR}`);
+    logger.info(`ABI files written to: ${PORTAL_DIR}`);
   } catch (error) {
-    log.error(`ABI collection failed: ${error}`);
+    logger.error(`ABI collection failed: ${error}`);
     process.exit(1);
   }
 }
@@ -460,7 +470,7 @@ async function main(): Promise<void> {
 // Run the script
 if (import.meta.main) {
   main().catch((error) => {
-    console.error("Unhandled error:", error);
+    logger.error("Unhandled error:", error);
     process.exit(1);
   });
 }
