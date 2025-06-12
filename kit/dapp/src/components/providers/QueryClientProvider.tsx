@@ -1,6 +1,6 @@
 "use client";
 
-import { makeQueryClient } from "@/lib/orpc/query/query.client";
+import { makeQueryClient } from "@/lib/query/query.client";
 import {
   type QueryClient,
   QueryClientProvider as ReactQueryClientProvider,

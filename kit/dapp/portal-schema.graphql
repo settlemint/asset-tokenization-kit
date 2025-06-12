@@ -55125,7 +55125,7 @@ type Query {
     pageSize: Int = 100
 
     """
-    Processed after date, use json like date format (eg 2025-06-11T16:25:09.962Z) (defaults to 15 min ago)
+    Processed after date, use json like date format (eg 2025-06-12T07:22:28.377Z) (defaults to 15 min ago)
     """
     processedAfter: String
   ): TransactionsPaginatedOutput
@@ -55166,7 +55166,7 @@ type Query {
     pageSize: Int = 100
 
     """
-    Processed after date, use json like date format (eg 2025-06-11T16:25:09.962Z)
+    Processed after date, use json like date format (eg 2025-06-12T07:22:28.378Z)
     """
     processedAfter: String
   ): TransactionsPaginatedOutput
@@ -55192,17 +55192,17 @@ type Query {
     granularity: TransactionTimelineGranularity!
 
     """
-    Processed after date, use json like date format (eg 2025-06-11T16:25:09.962Z)
+    Processed after date, use json like date format (eg 2025-06-12T07:22:28.378Z)
     """
     processedAfter: String
 
     """
-    Timeline end date, use json like date format(eg 2025-06-11T16:25:09.962Z) (for month and year interval the last day of the month or year is used). Defaults to the current date.
+    Timeline end date, use json like date format(eg 2025-06-12T07:22:28.378Z) (for month and year interval the last day of the month or year is used). Defaults to the current date.
     """
     timelineEndDate: String
 
     """
-    Timeline start date, use json like date format (eg 2025-06-11T16:25:09.962Z) (for month and year interval the first day of the month or year is used)
+    Timeline start date, use json like date format (eg 2025-06-12T07:22:28.378Z) (for month and year interval the first day of the month or year is used)
     """
     timelineStartDate: String!
   ): [TransactionTimelineOutput!]
@@ -61576,7 +61576,7 @@ type Subscription {
     pageSize: Int = 100
 
     """
-    Processed after date, use json like date format (eg 2025-06-11T16:25:09.962Z) (defaults to 15 min ago)
+    Processed after date, use json like date format (eg 2025-06-12T07:22:28.377Z) (defaults to 15 min ago)
     """
     processedAfter: String
   ): TransactionsPaginatedOutput
@@ -61617,7 +61617,7 @@ type Subscription {
     pageSize: Int = 100
 
     """
-    Processed after date, use json like date format (eg 2025-06-11T16:25:09.962Z)
+    Processed after date, use json like date format (eg 2025-06-12T07:22:28.378Z)
     """
     processedAfter: String
   ): TransactionsPaginatedOutput

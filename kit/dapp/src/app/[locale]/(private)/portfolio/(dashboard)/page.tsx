@@ -3,16 +3,13 @@ import { TransferForm } from "@/app/[locale]/(private)/portfolio/_components/tra
 import { ActionsTable } from "@/components/blocks/actions-table/actions-table";
 import { AssetDistribution } from "@/components/blocks/charts/assets/asset-distribution";
 import MyAssetsTable from "@/components/blocks/my-assets-table/my-assets-table-mini";
-import { Await } from "@/components/data/Await";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
-import { orpc } from "@/lib/orpc/orpc";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { LatestEvents } from "../../assets/(dashboard)/_components/table/latest-events";
-import { Planets } from "./_components/planets";
 import { TransactionsChart } from "./_components/transactions-chart";
 
 export async function generateMetadata({
@@ -60,7 +57,7 @@ export default async function PortfolioDashboard({
 
       <PageHeader title={t("dashboard.my-assets")} className="mt-8" />
 
-      <Await
+      {/* <Await
         queryOptions={orpc.planet.list.queryOptions({ input: {} as const })}
         error={
           <div className="flex items-center justify-center p-8 text-center">
@@ -87,7 +84,7 @@ export default async function PortfolioDashboard({
         }
       >
         <Planets />
-      </Await>
+      </Await> */}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <AssetDistribution address={user.wallet} />

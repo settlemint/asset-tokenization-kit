@@ -11,7 +11,7 @@
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
     "codegen:gql-tada": "gql-tada generate-schema http://localhost:${THE_GRAPH_PORT_LOCAL_QUERY:-8000}/subgraphs/name/smart-protocol && gql-tada turbo && gql-tada generate-output",
-    "format": "prettier --write .",
+    "format": "prettier -l --write .",
     "compile": "bunx graph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 > subgraph-output.txt",
     "postcompile": "yq eval '.services.graph-node.environment.SUBGRAPH = \"kit:'$(cat subgraph-output.txt | tr -d '\\n')'\"' -i ../../docker-compose.yml",
     "publish": "bun run tools/graph-deploy.ts --local",

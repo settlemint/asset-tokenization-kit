@@ -9,8 +9,6 @@
  */
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { z } from "zod";
-import { fromError } from "zod-validation-error";
-import { redactSensitiveFields } from "../redaction";
 
 // Create logger instance with configurable log level
 const logger = createLogger({
@@ -65,12 +63,6 @@ export function safeParse<T extends z.ZodType>(
   const result = schema.safeParse(value);
 
   if (!result.success) {
-    // Log detailed error information with sensitive data redacted
-    logger.error("Zod validation failed", {
-      input: redactSensitiveFields(value), // Redact passwords, keys, etc.
-      errors: fromError(result.error), // Human-readable error format
-    });
-
     // Throw a generic error to avoid exposing sensitive validation details
     throw new Error(`Validation failed with error(s). Check logs for details.`);
   }
