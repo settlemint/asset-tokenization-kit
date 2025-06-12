@@ -164,20 +164,17 @@ class AbiCollector {
         return;
       }
 
-      // Read ABI content using Bun's file API
+      // Read artifact content using Bun's file API
       const file = Bun.file(abiFile.abiPath);
       const content = await file.text();
       const parsed = JSON.parse(content);
 
-      // Extract just the ABI if it's wrapped in an object
-      const abi = parsed.abi || parsed;
-
-      // Write to portal directory using Bun's file API
-      await Bun.write(abiFile.outputPath, JSON.stringify(abi, null, 2));
-      await Bun.write(abiFile.rootOutputPath, JSON.stringify(abi, null, 2));
+      // Write the entire artifact to portal directory using Bun's file API
+      await Bun.write(abiFile.outputPath, JSON.stringify(parsed, null, 2));
+      await Bun.write(abiFile.rootOutputPath, JSON.stringify(parsed, null, 2));
 
       this.collectedCount++;
-      logger.debug(`Successfully copied ${abiFile.contractName} ABI`);
+      logger.debug(`Successfully copied ${abiFile.contractName} artifact`);
     } catch (error) {
       this.failedCount++;
       logger.error(`Failed to copy ${abiFile.contractName}: ${error}`);

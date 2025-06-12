@@ -10,8 +10,8 @@
  * Optimized for Bun runtime with native file operations and efficient JSON handling.
  */
 
-import { $ } from "bun";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { $ } from "bun";
 import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -141,6 +141,20 @@ const CONTRACT_FILES = {
 } as const;
 
 // =============================================================================
+// HELPER FUNCTIONS
+// =============================================================================
+
+/**
+ * Check if debug logging is enabled
+ */
+function isDebugEnabled(): boolean {
+  return (
+    process.env.LOG_LEVEL === "debug" ||
+    process.env.SETTLEMINT_LOG_LEVEL === "debug"
+  );
+}
+
+// =============================================================================
 // ANVIL NODE MANAGER
 // =============================================================================
 
@@ -227,11 +241,8 @@ class AnvilManager {
 
     // Capture stdout and stderr for debugging
     // Note: SettleMint SDK logger doesn't have isLevelEnabled
-    const isDebugEnabled =
-      process.env.LOG_LEVEL === "debug" ||
-      process.env.SETTLEMINT_LOG_LEVEL === "debug";
-    const stdout = isDebugEnabled ? "inherit" : "pipe";
-    const stderr = isDebugEnabled ? "inherit" : "pipe";
+    const stdout = isDebugEnabled() ? "inherit" : "pipe";
+    const stderr = isDebugEnabled() ? "inherit" : "pipe";
 
     // Start anvil in background
     this.anvilProcess = Bun.spawn(anvilArgs, {
@@ -254,10 +265,7 @@ class AnvilManager {
         const exitCode = this.anvilProcess.exitCode;
         let errorOutput = "";
 
-        const isDebugEnabled =
-          process.env.LOG_LEVEL === "debug" ||
-          process.env.SETTLEMINT_LOG_LEVEL === "debug";
-        if (!isDebugEnabled && this.anvilProcess.stderr) {
+        if (!isDebugEnabled() && this.anvilProcess.stderr) {
           try {
             const stderr = await new Response(this.anvilProcess.stderr).text();
             errorOutput = stderr;
@@ -288,10 +296,7 @@ class AnvilManager {
 
     // If we get here, Anvil failed to start
     let errorOutput = "";
-    const isDebugEnabled =
-      process.env.LOG_LEVEL === "debug" ||
-      process.env.SETTLEMINT_LOG_LEVEL === "debug";
-    if (!isDebugEnabled && this.anvilProcess.stderr) {
+    if (!isDebugEnabled() && this.anvilProcess.stderr) {
       try {
         const stderr = await new Response(this.anvilProcess.stderr).text();
         errorOutput = stderr;
@@ -434,10 +439,7 @@ class ContractDeployer {
   async validateBytecode(solFile: string, contractName: string): Promise<void> {
     logger.debug(`Validating bytecode for ${contractName}...`);
 
-    const isDebugEnabled =
-      process.env.LOG_LEVEL === "debug" ||
-      process.env.SETTLEMINT_LOG_LEVEL === "debug";
-    const result = isDebugEnabled
+    const result = isDebugEnabled()
       ? await $`forge inspect ${solFile}:${contractName} bytecode --out ${FORGE_OUT_DIR}`.cwd(
           CONTRACTS_ROOT
         )
@@ -507,7 +509,7 @@ class ContractDeployer {
 
     let result;
     if (args.length > 0) {
-      result = isDebugEnabled
+      result = isDebugEnabled()
         ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --constructor-args ${args}`.cwd(
             CONTRACTS_ROOT
           )
@@ -515,7 +517,7 @@ class ContractDeployer {
             .cwd(CONTRACTS_ROOT)
             .quiet();
     } else {
-      result = isDebugEnabled
+      result = isDebugEnabled()
         ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR}`.cwd(
             CONTRACTS_ROOT
           )
@@ -579,10 +581,7 @@ class ContractDeployer {
     logger.debug(`Getting storage layout for ${contractName}...`);
 
     // Get storage layout from contract
-    const isDebugEnabled =
-      process.env.LOG_LEVEL === "debug" ||
-      process.env.SETTLEMINT_LOG_LEVEL === "debug";
-    const layoutResult = isDebugEnabled
+    const layoutResult = isDebugEnabled()
       ? await $`forge inspect ${solFile}:${contractName} storageLayout --force --json --out ${FORGE_OUT_DIR}`.cwd(
           CONTRACTS_ROOT
         )
@@ -607,10 +606,7 @@ class ContractDeployer {
     // Process storage slots
     for (const slot of storageLayout.storage) {
       try {
-        const isDebugEnabled =
-          process.env.LOG_LEVEL === "debug" ||
-          process.env.SETTLEMINT_LOG_LEVEL === "debug";
-        const slotResult = isDebugEnabled
+        const slotResult = isDebugEnabled()
           ? await $`cast storage --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress} ${slot.slot}`
           : await $`cast storage --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress} ${slot.slot}`.quiet();
 
@@ -647,10 +643,7 @@ class ContractDeployer {
   ): Promise<string> {
     logger.debug(`Getting deployed bytecode for ${contractName}...`);
 
-    const isDebugEnabled =
-      process.env.LOG_LEVEL === "debug" ||
-      process.env.SETTLEMINT_LOG_LEVEL === "debug";
-    const result = isDebugEnabled
+    const result = isDebugEnabled()
       ? await $`cast code --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress}`
       : await $`cast code --rpc-url http://localhost:${this.config.anvilPort} ${deployedAddress}`.quiet();
 
@@ -821,7 +814,7 @@ class GenesisGenerator {
     } catch (error) {
       this.failedCount++;
       logger.error(`Failed to process ${contractName}: ${error}`);
-      logger.debug(error);
+      logger.debug(`${error as Error}.message`);
       throw error;
     }
   }
@@ -1130,10 +1123,7 @@ async function main(): Promise<void> {
 
   // Check if forge is available
   try {
-    const isDebugEnabled =
-      process.env.LOG_LEVEL === "debug" ||
-      process.env.SETTLEMINT_LOG_LEVEL === "debug";
-    const forgeResult = isDebugEnabled
+    const forgeResult = isDebugEnabled()
       ? await $`forge --version`.cwd(CONTRACTS_ROOT)
       : await $`forge --version`.cwd(CONTRACTS_ROOT).quiet();
     logger.debug(`Forge version: ${forgeResult.stdout}`);
@@ -1143,10 +1133,7 @@ async function main(): Promise<void> {
 
   // Check if anvil is available
   try {
-    const isDebugEnabled =
-      process.env.LOG_LEVEL === "debug" ||
-      process.env.SETTLEMINT_LOG_LEVEL === "debug";
-    const anvilResult = isDebugEnabled
+    const anvilResult = isDebugEnabled()
       ? await $`anvil --version`
       : await $`anvil --version`.quiet();
     logger.debug(`Anvil version: ${anvilResult.stdout}`);

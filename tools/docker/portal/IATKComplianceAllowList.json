@@ -1,133 +1,483 @@
-[
-  {
-    "type": "function",
-    "name": "addMultipleToAllowList",
-    "inputs": [
-      {
-        "name": "accounts",
-        "type": "address[]",
-        "internalType": "address[]"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "addMultipleToAllowList",
+      "inputs": [
+        {
+          "name": "accounts",
+          "type": "address[]",
+          "internalType": "address[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "addToAllowList",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "isAllowListed",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "removeFromAllowList",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "removeMultipleFromAllowList",
+      "inputs": [
+        {
+          "name": "accounts",
+          "type": "address[]",
+          "internalType": "address[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "AddressAllowListed",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "manager",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "AddressRemovedFromAllowList",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "manager",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "AddressAlreadyAllowListed",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "AddressNotAllowListed",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
   },
-  {
-    "type": "function",
-    "name": "addToAllowList",
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
   },
-  {
-    "type": "function",
-    "name": "isAllowListed",
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
-    ],
-    "stateMutability": "view"
+  "methodIdentifiers": {
+    "addMultipleToAllowList(address[])": "5d69086f",
+    "addToAllowList(address)": "31f59102",
+    "isAllowListed(address)": "70dd8d2e",
+    "removeFromAllowList(address)": "eba8dabc",
+    "removeMultipleFromAllowList(address[])": "de6fe9a2"
   },
-  {
-    "type": "function",
-    "name": "removeFromAllowList",
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "removeMultipleFromAllowList",
-    "inputs": [
-      {
-        "name": "accounts",
-        "type": "address[]",
-        "internalType": "address[]"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "event",
-    "name": "AddressAllowListed",
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"AddressAlreadyAllowListed\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"AddressNotAllowListed\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"}],\"name\":\"AddressAllowListed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"}],\"name\":\"AddressRemovedFromAllowList\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"accounts\",\"type\":\"address[]\"}],\"name\":\"addMultipleToAllowList\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"addToAllowList\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"isAllowListed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"removeFromAllowList\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"accounts\",\"type\":\"address[]\"}],\"name\":\"removeMultipleFromAllowList\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"details\":\"This interface defines the standard functions for allowlist management in ATK compliance contracts\",\"events\":{\"AddressAllowListed(address,address)\":{\"params\":{\"account\":\"The address that was added to the allowlist\",\"manager\":\"The address that performed the allowlist addition\"}},\"AddressRemovedFromAllowList(address,address)\":{\"params\":{\"account\":\"The address that was removed from the allowlist\",\"manager\":\"The address that performed the allowlist removal\"}}},\"kind\":\"dev\",\"methods\":{\"addMultipleToAllowList(address[])\":{\"details\":\"Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function. This is a gas-efficient way to allowlist multiple addresses at once.\",\"params\":{\"accounts\":\"Array of addresses to add to the allowlist\"}},\"addToAllowList(address)\":{\"details\":\"Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function. AllowListed addresses can bypass compliance checks in canTransfer function.\",\"params\":{\"account\":\"The address to add to the allowlist\"}},\"isAllowListed(address)\":{\"params\":{\"account\":\"The address to check\"},\"returns\":{\"_0\":\"True if the address is on the allowlist, false otherwise\"}},\"removeFromAllowList(address)\":{\"details\":\"Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.\",\"params\":{\"account\":\"The address to remove from the allowlist\"}},\"removeMultipleFromAllowList(address[])\":{\"details\":\"Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.\",\"params\":{\"accounts\":\"Array of addresses to remove from the allowlist\"}}},\"title\":\"ATK Compliance AllowList Interface\",\"version\":1},\"userdoc\":{\"errors\":{\"AddressAlreadyAllowListed(address)\":[{\"notice\":\"Error thrown when trying to add an address that is already on the allowlist\"}],\"AddressNotAllowListed(address)\":[{\"notice\":\"Error thrown when trying to remove an address that is not on the allowlist\"}]},\"events\":{\"AddressAllowListed(address,address)\":{\"notice\":\"Emitted when an address is added to the compliance allowlist\"},\"AddressRemovedFromAllowList(address,address)\":{\"notice\":\"Emitted when an address is removed from the compliance allowlist\"}},\"kind\":\"user\",\"methods\":{\"addMultipleToAllowList(address[])\":{\"notice\":\"Adds multiple addresses to the compliance allowlist in a single transaction\"},\"addToAllowList(address)\":{\"notice\":\"Adds an address to the compliance allowlist\"},\"isAllowListed(address)\":{\"notice\":\"Checks if an address is on the allowlist\"},\"removeFromAllowList(address)\":{\"notice\":\"Removes an address from the compliance allowlist\"},\"removeMultipleFromAllowList(address[])\":{\"notice\":\"Removes multiple addresses from the compliance allowlist in a single transaction\"}},\"notice\":\"Interface for managing compliance allowlist functionality\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/system/compliance/IATKComplianceAllowList.sol\":\"IATKComplianceAllowList\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/system/compliance/IATKComplianceAllowList.sol\":{\"keccak256\":\"0xd455df5b085fc4a241ffd4036129f00b5f48aca83c31aff99f8b857fef76ef4a\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://afd0cfc4b5feabe3c26699d954bafe98adb5ac370e7879a34c182ab592608bde\",\"dweb:/ipfs/QmXWsFpLmdR1YJsXZ4CvNMNYwi7ZBaeuqnQiaKbAQ8ctDm\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "AddressAlreadyAllowListed"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "AddressNotAllowListed"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "manager",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "AddressAllowListed",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "manager",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "AddressRemovedFromAllowList",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "accounts",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "addMultipleToAllowList"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "addToAllowList"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isAllowListed",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "removeFromAllowList"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "accounts",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "removeMultipleFromAllowList"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "addMultipleToAllowList(address[])": {
+            "details": "Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function. This is a gas-efficient way to allowlist multiple addresses at once.",
+            "params": {
+              "accounts": "Array of addresses to add to the allowlist"
+            }
+          },
+          "addToAllowList(address)": {
+            "details": "Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function. AllowListed addresses can bypass compliance checks in canTransfer function.",
+            "params": {
+              "account": "The address to add to the allowlist"
+            }
+          },
+          "isAllowListed(address)": {
+            "params": {
+              "account": "The address to check"
+            },
+            "returns": {
+              "_0": "True if the address is on the allowlist, false otherwise"
+            }
+          },
+          "removeFromAllowList(address)": {
+            "details": "Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.",
+            "params": {
+              "account": "The address to remove from the allowlist"
+            }
+          },
+          "removeMultipleFromAllowList(address[])": {
+            "details": "Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.",
+            "params": {
+              "accounts": "Array of addresses to remove from the allowlist"
+            }
+          }
+        },
+        "version": 1
       },
-      {
-        "name": "manager",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "addMultipleToAllowList(address[])": {
+            "notice": "Adds multiple addresses to the compliance allowlist in a single transaction"
+          },
+          "addToAllowList(address)": {
+            "notice": "Adds an address to the compliance allowlist"
+          },
+          "isAllowListed(address)": {
+            "notice": "Checks if an address is on the allowlist"
+          },
+          "removeFromAllowList(address)": {
+            "notice": "Removes an address from the compliance allowlist"
+          },
+          "removeMultipleFromAllowList(address[])": {
+            "notice": "Removes multiple addresses from the compliance allowlist in a single transaction"
+          }
+        },
+        "version": 1
       }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "AddressRemovedFromAllowList",
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
       },
-      {
-        "name": "manager",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/system/compliance/IATKComplianceAllowList.sol": "IATKComplianceAllowList"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/system/compliance/IATKComplianceAllowList.sol": {
+        "keccak256": "0xd455df5b085fc4a241ffd4036129f00b5f48aca83c31aff99f8b857fef76ef4a",
+        "urls": [
+          "bzz-raw://afd0cfc4b5feabe3c26699d954bafe98adb5ac370e7879a34c182ab592608bde",
+          "dweb:/ipfs/QmXWsFpLmdR1YJsXZ4CvNMNYwi7ZBaeuqnQiaKbAQ8ctDm"
+        ],
+        "license": "FSL-1.1-MIT"
       }
-    ],
-    "anonymous": false
+    },
+    "version": 1
   },
-  {
-    "type": "error",
-    "name": "AddressAlreadyAllowListed",
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address",
-        "internalType": "address"
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "addMultipleToAllowList(address[])": {
+        "notice": "Adds multiple addresses to the compliance allowlist in a single transaction"
+      },
+      "addToAllowList(address)": {
+        "notice": "Adds an address to the compliance allowlist"
+      },
+      "isAllowListed(address)": {
+        "notice": "Checks if an address is on the allowlist"
+      },
+      "removeFromAllowList(address)": {
+        "notice": "Removes an address from the compliance allowlist"
+      },
+      "removeMultipleFromAllowList(address[])": {
+        "notice": "Removes multiple addresses from the compliance allowlist in a single transaction"
       }
-    ]
+    },
+    "events": {
+      "AddressAllowListed(address,address)": {
+        "notice": "Emitted when an address is added to the compliance allowlist"
+      },
+      "AddressRemovedFromAllowList(address,address)": {
+        "notice": "Emitted when an address is removed from the compliance allowlist"
+      }
+    },
+    "errors": {
+      "AddressAlreadyAllowListed(address)": [
+        {
+          "notice": "Error thrown when trying to add an address that is already on the allowlist"
+        }
+      ],
+      "AddressNotAllowListed(address)": [
+        {
+          "notice": "Error thrown when trying to remove an address that is not on the allowlist"
+        }
+      ]
+    },
+    "notice": "Interface for managing compliance allowlist functionality"
   },
-  {
-    "type": "error",
-    "name": "AddressNotAllowListed",
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address",
-        "internalType": "address"
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "author": "SettleMint Tokenization Services",
+    "details": "This interface defines the standard functions for allowlist management in ATK compliance contracts",
+    "methods": {
+      "addMultipleToAllowList(address[])": {
+        "details": "Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function. This is a gas-efficient way to allowlist multiple addresses at once.",
+        "params": {
+          "accounts": "Array of addresses to add to the allowlist"
+        }
+      },
+      "addToAllowList(address)": {
+        "details": "Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function. AllowListed addresses can bypass compliance checks in canTransfer function.",
+        "params": {
+          "account": "The address to add to the allowlist"
+        }
+      },
+      "isAllowListed(address)": {
+        "params": {
+          "account": "The address to check"
+        },
+        "returns": {
+          "_0": "True if the address is on the allowlist, false otherwise"
+        }
+      },
+      "removeFromAllowList(address)": {
+        "details": "Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.",
+        "params": {
+          "account": "The address to remove from the allowlist"
+        }
+      },
+      "removeMultipleFromAllowList(address[])": {
+        "details": "Only addresses with ALLOW_LIST_MANAGER_ROLE can call this function.",
+        "params": {
+          "accounts": "Array of addresses to remove from the allowlist"
+        }
       }
-    ]
-  }
-]
+    },
+    "events": {
+      "AddressAllowListed(address,address)": {
+        "params": {
+          "account": "The address that was added to the allowlist",
+          "manager": "The address that performed the allowlist addition"
+        }
+      },
+      "AddressRemovedFromAllowList(address,address)": {
+        "params": {
+          "account": "The address that was removed from the allowlist",
+          "manager": "The address that performed the allowlist removal"
+        }
+      }
+    },
+    "title": "ATK Compliance AllowList Interface"
+  },
+  "id": 112
+}

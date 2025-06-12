@@ -1,67 +1,220 @@
-[
-  {
-    "type": "function",
-    "name": "TOPIC_AML",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "string",
-        "internalType": "string"
-      }
-    ],
-    "stateMutability": "view"
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "TOPIC_AML",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TOPIC_ASSET_CLASSIFICATION",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TOPIC_COLLATERAL",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TOPIC_ISIN",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TOPIC_KYC",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    }
+  ],
+  "bytecode": {
+    "object": "0x60808060405234601957610216908161001e823930815050f35b5f80fdfe60806040526004361015610011575f80fd5b5f3560e01c80633a39e8f01461016b5780636feda22b1461013d578063835cd4631461010f5780638ef293b0146100c557638fbd724714610050575f80fd5b5f3660031901126100c157604051604081019080821067ffffffffffffffff8311176100ad576100a991604052601381527230b9b9b2ba21b630b9b9b4b334b1b0ba34b7b760691b6020820152604051918291826101df565b0390f35b634e487b7160e01b5f52604160045260245ffd5b5f80fd5b5f3660031901126100c157604051604081019080821067ffffffffffffffff8311176100ad576100a991604052600481526334b9b4b760e11b6020820152604051918291826101df565b5f3660031901126100c1576100a96101256101bb565b62185b5b60ea1b6020820152604051918291826101df565b5f3660031901126100c1576100a96101536101bb565b626b796360e81b6020820152604051918291826101df565b5f3660031901126100c157604051604081019080821067ffffffffffffffff8311176100ad576100a991604052600a81526918dbdb1b185d195c985b60b21b6020820152604051918291826101df565b604051906040820182811067ffffffffffffffff8211176100ad5760405260038252565b602060409281835280519182918282860152018484015e5f828201840152601f01601f191601019056fea164736f6c634300081c000a",
+    "sourceMap": "236:1311:105:-:0;;;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
   },
-  {
-    "type": "function",
-    "name": "TOPIC_ASSET_CLASSIFICATION",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "string",
-        "internalType": "string"
-      }
-    ],
-    "stateMutability": "view"
+  "deployedBytecode": {
+    "object": "0x60806040526004361015610011575f80fd5b5f3560e01c80633a39e8f01461016b5780636feda22b1461013d578063835cd4631461010f5780638ef293b0146100c557638fbd724714610050575f80fd5b5f3660031901126100c157604051604081019080821067ffffffffffffffff8311176100ad576100a991604052601381527230b9b9b2ba21b630b9b9b4b334b1b0ba34b7b760691b6020820152604051918291826101df565b0390f35b634e487b7160e01b5f52604160045260245ffd5b5f80fd5b5f3660031901126100c157604051604081019080821067ffffffffffffffff8311176100ad576100a991604052600481526334b9b4b760e11b6020820152604051918291826101df565b5f3660031901126100c1576100a96101256101bb565b62185b5b60ea1b6020820152604051918291826101df565b5f3660031901126100c1576100a96101536101bb565b626b796360e81b6020820152604051918291826101df565b5f3660031901126100c157604051604081019080821067ffffffffffffffff8311176100ad576100a991604052600a81526918dbdb1b185d195c985b60b21b6020820152604051918291826101df565b604051906040820182811067ffffffffffffffff8211176100ad5760405260038252565b602060409281835280519182918282860152018484015e5f828201840152601f01601f191601019056fea164736f6c634300081c000a",
+    "sourceMap": "236:1311:105:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;236:1311:105;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;236:1311:105;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;236:1311:105;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;236:1311:105;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;236:1311:105;;;;;;;:::i;:::-;-1:-1:-1;;;236:1311:105;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;236:1311:105;;;;;;;:::i;:::-;-1:-1:-1;;;236:1311:105;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;236:1311:105;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;236:1311:105;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;236:1311:105;;;;:::o",
+    "linkReferences": {}
   },
-  {
-    "type": "function",
-    "name": "TOPIC_COLLATERAL",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "string",
-        "internalType": "string"
-      }
-    ],
-    "stateMutability": "view"
+  "methodIdentifiers": {
+    "TOPIC_AML()": "835cd463",
+    "TOPIC_ASSET_CLASSIFICATION()": "8fbd7247",
+    "TOPIC_COLLATERAL()": "3a39e8f0",
+    "TOPIC_ISIN()": "8ef293b0",
+    "TOPIC_KYC()": "6feda22b"
   },
-  {
-    "type": "function",
-    "name": "TOPIC_ISIN",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "string",
-        "internalType": "string"
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"TOPIC_AML\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TOPIC_ASSET_CLASSIFICATION\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TOPIC_COLLATERAL\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TOPIC_ISIN\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TOPIC_KYC\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"kind\":\"dev\",\"methods\":{},\"title\":\"ATK  Topic Management\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Central registry for all claim topics and their schemes used in the ATK protocol\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/system/ATKTopics.sol\":\"ATKTopics\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/system/ATKTopics.sol\":{\"keccak256\":\"0xcd950ae62665b376814b592b52479c1a87806493b9789cfff647a221a5fdcf46\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://e1512e85e7cc84b87381afcb2d485d88bc16feb4d4dce5b423714576353c35e8\",\"dweb:/ipfs/Qmansg9HE7rDYFmPHfhbWnKJoTfdHMPbd444NtBa9Vn1Ey\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOPIC_AML",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOPIC_ASSET_CLASSIFICATION",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOPIC_COLLATERAL",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOPIC_ISIN",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOPIC_KYC",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
       }
-    ],
-    "stateMutability": "view"
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/system/ATKTopics.sol": "ATKTopics"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/system/ATKTopics.sol": {
+        "keccak256": "0xcd950ae62665b376814b592b52479c1a87806493b9789cfff647a221a5fdcf46",
+        "urls": [
+          "bzz-raw://e1512e85e7cc84b87381afcb2d485d88bc16feb4d4dce5b423714576353c35e8",
+          "dweb:/ipfs/Qmansg9HE7rDYFmPHfhbWnKJoTfdHMPbd444NtBa9Vn1Ey"
+        ],
+        "license": "FSL-1.1-MIT"
+      }
+    },
+    "version": 1
   },
-  {
-    "type": "function",
-    "name": "TOPIC_KYC",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "string",
-        "internalType": "string"
-      }
-    ],
-    "stateMutability": "view"
-  }
-]
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "notice": "Central registry for all claim topics and their schemes used in the ATK protocol"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "author": "SettleMint Tokenization Services",
+    "title": "ATK  Topic Management"
+  },
+  "id": 105
+}

@@ -246,8 +246,19 @@ class ArtifactsCopier {
     try {
       const content = await Bun.file(CHARTS_GENESIS_FILE).text();
       const parsed = JSON.parse(content);
-      if (!parsed.alloc || typeof parsed.alloc !== "object") {
-        throw new Error("Invalid genesis output structure");
+      // The genesis output should be an object with addresses as keys
+      if (typeof parsed !== "object" || parsed === null) {
+        throw new Error("Invalid genesis output structure - expected an object");
+      }
+      // Check if it has at least one address key
+      const keys = Object.keys(parsed);
+      if (keys.length === 0) {
+        throw new Error("Genesis output is empty");
+      }
+      // Verify at least one address looks valid
+      const firstKey = keys[0];
+      if (!firstKey?.startsWith("0x") || firstKey.length !== 42) {
+        throw new Error("Invalid genesis output structure - expected addresses as keys");
       }
     } catch (error) {
       throw new Error(`Failed to verify genesis output: ${error}`);
@@ -284,7 +295,7 @@ class ArtifactsCopier {
       try {
         const content = await Bun.file(CHARTS_GENESIS_FILE).text();
         const parsed = JSON.parse(content);
-        const numAllocations = Object.keys(parsed.alloc || {}).length;
+        const numAllocations = Object.keys(parsed).length;
         logger.info(
           `  - genesis-output.json (${numAllocations} allocations)`
         );
