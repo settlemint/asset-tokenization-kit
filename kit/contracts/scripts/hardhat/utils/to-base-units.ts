@@ -1,9 +1,11 @@
 /**
- * Parses a decimal string into a bigint with the specified number of decimals
+ * Parses a decimal string into a bigint with the specified number of decimals.
+ * This is a utility function for `toBaseUnits`.
+ *
  * @param amount - The amount as a decimal string (e.g., "1.5", "0.123")
  * @param decimals - Number of decimal places for the token
- * @returns The amount as bigint with decimals applied
- * @throws Error if the decimal string has more precision than allowed
+ * @returns The amount as a bigint scaled by `decimals`.
+ * @throws Error if the decimal string has more precision than allowed.
  */
 export function parseDecimalString(amount: string, decimals: number): bigint {
   const [whole, fraction = ""] = amount.split(".");
@@ -22,28 +24,18 @@ export function parseDecimalString(amount: string, decimals: number): bigint {
 }
 
 /**
- * Converts a decimal number amount to its bigint representation with the specified decimals
- * Note: For high precision amounts, prefer using string input to avoid floating point precision issues
- * @param amount - The amount as a number (e.g., 1.5)
- * @param decimals - Number of decimal places for the token
- * @returns The amount as bigint with decimals applied
+ * Converts a number representation of a token amount to its bigint representation in base units.
+ * For higher precision, it's recommended to use the string overload to avoid floating-point inaccuracies.
+ *
+ * @param amount - The amount as a number (e.g., 1.5).
+ * @param decimals - The number of decimal places for the token.
+ * @returns The amount in base units as a bigint.
  */
-export function toDecimals(amount: number, decimals: number): bigint;
-
-/**
- * Converts a bigint amount (already in base units) to its representation with the specified decimals
- * @param amount - The amount as bigint (e.g., 1500000000000000000n)
- * @param decimals - Number of decimal places for the token
- * @returns The amount as bigint with decimals applied
- */
-export function toDecimals(amount: bigint, decimals: number): bigint;
-
-export function toDecimals(
+export function toBaseUnits(
   amount: string | number | bigint,
   decimals: number
 ): bigint {
   if (typeof amount === "bigint") {
-    // If already bigint, multiply by 10^decimals (existing behavior)
     return amount * 10n ** BigInt(decimals);
   }
 

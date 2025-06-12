@@ -451,7 +451,9 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         );
 
         // Make it possible that the token factory can add addresses to the compliance allow list
-        IAccessControl(address(complianceProxy())).grantRole(ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE, _tokenFactoryProxy);
+        IAccessControl(address(complianceProxy())).grantRole(
+            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
+        );
 
         emit TokenFactoryCreated(_msgSender(), _typeName, _tokenFactoryProxy, _factoryImplementation, block.timestamp);
 

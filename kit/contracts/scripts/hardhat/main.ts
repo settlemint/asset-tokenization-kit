@@ -64,7 +64,7 @@ async function main() {
   await grantRole(
     atkDeployer.getComplianceContract().address,
     owner,
-    ATKRoles.allowListManagerRole,
+    ATKRoles.bypassListManagerRole,
     atkDeployer.getFixedYieldScheduleFactoryContract().address
   );
 
@@ -80,6 +80,7 @@ async function main() {
     topicManager.getTopicId(ATKTopic.aml),
     topicManager.getTopicId(ATKTopic.collateral),
     topicManager.getTopicId(ATKTopic.assetClassification),
+    topicManager.getTopicId(ATKTopic.basePrice),
   ]);
 
   console.log("\n=== Verify the actors... ===\n");

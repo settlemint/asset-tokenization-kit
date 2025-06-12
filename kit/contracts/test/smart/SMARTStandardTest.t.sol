@@ -9,8 +9,6 @@ import { SMARTBurnableTest } from "./extensions/SMARTBurnableTest.sol";
 import { SMARTPausableTest } from "./extensions/SMARTPausableTest.sol";
 import { SMARTCustodianTest } from "./extensions/SMARTCustodianTest.sol";
 import { SMARTCollateralTest } from "./extensions/SMARTCollateralTest.sol";
-import { SMARTCountryAllowListTest } from "./extensions/SMARTCountryAllowListTest.sol";
-import { SMARTCountryBlockListTest } from "./extensions/SMARTCountryBlockListTest.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { SMARTToken } from "./examples/SMARTToken.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
@@ -24,8 +22,6 @@ contract SMARTStandardTest is
     SMARTPausableTest,
     SMARTCustodianTest,
     SMARTCollateralTest,
-    SMARTCountryAllowListTest,
-    SMARTCountryBlockListTest,
     SMARTIdentityVerificationTest,
     SMARTCappedTest
 {
@@ -48,8 +44,6 @@ contract SMARTStandardTest is
         vm.stopPrank();
 
         _grantAllRoles(tokenAddress, tokenIssuer);
-
-        // TODO createTokenIdentity --> needs AccessManager
 
         // 2. Create the token's on-chain identity
         tokenUtils.createAndSetTokenOnchainID(tokenAddress, tokenIssuer, address(accessManager));

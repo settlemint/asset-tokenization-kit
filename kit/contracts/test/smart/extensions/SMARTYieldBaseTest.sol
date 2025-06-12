@@ -29,9 +29,9 @@ abstract contract SMARTYieldBaseTest is AbstractSMARTTest, SMARTYieldHelpers {
 
         IAccessControl(yieldScheduleFactory).grantRole(ATKSystemRoles.DEPLOYER_ROLE, tokenIssuer);
 
-        // Grant whitelist manager role to yield schedule factory
+        // Grant bypass list manager role to yield schedule factory
         IAccessControl(address(systemUtils.compliance())).grantRole(
-            ATKSystemRoles.ALLOW_LIST_MANAGER_ROLE, address(yieldScheduleFactory)
+            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, address(yieldScheduleFactory)
         );
         vm.stopPrank();
 

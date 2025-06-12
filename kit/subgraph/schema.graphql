@@ -46,7 +46,7 @@ type AccessControl @entity(immutable: false) {
   custodian: [Account!]!
   emergency: [Account!]!
   implementationManager: [Account!]!
-  allowListManager: [Account!]!
+  bypassListManager: [Account!]!
 }
 
 type System @entity(immutable: false) {

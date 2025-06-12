@@ -56,7 +56,7 @@ library ATKSystemRoles {
     bytes32 public constant MANAGE_REGISTRIES_ROLE = keccak256("MANAGE_REGISTRIES_ROLE");
 
     // --- Access Control Roles ---
-    /// @notice Role identifier for addresses that can manage the compliance allow list
-    /// @dev This role allows adding/removing addresses from the allow list that can bypass compliance checks
-    bytes32 public constant ALLOW_LIST_MANAGER_ROLE = keccak256("ALLOW_LIST_MANAGER_ROLE");
+    /// @notice Role identifier for addresses that can manage the compliance bypass list
+    /// @dev This role allows adding/removing addresses from the bypass list that can bypass compliance checks
+    bytes32 public constant BYPASS_LIST_MANAGER_ROLE = keccak256("BYPASS_LIST_MANAGER_ROLE");
 }

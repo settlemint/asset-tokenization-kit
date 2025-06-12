@@ -14,7 +14,7 @@ import { IATKFixedYieldScheduleFactory } from "./IATKFixedYieldScheduleFactory.s
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 import { IATKSystem } from "../IATKSystem.sol";
-import { IATKComplianceAllowList } from "../compliance/IATKComplianceAllowList.sol";
+import { IATKComplianceBypassList } from "../compliance/IATKComplianceBypassList.sol";
 
 // Implementations
 import { SMARTFixedYieldScheduleUpgradeable } from
@@ -130,10 +130,10 @@ contract ATKFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl, 
         address complianceProxy = IATKSystem(systemAddress).complianceProxy();
         if (
             complianceProxy != address(0)
-                && IERC165(complianceProxy).supportsInterface(type(IATKComplianceAllowList).interfaceId)
+                && IERC165(complianceProxy).supportsInterface(type(IATKComplianceBypassList).interfaceId)
         ) {
             // Allow schedule to receive tokens
-            IATKComplianceAllowList(complianceProxy).addToAllowList(scheduleProxyAddress);
+            IATKComplianceBypassList(complianceProxy).addToBypassList(scheduleProxyAddress);
         }
 
         return scheduleProxyAddress;
