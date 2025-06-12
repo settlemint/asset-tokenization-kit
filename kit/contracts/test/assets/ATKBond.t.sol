@@ -92,7 +92,9 @@ contract ATKBondTest is AbstractATKAssetTest {
                 "fixed-yield-schedule-factory",
                 address(fixedYieldScheduleFactoryImpl),
                 abi.encodeWithSelector(
-                    ATKFixedYieldScheduleFactoryImplementation.initialize.selector, address(systemUtils.system())
+                    ATKFixedYieldScheduleFactoryImplementation.initialize.selector,
+                    address(systemUtils.system()),
+                    platformAdmin
                 )
             )
         );

@@ -63,16 +63,18 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     /// @dev Initializes the factory, deploys the initial `ATKFixedYieldSchedule` implementation,
     /// and sets up support for meta-transactions via ERC2771Context.
     /// @param systemAddress_ The address of the `IATKSystem` contract.
-    function initialize(address systemAddress_) public initializer {
+    /// @param initialAdmin_ The address of the initial admin.
+    function initialize(address systemAddress_, address initialAdmin_) public initializer {
         __AccessControl_init();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, _msgSender());
-        _grantRole(ATKSystemRoles.DEPLOYER_ROLE, _msgSender());
+        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin_);
+        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin_);
+        _grantRole(ATKSystemRoles.DEPLOYER_ROLE, initialAdmin_);
 
         systemAddress = systemAddress_;
 
-        address forwarder = this.trustedForwarder();
+        // Is this ok? couldn't find a better way to get the forwarder
+        address forwarder = ERC2771ContextUpgradeable(address(systemAddress_)).trustedForwarder();
         // Deploy the initial implementation contract for SMARTFixedYieldSchedule.
         // The SMARTFixedYieldSchedule constructor now only calls _disableInitializers().
         SMARTFixedYieldScheduleUpgradeable initialImplementation = new SMARTFixedYieldScheduleUpgradeable(forwarder);

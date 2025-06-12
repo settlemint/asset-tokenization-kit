@@ -34,7 +34,9 @@ abstract contract SMARTYieldBaseTest is AbstractSMARTTest, SMARTYieldHelpers {
                 "fixed-yield-schedule-factory",
                 address(fixedYieldScheduleFactoryImpl),
                 abi.encodeWithSelector(
-                    ATKFixedYieldScheduleFactoryImplementation.initialize.selector, address(systemUtils.system())
+                    ATKFixedYieldScheduleFactoryImplementation.initialize.selector,
+                    address(systemUtils.system()),
+                    platformAdmin
                 )
             )
         );
