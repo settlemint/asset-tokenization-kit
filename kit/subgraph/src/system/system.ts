@@ -10,12 +10,12 @@ import {
   IdentityImplementationUpdated,
   IdentityRegistryImplementationUpdated,
   IdentityRegistryStorageImplementationUpdated,
+  SystemAddonCreated,
   TokenAccessManagerImplementationUpdated,
   TokenFactoryCreated,
   TokenIdentityImplementationUpdated,
   TopicSchemeRegistryImplementationUpdated,
   TrustedIssuersRegistryImplementationUpdated,
-  type SystemAddonCreated,
 } from "../../generated/templates/System/System";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
