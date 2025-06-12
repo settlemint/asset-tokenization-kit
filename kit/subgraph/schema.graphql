@@ -255,3 +255,11 @@ type IdentityClaimValue @entity(immutable: false) {
   key: String!
   value: String!
 }
+
+type SystemAddon @entity(immutable: false) {
+  id: Bytes!
+  accessControl: AccessControl!
+  type: String!
+  system: System
+  account: Account!
+}

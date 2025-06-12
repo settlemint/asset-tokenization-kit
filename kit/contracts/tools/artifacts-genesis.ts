@@ -68,7 +68,8 @@ const CONTRACT_ADDRESSES = {
   ATKTokenAccessManagerImplementation:
     "0x5e771e1417100000000000000000000000020009",
 
-  // System factory
+  // System
+  ATKSystemImplementation: "0x5e771e1417100000000000000000000000020087",
   ATKSystemFactory: "0x5e771e1417100000000000000000000000020088",
 
   // Asset implementations
@@ -112,7 +113,8 @@ const CONTRACT_FILES = {
   ATKTokenAccessManagerImplementation:
     "contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol",
 
-  // System factory
+  // System
+  ATKSystemImplementation: "contracts/system/ATKSystemImplementation.sol",
   ATKSystemFactory: "contracts/system/ATKSystemFactory.sol",
 
   // Asset implementations
@@ -413,11 +415,9 @@ class ContractDeployer {
       case "ATKForwarder":
         return [];
 
-      case "SMARTIdentityVerificationModule":
-        return [forwarderAddress];
-
       case "ATKSystemFactory":
         return [
+          CONTRACT_ADDRESSES.ATKSystemImplementation,
           CONTRACT_ADDRESSES.ATKComplianceImplementation,
           CONTRACT_ADDRESSES.ATKIdentityRegistryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityRegistryStorageImplementation,
