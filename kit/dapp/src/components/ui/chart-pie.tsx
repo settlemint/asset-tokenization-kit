@@ -1,10 +1,10 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import type { Variants } from "motion/react";
 import { motion, useAnimation } from "motion/react";
 import type { HTMLAttributes } from "react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
-import { cn } from "@/lib/utils";
 
 export interface ChartPieIconHandle {
   startAnimation: () => void;
@@ -16,8 +16,8 @@ interface ChartPieIconProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const pathVariants: Variants = {
-  normal: { translateX: 0, translateY: 0 },
-  animate: { translateX: 1.1, translateY: -1.1 },
+  normal: { x: 0, y: 0 },
+  animate: { x: 1.1, y: -1.1 },
 };
 
 const ChartPieIcon = forwardRef<ChartPieIconHandle, ChartPieIconProps>(

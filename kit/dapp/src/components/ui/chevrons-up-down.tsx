@@ -1,10 +1,10 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import type { Transition } from "motion/react";
 import { motion, useAnimation } from "motion/react";
 import type { HTMLAttributes } from "react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
-import { cn } from "@/lib/utils";
 
 export interface ChevronsUpDownIconHandle {
   startAnimation: () => void;
@@ -79,8 +79,8 @@ const ChevronsUpDownIcon = forwardRef<
       >
         <motion.path
           variants={{
-            normal: { translateY: "0%" },
-            animate: { translateY: "2px" },
+            normal: { y: "0%" },
+            animate: { y: "2px" },
           }}
           transition={defaultTransition}
           animate={controls}
@@ -89,8 +89,8 @@ const ChevronsUpDownIcon = forwardRef<
         />
         <motion.path
           variants={{
-            normal: { translateY: "0%" },
-            animate: { translateY: "-2px" },
+            normal: { y: "0%" },
+            animate: { y: "-2px" },
           }}
           transition={defaultTransition}
           animate={controls}
