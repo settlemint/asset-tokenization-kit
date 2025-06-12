@@ -139,6 +139,10 @@ jobs:
           echo "pr_reviewers=$PR_REVIEWERS" >> $GITHUB_OUTPUT
           echo "skip_notification=false" >> $GITHUB_OUTPUT
 
+          # Debug: Show output values
+          echo "Debug: skip_notification=false"
+          echo "Debug: pr_draft=$PR_DRAFT"
+
           # Get review status
           if [[ -n "$PR_NUMBER" ]]; then
             echo "Debug: Fetching review status for PR #$PR_NUMBER"
@@ -178,6 +182,22 @@ jobs:
 
           echo "Debug: Review status: $REVIEW_STATUS"
           echo "review_status=$REVIEW_STATUS" >> $GITHUB_OUTPUT
+
+      - name: Debug condition evaluation
+        run: |
+          echo "Debug: Evaluating conditions for next steps:"
+          echo "Debug: skip_notification = ${{ steps.build_status.outputs.skip_notification }}"
+          echo "Debug: pr_draft = ${{ steps.build_status.outputs.pr_draft }}"
+          echo "Debug: skip_notification != 'true' = ${{ steps.build_status.outputs.skip_notification != 'true' }}"
+          echo "Debug: skip_notification != true = ${{ steps.build_status.outputs.skip_notification != true }}"
+          echo "Debug: pr_draft != 'true' = ${{ steps.build_status.outputs.pr_draft != 'true' }}"
+          echo "Debug: pr_draft != true = ${{ steps.build_status.outputs.pr_draft != true }}"
+          echo "Debug: Overall condition result = ${{ steps.build_status.outputs.skip_notification != 'true' && steps.build_status.outputs.pr_draft != 'true' }}"
+          if [[ "${{ steps.build_status.outputs.skip_notification != 'true' && steps.build_status.outputs.pr_draft != 'true' }}" == "true" ]]; then
+            echo "Debug: ✅ Next steps will RUN"
+          else
+            echo "Debug: ❌ Next steps will be SKIPPED"
+          fi
 
       - name: Check for existing Slack message
         id: check_message
