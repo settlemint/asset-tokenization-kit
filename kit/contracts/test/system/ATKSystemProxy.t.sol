@@ -149,6 +149,18 @@ contract MockATKSystem is IATKSystem {
     function createTokenFactory(string calldata, address, address) external pure returns (address) {
         return address(0); // Return zero instead of revert
     }
+
+    function createXvPFactory() external pure returns (address) {
+        return address(0); // Return zero instead of revert
+    }
+
+    function xvpSettlementFactoryImplementation() external pure returns (address) {
+        return address(0); // Return zero instead of revert
+    }
+
+    function xvpSettlementFactoryProxy() external pure returns (address) {
+        return address(0); // Return zero instead of revert
+    }
 }
 
 // Mock implementation for testing

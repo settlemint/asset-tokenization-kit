@@ -27,7 +27,9 @@ import {
     SystemAlreadyBootstrapped,
     SystemNotBootstrapped,
     TopicSchemeRegistryImplementationNotSet,
-    IdentityVerificationModuleNotSet
+    IdentityVerificationModuleNotSet,
+    XvPSettlementFactoryImplementationNotSet,
+    XvPFactoryAlreadyCreated
 } from "./ATKSystemErrors.sol";
 
 // Compliance modules
@@ -53,6 +55,8 @@ import { ATKTrustedIssuersRegistryProxy } from "./trusted-issuers-registry/ATKTr
 import { ATKTopicSchemeRegistryProxy } from "./topic-scheme-registry/ATKTopicSchemeRegistryProxy.sol";
 import { ATKIdentityFactoryProxy } from "./identity-factory/ATKIdentityFactoryProxy.sol";
 import { ATKTokenFactoryProxy } from "./token-factory/ATKTokenFactoryProxy.sol";
+import { IATKXvPSettlementFactory } from "./xvp/IATKXvPSettlementFactory.sol";
+import { ATKXvPSettlementFactoryProxy } from "./xvp/ATKXvPSettlementFactoryProxy.sol";
 
 /// @title ATKSystem Contract
 /// @author SettleMint Tokenization Services
@@ -82,6 +86,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     bytes4 private constant _IIDENTITY_ID = type(IIdentity).interfaceId;
     bytes4 private constant _IATK_TOKEN_FACTORY_ID = type(IATKTokenFactory).interfaceId;
     bytes4 private constant _ISMART_TOKEN_ACCESS_MANAGER_ID = type(ISMARTTokenAccessManager).interfaceId;
+    bytes4 private constant _IATK_XVP_SETTLEMENT_FACTORY_ID = type(IATKXvPSettlementFactory).interfaceId;
 
     // --- State Variables ---
     // State variables store data persistently on the blockchain.
@@ -140,6 +145,12 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     // Token Factories by Type
     mapping(bytes32 typeHash => address tokenFactoryImplementationAddress) private tokenFactoryImplementationsByType;
     mapping(bytes32 typeHash => address tokenFactoryProxyAddress) private tokenFactoryProxiesByType;
+
+    // Addresses for the XvP Settlement Factory module.
+    /// @dev Stores the address of the current XvP Settlement Factory logic contract.
+    address private _xvpSettlementFactoryImplementation;
+    /// @dev Stores the address of the XvP Settlement Factory module's proxy contract.
+    address private _xvpSettlementFactoryProxy;
 
     // --- Internal Helper for Interface Check ---
     /// @dev Internal helper function to check if a given contract address (`implAddress`)
@@ -562,6 +573,18 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         emit TokenAccessManagerImplementationUpdated(_msgSender(), implementation);
     }
 
+    /// @notice Sets (updates) the address of the XvP Settlement Factory's implementation (logic) contract.
+    /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
+    /// Reverts if the provided `implementation` address is the zero address or does not support the required interface.
+    /// Emits a `XvPSettlementFactoryImplementationUpdated` event upon successful update.
+    /// @param implementation The new address for the XvP Settlement Factory logic contract.
+    function setXvPSettlementFactoryImplementation(address implementation) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (implementation == address(0)) revert XvPSettlementFactoryImplementationNotSet();
+        _checkInterface(implementation, _IATK_XVP_SETTLEMENT_FACTORY_ID);
+        _xvpSettlementFactoryImplementation = implementation;
+        emit XvPSettlementFactoryImplementationUpdated(_msgSender(), implementation);
+    }
+
     // --- Implementation Getter Functions ---
     // These public view functions allow anyone to query the current implementation (logic contract) addresses
     // for the various modules and identity types. These are the addresses that the respective proxy contracts
@@ -621,6 +644,12 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         return _tokenAccessManagerImplementation;
     }
 
+    /// @notice Gets the current address of the XvP Settlement Factory's implementation (logic) contract.
+    /// @return The address of the XvP Settlement Factory logic contract.
+    function xvpSettlementFactoryImplementation() public view override returns (address) {
+        return _xvpSettlementFactoryImplementation;
+    }
+
     /// @inheritdoc IATKSystem
     function tokenFactoryImplementation(bytes32 factoryTypeHash) public view returns (address) {
         return tokenFactoryImplementationsByType[factoryTypeHash];
@@ -673,6 +702,12 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         return tokenFactoryProxiesByType[factoryTypeHash];
     }
 
+    /// @notice Gets the address of the XvP Settlement Factory's proxy contract.
+    /// @return The address of the XvP Settlement Factory proxy contract.
+    function xvpSettlementFactoryProxy() public view override returns (address) {
+        return _xvpSettlementFactoryProxy;
+    }
+
     // --- Identity Verification Module ---
 
     /// @notice Gets the address of the identity verification module's proxy contract.
@@ -720,5 +755,36 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// @return `true` if the contract supports the interface, `false` otherwise.
     function supportsInterface(bytes4 interfaceId) public view override(ERC165, AccessControl) returns (bool) {
         return interfaceId == _IATK_SYSTEM_ID || super.supportsInterface(interfaceId);
+    }
+
+    /// @notice Creates a new XvP Settlement Factory with proxy support
+    /// @dev This function creates a new proxy instance for the XvP Settlement Factory.
+    /// The proxy will delegate calls to the current implementation address.
+    /// @return The address of the newly created XvP Settlement Factory proxy.
+    function createXvPFactory() external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) returns (address) {
+        // System must be bootstrapped before creating the XvP factory
+        if (!_bootstrapped) {
+            revert SystemNotBootstrapped();
+        }
+
+        // Check if factory already exists
+        if (_xvpSettlementFactoryProxy != address(0)) {
+            revert XvPFactoryAlreadyCreated();
+        }
+
+        // Check if implementation is set
+        if (_xvpSettlementFactoryImplementation == address(0)) {
+            revert XvPSettlementFactoryImplementationNotSet();
+        }
+
+        // Deploy the XvP Settlement Factory proxy
+        address _factoryProxy = address(new ATKXvPSettlementFactoryProxy(address(this), _msgSender()));
+
+        // Store the proxy address
+        _xvpSettlementFactoryProxy = _factoryProxy;
+
+        emit XvPSettlementFactoryCreated(_msgSender(), _factoryProxy, _xvpSettlementFactoryImplementation);
+
+        return _factoryProxy;
     }
 }

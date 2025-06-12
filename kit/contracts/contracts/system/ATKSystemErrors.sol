@@ -115,3 +115,9 @@ error InvalidTokenImplementationInterface();
 /// @dev This typically occurs in proxy constructors if the logic contract address fetched from the system is
 /// address(0).
 error InitializationWithZeroAddress();
+
+/// @notice Error indicating that the XVP Settlement Factory implementation address has not been set.
+error XvPSettlementFactoryImplementationNotSet();
+
+/// @notice Error indicating that the XVP Factory has already been created.
+error XvPFactoryAlreadyCreated();
