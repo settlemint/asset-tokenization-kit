@@ -73,8 +73,7 @@ contract ATKFixedYieldScheduleFactoryImplementation is
 
         systemAddress = systemAddress_;
 
-        // Is this ok? couldn't find a better way to get the forwarder
-        address forwarder = ERC2771ContextUpgradeable(address(systemAddress_)).trustedForwarder();
+        address forwarder = trustedForwarder();
         // Deploy the initial implementation contract for SMARTFixedYieldSchedule.
         // The SMARTFixedYieldSchedule constructor now only calls _disableInitializers().
         SMARTFixedYieldScheduleUpgradeable initialImplementation = new SMARTFixedYieldScheduleUpgradeable(forwarder);
