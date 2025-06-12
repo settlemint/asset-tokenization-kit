@@ -1,10 +1,10 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import type { Transition } from "motion/react";
 import { motion, useAnimation } from "motion/react";
 import type { HTMLAttributes } from "react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
-import { cn } from "@/lib/utils";
 
 export interface FrameIconHandle {
   startAnimation: () => void;
@@ -78,11 +78,11 @@ const FrameIcon = forwardRef<FrameIconHandle, FrameIconProps>(
         >
           <motion.line
             variants={{
-              animate: { translateY: -4 },
+              animate: { y: -4 },
               normal: {
-                translateX: 0,
+                x: 0,
                 rotate: 0,
-                translateY: 0,
+                y: 0,
               },
             }}
             animate={controls}
@@ -94,11 +94,11 @@ const FrameIcon = forwardRef<FrameIconHandle, FrameIconProps>(
           />
           <motion.line
             variants={{
-              animate: { translateY: 4 },
+              animate: { y: 4 },
               normal: {
-                translateX: 0,
+                x: 0,
                 rotate: 0,
-                translateY: 0,
+                y: 0,
               },
             }}
             animate={controls}
@@ -110,11 +110,11 @@ const FrameIcon = forwardRef<FrameIconHandle, FrameIconProps>(
           />
           <motion.line
             variants={{
-              animate: { translateX: -4 },
+              animate: { x: -4 },
               normal: {
-                translateX: 0,
+                x: 0,
                 rotate: 0,
-                translateY: 0,
+                y: 0,
               },
             }}
             animate={controls}
@@ -126,11 +126,11 @@ const FrameIcon = forwardRef<FrameIconHandle, FrameIconProps>(
           />
           <motion.line
             variants={{
-              animate: { translateX: 4 },
+              animate: { x: 4 },
               normal: {
-                translateX: 0,
+                x: 0,
                 rotate: 0,
-                translateY: 0,
+                y: 0,
               },
             }}
             animate={controls}

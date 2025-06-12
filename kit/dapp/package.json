@@ -13,7 +13,7 @@
     "watch": "tsc --noEmit --watch",
     "codegen:settlemint": "settlemint codegen",
     "codegen:gql-tada": "gql-tada turbo",
-    "format": "prettier --write .",
+    "format": "prettier -l --write .",
     "lint": "next lint",
     "build": "next build --turbopack",
     "dev": "next dev --turbopack",

@@ -40,17 +40,20 @@ const wrapperVariants = cva("flex items-center space-x-2", {
   },
 });
 
-const buttonVariants = cva("-ml-3 h-8 data-[state=open]:bg-accent", {
-  variants: {
-    variant: {
-      default: "",
-      numeric: "ml-auto",
+const buttonVariants = cva(
+  "-ml-3 h-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
+  {
+    variants: {
+      variant: {
+        default: "",
+        numeric: "ml-auto",
+      },
     },
-  },
-  defaultVariants: {
-    variant: "default",
-  },
-});
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
 
 /**
  * Props for the DataTableColumnHeader component.

@@ -1,10 +1,10 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import type { Variants } from "motion/react";
 import { motion, useAnimation } from "motion/react";
 import type { HTMLAttributes } from "react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
-import { cn } from "@/lib/utils";
 
 export interface HandCoinsIconHandle {
   startAnimation: () => void;
@@ -17,7 +17,7 @@ interface HandCoinsIconProps extends HTMLAttributes<HTMLDivElement> {
 
 const circleVariants: Variants = {
   normal: {
-    translateY: 0,
+    y: 0,
     opacity: 1,
     transition: {
       opacity: { duration: 0.2 },
@@ -29,7 +29,7 @@ const circleVariants: Variants = {
   },
   animate: {
     opacity: [0, 1],
-    translateY: [-20, 0],
+    y: [-20, 0],
     transition: {
       opacity: { duration: 0.2 },
       type: "spring",
@@ -42,7 +42,7 @@ const circleVariants: Variants = {
 
 const secondCircleVariants: Variants = {
   normal: {
-    translateY: 0,
+    y: 0,
     opacity: 1,
     transition: {
       opacity: { duration: 0.2 },
@@ -55,7 +55,7 @@ const secondCircleVariants: Variants = {
   },
   animate: {
     opacity: [0, 1],
-    translateY: [-20, 0],
+    y: [-20, 0],
     transition: {
       opacity: { duration: 0.2 },
       delay: 0.15,

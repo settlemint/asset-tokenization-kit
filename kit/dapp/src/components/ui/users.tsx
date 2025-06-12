@@ -1,10 +1,10 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import type { Variants } from "motion/react";
 import { motion, useAnimation } from "motion/react";
 import type { HTMLAttributes } from "react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
-import { cn } from "@/lib/utils";
 
 export interface UsersIconHandle {
   startAnimation: () => void;
@@ -17,7 +17,7 @@ interface UsersIconProps extends HTMLAttributes<HTMLDivElement> {
 
 const pathVariants: Variants = {
   normal: {
-    translateX: 0,
+    x: 0,
     transition: {
       type: "spring",
       stiffness: 200,
@@ -25,7 +25,7 @@ const pathVariants: Variants = {
     },
   },
   animate: {
-    translateX: [-6, 0],
+    x: [-6, 0],
     transition: {
       delay: 0.1,
       type: "spring",
