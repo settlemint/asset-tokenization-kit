@@ -40,7 +40,6 @@ abstract contract AbstractSMARTTest is Test {
 
     // --- Test Data ---
     uint256[] public requiredClaimTopics;
-    uint16[] public allowedCountries;
     SMARTComplianceModuleParamPair[] public modulePairs;
 
     // --- Private Keys ---
@@ -98,10 +97,6 @@ abstract contract AbstractSMARTTest is Test {
         requiredClaimTopics = new uint256[](2);
         requiredClaimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
         requiredClaimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
-
-        allowedCountries = new uint16[](2);
-        allowedCountries[0] = TestConstants.COUNTRY_CODE_BE;
-        allowedCountries[1] = TestConstants.COUNTRY_CODE_JP;
 
         // --- Setup Identities AFTER requiredClaimTopics is initialized ---
         _setupIdentities();
@@ -201,17 +196,17 @@ abstract contract AbstractSMARTTest is Test {
     function _grantAllRoles(address tokenAddress, address tokenIssuer_) internal {
         vm.startPrank(tokenIssuer_);
         // Grant all roles to the token issuer
-        IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).TOKEN_ADMIN_ROLE(), tokenIssuer_);
-        IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).COMPLIANCE_ADMIN_ROLE(), tokenIssuer_);
-        IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).VERIFICATION_ADMIN_ROLE(), tokenIssuer_);
-        IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).MINTER_ROLE(), tokenIssuer_);
-        IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).BURNER_ROLE(), tokenIssuer_);
-        IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).FREEZER_ROLE(), tokenIssuer_);
-        IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).FORCED_TRANSFER_ROLE(), tokenIssuer_);
-        IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).RECOVERY_ROLE(), tokenIssuer_);
-        IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).PAUSER_ROLE(), tokenIssuer_);
-        IAccessControl(accessManager).grantRole(SMARTToken(tokenAddress).CAP_MANAGEMENT_ROLE(), tokenIssuer_);
-        IAccessControl(accessManager).grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, tokenIssuer_);
+        accessManager.grantRole(SMARTToken(tokenAddress).TOKEN_ADMIN_ROLE(), tokenIssuer_);
+        accessManager.grantRole(SMARTToken(tokenAddress).COMPLIANCE_ADMIN_ROLE(), tokenIssuer_);
+        accessManager.grantRole(SMARTToken(tokenAddress).VERIFICATION_ADMIN_ROLE(), tokenIssuer_);
+        accessManager.grantRole(SMARTToken(tokenAddress).MINTER_ROLE(), tokenIssuer_);
+        accessManager.grantRole(SMARTToken(tokenAddress).BURNER_ROLE(), tokenIssuer_);
+        accessManager.grantRole(SMARTToken(tokenAddress).FREEZER_ROLE(), tokenIssuer_);
+        accessManager.grantRole(SMARTToken(tokenAddress).FORCED_TRANSFER_ROLE(), tokenIssuer_);
+        accessManager.grantRole(SMARTToken(tokenAddress).RECOVERY_ROLE(), tokenIssuer_);
+        accessManager.grantRole(SMARTToken(tokenAddress).PAUSER_ROLE(), tokenIssuer_);
+        accessManager.grantRole(SMARTToken(tokenAddress).CAP_MANAGEMENT_ROLE(), tokenIssuer_);
+        accessManager.grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, tokenIssuer_);
         vm.stopPrank();
     }
 
