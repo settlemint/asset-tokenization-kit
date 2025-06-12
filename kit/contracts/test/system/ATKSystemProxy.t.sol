@@ -149,6 +149,18 @@ contract MockATKSystem is IATKSystem {
     function createTokenFactory(string calldata, address, address) external pure returns (address) {
         return address(0); // Return zero instead of revert
     }
+
+    function createSystemAddon(string calldata, address, bytes calldata) external pure returns (address) {
+        return address(0); // Return zero instead of revert
+    }
+
+    function addonProxy(bytes32) external pure returns (address) {
+        return address(0); // Return zero instead of revert
+    }
+
+    function addonImplementation(bytes32) external pure returns (address) {
+        return address(0); // Return zero instead of revert
+    }
 }
 
 // Mock implementation for testing

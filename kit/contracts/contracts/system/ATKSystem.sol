@@ -27,8 +27,11 @@ import {
     SystemAlreadyBootstrapped,
     SystemNotBootstrapped,
     TopicSchemeRegistryImplementationNotSet,
-    IdentityVerificationModuleNotSet
+    IdentityVerificationModuleNotSet,
+    AddonTypeAlreadyRegistered,
+    InvalidAddonAddress
 } from "./ATKSystemErrors.sol";
+import { ATKSystemAddonProxy } from "./ATKSystemAddonProxy.sol";
 
 // Compliance modules
 import { SMARTIdentityVerificationModule } from "../smart/modules/SMARTIdentityVerificationModule.sol";
@@ -140,6 +143,10 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     // Token Factories by Type
     mapping(bytes32 typeHash => address tokenFactoryImplementationAddress) private tokenFactoryImplementationsByType;
     mapping(bytes32 typeHash => address tokenFactoryProxyAddress) private tokenFactoryProxiesByType;
+
+    // System Addons by Type
+    mapping(bytes32 typeHash => address addonImplementationAddress) private addonImplementationsByType;
+    mapping(bytes32 typeHash => address addonProxyAddress) private addonProxiesByType;
 
     // --- Internal Helper for Interface Check ---
     /// @dev Internal helper function to check if a given contract address (`implAddress`)
@@ -400,6 +407,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         address _tokenImplementation
     )
         external
+        override
         nonReentrant
         onlyRole(DEFAULT_ADMIN_ROLE)
         returns (address)
@@ -421,7 +429,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         bytes32 factoryTypeHash = keccak256(abi.encodePacked(_typeName));
 
         if (tokenFactoryImplementationsByType[factoryTypeHash] != address(0)) {
-            revert TokenFactoryTypeAlreadyRegistered(factoryTypeHash);
+            revert TokenFactoryTypeAlreadyRegistered(_typeName);
         }
 
         tokenFactoryImplementationsByType[factoryTypeHash] = _factoryImplementation;
@@ -447,6 +455,47 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         emit TokenFactoryCreated(_msgSender(), _typeName, _tokenFactoryProxy, _factoryImplementation, block.timestamp);
 
         return _tokenFactoryProxy;
+    }
+
+    /// @inheritdoc IATKSystem
+    function createSystemAddon(
+        string calldata typeName,
+        address implementation,
+        bytes calldata initializationData
+    )
+        external
+        override
+        nonReentrant
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (address proxyAddress)
+    {
+        // System must be bootstrapped before creating token factories, as factories need to interact with core proxies.
+        if (!_bootstrapped) {
+            revert SystemNotBootstrapped();
+        }
+
+        if (address(implementation) == address(0)) revert InvalidAddonAddress();
+
+        bytes32 addonTypeHash = keccak256(abi.encodePacked(typeName));
+
+        if (addonImplementationsByType[addonTypeHash] != address(0)) {
+            revert AddonTypeAlreadyRegistered(typeName);
+        }
+
+        addonImplementationsByType[addonTypeHash] = implementation;
+
+        address _addonProxy = address(new ATKSystemAddonProxy(address(this), addonTypeHash, initializationData));
+
+        addonProxiesByType[addonTypeHash] = _addonProxy;
+
+        // Make it possible that the addon can add addresses to the compliance allow list
+        IAccessControl(address(complianceProxy())).grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _addonProxy);
+
+        emit SystemAddonCreated(
+            _msgSender(), typeName, _addonProxy, implementation, initializationData, block.timestamp
+        );
+
+        return _addonProxy;
     }
 
     // --- Implementation Setter Functions ---
@@ -624,8 +673,13 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     }
 
     /// @inheritdoc IATKSystem
-    function tokenFactoryImplementation(bytes32 factoryTypeHash) public view returns (address) {
+    function tokenFactoryImplementation(bytes32 factoryTypeHash) public view override returns (address) {
         return tokenFactoryImplementationsByType[factoryTypeHash];
+    }
+
+    /// @inheritdoc IATKSystem
+    function addonImplementation(bytes32 addonTypeHash) public view override returns (address) {
+        return addonImplementationsByType[addonTypeHash];
     }
 
     // --- Proxy Getter Functions ---
@@ -673,6 +727,13 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// @return The address of the token factory proxy contract.
     function tokenFactoryProxy(bytes32 factoryTypeHash) public view override returns (address) {
         return tokenFactoryProxiesByType[factoryTypeHash];
+    }
+
+    /// @notice Gets the address of the system addon proxy contract for a given addon type hash.
+    /// @param addonTypeHash The hash of the addon type.
+    /// @return The address of the system addon proxy contract.
+    function addonProxy(bytes32 addonTypeHash) public view override returns (address) {
+        return addonProxiesByType[addonTypeHash];
     }
 
     // --- Identity Verification Module ---
