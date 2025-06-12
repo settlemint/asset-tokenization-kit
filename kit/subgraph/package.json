@@ -14,10 +14,11 @@
     "deploy:remote": "bash graph-remote-deploy.sh",
     "format": "prettier --write .",
     "subgraph:deploy": "settlemint scs subgraph deploy",
-    "lint": "eslint src/ --ext .ts"
+    "lint": "eslint src/ --ext .ts",
+    "test": "graph test EAS"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.97.0",
+    "@graphprotocol/graph-cli": "0.97.1",
     "@graphprotocol/graph-ts": "0.38.0",
     "@typescript-eslint/parser": "8.32.0",
     "contracts": "workspace:*",

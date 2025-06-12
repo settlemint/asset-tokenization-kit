@@ -14,6 +14,8 @@ restore_addresses() {
     XVP_SETTLEMENT_FACTORY_ADDRESS="0x5e771e1417100000000000000000000000000008"
     AIRDROP_FACTORY_ADDRESS="0x5e771e1417100000000000000000000000000009"
     VAULT_FACTORY_ADDRESS="0x5e771e141710000000000000000000000000000a"
+    EAS_ADDRESS="0x0000000000000000000000000000000000000000"
+    EAS_SCHEMA_REGISTRY_ADDRESS="0x0000000000000000000000000000000000000000"
 
     yq -i "(.dataSources[] | select(.name == \"BondFactory\").source.address) = \"$BOND_FACTORY_ADDRESS\"" subgraph.yaml
     yq -i "(.dataSources[] | select(.name == \"CryptoCurrencyFactory\").source.address) = \"$CRYPTO_CURRENCY_FACTORY_ADDRESS\"" subgraph.yaml
@@ -25,6 +27,8 @@ restore_addresses() {
     yq -i "(.dataSources[] | select(.name == \"XvPSettlementFactory\").source.address) = \"$XVP_SETTLEMENT_FACTORY_ADDRESS\"" subgraph.yaml
     yq -i "(.dataSources[] | select(.name == \"AirdropFactory\").source.address) = \"$AIRDROP_FACTORY_ADDRESS\"" subgraph.yaml
     yq -i "(.dataSources[] | select(.name == \"VaultFactory\").source.address) = \"$VAULT_FACTORY_ADDRESS\"" subgraph.yaml
+    yq -i "(.dataSources[] | select(.name == \"EAS\").source.address) = \"$EAS_ADDRESS\"" subgraph.yaml
+    yq -i "(.dataSources[] | select(.name == \"SchemaRegistry\").source.address) = \"$EAS_SCHEMA_REGISTRY_ADDRESS\"" subgraph.yaml
     echo "Original addresses restored."
 }
 
@@ -41,6 +45,9 @@ DEPOSIT_FACTORY_ADDRESS=$(jq -r '."DepositFactoryModule#DepositFactory"' ../cont
 XVP_SETTLEMENT_FACTORY_ADDRESS=$(jq -r '."XvPSettlementFactoryModule#XvPSettlementFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
 AIRDROP_FACTORY_ADDRESS=$(jq -r '."AirdropFactoryModule#AirdropFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
 VAULT_FACTORY_ADDRESS=$(jq -r '."VaultFactoryModule#VaultFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
+EAS_ADDRESS=$(jq -r '."EASModule#EAS"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
+EAS_SCHEMA_REGISTRY_ADDRESS=$(jq -r '."EASModule#EASSchemaRegistry"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
+
 # Update the addresses in subgraph.yaml
 yq -i "(.dataSources[] | select(.name == \"BondFactory\").source.address) = \"$BOND_FACTORY_ADDRESS\"" subgraph.yaml
 yq -i "(.dataSources[] | select(.name == \"CryptoCurrencyFactory\").source.address) = \"$CRYPTO_CURRENCY_FACTORY_ADDRESS\"" subgraph.yaml
@@ -52,6 +59,9 @@ yq -i "(.dataSources[] | select(.name == \"DepositFactory\").source.address) = \
 yq -i "(.dataSources[] | select(.name == \"XvPSettlementFactory\").source.address) = \"$XVP_SETTLEMENT_FACTORY_ADDRESS\"" subgraph.yaml
 yq -i "(.dataSources[] | select(.name == \"AirdropFactory\").source.address) = \"$AIRDROP_FACTORY_ADDRESS\"" subgraph.yaml
 yq -i "(.dataSources[] | select(.name == \"VaultFactory\").source.address) = \"$VAULT_FACTORY_ADDRESS\"" subgraph.yaml
+yq -i "(.dataSources[] | select(.name == \"EAS\").source.address) = \"$EAS_ADDRESS\"" subgraph.yaml
+yq -i "(.dataSources[] | select(.name == \"SchemaRegistry\").source.address) = \"$EAS_SCHEMA_REGISTRY_ADDRESS\"" subgraph.yaml
+
 # Print addresses for debugging
 echo "Addresses being used:"
 echo "BondFactory: $BOND_FACTORY_ADDRESS"
@@ -64,6 +74,8 @@ echo "DepositFactory: $DEPOSIT_FACTORY_ADDRESS"
 echo "XvPSettlementFactory: $XVP_SETTLEMENT_FACTORY_ADDRESS"
 echo "AirdropFactory: $AIRDROP_FACTORY_ADDRESS"
 echo "VaultFactory: $VAULT_FACTORY_ADDRESS"
+echo "EAS: $EAS_ADDRESS"
+echo "EASSchemaRegistry: $EAS_SCHEMA_REGISTRY_ADDRESS"
 echo "---"
 
 bun graph codegen
