@@ -2,3 +2,9 @@
 .prettierignore
 *.d.ts
 *.graphql
+.tsbuildinfo
+.next/
+.turbo/
+.env
+.env.local
+next-env.d.ts

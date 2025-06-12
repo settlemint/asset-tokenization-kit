@@ -14,7 +14,7 @@
 import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { logger, LogLevel } from "../../../tools/logging";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -38,7 +38,12 @@ interface ContractArtifact {
 // CONSTANTS
 // =============================================================================
 
-const log = logger;
+const logger = createLogger({
+  level:
+    (process.env.LOG_LEVEL as LogLevel) ||
+    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+    "info",
+});
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
 const ARTIFACTS_DIR = join(CONTRACTS_ROOT, "artifacts");
 const OUTPUT_DIR = join(CONTRACTS_ROOT, "scripts/hardhat/abi");
@@ -145,7 +150,7 @@ let options: ScriptOptions = {
 // =============================================================================
 
 function showUsage(): void {
-  console.log(`
+  logger.info(`
 Usage: bun run codegen-types.ts [OPTIONS] [ABI_NAMES...]
 
 Generate TypeScript typings from Hardhat contract ABIs.
@@ -216,12 +221,13 @@ function parseArguments(args: string[]): void {
         process.exit(0);
       case "-v":
       case "--verbose":
-        log.setLevel(LogLevel.DEBUG);
-        log.info("Verbose mode enabled");
+        // Note: SettleMint SDK logger level is set at creation time
+        logger.info("Verbose mode requested (set LOG_LEVEL=debug in env)");
         break;
       case "-q":
       case "--quiet":
-        log.setLevel(LogLevel.ERROR);
+        // Note: SettleMint SDK logger level is set at creation time
+        // Quiet mode can be achieved by setting LOG_LEVEL=error in env
         break;
       case "-l":
       case "--list":
@@ -229,11 +235,11 @@ function parseArguments(args: string[]): void {
         break;
       case "--skip-build":
         options.skipBuild = true;
-        log.info("Skip build mode enabled");
+        logger.info("Skip build mode enabled");
         break;
       default:
         if (arg?.startsWith("-")) {
-          log.error(`Unknown option: ${arg}`);
+          logger.error(`Unknown option: ${arg}`);
           showUsage();
           process.exit(1);
         } else {
@@ -250,11 +256,11 @@ function parseArguments(args: string[]): void {
 
 async function compileContracts(): Promise<boolean> {
   if (options.skipBuild) {
-    log.info("Skipping contract compilation");
+    logger.info("Skipping contract compilation");
     return true;
   }
 
-  log.info("Compiling contracts with Hardhat...");
+  logger.info("Compiling contracts with Hardhat...");
 
   try {
     // Set working directory for shell commands);
@@ -263,47 +269,47 @@ async function compileContracts(): Promise<boolean> {
     const result = await $`settlemint scs hardhat build`.quiet();
 
     if (result.exitCode === 0) {
-      log.success("Contracts compiled successfully");
+      logger.info("Contracts compiled successfully");
       return true;
     } else {
-      log.error("Failed to compile contracts");
+      logger.error("Failed to compile contracts");
       if (result.stderr) {
-        console.error(result.stderr.toString());
+        logger.error(result.stderr.toString());
       }
       return false;
     }
   } catch (err) {
     const shellError = err as $.ShellError;
-    log.info(shellError.stdout.toString());
-    log.error(shellError.stderr.toString());
-    log.error(`Failed to execute compilation`);
+    logger.info(shellError.stdout.toString());
+    logger.error(shellError.stderr.toString());
+    logger.error(`Failed to execute compilation`);
     return false;
   }
 }
 
 function listAbiNames(): void {
-  log.info("Available ABI names:");
+  logger.info("Available ABI names:");
 
-  console.log("\n📦 Onboarding:");
-  AVAILABLE_ABIS.onboarding.forEach((name) => console.log(`  • ${name}`));
+  logger.info("\nOnboarding:");
+  AVAILABLE_ABIS.onboarding.forEach((name) => logger.info(`  • ${name}`));
 
-  console.log("\n🔗 Token Infrastructure:");
+  logger.info("\nToken Infrastructure:");
   AVAILABLE_ABIS.tokenInfrastructure.forEach((name) =>
-    console.log(`  • ${name}`)
+    logger.info(`  • ${name}`)
   );
 
-  console.log("\n💰 Asset Tokens:");
-  AVAILABLE_ABIS.assetTokens.forEach((name) => console.log(`  • ${name}`));
+  logger.info("\nAsset Tokens:");
+  AVAILABLE_ABIS.assetTokens.forEach((name) => logger.info(`  • ${name}`));
 
-  console.log("\n🧠 Core ATK:");
-  AVAILABLE_ABIS.coreSmart.forEach((name) => console.log(`  • ${name}`));
+  logger.info("\nCore ATK:");
+  AVAILABLE_ABIS.coreSmart.forEach((name) => logger.info(`  • ${name}`));
 
-  console.log("\n🔒 Open Zeppelin:");
-  AVAILABLE_ABIS.openZeppelin.forEach((name) => console.log(`  • ${name}`));
+  logger.info("\nOpen Zeppelin:");
+  AVAILABLE_ABIS.openZeppelin.forEach((name) => logger.info(`  • ${name}`));
 
-  console.log("\n🔒 Compliance Modules:");
+  logger.info("\nCompliance Modules:");
   AVAILABLE_ABIS.complianceModules.forEach((name) =>
-    console.log(`  • ${name}`)
+    logger.info(`  • ${name}`)
   );
 }
 
@@ -313,7 +319,7 @@ function findArtifactFile(contractName: string): string | null {
     return artifactPath;
   }
 
-  log.warn(`Artifact not found for contract: ${contractName}`);
+  logger.warn(`Artifact not found for contract: ${contractName}`);
   return null;
 }
 
@@ -343,18 +349,18 @@ export type ${contractName}Abi = typeof ${contractName}Abi;
     const outputPath = join(OUTPUT_DIR, `${contractName}.ts`);
     writeFileSync(outputPath, abiContent);
 
-    log.success(`Generated ABI typing for ${contractName}`);
-    log.debug(`Output written to: ${outputPath}`);
+    logger.info(`Generated ABI typing for ${contractName}`);
+    logger.debug(`Output written to: ${outputPath}`);
 
     return true;
   } catch (error) {
-    log.error(`Failed to generate ABI typing for ${contractName}: ${error}`);
+    logger.error(`Failed to generate ABI typing for ${contractName}: ${error}`);
     return false;
   }
 }
 
 function generateAllAbiTypings(): boolean {
-  log.info(`Generating ABI typings for ${ALL_ABIS.length} contracts...`);
+  logger.info(`Generating ABI typings for ${ALL_ABIS.length} contracts...`);
 
   let successCount = 0;
   let failureCount = 0;
@@ -367,7 +373,7 @@ function generateAllAbiTypings(): boolean {
     }
   }
 
-  log.info(
+  logger.info(
     `Generation complete: ${successCount} successful, ${failureCount} failed`
   );
   return failureCount === 0;
@@ -380,12 +386,12 @@ function generateSpecificAbiTypings(abiNames: string[]): boolean {
     (name) => !validAbiNames.has(name as any)
   );
   if (invalidAbis.length > 0) {
-    log.error(`Invalid ABI names: ${invalidAbis.join(", ")}`);
-    log.info("Use --list to see available ABI names");
+    logger.error(`Invalid ABI names: ${invalidAbis.join(", ")}`);
+    logger.info("Use --list to see available ABI names");
     return false;
   }
 
-  log.info(
+  logger.info(
     `Generating ABI typings for ${abiNames.length} specific contracts...`
   );
 
@@ -400,7 +406,7 @@ function generateSpecificAbiTypings(abiNames: string[]): boolean {
     }
   }
 
-  log.info(
+  logger.info(
     `Generation complete: ${successCount} successful, ${failureCount} failed`
   );
   return failureCount === 0;
@@ -421,7 +427,7 @@ ${exports}
 
   const indexPath = join(OUTPUT_DIR, "index.ts");
   writeFileSync(indexPath, indexContent);
-  log.success("Generated index.ts file");
+  logger.info("Generated index.ts file");
 }
 
 // =============================================================================
@@ -429,8 +435,8 @@ ${exports}
 // =============================================================================
 
 async function main(): Promise<void> {
-  log.info("Starting ABI typings generation...");
-  log.debug(`Contracts root: ${CONTRACTS_ROOT}`);
+  logger.info("Starting ABI typings generation...");
+  logger.debug(`Contracts root: ${CONTRACTS_ROOT}`);
 
   // Parse command line arguments
   parseArguments(Bun.argv.slice(2));
@@ -457,7 +463,7 @@ async function main(): Promise<void> {
         }
 
         generateIndexFile();
-        log.success("All ABI typings generated successfully");
+        logger.info("All ABI typings generated successfully");
         break;
 
       case "generate-specific":
@@ -474,21 +480,17 @@ async function main(): Promise<void> {
         }
 
         generateIndexFile();
-        log.success("Specific ABI typings generated successfully");
+        logger.info("Specific ABI typings generated successfully");
         break;
 
       default:
-        log.error(`Unknown operation mode: ${options.operationMode}`);
+        logger.error(`Unknown operation mode: ${options.operationMode}`);
         exitCode = 1;
         break;
     }
   } catch (error) {
-    log.error(`Unexpected error: ${error}`);
+    logger.error(`Unexpected error: ${error}`);
     exitCode = 1;
-  }
-
-  if (exitCode === 0) {
-    log.info("ABI typings generation completed successfully");
   }
 
   process.exit(exitCode);

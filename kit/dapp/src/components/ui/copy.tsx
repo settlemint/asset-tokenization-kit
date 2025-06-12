@@ -1,10 +1,10 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import type { Transition } from "motion/react";
 import { motion, useAnimation } from "motion/react";
 import type { HTMLAttributes } from "react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
-import { cn } from "@/lib/utils";
 
 export interface CopyIconHandle {
   startAnimation: () => void;
@@ -83,8 +83,8 @@ const CopyIcon = forwardRef<CopyIconHandle, CopyIconProps>(
             rx="2"
             ry="2"
             variants={{
-              normal: { translateY: 0, translateX: 0 },
-              animate: { translateY: -3, translateX: -3 },
+              normal: { y: 0, x: 0 },
+              animate: { y: -3, x: -3 },
             }}
             animate={controls}
             transition={defaultTransition}
