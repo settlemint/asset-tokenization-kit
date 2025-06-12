@@ -4,13 +4,15 @@ pragma solidity ^0.8.28;
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
 import { SMARTYieldHelpers, MockERC20 } from "./../../utils/SMARTYieldHelpers.sol";
-import { ATKFixedYieldScheduleFactory } from "../../../contracts/system/yield/ATKFixedYieldScheduleFactory.sol";
+import { IATKFixedYieldScheduleFactory } from "../../../contracts/system/yield/IATKFixedYieldScheduleFactory.sol";
+import { ATKFixedYieldScheduleFactoryImplementation } from
+    "../../../contracts/system/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 
 /// @title Base test contract for SMART Yield functionality
 /// @notice Provides shared state and setup for yield tests
 abstract contract SMARTYieldBaseTest is AbstractSMARTTest, SMARTYieldHelpers {
-    ATKFixedYieldScheduleFactory internal yieldScheduleFactory;
+    IATKFixedYieldScheduleFactory internal yieldScheduleFactory;
     address internal yieldPaymentToken;
 
     function _setUpYieldTest() internal virtual {
@@ -24,10 +26,19 @@ abstract contract SMARTYieldBaseTest is AbstractSMARTTest, SMARTYieldHelpers {
 
         // Deploy yield schedule factory
         vm.startPrank(platformAdmin);
-        yieldScheduleFactory = new ATKFixedYieldScheduleFactory(address(systemUtils.system()), address(0));
+        ATKFixedYieldScheduleFactoryImplementation fixedYieldScheduleFactoryImpl =
+            new ATKFixedYieldScheduleFactoryImplementation(address(address(0)));
+
+        yieldScheduleFactory = IATKFixedYieldScheduleFactory(
+            systemUtils.system().createSystemAddon(
+                "fixed-yield-schedule-factory",
+                address(fixedYieldScheduleFactoryImpl),
+                abi.encode(address(systemUtils.system()))
+            )
+        );
         vm.label(address(yieldScheduleFactory), "Yield Schedule Factory");
 
-        IAccessControl(yieldScheduleFactory).grantRole(ATKSystemRoles.DEPLOYER_ROLE, tokenIssuer);
+        IAccessControl(address(yieldScheduleFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, tokenIssuer);
 
         // Grant bypass list manager role to yield schedule factory
         IAccessControl(address(systemUtils.compliance())).grantRole(

@@ -8,9 +8,16 @@ const ATKOnboardingFixedYieldScheduleFactoryModule = buildModule(
     const { system } = m.useModule(ATKOnboardingSystemModule);
     const { fixedYieldScheduleFactoryImplementation } = m.useModule(ATKModule);
 
-    const encodedInitializationData = m.encodeFunctionData("initialize", [
-      system.address,
-    ]);
+    const fixedYieldScheduleFactory = m.contractAt(
+      "ATKFixedYieldScheduleFactory",
+      fixedYieldScheduleFactoryImplementation
+    );
+
+    const encodedInitializationData = m.encodeFunctionCall(
+      fixedYieldScheduleFactory,
+      "initialize",
+      [system.address]
+    );
 
     const createFixedYieldScheduleFactoryAddon = m.call(
       system,
