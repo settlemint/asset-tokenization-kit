@@ -64,3 +64,33 @@ bun run artifacts
 # Restart the docker compose setup
 bun run dev:up
 ```
+
+### Testing the contracts / subgraph
+
+To test the contracts and subgraph locally using an Anvil node and a subgraph
+linked to this node you need to do the following.
+
+#### Setup
+
+```bash
+# Start the docker compose setup
+bun run dev:up
+```
+
+#### Test contracts
+
+```bash
+cd kit/contracts
+bun run deploy:local:test
+```
+
+### Test subgraph
+
+The subgraph can only be tested after you have executed the tests of the
+contracts. The subgraph tests will index the transactions created by the
+contracts ignition script.
+
+```bash
+cd kit/subgraph
+bun run test:integration:local
+```

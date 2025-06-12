@@ -1,6 +1,10 @@
 # --------------------------------------------------
-# SMART Indexer
+# SMART Indexer Schema
 # --------------------------------------------------
+
+# ==================================================
+# CORE ENTITIES
+# ==================================================
 
 type Account @entity(immutable: false) {
   id: Bytes!
@@ -29,6 +33,10 @@ type EventValue @entity(immutable: true) {
   value: String!
   entry: Event!
 }
+
+# ==================================================
+# ACCESS CONTROL & SYSTEM
+# ==================================================
 
 type AccessControl @entity(immutable: false) {
   id: Bytes!
@@ -66,6 +74,10 @@ type Compliance @entity(immutable: false) {
   id: Bytes!
   account: Account!
 }
+
+# ==================================================
+# IDENTITY MANAGEMENT
+# ==================================================
 
 type IdentityRegistryStorage @entity(immutable: false) {
   id: Bytes!
@@ -109,6 +121,35 @@ type TopicScheme @entity(immutable: false) {
   signature: String!
   enabled: Boolean!
 }
+
+type Identity @entity(immutable: false) {
+  id: Bytes!
+  registry: IdentityRegistry
+  claims: [IdentityClaim!]! @derivedFrom(field: "identity")
+  account: Account
+  token: Token
+}
+
+type IdentityClaim @entity(immutable: false) {
+  id: Bytes!
+  identity: Identity!
+  name: String!
+  issuer: Identity!
+  uri: String
+  revoked: Boolean!
+  values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
+}
+
+type IdentityClaimValue @entity(immutable: false) {
+  id: Bytes!
+  claim: IdentityClaim!
+  key: String!
+  value: String!
+}
+
+# ==================================================
+# TOKEN MANAGEMENT
+# ==================================================
 
 type TokenFactory @entity(immutable: false) {
   id: Bytes!
@@ -164,6 +205,10 @@ type TokenBalance @entity(immutable: false) {
   availableExact: BigInt!
 }
 
+# ==================================================
+# TOKEN EXTENSIONS
+# ==================================================
+
 type TokenPausable @entity(immutable: false) {
   id: Bytes!
   paused: Boolean!
@@ -191,6 +236,10 @@ type TokenRedeemable @entity(immutable: false) {
   redeemedAmountExact: BigInt!
 }
 
+# ==================================================
+# TOKEN TYPES
+# ==================================================
+
 type TokenBond @entity(immutable: false) {
   id: Bytes!
   faceValue: BigDecimal!
@@ -203,6 +252,10 @@ type TokenFund @entity(immutable: false) {
   id: Bytes!
   managementFeeBps: Int!
 }
+
+# ==================================================
+# YIELD SCHEDULES
+# ==================================================
 
 type TokenFixedYieldSchedule @entity(immutable: false) {
   id: Bytes!
@@ -239,58 +292,67 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
   totalYieldExact: BigInt!
 }
 
-type Identity @entity(immutable: false) {
+# ==================================================
+# SYSTEM & ACCOUNT STATISTICS
+# ==================================================
+
+type SystemStats @entity(immutable: false) {
   id: Bytes!
-  registry: IdentityRegistry
-  claims: [IdentityClaim!]! @derivedFrom(field: "identity")
-  account: Account
-  token: Token
+  system: System!
+  totalValueInBaseCurrency: BigDecimal!
 }
 
-type IdentityClaim @entity(immutable: false) {
+type AccountStats @entity(immutable: false) {
   id: Bytes!
-  identity: Identity!
-  name: String!
-  issuer: Identity!
-  uri: String
-  revoked: Boolean!
-  values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
+  account: Account!
+  totalValueInBaseCurrency: BigDecimal!
 }
 
-type IdentityClaimValue @entity(immutable: false) {
-  id: Bytes!
-  claim: IdentityClaim!
-  key: String!
-  value: String!
-}
+# ==================================================
+# TOKEN STATISTICS
+# ==================================================
 
+# Total count of tokens by type
 type TokenTypeStats @entity(immutable: false) {
   id: Bytes!
   type: String!
   count: Int!
+  # Percentage of total supply (eg bonds take 8% of the total supply accross all types)
+  percentageOfTotalSupply: BigDecimal!
 }
 
 type TokenStats @entity(immutable: false) {
   id: Bytes!
   token: Token!
-  # balances
+
+  # Balance metrics
   balancesCount: Int!
-  # supply
+
+  # Supply metrics
+  mintCount: Int!
   totalMinted: BigDecimal!
   totalMintedExact: BigInt!
+  burnCount: Int!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  # transfers
+
+  # Transfer metrics
   transfersCount: Int!
   transfersVolume: BigDecimal!
   transfersVolumeExact: BigInt!
-  # distribution
+
+  # Distribution metrics
   distribution: TokenDistributionStats!
-  # extensions
+
+  # Extension metrics
   collateral: TokenCollateralStats
 }
 
-# https://github.com/settlemint/asset-tokenization-kit/blob/v1/kit/subgraph/src/assets/calculations/collateral.ts
+# ==================================================
+# TOKEN EXTENSION STATISTICS
+# ==================================================
+
+# Collateral statistics for tokens
 type TokenCollateralStats @entity(immutable: false) {
   id: Bytes!
   collateral: BigDecimal!
@@ -301,22 +363,36 @@ type TokenCollateralStats @entity(immutable: false) {
   collateralUsedExact: BigInt!
 }
 
-# https://github.com/settlemint/asset-tokenization-kit/blob/v1/kit/subgraph/src/assets/calculations/concentration.ts
+# Token distribution statistics by concentration segments
 type TokenDistributionStats @entity(immutable: false) {
   id: Bytes!
+
+  # Percentage owned by top 5 holders
+  percentageOwnedByTop5Holders: BigDecimal!
+
+  # Concentration segments
   # 0-2%
+  balancesCountSegment1: Int!
   totalValueSegment1: BigDecimal!
   totalValueSegment1Exact: BigInt!
+
   # 2-10%
+  balancesCountSegment2: Int!
   totalValueSegment2: BigDecimal!
   totalValueSegment2Exact: BigInt!
+
   # 10-20%
+  balancesCountSegment3: Int!
   totalValueSegment3: BigDecimal!
   totalValueSegment3Exact: BigInt!
+
   # 20-40%
+  balancesCountSegment4: Int!
   totalValueSegment4: BigDecimal!
   totalValueSegment4Exact: BigInt!
+
   # 40-100%
+  balancesCountSegment5: Int!
   totalValueSegment5: BigDecimal!
   totalValueSegment5Exact: BigInt!
 }
