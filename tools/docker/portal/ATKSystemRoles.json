@@ -1,7 +1,7 @@
 [
   {
     "type": "function",
-    "name": "ALLOW_LIST_MANAGER_ROLE",
+    "name": "BYPASS_LIST_MANAGER_ROLE",
     "inputs": [],
     "outputs": [
       {
