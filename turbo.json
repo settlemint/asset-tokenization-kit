@@ -10,10 +10,10 @@
       "dependsOn": ["ci:base", "format"]
     },
     "ci:base": {
-      "dependsOn": ["compile", "codegen", "lint", "test", "build"]
+      "dependsOn": ["compile", "codegen", "lint", "test"]
     },
     "ci:gha": {
-      "dependsOn": ["publish", "ci:base", "test:integration"]
+      "dependsOn": ["publish", "ci:base", "test:integration", "build"]
     },
     "//#version": {
       "cache": false,

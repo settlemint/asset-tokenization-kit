@@ -30,7 +30,7 @@
       "dependsOn": ["codegen:gql-tada"]
     },
     "artifacts": {
-      "dependsOn": ["build"]
+      "dependsOn": ["build", "compile"]
     }
   }
 }
