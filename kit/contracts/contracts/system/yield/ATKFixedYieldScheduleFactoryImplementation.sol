@@ -72,10 +72,10 @@ contract ATKFixedYieldScheduleFactoryImplementation is
 
         systemAddress = systemAddress_;
 
+        address forwarder = this.trustedForwarder();
         // Deploy the initial implementation contract for SMARTFixedYieldSchedule.
         // The SMARTFixedYieldSchedule constructor now only calls _disableInitializers().
-        SMARTFixedYieldScheduleUpgradeable initialImplementation =
-            new SMARTFixedYieldScheduleUpgradeable(this.trustedForwarder());
+        SMARTFixedYieldScheduleUpgradeable initialImplementation = new SMARTFixedYieldScheduleUpgradeable(forwarder);
 
         atkFixedYieldScheduleImplementation = address(initialImplementation);
         emit ImplementationUpdated(address(0), atkFixedYieldScheduleImplementation);
