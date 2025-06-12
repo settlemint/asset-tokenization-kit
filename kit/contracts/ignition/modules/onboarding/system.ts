@@ -14,7 +14,7 @@ const ATKOnboardingSystemModule = buildModule(
       "systemAddress",
       { id: "systemAddress" }
     );
-    const system = m.contractAt("ATKSystem", systemAddress, {
+    const system = m.contractAt("IATKSystem", systemAddress, {
       id: "system",
     });
 
