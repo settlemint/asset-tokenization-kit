@@ -54,6 +54,7 @@ export const createDeposit = async () => {
 
   await setupAsset(deposit, {
     collateral: 100000n,
+    basePrice: 1,
   });
 
   // core

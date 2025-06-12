@@ -6,6 +6,7 @@ import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
 import { grantRoles } from "./actions/core/grant-roles";
+import { issueBasePriceClaim } from "./actions/core/issue-base-price-claim";
 import { pauseAsset } from "./actions/pausable/pause-asset";
 import { unpauseAsset } from "./actions/pausable/unpause-asset";
 
@@ -31,6 +32,8 @@ export const createPausedAsset = async () => {
   ]);
 
   await pausedStableCoin.waitUntilDeployed(transactionHash);
+
+  await issueBasePriceClaim(pausedStableCoin, 1);
 
   await grantRoles(pausedStableCoin, owner, [ATKRoles.emergencyRole]);
 

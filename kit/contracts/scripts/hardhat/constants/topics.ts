@@ -11,4 +11,5 @@ export enum ATKTopic {
   collateral = "collateral",
   isin = "isin",
   assetClassification = "assetClassification",
+  basePrice = "basePrice",
 }
