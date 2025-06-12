@@ -50,9 +50,9 @@ export function Distribution({ children }: PropsWithChildren) {
               .slice(1)
               .map((row, index) => ({
                 amount: Number(row[0]),
-                amountExact: parseUnits(String(row[0]), decimals).toString(),
+                amountExact: parseUnits(String(row[0]), decimals),
                 recipient: getAddress(row[1]),
-                index,
+                index: BigInt(index),
               }));
 
             if (distribution.length === 0) {

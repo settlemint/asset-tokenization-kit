@@ -16,7 +16,7 @@ export function PushAirdropDetails({
 }: {
   airdrop: PushAirdropRecipient;
   amount: string;
-  index: number;
+  index: bigint;
   price: Price;
 }) {
   const t = useTranslations("private.airdrops.details.fields");

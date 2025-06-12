@@ -4,6 +4,7 @@ import { getAirdropDistribution } from "@/lib/queries/airdrop/airdrop-distributi
 import { waitForIndexingTransactions } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParse, t } from "@/lib/utils/typebox";
+import { AirdropDistributionSchema } from "../../create/common/airdrop-distribution-schema";
 import {
   createMerkleTree,
   getMerkleProof,
@@ -45,16 +46,15 @@ export const claimStandardAirdropFunction = async ({
   // Create the merkle tree from all distributions
   const tree = createMerkleTree(distributions);
 
+  const leaf = safeParse(AirdropDistributionSchema, {
+    index,
+    amount,
+    amountExact,
+    recipient,
+  });
+
   // Get the merkle proof for this specific leaf
-  const merkleProof = getMerkleProof(
-    {
-      index,
-      amount: Number(amount),
-      amountExact: BigInt(amountExact),
-      recipient,
-    },
-    tree
-  );
+  const merkleProof = getMerkleProof(leaf, tree);
 
   const result = await portalClient.request(ClaimStandardAirdrop, {
     address: airdrop,

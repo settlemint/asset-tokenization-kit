@@ -1,6 +1,5 @@
 import {
   index,
-  integer,
   numeric,
   pgEnum,
   pgTable,
@@ -77,7 +76,7 @@ export const airdropDistribution = pgTable(
     recipient: text("recipient").notNull(),
     amount: text("amount").notNull(),
     amountExact: text("amount_exact").notNull(),
-    index: integer("index").notNull(),
+    index: text("index").notNull(),
   },
   (table) => [
     index("airdrop_distribution_recipient_idx").on(table.recipient),
@@ -88,7 +87,8 @@ export const airdropDistribution = pgTable(
     ),
     unique("airdrop_distribution_unique_constraint").on(
       table.airdropId,
-      table.recipient
+      table.recipient,
+      table.index
     ),
   ]
 );
