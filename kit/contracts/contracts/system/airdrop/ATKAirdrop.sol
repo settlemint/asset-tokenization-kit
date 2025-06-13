@@ -13,7 +13,8 @@ import {
     IndexAlreadyClaimed,
     InvalidTokenAddress,
     InvalidInputArrayLengths,
-    InvalidWithdrawalAddress
+    InvalidWithdrawalAddress,
+    InvalidMerkleRoot
 } from "./ATKAirdropErrors.sol";
 
 /// @title ATK Airdrop (Abstract)
@@ -37,19 +38,21 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
     using SafeERC20 for IERC20;
 
     // --- Storage Variables ---
+
     /// @notice The ERC20 token being distributed in this airdrop.
     /// @dev Set once at construction and immutable thereafter.
-    IERC20 public immutable token;
+    IERC20 public immutable _token;
 
     /// @notice The Merkle root for verifying airdrop claims.
     /// @dev Set once at construction and immutable thereafter. Used for Merkle proof verification.
-    bytes32 public immutable merkleRoot;
+    bytes32 public immutable _merkleRoot;
 
     /// @notice Bitmap tracking which claim indices have already been claimed.
     /// @dev Maps word index to 256-bit word, where each bit represents a claim index (claimed = 1).
-    mapping(uint256 => uint256) private claimedBitMap;
+    mapping(uint256 => uint256) private _claimedBitMap;
 
     // --- Events ---
+
     /// @notice Emitted when a user successfully claims their airdrop allocation.
     /// @param claimant The address that claimed the tokens.
     /// @param amount The amount of tokens claimed.
@@ -69,33 +72,54 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
     // --- Constructor ---
     /// @notice Initializes the base airdrop contract.
     /// @dev Sets the token, Merkle root, owner, and trusted forwarder for meta-transactions.
-    /// @param tokenAddress The address of the ERC20 token to be distributed.
-    /// @param root The Merkle root for verifying claims.
-    /// @param initialOwner The initial owner of the contract.
-    /// @param trustedForwarder The address of the trusted forwarder for ERC2771 meta-transactions.
+    /// @param token_ The address of the ERC20 token to be distributed.
+    /// @param root_ The Merkle root for verifying claims.
+    /// @param owner_ The initial owner of the contract.
+    /// @param trustedForwarder_ The address of the trusted forwarder for ERC2771 meta-transactions.
     constructor(
-        address tokenAddress,
-        bytes32 root,
-        address initialOwner,
-        address trustedForwarder
+        address token_,
+        bytes32 root_,
+        address owner_,
+        address trustedForwarder_
     )
-        Ownable(initialOwner)
-        ERC2771Context(trustedForwarder)
+        Ownable(owner_)
+        ERC2771Context(trustedForwarder_)
     {
-        if (tokenAddress == address(0)) revert InvalidTokenAddress();
-        token = IERC20(tokenAddress);
-        merkleRoot = root;
+        if (token_ == address(0)) revert InvalidTokenAddress();
+        if (root_ == bytes32(0)) revert InvalidMerkleRoot();
+
+        // Verify the token contract exists and implements IERC20 by attempting to call a view function
+        try IERC20(token_).totalSupply() returns (uint256) {
+            // Contract exists and implements IERC20
+        } catch {
+            revert InvalidTokenAddress();
+        }
+
+        _token = IERC20(token_);
+        _merkleRoot = root_;
     }
 
     // --- View Functions ---
 
+    /// @notice Returns the token being distributed in this airdrop.
+    /// @return The ERC20 token being distributed.
+    function token() external view returns (IERC20) {
+        return _token;
+    }
+
+    /// @notice Returns the Merkle root for verifying airdrop claims.
+    /// @return The Merkle root for verifying airdrop claims.
+    function merkleRoot() external view returns (bytes32) {
+        return _merkleRoot;
+    }
+
     /// @notice Checks if a claim has already been made for a specific index.
     /// @param index The index to check in the Merkle tree.
     /// @return claimed True if the index has been claimed, false otherwise.
-    function isClaimed(uint256 index) public view returns (bool claimed) {
+    function claimed(uint256 index) public view returns (bool) {
         uint256 wordIndex = index / 256;
         uint256 bitIndex = index % 256;
-        uint256 word = claimedBitMap[wordIndex];
+        uint256 word = _claimedBitMap[wordIndex];
         uint256 mask = 1 << bitIndex;
         return (word & mask) != 0;
     }
@@ -128,8 +152,8 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
     /// @param to The address to send the withdrawn tokens to.
     function withdrawTokens(address to) external onlyOwner {
         if (to == address(0)) revert InvalidWithdrawalAddress();
-        uint256 balance = token.balanceOf(address(this));
-        token.safeTransfer(to, balance);
+        uint256 balance = _token.balanceOf(address(this));
+        _token.safeTransfer(to, balance);
         emit TokensWithdrawn(to, balance);
     }
 
@@ -140,7 +164,7 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
     function _setClaimed(uint256 index) internal {
         uint256 wordIndex = index / 256;
         uint256 bitIndex = index % 256;
-        claimedBitMap[wordIndex] |= (1 << bitIndex);
+        _claimedBitMap[wordIndex] |= (1 << bitIndex);
     }
 
     /// @dev Verifies a Merkle proof for a claim.
@@ -162,7 +186,7 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
     {
         // Double hash the leaf node for domain separation and security
         bytes32 node = keccak256(abi.encode(keccak256(abi.encode(index, account, amount))));
-        return MerkleProof.verify(merkleProof, merkleRoot, node);
+        return MerkleProof.verify(merkleProof, _merkleRoot, node);
     }
 
     // --- Context Overrides (ERC2771) ---

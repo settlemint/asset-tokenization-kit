@@ -9,17 +9,17 @@ pragma solidity ^0.8.28;
 /// @notice Error indicating that a provided Merkle proof is invalid for the claim parameters.
 error InvalidMerkleProof();
 
+/// @notice Error indicating that a provided Merkle root is invalid.
+error InvalidMerkleRoot();
+
 /// @notice Error indicating that a claim is attempted for an index that has already been claimed.
 error IndexAlreadyClaimed();
 
-/// @notice Error indicating that a zero address was provided where a non-zero address is required.
+/// @notice Error indicating that an invalid token address was provided.
 error InvalidTokenAddress();
 
 /// @notice Error indicating that input array lengths do not match in batch operations.
 error InvalidInputArrayLengths();
 
-/// @notice Error indicating that a zero address was provided where a non-zero address is required.
-error InvalidRecipientAddress();
-
-/// @notice Error indicating that a zero address was provided where a non-zero address is required.
+/// @notice Error indicating that an invalid withdrawal address was provided.
 error InvalidWithdrawalAddress();
