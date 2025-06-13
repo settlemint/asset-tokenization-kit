@@ -80,8 +80,7 @@ bun run dev:up
 #### Test contracts
 
 ```bash
-cd kit/contracts
-bun run deploy:local:test
+bun run publish
 ```
 
 ### Test subgraph
@@ -91,6 +90,5 @@ contracts. The subgraph tests will index the transactions created by the
 contracts ignition script.
 
 ```bash
-cd kit/subgraph
-bun run test:integration:local
+bun run test:integration
 ```
