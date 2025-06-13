@@ -12,7 +12,6 @@ type Account @entity(immutable: false) {
   identity: Identity
   country: Int
   balances: [TokenBalance!]! @derivedFrom(field: "account")
-  stats: AccountStats!
 }
 
 type Event @entity(immutable: true) {
@@ -193,8 +192,6 @@ type Token @entity(immutable: false) {
   # Type specific
   bond: TokenBond
   fund: TokenFund
-  # Stats
-  stats: TokenStats!
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -210,7 +207,6 @@ type TokenBalance @entity(immutable: false) {
   frozenExact: BigInt!
   available: BigDecimal!
   availableExact: BigInt!
-  stats: TokenBalanceStats!
 }
 
 # ==================================================
@@ -286,7 +282,6 @@ type TokenFixedYieldSchedule @entity(immutable: false) {
   currentPeriod: TokenFixedYieldSchedulePeriod
   nextPeriod: TokenFixedYieldSchedulePeriod
   periods: [TokenFixedYieldSchedulePeriod!]! @derivedFrom(field: "schedule")
-  stats: TokenFixedYieldScheduleStats!
 }
 
 type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
@@ -303,17 +298,30 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
 }
 
 # ==================================================
-# SYSTEM & ACCOUNT STATISTICS
+# SYSTEM STATISTICS
 # ==================================================
 
-type SystemStats @entity(immutable: false) {
-  id: Bytes!
+type SystemStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
   system: System!
   totalValueInBaseCurrency: BigDecimal! # Value of all tokens in the system in base FIAT currency
 }
 
-type AccountStats @entity(immutable: false) {
-  id: Bytes!
+type SystemStats @aggregation(intervals: ["hour", "day"], source: "SystemStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+  system: System!
+  totalValueInBaseCurrency: BigDecimal! @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
+}
+
+# ==================================================
+# ACCOUNT STATISTICS
+# ==================================================
+
+type AccountStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
   account: Account!
 
   # Value of all tokens for the account in base FIAT currency
@@ -321,10 +329,40 @@ type AccountStats @entity(immutable: false) {
 
   # Balance metrics
   balancesCount: Int!
+}
 
-  # Event metrics
-  eventsCount: Int!
-  mostRecentEventAt: BigInt!
+type AccountStats @aggregation(intervals: ["hour", "day"], source: "AccountStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+  account: Account!
+
+  # Value metrics (in base FIAT currency)
+  totalValueInBaseCurrency: BigDecimal! @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
+
+  # Balance metrics
+  balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
+}
+
+# ==================================================
+# EVENT STATISTICS
+# ==================================================
+
+type EventStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+
+  account: Account!
+  eventName: String!
+}
+
+type EventStats @aggregation(intervals: ["hour", "day"], source: "EventStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+
+  account: Account!
+  eventName: String!
+
+  eventsCount: Int! @aggregate(fn: "count", cumulative: true)
 }
 
 # ==================================================
@@ -332,17 +370,18 @@ type AccountStats @entity(immutable: false) {
 # ==================================================
 
 # Total count of tokens by type
-type TokenTypeStats @entity(immutable: false) {
-  id: Bytes!
+type TokenTypeStats @entity(timeseries: true) {
+  id: Int8!
   type: String!
   count: Int!
   # Percentage of total supply (eg bonds take 8% of the total supply accross all types)
   percentageOfTotalSupply: BigDecimal!
 }
 
-type TokenStats @entity(immutable: false) {
-  id: Bytes!
+type TokenStatsData @entity(timeseries: true) {
+  id: Int8!
   token: Token!
+  type: String!
 
   # Value metrics (in base FIAT currency)
   valueInBaseCurrency: BigDecimal!
@@ -355,31 +394,47 @@ type TokenStats @entity(immutable: false) {
   eventsCount: Int!
 
   # Supply metrics
-  mintCount: Int!
-  totalMinted: BigDecimal!
-  totalMintedExact: BigInt!
-  burnCount: Int!
-  totalBurned: BigDecimal!
-  totalBurnedExact: BigInt!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  minted: BigDecimal!
+  mintedExact: BigInt!
+  burned: BigDecimal!
+  burnedExact: BigInt!
+  transfered: BigDecimal!
+  transferedExact: BigInt!
+}
 
-  # Transfer metrics
-  transfersCount: Int!
-  transfersVolume: BigDecimal!
-  transfersVolumeExact: BigInt!
+type TokenStats @aggregation(intervals: ["hour", "day"], source: "TokenStatsData") {
+  id: Int8!
+  token: Token!
+  type: String!
 
-  # Distribution metrics
-  distribution: TokenDistributionStats
+  # Value metrics (in base FIAT currency)
+  valueInBaseCurrency: BigDecimal! @aggregate(fn: "last", arg: "valueInBaseCurrency")
+  valueTotalSupplyInBaseCurrency: BigDecimal! @aggregate(fn: "last", arg: "valueTotalSupplyInBaseCurrency")
 
-  # Extension metrics
-  collateral: TokenCollateralStats
+  # Balance metrics
+  balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
 
-  # Type specific metrics
-  bond: TokenBondStats
+  # Event metrics
+  eventsCount: Int! @aggregate(fn: "last", arg: "eventsCount")
+
+  # Supply metrics
+  totalSupply: BigDecimal! @aggregate(fn: "last", arg: "totalSupply")
+  totalSupplyExact: BigInt! @aggregate(fn: "last", arg: "totalSupplyExact")
+  totalMinted: BigDecimal! @aggregate(fn: "sum", arg: "minted")
+  totalMintedExact: BigInt! @aggregate(fn: "sum", arg: "mintedExact")
+  totalBurned: BigDecimal! @aggregate(fn: "sum", arg: "burned")
+  totalBurnedExact: BigInt! @aggregate(fn: "sum", arg: "burnedExact")
+  totalTransfered: BigDecimal! @aggregate(fn: "sum", arg: "transfered")
+  totalTransferedExact: BigInt! @aggregate(fn: "sum", arg: "transferedExact")
 }
 
 # Collateral statistics for tokens
-type TokenCollateralStats @entity(immutable: false) {
-  id: Bytes!
+type TokenCollateralStatsData @entity(timeseries: true) {
+  id: Int8!
+  token: Token!
+
   collateral: BigDecimal!
   collateralExact: BigInt!
   collateralAvailable: BigDecimal!
@@ -388,18 +443,45 @@ type TokenCollateralStats @entity(immutable: false) {
   collateralUsedExact: BigInt!
 }
 
+type TokenCollateralStats @aggregation(intervals: ["hour", "day"], source: "TokenCollateralStatsData") {
+  id: Int8!
+  token: Token!
+
+  collateral: BigDecimal! @aggregate(fn: "last", arg: "collateral")
+  collateralExact: BigInt! @aggregate(fn: "last", arg: "collateralExact")
+  collateralAvailable: BigDecimal! @aggregate(fn: "last", arg: "collateralAvailable")
+  collateralAvailableExact: BigInt! @aggregate(fn: "last", arg: "collateralAvailableExact")
+  collateralUsed: BigDecimal! @aggregate(fn: "last", arg: "collateralUsed")
+  collateralUsedExact: BigInt! @aggregate(fn: "last", arg: "collateralUsedExact")
+}
+
 # Bond statistics for tokens
-type TokenBondStats @entity(immutable: false) {
-  id: Bytes!
+type TokenBondStatsData @entity(timeseries: true) {
+  id: Int8!
+  token: Token!
+
   underlyingAssetBalanceAvailable: BigDecimal!
   underlyingAssetBalanceAvailableExact: BigInt!
   underlyingAssetBalanceRequired: BigDecimal!
   underlyingAssetBalanceRequiredExact: BigInt!
 }
 
+type TokenBondStats @aggregation(intervals: ["hour", "day"], source: "TokenBondStatsData") {
+  id: Int8!
+  token: Token!
+
+  underlyingAssetBalanceAvailable: BigDecimal! @aggregate(fn: "last", arg: "underlyingAssetBalanceAvailable")
+  underlyingAssetBalanceAvailableExact: BigInt! @aggregate(fn: "last", arg: "underlyingAssetBalanceAvailableExact")
+  underlyingAssetBalanceRequired: BigDecimal! @aggregate(fn: "last", arg: "underlyingAssetBalanceRequired")
+  underlyingAssetBalanceRequiredExact: BigInt! @aggregate(fn: "last", arg: "underlyingAssetBalanceRequiredExact")
+}
+
 # Fixed yield schedule statistics for tokens
 type TokenFixedYieldScheduleStats @entity(immutable: false) {
-  id: Bytes!
+  id: Int8!
+  token: Token!
+  fixedYieldSchedule: TokenFixedYieldSchedule!
+
   coveredPercentage: BigDecimal!
 }
 
