@@ -192,6 +192,8 @@ type Token @entity(immutable: false) {
   # Type specific
   bond: TokenBond
   fund: TokenFund
+  # Price
+  basePriceClaim: IdentityClaim
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -408,10 +410,6 @@ type TokenStatsData @entity(timeseries: true) {
   token: Token!
   type: String!
 
-  # Value metrics (in base FIAT currency)
-  valueInBaseCurrency: BigDecimal!
-  valueTotalSupplyInBaseCurrency: BigDecimal!
-
   # Balance metrics
   balancesCount: Int!
 
@@ -432,10 +430,6 @@ type TokenStats @aggregation(intervals: ["hour", "day"], source: "TokenStatsData
 
   token: Token!
   type: String!
-
-  # Value metrics (in base FIAT currency)
-  valueInBaseCurrency: BigDecimal! @aggregate(fn: "last", arg: "valueInBaseCurrency")
-  valueTotalSupplyInBaseCurrency: BigDecimal! @aggregate(fn: "last", arg: "valueTotalSupplyInBaseCurrency")
 
   # Balance metrics
   balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
