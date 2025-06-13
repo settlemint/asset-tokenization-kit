@@ -21,6 +21,7 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IWithTypeIdentifier } from "../IWithTypeIdentifier.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
 /// @notice This contract provides functionality for registering tokens and checking their registration status,
@@ -32,7 +33,8 @@ abstract contract AbstractATKTokenFactoryImplementation is
     ERC2771ContextUpgradeable,
     ERC165Upgradeable,
     AccessControlUpgradeable,
-    IATKTokenFactory
+    IATKTokenFactory,
+    IWithTypeIdentifier
 {
     /// @notice Error when a predicted CREATE2 address is already marked as deployed by this factory.
 
@@ -342,7 +344,9 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
         address tokenIdentity = _deployTokenIdentity(deployedAddress, accessManager);
 
-        emit TokenAssetCreated(_msgSender(), deployedAddress, tokenIdentity, accessManager);
+        emit TokenAssetCreated(
+            _msgSender(), deployedAddress, tokenIdentity, ISMART(deployedAddress).registeredInterfaces(), accessManager
+        );
 
         return (deployedAddress, tokenIdentity);
     }

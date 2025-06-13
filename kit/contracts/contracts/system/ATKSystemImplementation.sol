@@ -61,6 +61,7 @@ import { ATKTrustedIssuersRegistryProxy } from "./trusted-issuers-registry/ATKTr
 import { ATKTopicSchemeRegistryProxy } from "./topic-scheme-registry/ATKTopicSchemeRegistryProxy.sol";
 import { ATKIdentityFactoryProxy } from "./identity-factory/ATKIdentityFactoryProxy.sol";
 import { ATKTokenFactoryProxy } from "./token-factory/ATKTokenFactoryProxy.sol";
+import { IWithTypeIdentifier } from "./IWithTypeIdentifier.sol";
 
 /// @title ATKSystem Contract
 /// @author SettleMint Tokenization Services
@@ -425,7 +426,7 @@ contract ATKSystemImplementation is
 
     /// @inheritdoc IATKSystem
     function createTokenFactory(
-        string calldata _typeName,
+        string calldata _name,
         address _factoryImplementation,
         address _tokenImplementation
     )
@@ -449,10 +450,10 @@ contract ATKSystemImplementation is
             revert InvalidTokenImplementationInterface();
         }
 
-        bytes32 factoryTypeHash = keccak256(abi.encodePacked(_typeName));
+        bytes32 factoryTypeHash = keccak256(abi.encodePacked(_name));
 
         if (tokenFactoryImplementationsByType[factoryTypeHash] != address(0)) {
-            revert TokenFactoryTypeAlreadyRegistered(_typeName);
+            revert TokenFactoryTypeAlreadyRegistered(_name);
         }
 
         tokenFactoryImplementationsByType[factoryTypeHash] = _factoryImplementation;
@@ -475,14 +476,21 @@ contract ATKSystemImplementation is
             ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
         );
 
-        emit TokenFactoryCreated(_msgSender(), _typeName, _tokenFactoryProxy, _factoryImplementation, block.timestamp);
+        emit TokenFactoryCreated(
+            _msgSender(),
+            _name,
+            IWithTypeIdentifier(_factoryImplementation).typeId(),
+            _tokenFactoryProxy,
+            _factoryImplementation,
+            block.timestamp
+        );
 
         return _tokenFactoryProxy;
     }
 
     /// @inheritdoc IATKSystem
     function createSystemAddon(
-        string calldata typeName,
+        string calldata name,
         address implementation,
         bytes calldata initializationData
     )
@@ -499,10 +507,10 @@ contract ATKSystemImplementation is
 
         if (address(implementation) == address(0)) revert InvalidAddonAddress();
 
-        bytes32 addonTypeHash = keccak256(abi.encodePacked(typeName));
+        bytes32 addonTypeHash = keccak256(abi.encodePacked(name));
 
         if (addonImplementationsByType[addonTypeHash] != address(0)) {
-            revert AddonTypeAlreadyRegistered(typeName);
+            revert AddonTypeAlreadyRegistered(name);
         }
 
         addonImplementationsByType[addonTypeHash] = implementation;
@@ -514,8 +522,17 @@ contract ATKSystemImplementation is
         // Make it possible that the addon can add addresses to the compliance allow list
         IAccessControl(address(complianceProxy())).grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _addonProxy);
 
+        // Get the typeId of the addon, if it implements IWithTypeIdentifier
+        (bool success, bytes memory data) =
+            _addonProxy.staticcall(abi.encodeWithSelector(bytes4(keccak256("typeId()"))));
+
+        bytes32 typeId = bytes32(0);
+        if (success && data.length == 32) {
+            typeId = abi.decode(data, (bytes32));
+        }
+
         emit SystemAddonCreated(
-            _msgSender(), typeName, _addonProxy, implementation, initializationData, block.timestamp
+            _msgSender(), name, typeId, _addonProxy, implementation, initializationData, block.timestamp
         );
 
         return _addonProxy;

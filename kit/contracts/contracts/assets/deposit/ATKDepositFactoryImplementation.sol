@@ -24,6 +24,8 @@ import { ATKDepositProxy } from "./ATKDepositProxy.sol";
 /// @title Implementation of the ATK Deposit Factory
 /// @notice This contract is responsible for creating instances of ATK Deposit tokens.
 contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKTokenFactoryImplementation {
+    bytes32 public constant override typeId = keccak256("ATKDepositFactory");
+
     /// @notice The collateral claim topic ID.
     uint256 internal _collateralClaimTopicId;
 

@@ -24,6 +24,8 @@ import { ATKStableCoinProxy } from "./ATKStableCoinProxy.sol";
 /// @title Implementation of the ATK Stable Coin Factory
 /// @notice This contract is responsible for creating instances of ATK Stable Coins.
 contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractATKTokenFactoryImplementation {
+    bytes32 public constant override typeId = keccak256("ATKStableCoinFactory");
+
     /// @notice The collateral claim topic ID.
     uint256 internal _collateralClaimTopicId;
 

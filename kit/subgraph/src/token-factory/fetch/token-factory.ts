@@ -11,7 +11,7 @@ export function fetchTokenFactory(address: Address): TokenFactory {
     tokenFactory = new TokenFactory(address);
     tokenFactory.accessControl = fetchAccessControl(address).id;
     tokenFactory.account = fetchAccount(address).id;
-    tokenFactory.type = "unknown";
+    tokenFactory.name = "unknown";
     tokenFactory.save();
     TokenFactoryTemplate.create(address);
   }

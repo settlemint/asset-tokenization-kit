@@ -1,3 +1,5 @@
+import { ByteArray, crypto } from "@graphprotocol/graph-ts";
+
 import {
   BondFactory as BondFactoryTemplate,
   FixedYieldScheduleFactory as FixedYieldScheduleFactoryTemplate,
@@ -27,9 +29,6 @@ import { fetchCompliance } from "./fetch/compliance";
 import { fetchSystem } from "./fetch/system";
 import { fetchSystemAddon } from "./fetch/system-addon";
 import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
-
-import { checkSupportsInterface } from "../erc165/erc165";
-import { InterfaceIds } from "../erc165/utils/interfaceids";
 
 export function handleBootstrapped(event: Bootstrapped): void {
   fetchEvent(event, "Bootstrapped");
@@ -92,21 +91,18 @@ export function handleTokenAccessManagerImplementationUpdated(
 export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
   fetchEvent(event, "TokenFactoryCreated");
   const tokenFactory = fetchTokenFactory(event.params.proxyAddress);
-  tokenFactory.type = event.params.typeName;
+  tokenFactory.name = event.params.name;
+  tokenFactory.typeId = event.params.typeId;
 
   if (
-    checkSupportsInterface(
-      event.params.implementationAddress,
-      InterfaceIds.IATKBondFactory
-    )
+    event.params.typeId ==
+    crypto.keccak256(ByteArray.fromUTF8("ATKBondFactory"))
   ) {
     BondFactoryTemplate.create(event.params.proxyAddress);
   }
   if (
-    checkSupportsInterface(
-      event.params.implementationAddress,
-      InterfaceIds.IATKFundFactory
-    )
+    event.params.typeId ==
+    crypto.keccak256(ByteArray.fromUTF8("ATKFundFactory"))
   ) {
     FundFactoryTemplate.create(event.params.proxyAddress);
   }
@@ -118,12 +114,11 @@ export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
 export function handleSystemAddonCreated(event: SystemAddonCreated): void {
   fetchEvent(event, "SystemAddonCreated");
   const systemAddon = fetchSystemAddon(event.params.proxyAddress);
-  systemAddon.type = event.params.typeName;
+  systemAddon.name = event.params.name;
+  systemAddon.typeId = event.params.typeId;
   if (
-    checkSupportsInterface(
-      event.params.proxyAddress,
-      InterfaceIds.IATKFixedYieldScheduleFactory
-    )
+    event.params.typeId ==
+    crypto.keccak256(ByteArray.fromUTF8("ATKFixedYieldScheduleFactory"))
   ) {
     FixedYieldScheduleFactoryTemplate.create(event.params.proxyAddress);
   }

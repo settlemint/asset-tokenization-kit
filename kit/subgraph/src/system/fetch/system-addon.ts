@@ -10,7 +10,7 @@ export function fetchSystemAddon(address: Address): SystemAddon {
     systemAddon = new SystemAddon(address);
     systemAddon.accessControl = fetchAccessControl(address).id;
     systemAddon.account = fetchAccount(address).id;
-    systemAddon.type = "unknown";
+    systemAddon.name = "unknown";
     systemAddon.save();
     // FixedYieldScheduleFactoryTemplate.create(address);
   }

@@ -18,6 +18,8 @@ import { ATKFundProxy } from "./ATKFundProxy.sol";
 /// @title Implementation of the ATK Fund Factory
 /// @notice This contract is responsible for creating instances of ATK Funds.
 contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactoryImplementation {
+    bytes32 public constant override typeId = keccak256("ATKFundFactory");
+
     /// @notice Constructor for the ATKFundFactoryImplementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions.
     constructor(address forwarder) AbstractATKTokenFactoryImplementation(forwarder) { }
