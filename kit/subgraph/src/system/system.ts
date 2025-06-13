@@ -1,5 +1,6 @@
 import {
   BondFactory as BondFactoryTemplate,
+  FixedYieldScheduleFactory as FixedYieldScheduleFactoryTemplate,
   FundFactory as FundFactoryTemplate,
 } from "../../generated/templates";
 import {
@@ -9,6 +10,7 @@ import {
   IdentityImplementationUpdated,
   IdentityRegistryImplementationUpdated,
   IdentityRegistryStorageImplementationUpdated,
+  SystemAddonCreated,
   TokenAccessManagerImplementationUpdated,
   TokenFactoryCreated,
   TokenIdentityImplementationUpdated,
@@ -23,6 +25,7 @@ import { fetchTokenFactory } from "../token-factory/fetch/token-factory";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
 import { fetchCompliance } from "./fetch/compliance";
 import { fetchSystem } from "./fetch/system";
+import { fetchSystemAddon } from "./fetch/system-addon";
 import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 
 export function handleBootstrapped(event: Bootstrapped): void {
@@ -87,6 +90,7 @@ export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
   fetchEvent(event, "TokenFactoryCreated");
   const tokenFactory = fetchTokenFactory(event.params.proxyAddress);
   tokenFactory.type = event.params.typeName;
+  // TODO can't we use ERC165 for this?
   if (event.params.typeName == "bond") {
     BondFactoryTemplate.create(event.params.proxyAddress);
   } else if (event.params.typeName == "fund") {
@@ -94,6 +98,18 @@ export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
   }
   tokenFactory.system = fetchSystem(event.address).id;
   tokenFactory.save();
+}
+
+export function handleSystemAddonCreated(event: SystemAddonCreated): void {
+  fetchEvent(event, "SystemAddonCreated");
+  const systemAddon = fetchSystemAddon(event.params.proxyAddress);
+  systemAddon.type = event.params.typeName;
+  // TODO can't we use ERC165 for this?
+  if (event.params.typeName == "fixed-yield-schedule-factory") {
+    FixedYieldScheduleFactoryTemplate.create(event.params.proxyAddress);
+  }
+  systemAddon.system = fetchSystem(event.address).id;
+  systemAddon.save();
 }
 
 export function handleTokenIdentityImplementationUpdated(

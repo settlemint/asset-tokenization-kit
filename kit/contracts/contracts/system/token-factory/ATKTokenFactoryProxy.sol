@@ -12,26 +12,16 @@ import {
     ETHTransfersNotAllowed,
     TokenFactoryImplementationNotSet
 } from "../ATKSystemErrors.sol";
+import { ATKSystemProxy } from "../ATKSystemProxy.sol";
 
 /// @title Proxy contract for ATK Token Factory.
 /// @notice This contract serves as a proxy to the ATK Token Factory implementation,
 /// allowing for upgradeability of the token factory logic.
 /// It retrieves the implementation address from the IATKSystem contract.
-contract ATKTokenFactoryProxy is Proxy {
-    // keccak256("org.atk.contracts.proxy.ATKTokenFactoryProxy.system")
-    bytes32 private constant _SYSTEM_SLOT = 0xe8884080cc51c5c292bf466c34183fc7b6d97a0de789d28a4fa18c91a467e8f3;
-
+contract ATKTokenFactoryProxy is ATKSystemProxy {
     // keccak256("org.atk.contracts.proxy.ATKTokenFactoryProxy.factoryTypeHash")
     bytes32 private constant _REGISTRY_TYPE_HASH_SLOT =
         0x17947bca0d2c81fdff72d848cf07e6794554f6987d19e262fbc8ebfe6c58aef4;
-
-    function _setSystem(IATKSystem system_) internal {
-        StorageSlot.getAddressSlot(_SYSTEM_SLOT).value = address(system_);
-    }
-
-    function _getSystem() internal view returns (IATKSystem) {
-        return IATKSystem(StorageSlot.getAddressSlot(_SYSTEM_SLOT).value);
-    }
 
     function _setFactoryTypeHash(bytes32 factoryTypeHash_) internal {
         StorageSlot.getBytes32Slot(_REGISTRY_TYPE_HASH_SLOT).value = factoryTypeHash_;
@@ -56,12 +46,8 @@ contract ATKTokenFactoryProxy is Proxy {
         address tokenImplementation,
         address identityVerificationModule
     )
-        payable
+        ATKSystemProxy(systemAddress)
     {
-        if (systemAddress == address(0) || !IERC165(systemAddress).supportsInterface(type(IATKSystem).interfaceId)) {
-            revert InvalidSystemAddress();
-        }
-        _setSystem(IATKSystem(systemAddress));
         _setFactoryTypeHash(factoryTypeHash);
 
         IATKSystem system_ = _getSystem();
@@ -76,28 +62,20 @@ contract ATKTokenFactoryProxy is Proxy {
             identityVerificationModule
         );
 
-        // Perform the delegatecall to initialize the identity logic in the context of this proxy's storage.
-        // slither-disable-next-line low-level-calls: Delegatecall is inherent and fundamental to proxy functionality.
-        (bool success, bytes memory returnData) = implementation.delegatecall(data);
-        if (!success) {
-            // Revert with the original error message from the implementation
-            assembly {
-                revert(add(returnData, 0x20), mload(returnData))
-            }
-        }
+        _performInitializationDelegatecall(implementation, data);
     }
 
-    /// @notice Returns the address of the current token factory implementation.
-    /// @dev This function is called by the EIP1967Proxy logic to determine where to delegate calls.
-    /// @return implementationAddress The address of the token factory implementation contract.
-    function _implementation() internal view override returns (address) {
-        IATKSystem system_ = _getSystem();
+    /// @dev Retrieves the implementation address for the Token Factory module from the `IATKSystem` contract.
+    /// @dev Reverts with `TokenFactoryImplementationNotSet` if the implementation address is zero.
+    /// @param system The `IATKSystem` contract instance.
+    /// @return The address of the `ATKTokenFactoryImplementation` contract.
+    /// @inheritdoc ATKSystemProxy
+    function _getSpecificImplementationAddress(IATKSystem system) internal view override returns (address) {
         bytes32 factoryTypeHash = _getFactoryTypeHash();
-        return system_.tokenFactoryImplementation(factoryTypeHash);
-    }
-
-    /// @notice Rejects Ether transfers.
-    receive() external payable {
-        revert ETHTransfersNotAllowed();
+        address implementation = system.tokenFactoryImplementation(factoryTypeHash);
+        if (implementation == address(0)) {
+            revert TokenFactoryImplementationNotSet(factoryTypeHash);
+        }
+        return implementation;
     }
 }

@@ -14,8 +14,9 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { ISMARTCapped } from "../../contracts/smart/extensions/capped/ISMARTCapped.sol";
-
-import { ATKFixedYieldScheduleFactory } from "../../contracts/system/yield/ATKFixedYieldScheduleFactory.sol";
+import { IATKFixedYieldScheduleFactory } from "../../contracts/system/yield/IATKFixedYieldScheduleFactory.sol";
+import { ATKFixedYieldScheduleFactoryImplementation } from
+    "../../contracts/system/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
 import { SMARTFixedYieldSchedule } from
     "../../contracts/smart/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
 import { ATKBondFactoryImplementation } from "../../contracts/assets/bond/ATKBondFactoryImplementation.sol";
@@ -25,6 +26,7 @@ import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract ATKBondTest is AbstractATKAssetTest {
     IATKBondFactory public bondFactory;
+    IATKFixedYieldScheduleFactory public fixedYieldScheduleFactory;
     IATKBond public bond;
     MockedERC20Token public underlyingAsset;
 
@@ -74,6 +76,8 @@ contract ATKBondTest is AbstractATKAssetTest {
         // Set up the Bond Factory
         ATKBondFactoryImplementation bondFactoryImpl = new ATKBondFactoryImplementation(address(forwarder));
         ATKBondImplementation bondImpl = new ATKBondImplementation(address(forwarder));
+        ATKFixedYieldScheduleFactoryImplementation fixedYieldScheduleFactoryImpl =
+            new ATKFixedYieldScheduleFactoryImplementation(address(forwarder));
 
         vm.startPrank(platformAdmin);
         bondFactory = IATKBondFactory(
@@ -82,6 +86,21 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         // Grant registrar role to owner so that he can create the bond
         IAccessControl(address(bondFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
+
+        fixedYieldScheduleFactory = IATKFixedYieldScheduleFactory(
+            systemUtils.system().createSystemAddon(
+                "fixed-yield-schedule-factory",
+                address(fixedYieldScheduleFactoryImpl),
+                abi.encodeWithSelector(
+                    ATKFixedYieldScheduleFactoryImplementation.initialize.selector,
+                    address(systemUtils.system()),
+                    platformAdmin
+                )
+            )
+        );
+        vm.label(address(fixedYieldScheduleFactory), "Yield Schedule Factory");
+        IAccessControl(address(fixedYieldScheduleFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
+
         vm.stopPrank();
 
         // Initialize identities
@@ -818,19 +837,6 @@ contract ATKBondTest is AbstractATKAssetTest {
         // First verify the bond has no yield schedule
         assertEq(bond.yieldSchedule(), address(0), "Bond should have zero yield schedule initially");
 
-        // Create a forwarder for the FixedYield (already in setup)
-        // Create a factory to create the FixedYield
-        ATKFixedYieldScheduleFactory factory =
-            new ATKFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
-        vm.label(address(factory), "Yield Schedule Factory");
-        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
-
-        vm.stopPrank();
-
-        vm.startPrank(platformAdmin);
-        IAccessControl(address(systemUtils.compliance())).grantRole(
-            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, address(factory)
-        );
         vm.stopPrank();
 
         // Setup yield schedule parameters
@@ -843,7 +849,8 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         // Create the yield schedule for our bond
         // Note: The factory automatically sets up the circular reference by calling bond.setYieldSchedule()
-        address yieldScheduleAddr = factory.create(ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval);
+        address yieldScheduleAddr =
+            fixedYieldScheduleFactory.create(ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval);
         vm.label(yieldScheduleAddr, "Yield Schedule");
 
         // We need to set the yield schedule manually
@@ -864,28 +871,14 @@ contract ATKBondTest is AbstractATKAssetTest {
     }
 
     function test_CannotMintIfYieldScheduleStarted() public {
-        // Setup: Deploy factory and create yield schedule linked to the bond
-        vm.startPrank(owner);
-        ATKFixedYieldScheduleFactory factory =
-            new ATKFixedYieldScheduleFactory(address(systemUtils.system()), address(forwarder));
-        vm.label(address(factory), "Yield Schedule Factory");
-
-        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
-        vm.stopPrank();
-
-        vm.startPrank(platformAdmin);
-        IAccessControl(address(systemUtils.compliance())).grantRole(
-            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, address(factory)
-        );
-        vm.stopPrank();
-
         uint256 startDate = block.timestamp + 1 days; // Schedule starts in the future
         uint256 endDate = startDate + 365 days;
         uint256 yieldRate = 500; // 5%
         uint256 interval = 30 days;
 
         vm.startPrank(owner);
-        address yieldScheduleAddr = factory.create(ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval);
+        address yieldScheduleAddr =
+            fixedYieldScheduleFactory.create(ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval);
         vm.label(yieldScheduleAddr, "Yield Schedule");
 
         // We need to set the yield schedule manually

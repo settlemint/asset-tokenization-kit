@@ -1,4 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import ATKOnboardingFixedYieldScheduleFactoryModule from "./onboarding/addons/fixed-yield-schedule-factory";
 import ATKOnboardingBondModule from "./onboarding/assets/bond";
 import ATKOnboardingDepositModule from "./onboarding/assets/deposit";
 import ATKOnboardingEquityModule from "./onboarding/assets/equity";
@@ -22,7 +23,6 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     trustedIssuersRegistry,
     topicSchemeRegistry,
     identityFactory,
-    fixedYieldScheduleFactory,
   } = m.useModule(ATKOnboardingSystemModule);
 
   // This can be setup based out of configuration in the onboarding wizard at some point
@@ -34,6 +34,10 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
 
   const { countryAllowListModule } = m.useModule(CountryAllowListModule);
   const { countryBlockListModule } = m.useModule(CountryBlockListModule);
+
+  const { fixedYieldScheduleFactory } = m.useModule(
+    ATKOnboardingFixedYieldScheduleFactoryModule
+  );
 
   return {
     system,
