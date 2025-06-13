@@ -37,3 +37,6 @@ error InvalidVestingDuration();
 
 /// @notice Error indicating that the cliff duration exceeds the vesting duration.
 error CliffExceedsVestingDuration();
+
+/// @notice Error indicating that the vesting airdrop implementation is not set or invalid.
+error VestingAirdropImplementationNotSet();

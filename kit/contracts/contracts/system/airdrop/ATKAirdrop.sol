@@ -2,12 +2,14 @@
 
 pragma solidity ^0.8.28;
 
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import { Context } from "@openzeppelin/contracts/utils/Context.sol";
+import { IATKAirdrop } from "./IATKAirdrop.sol";
 import { IATKClaimTracker } from "./IATKClaimTracker.sol";
 import {
     InvalidMerkleProof,
@@ -40,22 +42,22 @@ import {
 ///
 /// The contract is intended to be inherited by specific airdrop implementations (e.g., standard, vesting, push).
 /// It is not meant to be deployed directly.
-abstract contract ATKAirdrop is Ownable, ERC2771Context {
+abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, ERC2771ContextUpgradeable {
     using SafeERC20 for IERC20;
 
     // --- Storage Variables ---
 
     /// @notice The ERC20 token being distributed in this airdrop.
-    /// @dev Set once at construction and immutable thereafter.
-    IERC20 public immutable _token;
+    /// @dev Set once at initialization and immutable thereafter.
+    IERC20 internal _token;
 
     /// @notice The Merkle root for verifying airdrop claims.
-    /// @dev Set once at construction and immutable thereafter. Used for Merkle proof verification.
-    bytes32 public immutable _merkleRoot;
+    /// @dev Set once at initialization and immutable thereafter. Used for Merkle proof verification.
+    bytes32 internal _merkleRoot;
 
     /// @notice The claim tracker contract for managing claim states.
-    /// @dev Set once at construction and immutable thereafter. Handles claim tracking logic.
-    IATKClaimTracker public immutable _claimTracker;
+    /// @dev Set once at initialization and immutable thereafter. Handles claim tracking logic.
+    IATKClaimTracker internal _claimTracker;
 
     // --- Events ---
 
@@ -77,24 +79,26 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
     /// @param amounts The amounts claimed for each index.
     event BatchClaimed(address indexed claimant, uint256 totalAmount, uint256[] indices, uint256[] amounts);
 
-    // --- Constructor ---
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    /// @param forwarder_ The address of the forwarder contract.
+    constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
+        _disableInitializers();
+    }
 
     /// @notice Initializes the base airdrop contract.
     /// @dev Sets the token, Merkle root, claim tracker, owner, and trusted forwarder for meta-transactions.
     /// @param token_ The address of the ERC20 token to be distributed.
     /// @param root_ The Merkle root for verifying claims.
     /// @param owner_ The initial owner of the contract.
-    /// @param trustedForwarder_ The address of the trusted forwarder for ERC2771 meta-transactions.
     /// @param claimTracker_ The address of the claim tracker contract.
-    constructor(
+    function __ATKAirdrop_init(
         address token_,
         bytes32 root_,
         address owner_,
-        address trustedForwarder_,
         address claimTracker_
     )
-        Ownable(owner_)
-        ERC2771Context(trustedForwarder_)
+        internal
+        onlyInitializing
     {
         if (token_ == address(0)) revert InvalidTokenAddress();
         if (root_ == bytes32(0)) revert InvalidMerkleRoot();
@@ -114,6 +118,8 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
         } catch {
             revert InvalidClaimTrackerAddress();
         }
+
+        __Ownable_init(owner_);
 
         _token = IERC20(token_);
         _merkleRoot = root_;
@@ -316,17 +322,35 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
     // --- Context Overrides (ERC2771) ---
 
     /// @dev Returns the sender of the transaction, supporting ERC2771 meta-transactions.
-    function _msgSender() internal view virtual override(Context, ERC2771Context) returns (address sender) {
-        return ERC2771Context._msgSender();
+    function _msgSender()
+        internal
+        view
+        virtual
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (address sender)
+    {
+        return ERC2771ContextUpgradeable._msgSender();
     }
 
     /// @dev Returns the calldata of the transaction, supporting ERC2771 meta-transactions.
-    function _msgData() internal view virtual override(Context, ERC2771Context) returns (bytes calldata data) {
-        return ERC2771Context._msgData();
+    function _msgData()
+        internal
+        view
+        virtual
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata data)
+    {
+        return ERC2771ContextUpgradeable._msgData();
     }
 
     /// @dev Returns the context suffix length for ERC2771 compatibility.
-    function _contextSuffixLength() internal view virtual override(Context, ERC2771Context) returns (uint256) {
-        return ERC2771Context._contextSuffixLength();
+    function _contextSuffixLength()
+        internal
+        view
+        virtual
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
+        return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 }

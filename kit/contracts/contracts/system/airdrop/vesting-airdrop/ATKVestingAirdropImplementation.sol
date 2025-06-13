@@ -2,12 +2,14 @@
 
 pragma solidity ^0.8.28;
 
-import { ATKAirdrop } from "../ATKAirdrop.sol";
-import { ATKAmountClaimTracker } from "../ATKAmountClaimTracker.sol";
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { ATKAirdrop } from "../ATKAirdrop.sol";
+import { ATKAmountClaimTracker } from "../ATKAmountClaimTracker.sol";
 import { IATKVestingStrategy } from "./IATKVestingStrategy.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { IATKVestingAirdrop } from "./IATKVestingAirdrop.sol";
+import { IATKAirdrop } from "../IATKAirdrop.sol";
 import {
     InitializationDeadlinePassed,
     ClaimNotEligible,
@@ -31,25 +33,23 @@ import { InvalidInputArrayLengths, InvalidMerkleProof } from "../ATKAirdropError
 ///      The contract uses a pluggable vesting strategy pattern to allow different vesting calculations.
 ///      It extends ATKAirdrop for Merkle proof verification and meta-transaction support.
 ///      It deploys its own claim tracker for secure claim management.
-contract ATKVestingAirdropImplementation is ATKAirdrop, ReentrancyGuard {
+contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
     // --- Storage Variables ---
-
     /// @notice The vesting strategy contract that handles vesting calculations.
     /// @dev Can be updated by the owner to change vesting logic.
-    IATKVestingStrategy public _vestingStrategy;
+    IATKVestingStrategy private _vestingStrategy;
 
     /// @notice The timestamp after which no new vesting can be initialized.
-    /// @dev Set once at construction and immutable thereafter.
-    uint256 public immutable _initializationDeadline;
+    /// @dev Set once at initialization and immutable thereafter.
+    uint256 private _initializationDeadline;
 
     /// @notice Mapping to track initialization timestamps for each claim index.
     /// @dev Maps claim index to the timestamp when vesting was initialized for that index.
     mapping(uint256 => uint256) private _initializationTimestamp;
 
     // --- Events ---
-
     /// @notice Emitted when vesting is initialized for a specific claim index.
     /// @param account The address that initialized the vesting.
     /// @param totalAmount The total amount allocated for this index.
@@ -68,25 +68,30 @@ contract ATKVestingAirdropImplementation is ATKAirdrop, ReentrancyGuard {
     event VestingStrategyUpdated(address indexed oldStrategy, address indexed newStrategy);
 
     // --- Constructor ---
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    /// @param forwarder_ The address of the forwarder contract.
+    constructor(address forwarder_) ATKAirdrop(forwarder_) {
+        _disableInitializers();
+    }
 
+    // --- Initializer ---
     /// @notice Initializes the vesting airdrop contract with specified parameters.
     /// @dev Sets up the base airdrop functionality and vesting-specific parameters.
     ///      Deploys its own claim tracker for secure claim management.
     /// @param token_ The address of the ERC20 token to be distributed.
     /// @param root_ The Merkle root for verifying claims.
     /// @param owner_ The initial owner of the contract.
-    /// @param trustedForwarder_ The address of the trusted forwarder for ERC2771 meta-transactions.
     /// @param vestingStrategy_ The address of the vesting strategy contract for vesting calculations.
     /// @param initializationDeadline_ The timestamp after which no new vesting can be initialized.
-    constructor(
+    function initialize(
         address token_,
         bytes32 root_,
         address owner_,
-        address trustedForwarder_,
         address vestingStrategy_,
         uint256 initializationDeadline_
     )
-        ATKAirdrop(token_, root_, owner_, trustedForwarder_, address(new ATKAmountClaimTracker(address(this))))
+        external
+        initializer
     {
         if (vestingStrategy_ == address(0)) revert InvalidVestingStrategyAddress();
         if (initializationDeadline_ <= block.timestamp) revert InvalidInitializationDeadline();
@@ -98,12 +103,19 @@ contract ATKVestingAirdropImplementation is ATKAirdrop, ReentrancyGuard {
             revert InvalidVestingStrategy(vestingStrategy_);
         }
 
+        // Deploy claim tracker for this contract
+        address claimTracker_ = address(new ATKAmountClaimTracker(address(this)));
+
+        // Initialize base airdrop contract
+        __ATKAirdrop_init(token_, root_, owner_, claimTracker_);
+        __ReentrancyGuard_init();
+
+        // Set vesting-specific state
         _vestingStrategy = IATKVestingStrategy(vestingStrategy_);
         _initializationDeadline = initializationDeadline_;
     }
 
     // --- View Functions ---
-
     /// @notice Returns the current vesting strategy contract.
     /// @return The vesting strategy contract.
     function vestingStrategy() external view returns (IATKVestingStrategy) {
@@ -131,7 +143,6 @@ contract ATKVestingAirdropImplementation is ATKAirdrop, ReentrancyGuard {
     }
 
     // --- External Functions ---
-
     /// @notice Updates the vesting strategy contract.
     /// @dev Only the owner can update the vesting strategy. The new strategy must support multiple claims.
     /// @param newVestingStrategy_ The address of the new vesting strategy contract.
@@ -223,7 +234,15 @@ contract ATKVestingAirdropImplementation is ATKAirdrop, ReentrancyGuard {
     /// @param index The index of the claim in the Merkle tree.
     /// @param totalAmount The total amount allocated for this index.
     /// @param merkleProof The Merkle proof array (required by base contract but not used in verification here).
-    function claim(uint256 index, uint256 totalAmount, bytes32[] calldata merkleProof) external override nonReentrant {
+    function claim(
+        uint256 index,
+        uint256 totalAmount,
+        bytes32[] calldata merkleProof
+    )
+        external
+        override(ATKAirdrop, IATKAirdrop)
+        nonReentrant
+    {
         if (_initializationTimestamp[index] == 0) revert VestingNotInitialized();
 
         uint256 vestingStart = _initializationTimestamp[index];
@@ -236,7 +255,7 @@ contract ATKVestingAirdropImplementation is ATKAirdrop, ReentrancyGuard {
 
         if (claimableAmount == 0) revert ZeroAmountToTransfer();
 
-        // Process the claim using the internal helper
+        // Process the claim using the inherited helper
         _processClaim(index, sender, claimableAmount, totalAmount, merkleProof);
     }
 
@@ -251,7 +270,7 @@ contract ATKVestingAirdropImplementation is ATKAirdrop, ReentrancyGuard {
         bytes32[][] calldata merkleProofs
     )
         external
-        override
+        override(ATKAirdrop, IATKAirdrop)
         nonReentrant
     {
         if (indices.length != totalAmounts.length || totalAmounts.length != merkleProofs.length) {
