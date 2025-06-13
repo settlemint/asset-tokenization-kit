@@ -28,6 +28,9 @@ import { fetchSystem } from "./fetch/system";
 import { fetchSystemAddon } from "./fetch/system-addon";
 import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 
+import { InterfaceIds } from "../erc165/utils/interfaceids";
+import { checkSupportsInterface } from "../generic-erc165/generic-erc165";
+
 export function handleBootstrapped(event: Bootstrapped): void {
   fetchEvent(event, "Bootstrapped");
   const system = fetchSystem(event.address);
@@ -90,12 +93,24 @@ export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
   fetchEvent(event, "TokenFactoryCreated");
   const tokenFactory = fetchTokenFactory(event.params.proxyAddress);
   tokenFactory.type = event.params.typeName;
-  // TODO can't we use ERC165 for this?
-  if (event.params.typeName == "bond") {
+
+  if (
+    checkSupportsInterface(
+      event.params.implementationAddress,
+      InterfaceIds.IATKBondFactory
+    )
+  ) {
     BondFactoryTemplate.create(event.params.proxyAddress);
-  } else if (event.params.typeName == "fund") {
+  }
+  if (
+    checkSupportsInterface(
+      event.params.implementationAddress,
+      InterfaceIds.IATKFundFactory
+    )
+  ) {
     FundFactoryTemplate.create(event.params.proxyAddress);
   }
+
   tokenFactory.system = fetchSystem(event.address).id;
   tokenFactory.save();
 }
@@ -104,8 +119,12 @@ export function handleSystemAddonCreated(event: SystemAddonCreated): void {
   fetchEvent(event, "SystemAddonCreated");
   const systemAddon = fetchSystemAddon(event.params.proxyAddress);
   systemAddon.type = event.params.typeName;
-  // TODO can't we use ERC165 for this?
-  if (event.params.typeName == "fixed-yield-schedule-factory") {
+  if (
+    checkSupportsInterface(
+      event.params.proxyAddress,
+      InterfaceIds.IATKFixedYieldScheduleFactory
+    )
+  ) {
     FixedYieldScheduleFactoryTemplate.create(event.params.proxyAddress);
   }
   systemAddon.system = fetchSystem(event.address).id;

@@ -8,7 +8,7 @@ dataSources:
     name: SystemFactory
     network: settlemint
     source:
-      address: "0xDf951d2061b12922BFbF22cb17B17f3b39183570"
+      address: "0x4432a6DcfAEAB227673B43C30c6fEf40eaBD5D30"
       abi: SystemFactory
       startBlock: 0
     mapping:
@@ -68,6 +68,8 @@ templates:
           file: ../contracts/artifacts/contracts/system/IATKSystem.sol/IATKSystem.json
         - name: BondFactory
           file: ../contracts/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
+        - name: IERC165
+          file: ../contracts/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
             address,address,address,address,address,address)
@@ -524,3 +526,21 @@ templates:
         - event: ATKFixedYieldScheduleCreated(indexed address,indexed address)
           handler: handleATKFixedYieldScheduleCreated
       file: ./src/token-extensions/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
+  - kind: ethereum
+    name: GenericERC165
+    network: settlemint
+    source:
+      abi: IERC165
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: IERC165
+          file: ../contracts/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
+      callHandlers: []
+      eventHandlers: []
+      file: ./src/generic-erc165/generic-erc165.ts
