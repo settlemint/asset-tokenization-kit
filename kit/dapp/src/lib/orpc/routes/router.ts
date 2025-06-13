@@ -14,6 +14,18 @@ import { br } from "../procedures/base.router";
  */
 export const router = br.router({
   /**
+   * Account-related API procedures.
+  /**
+   * Account-related API procedures.
+   *
+   * Lazy-loaded module containing account-related operations such as
+   * managing user accounts and their associated resources.
+   *
+   * @see {@link ./account/account.router} - Account router implementation
+   */
+  account: br.account.lazy(() => import("./account/account.router")),
+
+  /**
    * System-related API procedures.
    *
    * Lazy-loaded module containing SMART system management operations.

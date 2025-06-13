@@ -14,6 +14,7 @@ import { passkey } from "better-auth/plugins/passkey";
 import { z } from "zod";
 import { env } from "../config/env";
 import { metadata } from "../config/metadata";
+import { ethereumAddress } from "../utils/zod/validators/ethereum-address";
 import {
   accessControl,
   adminRole,
@@ -70,10 +71,15 @@ export const auth = betterAuth({
       sendChangeEmailVerification,
     },
     additionalFields: {
-      wallet: {
+      walletAddress: {
         type: "string",
         required: false,
         unique: true,
+        input: false,
+        validator: {
+          input: ethereumAddress,
+          output: ethereumAddress,
+        },
       },
       currency: {
         type: "string",
@@ -127,6 +133,7 @@ export const auth = betterAuth({
   },
   hooks: {
     // TODO JAN: create a middleware that checks if we have a wallet and identity, if not redirect to the user onboarding section
+    // TODO JAN: only run these queries if initialOnboardingFinished is false
   },
   session: {
     session: {
@@ -163,6 +170,7 @@ export const auth = betterAuth({
       },
       permissions: {
         defaultPermissions: {
+          // TODO JAN: add the permissions for the api key synced to the rest of the permissions
           planets: ["read"],
         },
       },

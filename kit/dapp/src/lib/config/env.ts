@@ -65,7 +65,7 @@ export const env = createEnv({
      */
     SETTLEMINT_HASURA_ADMIN_SECRET: z
       .string()
-      .min(1, "SETTLEMINT_HASURA_ADMIN_SECRET is required"),
+      .nonempty("SETTLEMINT_HD_PRIVATE_KEY is required"),
 
     /**
      * Resend API key for email services.
@@ -90,6 +90,7 @@ export const env = createEnv({
      */
     SETTLEMINT_HD_PRIVATE_KEY: z
       .string()
+      .nonempty("SETTLEMINT_HD_PRIVATE_KEY is required")
       .regex(
         /^[a-z0-9-]+$/,
         "SETTLEMINT_HD_PRIVATE_KEY can only contain lowercase letters, digits, and hyphens with no spaces"

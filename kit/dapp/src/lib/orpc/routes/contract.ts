@@ -1,3 +1,4 @@
+import { accountContract } from "./account/account.contract";
 import { systemContract } from "./system/system.contract";
 import { transactionContract } from "./transaction/transaction.contract";
 
@@ -19,6 +20,7 @@ import { transactionContract } from "./transaction/transaction.contract";
  * the type definitions for all procedures within that namespace.
  */
 export const contract = {
+  account: accountContract,
   /**
    * System-related API contract.
    *
