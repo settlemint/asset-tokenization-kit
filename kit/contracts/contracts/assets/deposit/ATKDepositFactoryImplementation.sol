@@ -159,4 +159,15 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
 
         return predictedAddress;
     }
+
+    // --- ERC165 Overrides ---
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(AbstractATKTokenFactoryImplementation, IERC165)
+        returns (bool)
+    {
+        return interfaceId == type(IATKDepositFactory).interfaceId || super.supportsInterface(interfaceId);
+    }
 }

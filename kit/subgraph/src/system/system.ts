@@ -28,8 +28,8 @@ import { fetchSystem } from "./fetch/system";
 import { fetchSystemAddon } from "./fetch/system-addon";
 import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 
+import { checkSupportsInterface } from "../erc165/erc165";
 import { InterfaceIds } from "../erc165/utils/interfaceids";
-import { checkSupportsInterface } from "../generic-erc165/generic-erc165";
 
 export function handleBootstrapped(event: Bootstrapped): void {
   fetchEvent(event, "Bootstrapped");

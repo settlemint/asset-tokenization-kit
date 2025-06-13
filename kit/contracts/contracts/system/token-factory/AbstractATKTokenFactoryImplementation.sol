@@ -386,6 +386,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
     function supportsInterface(bytes4 interfaceId)
         public
         view
+        virtual
         override(AccessControlUpgradeable, ERC165Upgradeable, IERC165)
         returns (bool)
     {

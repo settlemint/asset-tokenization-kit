@@ -152,4 +152,15 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
         predictedAddress = _predictProxyAddress(proxyBytecode, constructorArgs, salt);
         return predictedAddress;
     }
+
+    // --- ERC165 Overrides ---
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(AbstractATKTokenFactoryImplementation, IERC165)
+        returns (bool)
+    {
+        return interfaceId == type(IATKStableCoinFactory).interfaceId || super.supportsInterface(interfaceId);
+    }
 }

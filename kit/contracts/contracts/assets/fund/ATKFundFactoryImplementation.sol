@@ -127,4 +127,15 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
         predictedAddress = _predictProxyAddress(proxyBytecode, constructorArgs, salt);
         return predictedAddress;
     }
+
+    // --- ERC165 Overrides ---
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(AbstractATKTokenFactoryImplementation, IERC165)
+        returns (bool)
+    {
+        return interfaceId == type(IATKFundFactory).interfaceId || super.supportsInterface(interfaceId);
+    }
 }
