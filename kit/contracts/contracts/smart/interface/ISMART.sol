@@ -310,4 +310,9 @@ interface ISMART is IERC20, IERC20Metadata, IERC165 {
     ///      and its current ABI-encoded parameters specific to this token.
     /// @return modulesList An array of `SMARTComplianceModuleParamPair` structs.
     function complianceModules() external view returns (SMARTComplianceModuleParamPair[] memory modulesList);
+
+    /// @notice Retrieves a list of all currently active interfaces for this token.
+    /// @dev This function returns an array of bytes4 interface IDs that the token supports.
+    /// @return interfacesList An array of bytes4 interface IDs.
+    function registeredInterfaces() external view returns (bytes4[] memory interfacesList);
 }

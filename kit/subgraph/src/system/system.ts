@@ -1,3 +1,5 @@
+import { ByteArray, crypto } from "@graphprotocol/graph-ts";
+
 import {
   BondFactory as BondFactoryTemplate,
   FixedYieldScheduleFactory as FixedYieldScheduleFactoryTemplate,
@@ -89,13 +91,22 @@ export function handleTokenAccessManagerImplementationUpdated(
 export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
   fetchEvent(event, "TokenFactoryCreated");
   const tokenFactory = fetchTokenFactory(event.params.proxyAddress);
-  tokenFactory.type = event.params.typeName;
-  // TODO can't we use ERC165 for this?
-  if (event.params.typeName == "bond") {
+  tokenFactory.name = event.params.name;
+  tokenFactory.typeId = event.params.typeId;
+
+  if (
+    event.params.typeId ==
+    crypto.keccak256(ByteArray.fromUTF8("ATKBondFactory"))
+  ) {
     BondFactoryTemplate.create(event.params.proxyAddress);
-  } else if (event.params.typeName == "fund") {
+  }
+  if (
+    event.params.typeId ==
+    crypto.keccak256(ByteArray.fromUTF8("ATKFundFactory"))
+  ) {
     FundFactoryTemplate.create(event.params.proxyAddress);
   }
+
   tokenFactory.system = fetchSystem(event.address).id;
   tokenFactory.save();
 }
@@ -103,9 +114,12 @@ export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
 export function handleSystemAddonCreated(event: SystemAddonCreated): void {
   fetchEvent(event, "SystemAddonCreated");
   const systemAddon = fetchSystemAddon(event.params.proxyAddress);
-  systemAddon.type = event.params.typeName;
-  // TODO can't we use ERC165 for this?
-  if (event.params.typeName == "fixed-yield-schedule-factory") {
+  systemAddon.name = event.params.name;
+  systemAddon.typeId = event.params.typeId;
+  if (
+    event.params.typeId ==
+    crypto.keccak256(ByteArray.fromUTF8("ATKFixedYieldScheduleFactory"))
+  ) {
     FixedYieldScheduleFactoryTemplate.create(event.params.proxyAddress);
   }
   systemAddon.system = fetchSystem(event.address).id;

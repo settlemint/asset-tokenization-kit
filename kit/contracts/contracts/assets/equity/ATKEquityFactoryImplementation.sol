@@ -17,6 +17,8 @@ import { ATKEquityProxy } from "./ATKEquityProxy.sol";
 /// @title Implementation of the ATK Equity Factory
 /// @notice This contract is responsible for creating instances of ATK Equity tokens.
 contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFactoryImplementation {
+    bytes32 public constant override typeId = keccak256("ATKEquityFactory");
+
     /// @notice Constructor for the ATKEquityFactoryImplementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions.
     constructor(address forwarder) AbstractATKTokenFactoryImplementation(forwarder) { }
@@ -117,5 +119,16 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
         bytes memory proxyBytecode = type(ATKEquityProxy).creationCode;
         predictedAddress = _predictProxyAddress(proxyBytecode, constructorArgs, salt);
         return predictedAddress;
+    }
+
+    // --- ERC165 Overrides ---
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(AbstractATKTokenFactoryImplementation, IERC165)
+        returns (bool)
+    {
+        return interfaceId == type(IATKEquityFactory).interfaceId || super.supportsInterface(interfaceId);
     }
 }

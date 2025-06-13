@@ -8,7 +8,7 @@ dataSources:
     name: SystemFactory
     network: settlemint
     source:
-      address: "0xDf951d2061b12922BFbF22cb17B17f3b39183570"
+      address: "0xCD8a1C3ba11CF5ECfa6267617243239504a98d90"
       abi: SystemFactory
       startBlock: 0
     mapping:
@@ -68,6 +68,8 @@ templates:
           file: ../contracts/artifacts/contracts/system/IATKSystem.sol/IATKSystem.json
         - name: BondFactory
           file: ../contracts/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
+        - name: IERC165
+          file: ../contracts/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
             address,address,address,address,address,address)
@@ -85,9 +87,11 @@ templates:
           handler: handleIdentityRegistryStorageImplementationUpdated
         - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
           handler: handleTokenAccessManagerImplementationUpdated
-        - event: TokenFactoryCreated(indexed address,string,address,address,uint256)
+        - event: TokenFactoryCreated(indexed
+            address,string,bytes32,address,address,uint256)
           handler: handleTokenFactoryCreated
-        - event: SystemAddonCreated(indexed address,string,address,address,bytes,uint256)
+        - event: SystemAddonCreated(indexed
+            address,string,bytes32,address,address,bytes,uint256)
           handler: handleSystemAddonCreated
         - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
           handler: handleTokenIdentityImplementationUpdated
@@ -116,7 +120,7 @@ templates:
           file: ../contracts/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
         - event: TokenAssetCreated(indexed address,indexed address,indexed
-            address,address)
+            address,bytes4[],address)
           handler: handleTokenAssetCreated
         - event: TokenImplementationUpdated(indexed address,indexed address,indexed
             address)
@@ -524,3 +528,21 @@ templates:
         - event: ATKFixedYieldScheduleCreated(indexed address,indexed address)
           handler: handleATKFixedYieldScheduleCreated
       file: ./src/token-extensions/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
+  - kind: ethereum
+    name: GenericERC165
+    network: settlemint
+    source:
+      abi: IERC165
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: IERC165
+          file: ../contracts/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
+      callHandlers: []
+      eventHandlers: []
+      file: ./src/erc165/erc165.ts

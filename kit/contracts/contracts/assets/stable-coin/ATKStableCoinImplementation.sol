@@ -83,6 +83,8 @@ contract ATKStableCoinImplementation is
         __SMARTPausable_init(true);
         __SMARTTokenAccessManaged_init(accessManager_);
         __SMARTCollateral_init(collateralTopicId_);
+
+        _registerInterface(type(IATKStableCoin).interfaceId);
     }
 
     // --- ISMART Implementation ---

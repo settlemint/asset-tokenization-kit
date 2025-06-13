@@ -102,6 +102,8 @@ contract ATKFundImplementation is
         __SMARTPausable_init(true);
         __SMARTTokenAccessManaged_init(accessManager_);
 
+        _registerInterface(type(IATKFund).interfaceId);
+
         _managementFeeBps = managementFeeBps_;
         _lastFeeCollection = uint40(block.timestamp);
     }
