@@ -102,6 +102,8 @@ contract ATKFundImplementation is
         __SMARTPausable_init(true);
         __SMARTTokenAccessManaged_init(accessManager_);
 
+        _registerInterface(type(IATKFund).interfaceId);
+
         _managementFeeBps = managementFeeBps_;
         _lastFeeCollection = uint40(block.timestamp);
     }
@@ -403,17 +405,6 @@ contract ATKFundImplementation is
     {
         // Delegation to SMARTUpgradeable -> _SMARTLogic ensures correct value is returned
         return super.decimals();
-    }
-
-    /// @inheritdoc SMARTUpgradeable
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(SMARTUpgradeable, IERC165)
-        returns (bool)
-    {
-        return interfaceId == type(IATKFund).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- Hooks (Overrides for Chaining) ---

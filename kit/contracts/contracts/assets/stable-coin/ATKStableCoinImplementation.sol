@@ -83,6 +83,8 @@ contract ATKStableCoinImplementation is
         __SMARTPausable_init(true);
         __SMARTTokenAccessManaged_init(accessManager_);
         __SMARTCollateral_init(collateralTopicId_);
+
+        _registerInterface(type(IATKStableCoin).interfaceId);
     }
 
     // --- ISMART Implementation ---
@@ -345,17 +347,6 @@ contract ATKStableCoinImplementation is
     {
         // Delegation to SMARTUpgradeable -> _SMARTLogic ensures correct value is returned
         return super.decimals();
-    }
-
-    /// @inheritdoc SMARTUpgradeable
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(SMARTUpgradeable, IERC165)
-        returns (bool)
-    {
-        return interfaceId == type(IATKStableCoin).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- Hooks (Overrides for Chaining) ---

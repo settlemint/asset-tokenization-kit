@@ -77,6 +77,8 @@ contract ATKEquityImplementation is
         __SMARTBurnable_init();
         __SMARTPausable_init(true);
         __SMARTTokenAccessManaged_init(accessManager_);
+
+        _registerInterface(type(IATKEquity).interfaceId);
     }
 
     // --- ISMART Implementation ---
@@ -339,17 +341,6 @@ contract ATKEquityImplementation is
     {
         // Delegation to SMARTUpgradeable -> _SMARTLogic ensures correct value is returned
         return super.decimals();
-    }
-
-    /// @inheritdoc SMARTUpgradeable
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(SMARTUpgradeable, IERC165)
-        returns (bool)
-    {
-        return interfaceId == type(IATKEquity).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- Hooks (Overrides for Chaining) ---

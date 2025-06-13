@@ -13,7 +13,7 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   const tokenFactory = fetchTokenFactory(event.address);
   const token = fetchToken(event.params.tokenAddress);
   token.tokenFactory = tokenFactory.id;
-  token.type = tokenFactory.type;
+  token.type = tokenFactory.name;
   token.identity = fetchIdentity(event.params.tokenIdentity).id;
   token.accessControl = fetchAccessControl(event.params.accessManager).id;
   token.save();

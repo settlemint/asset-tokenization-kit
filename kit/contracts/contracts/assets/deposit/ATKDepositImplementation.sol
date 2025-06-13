@@ -83,6 +83,8 @@ contract ATKDepositImplementation is
         __SMARTPausable_init(true);
         __SMARTTokenAccessManaged_init(accessManager_);
         __SMARTCollateral_init(collateralTopicId_);
+
+        _registerInterface(type(IATKDeposit).interfaceId);
     }
 
     // --- ISMART Implementation ---
@@ -345,17 +347,6 @@ contract ATKDepositImplementation is
     {
         // Delegation to SMARTUpgradeable -> _SMARTLogic ensures correct value is returned
         return super.decimals();
-    }
-
-    /// @inheritdoc SMARTUpgradeable
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(SMARTUpgradeable, IERC165)
-        returns (bool)
-    {
-        return interfaceId == type(IATKDeposit).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- Hooks (Overrides for Chaining) ---

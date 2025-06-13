@@ -139,6 +139,8 @@ contract ATKBondImplementation is
         __SMARTCapped_init(cap_);
         __ReentrancyGuard_init();
 
+        _registerInterface(type(IATKBond).interfaceId);
+
         _maturityDate = maturityDate_;
         _faceValue = faceValue_;
         _underlyingAsset = IERC20(underlyingAsset_);
@@ -494,17 +496,6 @@ contract ATKBondImplementation is
     {
         // Delegation to SMARTUpgradeable -> _SMARTLogic ensures correct value is returned
         return super.decimals();
-    }
-
-    /// @inheritdoc SMARTUpgradeable
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(SMARTUpgradeable, IERC165)
-        returns (bool)
-    {
-        return interfaceId == type(IATKBond).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- Internal Functions ---
