@@ -9,9 +9,8 @@ import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
  */
 export const AirdropFragment = theGraphGraphqlKit(`
   fragment AirdropFragment on Airdrop {
-    type: __typename
-    __typename
     id
+    type: __typename
     asset: token {
       id
       symbol
@@ -43,6 +42,16 @@ export const OffchainAirdropFragment = hasuraGraphql(`
   }
 `);
 
+export const AirdropClaimIndexFragment = theGraphGraphqlKit(`
+  fragment AirdropClaimIndexFragment on AirdropClaimIndex {
+    index
+    claimedAmount: amount
+    claimedAmountExact: amountExact
+    timestamp
+    initialized
+  }
+`);
+
 /**
  * GraphQL fragment for airdrop recipient data from The Graph
  *
@@ -50,12 +59,14 @@ export const OffchainAirdropFragment = hasuraGraphql(`
  * Contains recipient-specific claim data from on-chain events
  * Includes claim timestamps and total claimed amounts for status calculation
  */
-export const AirdropClaimFragment = theGraphGraphqlKit(`
-  fragment AirdropClaimFragment on AirdropRecipient {
+export const AirdropRecipientFragment = theGraphGraphqlKit(
+  `
+  fragment AirdropRecipientFragment on AirdropRecipient {
     id
     firstClaimedTimestamp
     lastClaimedTimestamp
     totalClaimedByRecipient
     totalClaimedByRecipientExact
   }
-`);
+`
+);

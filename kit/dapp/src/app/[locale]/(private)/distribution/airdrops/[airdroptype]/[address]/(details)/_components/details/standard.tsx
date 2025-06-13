@@ -1,6 +1,7 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { getUser } from "@/lib/auth/utils";
 import { getStandardAirdropDetail } from "@/lib/queries/standard-airdrop/standard-airdrop-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
@@ -15,8 +16,9 @@ interface StandardAirdropDetailsProps {
 export async function StandardAirdropDetails({
   address,
 }: StandardAirdropDetailsProps) {
+  const user = await getUser();
   const [airdrop, t, locale] = await Promise.all([
-    getStandardAirdropDetail({ address }),
+    getStandardAirdropDetail({ address, user }),
     getTranslations("private.airdrops.details.fields"),
     getLocale(),
   ]);

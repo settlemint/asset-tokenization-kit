@@ -1,15 +1,16 @@
 import { t, type StaticDecode } from "@/lib/utils/typebox";
+import type { Static } from "@sinclair/typebox";
 
 /**
  * Schema for vesting data associated with linear vesting strategy
  */
 export const VestingDataSchema = t.Object(
   {
-    id: t.EthereumAddress({
+    id: t.String({
       description: "The vesting data contract address",
     }),
     user: t.Object({
-      id: t.EthereumAddress({
+      id: t.String({
         description: "The user address",
       }),
     }),
@@ -19,17 +20,13 @@ export const VestingDataSchema = t.Object(
     vestingStart: t.Timestamp({
       description: "The start time of the vesting in seconds",
     }),
-    claimedAmountTrackedByStrategy: t.BigDecimal({
-      description: "The amount claimed by the strategy",
-    }),
-    totalAmountAggregated: t.BigDecimal({
-      description: "The total amount aggregated",
-    }),
   },
   {
     description: "Vesting data associated with the strategy",
   }
 );
+
+export type VestingData = Static<typeof VestingDataSchema>;
 
 /**
  * Schema for linear vesting strategy data
@@ -48,9 +45,6 @@ export const LinearVestingStrategySchema = t.Object(
     }),
     vestingDuration: t.StringifiedBigInt({
       description: "Total duration of the vesting period in seconds",
-    }),
-    vestingData: t.Array(VestingDataSchema, {
-      description: "The vesting data for the linear vesting strategy",
     }),
   },
   {

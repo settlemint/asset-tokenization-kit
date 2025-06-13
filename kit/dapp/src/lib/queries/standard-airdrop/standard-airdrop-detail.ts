@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { User } from "@/lib/auth/types";
 import { getAirdropDistribution } from "@/lib/queries/airdrop/airdrop-distribution";
 import {
   theGraphClientKit,
@@ -9,10 +10,11 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox/index";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
+import { getAssetsPricesInUserCurrency } from "../asset-price/asset-price";
 import { StandardAirdropFragment } from "./standard-airdrop-fragment";
 import {
-  OnChainStandardAirdropSchema,
+  StandardAirdropSchema,
   type StandardAirdrop,
 } from "./standard-airdrop-schema";
 
@@ -31,14 +33,6 @@ const StandardAirdropDetail = theGraphGraphqlKit(
 );
 
 /**
- * Props interface for standard airdrop detail components
- */
-export interface StandardAirdropDetailProps {
-  /** Ethereum address of the standard airdrop contract */
-  address: Address;
-}
-
-/**
  * Fetches and combines on-chain and off-chain standard airdrop data
  *
  * @param params - Object containing the standard airdrop address
@@ -51,40 +45,45 @@ export const getStandardAirdropDetail = withTracing(
   cache(
     async ({
       address,
-    }: StandardAirdropDetailProps): Promise<StandardAirdrop> => {
+      user,
+    }: {
+      address: Address;
+      user: User;
+    }): Promise<StandardAirdrop> => {
       "use cache";
       cacheTag("airdrop");
 
-      const [onChainStandardAirdrop, offChainStandardAirdrop] =
-        await Promise.all([
-          (async () => {
-            const response = await theGraphClientKit.request(
-              StandardAirdropDetail,
-              {
-                id: address,
-              },
-              {
-                "X-GraphQL-Operation-Name": "StandardAirdropDetail",
-                "X-GraphQL-Operation-Type": "query",
-              }
-            );
-            return safeParse(
-              OnChainStandardAirdropSchema,
-              response.standardAirdrop
-            );
-          })(),
-          (async () => {
-            const response = await getAirdropDistribution(address);
-            return {
-              distribution: response,
-            };
-          })(),
-        ]);
+      const [onChainStandardAirdrop, distribution] = await Promise.all([
+        (async () => {
+          const response = await theGraphClientKit.request(
+            StandardAirdropDetail,
+            {
+              id: address,
+            },
+            {
+              "X-GraphQL-Operation-Name": "StandardAirdropDetail",
+              "X-GraphQL-Operation-Type": "query",
+            }
+          );
+          return response.standardAirdrop;
+        })(),
+        getAirdropDistribution(address),
+      ]);
 
-      return {
+      if (!onChainStandardAirdrop) {
+        throw new Error(`Standard airdrop not found for address ${address}`);
+      }
+
+      const prices = await getAssetsPricesInUserCurrency(
+        [onChainStandardAirdrop.asset.id],
+        user.currency
+      );
+
+      return safeParse(StandardAirdropSchema, {
         ...onChainStandardAirdrop,
-        ...offChainStandardAirdrop,
-      };
+        distribution,
+        price: prices.get(getAddress(onChainStandardAirdrop.asset.id)),
+      });
     }
   )
 );

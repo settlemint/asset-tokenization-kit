@@ -16,6 +16,7 @@ interface FormSheetProps extends PropsWithChildren {
   description: string;
   triggerLabel?: string;
   asButton?: boolean;
+  asTableAction?: boolean;
   disabled?: boolean;
 }
 
@@ -27,6 +28,7 @@ export function FormSheet({
   description,
   triggerLabel,
   asButton,
+  asTableAction,
   disabled = false,
 }: FormSheetProps) {
   return (
@@ -37,6 +39,18 @@ export function FormSheet({
             variant="secondary"
             disabled={disabled}
             className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground"
+          >
+            {triggerLabel}
+          </Button>
+        </SheetTrigger>
+      )}
+      {triggerLabel && asTableAction && (
+        <SheetTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-muted"
+            disabled={disabled}
           >
             {triggerLabel}
           </Button>

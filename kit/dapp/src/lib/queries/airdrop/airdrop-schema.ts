@@ -75,17 +75,114 @@ export const AirdropListItem = OnChainAirdropSchema;
 
 export type AirdropListItem = StaticDecode<typeof AirdropListItem>;
 
-export const AirdropClaimStatusSchema = t.Union([
-  t.Literal("READY"),
-  t.Literal("PENDING"),
-  t.Literal("CLAIMED"),
-  t.Literal("EXPIRED"),
+export const AirdropStatusSchema = t.Union([
+  t.Literal("UPCOMING"),
+  t.Literal("ACTIVE"),
+  t.Literal("ENDED"),
 ]);
 
-export type AirdropClaimStatus = StaticDecode<typeof AirdropClaimStatusSchema>;
+export type AirdropStatus = StaticDecode<typeof AirdropStatusSchema>;
 
 export const OffChainAirdropSchema = t.Object({
   distribution: AirdropDistributionListSchema,
+  price: t.Price({
+    description: "The price of the asset in the airdrop",
+  }),
 });
 
-export type OffChainAirdrop = StaticDecode<typeof OffChainAirdropSchema>;
+/**
+ * TypeBox schema for airdrop recipient data from The Graph
+ *
+ * Provides validation for minimal claim information needed for status
+ */
+export const OnChainAirdropRecipientSchema = t.Object(
+  {
+    totalClaimedByRecipient: t.BigDecimal({
+      description: "Total amount claimed by the recipient",
+    }),
+    totalClaimedByRecipientExact: t.StringifiedBigInt({
+      description: "Total amount claimed by the recipient",
+    }),
+    firstClaimedTimestamp: t.Timestamp({
+      description:
+        "Timestamp when the recipient first claimed from this airdrop",
+    }),
+    lastClaimedTimestamp: t.Timestamp({
+      description:
+        "Timestamp when the recipient last claimed from this airdrop",
+    }),
+  },
+  {
+    description:
+      "Schema for minimal airdrop recipient claim data needed for status",
+  }
+);
+
+export type OnChainAirdropRecipient = StaticDecode<
+  typeof OnChainAirdropRecipientSchema
+>;
+
+export const OffChainAirdropRecipientSchema = t.Object({
+  totalAmountAllocated: t.BigDecimal({
+    description: "Total amount allocated to the recipient",
+  }),
+  totalAmountAllocatedExact: t.StringifiedBigInt({
+    description: "Total amount allocated to the recipient",
+  }),
+});
+
+export type OffChainAirdropRecipient = StaticDecode<
+  typeof OffChainAirdropRecipientSchema
+>;
+
+export const AirdropRecipientSchema = t.Object({
+  ...t.Partial(OnChainAirdropRecipientSchema).properties,
+  ...OffChainAirdropRecipientSchema.properties,
+});
+
+export type AirdropRecipient = StaticDecode<typeof AirdropRecipientSchema>;
+
+export const OnChainAirdropClaimIndexSchema = t.Object({
+  index: t.StringifiedBigInt({
+    description: "The index of the claim",
+  }),
+  claimedAmount: t.BigDecimal({
+    description: "The amount of the claim",
+  }),
+  claimedAmountExact: t.StringifiedBigInt({
+    description: "The exact amount of the claim",
+  }),
+  timestamp: t.Timestamp({
+    description: "The timestamp of the claim",
+  }),
+  initialized: t.Timestamp({
+    description: "When the claim is initialized",
+  }),
+});
+
+export type OnChainAirdropClaimIndex = StaticDecode<
+  typeof OnChainAirdropClaimIndexSchema
+>;
+
+export const OffChainAirdropClaimIndexSchema = t.Object({
+  index: t.StringifiedBigInt({
+    description: "The index of the claim",
+  }),
+  amount: t.BigDecimal({
+    description: "The amount of the claim",
+  }),
+  amountExact: t.StringifiedBigInt({
+    description: "The exact amount of the claim",
+  }),
+});
+
+export type OffChainAirdropClaimIndex = StaticDecode<
+  typeof OffChainAirdropClaimIndexSchema
+>;
+
+export const AirdropClaimIndexSchema = t.Object({
+  ...t.Partial(OnChainAirdropClaimIndexSchema).properties,
+  ...OffChainAirdropClaimIndexSchema.properties,
+});
+
+export type AirdropClaimIndex = StaticDecode<typeof AirdropClaimIndexSchema>;

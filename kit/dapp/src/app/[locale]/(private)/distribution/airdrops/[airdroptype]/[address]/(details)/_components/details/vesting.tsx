@@ -1,6 +1,7 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { getUser } from "@/lib/auth/utils";
 import { getVestingAirdropDetail } from "@/lib/queries/vesting-airdrop/vesting-airdrop-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
@@ -15,8 +16,9 @@ interface VestingAirdropDetailsProps {
 export async function VestingAirdropDetails({
   address,
 }: VestingAirdropDetailsProps) {
+  const user = await getUser();
   const [airdrop, t, locale] = await Promise.all([
-    getVestingAirdropDetail({ address }),
+    getVestingAirdropDetail({ address, user }),
     getTranslations("private.airdrops.details.fields"),
     getLocale(),
   ]);

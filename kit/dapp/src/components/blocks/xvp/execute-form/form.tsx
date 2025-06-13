@@ -16,6 +16,7 @@ interface ExecuteFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
+  asTableAction?: boolean;
 }
 
 export function ExecuteForm({
@@ -23,6 +24,7 @@ export function ExecuteForm({
   open,
   onOpenChange,
   asButton = false,
+  asTableAction = false,
 }: ExecuteFormProps) {
   const t = useTranslations("trade-management.xvp");
   const isExternallyControlled =
@@ -32,6 +34,7 @@ export function ExecuteForm({
   return (
     <FormSheet
       asButton={asButton}
+      asTableAction={asTableAction}
       open={isExternallyControlled ? open : internalOpenState}
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState

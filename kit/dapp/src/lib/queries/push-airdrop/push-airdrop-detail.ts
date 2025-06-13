@@ -1,6 +1,7 @@
 import "server-only";
 
-import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
+import type { User } from "@/lib/auth/types";
+import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
@@ -9,13 +10,11 @@ import { withTracing } from "@/lib/utils/tracing";
 import { safeParse } from "@/lib/utils/typebox";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
-import type { Address } from "viem";
+import { getAddress, type Address } from "viem";
 import { getAirdropDistribution } from "../airdrop/airdrop-distribution";
+import { getAssetBalanceDetail } from "../asset-balance/asset-balance-detail";
 import { PushAirdropFragment } from "./push-airdrop-fragment";
-import {
-  OnChainPushAirdropSchema,
-  type PushAirdrop,
-} from "./push-airdrop-schema";
+import { PushAirdropSchema, type PushAirdrop } from "./push-airdrop-schema";
 
 /**
  * GraphQL query to fetch on-chain push airdrop details from The Graph
@@ -32,14 +31,6 @@ const PushAirdropDetail = theGraphGraphqlKit(
 );
 
 /**
- * Props interface for push airdrop detail components
- */
-export interface PushAirdropDetailProps {
-  /** Ethereum address of the push airdrop contract */
-  address: Address;
-}
-
-/**
  * Fetches and combines on-chain and off-chain push airdrop data
  *
  * @param params - Object containing the push airdrop address
@@ -49,42 +40,54 @@ export interface PushAirdropDetailProps {
 export const getPushAirdropDetail = withTracing(
   "queries",
   "getPushAirdropDetail",
-  cache(async ({ address }: PushAirdropDetailProps): Promise<PushAirdrop> => {
-    "use cache";
-    cacheTag("airdrop");
+  cache(
+    async ({
+      address,
+      user,
+    }: {
+      address: Address;
+      user: User;
+    }): Promise<PushAirdrop> => {
+      "use cache";
+      cacheTag("airdrop");
 
-    const [onChainPushAirdrop, offChainPushAirdrop] = await Promise.all([
-      (async () => {
-        const response = await theGraphClientKit.request(
-          PushAirdropDetail,
-          {
-            id: address,
-          },
-          {
-            "X-GraphQL-Operation-Name": "PushAirdropDetail",
-            "X-GraphQL-Operation-Type": "query",
-          }
-        );
-        return safeParse(OnChainPushAirdropSchema, response.pushAirdrop);
-      })(),
-      (async () => {
-        const response = await getAirdropDistribution(address);
-        return {
-          distribution: response,
-        };
-      })(),
-    ]);
+      const [onChainPushAirdrop, distribution] = await Promise.all([
+        (async () => {
+          const response = await theGraphClientKit.request(
+            PushAirdropDetail,
+            {
+              id: address,
+            },
+            {
+              "X-GraphQL-Operation-Name": "PushAirdropDetail",
+              "X-GraphQL-Operation-Type": "query",
+            }
+          );
+          return response.pushAirdrop;
+        })(),
+        getAirdropDistribution(address),
+      ]);
 
-    // Get the token balance
-    const balance = await getAssetBalanceDetail({
-      address: onChainPushAirdrop.asset.id,
-      account: address,
-    });
+      if (!onChainPushAirdrop) {
+        throw new Error(`Push airdrop not found for address ${address}`);
+      }
 
-    return {
-      ...onChainPushAirdrop,
-      ...offChainPushAirdrop,
-      balance: balance?.value ?? 0,
-    };
-  })
+      const balance = await getAssetBalanceDetail({
+        address: getAddress(onChainPushAirdrop.asset.id),
+        account: address,
+      });
+
+      const prices = await getAssetsPricesInUserCurrency(
+        [onChainPushAirdrop.asset.id],
+        user.currency
+      );
+
+      return safeParse(PushAirdropSchema, {
+        ...onChainPushAirdrop,
+        distribution,
+        price: prices.get(getAddress(onChainPushAirdrop.asset.id)),
+        balance: balance?.value ?? 0,
+      });
+    }
+  )
 );

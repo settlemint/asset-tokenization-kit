@@ -1,4 +1,5 @@
 import { AirdropTabs } from "@/components/blocks/airdrop/airdrop-tabs";
+import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import { getPushAirdropDetail } from "@/lib/queries/push-airdrop/push-airdrop-detail";
 import { getStandardAirdropDetail } from "@/lib/queries/standard-airdrop/standard-airdrop-detail";
@@ -30,16 +31,17 @@ export default async function AirdropDetailLayout({
   params,
 }: LayoutProps) {
   const { address, locale, airdroptype } = await params;
+  const user = await getUser();
 
   // Get the appropriate airdrop details based on type
   const airdrop = await (async () => {
     switch (airdroptype) {
       case AirdropTypeEnum.standard:
-        return getStandardAirdropDetail({ address });
+        return getStandardAirdropDetail({ address, user });
       case AirdropTypeEnum.vesting:
-        return getVestingAirdropDetail({ address });
+        return getVestingAirdropDetail({ address, user });
       case AirdropTypeEnum.push:
-        return getPushAirdropDetail({ address });
+        return getPushAirdropDetail({ address, user });
       default:
         return null;
     }

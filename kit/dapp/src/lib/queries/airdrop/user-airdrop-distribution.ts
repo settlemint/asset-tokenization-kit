@@ -67,11 +67,7 @@ export const getUserAirdropDistribution = withTracing(
       return result.airdrop_distribution;
     });
 
-    if (distributions.length !== 1) {
-      throw new Error(`Expected 1 distribution, got ${distributions.length}`);
-    }
-
-    return distributions[0];
+    return distributions;
   }
 );
 

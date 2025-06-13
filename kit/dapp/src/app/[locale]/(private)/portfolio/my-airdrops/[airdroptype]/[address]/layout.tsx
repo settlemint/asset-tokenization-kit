@@ -1,17 +1,18 @@
-import { AirdropDetailPageHeader } from "@/app/[locale]/(private)/distribution/airdrops/[airdroptype]/[address]/_components/airdrop-detail-page-header";
 import { metadata } from "@/lib/config/metadata";
 import { shortHex } from "@/lib/utils/hex";
+import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 import type { Address } from "viem";
-import { MyAirdropManageDropdown } from "./_components/manage-dropdown/my-airdrop-manage-dropdown";
+import { MyAirdropDetailPageHeader } from "./_components/my-airdrop-detail-page-header";
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
     locale: Locale;
     address: Address;
+    airdroptype: AirdropType;
   }>;
 }
 
@@ -23,10 +24,7 @@ export default async function MyAirdropDetailLayout({
 
   return (
     <>
-      <AirdropDetailPageHeader
-        address={address}
-        manageDropdown={() => <MyAirdropManageDropdown address={address} />}
-      />
+      <MyAirdropDetailPageHeader address={address} />
       <div className="relative mt-4 space-y-2">{children}</div>
     </>
   );

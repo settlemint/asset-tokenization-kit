@@ -16,6 +16,7 @@ interface ApproveFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
+  asTableAction?: boolean;
 }
 
 export function ApproveForm({
@@ -23,6 +24,7 @@ export function ApproveForm({
   open,
   onOpenChange,
   asButton = false,
+  asTableAction = false,
 }: ApproveFormProps) {
   const t = useTranslations("trade-management.xvp");
   const isExternallyControlled =
@@ -32,6 +34,7 @@ export function ApproveForm({
   return (
     <FormSheet
       asButton={asButton}
+      asTableAction={asTableAction}
       open={isExternallyControlled ? open : internalOpenState}
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState

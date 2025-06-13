@@ -1,4 +1,5 @@
 import { DetailGridSkeleton } from "@/components/blocks/skeleton/detail-grid-skeleton";
+import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
 import type { Locale } from "next-intl";
 import { Suspense } from "react";
 import type { Address } from "viem";
@@ -8,16 +9,17 @@ interface PageProps {
   params: Promise<{
     locale: Locale;
     address: Address;
+    airdroptype: AirdropType;
   }>;
 }
 
 export default async function MyAirdropDetailsPage({ params }: PageProps) {
-  const { address } = await params;
+  const { address, airdroptype } = await params;
 
   return (
     <>
       <Suspense fallback={<DetailGridSkeleton />}>
-        <MyAirdropDetails address={address} />
+        <MyAirdropDetails address={address} type={airdroptype} />
       </Suspense>
     </>
   );

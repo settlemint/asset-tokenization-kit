@@ -1,62 +1,32 @@
-"use client";
 import { formatDate } from "@/lib/utils/date";
 import { isAfter, isBefore } from "date-fns";
-import { useTranslations } from "next-intl";
-import type { AirdropClaimStatus } from "../airdrop/airdrop-schema";
-import type { StandardAirdropRecipient } from "../airdrop/user-airdrop-schema";
 
-export type StandardAirdropStatusResult = {
-  status: AirdropClaimStatus;
-  message: string;
-};
-
-/**
- * Calculates the status and tooltip message for a standard airdrop (server-side version)
- *
- * Note: This is for server-side usage. For client components, use the functions in
- * the airdrop-claim-status component directly.
- *
- * @param recipient - The airdrop recipient data
- * @returns Object containing status and translated message
- */
-export function CalculateStandardAirdropStatus(
-  airdrop: StandardAirdropRecipient
-): StandardAirdropStatusResult {
-  const t = useTranslations("portfolio.my-airdrops.tooltip");
+export function calculateStandardAirdropStatus({
+  startTimeMicroSeconds,
+  endTimeMicroSeconds,
+}: {
+  startTimeMicroSeconds: string;
+  endTimeMicroSeconds: string;
+}) {
   const currentTime = new Date();
+  const startTimeSeconds = Number(
+    formatDate(startTimeMicroSeconds, {
+      type: "unixSeconds",
+    })
+  );
+  const endTimeSeconds = Number(
+    formatDate(endTimeMicroSeconds, {
+      type: "unixSeconds",
+    })
+  );
 
-  // Check if user has already claimed
-  const hasClaimed = !!airdrop.claimData?.firstClaimedTimestamp;
-
-  if (hasClaimed) {
-    return {
-      status: "CLAIMED",
-      message: t("standard-airdrop.claimed"),
-    };
+  if (isBefore(currentTime, startTimeSeconds * 1000)) {
+    return "UPCOMING" as const;
   }
 
-  if (isBefore(currentTime, airdrop.startTime)) {
-    return {
-      status: "PENDING",
-      message: t("standard-airdrop.pending-with-start", {
-        date: formatDate(airdrop.startTime),
-      }),
-    };
+  if (isAfter(currentTime, endTimeSeconds * 1000)) {
+    return "ENDED" as const;
   }
 
-  if (isAfter(currentTime, airdrop.endTime)) {
-    return {
-      status: "EXPIRED",
-      message: t("standard-airdrop.expired", {
-        date: formatDate(airdrop.endTime),
-      }),
-    };
-  }
-
-  return {
-    status: "READY",
-    message: t("standard-airdrop.ready-with-end", {
-      date: formatDate(airdrop.endTime),
-    }),
-  };
+  return "ACTIVE" as const;
 }

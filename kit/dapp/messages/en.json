@@ -1186,7 +1186,10 @@
         "type-header": "Type",
         "amount-header": "Amount",
         "status-header": "Status",
-        "actions-header": "Actions"
+        "actions-header": "Actions",
+        "amount-claimed-header": "Amount Claimed",
+        "amount-allocated-header": "Amount Allocated",
+        "claimed": "Claimed"
       },
       "empty-state": {
         "title": "No airdrops found",
@@ -1198,42 +1201,67 @@
         "push": "Push"
       },
       "claim-status": {
-        "READY": "Ready",
-        "PENDING": "Pending",
-        "CLAIMED": "Claimed",
-        "EXPIRED": "Expired",
-        "available": "Available",
-        "claimed": "Claimed"
+        "ACTIVE": "Active",
+        "UPCOMING": "Upcoming",
+        "ENDED": "Ended"
       },
       "status-info-label": "Additional information about this status",
       "tooltip": {
-        "standard-airdrop": {
-          "pending-with-start": "Claims will start on {date}",
-          "ready-with-end": "You can claim your assets now. Claiming period ends on {date}",
-          "expired": "The claiming period ended on {date}",
-          "claimed": "You have successfully claimed your airdrop assets"
+        "standard": {
+          "UPCOMING": "Claims are yet to start.",
+          "ACTIVE": "You can claim your assets now.",
+          "ENDED": "The claiming period has ended."
         },
-        "push-airdrop": {
-          "ready": "The admin will send your assets to you",
-          "pending": "Waiting for administrator to distribute your assets",
-          "expired": "Distribution is complete. {distributed} out of {cap} assets have been distributed",
-          "claimed": "Your assets have been distributed to your wallet"
+        "push": {
+          "UPCOMING": "The admin will send your assets to you",
+          "ACTIVE": "The admin will send your assets to you",
+          "ENDED": "All assets have been distributed"
         },
-        "vesting-airdrop": {
-          "ready-initialize": "You can initialize your vesting schedule now. Deadline: {date}",
-          "ready-claim": "You have assets available to claim from your vesting schedule",
-          "pending-not-initialized": "You need to initialize your vesting schedule first",
-          "pending-cliff": "Your assets are in the cliff period. Vesting will begin on {date}",
-          "pending-vesting": "No assets are ready for claiming yet. Check back later as assets vest",
-          "expired": "The initialization period ended on {date}. You can no longer claim this airdrop",
-          "claimed": "You have claimed all available assets from your vesting schedule"
+        "vesting": {
+          "UPCOMING": "You can initialize your vesting schedule now, before claims start.",
+          "ACTIVE": "You can claim any available assets from your vesting schedule now.",
+          "ENDED": "The vesting period for the airdrop has ended. Claim any remaining assets now."
         }
       },
       "details": {
         "page-title": "Airdrop {address}",
         "page-description": "View and manage your airdrop at {address}",
         "forms": {
-          "manage": "Manage"
+          "manage": "Manage",
+          "actions": {
+            "claim": "Claim"
+          },
+          "form": {
+            "title": {
+              "claim": "Claim airdrop assets"
+            },
+            "description": {
+              "claim": "Claim your allocated assets from this airdrop. Once claimed, the assets will be transferred directly to your wallet."
+            },
+            "trigger-label": {
+              "claim": "Claim"
+            }
+          },
+          "summary": {
+            "title": {
+              "claim": "Initiate Claim"
+            },
+            "description": {
+              "claim": "Review your claim details and confirm the transaction to receive your assets."
+            },
+            "asset-label": "Asset",
+            "card": {
+              "title": "Summary",
+              "description": "Review the assets and amounts that will be transferred to your wallet."
+            },
+            "claimable-amount-label": "Amount claimable",
+            "locked-amount-label": "Amount locked",
+            "allocated-amount-label": "Amount allocated",
+            "claimed-amount-label": "Amount claimed",
+            "airdrop-contract-label": "Airdrop Contract",
+            "amount-label": "Amount",
+            "value-label": "Value"
+          }
         }
       }
     },
@@ -1587,10 +1615,10 @@
           "title": "Vesting Schedule",
           "description": "Configure the vesting parameters for the airdrop.",
           "claim-period-end-label": "Claim Period End",
-          "claim-period-end-description": "Deadline for users to claim their airdrop. After this date, unclaimed tokens are forfeited.",
+          "claim-period-end-description": "A user must initialize their claim before this date to receive their assets.",
           "claim-period-end-error": "Claim period end must be at least 1 hour in the future",
           "cliff-duration-label": "Cliff Duration",
-          "cliff-duration-description": "Waiting period after claiming before any tokens can be withdrawn.",
+          "cliff-duration-description": "Waiting period after initializing the claim before any tokens can be withdrawn.",
           "vesting-duration-label": "Vesting Duration",
           "vesting-duration-description": "Total time for all tokens to unlock gradually after claiming.",
           "time-units": {
@@ -1711,7 +1739,8 @@
           "vesting-end-info": "The date and time when the vesting ends",
           "vesting-cliff-end": "Assets available from",
           "vesting-cliff-end-info": "You can claim your assets starting on this date. Before this date, the assets are locked and cannot be claimed."
-        }
+        },
+        "asset-allocation": "Asset Allocation"
       },
       "detail": {
         "forms": {

@@ -15,13 +15,15 @@ interface MatureFormProps {
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  asTableAction?: boolean;
 }
 
 export function MatureForm({
   address,
-  asButton = false,
   open,
   onOpenChange,
+  asButton = false,
+  asTableAction = false,
 }: MatureFormProps) {
   const t = useTranslations("private.assets.details.forms.form");
   const isExternallyControlled =
@@ -40,6 +42,7 @@ export function MatureForm({
       title={t("title.mature")}
       description={t("description.mature")}
       asButton={asButton}
+      asTableAction={asTableAction}
     >
       <Form
         action={mature}

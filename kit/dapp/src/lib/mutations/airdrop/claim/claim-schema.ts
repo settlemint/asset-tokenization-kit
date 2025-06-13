@@ -1,11 +1,14 @@
 import { t } from "@/lib/utils/typebox";
 import type { Static } from "@sinclair/typebox";
-import { AirdropDistributionSchema } from "../../create/common/airdrop-distribution-schema";
+import { AirdropDistributionSchema } from "../create/common/airdrop-distribution-schema";
 
-export const ClaimStandardAirdropSchema = t.Object(
+export const ClaimAirdropSchema = t.Object(
   {
     airdrop: t.EthereumAddress({
       description: "The address of the airdrop contract",
+    }),
+    airdropType: t.AirdropType({
+      description: "The type of airdrop (standard or vesting)",
     }),
     verificationCode: t.VerificationCode({
       description:
@@ -17,10 +20,9 @@ export const ClaimStandardAirdropSchema = t.Object(
     ...AirdropDistributionSchema.properties,
   },
   {
-    description: "Standard airdrop information",
+    description:
+      "Airdrop claim information for both standard and vesting types",
   }
 );
 
-export type ClaimStandardAirdropInput = Static<
-  typeof ClaimStandardAirdropSchema
->;
+export type ClaimAirdropInput = Static<typeof ClaimAirdropSchema>;
