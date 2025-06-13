@@ -1,6 +1,6 @@
 import { ActionsDropdownTable } from "@/components/blocks/actions-table/actions-dropdown-table";
 import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
-import type { Locale } from "next-intl";
+import type { Locale } from "@/i18n/locales";
 import { Suspense } from "react";
 import type { Address } from "viem";
 

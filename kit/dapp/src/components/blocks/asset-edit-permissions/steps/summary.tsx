@@ -6,7 +6,7 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { Role } from "@/lib/config/roles";
 import type { UpdateRolesInput } from "@/lib/mutations/asset/access-control/update-role/update-role-schema";
 import { Lock } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 import type { Address } from "viem";
 

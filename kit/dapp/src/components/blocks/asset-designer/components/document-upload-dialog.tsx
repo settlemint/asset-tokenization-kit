@@ -1,7 +1,7 @@
 "use client";
 
 import { MicaDocumentType } from "@/lib/db/regulations/schema-mica-regulation-configs";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { UploadedDocument } from "../types";

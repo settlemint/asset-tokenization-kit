@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import { CreateApiKeyForm } from "./create-api-key-form";
 

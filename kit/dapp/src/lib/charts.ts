@@ -14,7 +14,7 @@ import {
   subWeeks,
   subYears,
 } from "date-fns";
-import type { Locale } from "next-intl";
+import type { Locale } from "@/i18n/locales";
 import { getDateFromTimestamp, getDateLocale } from "./utils/date";
 
 export type TimeGranularity = "hour" | "day" | "month";

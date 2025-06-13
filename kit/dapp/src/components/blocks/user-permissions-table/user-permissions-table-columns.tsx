@@ -26,7 +26,7 @@ import {
   UsersIcon,
   WalletIcon,
 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { getAddress, type Address } from "viem";
 
 const columnHelper = createColumnHelper<UserAsset>();

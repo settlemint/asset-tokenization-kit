@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth/client";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CopySecretCodes } from "./copy-secret-codes";

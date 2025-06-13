@@ -4,7 +4,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 export function Basics() {

@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import { toast } from "sonner";
 

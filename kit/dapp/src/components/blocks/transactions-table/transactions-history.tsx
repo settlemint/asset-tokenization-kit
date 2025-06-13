@@ -2,7 +2,7 @@
 import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
 import type { ChartConfig } from "@/components/ui/chart";
 import { formatChartDate, type TimeSeriesOptions } from "@/lib/charts";
-import { useLocale, useTranslations, type Locale } from "next-intl";
+import { useLocale, useTranslations, type Locale } from "@/i18n/translation";
 
 export interface TransactionsHistoryProps {
   title?: string;

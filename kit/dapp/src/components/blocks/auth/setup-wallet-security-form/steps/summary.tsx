@@ -1,6 +1,6 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import type { SetupWalletSecurityInput } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 export function Summary() {
   const t = useTranslations("private.auth.wallet-security.form.summary");

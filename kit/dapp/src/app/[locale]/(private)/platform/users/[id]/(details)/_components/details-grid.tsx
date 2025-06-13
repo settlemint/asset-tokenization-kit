@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/date";
 import { capitalizeFirstLetter } from "better-auth/react";
 import { Ban, Check } from "lucide-react";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "@/i18n/translation";
 
 type DetailsGridProps = {
   id: string;

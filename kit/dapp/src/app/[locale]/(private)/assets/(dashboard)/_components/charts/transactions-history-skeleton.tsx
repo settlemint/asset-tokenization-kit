@@ -1,5 +1,5 @@
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function TransactionsHistorySkeleton() {
   const t = await getTranslations("admin.dashboard.charts");

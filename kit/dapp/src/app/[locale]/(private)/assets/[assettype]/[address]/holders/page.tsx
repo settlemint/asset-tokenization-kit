@@ -4,7 +4,7 @@ import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import type { Locale } from "next-intl";
+import type { Locale } from "@/i18n/locales";
 import type { Address } from "viem";
 import { columns } from "./_components/columns";
 

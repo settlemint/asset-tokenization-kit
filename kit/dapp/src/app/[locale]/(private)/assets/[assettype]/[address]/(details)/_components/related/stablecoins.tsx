@@ -6,7 +6,7 @@ import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { isSupplyManager } from "@/lib/utils/has-role";
 import { isBefore } from "date-fns";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { UpdateCollateralForm } from "../../../_components/manage-dropdown/update-collateral-form/form";
 import { MintForm } from "../../../_components/mint-form/form";

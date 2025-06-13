@@ -2,9 +2,9 @@ import { AssetDesignerButton } from "@/components/blocks/asset-designer/asset-de
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import { getUser } from "@/lib/auth/utils";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function CryptocurrenciesRelated() {
   const t = await getTranslations("private.assets.table.related");

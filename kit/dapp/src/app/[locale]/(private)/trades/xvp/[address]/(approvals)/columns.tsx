@@ -4,7 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { ApprovalStatus } from "@/components/blocks/xvp/approval-status";
 import type { XvPSettlementApproval } from "@/lib/queries/xvp/xvp-schema";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 const columnHelper = createColumnHelper<XvPSettlementApproval>();
 

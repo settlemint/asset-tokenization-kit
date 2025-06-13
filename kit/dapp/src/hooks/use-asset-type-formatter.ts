@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 export function useAssetTypeFormatter() {
   const t = useTranslations("admin.charts.asset-type-formatter");

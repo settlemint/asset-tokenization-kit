@@ -5,7 +5,7 @@ import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getRoleFromHash } from "@/lib/config/roles";
 import { formatDate } from "@/lib/utils/date";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import React from "react";
 import useSWR from "swr";
 import { isAddress, type Address, type Hash, type Hex } from "viem";

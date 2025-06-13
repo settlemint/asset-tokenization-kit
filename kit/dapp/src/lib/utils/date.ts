@@ -19,7 +19,7 @@ import {
   type DateTimeFormatOptions,
   type Locale,
   useFormatter,
-} from "next-intl";
+} from "@/i18n/translation";
 import type { TimeUnit } from "./typebox/time-units";
 
 const NUMERIC_REGEX = /^\d+$/;

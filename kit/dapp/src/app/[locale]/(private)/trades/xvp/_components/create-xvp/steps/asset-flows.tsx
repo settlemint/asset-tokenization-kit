@@ -10,7 +10,7 @@ import type {
   CreateXvpInput,
 } from "@/lib/mutations/xvp/create/create-schema";
 import { Plus, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import type { Address } from "viem";
 

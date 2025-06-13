@@ -4,7 +4,7 @@ import { unblockUser } from "@/lib/mutations/unblock-user/unblock-user-action";
 import { UnblockUserSchema } from "@/lib/mutations/unblock-user/unblock-user-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";
 import { User } from "./steps/user";

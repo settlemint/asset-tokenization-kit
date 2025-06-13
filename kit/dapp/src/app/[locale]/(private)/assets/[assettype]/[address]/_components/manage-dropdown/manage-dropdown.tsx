@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/navigation";
 import { getRoles, ROLES, type Role } from "@/lib/config/roles";
 import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
@@ -19,7 +19,7 @@ import type { getDepositDetail } from "@/lib/queries/deposit/deposit-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { isBefore } from "date-fns";
 import { ChevronDown } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import type { Address } from "viem";
 import {

@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { getAirdropColor } from "./airdrop-color";
 
 interface AirdropTypeIconProps {

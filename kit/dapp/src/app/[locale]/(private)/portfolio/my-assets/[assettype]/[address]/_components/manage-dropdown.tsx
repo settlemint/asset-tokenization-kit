@@ -11,7 +11,7 @@ import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-ba
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { ChevronDown } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import type { Address } from "viem";
 import { TransferForm } from "../../../../_components/transfer-form/form";

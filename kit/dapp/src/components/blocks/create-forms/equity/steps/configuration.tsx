@@ -4,7 +4,7 @@ import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 import { EquityCategoriesSelect } from "./_components/equity-categories";
 import { EquityClassesSelect } from "./_components/equity-classes";

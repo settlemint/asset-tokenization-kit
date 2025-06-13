@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 export type AdminRole = "admin" | "user-manager" | "issuer";
 

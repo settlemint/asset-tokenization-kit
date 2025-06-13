@@ -1,6 +1,6 @@
 import { getUserCount } from "@/lib/queries/user/user-count";
 import { startOfDay, subDays } from "date-fns";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import { Widget } from "./widget";
 
 export async function UsersWidget() {

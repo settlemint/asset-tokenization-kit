@@ -8,7 +8,7 @@ import { authClient } from "@/lib/auth/client";
 import type { CreateAirdropInput } from "@/lib/mutations/airdrop/create/common/schema";
 import { formatNumber } from "@/lib/utils/number";
 import { HandHeart, Settings } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { useEffect } from "react";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 import type { Address } from "viem";

@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useFeatureEnabled } from "@/lib/hooks/use-feature-enabled";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { User } from "better-auth";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AssetTypeSelection } from "./steps/asset-type-selection";
 import { assetForms, type AssetFormDefinition } from "./types";

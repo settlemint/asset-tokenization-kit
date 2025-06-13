@@ -13,10 +13,10 @@ import {
   SquareStackIcon,
   type SquareStackIconHandle,
 } from "@/components/ui/square-stack";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import { usePendingTransactions } from "@/lib/hooks/use-pending-transactions";
 import { formatDate } from "@/lib/utils/date";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { useEffect, useRef } from "react";
 import type { Address } from "viem";
 

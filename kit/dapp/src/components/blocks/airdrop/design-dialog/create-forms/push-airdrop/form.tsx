@@ -12,7 +12,7 @@ import {
 import { isAddressAvailable } from "@/lib/queries/airdrop-factory/push/is-address-available";
 import { getPredictedAddress } from "@/lib/queries/airdrop-factory/push/predict-address";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { UseFormReturn } from "react-hook-form";
 import { stepDefinition as summaryStep } from "../common/summary";
 import { stepDefinition as basicsStep } from "./steps/basics";

@@ -1,6 +1,6 @@
-import { Link } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import { ArrowRight } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function ChangelogLink() {
   const t = await getTranslations("homepage");

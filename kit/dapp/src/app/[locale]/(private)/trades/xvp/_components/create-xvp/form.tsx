@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { createXvp } from "@/lib/mutations/xvp/create/create-action";
 import { CreateXvpSchema } from "@/lib/mutations/xvp/create/create-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import { AssetFlows } from "./steps/asset-flows";
 import { Configuration } from "./steps/configuration";

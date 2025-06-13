@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
 import { Settings } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 import { SummaryRow } from "../../common/summary/summary";
 

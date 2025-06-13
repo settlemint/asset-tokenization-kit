@@ -8,7 +8,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import type { User } from "@/lib/auth/types";
 import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
 import type { Contact } from "@/lib/queries/contact/contact-schema";

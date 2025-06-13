@@ -1,8 +1,8 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { columns } from "./_components/columns";
 

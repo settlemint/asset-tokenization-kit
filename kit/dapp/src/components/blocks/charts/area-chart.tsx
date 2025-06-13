@@ -23,7 +23,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { ReactNode } from "react";
 import { defaultTickFormatter, defaultTickMargin } from "./tick-formatter";
 import type { ChartData } from "./types";

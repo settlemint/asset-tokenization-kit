@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { SecretCodesForm } from "./secret-codes-form";
 
 interface SecretCodesDialogProps {

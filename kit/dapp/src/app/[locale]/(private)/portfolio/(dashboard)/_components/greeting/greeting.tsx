@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { User } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useTheme } from "next-themes";
 import { MyAssetsCount } from "../header/my-assets-count";
 

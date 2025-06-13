@@ -9,7 +9,7 @@ import {
   getTimeUnitSeconds,
 } from "@/lib/utils/date";
 import { Clock, Timer } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 export function VestingAirdropConfigurationCard() {
   const form = useFormContext<CreateVestingAirdropInput>();

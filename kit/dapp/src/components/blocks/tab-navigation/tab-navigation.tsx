@@ -4,7 +4,7 @@ import {
   NavigationMenu,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import { usePathname } from "@/i18n/routing";
+import { usePathname } from "@/i18n/navigation";
 import { TabItem, type TabItemProps } from "./tab-item";
 
 interface TabNavigationProps {

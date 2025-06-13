@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { WalletSecurityMethodOptions } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 
 export type WalletSecurityMethod =

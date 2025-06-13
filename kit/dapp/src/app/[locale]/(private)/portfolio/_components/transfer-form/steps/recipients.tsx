@@ -3,7 +3,7 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import { authClient } from "@/lib/auth/client";
 import type { TransferInput } from "@/lib/mutations/transfer/transfer-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 

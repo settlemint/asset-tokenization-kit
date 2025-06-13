@@ -8,7 +8,7 @@ import { defineMeta, filterFn } from "@/lib/filters";
 import type { Contact } from "@/lib/queries/contact/contact-schema";
 import { createColumnHelper } from "@tanstack/react-table";
 import { User2, Wallet } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { type ComponentType, Suspense } from "react";
 
 export const icons: Record<string, ComponentType<{ className?: string }>> = {

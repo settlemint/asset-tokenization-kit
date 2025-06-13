@@ -16,7 +16,7 @@ import { InputOTP } from "@/components/ui/input-otp";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { authClient } from "@/lib/auth/client";
 import type { VerificationType } from "@/lib/utils/typebox/verification-type";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { ComponentPropsWithoutRef } from "react";
 import { useCallback, useEffect, useState } from "react";
 import {

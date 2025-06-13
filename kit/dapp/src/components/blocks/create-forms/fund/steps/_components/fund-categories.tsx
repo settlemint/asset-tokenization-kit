@@ -1,7 +1,7 @@
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
 import type { fundCategories } from "@/lib/utils/typebox/fund-categories";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 export function FundCategoriesSelect({

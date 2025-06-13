@@ -7,7 +7,7 @@ import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail"
 import { formatDate, formatDuration } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 
 interface CollateralProps {

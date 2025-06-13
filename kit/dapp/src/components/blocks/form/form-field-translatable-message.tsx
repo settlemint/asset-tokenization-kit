@@ -1,6 +1,6 @@
 import { useFormField } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type React from "react";
 
 /**

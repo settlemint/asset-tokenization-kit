@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { PauseCircle, PlayCircle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { ReactElement } from "react";
 
 export function ActivePill({ paused }: { paused: boolean }): ReactElement {

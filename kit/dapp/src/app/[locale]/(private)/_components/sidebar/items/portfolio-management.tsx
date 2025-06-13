@@ -4,7 +4,7 @@ import { ChartScatterIcon } from "@/components/ui/chart-scatter";
 import { HandCoinsIcon } from "@/components/ui/hand-coins";
 import { MailCheckIcon } from "@/components/ui/mail-check";
 import { UsersIcon } from "@/components/ui/users";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function PortfolioManagement() {
   const t = await getTranslations("admin.sidebar.portfolio-management");

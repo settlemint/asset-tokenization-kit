@@ -1,10 +1,9 @@
 import { Providers } from "@/components/providers/Providers";
 import { ClientToaster } from "@/components/ui/toaster";
-import { routing } from "@/i18n/routing";
+import { Translation } from "@/i18n/translation";
 import "@/lib/orpc/orpc.server";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
-import { getLocale } from "next-intl/server";
 import { Figtree, Roboto_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
@@ -38,11 +37,12 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   try {
-    const locale = await getLocale();
+    // Get locale from Translation provider
+    const locale = Translation.locale || "en";
     const direction = getLangDir(locale);
 
     // Ensure that the incoming `locale` is valid
-    if (!routing.locales.includes(locale)) {
+    if (!Translation.locales.includes(locale)) {
       notFound();
     }
 
@@ -58,10 +58,12 @@ export default async function RootLayout({
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       </head> */}
         <body className="min-h-screen antialiased">
-          <Providers>
-            {children}
-            <ClientToaster />
-          </Providers>
+          <Translation>
+            <Providers>
+              {children}
+              <ClientToaster />
+            </Providers>
+          </Translation>
         </body>
       </html>
     );

@@ -27,7 +27,7 @@ import {
   User2,
   WalletIcon,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { type ComponentType, Suspense } from "react";
 import { BanUserAction } from "./actions/ban-user-action";
 import { ChangeRoleAction } from "./actions/change-role-action";

@@ -3,7 +3,7 @@ import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { Badge } from "@/components/ui/badge";
 import { Users } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 
 interface AssetAdmin {

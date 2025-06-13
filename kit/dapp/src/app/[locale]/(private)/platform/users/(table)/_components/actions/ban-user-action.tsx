@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import type { getUserList } from "@/lib/queries/user/user-list";
 import { type KeyboardEvent, type MouseEvent, useState } from "react";

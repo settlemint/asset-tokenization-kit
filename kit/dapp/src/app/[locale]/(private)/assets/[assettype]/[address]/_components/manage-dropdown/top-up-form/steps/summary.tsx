@@ -6,7 +6,7 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { TopUpInput } from "@/lib/mutations/bond/top-up/top-up-schema";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { formatNumber } from "@/lib/utils/number";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { useFormContext, useWatch } from "react-hook-form";
 
 interface SummaryProps {

@@ -1,18 +1,4 @@
-import { default as createIntlMiddleware } from "next-intl/middleware";
-import type { NextRequest } from "next/server";
-
-// Create the Next Intl middleware outside the main middleware function
-const intlMiddleware = createIntlMiddleware({
-  locales: ["en", "de", "ja", "ar"],
-  defaultLocale: "en",
-  // Add this to ensure root path redirects to the default locale
-  localePrefix: "always",
-});
-
-export default function middleware(request: NextRequest) {
-  // Handle the internationalization routing
-  return intlMiddleware(request);
-}
+export { middleware as default } from "@/i18n/navigation";
 
 export const config = {
   matcher: [

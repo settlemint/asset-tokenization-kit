@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { ReactNode } from "react";
 import React from "react";
 

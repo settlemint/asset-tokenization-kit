@@ -1,6 +1,6 @@
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
 import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
-import type { Locale } from "next-intl";
+import type { Locale } from "@/i18n/locales";
 import { Suspense } from "react";
 import type { Address } from "viem";
 

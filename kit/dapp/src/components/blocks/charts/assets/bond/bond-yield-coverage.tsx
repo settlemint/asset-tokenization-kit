@@ -2,7 +2,7 @@ import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { GaugeChart } from "@/components/blocks/charts/gauge-chart";
 import { ChartColumnIncreasingIcon } from "@/components/ui/chart-column-increasing";
 import { getBondYieldCoverage } from "@/lib/queries/bond/bond-yield-coverage";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 
 interface BondYieldCoverageProps {

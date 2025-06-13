@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Check, Circle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 /**
  * Props shared by all step components

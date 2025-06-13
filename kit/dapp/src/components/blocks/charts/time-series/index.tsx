@@ -28,8 +28,8 @@ import {
   Info,
   LineChartIcon,
 } from "lucide-react";
-import type { Locale } from "next-intl";
-import { useTranslations } from "next-intl";
+import type { Locale } from "@/i18n/locales";
+import { useTranslations } from "@/i18n/translation";
 import {
   createContext,
   useContext,

@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { getAssetColor } from "./asset-color";
 
 interface AssetTypeIconProps {

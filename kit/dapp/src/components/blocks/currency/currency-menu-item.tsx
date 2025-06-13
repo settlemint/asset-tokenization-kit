@@ -6,7 +6,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { Check, DollarSign } from "lucide-react";

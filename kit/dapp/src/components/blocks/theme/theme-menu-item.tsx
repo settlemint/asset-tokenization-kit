@@ -3,7 +3,7 @@
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { MoonIcon, type MoonIconHandle } from "@/components/ui/moon";
 import { SunIcon, type SunIconHandle } from "@/components/ui/sun";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useTheme } from "next-themes";
 import { useRef } from "react";
 

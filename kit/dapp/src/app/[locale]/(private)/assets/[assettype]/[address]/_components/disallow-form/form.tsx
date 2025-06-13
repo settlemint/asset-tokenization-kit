@@ -4,7 +4,7 @@ import { disallowUser } from "@/lib/mutations/disallow-user/disallow-user-action
 import { DisallowUserSchema } from "@/lib/mutations/disallow-user/disallow-user-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";
 import { User } from "./steps/user";

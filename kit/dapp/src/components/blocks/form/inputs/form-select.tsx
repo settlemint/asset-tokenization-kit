@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useRef } from "react";
 import type { FieldValues } from "react-hook-form";
 import { TranslatableFormFieldMessage } from "../form-field-translatable-message";

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { User } from "@/lib/auth/types";
 import { GiftIcon, PlusIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import { AirdropDesignerDialog } from "./airdrop-designer-dialog";
 

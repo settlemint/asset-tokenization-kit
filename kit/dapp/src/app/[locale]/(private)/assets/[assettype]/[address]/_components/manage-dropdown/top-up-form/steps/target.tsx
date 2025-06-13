@@ -3,7 +3,7 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { TopUpInput } from "@/lib/mutations/bond/top-up/top-up-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 export function Target() {

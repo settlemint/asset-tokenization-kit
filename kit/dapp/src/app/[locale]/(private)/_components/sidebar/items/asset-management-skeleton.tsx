@@ -2,7 +2,7 @@ import { AssetTypeIcon } from "@/components/blocks/asset-type-icon/asset-type-ic
 import { type NavItem, NavMain } from "@/components/layout/nav-main";
 import { ActivityIcon } from "@/components/ui/activity";
 import { ChartScatterIcon } from "@/components/ui/chart-scatter";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function AssetManagementSkeleton() {
   const t = await getTranslations("admin.sidebar.asset-management");

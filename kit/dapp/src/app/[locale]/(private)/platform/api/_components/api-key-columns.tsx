@@ -15,7 +15,7 @@ import {
   ShieldCheck,
   User2,
 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import type { ComponentType } from "react";
 import { DeleteApiKeyAction } from "./delete-api-key-action";
 

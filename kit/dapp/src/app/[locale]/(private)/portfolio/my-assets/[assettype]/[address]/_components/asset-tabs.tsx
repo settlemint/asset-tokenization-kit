@@ -2,8 +2,8 @@ import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import { isMicaEnabledForAsset } from "@/lib/utils/features-enabled";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 
 interface AssetTabsProps {

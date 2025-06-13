@@ -1,7 +1,7 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUserList } from "@/lib/queries/user/user-list";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import { Columns, icons } from "./_components/columns";
 
 export default async function UsersPage() {

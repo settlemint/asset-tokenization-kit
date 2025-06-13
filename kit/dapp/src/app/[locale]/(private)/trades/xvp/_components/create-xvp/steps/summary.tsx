@@ -5,7 +5,7 @@ import { FlowCard } from "@/components/blocks/xvp/flow-card";
 import type { CreateXvpInput } from "@/lib/mutations/xvp/create/create-schema";
 import { formatDate } from "@/lib/utils/date";
 import { ArrowRightLeft, Lock } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { Fragment } from "react";
 import { useFormContext } from "react-hook-form";
 

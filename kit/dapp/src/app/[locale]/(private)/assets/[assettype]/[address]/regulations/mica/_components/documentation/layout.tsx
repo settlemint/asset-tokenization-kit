@@ -17,7 +17,7 @@ import { updateDocuments } from "@/lib/mutations/regulations/mica/update-documen
 import { DocumentOperation } from "@/lib/mutations/regulations/mica/update-documents/update-documents-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { Upload } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";

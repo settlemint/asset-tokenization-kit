@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import type { LucideIcon } from "lucide-react";
 import { CheckCircle, ChevronsRight, Clock, TriangleAlert } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { ReactElement } from "react";
 
 type ActionStatusIndicatorProps = {

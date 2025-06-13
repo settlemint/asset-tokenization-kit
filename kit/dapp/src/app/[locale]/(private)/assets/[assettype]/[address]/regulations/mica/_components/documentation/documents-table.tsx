@@ -3,7 +3,7 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import type { MicaDocument } from "@/lib/queries/regulations/mica-documents";
 import { FileText } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { DocumentsTableColumns } from "./documents-table-columns";
 
 interface DocumentsTableProps {

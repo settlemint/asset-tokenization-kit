@@ -2,7 +2,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import type { GrantRoleInput } from "@/lib/mutations/asset/access-control/grant-role/grant-role-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 

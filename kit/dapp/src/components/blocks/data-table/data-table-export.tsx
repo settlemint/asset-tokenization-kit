@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import type { Column, Table } from "@tanstack/react-table";
 import { Download } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { toast } from "sonner";
 
 function formatCellValue(value: unknown): string {

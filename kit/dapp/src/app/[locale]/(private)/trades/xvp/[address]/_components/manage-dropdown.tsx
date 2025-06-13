@@ -14,7 +14,7 @@ import { authClient } from "@/lib/auth/client";
 import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
 import { isBefore } from "date-fns";
 import { ChevronDown } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import { getAddress, type Address } from "viem";
 

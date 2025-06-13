@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import type { User } from "@/lib/queries/user/user-schema";
 import { Plus } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { AdminRole } from "./admin-roles-badges";
 import { SelectedAdminListItem } from "./selected-admin-list-item";
 

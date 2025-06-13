@@ -3,7 +3,7 @@
 import { StatusPill } from "@/components/blocks/status-pill/status-pill";
 import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { isCompliant as isMicaCompliant } from "@/lib/utils/mica";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { ReactElement } from "react";
 
 interface MicaRegulationPillProps {

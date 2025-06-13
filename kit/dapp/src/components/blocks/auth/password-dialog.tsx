@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useEffect, useState } from "react";
 
 interface TwoFactorPasswordDialogProps {

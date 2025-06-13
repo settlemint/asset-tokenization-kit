@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
 import { type FieldValues, useFormContext } from "react-hook-form";
 import {

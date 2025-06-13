@@ -51,7 +51,7 @@ import {
   Filter,
   X,
 } from "lucide-react";
-import { useLocale, type Locale } from "next-intl";
+import { useLocale, type Locale } from "@/i18n/translation";
 import {
   cloneElement,
   isValidElement,

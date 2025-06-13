@@ -28,7 +28,7 @@ import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { DollarSign } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { toast } from "sonner";
 import { updateBaseCurrencySettings } from "./base-currency-settings-action";
 

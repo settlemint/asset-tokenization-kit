@@ -18,9 +18,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { usePathname, useRouter } from "@/i18n/routing";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { ChartLineIcon, type ChartLineIconHandle } from "../ui/chart-line";
 import { HandCoinsIcon, type HandCoinsIconHandle } from "../ui/hand-coins";
 import {

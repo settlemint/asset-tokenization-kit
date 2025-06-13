@@ -4,7 +4,7 @@ import type { ChartConfig } from "@/components/ui/chart";
 import { ChartPieIcon } from "@/components/ui/chart-pie";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 
 interface CollateralRatioProps {

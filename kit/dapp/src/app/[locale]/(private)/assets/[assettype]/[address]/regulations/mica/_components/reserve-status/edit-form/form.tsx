@@ -10,7 +10,7 @@ import {
 import { updateReserves } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-action";
 import { UpdateReservesSchema } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import type { Address } from "viem";
 import { AuditDetails } from "./steps/audit-details";

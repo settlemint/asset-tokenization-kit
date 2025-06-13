@@ -7,9 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import { Check } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function Pricing() {
   const t = await getTranslations("homepage.pricing");

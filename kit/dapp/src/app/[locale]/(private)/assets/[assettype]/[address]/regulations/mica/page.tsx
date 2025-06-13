@@ -1,5 +1,5 @@
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import type { Locale } from "next-intl";
+import type { Locale } from "@/i18n/locales";
 import type { Address } from "viem";
 import { MicaRegulationLayout } from "./_components/layout";
 

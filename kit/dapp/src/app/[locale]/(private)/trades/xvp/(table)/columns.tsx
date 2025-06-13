@@ -4,11 +4,11 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
 import { XvPStatusIndicator } from "@/components/blocks/xvp/xvp-status";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/navigation";
 import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 
 const columnHelper = createColumnHelper<XvPSettlement>();
 

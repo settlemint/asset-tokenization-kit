@@ -8,7 +8,7 @@ import type { SetYieldScheduleInput } from "@/lib/mutations/bond/set-yield-sched
 import { formatDate } from "@/lib/utils/date";
 import { IntervalPeriod, getIntervalLabel } from "@/lib/utils/yield";
 import { Percent } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { useFormContext, useWatch } from "react-hook-form";
 import type { Address } from "viem";
 

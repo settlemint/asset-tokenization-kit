@@ -3,7 +3,7 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSwitch } from "@/components/blocks/form/inputs/form-switch";
 import type { CreateXvpInput } from "@/lib/mutations/xvp/create/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 
 export function Configuration() {

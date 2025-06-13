@@ -1,6 +1,6 @@
 import { getProcessedAndRecentTransactionsCount } from "@/lib/queries/transactions/transactions-processed";
 import { startOfDay, subDays } from "date-fns";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import { Widget } from "./widget";
 
 export async function TransactionsWidget() {

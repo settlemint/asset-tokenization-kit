@@ -1,6 +1,8 @@
 import { renderCompactNumber } from "@/app/[locale]/(private)/assets/(dashboard)/_components/utils/format-compact";
 import type { Price } from "@/lib/utils/typebox/price";
-import { useLocale } from "next-intl";
+import { useTranslation } from "@/i18n/translation"
+const { Translation } = useTranslation();
+const useLocale = () => Translation.locale;;
 
 export function MyAssetsCount({ totalValue }: { totalValue: Price }) {
   const locale = useLocale();

@@ -1,6 +1,6 @@
 import type { CurrencyCode } from "@/lib/db/schema-settings";
 import { formatNumber } from "@/lib/utils/number";
-import type { Locale } from "next-intl";
+import type { Locale } from "@/i18n/locales";
 import type { ReactNode } from "react";
 
 export interface FormattedNumberWithFull {

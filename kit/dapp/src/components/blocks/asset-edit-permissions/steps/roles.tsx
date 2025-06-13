@@ -2,7 +2,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormCheckbox } from "@/components/blocks/form/inputs/form-checkbox";
 import { getRoles, ROLES } from "@/lib/config/roles";
 import type { UpdateRolesInput } from "@/lib/mutations/asset/access-control/update-role/update-role-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 interface RolesProps {

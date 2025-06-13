@@ -5,7 +5,7 @@ import { updateRoles } from "@/lib/mutations/asset/access-control/update-role/up
 import { UpdateRolesSchema } from "@/lib/mutations/asset/access-control/update-role/update-role-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { EvmAddress } from "../evm-address/evm-address";
 import { Roles } from "./steps/roles";

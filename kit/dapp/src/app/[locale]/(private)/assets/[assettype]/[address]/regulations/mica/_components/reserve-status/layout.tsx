@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { ReserveComplianceStatus } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { ReserveComposition } from "./_components/reserve-composition";
 import { ReserveDetails } from "./_components/reserve-details";
 import { ReserveRatio } from "./_components/reserve-ratio";

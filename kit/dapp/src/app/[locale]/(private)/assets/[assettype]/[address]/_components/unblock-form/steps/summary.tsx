@@ -4,7 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { UnblockUserInput } from "@/lib/mutations/unblock-user/unblock-user-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 export function Summary() {

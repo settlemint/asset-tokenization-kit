@@ -2,7 +2,7 @@
 
 import React, { useEffect, type ReactNode } from "react";
 import * as Sentry from "@sentry/nextjs";
-import { usePathname } from "@/i18n/routing";
+import { usePathname } from "@/i18n/navigation";
 import {
   setSentryUser,
   addActionBreadcrumb,

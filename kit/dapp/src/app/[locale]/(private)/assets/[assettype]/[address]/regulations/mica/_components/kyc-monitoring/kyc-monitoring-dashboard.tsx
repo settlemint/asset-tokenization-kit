@@ -11,8 +11,8 @@ import {
   Shield,
   Snowflake,
 } from "lucide-react";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 
 interface KycMonitoringDashboardProps {
   locale: Locale;

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/client";
 import { DollarSign, Users } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useEffect, useState } from "react";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 import type { Address } from "viem";

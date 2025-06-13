@@ -11,8 +11,8 @@ import {
   UpdateNameCard,
 } from "@daveyplate/better-auth-ui";
 import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import { PincodeCard } from "./_components/pincode-card";
 import { SecretCodesCard } from "./_components/secret-codes-card";
 

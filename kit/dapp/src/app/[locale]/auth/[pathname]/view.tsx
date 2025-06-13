@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/navigation";
 import { AuthCard } from "@daveyplate/better-auth-ui";
 import { useEffect } from "react";
 

@@ -1,7 +1,7 @@
 "use client";
 import { Logo } from "@/components/blocks/logo/logo";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import React from "react";

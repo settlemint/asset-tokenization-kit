@@ -7,7 +7,7 @@ import {
 } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
 import { cn } from "@/lib/utils";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useCallback } from "react";
 import type { Path, UseFormReturn } from "react-hook-form";
 import { SecretCodes } from "./steps/secret-codes";

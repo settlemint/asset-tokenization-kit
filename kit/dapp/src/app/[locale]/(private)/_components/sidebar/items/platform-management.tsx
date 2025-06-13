@@ -2,7 +2,7 @@ import { NavMain } from "@/components/layout/nav-main";
 import { ConnectIcon } from "@/components/ui/connect";
 import { SettingsGearIcon } from "@/components/ui/settings-gear";
 import { UsersIcon } from "@/components/ui/users";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function PlatformManagement() {
   const t = await getTranslations("admin.sidebar.platform-management");

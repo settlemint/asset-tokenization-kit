@@ -5,7 +5,7 @@ import { formatNumber } from "@/lib/utils/number";
 import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CoinsIcon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { ColumnAssetType } from "../asset-info/column-asset-type";
 
 const columnHelper = createColumnHelper<UserAsset>();

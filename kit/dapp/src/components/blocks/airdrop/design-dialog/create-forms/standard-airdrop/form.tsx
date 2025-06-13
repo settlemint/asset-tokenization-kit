@@ -11,7 +11,7 @@ import {
 import { isAddressAvailable } from "@/lib/queries/airdrop-factory/standard/is-address-available";
 import { getPredictedAddress } from "@/lib/queries/airdrop-factory/standard/predict-address";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { UseFormReturn } from "react-hook-form";
 import type { AirdropFormDefinition } from "../../types";
 import { stepDefinition as distributionStep } from "../common/distribution";

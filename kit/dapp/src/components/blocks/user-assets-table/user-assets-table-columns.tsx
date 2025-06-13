@@ -26,7 +26,7 @@ import {
   ShapesIcon,
   WalletIcon,
 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { ColumnAssetType } from "../asset-info/column-asset-type";
 import { ColumnHolderType } from "../asset-info/column-holder-type";
 

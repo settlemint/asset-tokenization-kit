@@ -5,7 +5,7 @@ import { revalidate } from "@/lib/utils/revalidate";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { Kind } from "@sinclair/typebox";
 import { SetErrorFunction, ValueErrorType } from "@sinclair/typebox/errors";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { Infer, Schema } from "next-safe-action/adapters/types";
 import type { HookSafeActionFn } from "next-safe-action/hooks";
 import { useCallback, useEffect, useState } from "react";

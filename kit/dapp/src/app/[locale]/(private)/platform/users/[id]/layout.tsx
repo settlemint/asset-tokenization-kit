@@ -5,8 +5,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
 import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import type { PropsWithChildren } from "react";
 import { EditUserDropdown } from "./_components/edit-user-dropdown";
 interface LayoutProps extends PropsWithChildren {

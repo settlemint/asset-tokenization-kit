@@ -1,7 +1,7 @@
 "use client";
 
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import { ReserveTooltip } from "./reserve-tooltip";
 

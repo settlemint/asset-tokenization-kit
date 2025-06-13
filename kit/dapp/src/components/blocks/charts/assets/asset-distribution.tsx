@@ -1,7 +1,7 @@
 import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
 import { PieChartComponent } from "@/components/blocks/charts/pie-chart";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 
 interface AssetDistributionProps {

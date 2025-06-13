@@ -8,7 +8,7 @@ import type { MicaRegulationConfig } from "@/lib/db/regulations/schema-mica-regu
 import { updateAuthorization } from "@/lib/mutations/regulations/mica/update-authorization/update-authorization-action";
 import { UpdateAuthorizationSchema } from "@/lib/mutations/regulations/mica/update-authorization/update-authorization-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 

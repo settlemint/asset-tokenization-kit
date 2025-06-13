@@ -6,7 +6,7 @@ import {
   Settings,
   ShieldCheck,
 } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 export async function Features() {
   const t = await getTranslations("homepage");
 

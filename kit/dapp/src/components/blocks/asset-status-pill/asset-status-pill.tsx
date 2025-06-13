@@ -1,6 +1,6 @@
 import type { AssetBalance } from "@/lib/queries/asset-balance/asset-balance-fragment";
 import { XCircle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { ReactElement } from "react";
 import { ActivePill } from "../active-pill/active-pill";
 

@@ -1,6 +1,6 @@
 import { DetailGridSkeleton } from "@/components/blocks/skeleton/detail-grid-skeleton";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import type { Locale } from "next-intl";
+import type { Locale } from "@/i18n/locales";
 import { Suspense } from "react";
 import type { Address } from "viem";
 import { Charts } from "./_components/charts";

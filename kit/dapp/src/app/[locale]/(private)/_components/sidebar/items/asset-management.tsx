@@ -6,7 +6,7 @@ import { ChartScatterIcon } from "@/components/ui/chart-scatter";
 import { MailCheckIcon } from "@/components/ui/mail-check";
 import { getSidebarAssets } from "@/lib/queries/sidebar-assets/sidebar-assets";
 import { EllipsisIcon } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function AssetManagement() {
   const t = await getTranslations("admin.sidebar.asset-management");

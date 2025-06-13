@@ -10,7 +10,7 @@ import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { getRegulationDetail } from "@/lib/queries/regulations/regulation-detail";
 import { isMicaEnabledForAsset } from "@/lib/utils/features-enabled";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import type { ReactNode } from "react";
 import type { Address } from "viem";
 

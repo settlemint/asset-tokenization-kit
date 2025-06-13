@@ -18,7 +18,7 @@ import {
   Unlock,
   User2Icon,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { EventDetailSheet } from "./detail-sheet";
 

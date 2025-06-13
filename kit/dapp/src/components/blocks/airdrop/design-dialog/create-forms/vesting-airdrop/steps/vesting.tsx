@@ -4,7 +4,7 @@ import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateVestingAirdropInput } from "@/lib/mutations/airdrop/create/vesting/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
 import { timeUnits } from "@/lib/utils/typebox/time-units";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext, useWatch, type UseFormReturn } from "react-hook-form";
 
 export function Vesting() {

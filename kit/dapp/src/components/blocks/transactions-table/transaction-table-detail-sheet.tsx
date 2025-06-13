@@ -13,7 +13,7 @@ import {
 import type { Transaction } from "@/lib/queries/transactions/transaction-schema";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 
 export function TransactionDetailSheet({
   transactionHash,

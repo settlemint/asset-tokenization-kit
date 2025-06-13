@@ -11,8 +11,8 @@ import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-ske
 import { getUser } from "@/lib/auth/utils";
 import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import type { Locale } from "next-intl";
-import { getLocale, getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getLocale, getTranslations } from "@/i18n/translation";
 import { Suspense } from "react";
 import type { Address } from "viem";
 

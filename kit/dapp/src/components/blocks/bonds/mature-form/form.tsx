@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { mature } from "@/lib/mutations/bond/mature/mature-action";
 import { MatureFormSchema } from "@/lib/mutations/bond/mature/mature-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";

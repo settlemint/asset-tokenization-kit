@@ -2,8 +2,8 @@ import { RoleGuard } from "@/components/blocks/auth/role-guard";
 import NavInset from "@/components/layout/nav-inset";
 import { getUserRole } from "@/lib/utils/zod/validators/user-roles";
 import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import type { PropsWithChildren } from "react";
 import { PlatformSidebar } from "../_components/sidebar/platform-sidebar";
 

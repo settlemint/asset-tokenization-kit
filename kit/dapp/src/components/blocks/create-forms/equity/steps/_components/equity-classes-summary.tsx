@@ -1,5 +1,5 @@
 import type { equityClasses } from "@/lib/utils/typebox/equity-classes";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 export function EquityClassesSummary({
   value,

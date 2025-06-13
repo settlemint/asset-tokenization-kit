@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import type { Column } from "@tanstack/react-table";
 import { type VariantProps, cva } from "class-variance-authority";
 import { ArrowDownUp, EyeOff, SortAsc, SortDesc } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { HTMLAttributes, PropsWithChildren } from "react";
 
 const headerVariants = cva("", {

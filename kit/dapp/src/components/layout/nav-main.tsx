@@ -15,7 +15,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Link, usePathname } from "@/i18n/routing";
+import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { ChevronRight } from "lucide-react";

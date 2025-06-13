@@ -11,7 +11,7 @@ import {
   isReserveCompliant,
 } from "@/lib/utils/mica";
 import { ChevronDown } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 
 interface RequirementProps {

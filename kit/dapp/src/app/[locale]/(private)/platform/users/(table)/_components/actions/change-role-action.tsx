@@ -14,12 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import type { getUserList } from "@/lib/queries/user/user-list";
 import { userRoles } from "@/lib/utils/typebox/user-roles";
 import { AlertTriangle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { type MouseEvent, useState } from "react";
 import { toast } from "sonner";
 import { revalidateUserCache } from "../../../_actions/revalidate-user";

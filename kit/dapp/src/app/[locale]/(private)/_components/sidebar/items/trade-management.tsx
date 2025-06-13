@@ -2,7 +2,7 @@
 
 import { NavMain } from "@/components/layout/nav-main";
 import { RefreshCWIcon } from "@/components/ui/refresh-cw";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 export function TradeManagement() {
   const t = useTranslations("admin.sidebar.trade-management");

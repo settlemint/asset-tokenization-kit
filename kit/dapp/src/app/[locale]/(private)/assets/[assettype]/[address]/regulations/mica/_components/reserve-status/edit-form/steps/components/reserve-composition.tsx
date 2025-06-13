@@ -4,7 +4,7 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UpdateReservesSchema } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-schema";
 import type { StaticDecode } from "@/lib/utils/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 type UpdateReservesInput = StaticDecode<

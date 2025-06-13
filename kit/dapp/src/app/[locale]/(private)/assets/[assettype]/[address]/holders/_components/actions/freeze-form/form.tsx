@@ -4,7 +4,7 @@ import { freeze } from "@/lib/mutations/freeze/freeze-action";
 import { FreezeSchema } from "@/lib/mutations/freeze/freeze-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";

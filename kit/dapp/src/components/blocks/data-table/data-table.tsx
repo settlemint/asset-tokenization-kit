@@ -24,7 +24,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { type ComponentType, useMemo, useState } from "react";
 import { DataTableColumnCell } from "./data-table-column-cell";
 import { DataTableColumnHeader } from "./data-table-column-header";

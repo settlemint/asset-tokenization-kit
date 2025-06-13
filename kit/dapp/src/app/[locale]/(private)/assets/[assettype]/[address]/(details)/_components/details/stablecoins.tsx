@@ -5,7 +5,7 @@ import { getUser } from "@/lib/auth/utils";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { formatNumber } from "@/lib/utils/number";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 
 interface StablecoinsDetailsProps {

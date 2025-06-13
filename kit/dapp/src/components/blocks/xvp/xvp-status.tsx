@@ -3,7 +3,7 @@ import type { XvPSettlement } from "@/lib/queries/xvp/xvp-schema";
 import { calculateXvPStatus } from "@/lib/queries/xvp/xvp-status";
 import { cn } from "@/lib/utils";
 import { CheckCircle, Clock, Rocket, TriangleAlert, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { ReactElement } from "react";
 
 type XvPStatusIndicatorProps = {

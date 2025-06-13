@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { redeem } from "@/lib/mutations/bond/redeem/redeem-action";
 import { RedeemBondSchema } from "@/lib/mutations/bond/redeem/redeem-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";

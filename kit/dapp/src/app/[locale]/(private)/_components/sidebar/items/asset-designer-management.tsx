@@ -1,6 +1,6 @@
 import { NavMain } from "@/components/layout/nav-main";
 import { LucideCoins } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function AssetDesignerManagement() {
   const t = await getTranslations("admin.sidebar.asset-management");

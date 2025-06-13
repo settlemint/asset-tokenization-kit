@@ -4,7 +4,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { GrantRoleInput } from "@/lib/mutations/asset/access-control/grant-role/grant-role-schema";
 import type { RoleMap } from "@/lib/utils/typebox/roles";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext, useWatch } from "react-hook-form";
 import type { Address } from "viem";
 

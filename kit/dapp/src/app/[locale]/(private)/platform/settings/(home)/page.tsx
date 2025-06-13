@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { getSetting } from "@/lib/config/settings";
 import { SETTING_KEYS } from "@/lib/db/schema-settings";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import { BaseCurrencySettingsForm } from "./_components/base-currency-settings-form";
 
 export default async function SettingsPage() {

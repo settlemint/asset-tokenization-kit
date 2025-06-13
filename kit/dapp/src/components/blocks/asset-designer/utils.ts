@@ -1,5 +1,5 @@
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 type TranslationKeys = Parameters<
   ReturnType<typeof useTranslations<"private.assets.create">>

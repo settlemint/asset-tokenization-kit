@@ -1,7 +1,7 @@
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import { Suspense } from "react";
 import { BadgeSpinner, UserBadgeLoader } from "./user-badge-loader"; // Assuming badge-loader.tsx is in the same directory or adjust path
 

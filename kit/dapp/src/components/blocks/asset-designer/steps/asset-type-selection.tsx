@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { CheckCircle2, Info, XCircle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 interface AssetTypeSelectionProps {
   selectedType: AssetType | null;

@@ -1,7 +1,7 @@
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
 import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-skeleton";
-import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "@/i18n/translation";
 import { Suspense } from "react";
 import type { Address } from "viem";
 

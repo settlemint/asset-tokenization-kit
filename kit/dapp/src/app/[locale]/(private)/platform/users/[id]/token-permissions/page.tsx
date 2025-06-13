@@ -1,7 +1,7 @@
 import UserPermissionsTable from "@/components/blocks/user-permissions-table/user-permissions-table";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 
 interface PageProps {
   params: Promise<{ id: string; locale: Locale }>;

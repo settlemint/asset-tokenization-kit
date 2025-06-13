@@ -2,7 +2,7 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { getRecentTransactions } from "@/lib/queries/transactions/transactions-recent";
 import { ClockFadingIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { Columns, icons } from "./transactions-table-columns";
 
 interface TransactionsTableClientProps {

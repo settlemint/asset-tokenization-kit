@@ -1,6 +1,6 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
-import type { Locale } from "next-intl";
+import type { Locale } from "@/i18n/locales";
 import type { Address } from "viem";
 import { Columns } from "./_components/columns";
 

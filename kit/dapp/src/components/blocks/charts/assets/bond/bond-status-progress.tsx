@@ -3,7 +3,7 @@ import { getUser } from "@/lib/auth/utils";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getBondStatus } from "@/lib/utils/bond-status";
 import { getBondStatusColor } from "@/lib/utils/chart-colors";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 
 interface BondStatusProgressProps {

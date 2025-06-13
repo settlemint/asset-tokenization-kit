@@ -16,7 +16,7 @@ import type { VerifyTwoFactorOTPInput } from "@/lib/mutations/user/two-factor/ve
 import { VerifyTwoFactorOTPSchema } from "@/lib/mutations/user/two-factor/verify-two-factor-otp-schema";
 import { AuthUIContext } from "@daveyplate/better-auth-ui";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";

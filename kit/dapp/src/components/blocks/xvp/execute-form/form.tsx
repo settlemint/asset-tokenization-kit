@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { executeXvp } from "@/lib/mutations/xvp/execute/execute-action";
 import { ExecuteXvpSchema } from "@/lib/mutations/xvp/execute/execute-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";

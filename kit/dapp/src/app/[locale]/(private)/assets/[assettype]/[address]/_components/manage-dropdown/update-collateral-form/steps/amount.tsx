@@ -1,7 +1,7 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { UpdateCollateralInput } from "@/lib/mutations/update-collateral/update-collateral-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 interface AmountProps {

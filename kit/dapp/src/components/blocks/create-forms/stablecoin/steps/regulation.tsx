@@ -12,7 +12,7 @@ import { useFeatureEnabled } from "@/lib/hooks/use-feature-enabled";
 import { cn } from "@/lib/utils";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { Check, Info, MapPin } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 

@@ -1,10 +1,10 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import { AuthQueryProvider } from "@daveyplate/better-auth-tanstack";
 import { AuthUIProviderTanstack } from "@daveyplate/better-auth-ui/tanstack";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 // eslint-disable-next-line no-restricted-imports
 import { useRouter } from "next/navigation";
 import type { PropsWithChildren } from "react";

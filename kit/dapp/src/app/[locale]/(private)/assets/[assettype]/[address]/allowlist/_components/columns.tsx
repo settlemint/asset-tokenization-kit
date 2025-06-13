@@ -12,7 +12,7 @@ import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { ColumnMeta } from "@tanstack/react-table";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CalendarIcon, MoreHorizontal, User2Icon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { DisallowForm } from "../../_components/disallow-form/form";
 

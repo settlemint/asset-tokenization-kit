@@ -2,7 +2,7 @@ import { BarChartComponent } from "@/components/blocks/charts/bar-charts/horizon
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import type { ChartConfig } from "@/components/ui/chart";
 import { getAssetActivity } from "@/lib/queries/asset-activity/asset-activity";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function AssetActivity() {
   const t = await getTranslations("admin.dashboard.charts");

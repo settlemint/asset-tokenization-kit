@@ -14,12 +14,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UsersIcon, type UsersIconHandle } from "@/components/ui/users";
-import { Link, useRouter } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { shortHex } from "@/lib/utils/hex";
 import { ChevronDown } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { usePostHog } from "posthog-js/react";
 import {
   type ReactNode,

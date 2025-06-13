@@ -5,7 +5,7 @@ import { FormDescription, FormLabel } from "@/components/ui/form";
 import { AirdropDistributionListSchema } from "@/lib/mutations/airdrop/create/common/airdrop-distribution-schema";
 import type { CreateAirdropInput } from "@/lib/mutations/airdrop/create/common/schema";
 import { safeParse } from "@/lib/utils/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { parse } from "papaparse";
 import type { PropsWithChildren } from "react";
 import { useFormContext } from "react-hook-form";

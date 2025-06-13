@@ -1,7 +1,7 @@
 import { getUser } from "@/lib/auth/utils";
 import type { ActionType } from "@/lib/queries/actions/actions-schema";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import { Suspense } from "react";
 import { TabNavigation } from "../tab-navigation/tab-navigation";
 import { BadgeLoader, BadgeSpinner } from "./badge-loader";

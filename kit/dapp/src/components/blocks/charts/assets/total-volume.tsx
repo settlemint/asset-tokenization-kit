@@ -13,7 +13,7 @@ import { createTimeSeries } from "@/lib/charts";
 import type { AssetStats } from "@/lib/queries/asset-stats/asset-stats-schema";
 import { formatDate } from "@/lib/utils/date";
 import { startOfHour } from "date-fns";
-import { useTranslations, type Locale } from "next-intl";
+import { useTranslations, type Locale } from "@/i18n/translation";
 interface TotalVolumeProps {
   data: AssetStats[];
   locale: Locale;

@@ -3,7 +3,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { FreezeInput } from "@/lib/mutations/freeze/freeze-schema";
 import { formatNumber } from "@/lib/utils/number";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 import type { Address } from "viem";
 

@@ -3,7 +3,7 @@
 import { EventDetailContent } from "@/components/blocks/asset-events-table/detail-content";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 export function EventDetailSheet({ eventId }: { eventId: string }) {
   const t = useTranslations("components.asset-events-table.detail-sheet");

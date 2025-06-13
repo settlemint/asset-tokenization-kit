@@ -13,7 +13,7 @@ import type {
 } from "@/lib/queries/portfolio/portfolio-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Price } from "@/lib/utils/typebox/price";
-import { useTranslations, type Locale } from "next-intl";
+import { useTranslations, type Locale } from "@/i18n/translation";
 import { useState } from "react";
 import type { Address } from "viem";
 import {

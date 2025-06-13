@@ -1,7 +1,7 @@
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import type { PropsWithChildren } from "react";
 import { CreateApiKeyButton } from "./_components/create-api-key-button";
 

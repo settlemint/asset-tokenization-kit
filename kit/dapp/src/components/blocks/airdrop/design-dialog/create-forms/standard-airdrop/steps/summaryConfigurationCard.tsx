@@ -5,7 +5,7 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { CreateStandardAirdropInput } from "@/lib/mutations/airdrop/create/standard/create-schema";
 import { formatDate } from "@/lib/utils/date";
 import { Clock } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 export function StandardAirdropConfigurationCard() {

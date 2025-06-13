@@ -2,7 +2,9 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/number";
-import { useLocale } from "next-intl";
+import { useTranslation } from "@/i18n/translation"
+const { Translation } = useTranslation();
+const useLocale = () => Translation.locale;;
 import type { ReactElement } from "react";
 import type { Address } from "viem";
 

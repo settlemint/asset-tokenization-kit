@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { User } from "@/lib/auth/types";
 import { exhaustiveGuard } from "@/lib/utils/exhaustive-guard";
 import type { AirdropType } from "@/lib/utils/typebox/airdrop-types";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useCallback, useEffect, useState } from "react";
 import { AirdropTypeSelection } from "./steps/airdrop-type-selection";
 import { airdropForms, type AirdropFormDefinition } from "./types";

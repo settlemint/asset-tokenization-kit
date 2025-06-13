@@ -1,9 +1,9 @@
 import { LanguageToggle } from "@/components/blocks/language/language-toggle";
 import { Logo } from "@/components/blocks/logo/logo";
 import { ThemeToggle } from "@/components/blocks/theme/theme-toggle";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "@/i18n/translation";
 import { cn } from "@/lib/utils";
-import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 
 export default async function AuthLayout({ children }: PropsWithChildren) {

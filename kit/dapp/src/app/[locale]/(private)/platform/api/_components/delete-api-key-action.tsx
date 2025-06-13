@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import { type KeyboardEvent, type MouseEvent, useState } from "react";
 import { toast } from "sonner";

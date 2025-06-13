@@ -8,7 +8,7 @@ import { TopUpSchema } from "@/lib/mutations/bond/top-up/top-up-schema";
 import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";

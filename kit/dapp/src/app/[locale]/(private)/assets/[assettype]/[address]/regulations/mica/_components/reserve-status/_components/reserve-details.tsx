@@ -5,7 +5,7 @@ import {
   type StatusType,
 } from "@/components/blocks/status-pill/status-pill";
 import { ReserveComplianceStatus } from "@/lib/db/regulations/schema-mica-regulation-configs";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 interface ReserveDetailsProps {
   lastAuditDate?: string;

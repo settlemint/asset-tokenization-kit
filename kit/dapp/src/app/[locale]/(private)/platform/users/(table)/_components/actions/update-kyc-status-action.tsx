@@ -7,10 +7,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/navigation";
 import { updateKycStatus } from "@/lib/mutations/user/update-kyc-status-action";
 import type { getUserList } from "@/lib/queries/user/user-list";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { type MouseEvent, useState } from "react";
 import { toast } from "sonner";
 

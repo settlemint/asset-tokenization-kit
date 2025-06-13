@@ -1,6 +1,6 @@
 import { getSidebarAssets } from "@/lib/queries/sidebar-assets/sidebar-assets";
 import { formatNumber } from "@/lib/utils/number";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "@/i18n/translation";
 import { Widget } from "./widget";
 
 export async function AssetsWidget() {

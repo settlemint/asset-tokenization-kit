@@ -12,7 +12,7 @@ import { burn } from "@/lib/mutations/burn/burn-action";
 import { BurnSchema } from "@/lib/mutations/burn/burn-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";

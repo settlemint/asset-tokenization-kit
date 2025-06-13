@@ -5,7 +5,7 @@ import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { cancelXvp } from "@/lib/mutations/xvp/cancel/cancel-action";
 import { CancelXvpSchema } from "@/lib/mutations/xvp/cancel/cancel-schema";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";

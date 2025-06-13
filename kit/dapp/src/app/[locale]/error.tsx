@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/navigation";
 import { AlertCircle } from "lucide-react";
 import posthog from "posthog-js";
 import { useEffect } from "react";

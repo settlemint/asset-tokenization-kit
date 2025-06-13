@@ -5,7 +5,7 @@ import { ChartColumnIncreasingIcon } from "@/components/ui/chart-column-increasi
 import { getUser } from "@/lib/auth/utils";
 import { createTimeSeries } from "@/lib/charts";
 import { getBondYieldDistribution } from "@/lib/queries/bond/bond-yield-distribution";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 
 interface BondYieldDistributionProps {

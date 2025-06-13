@@ -4,7 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import type { XvPSettlementFlow } from "@/lib/queries/xvp/xvp-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 
 const columnHelper = createColumnHelper<XvPSettlementFlow>();
 

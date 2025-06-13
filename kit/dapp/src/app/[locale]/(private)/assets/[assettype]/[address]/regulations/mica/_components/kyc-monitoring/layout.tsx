@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Locale } from "next-intl";
+import type { Locale } from "@/i18n/locales";
 import { KycMonitoringDashboard } from "./kyc-monitoring-dashboard";
 
 interface KycMonitoringLayoutProps {

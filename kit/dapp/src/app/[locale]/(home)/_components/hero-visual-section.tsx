@@ -1,8 +1,8 @@
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Button } from "@/components/ui/button";
 import { TextEffect } from "@/components/ui/text-effect";
-import { Link } from "@/i18n/routing";
-import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "@/i18n/translation";
 import Image from "next/image";
 import { ChangelogLink } from "./changelog-link";
 import DarkAssetDesigner from "./dark-asset-designer.webp";

@@ -2,7 +2,9 @@ import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/number";
 import * as ProgressPrimitive from "@radix-ui/react-progress";
 import type BigNumber from "bignumber.js";
-import { useLocale } from "next-intl";
+import { useTranslation } from "@/i18n/translation"
+const { Translation } = useTranslation();
+const useLocale = () => Translation.locale;;
 
 interface PercentageProgressBarProps {
   percentage: number | BigNumber;

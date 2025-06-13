@@ -1,8 +1,8 @@
 import { LanguageToggle } from "@/components/blocks/language/language-toggle";
 import { Logo } from "@/components/blocks/logo/logo";
 import { ThemeToggle } from "@/components/blocks/theme/theme-toggle";
-import { Link } from "@/i18n/routing";
-import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "@/i18n/translation";
 
 export async function FooterSection() {
   const t = await getTranslations("homepage.footer");

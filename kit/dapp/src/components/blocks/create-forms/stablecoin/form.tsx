@@ -36,7 +36,7 @@ import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/stablecoin
 import type { User } from "@/lib/queries/user/user-schema";
 import type { FiatCurrency } from "@/lib/utils/typebox/fiat-currency";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useEffect, useMemo } from "react";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 import type { AssetFormDefinition } from "../../asset-designer/types";

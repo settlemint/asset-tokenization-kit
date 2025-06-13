@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth/auth";
-import { getLocale } from "next-intl/server";
+import { getTranslation } from "@/i18n/translation"
+const getLocale = () => getTranslation().Translation.locale;;
 import {
   type ValidationErrors,
   createSafeActionClient,

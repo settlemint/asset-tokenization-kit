@@ -24,7 +24,7 @@ import type { AssetUsers } from "@/lib/queries/asset/asset-users-schema";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
 import { Check, ChevronsUpDown, History } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { memo, useCallback, useMemo, useState } from "react";
 import type { FieldValues } from "react-hook-form";
 import useSWR from "swr";

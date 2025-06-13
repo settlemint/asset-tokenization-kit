@@ -11,7 +11,7 @@ import {
   type SetupWalletSecurityInput,
   WalletSecurityMethodOptions,
 } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 

@@ -3,8 +3,8 @@ import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation
 import { PageHeader } from "@/components/layout/page-header";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import type { PropsWithChildren } from "react";
 
 const tabs = async (): Promise<TabItemProps[]> => {

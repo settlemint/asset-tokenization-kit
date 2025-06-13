@@ -1,7 +1,7 @@
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
 import type { equityCategories } from "@/lib/utils/typebox/equity-categories";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 export function EquityCategoriesSelect({

@@ -18,7 +18,7 @@ import { updateDocuments } from "@/lib/mutations/regulations/mica/update-documen
 import { DocumentOperation } from "@/lib/mutations/regulations/mica/update-documents/update-documents-schema";
 import { UpdateReservesSchema } from "@/lib/mutations/regulations/mica/update-reserves/update-reserves-schema";
 import type { StaticDecode } from "@/lib/utils/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { toast } from "sonner";

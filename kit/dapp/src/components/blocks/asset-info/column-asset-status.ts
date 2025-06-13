@@ -1,7 +1,7 @@
 "use client";
 
 import type { AssetBalance } from "@/lib/queries/asset-balance/asset-balance-fragment";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 type AssetOrBalance = AssetBalance | { paused?: boolean };
 

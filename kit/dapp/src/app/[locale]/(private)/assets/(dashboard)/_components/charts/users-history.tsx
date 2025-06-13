@@ -3,7 +3,7 @@ import type { ChartConfig } from "@/components/ui/chart";
 import { createTimeSeries } from "@/lib/charts";
 import { getUserCount } from "@/lib/queries/user/user-count";
 import { endOfDay, startOfDay, subDays } from "date-fns";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "@/i18n/translation";
 
 export async function UsersHistory() {
   const t = await getTranslations("admin.dashboard.charts");

@@ -3,7 +3,7 @@ import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import type { ChartConfig } from "@/components/ui/chart";
 import { ChartColumnIncreasingIcon } from "@/components/ui/chart-column-increasing";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 
 interface WalletDistributionProps {

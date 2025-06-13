@@ -13,7 +13,7 @@ import type {
   Action,
   ActionStatus,
 } from "@/lib/queries/actions/actions-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import type { DataTablePaginationOptions } from "../data-table/data-table-pagination";
 import type { DataTableToolbarOptions } from "../data-table/data-table-toolbar";

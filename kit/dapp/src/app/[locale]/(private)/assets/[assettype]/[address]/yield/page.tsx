@@ -1,8 +1,8 @@
 import { DetailGridSkeleton } from "@/components/blocks/skeleton/detail-grid-skeleton";
 import { getUser } from "@/lib/auth/utils";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import { Suspense } from "react";
 import type { Address } from "viem";
 import { YieldDetails } from "./_components/details";

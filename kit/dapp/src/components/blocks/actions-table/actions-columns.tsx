@@ -17,7 +17,7 @@ import { addressNameFilter } from "@/lib/utils/address-name-cache";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Info, Target, User } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { getAddress, isAddress } from "viem";
 import { ActionButton } from "./action-button";
 import { ActionStatusIndicator } from "./action-status";

@@ -5,7 +5,7 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { RedeemBondInput } from "@/lib/mutations/bond/redeem/redeem-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { DollarSign } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { useFormContext, useWatch } from "react-hook-form";
 import type { Address } from "viem";
 

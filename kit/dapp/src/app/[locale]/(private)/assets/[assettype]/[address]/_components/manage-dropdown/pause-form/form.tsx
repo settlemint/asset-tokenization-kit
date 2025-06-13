@@ -8,7 +8,7 @@ import { unpause } from "@/lib/mutations/unpause/unpause-action";
 import { UnpauseSchema } from "@/lib/mutations/unpause/unpause-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";
 

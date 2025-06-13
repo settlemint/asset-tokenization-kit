@@ -1,9 +1,7 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import { withSettleMint } from "@settlemint/sdk-next/config/with-settlemint";
 import type { NextConfig } from "next";
-import createNextIntlPlugin from "next-intl/plugin";
 
-const withNextIntl = createNextIntlPlugin();
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   reactStrictMode: true,
@@ -72,7 +70,7 @@ const nextConfig: NextConfig = {
 };
 
 // Apply configurations
-let config = withSettleMint(withNextIntl(nextConfig));
+let config = withSettleMint(nextConfig);
 
 // Only apply Sentry configuration if DSN is provided
 if (process.env.SENTRY_DSN) {

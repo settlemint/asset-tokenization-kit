@@ -3,7 +3,7 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { MintInput } from "@/lib/mutations/mint/mint-schema";
 import { formatNumber } from "@/lib/utils/number";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 interface AmountProps {

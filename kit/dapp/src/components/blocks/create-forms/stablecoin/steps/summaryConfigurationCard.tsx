@@ -10,7 +10,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { Settings } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useTranslation } from "@/i18n/translation"
+const { Translation } = useTranslation();
+const useLocale = () => Translation.locale;;
 import { useFormContext } from "react-hook-form";
 import { SummaryRow } from "../../common/summary/summary";
 

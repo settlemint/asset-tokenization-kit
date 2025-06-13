@@ -1,13 +1,19 @@
-import type formats from "@/i18n/request";
-import type { routing } from "@/i18n/routing";
-import type en from "./messages/en.json";
+ 
 
-declare module "next-intl" {
-  interface AppConfig {
-    Messages: typeof en;
-    Formats: typeof formats;
-    Locale: (typeof routing.locales)[number];
+declare namespace NodeJS {
+  interface ProcessEnv {
+    NODE_ENV: "development" | "production" | "test";
   }
+}
+
+declare module "*.svg" {
+  const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
+  export default content;
+}
+
+declare module "*.svg?url" {
+  const content: any;
+  export default content;
 }
 
 declare global {
@@ -15,4 +21,5 @@ declare global {
   var $headers: (() => Promise<Headers>) | undefined;
 }
 
-export {};
+export { };
+

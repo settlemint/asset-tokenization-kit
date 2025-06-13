@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { getUserDetail } from "@/lib/queries/user/user-detail";
 import { ChevronDown } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 
 interface EditUserDropdownProps {

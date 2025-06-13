@@ -1,7 +1,7 @@
 import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
 import { PieChartComponent } from "@/components/blocks/charts/pie-chart";
 import { getAssetActivity } from "@/lib/queries/asset-activity/asset-activity";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function AssetsSupply() {
   const t = await getTranslations("admin.dashboard.charts");

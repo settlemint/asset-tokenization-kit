@@ -5,10 +5,10 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import { getBlockExplorerTxUrl } from "@/lib/block-explorer";
 import { shortHex } from "@/lib/utils/hex";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { PropsWithChildren } from "react";
 import { CopyToClipboard } from "../copy/copy";
 

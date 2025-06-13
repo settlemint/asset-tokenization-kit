@@ -2,7 +2,7 @@
 
 import { AddContactForm } from "@/app/[locale]/(private)/portfolio/my-contacts/_components/add-contact-form/form";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 
 export function MyContactsActions() {

@@ -7,7 +7,7 @@ import { withdraw } from "@/lib/mutations/withdraw/withdraw-action";
 import { WithdrawSchema } from "@/lib/mutations/withdraw/withdraw-schema";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import { Amount } from "./steps/amount";
 import { Recipient } from "./steps/recipient";

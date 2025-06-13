@@ -1,7 +1,7 @@
 import { TransactionsHistory as TransactionsHistoryCommon } from "@/components/blocks/transactions-table/transactions-history";
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { startOfDay, subDays } from "date-fns";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 
 export async function TransactionsHistory() {
   const t = await getTranslations("admin.dashboard.charts");

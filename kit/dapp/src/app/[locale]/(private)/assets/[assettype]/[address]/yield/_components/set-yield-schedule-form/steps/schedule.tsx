@@ -3,7 +3,7 @@
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormSelect } from "@/components/blocks/form/inputs/form-select";
 import { IntervalPeriod, getIntervalLabel } from "@/lib/utils/yield";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 export function Schedule() {
   const t = useTranslations("admin.bonds.yield.set-schedule");

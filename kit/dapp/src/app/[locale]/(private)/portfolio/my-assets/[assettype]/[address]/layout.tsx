@@ -2,8 +2,8 @@ import { DetailPageHeader } from "@/app/[locale]/(private)/_components/detail-pa
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import type { PropsWithChildren } from "react";
 import type { Address } from "viem";
 import { AssetTabs } from "./_components/asset-tabs";

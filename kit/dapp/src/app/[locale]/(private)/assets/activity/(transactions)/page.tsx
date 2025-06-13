@@ -1,10 +1,10 @@
 import TransactionsTable from "@/components/blocks/transactions-table/transactions-table";
-import { Link } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import { getBlockExplorerAllTxUrl } from "@/lib/block-explorer";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 
 export async function generateMetadata({
   params,

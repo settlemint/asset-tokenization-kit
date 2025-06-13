@@ -2,7 +2,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import type { CreatePushAirdropInput } from "@/lib/mutations/airdrop/create/push/create-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 export function Basics() {

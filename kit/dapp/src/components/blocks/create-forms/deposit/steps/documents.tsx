@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
 import { t } from "@/lib/utils/typebox";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useEffect } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 

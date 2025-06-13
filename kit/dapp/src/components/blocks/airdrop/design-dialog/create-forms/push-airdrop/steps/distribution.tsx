@@ -1,6 +1,6 @@
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreatePushAirdropInput } from "@/lib/mutations/airdrop/create/push/create-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 import { Distribution as BaseDistribution } from "../../common/distribution";
 

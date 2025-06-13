@@ -4,7 +4,7 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import type { CreateStandardAirdropInput } from "@/lib/mutations/airdrop/create/standard/create-schema";
 import { isValidFutureDate } from "@/lib/utils/date";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext, type UseFormReturn } from "react-hook-form";
 
 export function Basics() {

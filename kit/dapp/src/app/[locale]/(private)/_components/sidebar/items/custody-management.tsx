@@ -1,7 +1,7 @@
 "use client";
 import { NavMain } from "@/components/layout/nav-main";
 import { KeySquareIcon } from "@/components/ui/key-square";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFeatureFlagEnabled } from "posthog-js/react";
 
 export function CustodyManagement() {

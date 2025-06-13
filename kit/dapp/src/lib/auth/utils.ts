@@ -1,7 +1,8 @@
 import { auth } from "@/lib/auth/auth";
 import { redirectToSignIn } from "@/lib/auth/redirect";
 import { withTracing } from "@/lib/utils/sentry-tracing";
-import { getLocale } from "next-intl/server";
+import { getTranslation } from "@/i18n/translation"
+const getLocale = () => getTranslation().Translation.locale;;
 import { headers } from "next/headers";
 import { cache } from "react";
 import type { User } from "./types";

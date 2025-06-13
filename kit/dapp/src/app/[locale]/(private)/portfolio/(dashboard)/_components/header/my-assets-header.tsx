@@ -3,7 +3,7 @@ import type { User } from "@/lib/auth/types";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
 import { getAssetsPricesInUserCurrency } from "@/lib/queries/asset-price/asset-price";
 import { getPortfolioStats } from "@/lib/queries/portfolio/portfolio-stats";
-import type { Locale } from "next-intl";
+import type { Locale } from "@/i18n/locales";
 import { Greeting } from "../greeting/greeting";
 
 interface MyAssetsHeaderProps {

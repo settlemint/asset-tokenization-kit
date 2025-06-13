@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/date";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { startOfHour } from "date-fns";
-import { useTranslations, type Locale } from "next-intl";
+import { useTranslations, type Locale } from "@/i18n/translation";
 
 interface TotalSupplyProps {
   data: AssetStats[];

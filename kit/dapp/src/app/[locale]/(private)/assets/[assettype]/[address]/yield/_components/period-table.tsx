@@ -11,7 +11,7 @@ import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import type { ColumnDef } from "@tanstack/react-table";
 import { isAfter, isBefore } from "date-fns";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { useMemo } from "react";
 
 export interface PeriodTableProps {

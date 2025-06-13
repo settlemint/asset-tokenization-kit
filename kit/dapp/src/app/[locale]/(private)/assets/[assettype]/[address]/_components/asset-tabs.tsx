@@ -8,8 +8,8 @@ import {
   isMicaEnabledForAsset,
 } from "@/lib/utils/features-enabled";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import { Suspense } from "react";
 import type { Address } from "viem";
 import { BadgeLoader, BadgeSpinner } from "./badge-loader";

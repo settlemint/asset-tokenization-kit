@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LanguagesIcon } from "@/components/ui/languages";
 import { Skeleton } from "@/components/ui/skeleton";
-import { routing, usePathname, useRouter } from "@/i18n/routing";
+import { allowedLocales } from "@/i18n/locales";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { useTranslation } from "@/i18n/translation";
 import { Check } from "lucide-react";
-import type { Locale } from "next-intl";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -58,8 +59,9 @@ export function LanguageToggle({
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
+  const { Translation } = useTranslation();
   const currentLocale = ((params.locale as string) ||
-    routing.defaultLocale) as (typeof routing.locales)[number];
+    "en") as (typeof allowedLocales)[number];
   const [mounted, setMounted] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
@@ -68,12 +70,12 @@ export function LanguageToggle({
    * @param locale - The new locale to set.
    */
   const handleSetLanguage = useCallback(
-    (locale: Locale) => {
+    (locale: (typeof allowedLocales)[number]) => {
       if (locale === currentLocale) return;
 
       setIsPending(true);
       router.push(pathname, {
-        locale: locale as (typeof routing.locales)[number],
+        locale,
         scroll: false,
       });
 
@@ -117,7 +119,7 @@ export function LanguageToggle({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {routing.locales.map((locale) => (
+        {allowedLocales.map((locale) => (
           <DropdownMenuItem
             key={locale}
             onClick={() => handleSetLanguage(locale)}

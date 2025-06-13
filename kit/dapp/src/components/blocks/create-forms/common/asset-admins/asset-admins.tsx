@@ -5,7 +5,7 @@ import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import type { User } from "@/lib/queries/user/user-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useEffect, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import type { AdminRole } from "./admin-roles-badges";

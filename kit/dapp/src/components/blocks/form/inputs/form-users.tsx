@@ -27,7 +27,7 @@ import type { Contact } from "@/lib/queries/contact/contact-schema";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
 import { Check, ChevronsUpDown, History } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import type { FieldValues } from "react-hook-form";
 import useSWR from "swr";

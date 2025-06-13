@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { type VariantProps, cva } from "class-variance-authority";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { type HTMLAttributes, memo, useMemo } from "react";
 import { getGravatarUrl } from "react-awesome-gravatar";
 import { type Address, getAddress, isAddress } from "viem";

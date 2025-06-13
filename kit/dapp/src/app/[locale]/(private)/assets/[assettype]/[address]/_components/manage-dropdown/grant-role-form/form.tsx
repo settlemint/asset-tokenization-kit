@@ -6,7 +6,7 @@ import { grantRole } from "@/lib/mutations/asset/access-control/grant-role/grant
 import { GrantRoleSchema } from "@/lib/mutations/asset/access-control/grant-role/grant-role-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { AdminAddress } from "./steps/address";
 import { AdminRoles } from "./steps/roles";

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { FormField, FormItem } from "@/components/ui/form";
 import type { SetupWalletSecurityInput } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
 import { WalletSecurityMethodOptions } from "@/lib/mutations/user/wallet/setup-wallet-security-schema";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 export function SelectMethod() {

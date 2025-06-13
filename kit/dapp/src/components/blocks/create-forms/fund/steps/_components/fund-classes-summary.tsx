@@ -1,5 +1,5 @@
 import type { fundClasses } from "@/lib/utils/typebox/fund-classes";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 
 export function FundClassesSummary({
   value,

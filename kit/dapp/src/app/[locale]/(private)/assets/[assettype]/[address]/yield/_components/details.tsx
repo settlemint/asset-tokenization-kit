@@ -1,7 +1,7 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { getUser } from "@/lib/auth/utils";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 
 interface DetailsProps {

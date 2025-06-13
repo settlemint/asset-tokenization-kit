@@ -4,7 +4,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { TopUpInput } from "@/lib/mutations/bond/top-up/top-up-schema";
 import { formatNumber } from "@/lib/utils/number";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "@/i18n/translation";
 import { useFormContext } from "react-hook-form";
 
 interface AmountProps {

@@ -14,7 +14,7 @@ import { MintSchema } from "@/lib/mutations/mint/mint-schema";
 import type { AllowedUser } from "@/lib/queries/asset/asset-users-schema";
 import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useState } from "react";
 import { getAddress, type Address } from "viem";
 import { hasAllowlist } from "../../../../../../../../lib/utils/features-enabled";

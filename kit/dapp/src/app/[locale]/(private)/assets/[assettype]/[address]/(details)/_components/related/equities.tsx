@@ -5,7 +5,7 @@ import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { isSupplyManager } from "@/lib/utils/has-role";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { MintForm } from "../../../_components/mint-form/form";
 

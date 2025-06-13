@@ -10,7 +10,7 @@ import {
 import { MoonIcon } from "@/components/ui/moon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SunIcon } from "@/components/ui/sun";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
 

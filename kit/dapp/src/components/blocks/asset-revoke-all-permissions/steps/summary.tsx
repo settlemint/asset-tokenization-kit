@@ -5,7 +5,7 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { Role } from "@/lib/config/roles";
 import type { RevokeRoleInput } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-schema";
 import { Lock } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import type { Address } from "viem";
 import { AssetRolePill } from "../../asset-role-pill/asset-role-pill";
 

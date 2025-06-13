@@ -7,7 +7,7 @@ import { StepContent } from "@/components/blocks/step-wizard/step-content";
 import type { CreateDepositInput } from "@/lib/mutations/deposit/create/create-schema";
 import { fiatCurrencies } from "@/lib/utils/typebox/fiat-currency";
 import { timeUnits } from "@/lib/utils/typebox/time-units";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useFormContext, useWatch } from "react-hook-form";
 
 export function Configuration() {

@@ -1,6 +1,6 @@
 import { getUser } from "@/lib/auth/utils";
 import { getTotalAssetPrice } from "@/lib/queries/asset-price/total-assets-price";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "@/i18n/translation";
 import { renderCompactNumber } from "../utils/format-compact";
 import { Widget } from "./widget";
 

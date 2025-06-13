@@ -10,9 +10,9 @@ import {
   LanguagesIcon,
   type LanguagesIconHandle,
 } from "@/components/ui/languages";
-import { routing, usePathname, useRouter } from "@/i18n/routing";
+import { routing, usePathname, useRouter } from "@/i18n/navigation";
 import { Check } from "lucide-react";
-import { useLocale, useTranslations, type Locale } from "next-intl";
+import { useLocale, useTranslations, type Locale } from "@/i18n/translation";
 import { useRef, useTransition } from "react";
 
 // Language display names mapping

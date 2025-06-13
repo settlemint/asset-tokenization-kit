@@ -13,7 +13,7 @@ import {
   CircleDashed,
   ListCheck,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { DataTable } from "../data-table/data-table";
 import { Columns } from "./actions-columns";
 

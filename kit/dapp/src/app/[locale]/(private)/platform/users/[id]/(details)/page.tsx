@@ -3,7 +3,7 @@ import { TransactionsHistory } from "@/components/blocks/transactions-table/tran
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { startOfDay, subMonths, subYears } from "date-fns";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/i18n/translation";
 import { DetailsGrid } from "./_components/details-grid";
 
 export default async function UserDetailPage({

@@ -8,7 +8,7 @@ import {
 import { t as tb } from "@/lib/utils/typebox";
 import { typeboxResolver } from "@hookform/resolvers/typebox";
 import type { Static } from "@sinclair/typebox";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "@/i18n/translation";
 import { useForm } from "react-hook-form";
 import type { Address } from "viem";
 

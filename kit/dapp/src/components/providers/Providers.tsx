@@ -4,7 +4,7 @@ import { TransitionProvider } from "@/components/layout/transition-provider";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import { QueryClientProvider } from "@/components/providers/QueryClientProvider";
 import { env } from "@/lib/config/env";
-import { NextIntlClientProvider } from "next-intl";
+import { Translation } from "@/i18n/translation";
 
 /**
  * Extracts authentication configuration from environment variables.

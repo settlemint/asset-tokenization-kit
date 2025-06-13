@@ -3,8 +3,8 @@ import { DataTableSkeleton } from "@/components/blocks/data-table/data-table-ske
 import { getUser } from "@/lib/auth/utils";
 import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/locales";
+import { getTranslations } from "@/i18n/translation";
 import { Suspense } from "react";
 
 export async function generateMetadata({
