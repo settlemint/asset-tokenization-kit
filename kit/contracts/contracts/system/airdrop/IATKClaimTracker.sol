@@ -16,8 +16,6 @@ interface IATKClaimTracker {
     /// @param totalAmount The total amount allocated for this index.
     event ClaimRecorded(uint256 indexed index, uint256 claimedAmount, uint256 totalAmount);
 
-    // --- External Functions ---
-
     /// @notice Checks if a claim has been fully claimed for a specific index.
     /// @param index The index to check in the Merkle tree.
     /// @param totalAmount The total amount allocated for this index.
