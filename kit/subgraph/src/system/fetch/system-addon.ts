@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { SystemAddon } from "../../../generated/schema";
 import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../../account/fetch/account";
@@ -11,6 +11,7 @@ export function fetchSystemAddon(address: Address): SystemAddon {
     systemAddon.accessControl = fetchAccessControl(address).id;
     systemAddon.account = fetchAccount(address).id;
     systemAddon.name = "unknown";
+    systemAddon.typeId = Bytes.fromHexString("0x00");
     systemAddon.save();
     // FixedYieldScheduleFactoryTemplate.create(address);
   }
