@@ -45,8 +45,10 @@ export type NavElement = NavItem | NavGroup;
 
 function NavItemComponent({
   item,
+  size,
 }: {
   item: NavItem & { isActive?: (path: string) => boolean };
+  size?: "sm";
 }) {
   const Icon = item.icon ?? undefined;
   const [isOpen, setIsOpen] = useState(false);
@@ -60,6 +62,7 @@ function NavItemComponent({
         className={cn(isActiveFn(item.path) ? "active" : undefined, "py-1")}
       >
         <SidebarMenuButton
+          size={size}
           asChild
           className={isActiveFn(item.path) ? "font-bold" : undefined}
         >
@@ -160,7 +163,15 @@ function NavGroupComponent({
   );
 }
 
-export function NavMain({ items }: { items: NavElement[] }) {
+export function NavMain({
+  items,
+  className,
+  size,
+}: {
+  items: NavElement[];
+  className?: string;
+  size?: "sm";
+}) {
   const pathname = usePathname();
 
   // Find the most specific matching path from all nav items
@@ -226,7 +237,7 @@ export function NavMain({ items }: { items: NavElement[] }) {
   };
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className={className}>
       <SidebarMenu>
         {items.map((item, index) => {
           if (isGroup(item)) {
@@ -240,6 +251,7 @@ export function NavMain({ items }: { items: NavElement[] }) {
           }
           return (
             <NavItemComponent
+              size={size}
               key={item.id ?? index}
               item={{ ...item, isActive }}
             />

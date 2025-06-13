@@ -1,8 +1,8 @@
 import { makeQueryClient } from "@/lib/query/query.client";
 import type { FetchQueryOptions } from "@tanstack/react-query";
-import { dehydrate } from "@tanstack/react-query";
 import type { PropsWithChildren, ReactNode } from "react";
-import { AwaitClientWrapper } from "./AwaitClientWrapper";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 
 /**
  * Props for the Await component.
@@ -27,7 +27,7 @@ type AwaitProps<TData = unknown, TError = Error> = PropsWithChildren<{
    *
    * Optional React node to display when an error occurs during data fetching
    * or rendering. If not provided, errors will bubble up to parent error
-   * boundaries. When provided, wraps children in an ErrorBoundary.
+   * boundaries.
    */
   error?: ReactNode;
 
@@ -35,8 +35,7 @@ type AwaitProps<TData = unknown, TError = Error> = PropsWithChildren<{
    * Loading fallback UI component.
    *
    * Optional React node to display while the component is suspended.
-   * This is shown during the initial render before hydration completes
-   * and during any subsequent suspense states.
+   * This is shown during the async data fetching.
    */
   fallback?: ReactNode;
 
@@ -53,70 +52,52 @@ type AwaitProps<TData = unknown, TError = Error> = PropsWithChildren<{
    *
    * Useful for conditional data fetching based on authentication state
    * or feature flags. When true, renders children immediately without
-   * prefetching or hydration.
+   * prefetching.
    */
   skip?: boolean;
-
-  /**
-   * Custom dehydrate options.
-   *
-   * Allows customization of which queries are included in the dehydrated
-   * state. By default, only successful queries are dehydrated.
-   */
-  dehydrateOptions?: Parameters<typeof dehydrate>[1];
-
-  /**
-   * Error boundary reset keys.
-   *
-   * Array of values that, when changed, will reset the error boundary
-   * and retry rendering. Useful for recovering from errors based on
-   * external state changes.
-   */
-  resetKeys?: (string | number)[];
-
-  /**
-   * Custom error fallback component.
-   *
-   * Receives error and reset function as props. Provides more control
-   * than the simple error ReactNode prop.
-   */
-  errorFallbackComponent?: React.ComponentType<{
-    error: Error;
-    resetErrorBoundary: () => void;
-  }>;
 }>;
 
 /**
- * Server-side data prefetching component with hydration support.
+ * Default error fallback component.
+ */
+function DefaultErrorFallback({ error }: { error: Error }) {
+  return (
+    <div className="flex min-h-[200px] flex-col items-center justify-center p-4">
+      <p className="text-center text-sm text-destructive">
+        {error.message || "An error occurred while loading data"}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Server-side data prefetching component.
  *
  * The Await component enables server-side data prefetching for React Query,
- * allowing data to be fetched on the server and seamlessly hydrated on the
- * client. This improves initial page load performance and provides better
- * SEO by ensuring data is available during server-side rendering.
+ * allowing data to be fetched on the server before rendering. This improves
+ * initial page load performance and provides better SEO by ensuring data is
+ * available during server-side rendering.
  *
  * Key features:
  * - Server-side data prefetching with React Query
- * - Automatic client-side hydration of prefetched data
  * - Support for single or multiple parallel queries
- * - Optional error boundary integration
- * - Suspense integration for loading states
+ * - Built-in error boundary and suspense boundary
  * - Type-safe query options and data handling
  * - Conditional prefetching with skip option
- * - Custom error handling and recovery
- * - Configurable dehydration options
+ * - Minimal client-side JavaScript
  *
  * The component works by:
  * 1. Creating a query client on the server
  * 2. Prefetching specified queries in parallel
- * 3. Dehydrating the query cache for client transfer
- * 4. Wrapping children in HydrationBoundary for seamless hydration
- * 5. Providing error and loading boundaries as needed
+ * 3. Storing the data in the query cache
+ * 4. Rendering children with access to the prefetched data
+ * 5. Wrapping in Suspense and ErrorBoundary as needed
  *
  * @template TData - The expected data type returned by the query
  * @template TError - The expected error type that might be thrown
  *
  * @param props - Component props including query options and UI fallbacks
- * @returns Promise resolving to JSX with prefetched data and hydration setup
+ * @returns Promise resolving to JSX with prefetched data
  *
  * @example
  * ```tsx
@@ -135,21 +116,16 @@ type AwaitProps<TData = unknown, TError = Error> = PropsWithChildren<{
  *
  * @example
  * ```tsx
- * // Multiple queries with custom error handling
+ * // Multiple queries
  * <Await
  *   queryOptions={[
  *     { queryKey: ['user'], queryFn: fetchUser },
  *     { queryKey: ['posts'], queryFn: fetchPosts },
  *   ]}
- *   onError={(error) => console.error('Prefetch failed:', error)}
- *   errorFallbackComponent={CustomErrorFallback}
  * >
  *   <Dashboard />
  * </Await>
  * ```
- *
- * @see {@link @/lib/orpc/query/query.client} - Query client configuration
- * @see {@link https://tanstack.com/query/latest/docs/framework/react/guides/ssr} - TanStack Query SSR guide
  */
 export async function Await<TData = unknown, TError = Error>({
   children,
@@ -158,9 +134,6 @@ export async function Await<TData = unknown, TError = Error>({
   fallback,
   onError,
   skip = false,
-  dehydrateOptions,
-  resetKeys,
-  errorFallbackComponent,
 }: AwaitProps<TData, TError>) {
   // Skip prefetching if requested
   if (skip) {
@@ -197,51 +170,17 @@ export async function Await<TData = unknown, TError = Error>({
     }
 
     // If we have an error fallback prop configured, render it instead of throwing
-    if (error || errorFallbackComponent) {
-      // If errorFallbackComponent is provided, use it
-      if (errorFallbackComponent) {
-        const ErrorComponent = errorFallbackComponent;
-        return (
-          <ErrorComponent
-            error={prefetchError as Error}
-            resetErrorBoundary={() => {
-              // In a server component context, we can't really reset
-              // This would need to be handled by client-side navigation
-            }}
-          />
-        );
-      }
-
-      // If only error prop (ReactNode) is provided, render it directly
-      if (error) {
-        return <>{error}</>;
-      }
-    }
-
-    // Re-throw if no error handling is configured
-    throw prefetchError;
+    return (
+      <>{error || <DefaultErrorFallback error={prefetchError as Error} />}</>
+    );
   }
 
-  // Default dehydrate options that only include successful queries
-  const defaultDehydrateOptions = {
-    shouldDehydrateQuery: (query: any) => query.state.status === "success",
-  };
-
-  // Dehydrate the query cache for client transfer
-  const dehydratedState = dehydrate(
-    queryClient,
-    dehydrateOptions || defaultDehydrateOptions
+  // Wrap children with error boundary if error fallback is provided
+  const content = error ? (
+    <ErrorBoundary fallback={error}>{children}</ErrorBoundary>
+  ) : (
+    children
   );
 
-  return (
-    <AwaitClientWrapper
-      dehydratedState={dehydratedState}
-      error={error}
-      fallback={fallback}
-      resetKeys={resetKeys}
-      errorFallbackComponent={errorFallbackComponent}
-    >
-      {children}
-    </AwaitClientWrapper>
-  );
+  return <Suspense fallback={fallback}>{content}</Suspense>;
 }

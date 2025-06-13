@@ -91,7 +91,7 @@ export function Summary({
               <EvmAddress
                 address={formValues.owner}
                 name={
-                  session?.user?.wallet === formValues.owner
+                  session?.user?.walletAddress === formValues.owner
                     ? session.user.name
                     : undefined
                 }

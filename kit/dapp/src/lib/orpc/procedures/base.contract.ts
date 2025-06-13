@@ -100,6 +100,34 @@ export const bc = oc.errors({
   },
 
   /**
+   * Resource conflict error.
+   *
+   * Thrown when the request conflicts with the current state of the resource:
+   * - Attempting to create a resource that already exists
+   * - Concurrent modification conflicts
+   * - Business rule violations that prevent the operation
+   * - State conflicts (e.g., deleting a resource with active dependencies)
+   */
+  CONFLICT: {
+    status: 409,
+    message: "Resource conflict",
+  },
+
+  /**
+   * Resource not found error.
+   *
+   * Thrown when the requested resource does not exist:
+   * - Invalid resource ID or key
+   * - Resource has been deleted
+   * - Resource never existed
+   * - Invalid URL or path parameters
+   */
+  NOT_FOUND: {
+    status: 404,
+    message: "Resource not found",
+  },
+
+  /**
    * Verification ID not found error.
    *
    * Thrown when a required verification ID is missing from the user's profile:
@@ -177,6 +205,45 @@ export const bc = oc.errors({
     status: 504,
     message: "Transaction confirmation timeout",
     data: z.object({
+      details: z.unknown().optional(),
+    }),
+  },
+
+  /**
+   * SettleMint Portal service error.
+   *
+   * Thrown when operations with the SettleMint Portal service fail:
+   * - Portal API unreachable
+   * - Portal GraphQL mutations/queries fail
+   * - Wallet creation failures
+   * - Key vault access issues
+   * - Portal authentication problems
+   */
+  PORTAL_ERROR: {
+    status: 503,
+    message: "SettleMint Portal service error",
+    data: z.object({
+      operation: z.string().optional(),
+      details: z.unknown().optional(),
+    }),
+  },
+
+  /**
+   * TheGraph indexing service error.
+   *
+   * Thrown when operations with TheGraph service fail:
+   * - Subgraph queries fail
+   * - Indexing delays or failures
+   * - GraphQL query errors
+   * - Service unavailable
+   * - Data synchronization issues
+   */
+  THE_GRAPH_ERROR: {
+    status: 503,
+    message: "TheGraph service error",
+    data: z.object({
+      subgraph: z.string().optional(),
+      operation: z.string().optional(),
       details: z.unknown().optional(),
     }),
   },

@@ -19,8 +19,13 @@
     "build": {
       "outputs": [".next/**", "!.next/cache/**"]
     },
+    "db:auth:generate": {
+      "inputs": ["src/lib/auth/auth.ts"],
+      "outputs": ["src/lib/db/schema-auth.ts"]
+    },
     "db:export": {
-      "inputs": ["src/lib/db/**"]
+      "inputs": ["src/lib/db/**"],
+      "dependsOn": ["db:auth:generate"]
     },
     "artifacts": {
       "dependsOn": ["db:export"]

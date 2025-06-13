@@ -1,6 +1,8 @@
 import { auth } from "@/lib/auth/auth";
 import { br } from "../../procedures/base.router";
 
+// TODO JAN: tie this into the better auth permissions system
+// TODO JAN: sync the CRUD roles to the better auth roles
 /**
  * CRUD permission types for API key authorization.
  *

@@ -1,6 +1,5 @@
 "use client";
 
-import { formatCompactForYAxis } from "@/app/[locale]/(private)/assets/(dashboard)/_components/utils/format-compact";
 import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
 import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { Button } from "@/components/ui/button";
@@ -24,6 +23,7 @@ import {
   TimeSeriesTitle,
   type TimeRange,
 } from "../time-series";
+import { formatCompactForYAxis } from "./format";
 
 interface PortfolioValueProps {
   portfolioStats: PortfolioStatsCollection;

@@ -125,12 +125,12 @@ export function UserDropdown() {
             </TextOrSkeleton>
 
             <TextOrSkeleton
-              condition={Boolean(data?.user?.wallet)}
+              condition={Boolean(data?.user?.walletAddress)}
               className="truncate text-xs"
               skeletonClassName="size-30"
             >
-              {data?.user?.wallet &&
-                shortHex(data?.user?.wallet, {
+              {data?.user?.walletAddress &&
+                shortHex(data?.user?.walletAddress, {
                   prefixLength: 12,
                   suffixLength: 8,
                 })}

@@ -13,7 +13,7 @@ const globalForDb = globalThis as unknown as {
 
 const createDb = () =>
   drizzle(postgresPool, {
-    // logger: process.env.NODE_ENV === 'development',
+    logger: process.env.NODE_ENV === "development",
     schema: {
       ...authSchema,
       ...assetTokenizationSchema,

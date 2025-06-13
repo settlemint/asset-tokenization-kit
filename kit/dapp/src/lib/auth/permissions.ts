@@ -2,11 +2,13 @@ import type { Subset } from "better-auth/plugins/access";
 import { createAccessControl } from "better-auth/plugins/access";
 import { adminAc, defaultStatements } from "better-auth/plugins/admin/access";
 
+// TODO JAN: we do not add hooks to create wallets and identities. We handle those out of band during user onboarding.
+
 const customPermissions = {
   ...defaultStatements,
-  user: [...defaultStatements.user, "set-kyc-status"],
-  asset: ["transfer", "manage"],
-  setting: ["read", "update"],
+  // TODO JAN: colocate the options with the contract/route in ORPC or automate in some way?
+  system: ["create", "read", "update", "delete"],
+  transaction: ["read", "watch"],
 } as const;
 
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
@@ -18,19 +20,19 @@ export type Permissions = Subset<
 export const accessControl = createAccessControl(customPermissions);
 
 export const adminRole = accessControl.newRole({
-  asset: ["transfer", "manage"],
   ...adminAc.statements,
-  user: [...adminAc.statements.user, "set-kyc-status"],
-  setting: ["read", "update"],
+  system: ["create", "read", "update", "delete"],
+  transaction: ["read", "watch"],
 });
 
 export const issuerRole = accessControl.newRole({
-  asset: ["transfer", "manage"],
-  user: ["list"],
-  setting: ["read"],
+  system: ["create", "read", "update", "delete"],
+  transaction: ["read", "watch"],
 });
 
-export const userRole = accessControl.newRole({
-  asset: ["transfer"],
-  setting: ["read"],
+export const investorRole = accessControl.newRole({
+  system: ["create", "read", "update", "delete"],
+  transaction: ["read", "watch"],
 });
+
+// TODO JAN: add the KYC and auditor roles

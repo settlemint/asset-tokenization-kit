@@ -50,6 +50,7 @@ export const sessionMiddleware = br.middleware(async ({ context, next }) => {
           user: User;
           session: Session;
         }),
+      authApi: auth.api,
     },
   });
 });

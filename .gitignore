@@ -51,3 +51,23 @@ kit/subgraph/subgraph.yaml.backup
 kit/subgraph/src/erc165/utils/interfaceids.ts
 kit/contracts/contracts/temp_interface_calc.sol
 kit/charts/atk/charts/besu-network/charts/besu-genesis/files/genesis-output.json
+
+# Added by Task Master AI
+# Logs
+logs
+*.log
+dev-debug.log
+# Dependency directories
+node_modules/
+# Environment variables
+# Editor directories and files
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# OS specific
+# Task files
+tasks.json
+tasks/ 

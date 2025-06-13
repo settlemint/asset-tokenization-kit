@@ -65,12 +65,12 @@ CREATE TABLE "account" (
 	"access_token" text,
 	"refresh_token" text,
 	"id_token" text,
-	"access_token_expires_at" timestamp with time zone,
-	"refresh_token_expires_at" timestamp with time zone,
+	"access_token_expires_at" timestamp,
+	"refresh_token_expires_at" timestamp,
 	"scope" text,
 	"password" text,
-	"created_at" timestamp with time zone NOT NULL,
-	"updated_at" timestamp with time zone NOT NULL
+	"created_at" timestamp NOT NULL,
+	"updated_at" timestamp NOT NULL
 );
 
 CREATE TABLE "apikey" (
@@ -83,16 +83,16 @@ CREATE TABLE "apikey" (
 	"refill_interval" integer,
 	"refill_amount" integer,
 	"last_refill_at" timestamp,
-	"enabled" boolean,
-	"rate_limit_enabled" boolean,
-	"rate_limit_time_window" integer,
-	"rate_limit_max" integer,
+	"enabled" boolean DEFAULT true,
+	"rate_limit_enabled" boolean DEFAULT true,
+	"rate_limit_time_window" integer DEFAULT 60000,
+	"rate_limit_max" integer DEFAULT 60,
 	"request_count" integer,
 	"remaining" integer,
 	"last_request" timestamp,
 	"expires_at" timestamp,
-	"created_at" timestamp with time zone NOT NULL,
-	"updated_at" timestamp with time zone NOT NULL,
+	"created_at" timestamp NOT NULL,
+	"updated_at" timestamp NOT NULL,
 	"permissions" text,
 	"metadata" text
 );
@@ -107,15 +107,16 @@ CREATE TABLE "passkey" (
 	"device_type" text NOT NULL,
 	"backed_up" boolean NOT NULL,
 	"transports" text,
-	"created_at" timestamp with time zone
+	"created_at" timestamp,
+	"aaguid" text
 );
 
 CREATE TABLE "session" (
 	"id" text PRIMARY KEY NOT NULL,
-	"expires_at" timestamp with time zone NOT NULL,
+	"expires_at" timestamp NOT NULL,
 	"token" text NOT NULL,
-	"created_at" timestamp with time zone NOT NULL,
-	"updated_at" timestamp with time zone NOT NULL,
+	"created_at" timestamp NOT NULL,
+	"updated_at" timestamp NOT NULL,
 	"ip_address" text,
 	"user_agent" text,
 	"user_id" text NOT NULL,
@@ -125,9 +126,9 @@ CREATE TABLE "session" (
 
 CREATE TABLE "two_factor" (
 	"id" text PRIMARY KEY NOT NULL,
-	"user_id" text NOT NULL,
 	"secret" text NOT NULL,
-	"backup_codes" text NOT NULL
+	"backup_codes" text NOT NULL,
+	"user_id" text NOT NULL
 );
 
 CREATE TABLE "user" (
@@ -136,33 +137,34 @@ CREATE TABLE "user" (
 	"email" text NOT NULL,
 	"email_verified" boolean NOT NULL,
 	"image" text,
-	"created_at" timestamp with time zone NOT NULL,
-	"updated_at" timestamp with time zone NOT NULL,
+	"created_at" timestamp NOT NULL,
+	"updated_at" timestamp NOT NULL,
 	"role" text,
 	"banned" boolean,
 	"ban_reason" text,
-	"ban_expires" timestamp with time zone,
-	"wallet" text,
-	"kyc_verified_at" timestamp with time zone,
-	"last_login_at" timestamp with time zone,
-	"currency" text DEFAULT 'EUR' NOT NULL,
-	"pincode_enabled" boolean DEFAULT false NOT NULL,
+	"ban_expires" timestamp,
+	"two_factor_enabled" boolean,
+	"wallet_address" text,
+	"currency" text,
+	"pincode_enabled" boolean,
 	"pincode_verification_id" text,
-	"two_factor_enabled" boolean DEFAULT false NOT NULL,
 	"two_factor_verification_id" text,
 	"secret_code_verification_id" text,
-	"initial_onboarding_finished" boolean DEFAULT false NOT NULL,
+	"initial_onboarding_finished" boolean,
 	CONSTRAINT "user_email_unique" UNIQUE("email"),
-	CONSTRAINT "user_wallet_unique" UNIQUE("wallet")
+	CONSTRAINT "user_wallet_address_unique" UNIQUE("wallet_address"),
+	CONSTRAINT "user_pincode_verification_id_unique" UNIQUE("pincode_verification_id"),
+	CONSTRAINT "user_two_factor_verification_id_unique" UNIQUE("two_factor_verification_id"),
+	CONSTRAINT "user_secret_code_verification_id_unique" UNIQUE("secret_code_verification_id")
 );
 
 CREATE TABLE "verification" (
 	"id" text PRIMARY KEY NOT NULL,
 	"identifier" text NOT NULL,
 	"value" text NOT NULL,
-	"expires_at" timestamp with time zone NOT NULL,
-	"created_at" timestamp with time zone NOT NULL,
-	"updated_at" timestamp with time zone NOT NULL
+	"expires_at" timestamp NOT NULL,
+	"created_at" timestamp,
+	"updated_at" timestamp
 );
 
 CREATE TABLE "exchange_rate" (
@@ -201,25 +203,6 @@ CREATE INDEX "asset_price_asset_id_idx" ON "asset_price" USING btree ("asset_id"
 CREATE INDEX "contact_name_idx" ON "contact" USING btree ("name");
 CREATE INDEX "contact_wallet_idx" ON "contact" USING btree ("wallet");
 CREATE INDEX "contact_user_id_idx" ON "contact" USING btree ("user_id");
-CREATE INDEX "account_user_id_idx" ON "account" USING btree ("user_id");
-CREATE INDEX "account_provider_id_idx" ON "account" USING btree ("provider_id");
-CREATE INDEX "account_account_id_idx" ON "account" USING btree ("account_id");
-CREATE INDEX "apikey_user_id_idx" ON "apikey" USING btree ("user_id");
-CREATE INDEX "apikey_enabled_idx" ON "apikey" USING btree ("enabled");
-CREATE INDEX "apikey_expires_at_idx" ON "apikey" USING btree ("expires_at");
-CREATE INDEX "passkey_user_id_idx" ON "passkey" USING btree ("user_id");
-CREATE INDEX "passkey_credential_id_idx" ON "passkey" USING btree ("credential_i_d");
-CREATE INDEX "session_user_id_idx" ON "session" USING btree ("user_id");
-CREATE INDEX "session_expires_at_idx" ON "session" USING btree ("expires_at");
-CREATE INDEX "two_factor_user_id_idx" ON "two_factor" USING btree ("user_id");
-CREATE INDEX "user_wallet_idx" ON "user" USING btree ("wallet");
-CREATE INDEX "user_currency_idx" ON "user" USING btree ("currency");
-CREATE INDEX "user_email_verified_idx" ON "user" USING btree ("email_verified");
-CREATE INDEX "user_banned_idx" ON "user" USING btree ("banned");
-CREATE INDEX "user_kyc_verified_at_idx" ON "user" USING btree ("kyc_verified_at");
-CREATE INDEX "user_role_idx" ON "user" USING btree ("role");
-CREATE INDEX "verification_identifier_idx" ON "verification" USING btree ("identifier");
-CREATE INDEX "verification_expires_at_idx" ON "verification" USING btree ("expires_at");
 CREATE INDEX "exchange_rate_base_currency_idx" ON "exchange_rate" USING btree ("base_currency");
 CREATE INDEX "exchange_rate_quote_currency_idx" ON "exchange_rate" USING btree ("quote_currency");
 CREATE INDEX "exchange_rate_day_idx" ON "exchange_rate" USING btree ("day");
