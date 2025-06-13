@@ -5,7 +5,6 @@ import { databaseMiddleware } from "@/lib/orpc/middlewares/services/db.middlewar
 import { portalMiddleware } from "@/lib/orpc/middlewares/services/portal.middleware";
 import { ar } from "@/lib/orpc/procedures/auth.router";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { ORPCError } from "@orpc/client";
 import { eq } from "drizzle-orm";
 
 const CREATE_ACCOUNT_MUTATION = portalGraphql(`
@@ -26,11 +25,14 @@ export const create = ar.account.create
   // )
   .use(databaseMiddleware)
   .use(portalMiddleware)
-  .handler(async ({ context }) => {
+  .handler(async ({ context, errors }) => {
     const sender = context.auth.user;
 
     if (sender.walletAddress) {
-      throw new ORPCError("Wallet already created");
+      // 409 Conflict is more appropriate for "resource already exists"
+      throw errors.CONFLICT({
+        message: "Wallet already created for this user",
+      });
     }
 
     // TODO JAN: i can call this twice for the same id, is that normal?
@@ -43,7 +45,12 @@ export const create = ar.account.create
     );
 
     if (!createWallet?.address) {
-      throw new ORPCError("Failed to create wallet");
+      throw errors.PORTAL_ERROR({
+        data: {
+          operation: "createWallet",
+          details: "Failed to create wallet in portal service",
+        },
+      });
     }
 
     // Set the wallet address in the database
