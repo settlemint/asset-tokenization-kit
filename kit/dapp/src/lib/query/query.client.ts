@@ -1,8 +1,8 @@
+import { setupReactQueryErrorHandling } from "@/lib/sentry/react-query-integration";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
-import { setupReactQueryErrorHandling } from "@/lib/sentry/react-query-integration";
 
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,

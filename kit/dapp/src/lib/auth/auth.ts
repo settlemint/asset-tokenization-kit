@@ -8,19 +8,21 @@ import { db } from "@/lib/db";
 import * as authSchema from "@/lib/db/schema-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
-import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { env } from "../config/env";
 import { metadata } from "../config/metadata";
-import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
+import {
+  accessControl,
+  adminRole,
+  investorRole,
+  issuerRole,
+} from "./permissions";
 import { pincode } from "./plugins/pincode-plugin";
 import { secretCodes } from "./plugins/secret-codes-plugin";
 import twoFactorPlugin from "./plugins/two-factor";
-import { createUserWallet } from "./portal";
 
 const hasEmailConfigured = env.RESEND_API_KEY !== undefined;
 
@@ -73,17 +75,6 @@ export const auth = betterAuth({
         required: false,
         unique: true,
       },
-      lastLoginAt: {
-        type: "date",
-        required: false,
-        input: false,
-      },
-      role: {
-        type: "string",
-        required: true,
-        defaultValue: "investor",
-        input: false,
-      },
       currency: {
         type: "string",
         required: false,
@@ -134,53 +125,8 @@ export const auth = betterAuth({
       },
     },
   },
-  databaseHooks: {
-    user: {
-      create: {
-        before: async (user) => {
-          try {
-            const wallet = await createUserWallet({
-              keyVaultId: env.SETTLEMINT_HD_PRIVATE_KEY,
-              name: user.email,
-            });
-
-            if (!wallet.createWallet?.address) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Failed to create wallet",
-              });
-            }
-
-            const firstUser = await db.query.user.findFirst();
-            return {
-              data: {
-                ...user,
-                wallet: wallet.createWallet.address,
-                role: firstUser ? "user" : "admin",
-              },
-            };
-          } catch (error) {
-            console.error("Failed to create user wallet", error);
-            throw new APIError("BAD_REQUEST", {
-              message: "Failed to create user wallet",
-              cause: error instanceof Error ? error : undefined,
-            });
-          }
-        },
-      },
-    },
-    session: {
-      create: {
-        before: async (session) => {
-          await db
-            .update(authSchema.user)
-            .set({ lastLoginAt: new Date() })
-            .where(eq(authSchema.user.id, session.userId));
-          return {
-            data: session,
-          };
-        },
-      },
-    },
+  hooks: {
+    // TODO JAN: create a middleware that checks if we have a wallet and identity, if not redirect to the user onboarding section
   },
   session: {
     session: {
@@ -202,7 +148,7 @@ export const auth = betterAuth({
       ac: accessControl,
       roles: {
         admin: adminRole,
-        user: userRole,
+        investor: investorRole,
         issuer: issuerRole,
       },
     }),

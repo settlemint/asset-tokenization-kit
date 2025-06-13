@@ -1,8 +1,8 @@
 import {
   accessControl,
   adminRole,
+  investorRole,
   issuerRole,
-  userRole,
 } from "@/lib/auth/permissions";
 import {
   adminClient,
@@ -30,7 +30,7 @@ const client = createAuthClient({
       ac: accessControl,
       roles: {
         admin: adminRole,
-        user: userRole,
+        investor: investorRole,
         issuer: issuerRole,
       },
     }),

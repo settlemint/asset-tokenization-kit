@@ -1,8 +1,8 @@
 "use client";
 
-import { BlockForm } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/block-form/form";
-import { MintForm } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/mint-form/form";
-import { FreezeForm } from "@/app/[locale]/(private)/assets/[assettype]/[address]/holders/_components/actions/freeze-form/form";
+// import { BlockForm } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/block-form/form";
+// import { MintForm } from "@/app/[locale]/(private)/assets/[assettype]/[address]/_components/mint-form/form";
+// import { FreezeForm } from "@/app/[locale]/(private)/assets/[assettype]/[address]/holders/_components/actions/freeze-form/form";
 import { AssetStatusPill } from "@/components/blocks/asset-status-pill/asset-status-pill";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { defineMeta, filterFn } from "@/lib/filters";
@@ -200,13 +200,14 @@ export function Columns() {
                 id: "block-form",
                 label: t("trigger-label.block"),
                 component: ({ open, onOpenChange }) => (
-                  <BlockForm
-                    address={row.original.asset.id}
-                    assettype={row.original.asset.type}
-                    userAddress={row.original.account.id}
-                    open={open}
-                    onOpenChange={onOpenChange}
-                  />
+                  // <BlockForm
+                  //   address={row.original.asset.id}
+                  //   assettype={row.original.asset.type}
+                  //   userAddress={row.original.account.id}
+                  //   open={open}
+                  //   onOpenChange={onOpenChange}
+                  // />
+                  <>todo</>
                 ),
                 disabled: row.original.asset.paused,
                 hidden: !hasBlocklist(row.original.asset.type),
@@ -215,16 +216,17 @@ export function Columns() {
                 id: "freeze-form",
                 label: t("trigger-label.freeze"),
                 component: ({ open, onOpenChange }) => (
-                  <FreezeForm
-                    address={row.original.asset.id}
-                    userAddress={row.original.account.id}
-                    balance={row.original.value}
-                    symbol={row.original.asset.symbol}
-                    assettype={row.original.asset.type}
-                    decimals={row.original.asset.decimals}
-                    open={open}
-                    onOpenChange={onOpenChange}
-                  />
+                  // <FreezeForm
+                  //   address={row.original.asset.id}
+                  //   userAddress={row.original.account.id}
+                  //   balance={row.original.value}
+                  //   symbol={row.original.asset.symbol}
+                  //   assettype={row.original.asset.type}
+                  //   decimals={row.original.asset.decimals}
+                  //   open={open}
+                  //   onOpenChange={onOpenChange}
+                  // />
+                  <>todo</>
                 ),
                 disabled: row.original.asset.paused || row.original.value === 0,
                 hidden: !hasFreeze(row.original.asset.type),
@@ -233,17 +235,18 @@ export function Columns() {
                 id: "mint-form",
                 label: t("trigger-label.mint"),
                 component: ({ open, onOpenChange }) => (
-                  <MintForm
-                    address={row.original.asset.id}
-                    recipient={row.original.account.id}
-                    assettype={row.original.asset.type}
-                    open={open}
-                    onOpenChange={onOpenChange}
-                    max={row.original.asset.totalSupply}
-                    decimals={row.original.asset.decimals}
-                    symbol={row.original.asset.symbol}
-                    allowlist={row.original.asset.allowlist ?? []}
-                  />
+                  // <MintForm
+                  //   address={row.original.asset.id}
+                  //   recipient={row.original.account.id}
+                  //   assettype={row.original.asset.type}
+                  //   open={open}
+                  //   onOpenChange={onOpenChange}
+                  //   max={row.original.asset.totalSupply}
+                  //   decimals={row.original.asset.decimals}
+                  //   symbol={row.original.asset.symbol}
+                  //   allowlist={row.original.asset.allowlist ?? []}
+                  // />
+                  <>todo</>
                 ),
                 disabled:
                   row.original.asset.paused ||
