@@ -61,8 +61,6 @@ import { ATKTrustedIssuersRegistryProxy } from "./trusted-issuers-registry/ATKTr
 import { ATKTopicSchemeRegistryProxy } from "./topic-scheme-registry/ATKTopicSchemeRegistryProxy.sol";
 import { ATKIdentityFactoryProxy } from "./identity-factory/ATKIdentityFactoryProxy.sol";
 import { ATKTokenFactoryProxy } from "./token-factory/ATKTokenFactoryProxy.sol";
-import { IATKXvPSettlementFactory } from "./xvp/IATKXvPSettlementFactory.sol";
-import { ATKXvPSettlementFactoryProxy } from "./xvp/ATKXvPSettlementFactoryProxy.sol";
 
 /// @title ATKSystem Contract
 /// @author SettleMint Tokenization Services
@@ -100,7 +98,6 @@ contract ATKSystemImplementation is
     bytes4 private constant _IIDENTITY_ID = type(IIdentity).interfaceId;
     bytes4 private constant _IATK_TOKEN_FACTORY_ID = type(IATKTokenFactory).interfaceId;
     bytes4 private constant _ISMART_TOKEN_ACCESS_MANAGER_ID = type(ISMARTTokenAccessManager).interfaceId;
-    bytes4 private constant _IATK_XVP_SETTLEMENT_FACTORY_ID = type(IATKXvPSettlementFactory).interfaceId;
 
     // --- State Variables ---
     // State variables store data persistently on the blockchain.

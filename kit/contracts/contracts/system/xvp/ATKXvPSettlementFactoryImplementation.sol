@@ -2,19 +2,26 @@
 pragma solidity ^0.8.27;
 
 import { XvPSettlement } from "./ATKXvPSettlement.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { Context } from "@openzeppelin/contracts/utils/Context.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { IATKXvPSettlementFactory } from "./IATKXvPSettlementFactory.sol";
 
 /// @title XvPSettlementFactory - A factory contract for creating XvPSettlement contracts
 /// @notice This contract allows the creation of new XvPSettlement contracts with deterministic addresses using CREATE2.
-/// @dev Inherits from ReentrancyGuard for protection against reentrancy attacks and ERC2771Context for
-/// meta-transaction support. Uses CREATE2 for deterministic deployment addresses and maintains a registry
-/// of deployed settlement contracts.
+/// @dev Inherits from ERC2771ContextUpgradeable for meta-transaction support and AccessControlUpgradeable for role
+/// management.
+/// Uses CREATE2 for deterministic deployment addresses and maintains a registry of deployed settlement contracts.
 /// @custom:security-contact support@settlemint.com
-contract ATKXvPSettlementFactory is IATKXvPSettlementFactory, ReentrancyGuard, ERC2771Context, AccessControl {
+contract ATKXvPSettlementFactoryImplementation is
+    Initializable,
+    IATKXvPSettlementFactory,
+    ERC165Upgradeable,
+    ERC2771ContextUpgradeable,
+    AccessControlUpgradeable
+{
     /// @notice Custom errors for the XvPSettlementFactory contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error AddressAlreadyDeployed();
@@ -30,27 +37,34 @@ contract ATKXvPSettlementFactory is IATKXvPSettlementFactory, ReentrancyGuard, E
     /// @notice Flag to track if the contract has been initialized
     bool private _initialized;
 
+    /// @notice The address of the trusted forwarder for meta-transactions
+    address private _trustedForwarder;
+
     /// @notice Emitted when a new XvPSettlement contract is created
     /// @param settlement The address of the newly created settlement contract
     /// @param creator The address that created the settlement contract
     event XvPSettlementCreated(address indexed settlement, address indexed creator);
 
-    /// @notice Deploys a new XvPSettlementFactory contract
-    /// @dev Sets up the factory with meta-transaction support
-    /// @param forwarder The address of the trusted forwarder for meta-transactions
-    constructor(address forwarder) ERC2771Context(forwarder) { }
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
+        _trustedForwarder = forwarder;
+        _disableInitializers();
+    }
 
-    /// @notice Initializes the factory with an admin address
+    /// @notice Initializes the factory with an admin address and trusted forwarder
     /// @dev Can only be called once, sets up initial roles
     /// @param initialAdmin The address that will be granted admin role
-    function initialize(address initialAdmin) external {
+    function initialize(address forwarder, address initialAdmin) public initializer {
         if (_initialized) revert AlreadyInitialized();
         if (initialAdmin == address(0)) revert ZeroAddressNotAllowed();
+        if (forwarder == address(0)) revert ZeroAddressNotAllowed();
 
-        _initialized = true;
+        __ERC165_init();
+        __AccessControl_init();
 
-        // Setup admin role for potential future upgrades
+        _trustedForwarder = forwarder;
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+        _initialized = true;
     }
 
     /// @notice Creates a new XvPSettlement contract
@@ -66,7 +80,6 @@ contract ATKXvPSettlementFactory is IATKXvPSettlementFactory, ReentrancyGuard, E
         bool autoExecute
     )
         external
-        nonReentrant
         returns (address contractAddress)
     {
         if (cutoffDate <= block.timestamp) revert InvalidCutoffDate();
@@ -81,7 +94,7 @@ contract ATKXvPSettlementFactory is IATKXvPSettlementFactory, ReentrancyGuard, E
 
         // Deploy the XvPSettlement contract with all parameters including flows
         XvPSettlement newXvPSettlement =
-            new XvPSettlement{ salt: salt }(trustedForwarder(), cutoffDate, autoExecute, flows);
+            new XvPSettlement{ salt: salt }(_trustedForwarder, cutoffDate, autoExecute, flows);
 
         contractAddress = address(newXvPSettlement);
         isFactoryContract[contractAddress] = true;
@@ -109,12 +122,13 @@ contract ATKXvPSettlementFactory is IATKXvPSettlementFactory, ReentrancyGuard, E
 
         bytes32 creationCodeHash = keccak256(
             abi.encodePacked(
-                type(XvPSettlement).creationCode, abi.encode(trustedForwarder(), cutoffDate, autoExecute, flows)
+                type(XvPSettlement).creationCode, abi.encode(_trustedForwarder, cutoffDate, autoExecute, flows)
             )
         );
 
         predicted =
             address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, creationCodeHash)))));
+        return predicted;
     }
 
     /// @notice Calculates the salt for CREATE2 deployment
@@ -144,18 +158,37 @@ contract ATKXvPSettlementFactory is IATKXvPSettlementFactory, ReentrancyGuard, E
         return isFactoryContract[settlement];
     }
 
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(AccessControlUpgradeable, ERC165Upgradeable)
+        returns (bool)
+    {
+        return interfaceId == type(IATKXvPSettlementFactory).interfaceId || super.supportsInterface(interfaceId);
+    }
+
     /// @dev Override for _msgSender() to support meta-transactions
-    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
-        return ERC2771Context._msgSender();
+    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
+        return super._msgSender();
     }
 
     /// @dev Override for _msgData() to support meta-transactions
-    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
-        return ERC2771Context._msgData();
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
+        return super._msgData();
     }
 
     /// @dev Override for _contextSuffixLength() to support meta-transactions
-    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
-        return ERC2771Context._contextSuffixLength();
+    function _contextSuffixLength()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
+        return super._contextSuffixLength();
     }
 }

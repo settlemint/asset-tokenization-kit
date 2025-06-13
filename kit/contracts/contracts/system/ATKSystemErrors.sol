@@ -127,14 +127,6 @@ error InvalidTokenImplementationInterface();
 /// address(0).
 error InitializationWithZeroAddress();
 
-<<<<<<< HEAD
-/// @notice Error indicating that the XVP Settlement Factory implementation address has not been set.
-error XvPSettlementFactoryImplementationNotSet();
-
-/// @notice Error indicating that the XVP Factory has already been created.
-error XvPFactoryAlreadyCreated();
-=======
 /// @notice Error indicating that an invalid ATKSystem implementation address was provided.
 /// @dev This error is thrown if the ATKSystem implementation address is the zero address.
 error InvalidSystemImplementation();
->>>>>>> origin/main

@@ -7,9 +7,10 @@ import { XvPSettlement } from "./ATKXvPSettlement.sol";
 /// @notice Interface for the XvP Settlement Factory contract
 /// @dev Defines the core functionality that must be implemented by the XvP Settlement Factory
 interface IATKXvPSettlementFactory {
-    /// @notice Initializes the factory with an admin address
+    /// @notice Initializes the factory with a trusted forwarder and an admin address
+    /// @param forwarder The address of the trusted forwarder
     /// @param initialAdmin The address that will be granted admin role
-    function initialize(address initialAdmin) external;
+    function initialize(address forwarder, address initialAdmin) external;
 
     /// @notice Creates a new XvPSettlement contract
     /// @param flows The array of token flows to include in the settlement

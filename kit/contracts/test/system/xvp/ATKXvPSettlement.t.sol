@@ -3,14 +3,15 @@ pragma solidity ^0.8.27;
 
 import { Test } from "forge-std/Test.sol";
 import { XvPSettlement } from "../../../contracts/system/xvp/ATKXvPSettlement.sol";
-import { ATKXvPSettlementFactory } from "../../../contracts/system/xvp/ATKXvPSettlementFactory.sol";
+import { ATKXvPSettlementFactoryImplementation } from
+    "../../../contracts/system/xvp/ATKXvPSettlementFactoryImplementation.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ATKForwarder } from "../../../contracts/vendor/ATKForwarder.sol";
 import { ERC20Mock } from "../../mocks/ERC20Mock.sol";
 
 contract XvPSettlementTest is Test {
-    ATKXvPSettlementFactory public factory;
+    ATKXvPSettlementFactoryImplementation public factory;
     ATKForwarder public forwarder;
     ERC20Mock public tokenA;
     ERC20Mock public tokenB;
@@ -49,7 +50,7 @@ contract XvPSettlementTest is Test {
 
         // Deploy XvPSettlementFactory
         vm.prank(admin);
-        factory = new ATKXvPSettlementFactory(address(forwarder));
+        factory = new ATKXvPSettlementFactoryImplementation(address(forwarder));
     }
 
     // ========================================================================
@@ -416,7 +417,7 @@ contract XvPSettlementTest is Test {
 
         // Should revert with InvalidCutoffDate
         vm.prank(alice);
-        vm.expectRevert(ATKXvPSettlementFactory.InvalidCutoffDate.selector);
+        vm.expectRevert(ATKXvPSettlementFactoryImplementation.InvalidCutoffDate.selector);
         factory.create(flows, pastCutoffDate, false);
 
         // Test with zero amount
@@ -558,7 +559,7 @@ contract XvPSettlementTest is Test {
 
         // Try to create the same settlement again
         vm.prank(alice);
-        vm.expectRevert(ATKXvPSettlementFactory.AddressAlreadyDeployed.selector);
+        vm.expectRevert(ATKXvPSettlementFactoryImplementation.AddressAlreadyDeployed.selector);
         factory.create(flows, cutoffDate, autoExecute);
     }
 

@@ -12,6 +12,7 @@ import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 contract ATKXvPSettlementFactoryProxy {
     /// @notice The ATKSystem contract that manages this proxy
     IATKSystem private immutable _system;
+    address private immutable _forwarder;
 
     /// @notice Custom errors
     error OnlySystem();
@@ -27,13 +28,15 @@ contract ATKXvPSettlementFactoryProxy {
 
     /// @notice Initializes the proxy with the ATKSystem contract address
     /// @param system_ The address of the ATKSystem contract
+    /// @param forwarder_ The address of the forwarder
     /// @param initialAdmin_ The address that will be granted admin role
-    constructor(address system_, address initialAdmin_) {
+    constructor(address system_, address forwarder_, address initialAdmin_) {
         _system = IATKSystem(system_);
+        _forwarder = forwarder_;
 
         // Initialize the implementation contract
-        (bool success,) = _system.xvpSettlementFactoryImplementation().delegatecall(
-            abi.encodeWithSelector(IATKXvPSettlementFactory.initialize.selector, initialAdmin_)
+        (bool success,) = _system.addonImplementation(keccak256("XvPSettlementFactory")).delegatecall(
+            abi.encodeWithSelector(IATKXvPSettlementFactory.initialize.selector, forwarder_, initialAdmin_)
         );
         if (!success) revert DelegateCallFailed();
     }
@@ -41,7 +44,7 @@ contract ATKXvPSettlementFactoryProxy {
     /// @dev Fallback function that delegates all calls to the implementation contract
     /// @notice This function handles all calls to the proxy by delegating them to the implementation
     fallback() external payable {
-        address implementation = _system.xvpSettlementFactoryImplementation();
+        address implementation = _system.addonImplementation(keccak256("XvPSettlementFactory"));
         assembly {
             // Copy msg.data. We take full control of memory in this inline assembly
             // block because it will not return to Solidity code. We overwrite the

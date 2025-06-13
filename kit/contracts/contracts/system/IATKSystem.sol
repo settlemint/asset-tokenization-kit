@@ -332,39 +332,4 @@ interface IATKSystem is IERC165 {
     /// you should use this proxy address. It will forward calls to the current logic implementation.
     /// @return identityVerificationModuleAddress The blockchain address of the identity verification module's proxy.
     function identityVerificationModule() external view returns (address identityVerificationModuleAddress);
-
-    /// @notice Emitted when a XVP Settlement Factory is created.
-    /// @param creator The address of the creator of the XVP Settlement Factory.
-    /// @param proxy The address of the deployed XVP Settlement Factory proxy.
-    /// @param implementation The address of the deployed XVP Settlement Factory implementation.
-    event XvPSettlementFactoryCreated(address indexed creator, address indexed proxy, address indexed implementation);
-
-    /// @notice Emitted when the implementation of the XVP Settlement Factory is updated.
-    /// @param updater The address of the updater of the XVP Settlement Factory.
-    /// @param implementation The address of the updated XVP Settlement Factory implementation.
-    event XvPSettlementFactoryImplementationUpdated(address indexed updater, address indexed implementation);
-
-    /// @notice Retrieves the current, active smart contract address of the XVP Settlement Factory's logic.
-    /// @dev XVP Settlement Factories are responsible for managing the settlement of XVP tokens.
-    /// This function returns the specific address of the contract that holds the actual programming code (the "logic")
-    /// for managing XVP settlements.
-    /// This address can change if the XVP Settlement Factory's logic is upgraded.
-    /// @return xvpSettlementFactoryImplementationAddress The blockchain address of the smart contract containing the
-    /// XVP Settlement Factory logic.
-    function xvpSettlementFactoryImplementation()
-        external
-        view
-        returns (address xvpSettlementFactoryImplementationAddress);
-
-    /// @notice Retrieves the smart contract address of the proxy for the XVP Settlement Factory.
-    /// @dev This function returns the stable, unchanging address of the XVP Settlement Factory's proxy contract.
-    /// To interact with the XVP Settlement Factory, you should use this proxy address. It will forward calls to the
-    /// current logic implementation.
-    /// @return xvpSettlementFactoryProxyAddress The blockchain address of the XVP Settlement Factory's proxy contract.
-    function xvpSettlementFactoryProxy() external view returns (address xvpSettlementFactoryProxyAddress);
-
-    /// @notice Creates a new XVP Settlement Factory implementation and proxy.
-    /// @dev This function is responsible for the creation of a new XVP Settlement Factory.
-    /// @return The address of the deployed XVP Settlement Factory proxy.
-    function createXvPFactory() external returns (address);
 }

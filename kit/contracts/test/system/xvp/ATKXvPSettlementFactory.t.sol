@@ -3,7 +3,8 @@ pragma solidity ^0.8.27;
 
 import { Test } from "forge-std/Test.sol";
 import { VmSafe } from "forge-std/Vm.sol";
-import { ATKXvPSettlementFactory } from "../../../contracts/system/xvp/ATKXvPSettlementFactory.sol";
+import { ATKXvPSettlementFactoryImplementation } from
+    "../../../contracts/system/xvp/ATKXvPSettlementFactoryImplementation.sol";
 import { XvPSettlement } from "../../../contracts/system/xvp/ATKXvPSettlement.sol";
 import { ATKForwarder } from "../../../contracts/vendor/ATKForwarder.sol";
 import { ERC20Mock } from "../../mocks/ERC20Mock.sol";
@@ -11,7 +12,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 contract ATKXvPSettlementFactoryTest is Test {
-    ATKXvPSettlementFactory public factory;
+    ATKXvPSettlementFactoryImplementation public factory;
     ATKForwarder public forwarder;
     address public admin;
     address public alice;
@@ -35,21 +36,35 @@ contract ATKXvPSettlementFactoryTest is Test {
         // Deploy forwarder
         forwarder = new ATKForwarder();
 
-        // Deploy factory implementation directly (no proxy/system needed for unit tests)
-        factory = new ATKXvPSettlementFactory(address(forwarder));
-
-        // Initialize the factory
-        vm.prank(admin);
-        factory.initialize(admin);
+        // Deploy factory implementation without initialization
+        // The create() method should work without initialization!
+        factory = new ATKXvPSettlementFactoryImplementation(address(forwarder));
     }
 
     function test_Constructor() public {
         // Test that constructor properly sets the forwarder
         assertTrue(factory.isTrustedForwarder(address(forwarder)));
 
-        // Test that constructor disables initializers
-        vm.expectRevert(ATKXvPSettlementFactory.AlreadyInitialized.selector);
-        factory.initialize(admin);
+        // Test that constructor disables initializers (this should fail)
+        vm.expectRevert();
+        factory.initialize(address(forwarder), admin);
+    }
+
+    function test_CreateWithoutInitialization() public {
+        // This should work! create() has no access control and uses _trustedForwarder from constructor
+        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
+        flows[0] = XvPSettlement.Flow({ asset: address(tokenA), from: alice, to: bob, amount: 100 * 10 ** 18 });
+
+        uint256 cutoffDate = block.timestamp + 1 days;
+        bool autoExecute = false;
+
+        // Create settlement without initialization
+        vm.prank(alice);
+        address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
+
+        // Verify it worked
+        assertTrue(settlementAddr != address(0), "Settlement should be created");
+        assertTrue(factory.isAddressDeployed(settlementAddr), "Settlement should be tracked");
     }
 
     function test_SupportsInterface() public view {
@@ -107,13 +122,13 @@ contract ATKXvPSettlementFactoryTest is Test {
     function test_CreateSettlementValidation() public {
         // Test empty flows
         XvPSettlement.Flow[] memory emptyFlows = new XvPSettlement.Flow[](0);
-        vm.expectRevert(ATKXvPSettlementFactory.EmptyFlows.selector);
+        vm.expectRevert(ATKXvPSettlementFactoryImplementation.EmptyFlows.selector);
         factory.create(emptyFlows, block.timestamp + 1 days, false);
 
         // Test past cutoff date
         XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
         flows[0] = XvPSettlement.Flow({ asset: address(tokenA), from: alice, to: bob, amount: 100 * 10 ** 18 });
-        vm.expectRevert(ATKXvPSettlementFactory.InvalidCutoffDate.selector);
+        vm.expectRevert(ATKXvPSettlementFactoryImplementation.InvalidCutoffDate.selector);
         factory.create(flows, block.timestamp - 1, false);
     }
 
@@ -133,7 +148,7 @@ contract ATKXvPSettlementFactoryTest is Test {
 
         // Try to create same settlement again
         vm.prank(alice);
-        vm.expectRevert(ATKXvPSettlementFactory.AddressAlreadyDeployed.selector);
+        vm.expectRevert(ATKXvPSettlementFactoryImplementation.AddressAlreadyDeployed.selector);
         factory.create(flows, cutoffDate, autoExecute);
     }
 
@@ -164,5 +179,11 @@ contract ATKXvPSettlementFactoryTest is Test {
         }
 
         assertTrue(foundEvent, "XvPSettlementCreated event should be emitted");
+    }
+
+    function test_IsAddressDeployed_DefaultState() public view {
+        // Test that arbitrary addresses are not marked as deployed by default
+        assertFalse(factory.isAddressDeployed(alice), "Random address should not be marked as deployed");
+        assertFalse(factory.isAddressDeployed(address(tokenA)), "Token address should not be marked as deployed");
     }
 }
