@@ -120,8 +120,15 @@ export const claimAirdropFunction = async ({
         baseParams
       );
 
+      const transactionHash = response.StandardAirdropClaim?.transactionHash;
+      if (!transactionHash) {
+        throw new Error(
+          "Failed to get transaction hash from StandardAirdropClaim"
+        );
+      }
+
       return await waitForIndexingTransactions(
-        safeParse(t.Hashes(), [response.StandardAirdropClaim?.transactionHash])
+        safeParse(t.Hashes(), [transactionHash])
       );
     }
     case "vesting": {
@@ -129,8 +136,16 @@ export const claimAirdropFunction = async ({
         ClaimVestingAirdrop,
         baseParams
       );
+
+      const transactionHash = response.VestingAirdropClaim?.transactionHash;
+      if (!transactionHash) {
+        throw new Error(
+          "Failed to get transaction hash from VestingAirdropClaim"
+        );
+      }
+
       return await waitForIndexingTransactions(
-        safeParse(t.Hashes(), [response.VestingAirdropClaim?.transactionHash])
+        safeParse(t.Hashes(), [transactionHash])
       );
     }
     case "push": {

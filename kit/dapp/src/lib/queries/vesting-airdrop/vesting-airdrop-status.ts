@@ -10,13 +10,16 @@ export function calculateVestingAirdropStatus({
   cliffDurationSeconds: string;
 }) {
   const currentTime = new Date();
+  const claimPeriodEndDate = new Date(
+    Number(claimPeriodEndMicroSeconds) / 1000
+  );
 
-  if (isBefore(currentTime, Number(claimPeriodEndMicroSeconds) * 1000)) {
+  if (isBefore(currentTime, claimPeriodEndDate)) {
     return "UPCOMING" as const;
   }
 
   const startTime = addSeconds(
-    Number(claimPeriodEndMicroSeconds) * 1000,
+    claimPeriodEndDate,
     Number(cliffDurationSeconds)
   );
   const endTime = addSeconds(startTime, Number(vestingDurationSeconds));

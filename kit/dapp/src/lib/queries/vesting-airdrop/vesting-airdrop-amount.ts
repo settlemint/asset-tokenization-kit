@@ -18,10 +18,12 @@ export function calculateClaimableAmount(
   }
 
   const currentTime = new Date();
-  const timeElapsed = currentTime.getTime() - vestingStart.getTime();
+  const timeElapsed = Math.floor(
+    (currentTime.getTime() - vestingStart.getTime()) / 1000
+  );
 
   let vestedAmount = BigInt(0);
-  if (timeElapsed >= vestingDuration) {
+  if (BigInt(timeElapsed) >= vestingDuration) {
     vestedAmount = amountExact; // Fully vested
   } else {
     vestedAmount = (amountExact * BigInt(timeElapsed)) / vestingDuration;
