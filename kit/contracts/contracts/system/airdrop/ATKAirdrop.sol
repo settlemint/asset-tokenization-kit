@@ -260,7 +260,7 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
     function _processBatchClaim(
         uint256[] calldata indices,
         address account,
-        uint256[] calldata claimAmounts,
+        uint256[] memory claimAmounts,
         uint256[] calldata totalAmounts,
         bytes32[][] calldata merkleProofs
     )
