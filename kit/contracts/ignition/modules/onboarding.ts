@@ -1,5 +1,6 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import ATKOnboardingFixedYieldScheduleFactoryModule from "./onboarding/addons/fixed-yield-schedule-factory";
+import ATKOnboardingXvPSettlementFactoryModule from "./onboarding/addons/xvp-settlement-factory";
 import ATKOnboardingBondModule from "./onboarding/assets/bond";
 import ATKOnboardingDepositModule from "./onboarding/assets/deposit";
 import ATKOnboardingEquityModule from "./onboarding/assets/equity";
@@ -39,6 +40,10 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     ATKOnboardingFixedYieldScheduleFactoryModule
   );
 
+  const { xvpSettlementFactory } = m.useModule(
+    ATKOnboardingXvPSettlementFactoryModule
+  );
+
   return {
     system,
     compliance,
@@ -53,6 +58,7 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     fundFactory,
     stablecoinFactory,
     fixedYieldScheduleFactory,
+    xvpSettlementFactory,
     // Compliance modules
     countryAllowListModule,
     countryBlockListModule,
