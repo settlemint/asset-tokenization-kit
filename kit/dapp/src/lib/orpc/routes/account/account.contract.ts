@@ -1,4 +1,5 @@
 import { AccountReadSchema } from "@/lib/orpc/routes/account/routes/account.read.schema";
+import { ethereumAddress } from "@/lib/utils/zod/validators/ethereum-address";
 import { ac } from "../../procedures/auth.contract";
 import { AccountCreateSchema } from "./routes/account.create.schema";
 import { AccountSchema } from "./routes/account.read.schema";
@@ -35,7 +36,7 @@ const create = ac
     tags: ["account"],
   })
   .input(AccountCreateSchema)
-  .output(AccountSchema);
+  .output(ethereumAddress);
 
 /**
  * System API contract collection.

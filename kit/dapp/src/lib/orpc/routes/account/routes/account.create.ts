@@ -1,8 +1,12 @@
+import { auth } from "@/lib/auth/auth";
 import { env } from "@/lib/config/env";
+import { user } from "@/lib/db/schema-auth";
+import { databaseMiddleware } from "@/lib/orpc/middlewares/services/db.middleware";
 import { portalMiddleware } from "@/lib/orpc/middlewares/services/portal.middleware";
 import { ar } from "@/lib/orpc/procedures/auth.router";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { ORPCError } from "@orpc/client";
+import { eq } from "drizzle-orm";
 
 const CREATE_ACCOUNT_MUTATION = portalGraphql(`
   mutation CreateAccountMutation($keyVaultId: String!, $userId: String!) {
@@ -20,10 +24,16 @@ export const create = ar.account.create
   //     roles: ["admin"],
   //   })
   // )
+  .use(databaseMiddleware)
   .use(portalMiddleware)
   .handler(async ({ context }) => {
     const sender = context.auth.user;
 
+    if (sender.walletAddress) {
+      throw new ORPCError("Wallet already created");
+    }
+
+    // TODO JAN: i can call this twice for the same id, is that normal?
     const { createWallet } = await context.portalClient.request(
       CREATE_ACCOUNT_MUTATION,
       {
@@ -36,8 +46,21 @@ export const create = ar.account.create
       throw new ORPCError("Failed to create wallet");
     }
 
-    return {
-      id: createWallet.address,
-      identity: null,
-    };
+    // Set the wallet address in the database
+    await context.db
+      .update(user)
+      .set({
+        walletAddress: createWallet.address,
+      })
+      .where(eq(user.id, sender.id));
+
+    // Refresh the cookie cache
+    await auth.api.getSession({
+      headers: context.headers,
+      query: {
+        disableCookieCache: true,
+      },
+    });
+
+    return createWallet.address;
   });
