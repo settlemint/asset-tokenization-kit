@@ -207,6 +207,7 @@ type TokenBalance @entity(immutable: false) {
   frozenExact: BigInt!
   available: BigDecimal!
   availableExact: BigInt!
+  basePriceClaim: IdentityClaim
 }
 
 # ==================================================
@@ -304,14 +305,20 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
 type SystemStatsData @entity(timeseries: true) {
   id: Int8!
   timestamp: Timestamp!
+
   system: System!
-  totalValueInBaseCurrency: BigDecimal! # Value of all tokens in the system in base FIAT currency
+
+  # Value of all tokens in the system in base FIAT currency
+  totalValueInBaseCurrency: BigDecimal!
 }
 
 type SystemStats @aggregation(intervals: ["hour", "day"], source: "SystemStatsData") {
   id: Int8!
   timestamp: Timestamp!
+
   system: System!
+
+  # Value of all tokens in the system in base FIAT currency
   totalValueInBaseCurrency: BigDecimal! @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
 }
 
@@ -322,6 +329,7 @@ type SystemStats @aggregation(intervals: ["hour", "day"], source: "SystemStatsDa
 type AccountStatsData @entity(timeseries: true) {
   id: Int8!
   timestamp: Timestamp!
+
   account: Account!
 
   # Value of all tokens for the account in base FIAT currency
@@ -334,6 +342,7 @@ type AccountStatsData @entity(timeseries: true) {
 type AccountStats @aggregation(intervals: ["hour", "day"], source: "AccountStatsData") {
   id: Int8!
   timestamp: Timestamp!
+
   account: Account!
 
   # Value metrics (in base FIAT currency)
@@ -370,16 +379,32 @@ type EventStats @aggregation(intervals: ["hour", "day"], source: "EventStatsData
 # ==================================================
 
 # Total count of tokens by type
-type TokenTypeStats @entity(timeseries: true) {
+type TokenTypeStatsData @entity(timeseries: true) {
   id: Int8!
+  timestamp: Timestamp!
+
   type: String!
+
   count: Int!
   # Percentage of total supply (eg bonds take 8% of the total supply accross all types)
   percentageOfTotalSupply: BigDecimal!
 }
 
+type TokenTypeStats @aggregation(intervals: ["hour", "day"], source: "TokenTypeStatsData") {
+ id: Int8!
+  timestamp: Timestamp!
+
+  type: String!
+
+  count: Int! @aggregate(fn: "last", arg: "count")
+  # Percentage of total supply (eg bonds take 8% of the total supply accross all types)
+  percentageOfTotalSupply: BigDecimal! @aggregate(fn: "last", arg: "percentageOfTotalSupply")
+}
+
 type TokenStatsData @entity(timeseries: true) {
   id: Int8!
+  timestamp: Timestamp!
+
   token: Token!
   type: String!
 
@@ -389,9 +414,6 @@ type TokenStatsData @entity(timeseries: true) {
 
   # Balance metrics
   balancesCount: Int!
-
-  # Event metrics
-  eventsCount: Int!
 
   # Supply metrics
   totalSupply: BigDecimal!
@@ -406,6 +428,8 @@ type TokenStatsData @entity(timeseries: true) {
 
 type TokenStats @aggregation(intervals: ["hour", "day"], source: "TokenStatsData") {
   id: Int8!
+  timestamp: Timestamp!
+
   token: Token!
   type: String!
 
@@ -415,9 +439,6 @@ type TokenStats @aggregation(intervals: ["hour", "day"], source: "TokenStatsData
 
   # Balance metrics
   balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
-
-  # Event metrics
-  eventsCount: Int! @aggregate(fn: "last", arg: "eventsCount")
 
   # Supply metrics
   totalSupply: BigDecimal! @aggregate(fn: "last", arg: "totalSupply")
@@ -433,6 +454,8 @@ type TokenStats @aggregation(intervals: ["hour", "day"], source: "TokenStatsData
 # Collateral statistics for tokens
 type TokenCollateralStatsData @entity(timeseries: true) {
   id: Int8!
+  timestamp: Timestamp!
+
   token: Token!
 
   collateral: BigDecimal!
@@ -445,6 +468,8 @@ type TokenCollateralStatsData @entity(timeseries: true) {
 
 type TokenCollateralStats @aggregation(intervals: ["hour", "day"], source: "TokenCollateralStatsData") {
   id: Int8!
+  timestamp: Timestamp!
+
   token: Token!
 
   collateral: BigDecimal! @aggregate(fn: "last", arg: "collateral")
@@ -458,6 +483,8 @@ type TokenCollateralStats @aggregation(intervals: ["hour", "day"], source: "Toke
 # Bond statistics for tokens
 type TokenBondStatsData @entity(timeseries: true) {
   id: Int8!
+  timestamp: Timestamp!
+
   token: Token!
 
   underlyingAssetBalanceAvailable: BigDecimal!
@@ -468,26 +495,23 @@ type TokenBondStatsData @entity(timeseries: true) {
 
 type TokenBondStats @aggregation(intervals: ["hour", "day"], source: "TokenBondStatsData") {
   id: Int8!
+  timestamp: Timestamp!
+
   token: Token!
 
   underlyingAssetBalanceAvailable: BigDecimal! @aggregate(fn: "last", arg: "underlyingAssetBalanceAvailable")
   underlyingAssetBalanceAvailableExact: BigInt! @aggregate(fn: "last", arg: "underlyingAssetBalanceAvailableExact")
   underlyingAssetBalanceRequired: BigDecimal! @aggregate(fn: "last", arg: "underlyingAssetBalanceRequired")
   underlyingAssetBalanceRequiredExact: BigInt! @aggregate(fn: "last", arg: "underlyingAssetBalanceRequiredExact")
-}
-
-# Fixed yield schedule statistics for tokens
-type TokenFixedYieldScheduleStats @entity(immutable: false) {
-  id: Int8!
-  token: Token!
-  fixedYieldSchedule: TokenFixedYieldSchedule!
-
-  coveredPercentage: BigDecimal!
+  coveredPercentage: BigDecimal! @aggregate(fn: "last", arg: "(underlyingAssetBalanceAvailable / underlyingAssetBalanceRequired) * 100")
 }
 
 # Token distribution statistics by concentration segments
-type TokenDistributionStats @entity(immutable: false) {
-  id: Bytes!
+type TokenDistributionStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+
+  token: Token!
 
   # Percentage owned by top 5 holders
   percentageOwnedByTop5Holders: BigDecimal!
@@ -519,13 +543,38 @@ type TokenDistributionStats @entity(immutable: false) {
   totalValueSegment5Exact: BigInt!
 }
 
-# ==================================================
-# TOKEN BALANCE STATISTICS
-# ==================================================
+type TokenDistributionStats @aggregation(intervals: ["hour", "day"], source: "TokenDistributionStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
 
-type TokenBalanceStats @entity(immutable: false) {
-  id: Bytes!
+  token: Token!
 
-  # Value metrics (in base FIAT currency)
-  valueInBaseCurrency: BigDecimal!
+  # Percentage owned by top 5 holders
+  percentageOwnedByTop5Holders: BigDecimal! @aggregate(fn: "last", arg: "percentageOwnedByTop5Holders")
+
+  # Concentration segments
+  # 0-2%
+  balancesCountSegment1: Int! @aggregate(fn: "last", arg: "balancesCountSegment1")
+  totalValueSegment1: BigDecimal! @aggregate(fn: "last", arg: "totalValueSegment1")
+  totalValueSegment1Exact: BigInt! @aggregate(fn: "last", arg: "totalValueSegment1Exact")
+
+  # 2-10%
+  balancesCountSegment2: Int! @aggregate(fn: "last", arg: "balancesCountSegment2")
+  totalValueSegment2: BigDecimal! @aggregate(fn: "last", arg: "totalValueSegment2")
+  totalValueSegment2Exact: BigInt! @aggregate(fn: "last", arg: "totalValueSegment2Exact")
+
+  # 10-20%
+  balancesCountSegment3: Int! @aggregate(fn: "last", arg: "balancesCountSegment3")
+  totalValueSegment3: BigDecimal! @aggregate(fn: "last", arg: "totalValueSegment3")
+  totalValueSegment3Exact: BigInt! @aggregate(fn: "last", arg: "totalValueSegment3Exact")
+
+  # 20-40%
+  balancesCountSegment4: Int! @aggregate(fn: "last", arg: "balancesCountSegment4")
+  totalValueSegment4: BigDecimal! @aggregate(fn: "last", arg: "totalValueSegment4")
+  totalValueSegment4Exact: BigInt! @aggregate(fn: "last", arg: "totalValueSegment4Exact")
+
+  # 40-100%
+  balancesCountSegment5: Int! @aggregate(fn: "last", arg: "balancesCountSegment5")
+  totalValueSegment5: BigDecimal! @aggregate(fn: "last", arg: "totalValueSegment5")
+  totalValueSegment5Exact: BigInt! @aggregate(fn: "last", arg: "totalValueSegment5Exact")
 }
