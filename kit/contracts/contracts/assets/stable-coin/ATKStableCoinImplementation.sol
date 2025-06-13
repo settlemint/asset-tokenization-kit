@@ -349,6 +349,17 @@ contract ATKStableCoinImplementation is
         return super.decimals();
     }
 
+    /// @inheritdoc SMARTUpgradeable
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(SMARTUpgradeable, IERC165)
+        returns (bool)
+    {
+        return interfaceId == type(IATKStableCoin).interfaceId || super.supportsInterface(interfaceId);
+    }
+
     // --- Hooks (Overrides for Chaining) ---
     // These ensure that logic from multiple inherited extensions (SMART, SMARTCustodian, etc.) is called correctly.
 
