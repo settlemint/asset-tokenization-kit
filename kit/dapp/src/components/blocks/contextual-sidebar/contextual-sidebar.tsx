@@ -1,7 +1,7 @@
 "use client";
 
 import { Logo } from "@/components/blocks/logo/logo";
-import { Separator } from "@/components/ui/separator";
+import { PlusIcon } from "@/components/ui/plus";
 import {
   Sidebar,
   SidebarContent,
@@ -16,7 +16,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { OrganizationSwitcher } from "../organization-switcher/organization-switcher";
 
 export function ContextualSidebar() {
   const t = useTranslations("layout.header");
@@ -59,16 +58,18 @@ export function ContextualSidebar() {
         </Tabs>
       </SidebarContent>
       <SidebarFooter>
-        <Separator />
-        <OrganizationSwitcher
-          organizations={[
-            {
-              name: "Organization 1",
-              logo: Logo,
-              plan: "Free",
-            },
-          ]}
-        />
+        <SidebarMenuButton
+          size="lg"
+          variant={"outline"}
+          className="bg-sidebar-primary data-[state=open]:bg-sidebar-primary data-[state=open]:text-sidebar-accent-foreground"
+        >
+          <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+            <PlusIcon />
+          </div>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium">Asset Designer</span>
+          </div>
+        </SidebarMenuButton>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

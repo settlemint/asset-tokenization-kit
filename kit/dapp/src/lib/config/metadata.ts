@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import StandardOGImage from "./metadata/standard-og.png";
 import { siteConfig } from "./site";
 
 /**
@@ -31,7 +30,7 @@ export const metadata = {
     siteName: siteConfig.name,
     images: [
       {
-        url: new URL(StandardOGImage.src, siteConfig.url).toString(),
+        url: new URL("/standard-og.png", siteConfig.url).toString(),
         width: 1200,
         height: 630,
         alt: siteConfig.name,
@@ -45,7 +44,7 @@ export const metadata = {
     creator: "@SettleMintCom",
     images: [
       {
-        url: new URL(StandardOGImage.src, siteConfig.url).toString(),
+        url: new URL("/standard-og.png", siteConfig.url).toString(),
         width: 1200,
         height: 630,
         alt: siteConfig.name,

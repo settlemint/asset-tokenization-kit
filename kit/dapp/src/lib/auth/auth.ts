@@ -73,11 +73,6 @@ export const auth = betterAuth({
         required: false,
         unique: true,
       },
-      kycVerifiedAt: {
-        type: "date",
-        required: false,
-        input: false,
-      },
       lastLoginAt: {
         type: "date",
         required: false,
@@ -86,7 +81,7 @@ export const auth = betterAuth({
       role: {
         type: "string",
         required: true,
-        defaultValue: "user",
+        defaultValue: "investor",
         input: false,
       },
       currency: {
