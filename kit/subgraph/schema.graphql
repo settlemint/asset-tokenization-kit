@@ -209,7 +209,6 @@ type TokenBalance @entity(immutable: false) {
   frozenExact: BigInt!
   available: BigDecimal!
   availableExact: BigInt!
-  basePriceClaim: IdentityClaim
 }
 
 # ==================================================
