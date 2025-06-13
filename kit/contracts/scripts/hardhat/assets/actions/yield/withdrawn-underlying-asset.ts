@@ -3,7 +3,7 @@ import { ATKContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { toDecimals } from "../../../utils/to-decimals";
+import { toBaseUnits } from "../../../utils/to-base-units";
 import { waitForEvent } from "../../../utils/wait-for-event";
 
 export const withdrawnUnderlyingAsset = async (
@@ -23,7 +23,7 @@ export const withdrawnUnderlyingAsset = async (
     abi: ATKContracts.ismartFixedYieldSchedule,
   });
 
-  const withdrawnAmount = toDecimals(amount, underlyingAsset.decimals);
+  const withdrawnAmount = toBaseUnits(amount, underlyingAsset.decimals);
   const transactionHash = await withDecodedRevertReason(() =>
     scheduleContract.write.withdrawUnderlyingAsset([to, withdrawnAmount])
   );

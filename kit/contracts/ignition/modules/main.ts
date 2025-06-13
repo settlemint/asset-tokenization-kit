@@ -1,4 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import FixedYieldScheduleFactoryModule from "./predeployed/addons/fixed-yield-schedule-factory";
 import BondModule from "./predeployed/assets/bond";
 import DepositModule from "./predeployed/assets/deposit";
 import EquityModule from "./predeployed/assets/equity";
@@ -23,7 +24,9 @@ const ATKModule = buildModule("ATKModule", (m) => {
     m.useModule(FundModule);
   const { stablecoinImplementation, stablecoinFactoryImplementation } =
     m.useModule(StableCoinModule);
-
+  const { fixedYieldScheduleFactoryImplementation } = m.useModule(
+    FixedYieldScheduleFactoryModule
+  );
   return {
     systemFactory,
     bondImplementation,
@@ -36,6 +39,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
     fundFactoryImplementation,
     stablecoinImplementation,
     stablecoinFactoryImplementation,
+    fixedYieldScheduleFactoryImplementation,
   };
 });
 

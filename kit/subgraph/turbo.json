@@ -10,7 +10,8 @@
     },
     "codegen:interfaceid": {
       "dependsOn": ["contracts#compile"],
-      "outputs": ["src/erc165/utils/interfaceids.ts"]
+      "outputs": ["src/erc165/utils/interfaceids.ts"],
+      "inputs": ["**/*.sol"]
     },
     "codegen:gql-tada": {
       "dependsOn": ["publish"],
@@ -30,7 +31,7 @@
       "dependsOn": ["codegen:gql-tada"]
     },
     "artifacts": {
-      "dependsOn": ["build"]
+      "dependsOn": ["build", "compile"]
     }
   }
 }

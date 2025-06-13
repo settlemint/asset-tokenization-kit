@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { ATKSystem } from "./ATKSystem.sol";
+import { ATKSystemImplementation } from "./ATKSystemImplementation.sol";
 import { IATKSystemFactory } from "./IATKSystemFactory.sol";
 import {
     ComplianceImplementationNotSet,
@@ -14,9 +14,11 @@ import {
     TokenAccessManagerImplementationNotSet,
     IndexOutOfBounds,
     TopicSchemeRegistryImplementationNotSet,
-    IdentityVerificationModuleNotSet
+    IdentityVerificationModuleNotSet,
+    InvalidSystemImplementation
 } from "./ATKSystemErrors.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 // --- Contract Definition ---
 
@@ -31,6 +33,9 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     // --- State Variables ---
     // Immutable variables are set once at construction and cannot be changed later, saving gas.
+
+    /// @notice The address of the ATKSystem implementation contract.
+    address public immutable atkSystemImplementation;
 
     /// @notice The default contract address for the compliance module's logic (implementation).
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial compliance
@@ -90,6 +95,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// It performs crucial checks to ensure that none of the provided implementation addresses are the zero address, as
     /// these are
     /// essential for the proper functioning of the `ATKSystem` instances that will be created.
+    /// @param atkSystemImplementation_ The address of the ATKSystem implementation contract.
     /// @param complianceImplementation_ The default address for the compliance module's logic contract.
     /// @param identityRegistryImplementation_ The default address for the identity registry module's logic contract.
     /// @param identityRegistryStorageImplementation_ The default address for the identity registry storage module's
@@ -107,6 +113,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// logic contract.
     /// @param forwarder_ The address of the trusted forwarder contract to be used for meta-transactions (ERC2771).
     constructor(
+        address atkSystemImplementation_,
         address complianceImplementation_,
         address identityRegistryImplementation_,
         address identityRegistryStorageImplementation_,
@@ -123,35 +130,20 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     {
         // Perform critical checks: ensure no implementation address is the zero address.
         // Reverting here prevents deploying a factory that would create non-functional ATKSystem instances.
+        if (atkSystemImplementation_ == address(0)) revert InvalidSystemImplementation();
         if (complianceImplementation_ == address(0)) revert ComplianceImplementationNotSet();
         if (identityRegistryImplementation_ == address(0)) revert IdentityRegistryImplementationNotSet();
-        if (identityRegistryStorageImplementation_ == address(0)) {
-            revert IdentityRegistryStorageImplementationNotSet();
-        }
-        if (trustedIssuersRegistryImplementation_ == address(0)) {
-            revert TrustedIssuersRegistryImplementationNotSet();
-        }
-        if (topicSchemeRegistryImplementation_ == address(0)) {
-            revert TopicSchemeRegistryImplementationNotSet();
-        }
-        if (identityFactoryImplementation_ == address(0)) {
-            revert IdentityFactoryImplementationNotSet();
-        }
-        if (identityImplementation_ == address(0)) {
-            revert IdentityImplementationNotSet(); // Assumes this custom error is defined in ATKSystemErrors.sol
-        }
-        if (tokenIdentityImplementation_ == address(0)) {
-            revert TokenIdentityImplementationNotSet(); // Assumes this custom error is defined in ATKSystemErrors.sol
-        }
-        if (tokenAccessManagerImplementation_ == address(0)) {
-            revert TokenAccessManagerImplementationNotSet(); // Assumes this custom error is defined in
-                // ATKSystemErrors.sol
-        }
-        if (identityVerificationModule_ == address(0)) {
-            revert IdentityVerificationModuleNotSet();
-        }
+        if (identityRegistryStorageImplementation_ == address(0)) revert IdentityRegistryStorageImplementationNotSet();
+        if (trustedIssuersRegistryImplementation_ == address(0)) revert TrustedIssuersRegistryImplementationNotSet();
+        if (topicSchemeRegistryImplementation_ == address(0)) revert TopicSchemeRegistryImplementationNotSet();
+        if (identityFactoryImplementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
+        if (identityImplementation_ == address(0)) revert IdentityImplementationNotSet();
+        if (tokenIdentityImplementation_ == address(0)) revert TokenIdentityImplementationNotSet();
+        if (tokenAccessManagerImplementation_ == address(0)) revert TokenAccessManagerImplementationNotSet();
+        if (identityVerificationModule_ == address(0)) revert IdentityVerificationModuleNotSet();
 
         // Set the immutable state variables with the provided addresses.
+        atkSystemImplementation = atkSystemImplementation_;
         defaultComplianceImplementation = complianceImplementation_;
         defaultIdentityRegistryImplementation = identityRegistryImplementation_;
         defaultIdentityRegistryStorageImplementation = identityRegistryStorageImplementation_;
@@ -184,7 +176,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         // Deploy a new ATKSystem contract instance.
         // It passes all the default implementation addresses stored in this factory, plus the factory's forwarder
         // address.
-        ATKSystem newSystem = new ATKSystem(
+        bytes memory callData = abi.encodeWithSelector(
+            ATKSystemImplementation.initialize.selector,
             sender,
             defaultComplianceImplementation,
             defaultIdentityRegistryImplementation,
@@ -195,12 +188,13 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
             defaultIdentityImplementation,
             defaultTokenIdentityImplementation,
             defaultTokenAccessManagerImplementation,
-            defaultIdentityVerificationModule,
-            factoryForwarder // The same forwarder is used for the new system.
+            defaultIdentityVerificationModule
         );
 
+        ERC1967Proxy proxy = new ERC1967Proxy(atkSystemImplementation, callData);
+
         // Get the address of the newly deployed contract.
-        systemAddress = address(newSystem);
+        systemAddress = address(proxy);
         // Add the new system's address to our tracking array.
         atkSystems.push(systemAddress);
 

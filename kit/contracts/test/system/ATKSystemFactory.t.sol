@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { ATKSystemFactory } from "../../contracts/system/ATKSystemFactory.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
-import { ATKSystem } from "../../contracts/system/ATKSystem.sol";
+import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {
@@ -47,6 +47,7 @@ contract ATKSystemFactoryTest is Test {
     ATKSystemFactory public factory;
 
     // Implementation addresses
+    address public systemImpl;
     address public complianceImpl;
     address public identityRegistryImpl;
     address public identityRegistryStorageImpl;
@@ -70,6 +71,7 @@ contract ATKSystemFactoryTest is Test {
         forwarder = makeAddr("forwarder");
 
         // Deploy all implementations
+        systemImpl = address(new ATKSystemImplementation(forwarder));
         complianceImpl = address(new ATKComplianceImplementation(forwarder));
         identityRegistryImpl = address(new ATKIdentityRegistryImplementation(forwarder));
         identityRegistryStorageImpl = address(new ATKIdentityRegistryStorageImplementation(forwarder));
@@ -83,6 +85,7 @@ contract ATKSystemFactoryTest is Test {
 
         // Deploy factory with valid implementations
         factory = new ATKSystemFactory(
+            systemImpl,
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -114,6 +117,7 @@ contract ATKSystemFactoryTest is Test {
     function test_ConstructorWithZeroComplianceImplementation() public {
         vm.expectRevert(ComplianceImplementationNotSet.selector);
         new ATKSystemFactory(
+            systemImpl,
             address(0), // Zero compliance implementation
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -131,6 +135,7 @@ contract ATKSystemFactoryTest is Test {
     function test_ConstructorWithZeroIdentityRegistryImplementation() public {
         vm.expectRevert(IdentityRegistryImplementationNotSet.selector);
         new ATKSystemFactory(
+            systemImpl,
             complianceImpl,
             address(0), // Zero identity registry implementation
             identityRegistryStorageImpl,
@@ -148,6 +153,7 @@ contract ATKSystemFactoryTest is Test {
     function test_ConstructorWithZeroIdentityRegistryStorageImplementation() public {
         vm.expectRevert(IdentityRegistryStorageImplementationNotSet.selector);
         new ATKSystemFactory(
+            systemImpl,
             complianceImpl,
             identityRegistryImpl,
             address(0), // Zero identity registry storage implementation
@@ -165,6 +171,7 @@ contract ATKSystemFactoryTest is Test {
     function test_ConstructorWithZeroTrustedIssuersRegistryImplementation() public {
         vm.expectRevert(TrustedIssuersRegistryImplementationNotSet.selector);
         new ATKSystemFactory(
+            systemImpl,
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -182,6 +189,7 @@ contract ATKSystemFactoryTest is Test {
     function test_ConstructorWithZeroTopicSchemeRegistryImplementation() public {
         vm.expectRevert(TopicSchemeRegistryImplementationNotSet.selector);
         new ATKSystemFactory(
+            systemImpl,
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -199,6 +207,7 @@ contract ATKSystemFactoryTest is Test {
     function test_ConstructorWithZeroIdentityFactoryImplementation() public {
         vm.expectRevert(IdentityFactoryImplementationNotSet.selector);
         new ATKSystemFactory(
+            systemImpl,
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -216,6 +225,7 @@ contract ATKSystemFactoryTest is Test {
     function test_ConstructorWithZeroIdentityImplementation() public {
         vm.expectRevert(IdentityImplementationNotSet.selector);
         new ATKSystemFactory(
+            systemImpl,
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -233,6 +243,7 @@ contract ATKSystemFactoryTest is Test {
     function test_ConstructorWithZeroTokenIdentityImplementation() public {
         vm.expectRevert(TokenIdentityImplementationNotSet.selector);
         new ATKSystemFactory(
+            systemImpl,
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -250,6 +261,7 @@ contract ATKSystemFactoryTest is Test {
     function test_ConstructorWithZeroTokenAccessManagerImplementation() public {
         vm.expectRevert(TokenAccessManagerImplementationNotSet.selector);
         new ATKSystemFactory(
+            systemImpl,
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -267,6 +279,7 @@ contract ATKSystemFactoryTest is Test {
     function test_ConstructorWithZeroIdentityVerificationModule() public {
         vm.expectRevert(IdentityVerificationModuleNotSet.selector);
         new ATKSystemFactory(
+            systemImpl,
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,
@@ -395,6 +408,7 @@ contract ATKSystemFactoryTest is Test {
     function test_CreateSystemWithZeroForwarder() public {
         // Test factory can be created with zero forwarder address
         ATKSystemFactory factoryWithZeroForwarder = new ATKSystemFactory(
+            systemImpl,
             complianceImpl,
             identityRegistryImpl,
             identityRegistryStorageImpl,

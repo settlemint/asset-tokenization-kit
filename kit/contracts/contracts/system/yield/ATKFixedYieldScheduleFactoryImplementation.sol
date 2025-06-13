@@ -3,10 +3,11 @@ pragma solidity 0.8.28;
 
 // OpenZeppelin Contracts
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interfaces
@@ -14,7 +15,7 @@ import { IATKFixedYieldScheduleFactory } from "./IATKFixedYieldScheduleFactory.s
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 import { IATKSystem } from "../IATKSystem.sol";
-import { IATKComplianceAllowList } from "../compliance/IATKComplianceAllowList.sol";
+import { IATKComplianceBypassList } from "../compliance/IATKComplianceBypassList.sol";
 
 // Implementations
 import { SMARTFixedYieldScheduleUpgradeable } from
@@ -36,7 +37,13 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 /// - **Registry**: Maintains an array `allSchedules` to keep track of all yield schedule proxies created.
 /// - **Meta-transactions**: Inherits `ERC2771Context` to support gasless operations if a trusted forwarder is
 /// configured.
-contract ATKFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl, IATKFixedYieldScheduleFactory {
+contract ATKFixedYieldScheduleFactoryImplementation is
+    Initializable,
+    IATKFixedYieldScheduleFactory,
+    ERC165Upgradeable,
+    ERC2771ContextUpgradeable,
+    AccessControlUpgradeable
+{
     /// @notice Address of the current `ATKFixedYieldSchedule` logic contract (implementation).
     address public atkFixedYieldScheduleImplementation;
 
@@ -47,18 +54,26 @@ contract ATKFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl, 
     /// schedule proxy contracts created by this factory.
     ISMARTFixedYieldSchedule[] private allSchedules;
 
-    /// @notice Constructor for the `ATKFixedYieldScheduleFactory`.
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
+        _disableInitializers();
+    }
+
+    /// @notice Initializes the `ATKFixedYieldScheduleFactory`.
     /// @dev Initializes the factory, deploys the initial `ATKFixedYieldSchedule` implementation,
     /// and sets up support for meta-transactions via ERC2771Context.
     /// @param systemAddress_ The address of the `IATKSystem` contract.
-    /// @param forwarder The address of the trusted forwarder contract for meta-transactions.
-    constructor(address systemAddress_, address forwarder) ERC2771Context(forwarder) AccessControl() {
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, _msgSender());
-        _grantRole(ATKSystemRoles.DEPLOYER_ROLE, _msgSender());
+    /// @param initialAdmin_ The address of the initial admin.
+    function initialize(address systemAddress_, address initialAdmin_) public initializer {
+        __AccessControl_init();
+
+        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin_);
+        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin_);
+        _grantRole(ATKSystemRoles.DEPLOYER_ROLE, initialAdmin_);
 
         systemAddress = systemAddress_;
 
+        address forwarder = trustedForwarder();
         // Deploy the initial implementation contract for SMARTFixedYieldSchedule.
         // The SMARTFixedYieldSchedule constructor now only calls _disableInitializers().
         SMARTFixedYieldScheduleUpgradeable initialImplementation = new SMARTFixedYieldScheduleUpgradeable(forwarder);
@@ -130,10 +145,10 @@ contract ATKFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl, 
         address complianceProxy = IATKSystem(systemAddress).complianceProxy();
         if (
             complianceProxy != address(0)
-                && IERC165(complianceProxy).supportsInterface(type(IATKComplianceAllowList).interfaceId)
+                && IERC165(complianceProxy).supportsInterface(type(IATKComplianceBypassList).interfaceId)
         ) {
             // Allow schedule to receive tokens
-            IATKComplianceAllowList(complianceProxy).addToAllowList(scheduleProxyAddress);
+            IATKComplianceBypassList(complianceProxy).addToBypassList(scheduleProxyAddress);
         }
 
         return scheduleProxyAddress;
@@ -145,28 +160,44 @@ contract ATKFixedYieldScheduleFactory is ERC165, ERC2771Context, AccessControl, 
     }
 
     /// @notice Returns the address of the current `ATKFixedYieldSchedule` logic contract (implementation).
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, AccessControl) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AccessControlUpgradeable, ERC165Upgradeable)
+        returns (bool)
+    {
         return interfaceId == type(IATKFixedYieldScheduleFactory).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /// @dev Overridden from `Context` and `ERC2771Context` to correctly identify the transaction sender,
     /// accounting for meta-transactions if a trusted forwarder is used.
     /// @return The actual sender of the transaction (`msg.sender` or the relayed sender).
-    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
         return super._msgSender();
     }
 
     /// @dev Overridden from `Context` and `ERC2771Context` to correctly retrieve the transaction data,
     /// accounting for meta-transactions.
     /// @return The actual transaction data (`msg.data` or the relayed data).
-    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
         return super._msgData();
     }
 
     /// @dev Overridden from `ERC2771Context` to define the length of the suffix appended to `msg.data` for relayed
     /// calls.
     /// @return The length of the context suffix (typically 20 bytes for the sender's address).
-    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+    function _contextSuffixLength()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
         return super._contextSuffixLength();
     }
 }

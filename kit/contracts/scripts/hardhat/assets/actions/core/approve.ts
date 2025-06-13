@@ -3,8 +3,8 @@ import { ATKContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatDecimals } from "../../../utils/format-decimals";
-import { toDecimals } from "../../../utils/to-decimals";
+import { formatBaseUnits } from "../../../utils/format-base-units";
+import { toBaseUnits } from "../../../utils/to-base-units";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const approve = async (
@@ -17,7 +17,7 @@ export const approve = async (
     abi: ATKContracts.ismart,
   });
 
-  const tokenAmount = toDecimals(amount, asset.decimals);
+  const tokenAmount = toBaseUnits(amount, asset.decimals);
 
   const transactionHash = await withDecodedRevertReason(() =>
     tokenContract.write.approve([to, tokenAmount])
@@ -26,6 +26,6 @@ export const approve = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Approve] ${formatDecimals(tokenAmount, asset.decimals)} ${asset.symbol} tokens to ${to}`
+    `[Approve] ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens to ${to}`
   );
 };

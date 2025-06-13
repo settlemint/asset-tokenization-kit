@@ -125,7 +125,7 @@ services:
       retries: 5
       start_period: 5s
   portal:
-    image: ghcr.io/settlemint/btp-scs-portal:8.5.7
+    image: ghcr.io/settlemint/btp-scs-portal:8.5.9
     container_name: atk-portal
     restart: unless-stopped
     depends_on:
@@ -220,7 +220,7 @@ services:
       GRAPH_IPFS_TIMEOUT: 60
       GRAPH_MAX_IPFS_FILE_BYTES: 52428800
       GRAPH_IPFS_REQUEST_RETRIES: 10
-      SUBGRAPH: "kit:QmXRc8QwAnJzVRPxbL8rVBbRaDZkrfFoQm3MLWgFyn5LQU"
+      SUBGRAPH: "kit:QmWLoCKmzXuWhZUsq1o5C6FyGYnBx2ei4nDGymvSvkUF4L"
     healthcheck:
       test: ["CMD-SHELL", "if timeout 1 bash -c '</dev/tcp/localhost/8000'; then echo 'Graph Node health check: SUCCESS'; else echo 'Graph Node health check: FAILED'; exit 1; fi"]
       interval: 2s

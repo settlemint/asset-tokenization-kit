@@ -65,6 +65,13 @@ interface ISMARTCustodian {
     /// @param amount The quantity of tokens that were unfrozen from the partial freeze.
     event TokensUnfrozen(address indexed sender, address indexed user, uint256 amount);
 
+    /// @notice Emitted when a forced transfer of tokens is executed by a custodian.
+    /// @param sender The address of the custodian who initiated the forced transfer. `indexed`.
+    /// @param from The source address of the tokens. `indexed`.
+    /// @param to The destination address of the tokens. `indexed`.
+    /// @param amount The amount of tokens transferred.
+    event ForcedTransfer(address indexed sender, address indexed from, address indexed to, uint256 amount);
+
     /// @notice Freezes or unfreezes an entire address, preventing or allowing standard token operations.
     /// @dev When an address is frozen, typically all standard transfers, mints (to it), and burns (from it)
     ///      are blocked. Unfreezing reverses this.

@@ -12,7 +12,7 @@ import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
 import { getAnvilTimeMilliseconds, getAnvilTimeSeconds } from "../utils/anvil";
-import { toDecimals } from "../utils/to-decimals";
+import { toBaseUnits } from "../utils/to-base-units";
 import { mature } from "./actions/bond/mature";
 import { burn } from "./actions/burnable/burn";
 import { setCap } from "./actions/capped/set-cap";
@@ -48,8 +48,8 @@ export const createBond = async (depositToken: Asset<any>) => {
   );
 
   const anvilTimeSeconds = await getAnvilTimeSeconds(owner);
-  const faceValue = toDecimals(0.000123, depositToken.decimals);
-  const cap = toDecimals(1_000_000, bond.decimals);
+  const faceValue = toBaseUnits(0.000123, depositToken.decimals);
+  const cap = toBaseUnits(1_000_000, bond.decimals);
   const transactionHash = await bondFactory.write.createBond([
     bond.name,
     bond.symbol,
@@ -69,7 +69,9 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   await bond.waitUntilDeployed(transactionHash);
 
-  await setupAsset(bond);
+  await setupAsset(bond, {
+    basePrice: 1.23,
+  });
 
   // core
   await mint(bond, owner, 100n);

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import { join } from "node:path";
-import { logger } from "../../../tools/logging";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 /**
@@ -12,13 +12,15 @@ import { getKitProjectPath } from "../../../tools/root";
  */
 
 const HARBOR_PROXY = "harbor.settlemint.com";
-const log = logger;
+const logger = createLogger({
+  level: process.env.LOG_LEVEL as LogLevel || process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
+});
 
 /**
  * Find the charts directory using intelligent root detection
  */
 async function findChartsDirectory(): Promise<string> {
-  log.debug("Finding charts directory...");
+  logger.debug("Finding charts directory...");
 
   // If we're already in kit/charts, use current directory
   const packageJsonFile = Bun.file(join(process.cwd(), "package.json"));
@@ -26,7 +28,7 @@ async function findChartsDirectory(): Promise<string> {
     try {
       const content = JSON.parse(await packageJsonFile.text());
       if (content.name === "charts") {
-        log.debug("Already in charts directory");
+        logger.debug("Already in charts directory");
         return process.cwd();
       }
     } catch {
@@ -37,10 +39,10 @@ async function findChartsDirectory(): Promise<string> {
   // Use root detection to find charts
   try {
     const chartsPath = getKitProjectPath("charts");
-    log.debug(`Found charts directory: ${chartsPath}`);
+    logger.debug(`Found charts directory: ${chartsPath}`);
     return chartsPath;
   } catch (error) {
-    log.error(`Could not find charts directory: ${error}`);
+    logger.error(`Could not find charts directory: ${error}`);
     throw new Error(
       "Could not find charts package.json file. Run this script from kit/charts or project root."
     );
@@ -65,7 +67,7 @@ async function findValuesFiles(dir: string): Promise<string[]> {
       }
     }
   } catch (error) {
-    log.warn(`Error scanning directory ${dir}: ${error}`);
+    logger.warn(`Error scanning directory ${dir}: ${error}`);
   }
 
   return files;
@@ -84,7 +86,7 @@ async function getChartFiles(projectDir: string): Promise<string[]> {
     // Try to get first item to verify directory exists
     await scanner.next();
   } catch {
-    log.error(`ATK directory not found: ${atkDir}`);
+    logger.error(`ATK directory not found: ${atkDir}`);
     return [];
   }
 
@@ -101,7 +103,7 @@ async function getChartFiles(projectDir: string): Promise<string[]> {
     if (await file.exists()) {
       existingFiles.push(filePath);
     } else {
-      log.warn(`File not found: ${filePath}`);
+      logger.warn(`File not found: ${filePath}`);
     }
   }
 
@@ -277,7 +279,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
 
     return { modified: wasModified, changes: changeCount };
   } catch (error) {
-    log.error(`Error processing ${filePath}: ${error}`);
+    logger.error(`Error processing ${filePath}: ${error}`);
     throw error;
   }
 }
@@ -286,7 +288,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
  * Main execution function
  */
 async function main(): Promise<void> {
-  log.info("Starting Harbor registry updates...");
+  logger.info("Starting Harbor registry updates...");
 
   let totalModified = 0;
   let totalChanges = 0;
@@ -294,17 +296,17 @@ async function main(): Promise<void> {
   try {
     // Find the charts directory
     const projectDir = await findChartsDirectory();
-    log.info(`Using charts directory: ${projectDir}`);
+    logger.info(`Using charts directory: ${projectDir}`);
 
     // Get all chart files to process
     const chartFiles = await getChartFiles(projectDir);
 
     if (chartFiles.length === 0) {
-      log.info("No chart files found to process");
+      logger.info("No chart files found to process");
       return;
     }
 
-    log.info(`Processing ${chartFiles.length} chart files...`);
+    logger.info(`Processing ${chartFiles.length} chart files...`);
 
     // Process all files in parallel
     const results = await Promise.allSettled(
@@ -313,9 +315,9 @@ async function main(): Promise<void> {
         const fileName = filePath.split("/").slice(-2).join("/");
 
         if (result.modified) {
-          log.success(`Updated ${fileName} (${result.changes} changes)`);
+          logger.info(`Updated ${fileName} (${result.changes} changes)`);
         } else {
-          log.debug(`No changes needed in ${fileName}`);
+          logger.debug(`No changes needed in ${fileName}`);
         }
 
         return result;
@@ -341,13 +343,13 @@ async function main(): Promise<void> {
     }
 
     if (totalModified > 0) {
-      log.success(`Successfully updated ${totalModified} files with ${totalChanges} total changes!`);
+      logger.info(`Successfully updated ${totalModified} files with ${totalChanges} total changes!`);
     } else {
-      log.info("All files are already up to date!");
+      logger.info("All files are already up to date!");
     }
 
   } catch (error) {
-    log.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
   }
 }

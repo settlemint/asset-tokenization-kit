@@ -55,6 +55,7 @@ export const createEquity = async () => {
   await setupAsset(equity, {
     assetClass: "Class A",
     assetCategory: "Category A",
+    basePrice: 173.02,
   });
 
   // core

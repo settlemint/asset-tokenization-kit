@@ -59,6 +59,7 @@ export const createFund = async () => {
   await setupAsset(fund, {
     assetClass: "Class A",
     assetCategory: "Category A",
+    basePrice: 20.0,
   });
 
   // core

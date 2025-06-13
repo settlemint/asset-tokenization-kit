@@ -73,6 +73,11 @@ error TokenAccessManagerImplementationNotSet();
 /// zero or has not been configured in the `SMARTSystem`.
 error IdentityVerificationModuleNotSet();
 
+/// @notice Error indicating that the system addon implementation address has not been set.
+/// @dev This error is thrown if an operation requires the system addon implementation, but its logic contract address
+/// is zero or has not been configured in the `SMARTSystem`.
+error AddonImplementationNotSet(bytes32 addonTypeHash);
+
 /// @notice Error indicating that an index provided for accessing an array or list is out of its valid range.
 /// @dev For example, trying to access the 5th element in an array that only has 3 elements.
 /// @param index The invalid index that was attempted to be accessed.
@@ -99,13 +104,19 @@ error InvalidTokenFactoryAddress();
 error TokenFactoryImplementationNotSet(bytes32 registryTypeHash);
 
 /// @notice Error indicating that a token factory type hash has already been registered.
-error TokenFactoryTypeAlreadyRegistered(bytes32 registryTypeHash);
+error TokenFactoryTypeAlreadyRegistered(string typeName);
+
+/// @notice Error indicating that a system addon type hash has already been registered.
+error AddonTypeAlreadyRegistered(string typeName);
 
 /// @notice Error indicating that the token implementation address has not been set.
 error TokenImplementationNotSet();
 
 /// @notice Error indicating that an invalid token implementation address was provided.
 error InvalidTokenImplementationAddress();
+
+/// @notice Error indicating that an invalid addon address was provided.
+error InvalidAddonAddress();
 
 /// @notice Error indicating that an invalid token implementation interface was provided.
 error InvalidTokenImplementationInterface();
@@ -115,3 +126,7 @@ error InvalidTokenImplementationInterface();
 /// @dev This typically occurs in proxy constructors if the logic contract address fetched from the system is
 /// address(0).
 error InitializationWithZeroAddress();
+
+/// @notice Error indicating that an invalid ATKSystem implementation address was provided.
+/// @dev This error is thrown if the ATKSystem implementation address is the zero address.
+error InvalidSystemImplementation();

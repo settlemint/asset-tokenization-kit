@@ -7,9 +7,9 @@
  * Converted from bash script to TypeScript for better maintainability and integration
  */
 
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { $ } from "bun";
 import { basename, join, relative } from "node:path";
-import { logger, LogLevel } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -33,7 +33,12 @@ interface InterfaceMetadata {
 // CONSTANTS AND CONFIGURATION
 // =============================================================================
 
-const log = logger;
+const logger = createLogger({
+  level:
+    (process.env.LOG_LEVEL as LogLevel) ||
+    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+    "info",
+});
 const DEFAULT_OUTPUT_DIR = "src/erc165/utils";
 const DEFAULT_OUTPUT_FILE = "interfaceids.ts";
 const DEFAULT_TEMP_CONTRACT = "temp_interface_calc.sol";
@@ -47,7 +52,7 @@ let SUBGRAPH_ROOT: string;
 // =============================================================================
 
 function showUsage(): void {
-  console.log(`
+  logger.info(`
 Usage: bun run interfaceid.ts [OPTIONS]
 
 This script calculates ERC165 interface IDs for all interfaces starting with capital "I".
@@ -63,7 +68,8 @@ OPTIONS:
     --temp-contract FILE    Set temporary contract filename (default: ${DEFAULT_TEMP_CONTRACT})
 
 ENVIRONMENT VARIABLES:
-    LOG_LEVEL               Set logging level (DEBUG, INFO, WARN, ERROR)
+    LOG_LEVEL               Set logging level (debug, info, warn, error)
+    SETTLEMINT_LOG_LEVEL    Alternative env var for log level
     OUTPUT_DIR              Set output directory
     OUTPUT_FILE             Set output filename
 
@@ -100,12 +106,13 @@ function parseArguments(): ScriptOptions {
         process.exit(0);
       case "-v":
       case "--verbose":
-        log.setLevel(LogLevel.DEBUG);
-        log.info("Verbose mode enabled");
+        // Note: SettleMint SDK logger level is set at creation time
+        logger.info("Verbose mode requested (set LOG_LEVEL=debug in env)");
         break;
       case "-q":
       case "--quiet":
-        log.setLevel(LogLevel.ERROR);
+        // Note: SettleMint SDK logger level is set at creation time
+        // Quiet mode can be achieved by setting LOG_LEVEL=error in env
         break;
       case "--skip-build":
         options.skipBuild = true;
@@ -121,7 +128,7 @@ function parseArguments(): ScriptOptions {
         options.tempContract = args[++i];
         break;
       default:
-        log.error(`Unknown argument: ${arg}`);
+        logger.error(`Unknown argument: ${arg}`);
         showUsage();
         process.exit(1);
     }
@@ -157,7 +164,7 @@ async function cleanupTempFiles(tempContract: string): Promise<void> {
       const exists = await file.exists();
 
       if (!exists) {
-        log.debug(`Temp file does not exist, skipping: ${tempFile}`);
+        logger.debug(`Temp file does not exist, skipping: ${tempFile}`);
         return;
       }
 
@@ -167,7 +174,7 @@ async function cleanupTempFiles(tempContract: string): Promise<void> {
         await $`rm -f ${tempFile}`.quiet(); // Force remove
         cleanupSuccess = true;
         attempts.push("bun-write + rm -f: SUCCESS");
-        log.debug(`Cleaned up temporary file (method 1): ${tempFile}`);
+        logger.debug(`Cleaned up temporary file (method 1): ${tempFile}`);
       } catch (error) {
         attempts.push(`bun-write + rm -f: FAILED (${error})`);
       }
@@ -178,7 +185,7 @@ async function cleanupTempFiles(tempContract: string): Promise<void> {
           await $`rm -rf ${tempFile}`.quiet(); // Force recursive remove
           cleanupSuccess = true;
           attempts.push("rm -rf: SUCCESS");
-          log.debug(`Cleaned up temporary file (method 2): ${tempFile}`);
+          logger.debug(`Cleaned up temporary file (method 2): ${tempFile}`);
         } catch (error) {
           attempts.push(`rm -rf: FAILED (${error})`);
         }
@@ -191,7 +198,7 @@ async function cleanupTempFiles(tempContract: string): Promise<void> {
           await fs.unlink(tempFile);
           cleanupSuccess = true;
           attempts.push("fs.unlink: SUCCESS");
-          log.debug(`Cleaned up temporary file (method 3): ${tempFile}`);
+          logger.debug(`Cleaned up temporary file (method 3): ${tempFile}`);
         } catch (error) {
           attempts.push(`fs.unlink: FAILED (${error})`);
         }
@@ -205,7 +212,7 @@ async function cleanupTempFiles(tempContract: string): Promise<void> {
             "// DELETED - This file should be removed\n"
           );
           attempts.push("overwrite-marker: SUCCESS");
-          log.debug(
+          logger.debug(
             `Marked temporary file for deletion (method 4): ${tempFile}`
           );
           cleanupSuccess = true;
@@ -221,7 +228,7 @@ async function cleanupTempFiles(tempContract: string): Promise<void> {
           const tmpPath = join("/tmp", tmpName);
           await $`mv ${tempFile} ${tmpPath}`.quiet();
           attempts.push("move-to-tmp: SUCCESS");
-          log.debug(
+          logger.debug(
             `Moved temporary file to /tmp (method 5): ${tempFile} -> ${tmpPath}`
           );
           cleanupSuccess = true;
@@ -231,15 +238,15 @@ async function cleanupTempFiles(tempContract: string): Promise<void> {
       }
 
       if (!cleanupSuccess) {
-        log.warn(`All cleanup methods failed for: ${tempFile}`);
-        log.debug(`Cleanup attempts: ${attempts.join(", ")}`);
+        logger.warn(`All cleanup methods failed for: ${tempFile}`);
+        logger.debug(`Cleanup attempts: ${attempts.join(", ")}`);
       } else {
-        log.debug(
+        logger.debug(
           `Cleanup successful for: ${tempFile} (${attempts.filter((a) => a.includes("SUCCESS")).length}/${attempts.length} methods worked)`
         );
       }
     } catch (error) {
-      log.warn(`Unexpected error during cleanup of ${tempFile}: ${error}`);
+      logger.warn(`Unexpected error during cleanup of ${tempFile}: ${error}`);
       attempts.push(`unexpected-error: ${error}`);
     }
   });
@@ -247,10 +254,10 @@ async function cleanupTempFiles(tempContract: string): Promise<void> {
   // Wait for all cleanup operations to complete, but don't fail if some don't work
   try {
     await Promise.allSettled(cleanupPromises);
-    log.debug("Temp file cleanup completed (all attempts finished)");
+    logger.debug("Temp file cleanup completed (all attempts finished)");
   } catch (error) {
     // This should never happen with Promise.allSettled, but just in case
-    log.warn(`Cleanup coordination error: ${error}`);
+    logger.warn(`Cleanup coordination error: ${error}`);
   }
 }
 
@@ -259,7 +266,7 @@ async function cleanupTempFiles(tempContract: string): Promise<void> {
 // =============================================================================
 
 async function findInterfaceFiles(): Promise<string[]> {
-  log.info("Searching for interface files...");
+  logger.info("Searching for interface files...");
 
   const contractsDir = join(CONTRACTS_ROOT, "contracts");
 
@@ -300,10 +307,10 @@ async function findInterfaceFiles(): Promise<string[]> {
   // Sort the files for consistent processing
   interfaceFiles.sort();
 
-  log.success(`Found ${interfaceFiles.length} interface files:`);
+  logger.info(`Found ${interfaceFiles.length} interface files:`);
   for (const file of interfaceFiles) {
     const relativePath = relative(CONTRACTS_ROOT, file);
-    log.info(`  - ${relativePath}`);
+    logger.info(`  - ${relativePath}`);
   }
 
   return interfaceFiles;
@@ -312,7 +319,7 @@ async function findInterfaceFiles(): Promise<string[]> {
 async function extractInterfaceMetadata(
   interfaceFiles: string[]
 ): Promise<InterfaceMetadata[]> {
-  log.info("Extracting interface names and metadata...");
+  logger.info("Extracting interface names and metadata...");
 
   const interfaces: InterfaceMetadata[] = [];
   const seenInterfaces = new Set<string>();
@@ -322,7 +329,7 @@ async function extractInterfaceMetadata(
 
     // Skip if not starting with I (double check)
     if (!/^I[A-Z]/.test(interfaceName)) {
-      log.warn(
+      logger.warn(
         `Skipping ${interfaceName}: does not match interface naming pattern`
       );
       continue;
@@ -340,7 +347,7 @@ async function extractInterfaceMetadata(
       // Check if we've already seen this interface name
       if (seenInterfaces.has(interfaceName)) {
         const relativePath = relative(join(CONTRACTS_ROOT, "contracts"), file);
-        log.warn(
+        logger.warn(
           `  ⚠ ${interfaceName}: Duplicate interface found, skipping (already processed)`
         );
         continue;
@@ -358,9 +365,9 @@ async function extractInterfaceMetadata(
         importPath,
       });
 
-      log.success(`  ✓ ${interfaceName}`);
+      logger.info(`  ✓ ${interfaceName}`);
     } else {
-      log.warn(`  ✗ ${interfaceName}: No interface declaration found`);
+      logger.warn(`  ✗ ${interfaceName}: No interface declaration found`);
     }
   }
 
@@ -368,7 +375,7 @@ async function extractInterfaceMetadata(
     throw new Error("No valid interfaces found");
   }
 
-  log.success(`Found ${interfaces.length} valid interfaces`);
+  logger.info(`Found ${interfaces.length} valid interfaces`);
   return interfaces;
 }
 
@@ -376,7 +383,7 @@ async function createCalculatorContract(
   interfaces: InterfaceMetadata[],
   tempContract: string
 ): Promise<string> {
-  log.info("Creating dynamic interface ID calculator...");
+  logger.info("Creating dynamic interface ID calculator...");
 
   const tempContractPath = join(CONTRACTS_ROOT, "contracts", tempContract);
 
@@ -424,22 +431,22 @@ contract InterfaceIdCalculator is Script {
 `;
 
   await Bun.write(tempContractPath, contractContent);
-  log.success(`Dynamic interface ID calculator created: ${tempContractPath}`);
+  logger.info(`Dynamic interface ID calculator created: ${tempContractPath}`);
 
   return tempContractPath;
 }
 
 async function compileContracts(skipBuild: boolean): Promise<void> {
   if (skipBuild) {
-    log.info("Skipping contract compilation");
+    logger.info("Skipping contract compilation");
     return;
   }
 
-  log.info("Compiling contracts...");
+  logger.info("Compiling contracts... (this can take a while)");
 
   try {
-    await $`forge build --silent`.cwd(CONTRACTS_ROOT);
-    log.success("Contracts compiled successfully");
+    await $`forge build --silent`.cwd(CONTRACTS_ROOT).quiet();
+    logger.info("Contracts compiled successfully");
   } catch (error) {
     throw new Error(`Contract compilation failed: ${error}`);
   }
@@ -448,13 +455,13 @@ async function compileContracts(skipBuild: boolean): Promise<void> {
 async function calculateInterfaceIds(
   tempContractPath: string
 ): Promise<string> {
-  log.info("Calculating interface IDs...");
+  logger.info("Calculating interface IDs... (this can take a while)");
 
   try {
     const result =
-      await $`forge script ${tempContractPath}:InterfaceIdCalculator`.cwd(
-        CONTRACTS_ROOT
-      );
+      await $`forge script ${tempContractPath}:InterfaceIdCalculator`
+        .cwd(CONTRACTS_ROOT)
+        .quiet();
 
     const output = result.stdout.toString();
 
@@ -463,9 +470,9 @@ async function calculateInterfaceIds(
     }
 
     // Display the interface IDs (truncated to 4 bytes)
-    console.log("\n");
-    log.info("Interface ID calculation results:");
-    console.log("\n");
+    logger.info("");
+    logger.info("Interface ID calculation results:");
+    logger.info("");
 
     // Extract and display the results section
     const lines = output.split("\n");
@@ -488,7 +495,7 @@ async function calculateInterfaceIds(
           /0x([0-9a-fA-F]{8})[0-9a-fA-F]*/g,
           "0x$1"
         );
-        console.log(truncated);
+        logger.info(truncated);
       }
     }
 
@@ -504,7 +511,7 @@ async function createOutputFile(
   outputFile: string,
   interfaceCount: number
 ): Promise<void> {
-  log.info("Creating output file...");
+  logger.info("Creating output file...");
 
   const outputDirPath = join(SUBGRAPH_ROOT, outputDir);
   const outputFilePath = join(outputDirPath, outputFile);
@@ -512,15 +519,15 @@ async function createOutputFile(
   // Create output directory if it doesn't exist
   try {
     await $`mkdir -p ${outputDirPath}`.quiet();
-    log.info(`Ensured output directory exists: ${outputDirPath}`);
+    logger.info(`Ensured output directory exists: ${outputDirPath}`);
   } catch (error) {
-    log.warn(`Could not create directory: ${error}`);
+    logger.warn(`Could not create directory: ${error}`);
   }
 
   // Check if file exists
   const outputFileHandle = Bun.file(outputFilePath);
   if (await outputFileHandle.exists()) {
-    log.info(`Overwriting existing file: ${outputFilePath}`);
+    logger.info(`Overwriting existing file: ${outputFilePath}`);
   }
 
   // Extract TypeScript content
@@ -558,12 +565,12 @@ ${tsContent}
 `;
 
   await Bun.write(outputFilePath, fileContent);
-  log.success(`Interface IDs saved to: ${outputFilePath}`);
+  logger.info(`Interface IDs saved to: ${outputFilePath}`);
 
   // Display TypeScript output for verification
-  console.log("\n");
-  log.info("Generated TypeScript content:");
-  console.log(tsContent);
+  logger.debug("\n");
+  logger.debug("Generated TypeScript content:");
+  logger.debug(tsContent);
 }
 
 async function validateOutputFile(
@@ -591,7 +598,7 @@ async function validateOutputFile(
     throw new Error("Output file does not contain any interface definitions");
   }
 
-  log.success(
+  logger.info(
     `Output file validation passed (${staticCount} interface definitions found)`
   );
 }
@@ -612,11 +619,11 @@ async function main() {
   const outputFile = options.outputFile || DEFAULT_OUTPUT_FILE;
   const tempContract = options.tempContract || DEFAULT_TEMP_CONTRACT;
 
-  log.info(`Starting interface ID calculator...`);
-  log.info(`Contracts root: ${CONTRACTS_ROOT}`);
-  log.info(`Subgraph root: ${SUBGRAPH_ROOT}`);
-  log.info(`Output directory: ${outputDir}`);
-  log.info(`Output file: ${outputFile}`);
+  logger.info(`Starting interface ID calculator...`);
+  logger.info(`Contracts root: ${CONTRACTS_ROOT}`);
+  logger.info(`Subgraph root: ${SUBGRAPH_ROOT}`);
+  logger.info(`Output directory: ${outputDir}`);
+  logger.info(`Output file: ${outputFile}`);
 
   try {
     // Setup cleanup - ensure it runs no matter what happens
@@ -625,7 +632,7 @@ async function main() {
         await cleanupTempFiles(tempContract);
       } catch (error) {
         // Even if cleanup fails, don't let it crash the process
-        console.error("Cleanup error (non-fatal):", error);
+        logger.error("Cleanup error (non-fatal):", error);
       }
     };
 
@@ -638,25 +645,25 @@ async function main() {
     });
 
     process.on("SIGINT", async () => {
-      console.log("\nReceived SIGINT, cleaning up...");
+      logger.info("\nReceived SIGINT, cleaning up...");
       await forceCleanup();
       process.exit(130);
     });
 
     process.on("SIGTERM", async () => {
-      console.log("\nReceived SIGTERM, cleaning up...");
+      logger.info("\nReceived SIGTERM, cleaning up...");
       await forceCleanup();
       process.exit(143);
     });
 
     process.on("uncaughtException", async (error) => {
-      console.error("Uncaught exception:", error);
+      logger.error("Uncaught exception:", error);
       await forceCleanup();
       process.exit(1);
     });
 
     process.on("unhandledRejection", async (reason) => {
-      console.error("Unhandled rejection:", reason);
+      logger.error("Unhandled rejection:", reason);
       await forceCleanup();
       process.exit(1);
     });
@@ -681,29 +688,29 @@ async function main() {
     );
     await validateOutputFile(outputDir, outputFile);
 
-    log.success("Interface ID calculation completed successfully!");
-    console.log("\n");
-    log.info("Summary:");
-    log.info(
+    logger.info("Interface ID calculation completed successfully!");
+    logger.info("");
+    logger.info("Summary:");
+    logger.info(
       `  - Found and processed ${interfaces.length} interfaces starting with 'I'`
     );
-    log.info("  - Calculated ERC165 interface IDs using Foundry/Forge");
-    log.info(
+    logger.info("  - Calculated ERC165 interface IDs using Foundry/Forge");
+    logger.info(
       `  - Results saved to: ${join(SUBGRAPH_ROOT, outputDir, outputFile)}`
     );
-    console.log("\n");
-    log.info("Usage:");
-    log.info("  - Import the InterfaceIds class in your TypeScript code");
-    log.info("  - Use InterfaceIds.INTERFACE_NAME to get the interface ID");
-    log.info("  - Example: InterfaceIds.ISMART");
+    logger.info("");
+    logger.info("Usage:");
+    logger.info("  - Import the InterfaceIds class in your TypeScript code");
+    logger.info("  - Use InterfaceIds.INTERFACE_NAME to get the interface ID");
+    logger.info("  - Example: InterfaceIds.ISMART");
   } catch (error) {
-    log.error(`${error}`);
+    logger.error(`${error}`);
 
     // Force cleanup before exiting, even if it fails
     try {
       await cleanupTempFiles(tempContract);
     } catch (cleanupError) {
-      log.warn(`Cleanup failed during error handling: ${cleanupError}`);
+      logger.warn(`Cleanup failed during error handling: ${cleanupError}`);
     }
 
     process.exit(1);
@@ -720,7 +727,7 @@ async function main() {
 // Only run main if script is executed directly
 if (import.meta.main) {
   main().catch(async (error) => {
-    console.error("Unhandled error:", error);
+    logger.error("Unhandled error:", error);
 
     // Last-ditch cleanup attempt
     try {
@@ -730,7 +737,7 @@ if (import.meta.main) {
       }
     } catch (cleanupError) {
       // Don't let cleanup errors prevent error reporting
-      console.error("Final cleanup attempt failed:", cleanupError);
+      logger.error("Final cleanup attempt failed:", cleanupError);
     }
 
     process.exit(1);

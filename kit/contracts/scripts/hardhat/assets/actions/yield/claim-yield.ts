@@ -2,7 +2,7 @@ import { ATKContracts } from "../../../constants/contracts";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatDecimals } from "../../../utils/format-decimals";
+import { formatBaseUnits } from "../../../utils/format-base-units";
 import { waitForEvent } from "../../../utils/wait-for-event";
 
 export const claimYield = async (
@@ -40,6 +40,6 @@ export const claimYield = async (
     };
 
   console.log(
-    `[Claim yield] ${formatDecimals(claimedAmount, underlyingAsset.decimals)} ${asset.symbol} yield claimed from period ${fromPeriod} to ${toPeriod}`
+    `[Claim yield] ${formatBaseUnits(claimedAmount, underlyingAsset.decimals)} ${asset.symbol} yield claimed from period ${fromPeriod} to ${toPeriod}`
   );
 };

@@ -56,6 +56,7 @@ export const createStableCoin = async () => {
 
   await setupAsset(stableCoin, {
     collateral: 1000n,
+    basePrice: 0.86,
   });
 
   // core

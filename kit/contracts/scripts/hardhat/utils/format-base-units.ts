@@ -1,15 +1,15 @@
 /**
- * Formats a raw token amount to a human-readable string with proper decimal placement
- * @param amount Raw token amount as bigint (e.g., from smart contract)
- * @param decimals Number of decimal places for the token
- * @returns Formatted string with decimal point in correct position
+ * Formats a bigint base unit amount to a human-readable string representation.
+ * @param amount The amount in base units (as a bigint).
+ * @param decimals The number of decimal places for the token.
+ * @returns A string representing the formatted amount.
  *
  * @example
- * formatDecimals(1234567n, 4) // "123.4567"
- * formatDecimals(1000000000000000000n, 18) // "1"
- * formatDecimals(1500000n, 6) // "1.5"
+ * formatBaseUnits(1234567n, 4) // "123.4567"
+ * formatBaseUnits(1000000000000000000n, 18) // "1"
+ * formatBaseUnits(1500000n, 6) // "1.5"
  */
-export function formatDecimals(amount: bigint, decimals: number): string {
+export function formatBaseUnits(amount: bigint, decimals: number): string {
   if (decimals < 0) {
     throw new Error("Decimals cannot be negative");
   }
