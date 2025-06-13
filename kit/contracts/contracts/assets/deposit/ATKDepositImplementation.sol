@@ -348,8 +348,8 @@ contract ATKDepositImplementation is
         // Delegation to SMARTUpgradeable -> _SMARTLogic ensures correct value is returned
         return super.decimals();
     }
-    /// @inheritdoc SMARTUpgradeable
 
+    /// @inheritdoc SMARTUpgradeable
     function supportsInterface(bytes4 interfaceId)
         public
         view

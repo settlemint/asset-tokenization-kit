@@ -498,17 +498,6 @@ contract ATKBondImplementation is
         return super.decimals();
     }
 
-    // --- Internal Functions ---
-
-    /// @notice Calculates the underlying asset amount for a given bond amount
-    /// @dev Multiplies the bond amount with the face value before dividing by decimals
-    ///      to maintain precision
-    /// @param bondAmount The amount of bonds to calculate for
-    /// @return The amount of underlying assets
-    function _calculateUnderlyingAmount(uint256 bondAmount) private view returns (uint256) {
-        return (bondAmount * _faceValue) / (10 ** decimals());
-    }
-
     /// @inheritdoc SMARTUpgradeable
     function supportsInterface(bytes4 interfaceId)
         public
@@ -518,6 +507,17 @@ contract ATKBondImplementation is
         returns (bool)
     {
         return interfaceId == type(IATKBond).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    // --- Internal Functions ---
+
+    /// @notice Calculates the underlying asset amount for a given bond amount
+    /// @dev Multiplies the bond amount with the face value before dividing by decimals
+    ///      to maintain precision
+    /// @param bondAmount The amount of bonds to calculate for
+    /// @return The amount of underlying assets
+    function _calculateUnderlyingAmount(uint256 bondAmount) private view returns (uint256) {
+        return (bondAmount * _faceValue) / (10 ** decimals());
     }
 
     // --- Hooks (Overrides for Chaining) ---
