@@ -3,6 +3,7 @@
 pragma solidity ^0.8.28;
 
 import { ATKAirdrop } from "../ATKAirdrop.sol";
+import { ATKAmountClaimTracker } from "../ATKAmountClaimTracker.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IATKVestingStrategy } from "./IATKVestingStrategy.sol";
@@ -29,6 +30,7 @@ import { InvalidInputArrayLengths, InvalidMerkleProof } from "../ATKAirdropError
 ///
 ///      The contract uses a pluggable vesting strategy pattern to allow different vesting calculations.
 ///      It extends ATKAirdrop for Merkle proof verification and meta-transaction support.
+///      It deploys its own claim tracker for secure claim management.
 contract ATKVestingAirdropImplementation is ATKAirdrop, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
@@ -69,11 +71,11 @@ contract ATKVestingAirdropImplementation is ATKAirdrop, ReentrancyGuard {
 
     /// @notice Initializes the vesting airdrop contract with specified parameters.
     /// @dev Sets up the base airdrop functionality and vesting-specific parameters.
+    ///      Deploys its own claim tracker for secure claim management.
     /// @param token_ The address of the ERC20 token to be distributed.
     /// @param root_ The Merkle root for verifying claims.
     /// @param owner_ The initial owner of the contract.
     /// @param trustedForwarder_ The address of the trusted forwarder for ERC2771 meta-transactions.
-    /// @param claimTracker_ The address of the claim tracker contract.
     /// @param vestingStrategy_ The address of the vesting strategy contract for vesting calculations.
     /// @param initializationDeadline_ The timestamp after which no new vesting can be initialized.
     constructor(
@@ -81,11 +83,10 @@ contract ATKVestingAirdropImplementation is ATKAirdrop, ReentrancyGuard {
         bytes32 root_,
         address owner_,
         address trustedForwarder_,
-        address claimTracker_,
         address vestingStrategy_,
         uint256 initializationDeadline_
     )
-        ATKAirdrop(token_, root_, owner_, trustedForwarder_, claimTracker_)
+        ATKAirdrop(token_, root_, owner_, trustedForwarder_, address(new ATKAmountClaimTracker(address(this))))
     {
         if (vestingStrategy_ == address(0)) revert InvalidVestingStrategyAddress();
         if (initializationDeadline_ <= block.timestamp) revert InvalidInitializationDeadline();

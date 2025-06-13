@@ -3,6 +3,7 @@
 pragma solidity ^0.8.28;
 
 import { IATKClaimTracker } from "./IATKClaimTracker.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title ATK Amount Claim Tracker
 /// @author SettleMint Tokenization Services
@@ -12,14 +13,19 @@ import { IATKClaimTracker } from "./IATKClaimTracker.sol";
 ///      validation - validation is handled by the calling airdrop contracts.
 ///
 ///      This implementation is optimized for scenarios requiring partial claims and progressive distributions.
-contract ATKAmountClaimTracker is IATKClaimTracker {
+///      Only the owner (typically the airdrop contract) can record claims to prevent unauthorized manipulation.
+contract ATKAmountClaimTracker is IATKClaimTracker, Ownable {
     // --- Storage Variables ---
 
     /// @notice Mapping to track already claimed amounts for each index.
     /// @dev Maps claim index to the cumulative amount claimed for that index.
     mapping(uint256 => uint256) private _claimedAmounts;
 
-    // --- View Functions ---
+    // --- Constructor ---
+
+    /// @notice Initializes the claim tracker with the specified owner.
+    /// @param owner_ The address that will own this claim tracker (typically the airdrop contract).
+    constructor(address owner_) Ownable(owner_) { }
 
     /// @notice Checks if a claim has been fully claimed for a specific index.
     /// @dev A claim is considered fully claimed when the claimed amount equals or exceeds the total amount.
@@ -38,10 +44,11 @@ contract ATKAmountClaimTracker is IATKClaimTracker {
     }
 
     /// @notice Records a claim for a specific index.
+    /// @dev Only the owner (airdrop contract) can record claims to prevent unauthorized manipulation.
     /// @param index The index of the claim in the Merkle tree.
     /// @param claimedAmount The amount being claimed.
     /// @param totalAmount The total amount allocated for this index.
-    function recordClaim(uint256 index, uint256 claimedAmount, uint256 totalAmount) external override {
+    function recordClaim(uint256 index, uint256 claimedAmount, uint256 totalAmount) external override onlyOwner {
         _claimedAmounts[index] += claimedAmount;
         emit ClaimRecorded(index, claimedAmount, totalAmount);
     }
