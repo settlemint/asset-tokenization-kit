@@ -13,7 +13,7 @@ interface Transaction {
 
 export function usePendingTransactions() {
   const { data: session } = authClient.useSession();
-  const wallet = session?.user?.wallet;
+  const wallet = session?.user?.walletAddress;
 
   const { data, isLoading, error } = useSWR(
     wallet ? ["pending-transactions", wallet] : null,

@@ -2,7 +2,7 @@ import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { t, type StaticDecode } from "@/lib/utils/typebox";
 import type { NonEmptyArray } from "../../utils/non-empty-array";
 
-const settingKeys = Object.values(SETTING_KEYS);
+const settingKeys = SETTING_KEYS;
 
 /**
  * TypeBox schema for setting key

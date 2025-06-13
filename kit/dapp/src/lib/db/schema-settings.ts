@@ -1,8 +1,41 @@
 import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import type { fiatCurrencies } from "../utils/typebox/fiat-currency";
 
-/** Type for valid currency codes */
-export type CurrencyCode = (typeof fiatCurrencies)[number];
+/**
+ * Supported currency codes
+ */
+export const CURRENCY_CODES = [
+  "EUR",
+  "USD",
+  "GBP",
+  "CHF",
+  "JPY",
+  "AED",
+  "SGD",
+  "SAR",
+] as const;
+
+/**
+ * Currency code type derived from the supported currencies
+ */
+export type CurrencyCode = (typeof CURRENCY_CODES)[number];
+
+/**
+ * Valid setting keys
+ */
+export const SETTING_KEYS = ["BASE_CURRENCY", "SYSTEM_ADDRESS"] as const;
+
+/**
+ * Setting key type derived from the valid keys
+ */
+export type SettingKey = (typeof SETTING_KEYS)[number];
+
+/**
+ * Default values for each setting
+ */
+export const DEFAULT_SETTINGS: Record<SettingKey, string> = {
+  BASE_CURRENCY: "EUR",
+  SYSTEM_ADDRESS: "", // Empty by default, should be set during deployment
+} as const;
 
 /**
  * Settings table schema for storing application-wide settings
@@ -17,19 +50,3 @@ export const settings = pgTable("settings", {
   /** When the setting was last updated */
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),
 });
-
-/** Type-safe keys for settings table */
-export const SETTING_KEYS = {
-  /** The base currency symbol used throughout the application */
-  BASE_CURRENCY: "baseCurrency",
-} as const;
-
-/** Type for valid setting keys */
-export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];
-
-/** Default values for settings */
-export const DEFAULT_SETTINGS: {
-  [SETTING_KEYS.BASE_CURRENCY]: CurrencyCode;
-} = {
-  [SETTING_KEYS.BASE_CURRENCY]: "EUR",
-};

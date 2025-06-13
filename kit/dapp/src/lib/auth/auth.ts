@@ -9,7 +9,12 @@ import * as authSchema from "@/lib/db/schema-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { admin, apiKey, magicLink } from "better-auth/plugins";
+import {
+  admin,
+  apiKey,
+  createAuthMiddleware,
+  magicLink,
+} from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { z } from "zod";
 import { env } from "../config/env";
@@ -131,9 +136,32 @@ export const auth = betterAuth({
       },
     },
   },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          const firstUser = await db.query.user.findFirst();
+          return {
+            data: {
+              ...user,
+              role: firstUser ? "user" : "admin",
+            },
+          };
+        },
+      },
+    },
+  },
   hooks: {
-    // TODO JAN: create a middleware that checks if we have a wallet and identity, if not redirect to the user onboarding section
-    // TODO JAN: only run these queries if initialOnboardingFinished is false
+    after: createAuthMiddleware(async (ctx) => {
+      if (ctx.path.includes("/sign-up") || ctx.path.includes("/sign-in")) {
+        const session = ctx.context.newSession;
+        if (!session?.user.initialOnboardingFinished) {
+          (ctx.context.returned as any).redirect = true;
+          (ctx.context.returned as any).url = `${env.APP_URL}/onboarding`;
+          return;
+        }
+      }
+    }),
   },
   session: {
     session: {

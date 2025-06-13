@@ -26,6 +26,19 @@ export const router = br.router({
   account: br.account.lazy(() => import("./account/account.router")),
 
   /**
+   * Identity-related API procedures.
+   *
+   * Lazy-loaded module containing identity management operations.
+   * Identities are blockchain-based compliance entities that store verified
+   * claims about users or organizations. This module provides endpoints for
+   * creating new identities and retrieving identity information including
+   * their associated claims.
+   *
+   * @see {@link ./identity/identity.router} - Identity router implementation
+   */
+  identity: br.identity.lazy(() => import("./identity/identity.router")),
+
+  /**
    * System-related API procedures.
    *
    * Lazy-loaded module containing SMART system management operations.
@@ -49,4 +62,16 @@ export const router = br.router({
   transaction: br.transaction.lazy(
     () => import("./transaction/transaction.router")
   ),
+
+  /**
+   * Settings-related API procedures.
+   *
+   * Lazy-loaded module containing application settings management operations.
+   * Settings are key-value pairs that control various aspects of the application
+   * such as the base currency, system addresses, and other configuration values.
+   * This module provides full CRUD operations for managing these settings.
+   *
+   * @see {@link ./settings/settings.router} - Settings router implementation
+   */
+  settings: br.settings.lazy(() => import("./settings/settings.router")),
 });

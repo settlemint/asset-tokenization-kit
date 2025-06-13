@@ -1,0 +1,61 @@
+import { settings } from "@/lib/db/schema-settings";
+import { databaseMiddleware } from "@/lib/orpc/middlewares/services/db.middleware";
+import { ar } from "@/lib/orpc/procedures/auth.router";
+import { eq } from "drizzle-orm";
+
+/**
+ * Setting read route handler.
+ *
+ * Retrieves a single setting value by its key from the database.
+ * This route is used to fetch application configuration values
+ * such as the base currency or system address.
+ *
+ * Authentication: Required (uses authenticated router)
+ * Permissions: Requires "read" permission - available to admin, issuer, user, and auditor roles
+ * Method: GET /settings/:key
+ *
+ * @param input - Read parameters containing the setting key
+ * @param context - Request context with database connection and authenticated user
+ * @returns Promise<Setting> - The setting object with key, value, and lastUpdated
+ *
+ * @throws UNAUTHORIZED - If user is not authenticated
+ * @throws FORBIDDEN - If user lacks required read permissions
+ * @throws NOT_FOUND - If the setting key does not exist
+ *
+ * @example
+ * ```typescript
+ * // Client usage:
+ * const setting = await orpc.settings.read.query({
+ *   key: 'baseCurrency'
+ * });
+ * console.log(setting.value); // "EUR"
+ * ```
+ */
+export const read = ar.settings.read
+  // TODO JAN: add permissions middleware, needs the default user role in better auth
+  // .use(
+  //   permissionsMiddleware({
+  //     requiredPermissions: ["read"],
+  //     roles: ["admin", "issuer", "user", "auditor"],
+  //   })
+  // )
+  .use(databaseMiddleware)
+  .handler(async ({ input, context, errors }) => {
+    const { key } = input;
+
+    // Query the setting from the database
+    const [setting] = await context.db
+      .select()
+      .from(settings)
+      .where(eq(settings.key, key))
+      .limit(1);
+
+    // Check if the setting exists
+    if (!setting) {
+      throw errors.NOT_FOUND({
+        message: `Setting with key '${key}' not found`,
+      });
+    }
+
+    return setting;
+  });

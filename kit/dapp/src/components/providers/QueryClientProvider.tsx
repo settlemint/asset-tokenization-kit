@@ -7,8 +7,8 @@ import {
   isServer,
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental";
 import { type PropsWithChildren, useEffect, useState } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 
 /**
  * Singleton QueryClient instance for browser environment.
@@ -64,62 +64,6 @@ function getQueryClient(): QueryClient {
 }
 
 /**
- * Error fallback component for React Query errors.
- *
- * This component provides a user-friendly error interface when React Query
- * operations fail. It includes error logging, user feedback, and recovery
- * mechanisms to maintain a good user experience even when data fetching fails.
- *
- * Features:
- * - Production error logging for monitoring
- * - User-friendly error messaging
- * - Recovery mechanism via retry button
- * - Accessible design with proper styling
- *
- * @param error - The error that occurred during React Query operations
- * @param resetErrorBoundary - Function to reset the error boundary and retry
- *
- * @example
- * ```tsx
- * // Used automatically by ErrorBoundary
- * <ErrorBoundary FallbackComponent={QueryErrorFallback}>
- *   <QueryDependentComponent />
- * </ErrorBoundary>
- * ```
- */
-function QueryErrorFallback({
-  error,
-  resetErrorBoundary,
-}: {
-  error: Error;
-  resetErrorBoundary: () => void;
-}) {
-  useEffect(() => {
-    // Log error to monitoring service in production for debugging and analytics
-    if (process.env.NODE_ENV === "production") {
-      console.error("React Query Error:", error);
-    }
-  }, [error]);
-
-  return (
-    <div className="flex min-h-[400px] flex-col items-center justify-center p-8">
-      <h2 className="mb-4 text-xl font-semibold text-destructive">
-        Something went wrong
-      </h2>
-      <p className="mb-6 text-center text-muted-foreground">
-        {error.message || "An unexpected error occurred while loading data."}
-      </p>
-      <button
-        onClick={resetErrorBoundary}
-        className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
-      >
-        Try again
-      </button>
-    </div>
-  );
-}
-
-/**
  * Props for the QueryClientProvider component.
  */
 interface QueryClientProviderProps extends PropsWithChildren {
@@ -144,17 +88,6 @@ interface QueryClientProviderProps extends PropsWithChildren {
    * @default false
    */
   devtoolsInitialIsOpen?: boolean;
-
-  /**
-   * Custom error fallback component.
-   *
-   * Allows overriding the default error fallback component with a custom
-   * implementation. The custom component should handle error display and
-   * provide recovery mechanisms for users.
-   *
-   * @default QueryErrorFallback
-   */
-  errorFallback?: typeof QueryErrorFallback;
 }
 
 /**
@@ -230,7 +163,6 @@ export function QueryClientProvider({
   children,
   showDevtools = true,
   devtoolsInitialIsOpen = false,
-  errorFallback: ErrorFallback = QueryErrorFallback,
 }: QueryClientProviderProps) {
   // Use state to ensure we don't recreate the client on every render
   // This is crucial for maintaining query cache and avoiding unnecessary re-initialization
@@ -247,16 +179,8 @@ export function QueryClientProvider({
   }, [queryClient]);
 
   return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onReset={() => {
-        // Clear the query cache and retry all queries when error boundary resets
-        // This provides a clean slate for recovery from error states
-        queryClient.clear();
-        queryClient.resetQueries();
-      }}
-    >
-      <ReactQueryClientProvider client={queryClient}>
+    <ReactQueryClientProvider client={queryClient}>
+      <ReactQueryStreamedHydration>
         {children}
         {/* Conditionally render devtools only in development and when enabled */}
         {showDevtools && process.env.NODE_ENV !== "production" && (
@@ -265,8 +189,8 @@ export function QueryClientProvider({
             buttonPosition="bottom-right"
           />
         )}
-      </ReactQueryClientProvider>
-    </ErrorBoundary>
+      </ReactQueryStreamedHydration>
+    </ReactQueryClientProvider>
   );
 }
 

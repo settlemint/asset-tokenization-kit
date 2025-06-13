@@ -114,6 +114,20 @@ export const bc = oc.errors({
   },
 
   /**
+   * Resource not found error.
+   *
+   * Thrown when the requested resource does not exist:
+   * - Invalid resource ID or key
+   * - Resource has been deleted
+   * - Resource never existed
+   * - Invalid URL or path parameters
+   */
+  NOT_FOUND: {
+    status: 404,
+    message: "Resource not found",
+  },
+
+  /**
    * Verification ID not found error.
    *
    * Thrown when a required verification ID is missing from the user's profile:

@@ -1,6 +1,8 @@
 import { accountContract } from "./account/account.contract";
+import { identityContract } from "./identity/identity.contract";
 import { systemContract } from "./system/system.contract";
 import { transactionContract } from "./transaction/transaction.contract";
+import { settingsContract } from "./settings/settings.contract";
 
 /**
  * Main ORPC contract definition.
@@ -21,6 +23,20 @@ import { transactionContract } from "./transaction/transaction.contract";
  */
 export const contract = {
   account: accountContract,
+  
+  /**
+   * Identity-related API contract.
+   *
+   * Contains type definitions for identity management procedures.
+   * Identities are blockchain-based compliance entities that hold verified
+   * claims about users or organizations. This contract provides type-safe
+   * access to identity creation and retrieval operations.
+   *
+   * @see {@link ./identity/identity.contract} - Identity contract implementation
+   * @see {@link ./identity/identity.router} - Corresponding router implementation
+   */
+  identity: identityContract,
+  
   /**
    * System-related API contract.
    *
@@ -43,4 +59,16 @@ export const contract = {
    * @see {@link ./transaction/transaction.router} - Corresponding router implementation
    */
   transaction: transactionContract,
+
+  /**
+   * Settings-related API contract.
+   *
+   * Contains type definitions for application settings management procedures.
+   * Settings provide a flexible key-value store for application configuration
+   * with support for CRUD operations and type-safe access to predefined keys.
+   *
+   * @see {@link ./settings/settings.contract} - Settings contract implementation
+   * @see {@link ./settings/settings.router} - Corresponding router implementation
+   */
+  settings: settingsContract,
 };
