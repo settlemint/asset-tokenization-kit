@@ -1,13 +1,18 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { ERC2771Context, Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {
+    ERC2771ContextUpgradeable,
+    ContextUpgradeable
+} from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 import { IATKSystem } from "./IATKSystem.sol";
 import {
@@ -28,9 +33,10 @@ import {
     SystemNotBootstrapped,
     TopicSchemeRegistryImplementationNotSet,
     IdentityVerificationModuleNotSet,
-    XvPSettlementFactoryImplementationNotSet,
-    XvPFactoryAlreadyCreated
+    AddonTypeAlreadyRegistered,
+    InvalidAddonAddress
 } from "./ATKSystemErrors.sol";
+import { ATKSystemAddonProxy } from "./ATKSystemAddonProxy.sol";
 
 // Compliance modules
 import { SMARTIdentityVerificationModule } from "../smart/modules/SMARTIdentityVerificationModule.sol";
@@ -72,7 +78,15 @@ import { ATKXvPSettlementFactoryProxy } from "./xvp/ATKXvPSettlementFactoryProxy
 /// trusted forwarder is used) and AccessControl for role-based permissions (restricting sensitive functions to
 /// authorized
 /// administrators). It also inherits ReentrancyGuard to protect against reentrancy attacks on certain functions.
-contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, ReentrancyGuard {
+contract ATKSystemImplementation is
+    Initializable,
+    IATKSystem,
+    ERC165Upgradeable,
+    ERC2771ContextUpgradeable,
+    AccessControlUpgradeable,
+    ReentrancyGuardUpgradeable,
+    UUPSUpgradeable
+{
     // Expected interface IDs used for validating implementation contracts.
     // These are unique identifiers for Solidity interfaces, ensuring that a contract claiming to be, for example,
     // an ISMARTCompliance implementation actually supports the functions defined in that interface.
@@ -90,9 +104,6 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
 
     // --- State Variables ---
     // State variables store data persistently on the blockchain.
-
-    /// @dev Flag to indicate if the system has been bootstrapped.
-    bool private _bootstrapped;
 
     // Addresses for the compliance module: one for the logic, one for the proxy.
     /// @dev Stores the address of the current compliance logic contract.
@@ -142,15 +153,16 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// @dev Stores the address of the current identity verification module instance.
     address private _identityVerificationModule;
 
+    /// @dev Flag to indicate if the system has been bootstrapped.
+    bool private _bootstrapped;
+
     // Token Factories by Type
     mapping(bytes32 typeHash => address tokenFactoryImplementationAddress) private tokenFactoryImplementationsByType;
     mapping(bytes32 typeHash => address tokenFactoryProxyAddress) private tokenFactoryProxiesByType;
 
-    // Addresses for the XvP Settlement Factory module.
-    /// @dev Stores the address of the current XvP Settlement Factory logic contract.
-    address private _xvpSettlementFactoryImplementation;
-    /// @dev Stores the address of the XvP Settlement Factory module's proxy contract.
-    address private _xvpSettlementFactoryProxy;
+    // System Addons by Type
+    mapping(bytes32 typeHash => address addonImplementationAddress) private addonImplementationsByType;
+    mapping(bytes32 typeHash => address addonProxyAddress) private addonProxiesByType;
 
     // --- Internal Helper for Interface Check ---
     /// @dev Internal helper function to check if a given contract address (`implAddress`)
@@ -175,15 +187,17 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         }
     }
 
-    // --- Constructor ---
-    /// @notice Initializes the ATKSystem contract upon deployment.
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
+        _disableInitializers();
+    }
+
+    /// @notice Initializes the ATKSystem contract.
     /// @dev Sets up the initial administrator, validates and stores the initial implementation addresses for all
     /// modules
     /// and identity types, and sets the trusted forwarder for meta-transactions.
     /// It performs interface checks on all provided implementation addresses to ensure they conform to the required
     /// standards.
-    /// This constructor is `payable`, meaning it can receive Ether upon deployment, though it's not strictly necessary
-    /// for its function.
     /// @param initialAdmin_ The address that will be granted the `DEFAULT_ADMIN_ROLE`, giving it administrative control
     /// over this contract.
     /// @param complianceImplementation_ The initial address of the compliance module's logic contract.
@@ -203,8 +217,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// be ISMARTTokenAccessManager compliant.
     /// @param identityVerificationModule_ The initial address of the identity verification module
     /// contract's logic.
-    /// @param forwarder_ The address of the trusted forwarder contract for ERC2771 meta-transaction support.
-    constructor(
+    function initialize(
         address initialAdmin_,
         address complianceImplementation_,
         address identityRegistryImplementation_,
@@ -215,11 +228,15 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         address identityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
-        address identityVerificationModule_,
-        address forwarder_
+        address identityVerificationModule_
     )
-        ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
+        public
+        initializer
     {
+        __AccessControl_init();
+        __ReentrancyGuard_init();
+        __UUPSUpgradeable_init();
+
         // Grant the DEFAULT_ADMIN_ROLE to the initial administrator address.
         // This role typically has permissions to call sensitive functions like setting implementation addresses.
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin_);
@@ -292,6 +309,11 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         }
         _identityVerificationModule = identityVerificationModule_;
     }
+
+    /// @dev Authorizes an upgrade to a new implementation contract.
+    /// The UUPS upgrade mechanism is used.
+    /// Only the `DEFAULT_ADMIN_ROLE` can authorize an upgrade.
+    function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) { }
 
     // --- Bootstrap Function ---
     /// @notice Deploys and initializes the proxy contracts for all core ATK modules.
@@ -411,6 +433,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         address _tokenImplementation
     )
         external
+        override
         nonReentrant
         onlyRole(DEFAULT_ADMIN_ROLE)
         returns (address)
@@ -432,7 +455,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         bytes32 factoryTypeHash = keccak256(abi.encodePacked(_typeName));
 
         if (tokenFactoryImplementationsByType[factoryTypeHash] != address(0)) {
-            revert TokenFactoryTypeAlreadyRegistered(factoryTypeHash);
+            revert TokenFactoryTypeAlreadyRegistered(_typeName);
         }
 
         tokenFactoryImplementationsByType[factoryTypeHash] = _factoryImplementation;
@@ -458,6 +481,47 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         emit TokenFactoryCreated(_msgSender(), _typeName, _tokenFactoryProxy, _factoryImplementation, block.timestamp);
 
         return _tokenFactoryProxy;
+    }
+
+    /// @inheritdoc IATKSystem
+    function createSystemAddon(
+        string calldata typeName,
+        address implementation,
+        bytes calldata initializationData
+    )
+        external
+        override
+        nonReentrant
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (address proxyAddress)
+    {
+        // System must be bootstrapped before creating token factories, as factories need to interact with core proxies.
+        if (!_bootstrapped) {
+            revert SystemNotBootstrapped();
+        }
+
+        if (address(implementation) == address(0)) revert InvalidAddonAddress();
+
+        bytes32 addonTypeHash = keccak256(abi.encodePacked(typeName));
+
+        if (addonImplementationsByType[addonTypeHash] != address(0)) {
+            revert AddonTypeAlreadyRegistered(typeName);
+        }
+
+        addonImplementationsByType[addonTypeHash] = implementation;
+
+        address _addonProxy = address(new ATKSystemAddonProxy(address(this), addonTypeHash, initializationData));
+
+        addonProxiesByType[addonTypeHash] = _addonProxy;
+
+        // Make it possible that the addon can add addresses to the compliance allow list
+        IAccessControl(address(complianceProxy())).grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _addonProxy);
+
+        emit SystemAddonCreated(
+            _msgSender(), typeName, _addonProxy, implementation, initializationData, block.timestamp
+        );
+
+        return _addonProxy;
     }
 
     // --- Implementation Setter Functions ---
@@ -575,18 +639,6 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         emit TokenAccessManagerImplementationUpdated(_msgSender(), implementation);
     }
 
-    /// @notice Sets (updates) the address of the XvP Settlement Factory's implementation (logic) contract.
-    /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
-    /// Reverts if the provided `implementation` address is the zero address or does not support the required interface.
-    /// Emits a `XvPSettlementFactoryImplementationUpdated` event upon successful update.
-    /// @param implementation The new address for the XvP Settlement Factory logic contract.
-    function setXvPSettlementFactoryImplementation(address implementation) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (implementation == address(0)) revert XvPSettlementFactoryImplementationNotSet();
-        _checkInterface(implementation, _IATK_XVP_SETTLEMENT_FACTORY_ID);
-        _xvpSettlementFactoryImplementation = implementation;
-        emit XvPSettlementFactoryImplementationUpdated(_msgSender(), implementation);
-    }
-
     // --- Implementation Getter Functions ---
     // These public view functions allow anyone to query the current implementation (logic contract) addresses
     // for the various modules and identity types. These are the addresses that the respective proxy contracts
@@ -646,15 +698,14 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         return _tokenAccessManagerImplementation;
     }
 
-    /// @notice Gets the current address of the XvP Settlement Factory's implementation (logic) contract.
-    /// @return The address of the XvP Settlement Factory logic contract.
-    function xvpSettlementFactoryImplementation() public view override returns (address) {
-        return _xvpSettlementFactoryImplementation;
+    /// @inheritdoc IATKSystem
+    function tokenFactoryImplementation(bytes32 factoryTypeHash) public view override returns (address) {
+        return tokenFactoryImplementationsByType[factoryTypeHash];
     }
 
     /// @inheritdoc IATKSystem
-    function tokenFactoryImplementation(bytes32 factoryTypeHash) public view returns (address) {
-        return tokenFactoryImplementationsByType[factoryTypeHash];
+    function addonImplementation(bytes32 addonTypeHash) public view override returns (address) {
+        return addonImplementationsByType[addonTypeHash];
     }
 
     // --- Proxy Getter Functions ---
@@ -704,10 +755,11 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
         return tokenFactoryProxiesByType[factoryTypeHash];
     }
 
-    /// @notice Gets the address of the XvP Settlement Factory's proxy contract.
-    /// @return The address of the XvP Settlement Factory proxy contract.
-    function xvpSettlementFactoryProxy() public view override returns (address) {
-        return _xvpSettlementFactoryProxy;
+    /// @notice Gets the address of the system addon proxy contract for a given addon type hash.
+    /// @param addonTypeHash The hash of the addon type.
+    /// @return The address of the system addon proxy contract.
+    function addonProxy(bytes32 addonTypeHash) public view override returns (address) {
+        return addonProxiesByType[addonTypeHash];
     }
 
     // --- Identity Verification Module ---
@@ -726,7 +778,7 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// rather than the forwarder contract that relayed it.
     /// If not a meta-transaction, it behaves like the standard `msg.sender`.
     /// @return The address of the original transaction sender (user) or the direct caller.
-    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
         return super._msgSender(); // Calls the ERC2771Context implementation.
     }
 
@@ -735,7 +787,12 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// refers to the original call data from the user in a meta-transaction context.
     /// If not a meta-transaction, it behaves like the standard `msg.data`.
     /// @return The original call data of the transaction.
-    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
         return super._msgData(); // Calls the ERC2771Context implementation.
     }
 
@@ -744,7 +801,12 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// appended to the call data by a forwarder, which typically contains the original sender's address.
     /// The base `ERC2771Context` implementation handles this correctly.
     /// @return The length of the context suffix in the call data for meta-transactions.
-    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+    function _contextSuffixLength()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
         return super._contextSuffixLength();
     }
 
@@ -755,38 +817,12 @@ contract ATKSystem is IATKSystem, ERC165, ERC2771Context, AccessControl, Reentra
     /// like `IERC165` (from `ERC165`) and `IAccessControl` (from `AccessControl`).
     /// @param interfaceId The 4-byte interface identifier to check.
     /// @return `true` if the contract supports the interface, `false` otherwise.
-    function supportsInterface(bytes4 interfaceId) public view override(ERC165, AccessControl) returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC165Upgradeable, AccessControlUpgradeable, IERC165)
+        returns (bool)
+    {
         return interfaceId == _IATK_SYSTEM_ID || super.supportsInterface(interfaceId);
-    }
-
-    /// @notice Creates a new XvP Settlement Factory with proxy support
-    /// @dev This function creates a new proxy instance for the XvP Settlement Factory.
-    /// The proxy will delegate calls to the current implementation address.
-    /// @return The address of the newly created XvP Settlement Factory proxy.
-    function createXvPFactory() external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) returns (address) {
-        // System must be bootstrapped before creating the XvP factory
-        if (!_bootstrapped) {
-            revert SystemNotBootstrapped();
-        }
-
-        // Check if factory already exists
-        if (_xvpSettlementFactoryProxy != address(0)) {
-            revert XvPFactoryAlreadyCreated();
-        }
-
-        // Check if implementation is set
-        if (_xvpSettlementFactoryImplementation == address(0)) {
-            revert XvPSettlementFactoryImplementationNotSet();
-        }
-
-        // Deploy the XvP Settlement Factory proxy
-        address _factoryProxy = address(new ATKXvPSettlementFactoryProxy(address(this), _msgSender()));
-
-        // Store the proxy address
-        _xvpSettlementFactoryProxy = _factoryProxy;
-
-        emit XvPSettlementFactoryCreated(_msgSender(), _factoryProxy, _xvpSettlementFactoryImplementation);
-
-        return _factoryProxy;
     }
 }

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+
 /// @title IATKSystem Interface
 /// @author SettleMint Tokenization Services
 /// @notice This interface outlines the essential functions for interacting with the ATK Protocol's central system
@@ -11,7 +13,7 @@ pragma solidity ^0.8.28;
 /// compliance modules, identity registries, and their corresponding proxy contracts. These proxies are important
 /// because they enable these components to be upgraded in the future without altering the addresses that other parts
 /// of the system use to interact with them, ensuring stability and maintainability.
-interface IATKSystem {
+interface IATKSystem is IERC165 {
     // --- Events ---
     // Events are signals emitted by the contract that can be listened to by external applications or other contracts.
     // They are a way to log important state changes or actions.
@@ -82,8 +84,25 @@ interface IATKSystem {
     /// @param typeName The human-readable type name of the token factory.
     /// @param proxyAddress The address of the deployed token factory proxy.
     /// @param implementationAddress The address of the deployed token factory implementation.
+    /// @param timestamp The timestamp of the token factory creation.
     event TokenFactoryCreated(
         address indexed sender, string typeName, address proxyAddress, address implementationAddress, uint256 timestamp
+    );
+
+    /// @notice Emitted when a system addon is created.
+    /// @param sender The address that created the system addon.
+    /// @param typeName The human-readable type name of the system addon.
+    /// @param proxyAddress The address of the deployed system addon proxy.
+    /// @param implementation The address of the deployed system addon implementation.
+    /// @param initializationData The encoded function call to initialize the system addon.
+    /// @param timestamp The timestamp of the system addon creation.
+    event SystemAddonCreated(
+        address indexed sender,
+        string typeName,
+        address proxyAddress,
+        address implementation,
+        bytes initializationData,
+        uint256 timestamp
     );
 
     /// @notice Initializes and sets up the entire ATK Protocol system.
@@ -107,6 +126,19 @@ interface IATKSystem {
     )
         external
         returns (address);
+
+    /// @notice Deploys and registers a new system addon with a proxy and initializer.
+    /// @param typeName A human-readable identifier (e.g., "Swap", "YieldContract").
+    /// @param implementation The address of the logic contract to use for the proxy.
+    /// @param initializationData Encoded function call to initialize the proxy (e.g., abi.encodeWithSelector(...)).
+    /// @return proxyAddress The address of the newly deployed proxy.
+    function createSystemAddon(
+        string calldata typeName,
+        address implementation,
+        bytes calldata initializationData
+    )
+        external
+        returns (address proxyAddress);
 
     /// @notice Retrieves the current, active smart contract address of the compliance module's logic.
     /// @dev Compliance modules are responsible for enforcing rules and restrictions on token transfers, account
@@ -227,6 +259,11 @@ interface IATKSystem {
     /// @return The address of the token factory implementation contract.
     function tokenFactoryImplementation(bytes32 factoryTypeHash) external view returns (address);
 
+    /// @notice Returns the address of the current system addon implementation.
+    /// @param addonTypeHash The hash of the addon type.
+    /// @return The address of the system addon implementation contract.
+    function addonImplementation(bytes32 addonTypeHash) external view returns (address);
+
     /// @notice Retrieves the smart contract address of the proxy for the compliance module.
     /// @dev A proxy contract is an intermediary contract that delegates all function calls it receives to another
     /// contract, known as the implementation contract (which contains the actual logic).
@@ -276,6 +313,11 @@ interface IATKSystem {
     /// @param factoryTypeHash The hash of the factory type.
     /// @return The address of the token factory proxy contract.
     function tokenFactoryProxy(bytes32 factoryTypeHash) external view returns (address);
+
+    /// @notice Returns the address of the system addon proxy.
+    /// @param addonTypeHash The hash of the addon type.
+    /// @return The address of the system addon proxy contract.
+    function addonProxy(bytes32 addonTypeHash) external view returns (address);
 
     /// @notice Retrieves the smart contract address of the proxy for the topic scheme registry module.
     /// @dev This function returns the stable, unchanging address of the topic scheme registry's proxy contract.

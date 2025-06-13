@@ -150,15 +150,15 @@ contract MockATKSystem is IATKSystem {
         return address(0); // Return zero instead of revert
     }
 
-    function createXvPFactory() external pure returns (address) {
+    function createSystemAddon(string calldata, address, bytes calldata) external pure returns (address) {
         return address(0); // Return zero instead of revert
     }
 
-    function xvpSettlementFactoryImplementation() external pure returns (address) {
+    function addonProxy(bytes32) external pure returns (address) {
         return address(0); // Return zero instead of revert
     }
 
-    function xvpSettlementFactoryProxy() external pure returns (address) {
+    function addonImplementation(bytes32) external pure returns (address) {
         return address(0); // Return zero instead of revert
     }
 }
