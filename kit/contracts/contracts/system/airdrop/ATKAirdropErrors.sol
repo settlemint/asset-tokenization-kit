@@ -23,3 +23,12 @@ error InvalidInputArrayLengths();
 
 /// @notice Error indicating that an invalid withdrawal address was provided.
 error InvalidWithdrawalAddress();
+
+/// @notice Error indicating that an invalid claim tracker address was provided.
+error InvalidClaimTrackerAddress();
+
+/// @notice Error indicating that the claim amount exceeds the total allocated amount for the index.
+error InvalidClaimAmount();
+
+/// @notice Error indicating that the claim amount is zero.
+error ZeroClaimAmount();

@@ -8,26 +8,32 @@ import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerklePr
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
+import { IATKClaimTracker } from "./IATKClaimTracker.sol";
 import {
     InvalidMerkleProof,
     IndexAlreadyClaimed,
     InvalidTokenAddress,
     InvalidInputArrayLengths,
     InvalidWithdrawalAddress,
-    InvalidMerkleRoot
+    InvalidMerkleRoot,
+    InvalidClaimTrackerAddress,
+    InvalidClaimAmount,
+    ZeroClaimAmount
 } from "./ATKAirdropErrors.sol";
 
 /// @title ATK Airdrop (Abstract)
 /// @author SettleMint Tokenization Services
 /// @notice Abstract base contract for reusable Merkle-based airdrop distributions in the ATK Protocol.
 ///         This contract provides the core logic for Merkle proof-based airdrop claims, including:
-///         - Efficient claim tracking using a bitmap (gas-optimized)
+///         - Flexible claim tracking using pluggable strategies
+///         - Support for partial and full claims
 ///         - Meta-transaction support via ERC2771 (trusted forwarder)
 ///         - Withdrawals of unclaimed tokens by the owner
 ///         - Abstract claim and batchClaim functions for extension by concrete airdrop implementations
 ///
-/// @dev This contract provides the core logic for Merkle proof-based airdrop claims, including:
-///  - Efficient claim tracking using a bitmap (gas-optimized)
+/// @dev This contract provides enhanced core logic for Merkle proof-based airdrop claims, including:
+///  - Flexible claim tracking using the IATKClaimTracker interface
+///  - Support for partial claims and progressive distributions
 ///  - Meta-transaction support via ERC2771 (trusted forwarder)
 ///  - Withdrawals of unclaimed tokens by the owner
 ///  - Abstract claim and batchClaim functions for extension by concrete airdrop implementations
@@ -47,9 +53,9 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
     /// @dev Set once at construction and immutable thereafter. Used for Merkle proof verification.
     bytes32 public immutable _merkleRoot;
 
-    /// @notice Bitmap tracking which claim indices have already been claimed.
-    /// @dev Maps word index to 256-bit word, where each bit represents a claim index (claimed = 1).
-    mapping(uint256 => uint256) private _claimedBitMap;
+    /// @notice The claim tracker contract for managing claim states.
+    /// @dev Set once at construction and immutable thereafter. Handles claim tracking logic.
+    IATKClaimTracker public immutable _claimTracker;
 
     // --- Events ---
 
@@ -58,10 +64,12 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
     /// @param amount The amount of tokens claimed.
     /// @param index The index of the claim in the Merkle tree.
     event Claimed(address indexed claimant, uint256 amount, uint256 index);
+
     /// @notice Emitted when the contract owner withdraws unclaimed tokens.
     /// @param to The address receiving the withdrawn tokens.
     /// @param amount The amount of tokens withdrawn.
     event TokensWithdrawn(address indexed to, uint256 amount);
+
     /// @notice Emitted when a user claims multiple allocations in a single transaction.
     /// @param claimant The address that claimed the tokens.
     /// @param totalAmount The total amount of tokens claimed in the batch.
@@ -70,23 +78,27 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
     event BatchClaimed(address indexed claimant, uint256 totalAmount, uint256[] indices, uint256[] amounts);
 
     // --- Constructor ---
+
     /// @notice Initializes the base airdrop contract.
-    /// @dev Sets the token, Merkle root, owner, and trusted forwarder for meta-transactions.
+    /// @dev Sets the token, Merkle root, claim tracker, owner, and trusted forwarder for meta-transactions.
     /// @param token_ The address of the ERC20 token to be distributed.
     /// @param root_ The Merkle root for verifying claims.
     /// @param owner_ The initial owner of the contract.
     /// @param trustedForwarder_ The address of the trusted forwarder for ERC2771 meta-transactions.
+    /// @param claimTracker_ The address of the claim tracker contract.
     constructor(
         address token_,
         bytes32 root_,
         address owner_,
-        address trustedForwarder_
+        address trustedForwarder_,
+        address claimTracker_
     )
         Ownable(owner_)
         ERC2771Context(trustedForwarder_)
     {
         if (token_ == address(0)) revert InvalidTokenAddress();
         if (root_ == bytes32(0)) revert InvalidMerkleRoot();
+        if (claimTracker_ == address(0)) revert InvalidClaimTrackerAddress();
 
         // Verify the token contract exists and implements IERC20 by attempting to call a view function
         try IERC20(token_).totalSupply() returns (uint256) {
@@ -95,8 +107,17 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
             revert InvalidTokenAddress();
         }
 
+        // Verify the claim tracker contract exists and implements IATKClaimTracker by attempting to call a view
+        // function
+        try IATKClaimTracker(claimTracker_).isClaimed(0, 0) returns (bool) {
+            // Contract exists and implements IATKClaimTracker
+        } catch {
+            revert InvalidClaimTrackerAddress();
+        }
+
         _token = IERC20(token_);
         _merkleRoot = root_;
+        _claimTracker = IATKClaimTracker(claimTracker_);
     }
 
     // --- View Functions ---
@@ -113,36 +134,46 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
         return _merkleRoot;
     }
 
-    /// @notice Checks if a claim has already been made for a specific index.
+    /// @notice Returns the claim tracker contract.
+    /// @return The claim tracker contract.
+    function claimTracker() external view returns (IATKClaimTracker) {
+        return _claimTracker;
+    }
+
+    /// @notice Checks if a claim has been fully claimed for a specific index.
     /// @param index The index to check in the Merkle tree.
-    /// @return claimed True if the index has been claimed, false otherwise.
-    function claimed(uint256 index) public view returns (bool) {
-        uint256 wordIndex = index / 256;
-        uint256 bitIndex = index % 256;
-        uint256 word = _claimedBitMap[wordIndex];
-        uint256 mask = 1 << bitIndex;
-        return (word & mask) != 0;
+    /// @param totalAmount The total amount allocated for this index.
+    /// @return claimed True if the index has been fully claimed, false otherwise.
+    function isClaimed(uint256 index, uint256 totalAmount) public view returns (bool) {
+        return _claimTracker.isClaimed(index, totalAmount);
+    }
+
+    /// @notice Gets the amount already claimed for a specific index.
+    /// @param index The index to check.
+    /// @return claimedAmount The amount already claimed for this index.
+    function getClaimedAmount(uint256 index) public view returns (uint256) {
+        return _claimTracker.getClaimedAmount(index);
     }
 
     // --- External Functions ---
 
     /// @notice Claims an airdrop allocation for the caller.
     /// @dev Must be implemented by derived contracts. Implementations must use `_msgSender()` instead of `msg.sender`
-    /// and pass it to `_verifyMerkleProof`.
+    /// and pass it to `_processClaim`.
     /// @param index The index of the claim in the Merkle tree.
-    /// @param amount The amount of tokens being claimed.
+    /// @param totalAmount The total amount allocated for this index.
     /// @param merkleProof The Merkle proof array.
-    function claim(uint256 index, uint256 amount, bytes32[] calldata merkleProof) external virtual;
+    function claim(uint256 index, uint256 totalAmount, bytes32[] calldata merkleProof) external virtual;
 
     /// @notice Claims multiple airdrop allocations for the caller in a single transaction.
     /// @dev Must be implemented by derived contracts. Implementations must use `_msgSender()` instead of `msg.sender`
-    /// and pass it to `_verifyMerkleProof` in a loop.
+    /// and pass it to `_processBatchClaim`.
     /// @param indices The indices of the claims in the Merkle tree.
-    /// @param amounts The amounts allocated for each index.
+    /// @param totalAmounts The total amounts allocated for each index.
     /// @param merkleProofs The Merkle proofs for each index.
     function batchClaim(
         uint256[] calldata indices,
-        uint256[] calldata amounts,
+        uint256[] calldata totalAmounts,
         bytes32[][] calldata merkleProofs
     )
         external
@@ -159,25 +190,17 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
 
     // --- Internal Functions ---
 
-    /// @dev Marks a specific index as claimed in the bitmap.
-    /// @param index The index to mark as claimed.
-    function _setClaimed(uint256 index) internal {
-        uint256 wordIndex = index / 256;
-        uint256 bitIndex = index % 256;
-        _claimedBitMap[wordIndex] |= (1 << bitIndex);
-    }
-
     /// @dev Verifies a Merkle proof for a claim.
     /// @param index The index of the claim in the Merkle tree.
     /// @param account The address claiming the tokens.
-    /// @param amount The amount of tokens being claimed.
+    /// @param totalAmount The total amount allocated for this index.
     /// @param merkleProof The Merkle proof array.
     /// @return verified True if the proof is valid, false otherwise.
     /// @dev IMPORTANT: Derived contracts implementing `claim` must ensure `account` == `_msgSender()`.
     function _verifyMerkleProof(
         uint256 index,
         address account,
-        uint256 amount,
+        uint256 totalAmount,
         bytes32[] calldata merkleProof
     )
         internal
@@ -185,8 +208,109 @@ abstract contract ATKAirdrop is Ownable, ERC2771Context {
         returns (bool verified)
     {
         // Double hash the leaf node for domain separation and security
-        bytes32 node = keccak256(abi.encode(keccak256(abi.encode(index, account, amount))));
+        bytes32 node = keccak256(abi.encode(keccak256(abi.encode(index, account, totalAmount))));
         return MerkleProof.verify(merkleProof, _merkleRoot, node);
+    }
+
+    /// @dev Internal function to process a single claim.
+    /// @param index The index in the Merkle tree.
+    /// @param account The address receiving the tokens.
+    /// @param claimAmount The amount to transfer.
+    /// @param totalAmount The total amount allocated for this index.
+    /// @param merkleProof The proof to verify.
+    function _processClaim(
+        uint256 index,
+        address account,
+        uint256 claimAmount,
+        uint256 totalAmount,
+        bytes32[] calldata merkleProof
+    )
+        internal
+    {
+        if (claimAmount == 0) revert ZeroClaimAmount();
+
+        // Check if already fully claimed
+        if (_claimTracker.isClaimed(index, totalAmount)) revert IndexAlreadyClaimed();
+
+        // Verify Merkle proof
+        if (!_verifyMerkleProof(index, account, totalAmount, merkleProof)) {
+            revert InvalidMerkleProof();
+        }
+
+        // Check if the new claim amount is valid
+        if (!_claimTracker.isClaimAmountValid(index, claimAmount, totalAmount)) {
+            revert InvalidClaimAmount();
+        }
+
+        // Record the claim
+        _claimTracker.recordClaim(index, claimAmount, totalAmount);
+
+        // Transfer tokens
+        _token.safeTransfer(account, claimAmount);
+        emit Claimed(account, claimAmount, index);
+    }
+
+    /// @dev Internal function to process a batch claim.
+    /// @param indices The indices in the Merkle tree.
+    /// @param account The address receiving the tokens.
+    /// @param claimAmounts The amounts to transfer for each index.
+    /// @param totalAmounts The total amounts allocated for each index.
+    /// @param merkleProofs The proofs to verify for each index.
+    /// @return totalTransferred The total amount transferred.
+    function _processBatchClaim(
+        uint256[] calldata indices,
+        address account,
+        uint256[] calldata claimAmounts,
+        uint256[] calldata totalAmounts,
+        bytes32[][] calldata merkleProofs
+    )
+        internal
+        returns (uint256 totalTransferred)
+    {
+        if (
+            indices.length != claimAmounts.length || claimAmounts.length != totalAmounts.length
+                || totalAmounts.length != merkleProofs.length
+        ) {
+            revert InvalidInputArrayLengths();
+        }
+
+        totalTransferred = 0;
+        uint256[] memory transferredAmounts = new uint256[](indices.length);
+
+        for (uint256 i = 0; i < indices.length; i++) {
+            uint256 index = indices[i];
+            uint256 claimAmount = claimAmounts[i];
+            uint256 totalAmount = totalAmounts[i];
+            bytes32[] calldata merkleProof = merkleProofs[i];
+
+            if (claimAmount == 0) revert ZeroClaimAmount();
+
+            // Check if already fully claimed
+            if (_claimTracker.isClaimed(index, totalAmount)) revert IndexAlreadyClaimed();
+
+            // Verify Merkle proof
+            if (!_verifyMerkleProof(index, account, totalAmount, merkleProof)) {
+                revert InvalidMerkleProof();
+            }
+
+            // Check if the new claim amount is valid
+            if (!_claimTracker.isClaimAmountValid(index, claimAmount, totalAmount)) {
+                revert InvalidClaimAmount();
+            }
+
+            // Record the claim
+            _claimTracker.recordClaim(index, claimAmount, totalAmount);
+
+            totalTransferred += claimAmount;
+            transferredAmounts[i] = claimAmount;
+        }
+
+        if (totalTransferred > 0) {
+            _token.safeTransfer(account, totalTransferred);
+            emit BatchClaimed(account, totalTransferred, indices, transferredAmounts);
+        }
+
+        return totalTransferred;
     }
 
     // --- Context Overrides (ERC2771) ---
