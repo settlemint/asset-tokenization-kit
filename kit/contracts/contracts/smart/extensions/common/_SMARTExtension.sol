@@ -33,21 +33,38 @@ abstract contract _SMARTExtension is ISMART, SMARTContext, SMARTHooks {
     ///      like `ERC165.sol` or `SMART.sol` that inherits this).
     mapping(bytes4 interfaceId => bool isRegistered) internal _isInterfaceRegistered;
 
+    /// @notice Array to store all registered interface IDs for enumeration.
+    /// @dev This array works alongside the `_isInterfaceRegistered` mapping to allow retrieval
+    ///      of all registered interfaces. Each interface ID is added to this array when registered
+    ///      via `_registerInterface()`.
+    bytes4[] internal _registeredInterfaces;
+
     // --- Implementation Functions ---
 
-    /**
-     * @notice Registers a specific interface ID as being supported by this contract.
-     * @dev This internal function is intended to be called by derived extension contracts, usually during
-     *      their initialization phase (constructor for standard, or an initializer function for upgradeable).
-     *      By calling this, an extension signals that it implements all functions defined in the given interface.
-     *      For example, a burnable extension would call `_registerInterface(type(ISMARTBurnable).interfaceId);`.
-     *      This populates the `_isInterfaceRegistered` mapping.
-     * @param interfaceId The `bytes4` identifier of the interface to register (e.g.,
-     * `type(IMyExtensionInterface).interfaceId`).
-     *                    The `type(IMyInterface).interfaceId` expression automatically calculates the correct ERC165
-     * ID.
-     */
+    /// @notice Registers a specific interface ID as being supported by this contract.
+    /// @dev This internal function is intended to be called by derived extension contracts, usually during
+    ///      their initialization phase (constructor for standard, or an initializer function for upgradeable).
+    ///      By calling this, an extension signals that it implements all functions defined in the given interface.
+    ///      For example, a burnable extension would call `_registerInterface(type(ISMARTBurnable).interfaceId);`.
+    ///      This populates both the `_isInterfaceRegistered` mapping and the `_registeredInterfaces` array.
+    /// @param interfaceId The `bytes4` identifier of the interface to register (e.g.,
+    /// `type(IMyExtensionInterface).interfaceId`).
+    ///                    The `type(IMyInterface).interfaceId` expression automatically calculates the correct ERC165
+    /// ID.
     function _registerInterface(bytes4 interfaceId) internal {
-        _isInterfaceRegistered[interfaceId] = true;
+        // Only register if not already registered to avoid duplicates
+        if (!_isInterfaceRegistered[interfaceId]) {
+            _isInterfaceRegistered[interfaceId] = true;
+            _registeredInterfaces.push(interfaceId);
+        }
+    }
+
+    /// @notice Returns an array of all registered interface IDs.
+    /// @dev This function allows external contracts and users to discover all interfaces
+    ///      that this contract claims to support. This is useful for introspection and
+    ///      automated interface detection.
+    /// @return An array of `bytes4` interface identifiers that have been registered.
+    function registeredInterfaces() external view returns (bytes4[] memory) {
+        return _registeredInterfaces;
     }
 }

@@ -139,6 +139,8 @@ contract ATKBondImplementation is
         __SMARTCapped_init(cap_);
         __ReentrancyGuard_init();
 
+        _registerInterface(type(IATKBond).interfaceId);
+
         _maturityDate = maturityDate_;
         _faceValue = faceValue_;
         _underlyingAsset = IERC20(underlyingAsset_);

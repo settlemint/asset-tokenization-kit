@@ -10,6 +10,8 @@ import "@openzeppelin/contracts/utils/Create2.sol";
 
 // Simple concrete implementation for testing
 contract TestableTokenFactory is AbstractATKTokenFactoryImplementation {
+    bytes32 public constant override typeId = keccak256("TestableTokenFactory");
+
     constructor(address forwarder) AbstractATKTokenFactoryImplementation(forwarder) { }
 
     function isValidTokenImplementation(address) external pure override returns (bool) {

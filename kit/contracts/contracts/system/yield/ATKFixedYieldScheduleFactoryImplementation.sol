@@ -16,6 +16,7 @@ import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { IATKComplianceBypassList } from "../compliance/IATKComplianceBypassList.sol";
+import { IWithTypeIdentifier } from "../IWithTypeIdentifier.sol";
 
 // Implementations
 import { SMARTFixedYieldScheduleUpgradeable } from
@@ -42,8 +43,11 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     IATKFixedYieldScheduleFactory,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable
+    AccessControlUpgradeable,
+    IWithTypeIdentifier
 {
+    bytes32 public constant override typeId = keccak256("ATKFixedYieldScheduleFactory");
+
     /// @notice Address of the current `ATKFixedYieldSchedule` logic contract (implementation).
     address public atkFixedYieldScheduleImplementation;
 
