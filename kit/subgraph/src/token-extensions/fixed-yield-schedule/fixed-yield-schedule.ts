@@ -6,10 +6,8 @@ import {
   UnderlyingAssetWithdrawn,
   YieldClaimed,
 } from "../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
-import { fetchAccount } from "../../account/fetch/account";
 import { DEFAULT_TOKEN_DECIMALS } from "../../config/token";
 import { fetchEvent } from "../../event/fetch/event";
-import { fetchTokenBalance } from "../../token-balance/fetch/token-balance";
 import { fetchToken } from "../../token/fetch/token";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchFixedYieldSchedule } from "./fetch/fixed-yield-schedule";
@@ -49,6 +47,7 @@ export function handleFixedYieldScheduleSet(
     tokenDecimals
   );
   fixedYieldSchedule.underlyingAsset = event.params.underlyingAsset;
+  /* TODO: implement stats
   const underlyingAsset = fetchToken(event.params.underlyingAsset);
   const underlyingAssetBalance = fetchTokenBalance(
     underlyingAsset,
@@ -59,7 +58,7 @@ export function handleFixedYieldScheduleSet(
     "underlyingAssetBalanceAvailable",
     underlyingAssetBalance.availableExact,
     underlyingAsset.decimals
-  );
+  );*/
   for (let i = 1; i <= event.params.periodEndTimestamps.length; i++) {
     const period = fetchFixedYieldSchedulePeriod(getPeriodId(event.address, i));
     period.schedule = fixedYieldSchedule.id;
@@ -86,6 +85,8 @@ export function handleFixedYieldScheduleSet(
 
 export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
   fetchEvent(event, "UnderlyingAssetTopUp");
+  /* TODO: implement stats
+  const underlyingAsset = fetchToken(
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
   const underlyingAsset = fetchToken(
     Address.fromBytes(fixedYieldSchedule.underlyingAsset)
@@ -101,12 +102,14 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
     underlyingAsset.decimals
   );
   fixedYieldSchedule.save();
+  */
 }
 
 export function handleUnderlyingAssetWithdrawn(
   event: UnderlyingAssetWithdrawn
 ): void {
   fetchEvent(event, "UnderlyingAssetWithdrawn");
+  /* TODO: implement stats
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
   const underlyingAsset = fetchToken(
     Address.fromBytes(fixedYieldSchedule.underlyingAsset)
@@ -122,6 +125,7 @@ export function handleUnderlyingAssetWithdrawn(
     underlyingAsset.decimals
   );
   fixedYieldSchedule.save();
+  */
 }
 
 export function handleYieldClaimed(event: YieldClaimed): void {

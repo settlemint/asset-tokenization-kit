@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { Token } from "../../../generated/schema";
 import { Token as TokenTemplate } from "../../../generated/templates";
 import { Token as TokenContract } from "../../../generated/templates/Token/Token";
@@ -17,6 +17,8 @@ export function fetchToken(address: Address): Token {
     token.name = tokenContract.name();
     token.symbol = tokenContract.symbol();
     token.decimals = tokenContract.decimals();
+    token.createdAt = BigInt.zero();
+    token.createdBy = Address.zero();
     setBigNumber(
       token,
       "totalSupply",

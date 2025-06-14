@@ -14,6 +14,7 @@ export function fetchTokenBalance(
     tokenBalance = new TokenBalance(id);
     tokenBalance.token = token.id;
     tokenBalance.account = account.id;
+    tokenBalance.lastUpdatedAt = BigInt.zero();
     tokenBalance.isFrozen = false;
     setBigNumber(tokenBalance, "value", BigInt.zero(), token.decimals);
     setBigNumber(tokenBalance, "frozen", BigInt.zero(), token.decimals);

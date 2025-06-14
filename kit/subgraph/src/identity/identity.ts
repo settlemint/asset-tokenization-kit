@@ -14,9 +14,11 @@ import {
   isCollateralClaim,
   updateCollateral,
 } from "../token-extensions/collateral/utils/collateral-utils";
+import { updateBasePrice } from "../token/utils/token-utils";
 import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
 import { decodeClaimValues } from "./utils/decode-claim";
+import { isBasePriceClaim } from "./utils/is-claim";
 
 export function handleApproved(event: Approved): void {
   fetchEvent(event, "Approved");
@@ -36,6 +38,9 @@ export function handleClaimAdded(event: ClaimAdded): void {
   if (isCollateralClaim(identityClaim)) {
     updateCollateral(identityClaim);
   }
+  if (isBasePriceClaim(identityClaim)) {
+    updateBasePrice(identityClaim);
+  }
 }
 
 export function handleClaimChanged(event: ClaimChanged): void {
@@ -52,6 +57,9 @@ export function handleClaimChanged(event: ClaimChanged): void {
   if (isCollateralClaim(identityClaim)) {
     updateCollateral(identityClaim);
   }
+  if (isBasePriceClaim(identityClaim)) {
+    updateBasePrice(identityClaim);
+  }
 }
 
 export function handleClaimRemoved(event: ClaimRemoved): void {
@@ -63,6 +71,9 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
 
   if (isCollateralClaim(identityClaim)) {
     updateCollateral(identityClaim);
+  }
+  if (isBasePriceClaim(identityClaim)) {
+    updateBasePrice(identityClaim);
   }
 }
 
