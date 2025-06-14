@@ -77,6 +77,8 @@ contract ATKEquityImplementation is
         __SMARTBurnable_init();
         __SMARTPausable_init(true);
         __SMARTTokenAccessManaged_init(accessManager_);
+
+        _registerInterface(type(IATKEquity).interfaceId);
     }
 
     // --- ISMART Implementation ---

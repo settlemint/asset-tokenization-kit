@@ -39,9 +39,14 @@ interface IATKTokenFactory is IERC165 {
     /// @param sender The address of the sender.
     /// @param tokenAddress The address of the newly created token.
     /// @param tokenIdentity The address of the token identity.
+    /// @param interfaces The array of interfaces that the token supports.
     /// @param accessManager The address of the access manager.
     event TokenAssetCreated(
-        address indexed sender, address indexed tokenAddress, address indexed tokenIdentity, address accessManager
+        address indexed sender,
+        address indexed tokenAddress,
+        address indexed tokenIdentity,
+        bytes4[] interfaces,
+        address accessManager
     );
 
     /// @notice Initializes the token registry.

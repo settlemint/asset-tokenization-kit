@@ -73,7 +73,8 @@ type System @entity(immutable: false) {
 type SystemAddon @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
-  type: String!
+  name: String!
+  typeId: Bytes!
   system: System
   account: Account!
 }
@@ -162,7 +163,8 @@ type IdentityClaimValue @entity(immutable: false) {
 type TokenFactory @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
-  type: String!
+  name: String!
+  typeId: Bytes!
   system: System
   account: Account!
   tokens: [Token!]! @derivedFrom(field: "tokenFactory")
