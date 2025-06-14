@@ -87,6 +87,11 @@ const CONTRACT_ADDRESSES = {
 
   // Compliance modules
   SMARTIdentityVerificationModule: "0x5e771e1417100000000000000000000000020100",
+  CountryAllowListModule: "0x5e771e1417100000000000000000000000020101",
+  CountryBlockListModule: "0x5e771e1417100000000000000000000000020102",
+  AddressBlockListModule: "0x5e771e1417100000000000000000000000020103",
+  IdentityBlockListModule: "0x5e771e1417100000000000000000000000020104",
+  IdentityAllowListModule: "0x5e771e1417100000000000000000000000020105",
 } as const;
 
 const CONTRACT_FILES = {
@@ -140,6 +145,16 @@ const CONTRACT_FILES = {
   // Compliance modules
   SMARTIdentityVerificationModule:
     "contracts/smart/modules/SMARTIdentityVerificationModule.sol",
+  CountryAllowListModule:
+    "contracts/smart/modules/CountryAllowListComplianceModule.sol",
+  CountryBlockListModule:
+    "contracts/smart/modules/CountryBlockListComplianceModule.sol",
+  AddressBlockListModule:
+    "contracts/smart/modules/AddressBlockListComplianceModule.sol",
+  IdentityBlockListModule:
+    "contracts/smart/modules/IdentityBlockListComplianceModule.sol",
+  IdentityAllowListModule:
+    "contracts/smart/modules/IdentityAllowListComplianceModule.sol",
 } as const;
 
 // =============================================================================

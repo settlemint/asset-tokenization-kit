@@ -1,5 +1,3 @@
-import { encodeAbiParameters, parseAbiParameters } from "viem";
-
 import { ATKTopic } from "../constants/topics";
 import {
   frozenInvestor,
@@ -18,6 +16,7 @@ import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
+import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
 
 export const createEquity = async () => {
   console.log("\n=== Creating equity... ===\n");
@@ -32,22 +31,12 @@ export const createEquity = async () => {
     equityFactory
   );
 
-  const encodedBlockedCountries = encodeAbiParameters(
-    parseAbiParameters("uint16[]"),
-    [[]]
-  );
-
   const transactionHash = await equityFactory.write.createEquity([
     equity.name,
     equity.symbol,
     equity.decimals,
     [topicManager.getTopicId(ATKTopic.kyc)],
-    [
-      {
-        module: atkDeployer.getContractAddress("countryBlockListModule"),
-        params: encodedBlockedCountries,
-      },
-    ],
+    getDefaultComplianceModules(),
   ]);
 
   await equity.waitUntilDeployed(transactionHash);

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import { ComplianceModuleTest } from "./ComplianceModuleTest.t.sol";
+import { AbstractComplianceModuleTest } from "./AbstractComplianceModuleTest.t.sol";
 import { CountryAllowListComplianceModule } from "../../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
 import { TestConstants } from "../../Constants.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
-contract CountryAllowListComplianceModuleTest is ComplianceModuleTest {
+contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
     CountryAllowListComplianceModule internal module;
 
     function setUp() public override {

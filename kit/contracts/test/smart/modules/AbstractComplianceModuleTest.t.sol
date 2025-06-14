@@ -19,7 +19,7 @@ import { TestConstants } from "../../Constants.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IATKComplianceBypassList } from "../../../contracts/system/compliance/IATKComplianceBypassList.sol";
 
-abstract contract ComplianceModuleTest is Test {
+abstract contract AbstractComplianceModuleTest is Test {
     SystemUtils internal systemUtils;
     IdentityUtils internal identityUtils;
     TokenUtils internal tokenUtils;

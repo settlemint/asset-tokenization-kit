@@ -1,5 +1,3 @@
-import { encodeAbiParameters, parseAbiParameters } from "viem";
-
 import { atkDeployer } from "../services/deployer";
 
 import { ATKTopic } from "../constants/topics";
@@ -28,6 +26,7 @@ import { claimYield } from "./actions/yield/claim-yield";
 import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
 import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
 import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
+import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
@@ -42,11 +41,6 @@ export const createBond = async (depositToken: Asset<any>) => {
     bondFactory
   );
 
-  const encodedBlockedCountries = encodeAbiParameters(
-    parseAbiParameters("uint16[]"),
-    [[]]
-  );
-
   const anvilTimeSeconds = await getAnvilTimeSeconds(owner);
   const faceValue = toBaseUnits(0.000123, depositToken.decimals);
   const cap = toBaseUnits(1_000_000, bond.decimals);
@@ -59,12 +53,7 @@ export const createBond = async (depositToken: Asset<any>) => {
     faceValue,
     depositToken.address!,
     [topicManager.getTopicId(ATKTopic.kyc)],
-    [
-      {
-        module: atkDeployer.getContractAddress("countryBlockListModule"),
-        params: encodedBlockedCountries,
-      },
-    ],
+    getDefaultComplianceModules(),
   ]);
 
   await bond.waitUntilDeployed(transactionHash);

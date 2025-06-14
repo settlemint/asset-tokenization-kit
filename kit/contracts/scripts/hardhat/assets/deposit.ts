@@ -1,4 +1,3 @@
-import { encodeAbiParameters, parseAbiParameters } from "viem";
 import {
   frozenInvestor,
   investorA,
@@ -18,6 +17,8 @@ import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
+import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
+import { encodeAddressParams } from "./utils/encode-address-params";
 
 export const createDeposit = async () => {
   console.log("\n=== Creating deposit... ===\n");
@@ -32,10 +33,10 @@ export const createDeposit = async () => {
     depositFactory
   );
 
-  const encodedBlockedCountries = encodeAbiParameters(
-    parseAbiParameters("uint16[]"),
-    [[]]
-  );
+  const allowedIdentities = await Promise.all([
+    investorA.getIdentity(),
+    investorB.getIdentity(),
+  ]);
 
   const transactionHash = await depositFactory.write.createDeposit([
     deposit.name,
@@ -43,9 +44,10 @@ export const createDeposit = async () => {
     deposit.decimals,
     [topicManager.getTopicId(ATKTopic.kyc)],
     [
+      ...getDefaultComplianceModules(),
       {
-        module: atkDeployer.getContractAddress("countryBlockListModule"),
-        params: encodedBlockedCountries,
+        module: atkDeployer.getContractAddress("identityAllowListModule"),
+        params: encodeAddressParams(allowedIdentities),
       },
     ],
   ]);

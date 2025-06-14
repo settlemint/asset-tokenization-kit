@@ -1,10 +1,10 @@
-import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { ATKContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
 import { atkDeployer } from "../../../services/deployer";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
+import { encodeCountryParams } from "../../utils/encode-country-params";
 
 export const addCountryComplianceModule = async (
   asset: Asset<any>,
@@ -16,9 +16,7 @@ export const addCountryComplianceModule = async (
     abi: ATKContracts.ismart,
   });
 
-  const encodedCountries = encodeAbiParameters(parseAbiParameters("uint16[]"), [
-    countryCodes,
-  ]);
+  const encodedCountries = encodeCountryParams(countryCodes);
 
   const transactionHash = await withDecodedRevertReason(() =>
     tokenContract.write.addComplianceModule([
