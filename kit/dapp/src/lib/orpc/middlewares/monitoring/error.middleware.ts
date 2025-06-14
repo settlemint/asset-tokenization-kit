@@ -188,6 +188,11 @@ export const errorMiddleware = br.middleware(async ({ next, path }) => {
         });
       }
 
+      // Handle 404 errors with lower log level (not errors)
+      if (error.code === "NOT_FOUND" || error.status === 404) {
+        throw error;
+      }
+
       // Handle other ORPC errors (already properly formatted)
       logger.error("ORPC error", {
         status: error.status,

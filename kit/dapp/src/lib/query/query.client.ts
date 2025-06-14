@@ -1,11 +1,20 @@
 import { setupReactQueryErrorHandling } from "@/lib/sentry/react-query-integration";
+import { isDefinedError } from "@orpc/client";
+import { StandardRPCJsonSerializer } from "@orpc/client/standard";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { QueryClient } from "@tanstack/react-query";
+import {
+  defaultShouldDehydrateQuery,
+  QueryClient,
+} from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
+});
+
+const serializer = new StandardRPCJsonSerializer({
+  customJsonSerializers: [],
 });
 
 /**
@@ -42,40 +51,23 @@ const MUTATION_RETRY_DELAY = (attemptIndex: number) =>
  */
 const MAX_RETRIES = 3;
 
-/**
- * Enhanced error interface for query operations.
- *
- * Extends the standard Error interface with additional properties
- * commonly found in HTTP and API errors, enabling more sophisticated
- * error handling and retry logic.
- */
-interface QueryError extends Error {
-  /** Error code from the API or HTTP status */
-  code?: string;
-  /** HTTP status code */
-  status?: number;
-  /** Additional error data from the API response */
-  data?: unknown;
-}
-
-/**
- * QueryClient factory function.
- *
- * Creates a new QueryClient instance with optimized configuration
- * for the application's needs. Each call creates a fresh instance
- * to prevent data leakage between server-side requests.
- *
- * Configuration highlights:
- * - Smart retry logic that avoids retrying client errors (4xx)
- * - Offline-first networking for better UX
- * - Optimized refetch behavior to reduce unnecessary requests
- * - Exponential backoff for failed requests
- *
- * @returns Configured QueryClient instance
- */
-const getQueryClient = () => {
+export const createQueryClient = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
+      hydrate: {
+        deserializeData(data) {
+          return serializer.deserialize(data.json, data.meta);
+        },
+      },
+      dehydrate: {
+        serializeData(data) {
+          const [json, meta] = serializer.serialize(data);
+          return { json, meta };
+        },
+        shouldDehydrateQuery: (query) =>
+          defaultShouldDehydrateQuery(query) ||
+          query.state.status === "pending",
+      },
       queries: {
         // Only refetch on window focus in production to reduce development noise
         refetchOnWindowFocus: process.env.NODE_ENV === "production",
@@ -94,14 +86,7 @@ const getQueryClient = () => {
          * network errors are retried with exponential backoff.
          */
         retry: (failureCount, error) => {
-          const queryError = error as QueryError;
-          // Don't retry on 4xx errors (except 408 Request Timeout)
-          if (
-            queryError.status &&
-            queryError.status >= 400 &&
-            queryError.status < 500 &&
-            queryError.status !== 408
-          ) {
+          if (isDefinedError(error)) {
             return false;
           }
           return failureCount < MAX_RETRIES;
@@ -136,13 +121,7 @@ const getQueryClient = () => {
          * network issues, never on client errors.
          */
         retry: (failureCount, error) => {
-          const mutationError = error as QueryError;
-          // Don't retry on 4xx errors
-          if (
-            mutationError.status &&
-            mutationError.status >= 400 &&
-            mutationError.status < 500
-          ) {
+          if (isDefinedError(error)) {
             return false;
           }
           return failureCount < MAX_RETRIES;
@@ -157,56 +136,8 @@ const getQueryClient = () => {
     },
   });
 
-  return queryClient;
-};
-
-/**
- * Creates and configures a new QueryClient instance with persistence support.
- *
- * This function creates a QueryClient with localStorage persistence, enabling
- * the application to maintain query cache across browser sessions. The
- * persistence is configured to only store successful queries and includes
- * throttling to prevent excessive localStorage writes.
- *
- * Features:
- * - Persistent cache across browser sessions
- * - Throttled writes to prevent performance issues
- * - Only persists successful queries to avoid storing error states
- * - Graceful fallback if localStorage is unavailable
- * - Automatic cache expiration based on configured max age
- *
- * @returns A configured QueryClient instance with localStorage persistence
- *
- * @example
- * ```tsx
- * // Basic usage in app setup
- * const queryClient = makeQueryClient();
- *
- * // Use in your app root
- * <QueryClientProvider client={queryClient}>
- *   <App />
- * </QueryClientProvider>
- * ```
- *
- * @example
- * ```tsx
- * // In a Next.js app with SSR
- * function MyApp({ Component, pageProps }: AppProps) {
- *   const [queryClient] = useState(() => makeQueryClient());
- *
- *   return (
- *     <QueryClientProvider client={queryClient}>
- *       <Component {...pageProps} />
- *     </QueryClientProvider>
- *   );
- * }
- * ```
- */
-export function makeQueryClient(): QueryClient {
-  const client = getQueryClient();
-
   // Set up Sentry integration for error tracking
-  setupReactQueryErrorHandling(client);
+  setupReactQueryErrorHandling(queryClient);
 
   // Only set up persistence in browser environment
   if (typeof window !== "undefined") {
@@ -221,7 +152,7 @@ export function makeQueryClient(): QueryClient {
 
       // Set up query persistence with selective dehydration
       void persistQueryClient({
-        queryClient: client,
+        queryClient: queryClient,
         persister,
         // Use the same max age as cache time for consistency
         maxAge: QUERY_CACHE_TIME,
@@ -229,9 +160,13 @@ export function makeQueryClient(): QueryClient {
         // storing error states or loading states that aren't useful
         // when the app is reloaded
         dehydrateOptions: {
-          shouldDehydrateQuery: (query) => {
-            return query.state.status === "success";
+          serializeData(data) {
+            const [json, meta] = serializer.serialize(data);
+            return { json, meta };
           },
+          shouldDehydrateQuery: (query) =>
+            defaultShouldDehydrateQuery(query) ||
+            query.state.status === "pending",
         },
       });
     } catch (error) {
@@ -246,5 +181,5 @@ export function makeQueryClient(): QueryClient {
     }
   }
 
-  return client;
-}
+  return queryClient;
+};

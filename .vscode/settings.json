@@ -45,7 +45,7 @@
     "*.jsx": "${capture}.js",
     "*.mts": "${capture}.typegen.ts",
     "*.ts": "${capture}.js, ${capture}.typegen.ts, ${capture}.spec.ts, ${capture}.test.ts, ${capture}.schema.ts",
-    "*.tsx": "${capture}.ts, ${capture}.typegen.ts, ${capture}.spec.ts, ${capture}.test.ts, ${capture}.spec.tsx, ${capture}.test.tsx, ${capture}.schema.tsx",
+    "*.tsx": "${capture}.ts, ${capture}.typegen.ts, ${capture}.spec.ts, ${capture}.test.ts, ${capture}.spec.tsx, ${capture}.test.tsx, ${capture}.schema.tsx, ${capture}.view.tsx",
     "*.contract.ts": "${capture}.contract.ts, ${capture}.router.ts",
     "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock",
     "tsconfig.json": "tsconfig.*.json"

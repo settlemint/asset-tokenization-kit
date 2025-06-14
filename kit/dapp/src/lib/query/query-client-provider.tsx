@@ -1,6 +1,6 @@
 "use client";
 
-import { makeQueryClient } from "@/lib/query/query.client";
+import { createQueryClient } from "@/lib/query/query.client";
 import {
   type QueryClient,
   QueryClientProvider as ReactQueryClientProvider,
@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental";
-import { type PropsWithChildren, useEffect, useState } from "react";
+import { type PropsWithChildren, useState } from "react";
 
 /**
  * Singleton QueryClient instance for browser environment.
@@ -52,42 +52,15 @@ function getQueryClient(): QueryClient {
   if (isServer) {
     // Server: Always create a new client for each request to prevent
     // data leaking between different users' requests
-    return makeQueryClient();
+    return createQueryClient();
   }
 
   // Client: Use singleton pattern to maintain state across navigations
   if (!browserQueryClient) {
-    browserQueryClient = makeQueryClient();
+    browserQueryClient = createQueryClient();
   }
 
   return browserQueryClient;
-}
-
-/**
- * Props for the QueryClientProvider component.
- */
-interface QueryClientProviderProps extends PropsWithChildren {
-  /**
-   * Whether to show React Query Devtools in development.
-   *
-   * Controls the visibility of the React Query development tools that provide
-   * insights into query states, cache contents, and performance metrics.
-   * Only affects development builds; devtools are never shown in production.
-   *
-   * @default true
-   */
-  showDevtools?: boolean;
-
-  /**
-   * Initial open state for React Query Devtools.
-   *
-   * Determines whether the devtools panel should be open by default when
-   * the application loads. Useful for debugging sessions where immediate
-   * access to query information is needed.
-   *
-   * @default false
-   */
-  devtoolsInitialIsOpen?: boolean;
 }
 
 /**
@@ -159,36 +132,19 @@ interface QueryClientProviderProps extends PropsWithChildren {
  * @see {@link @/lib/orpc/query/query.client} - QueryClient configuration
  * @see {@link https://tanstack.com/query/latest/docs/framework/react/reference/QueryClient} - QueryClient API reference
  */
-export function QueryClientProvider({
-  children,
-  showDevtools = true,
-  devtoolsInitialIsOpen = false,
-}: QueryClientProviderProps) {
+export function QueryClientProvider({ children }: PropsWithChildren) {
   // Use state to ensure we don't recreate the client on every render
   // This is crucial for maintaining query cache and avoiding unnecessary re-initialization
   const [queryClient] = useState(() => getQueryClient());
-
-  // Clean up resources on unmount (primarily for testing environments)
-  useEffect(() => {
-    return () => {
-      // Clear query cache in test environment to prevent test interference
-      if (process.env.NODE_ENV === "test") {
-        queryClient.getQueryCache().clear();
-      }
-    };
-  }, [queryClient]);
 
   return (
     <ReactQueryClientProvider client={queryClient}>
       <ReactQueryStreamedHydration>
         {children}
-        {/* Conditionally render devtools only in development and when enabled */}
-        {showDevtools && process.env.NODE_ENV !== "production" && (
-          <ReactQueryDevtools
-            initialIsOpen={devtoolsInitialIsOpen}
-            buttonPosition="bottom-right"
-          />
-        )}
+        <ReactQueryDevtools
+          initialIsOpen={false}
+          buttonPosition="bottom-right"
+        />
       </ReactQueryStreamedHydration>
     </ReactQueryClientProvider>
   );

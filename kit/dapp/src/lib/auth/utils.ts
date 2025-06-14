@@ -1,33 +1,18 @@
 import { auth } from "@/lib/auth/auth";
-import { redirectToSignIn } from "@/lib/auth/redirect";
-import { withTracing } from "@/lib/utils/sentry-tracing";
-import { getLocale } from "next-intl/server";
+import { prefetchSession } from "@daveyplate/better-auth-tanstack/server";
 import { headers } from "next/headers";
-import { cache } from "react";
+import { getQueryClient } from "../query/hydrate-client";
 import type { User } from "./types";
 
-/**
- * Get the currently authenticated user
- * @returns The authenticated user
- * @throws {AuthError} If user is not authenticated
- */
-export const getUser = withTracing(
-  "queries",
-  "getUser",
-  cache(async () => {
-    const locale = await getLocale();
-    try {
-      const session = await auth.api.getSession({
-        headers: await headers(),
-      });
-      if (!session?.user) {
-        return redirectToSignIn(locale);
-      }
-      return session.user as User;
-    } catch (err) {
-      const error = err as Error;
-      console.error(`Error getting user: ${error.message}`, error.stack);
-      return redirectToSignIn(locale);
-    }
-  })
-);
+export const getUser = async (): Promise<User> => {
+  const queryClient = getQueryClient();
+  const { user } = await prefetchSession(auth, queryClient, {
+    headers: await headers(),
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user as User;
+};

@@ -2,8 +2,8 @@ import { AuthProvider } from "@/components/blocks/auth/auth-provider";
 import { ThemeProvider } from "@/components/blocks/theme/theme-provider";
 import { TransitionProvider } from "@/components/layout/transition-provider";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
-import { QueryClientProvider } from "@/components/providers/QueryClientProvider";
 import { env } from "@/lib/config/env";
+import { QueryClientProvider } from "@/lib/query/query-client-provider";
 import { NextIntlClientProvider } from "next-intl";
 
 /**
