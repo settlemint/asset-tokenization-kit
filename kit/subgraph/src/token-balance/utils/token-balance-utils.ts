@@ -7,7 +7,8 @@ import { fetchTokenBalance } from "../fetch/token-balance";
 export function increaseTokenBalanceValue(
   token: Token,
   account: Address,
-  value: BigInt
+  value: BigInt,
+  timestamp: BigInt
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
@@ -19,13 +20,16 @@ export function increaseTokenBalanceValue(
   );
   updateAvailableAmount(balance, token.decimals);
 
+  balance.lastUpdatedAt = timestamp;
+
   balance.save();
 }
 
 export function decreaseTokenBalanceValue(
   token: Token,
   account: Address,
-  value: BigInt
+  value: BigInt,
+  timestamp: BigInt
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
@@ -37,13 +41,16 @@ export function decreaseTokenBalanceValue(
   );
   updateAvailableAmount(balance, token.decimals);
 
+  balance.lastUpdatedAt = timestamp;
+
   balance.save();
 }
 
 export function increaseTokenBalanceFrozen(
   token: Token,
   account: Address,
-  amount: BigInt
+  amount: BigInt,
+  timestamp: BigInt
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
@@ -55,13 +62,16 @@ export function increaseTokenBalanceFrozen(
   );
   updateAvailableAmount(balance, token.decimals);
 
+  balance.lastUpdatedAt = timestamp;
+
   balance.save();
 }
 
 export function decreaseTokenBalanceFrozen(
   token: Token,
   account: Address,
-  amount: BigInt
+  amount: BigInt,
+  timestamp: BigInt
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
@@ -73,18 +83,23 @@ export function decreaseTokenBalanceFrozen(
   );
   updateAvailableAmount(balance, token.decimals);
 
+  balance.lastUpdatedAt = timestamp;
+
   balance.save();
 }
 
 export function freezeOrUnfreezeTokenBalance(
   token: Token,
   account: Address,
-  isFrozen: boolean
+  isFrozen: boolean,
+  timestamp: BigInt
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
   balance.isFrozen = isFrozen;
   updateAvailableAmount(balance, token.decimals);
+
+  balance.lastUpdatedAt = timestamp;
 
   balance.save();
 }
@@ -92,7 +107,8 @@ export function freezeOrUnfreezeTokenBalance(
 export function moveTokenBalanceToNewAccount(
   token: Token,
   oldAccount: Address,
-  newAccount: Address
+  newAccount: Address,
+  timestamp: BigInt
 ): void {
   const oldBalance = fetchTokenBalance(token, fetchAccount(oldAccount));
   const newBalance = fetchTokenBalance(token, fetchAccount(newAccount));
@@ -100,6 +116,8 @@ export function moveTokenBalanceToNewAccount(
   setBigNumber(newBalance, "value", oldBalance.valueExact, token.decimals);
   setBigNumber(newBalance, "frozen", oldBalance.frozenExact, token.decimals);
   updateAvailableAmount(newBalance, token.decimals);
+
+  newBalance.lastUpdatedAt = timestamp;
 
   newBalance.save();
   store.remove("TokenBalance", oldBalance.id.toHexString());

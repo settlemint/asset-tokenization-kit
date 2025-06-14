@@ -200,7 +200,6 @@ type Token @entity(immutable: false) {
 
 type TokenBalance @entity(immutable: false) {
   id: Bytes!
-  createdAt: BigInt!
   lastUpdatedAt: BigInt!
   token: Token!
   account: Account!

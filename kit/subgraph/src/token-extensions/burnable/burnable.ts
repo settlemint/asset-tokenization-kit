@@ -8,5 +8,10 @@ export function handleBurnCompleted(event: BurnCompleted): void {
   fetchEvent(event, "BurnCompleted");
   const token = fetchToken(event.address);
   decreaseTokenSupply(token, event.params.amount);
-  decreaseTokenBalanceValue(token, event.params.from, event.params.amount);
+  decreaseTokenBalanceValue(
+    token,
+    event.params.from,
+    event.params.amount,
+    event.block.timestamp
+  );
 }

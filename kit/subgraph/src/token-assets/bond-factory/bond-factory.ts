@@ -14,5 +14,6 @@ export function handleBondCreated(event: BondCreated): void {
   );
   bond.maturityDate = event.params.maturityDate;
   bond.isMatured = false;
+  bond.underlyingAsset = event.params.underlyingAsset;
   bond.save();
 }
