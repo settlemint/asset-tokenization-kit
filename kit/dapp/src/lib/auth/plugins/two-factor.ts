@@ -1,7 +1,4 @@
-import { OTP_ALGORITHM, OTP_DIGITS, OTP_PERIOD } from "@/lib/auth/otp";
-import { disableTwoFactorFunction } from "@/lib/mutations/user/two-factor/disable-two-factor-function";
-import { enableTwoFactorFunction } from "@/lib/mutations/user/two-factor/enable-two-factor-function";
-import { verifyTwoFactorOTPFunction } from "@/lib/mutations/user/two-factor/verify-two-factor-otp-function";
+import { OTP_DIGITS, OTP_PERIOD } from "@/lib/auth/otp";
 import type { GenericEndpointContext } from "better-auth";
 import { createAuthEndpoint } from "better-auth/api";
 import { twoFactor } from "better-auth/plugins/two-factor";
@@ -34,18 +31,23 @@ plugin.endpoints = {
           ctx.setHeader(name, value);
         }
       }
-      const { totpURI, verificationId } = await enableTwoFactorFunction({
-        parsedInput: {
-          algorithm: OTP_ALGORITHM,
-          digits: OTP_DIGITS,
-          period: OTP_PERIOD,
-        },
-        ctx: { user },
-      });
+      // TODO JAN: Remove this once we have the mutation
+      // const { totpURI, verificationId } = await enableTwoFactorFunction({
+      //   parsedInput: {
+      //     algorithm: OTP_ALGORITHM,
+      //     digits: OTP_DIGITS,
+      //     period: OTP_PERIOD,
+      //   },
+      //   ctx: { user },
+      // });
+      const result = {
+        totpURI: "123",
+        verificationId: "123",
+      };
       await revokeSession(ctx as GenericEndpointContext, {
-        twoFactorVerificationId: verificationId,
+        twoFactorVerificationId: result.verificationId,
       });
-      return ctx.json({ backupCodes: [], totpURI });
+      return ctx.json({ backupCodes: [], totpURI: result.totpURI });
     }
   ),
   disableTwoFactor: createAuthEndpoint(
@@ -57,7 +59,8 @@ plugin.endpoints = {
         ctx as typeof ctx & { returnHeaders: true }
       );
       if (response.status) {
-        await disableTwoFactorFunction({ ctx: { user } });
+        // TODO JAN: Remove this once we have the mutation
+        // await disableTwoFactorFunction({ ctx: { user } });
       }
       for (const [name, value] of headers.entries()) {
         ctx.setHeader(name, value);
@@ -71,10 +74,14 @@ plugin.endpoints = {
     async (ctx) => {
       const user = ctx.context.session.user as User;
       const { code } = ctx.body;
-      const result = await verifyTwoFactorOTPFunction({
-        parsedInput: { code },
-        ctx: { user },
-      });
+      // TODO JAN: Remove this once we have the mutation
+      // const result = await verifyTwoFactorOTPFunction({
+      //   parsedInput: { code },
+      //   ctx: { user },
+      // });
+      const result = {
+        verified: true,
+      };
       if (!result?.verified) {
         return ctx.context.invalid();
       }

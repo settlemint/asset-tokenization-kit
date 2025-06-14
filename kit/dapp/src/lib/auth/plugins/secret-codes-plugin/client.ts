@@ -1,5 +1,5 @@
 import type { BetterAuthClientPlugin } from "better-auth/types";
-import type { secretCodes } from "./index";
+import type { secretCodes } from "./server";
 
 export const secretCodesClient = () => {
   return {

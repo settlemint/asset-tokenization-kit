@@ -1,4 +1,4 @@
-import { getUser } from "@/lib/auth/utils";
+import { getUser } from "@/lib/auth/get-user";
 import { getActionsList } from "@/lib/queries/actions/actions-list";
 import { ActionType } from "@/lib/queries/actions/actions-schema";
 import type { Address } from "viem";

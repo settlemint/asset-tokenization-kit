@@ -1,5 +1,5 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
-import { getUser } from "@/lib/auth/utils";
+import { getUser } from "@/lib/auth/get-user";
 import { getContactsList } from "@/lib/queries/contact/contact-list";
 import { Columns } from "./my-contacts-table-columns";
 

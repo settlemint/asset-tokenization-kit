@@ -1,5 +1,4 @@
 import { describe, expect, it } from "bun:test";
-import { z } from "zod";
 import { roleMap, roleNames, roles, type Role, type RoleMap } from "./roles";
 
 describe("roles", () => {
@@ -127,7 +126,7 @@ describe("type checking", () => {
       expect(result.success).toBe(true);
       if (result.success) {
         const _typeCheck: Role = result.data;
-        expect(result.data).toBe("manager");
+        expect(result.data).toBe("user");
       }
     });
   });
@@ -150,7 +149,7 @@ describe("type checking", () => {
         const _typeCheck: RoleMap = result.data;
         expect(result.data).toEqual({
           "0x1234567890123456789012345678901234567890": "admin",
-          "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd": "manager",
+          "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd": "investor",
         });
       }
     });

@@ -23,11 +23,13 @@ import { ethereumAddress } from "../utils/zod/validators/ethereum-address";
 import {
   accessControl,
   adminRole,
+  auditorRole,
   investorRole,
   issuerRole,
+  userRole,
 } from "./permissions";
-import { pincode } from "./plugins/pincode-plugin";
-import { secretCodes } from "./plugins/secret-codes-plugin";
+import { pincode } from "./plugins/pincode-plugin/server";
+import { secretCodes } from "./plugins/secret-codes-plugin/server";
 import twoFactorPlugin from "./plugins/two-factor";
 
 const hasEmailConfigured = env.RESEND_API_KEY !== undefined;
@@ -185,6 +187,8 @@ export const auth = betterAuth({
         admin: adminRole,
         investor: investorRole,
         issuer: issuerRole,
+        user: userRole,
+        auditor: auditorRole,
       },
     }),
     apiKey({

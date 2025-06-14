@@ -1,4 +1,4 @@
-import { getUser } from "@/lib/auth/utils";
+import { getUser } from "@/lib/auth/get-user";
 import type { ActionType } from "@/lib/queries/actions/actions-schema";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";

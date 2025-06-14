@@ -6,7 +6,7 @@ import {
   TokenType,
 } from "@/lib/db/regulations/schema-mica-regulation-configs";
 import { createRegulation } from "@/lib/providers/regulations/regulation-provider";
-import { withTracing } from "@/lib/utils/sentry-tracing";
+import { withTracing } from "@/lib/sentry/sentry-tracing";
 
 export interface CreateRegulationConfigInput {
   assetId: string;

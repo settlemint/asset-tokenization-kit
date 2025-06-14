@@ -1,5 +1,5 @@
 import { CreateAccount } from "@/app/[locale]/(private)/onboarding/_components/create-account";
-import { getUser } from "@/lib/auth/utils";
+import { getUser } from "@/lib/auth/get-user";
 import { HydrateClient } from "@/lib/query/hydrate-client";
 import { getSetting } from "@/lib/utils/get-settings";
 

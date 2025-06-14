@@ -1,5 +1,5 @@
 import type { BetterAuthClientPlugin } from "better-auth/types";
-import type { pincode } from "./index";
+import type { pincode } from "./server";
 
 export const pincodeClient = () => {
   return {

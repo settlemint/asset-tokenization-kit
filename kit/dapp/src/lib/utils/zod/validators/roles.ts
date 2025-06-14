@@ -24,10 +24,9 @@ import { z } from "zod";
 export const roleNames = [
   "admin",
   "issuer",
-  "manager",
-  "compliance",
   "auditor",
   "investor",
+  "user",
 ] as const;
 
 /**

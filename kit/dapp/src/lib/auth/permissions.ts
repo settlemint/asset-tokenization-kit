@@ -35,4 +35,12 @@ export const investorRole = accessControl.newRole({
   transaction: ["read", "watch"],
 });
 
-// TODO JAN: add the KYC and auditor roles
+export const auditorRole = accessControl.newRole({
+  system: ["read"],
+  transaction: ["read"],
+});
+
+export const userRole = accessControl.newRole({
+  system: ["read"],
+  transaction: ["read"],
+});

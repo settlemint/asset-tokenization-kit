@@ -1,8 +1,9 @@
 import type { Permissions } from "@/lib/auth/permissions";
 import type { User } from "@/lib/auth/types";
 import { authClient } from "../auth/client";
+import { getUser } from "../auth/get-user";
 import { handleAccessControlError } from "../auth/next-error-handling";
-import { getUser } from "../auth/utils";
+import type { Role } from "./zod/validators/roles";
 
 /**
  * The error thrown when the user does not have the required permissions
@@ -59,7 +60,7 @@ export function withAccessControl<
     const userRole = user.role ?? "";
     const hasPermission = authClient.admin.checkRolePermission({
       permission: requiredPermissions,
-      role: userRole,
+      role: userRole as Role,
     });
     if (!hasPermission) {
       const error = new AccessControlError("Forbidden", 403);

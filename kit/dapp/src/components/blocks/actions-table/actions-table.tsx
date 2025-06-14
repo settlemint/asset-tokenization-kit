@@ -1,4 +1,4 @@
-import { getUser } from "@/lib/auth/utils";
+import { getUser } from "@/lib/auth/get-user";
 import { getActionsList } from "@/lib/queries/actions/actions-list";
 import type {
   ActionStatus,

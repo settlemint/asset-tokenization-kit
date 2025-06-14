@@ -1,6 +1,6 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { columns } from "@/components/blocks/user-permissions-table/user-permissions-table-columns";
-import { getUser } from "@/lib/auth/utils";
+import { getUser } from "@/lib/auth/get-user";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
 import type { Address } from "viem";
 

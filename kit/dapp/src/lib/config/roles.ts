@@ -1,6 +1,5 @@
-import { t } from "@/lib/utils/typebox";
-import type { AssetType } from "@/lib/utils/typebox/asset-types";
 import { keccak256, stringToBytes, type Hex } from "viem";
+import type { AssetType } from "../utils/zod/validators/asset-types";
 
 /**
  * Role configuration for the access control system.
@@ -79,7 +78,6 @@ export const getRoleDisplayName = (roleKey: RoleKey): string => {
   return ROLES[roleKey].displayName;
 };
 
-const _RolesSchema = t.Roles();
 export type RolesInput = Record<RoleKey, boolean>;
 
 export const getActiveRoles = (roles?: RolesInput): Role[] => {

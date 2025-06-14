@@ -1,7 +1,7 @@
 "use server";
 
+import { withTracing } from "@/lib/sentry/sentry-tracing";
 import { client as minioClient } from "@/lib/settlemint/minio";
-import { withTracing } from "@/lib/utils/sentry-tracing";
 import { randomUUID } from "crypto";
 
 // Default bucket name

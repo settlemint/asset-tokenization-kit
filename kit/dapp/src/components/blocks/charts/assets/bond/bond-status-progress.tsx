@@ -1,5 +1,5 @@
 import { DonutProgressChart } from "@/components/blocks/charts/donut-progress-chart";
-import { getUser } from "@/lib/auth/utils";
+import { getUser } from "@/lib/auth/get-user";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getBondStatus } from "@/lib/utils/bond-status";
 import { getBondStatusColor } from "@/lib/utils/chart-colors";

@@ -24,7 +24,7 @@
  * @see PostHogProvider.tsx for client-side PostHog configuration
  */
 
-import { getUser } from "@/lib/auth/utils";
+import { getUser } from "@/lib/auth/get-user";
 import { PostHog } from "posthog-node";
 
 // Only initialize PostHog if the key is available
