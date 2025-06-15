@@ -12,5 +12,9 @@
     "switch-to-mode": "Switch to {mode} mode",
     "system": "System",
     "toggle-label": "Toggle theme"
+  },
+  "language": {
+    "switch": "Switch language",
+    "changing": "Changing..."
   }
 }

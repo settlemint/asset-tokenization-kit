@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/lib/i18n";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import type { PropsWithChildren } from "react";

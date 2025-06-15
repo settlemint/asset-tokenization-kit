@@ -1,8 +1,6 @@
-import { t } from "@/lib/i18n";
-
 export const metadata = {
-  title: `${t("general.appName")} | ${t("general.companyName")}`,
-  description: t("general.companyName"),
+  title: `Asset Tokenization Kit | SettleMint`,
+  description: "SettleMint",
   twitter: "@settlemintcom",
   keywords: [
     "Asset Tokenization",

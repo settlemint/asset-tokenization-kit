@@ -1,7 +1,7 @@
-import { useTranslation } from "@/lib/i18n";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/")({
   loader: ({ context }) => {

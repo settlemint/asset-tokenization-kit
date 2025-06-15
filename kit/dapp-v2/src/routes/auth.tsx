@@ -1,7 +1,9 @@
+import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
-import { useTranslation } from "@/lib/i18n";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { cn } from "@/lib/utils";
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/auth")({
   component: LayoutComponent,
@@ -27,14 +29,9 @@ function LayoutComponent() {
           </div>
         </div>
       </div>
-      <div className="absolute top-8 right-8 flex flex-col items-end gap-0">
-        <div className="text-right">
-          <Link to="/" className="text-primary-foreground">
-            {/* <ThemeToggle /> */}
-            {/* <LanguageToggle size="icon" variant="outline" />
-             */}
-          </Link>
-        </div>
+      <div className="absolute top-8 right-8 flex gap-2">
+        <LanguageSwitcher />
+        <ThemeToggle />
       </div>
       <div className="flex min-h-screen items-center justify-center">
         <Outlet />
