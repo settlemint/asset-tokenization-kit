@@ -1,9 +1,10 @@
+import { AuthProvider } from "@/providers/auth";
 import { ThemeProvider } from "./theme";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      {children}
+      <AuthProvider>{children}</AuthProvider>
     </ThemeProvider>
   );
 }

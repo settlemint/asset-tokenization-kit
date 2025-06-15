@@ -78,7 +78,8 @@ export const errorMiddleware = br.middleware(async ({ next }) => {
   try {
     return await next();
   } catch (error) {
-    console.log(error);
+    // logger.error("ORPC error", error);
+
     // Handle Better Auth API errors first
     if (error instanceof APIError) {
       logger.error("Better Auth API error", {
@@ -134,13 +135,6 @@ export const errorMiddleware = br.middleware(async ({ next }) => {
         });
       }
 
-      // Handle other ORPC errors (already properly formatted)
-      logger.error("ORPC error", {
-        status: error.status,
-        code: error.code as number,
-        message: error.message,
-        cause: error.cause?.constructor?.name,
-      });
       throw error;
     }
 

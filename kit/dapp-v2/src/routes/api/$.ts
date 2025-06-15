@@ -37,7 +37,7 @@ const handler = new OpenAPIHandler(router, {
       specGenerateOptions: {
         info: {
           title: metadata.title,
-          version: pkgjson.version as string,
+          version: pkgjson.version,
           description: metadata.description,
           license: {
             name: "FSL-1.1-MIT",

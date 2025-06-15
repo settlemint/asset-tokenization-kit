@@ -82,7 +82,7 @@ export default defineConfig([
       "@typescript-eslint/no-unsafe-call": "error",
       "@typescript-eslint/no-unsafe-return": "error",
       "@typescript-eslint/restrict-template-expressions": "off",
-
+      "react/no-unescaped-entities": "off",
       // Disable some rules that might be too strict for TanStack Start
       "@typescript-eslint/no-misused-promises": [
         "error",
