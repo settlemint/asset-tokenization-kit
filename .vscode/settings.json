@@ -29,6 +29,9 @@
   "[solidity]": {
     "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
   },
+  "[mdx]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "typescript.preferences.autoImportSpecifierExcludeRegexes": [
     "@radix-ui",
     "next/router"
@@ -62,11 +65,6 @@
   "githubPullRequests.notifications": "pullRequests",
   "githubPullRequests.quickDiff": true,
   "trailing-spaces.trimOnSave": true,
-  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "typescript.inlayHints.parameterTypes.enabled": true,
-  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
-  "typescript.inlayHints.variableTypes.enabled": true,
-  "typescript.suggest.completeFunctionCalls": true,
   "workbench.editor.customLabels.patterns": {
     "**/app/**/layout.tsx": "${dirname(1)}/${dirname} <layout>",
     "**/app/**/page.tsx": "${dirname(1)}/${dirname} <page>",
@@ -74,13 +72,6 @@
     "**/components/**/index.tsx": "${dirname(1)}/${dirname} <component>"
   },
   "workbench.tree.enableStickyScroll": true,
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "[dockerfile]": {
-    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
-  },
-  "[mdx]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
   "eslint.codeActionsOnSave.mode": "all",
   "eslint.lintTask.enable": true,
   "eslint.run": "onType",
@@ -88,11 +79,23 @@
   "i18n-ally.namespace": true,
   "i18n-ally.sortKeys": true,
   "i18n-ally.sourceLanguage": "en",
-  "i18n-ally.localesPaths": ["kit/dapp/messages"],
+  "i18n-ally.localesPaths": ["kit/dapp-v2/src/messages"],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.enabledFrameworks": ["next-intl"],
   "i18n-ally.pathMatcher": "{locale}.json",
   "i18n-ally.defaultNamespace": "",
   "i18n-ally.translate.engines": ["openai", "google"],
-  "biome.enabled": false
+  "biome.enabled": false,
+  "eslint.enable": true,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.suggest.completeFunctionCalls": true,
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.experimental.expandableHover": true,
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "typescript.updateImportsOnPaste.enabled": true,
+  "typescript.updateImportsOnFileMove.enabled": "always"
 }

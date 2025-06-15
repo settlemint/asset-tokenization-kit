@@ -63,7 +63,9 @@
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
-  "dependencies": {},
+  "dependencies": {
+    "tailwindcss": "4.1.10"
+  },
   "devDependencies": {
     "@settlemint/sdk-cli": "2.3.14",
     "lefthook": "1.11.13",
