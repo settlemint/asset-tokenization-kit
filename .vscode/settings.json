@@ -75,16 +75,6 @@
   "eslint.codeActionsOnSave.mode": "all",
   "eslint.lintTask.enable": true,
   "eslint.run": "onType",
-  "i18n-ally.extract.autoDetect": true,
-  "i18n-ally.namespace": true,
-  "i18n-ally.sortKeys": true,
-  "i18n-ally.sourceLanguage": "en",
-  "i18n-ally.localesPaths": ["kit/dapp-v2/src/messages"],
-  "i18n-ally.keystyle": "nested",
-  "i18n-ally.enabledFrameworks": ["next-intl"],
-  "i18n-ally.pathMatcher": "{locale}.json",
-  "i18n-ally.defaultNamespace": "",
-  "i18n-ally.translate.engines": ["openai", "google"],
   "biome.enabled": false,
   "eslint.enable": true,
   "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
@@ -103,5 +93,30 @@
   "typescript.tsserver.web.typeAcquisition.enabled": false,
   "typescript.disableAutomaticTypeAcquisition": true,
   "typescript.preferences.useAliasesForRenames": false,
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+  "i18n-ally.localesPaths": [
+    "kit/dapp-v2/src/locales",
+    "kit/dapp/messages",
+    "kit/dapp/src/i18n",
+    "kit/dapp/src/components/blocks/language"
+  ],
+  "i18n-ally.namespace": true,
+  "i18n-ally.sortKeys": true,
+  "i18n-ally.sourceLanguage": "en",
+  "i18n-ally.dirStructure": "auto",
+  "i18n-ally.displayLanguage": "en",
+  "i18n-ally.editor.preferEditor": true,
+  "i18n-ally.enabledFrameworks": ["next-intl"],
+  "i18n-ally.enabledParsers": ["json"],
+  "i18n-ally.extract.autoDetect": true,
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "search.exclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "i18n-ally.keystyle": "nested"
 }

@@ -1,4 +1,9 @@
 /// <reference types="vite/client" />
+import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { NotFound } from "@/components/error/not-found";
+import { seo } from "@/config/metadata";
+import { Providers } from "@/providers";
+import appCss from "@/styles/app.css?url";
 import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
@@ -8,15 +13,8 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { Toaster } from "sonner";
-
 import type { ReactNode } from "react";
-
-import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { NotFound } from "@/components/error/not-found";
-import { seo } from "@/config/metadata";
-import { Providers } from "@/providers";
-import appCss from "@/styles/app.css?url";
+import { Toaster } from "sonner";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;

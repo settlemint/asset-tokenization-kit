@@ -11,14 +11,20 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivateRouteImport } from './routes/_private'
 import { Route as PrivateIndexRouteImport } from './routes/_private/index'
-import { Route as AuthPathnameRouteImport } from './routes/auth/$pathname'
+import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivateRoute = PrivateRouteImport.update({
   id: '/_private',
   getParentRoute: () => rootRouteImport,
@@ -29,9 +35,9 @@ const PrivateIndexRoute = PrivateIndexRouteImport.update({
   getParentRoute: () => PrivateRoute,
 } as any)
 const AuthPathnameRoute = AuthPathnameRouteImport.update({
-  id: '/auth/$pathname',
-  path: '/auth/$pathname',
-  getParentRoute: () => rootRouteImport,
+  id: '/$pathname',
+  path: '/$pathname',
+  getParentRoute: () => AuthRoute,
 } as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
@@ -45,30 +51,33 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/auth': typeof AuthRouteWithChildren
   '/auth/$pathname': typeof AuthPathnameRoute
   '/': typeof PrivateIndexRoute
 }
 export interface FileRoutesByTo {
+  '/auth': typeof AuthRouteWithChildren
   '/auth/$pathname': typeof AuthPathnameRoute
   '/': typeof PrivateIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_private': typeof PrivateRouteWithChildren
+  '/auth': typeof AuthRouteWithChildren
   '/auth/$pathname': typeof AuthPathnameRoute
   '/_private/': typeof PrivateIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/auth/$pathname' | '/'
+  fullPaths: '/auth' | '/auth/$pathname' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth/$pathname' | '/'
-  id: '__root__' | '/_private' | '/auth/$pathname' | '/_private/'
+  to: '/auth' | '/auth/$pathname' | '/'
+  id: '__root__' | '/_private' | '/auth' | '/auth/$pathname' | '/_private/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   PrivateRoute: typeof PrivateRouteWithChildren
-  AuthPathnameRoute: typeof AuthPathnameRoute
+  AuthRoute: typeof AuthRouteWithChildren
 }
 export interface FileServerRoutesByFullPath {
   '/api/$': typeof ApiSplatServerRoute
@@ -98,6 +107,13 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_private': {
       id: '/_private'
       path: ''
@@ -114,10 +130,10 @@ declare module '@tanstack/react-router' {
     }
     '/auth/$pathname': {
       id: '/auth/$pathname'
-      path: '/auth/$pathname'
+      path: '/$pathname'
       fullPath: '/auth/$pathname'
       preLoaderRoute: typeof AuthPathnameRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthRoute
     }
   }
 }
@@ -151,9 +167,19 @@ const PrivateRouteChildren: PrivateRouteChildren = {
 const PrivateRouteWithChildren =
   PrivateRoute._addFileChildren(PrivateRouteChildren)
 
+interface AuthRouteChildren {
+  AuthPathnameRoute: typeof AuthPathnameRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthPathnameRoute: AuthPathnameRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   PrivateRoute: PrivateRouteWithChildren,
-  AuthPathnameRoute: AuthPathnameRoute,
+  AuthRoute: AuthRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

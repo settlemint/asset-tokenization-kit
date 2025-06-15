@@ -10,6 +10,6 @@
     "nize.oklch-preview",
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
-    "inlang.vs-code-extension"
+    "lokalise.i18n-ally"
   ]
 }

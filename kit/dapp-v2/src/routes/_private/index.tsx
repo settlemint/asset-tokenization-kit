@@ -1,5 +1,5 @@
+import { useTranslation } from "@/lib/i18n";
 import { orpc } from "@/orpc";
-import * as m from "@/paraglide/messages";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -23,13 +23,14 @@ export const Route = createFileRoute("/_private/")({
 });
 
 function Home() {
+  const { t } = useTranslation();
   const usersQuery = useSuspenseQuery(
     orpc.system.list.queryOptions({ input: {} })
   );
 
   return (
     <div className="p-2">
-      <h3>{m.example_message({ username: "John Doe" })}</h3>
+      <h3>{t("example_message", { username: "John Doe" })}</h3>
       <pre>{JSON.stringify(usersQuery.data, null, 2)}</pre>
     </div>
   );

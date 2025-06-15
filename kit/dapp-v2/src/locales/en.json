@@ -1,0 +1,16 @@
+{
+  "example_message": "Hello world {username}",
+  "counter": "Add 1 to {state}",
+  "general": {
+    "companyName": "SettleMint",
+    "appName": "Asset Tokenization Kit",
+    "appDescription": "Deploy in minutes, customize easily"
+  },
+  "theme": {
+    "dark": "Dark",
+    "light": "Light",
+    "switch-to-mode": "Switch to {mode} mode",
+    "system": "System",
+    "toggle-label": "Toggle theme"
+  }
+}

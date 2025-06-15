@@ -1,5 +1,0 @@
-{
-  "$schema": "https://inlang.com/schema/inlang-message-format",
-  "example_message": "Hello world {username}",
-  "counter": "Add 1 to {state}"
-}
