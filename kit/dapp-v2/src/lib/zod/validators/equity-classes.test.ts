@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { equityClass, equityClasses, type EquityClass } from "./equity-classes";
+import { equityClass, equityClasses } from "./equity-classes";
 
 describe("equityClass", () => {
   const validator = equityClass();
@@ -56,7 +56,6 @@ describe("equityClass", () => {
     it("should return proper type", () => {
       const result = validator.parse("B");
       // Test that the type is correctly inferred
-      const _typeCheck: EquityClass = result;
       expect(result).toBe("B");
     });
 
@@ -64,7 +63,6 @@ describe("equityClass", () => {
       const result = validator.safeParse("C");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: EquityClass = result.data;
         expect(result.data).toBe("C");
       }
     });

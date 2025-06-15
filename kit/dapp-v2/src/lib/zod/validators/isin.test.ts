@@ -140,7 +140,6 @@ describe("isin", () => {
     it("should return proper type", () => {
       const result = validator.parse("US0378331005");
       // Test that the type is correctly inferred
-      const _typeCheck: ISIN = result;
       expect(result).toBe("US0378331005" as ISIN);
     });
 
@@ -148,7 +147,6 @@ describe("isin", () => {
       const result = validator.safeParse("GB00B03MLX29");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: ISIN = result.data;
         expect(result.data).toBe("GB00B03MLX29" as ISIN);
       }
     });

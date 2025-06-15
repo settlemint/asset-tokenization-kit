@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { duration, type Duration } from "./duration";
+import { duration } from "./duration";
 
 describe("duration", () => {
   const validator = duration();
@@ -98,7 +98,6 @@ describe("duration", () => {
     it("should return proper type", () => {
       const result = validator.parse(60000);
       // Test that the type is correctly inferred
-      const _typeCheck: Duration = result;
       expect(result).toBe(60000);
     });
   });

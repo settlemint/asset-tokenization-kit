@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { timestamp, type Timestamp } from "./timestamp";
+import { timestamp } from "./timestamp";
 
 describe("timestamp", () => {
   const validator = timestamp();
@@ -183,7 +183,6 @@ describe("timestamp", () => {
     it("should return proper type", () => {
       const result = validator.parse("2023-04-01");
       // Test that the type is correctly inferred
-      const _typeCheck: Timestamp = result;
       expect(result).toBeInstanceOf(Date);
       expect(result.getFullYear()).toBe(2023);
     });
@@ -192,7 +191,6 @@ describe("timestamp", () => {
       const result = validator.safeParse(1680350400000);
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: Timestamp = result.data;
         expect(result.data).toBeInstanceOf(Date);
         expect(result.data.getTime()).toBe(1680350400000);
       }

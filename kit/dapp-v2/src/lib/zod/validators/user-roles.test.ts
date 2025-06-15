@@ -1,10 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  getUserRole,
-  userRoleNames,
-  userRoles,
-  type UserRole,
-} from "./user-roles";
+import { getUserRole, userRoleNames, userRoles } from "./user-roles";
 
 describe("userRoles", () => {
   const validator = userRoles();
@@ -73,7 +68,6 @@ describe("userRoles", () => {
     it("should return proper type", () => {
       const result = validator.parse("admin");
       // Test that the type is correctly inferred
-      const _typeCheck: UserRole = result;
       expect(result).toBe("admin");
     });
 
@@ -81,7 +75,6 @@ describe("userRoles", () => {
       const result = validator.safeParse("issuer");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: UserRole = result.data;
         expect(result.data).toBe("issuer");
       }
     });

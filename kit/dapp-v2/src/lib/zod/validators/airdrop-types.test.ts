@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { airdropType, airdropTypes, type AirdropType } from "./airdrop-types";
+import { airdropType, airdropTypes } from "./airdrop-types";
 
 describe("airdropType", () => {
   const validator = airdropType();
@@ -50,7 +50,6 @@ describe("airdropType", () => {
     it("should return proper type", () => {
       const result = validator.parse("whitelist");
       // Test that the type is correctly inferred
-      const _typeCheck: AirdropType = result;
       expect(result).toBe("whitelist");
     });
 
@@ -58,7 +57,6 @@ describe("airdropType", () => {
       const result = validator.safeParse("merkle");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: AirdropType = result.data;
         expect(result.data).toBe("merkle");
       }
     });

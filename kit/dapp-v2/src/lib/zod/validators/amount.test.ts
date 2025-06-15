@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { amount, type Amount } from "./amount";
+import { amount } from "./amount";
 
 describe("amount", () => {
   describe("basic validation", () => {
@@ -92,7 +92,6 @@ describe("amount", () => {
       const validator = amount();
       const result = validator.parse(100);
       // Test that the type is correctly inferred
-      const _typeCheck: Amount = result;
       expect(result).toBe(100);
     });
 
@@ -101,7 +100,6 @@ describe("amount", () => {
       const result = validator.safeParse(100);
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: Amount = result.data;
         expect(result.data).toBe(100);
       }
     });

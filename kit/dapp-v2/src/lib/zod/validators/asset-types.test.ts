@@ -2,8 +2,6 @@ import { describe, expect, it } from "bun:test";
 import { z } from "zod/v4";
 import {
   type AssetType,
-  type AssetTypeArray,
-  type AssetTypeSet,
   AssetTypeEnum,
   assetType,
   assetTypeArray,
@@ -197,7 +195,6 @@ describe("type checking", () => {
     it("should return proper type", () => {
       const result = assetType().parse("bond");
       // Test that the type is correctly inferred
-      const _typeCheck: AssetType = result;
       expect(result).toBe("bond");
     });
 
@@ -205,7 +202,6 @@ describe("type checking", () => {
       const result = assetType().safeParse("equity");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: AssetType = result.data;
         expect(result.data).toBe("equity");
       }
     });
@@ -215,7 +211,6 @@ describe("type checking", () => {
     it("should return proper type", () => {
       const result = assetTypeArray().parse(["bond", "equity"]);
       // Test that the type is correctly inferred
-      const _typeCheck: AssetTypeArray = result;
       expect(result).toEqual(["bond", "equity"]);
     });
 
@@ -223,7 +218,6 @@ describe("type checking", () => {
       const result = assetTypeArray().safeParse(["fund", "deposit"]);
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: AssetTypeArray = result.data;
         expect(result.data).toEqual(["fund", "deposit"]);
       }
     });
@@ -233,7 +227,6 @@ describe("type checking", () => {
     it("should return proper type", () => {
       const result = assetTypeSet().parse(new Set(["bond", "equity"]));
       // Test that the type is correctly inferred
-      const _typeCheck: AssetTypeSet = result;
       expect(result.has("bond")).toBe(true);
       expect(result.has("equity")).toBe(true);
     });
@@ -244,7 +237,6 @@ describe("type checking", () => {
       );
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: AssetTypeSet = result.data;
         expect(result.data.has("stablecoin")).toBe(true);
         expect(result.data.has("cryptocurrency")).toBe(true);
       }

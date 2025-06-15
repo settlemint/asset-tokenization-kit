@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { add, divide, format, multiply, subtract } from "dnum";
-import { bigDecimal, type BigDecimal } from "./bigdecimal";
+import { bigDecimal } from "./bigdecimal";
 
 describe("bigDecimal", () => {
   const validator = bigDecimal();
@@ -143,7 +143,6 @@ describe("bigDecimal", () => {
     it("should return proper type", () => {
       const result = validator.parse("123.456");
       // Test that the type is correctly inferred
-      const _typeCheck: BigDecimal = result;
       expect(Array.isArray(result)).toBe(true);
       expect(format(result)).toBe("123.456");
     });

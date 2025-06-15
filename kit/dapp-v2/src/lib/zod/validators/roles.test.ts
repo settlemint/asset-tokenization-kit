@@ -1,12 +1,12 @@
 import { describe, expect, it } from "bun:test";
-import { roleMap, roleNames, roles, type Role, type RoleMap } from "./roles";
+import { roleMap, roleNames, roles } from "./roles";
 
 describe("roles", () => {
   const validator = roles();
 
   describe("valid roles", () => {
     it.each(roleNames.map((role) => [role]))("should accept '%s'", (role) => {
-      expect(validator.parse(role) as string).toBe(role);
+      expect(validator.parse(role)).toBe(role);
     });
   });
 
@@ -38,31 +38,31 @@ describe("roleMap", () => {
 
   describe("valid role maps", () => {
     it("should accept empty object", () => {
-      expect(validator.parse({}) as any).toEqual({});
+      expect(validator.parse({})).toEqual({});
     });
 
     it("should accept single address to role mapping", () => {
       const map = {
-        "0x1234567890123456789012345678901234567890": "admin",
+        "0x1234567890123456789012345678901234567890": "admin" as const,
       };
-      expect(validator.parse(map) as any).toEqual(map);
+      expect(validator.parse(map)).toEqual(map);
     });
 
     it("should accept multiple address to role mappings", () => {
       const map = {
-        "0x1234567890123456789012345678901234567890": "admin",
-        "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd": "manager",
-        user123: "investor",
+        "0x1234567890123456789012345678901234567890": "admin" as const,
+        "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd": "manager" as const,
+        user123: "investor" as const,
       };
-      expect(validator.parse(map) as any).toEqual(map);
+      expect(validator.parse(map)).toEqual(map);
     });
 
     it("should accept all valid roles", () => {
-      const map: Record<string, string> = {};
+      const map: Record<string, (typeof roleNames)[number]> = {};
       roleNames.forEach((role, index) => {
         map[`address${index}`] = role;
       });
-      expect(validator.parse(map) as any).toEqual(map);
+      expect(validator.parse(map)).toEqual(map);
     });
   });
 
@@ -117,7 +117,6 @@ describe("type checking", () => {
     it("should return proper type", () => {
       const result = roles().parse("admin");
       // Test that the type is correctly inferred
-      const _typeCheck: Role = result;
       expect(result).toBe("admin");
     });
 
@@ -125,7 +124,6 @@ describe("type checking", () => {
       const result = roles().safeParse("manager");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: Role = result.data;
         expect(result.data).toBe("manager");
       }
     });
@@ -135,7 +133,6 @@ describe("type checking", () => {
     it("should return proper type", () => {
       const result = roleMap().parse({ "0x123": "admin" });
       // Test that the type is correctly inferred
-      const _typeCheck: RoleMap = result;
       expect(result).toEqual({ "0x123": "admin" });
     });
 
@@ -146,7 +143,6 @@ describe("type checking", () => {
       });
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: RoleMap = result.data;
         expect(result.data).toEqual({
           "0x1234567890123456789012345678901234567890": "admin",
           "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd": "manager",

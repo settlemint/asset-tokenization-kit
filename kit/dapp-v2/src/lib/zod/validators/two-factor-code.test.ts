@@ -1,27 +1,27 @@
 import { describe, expect, it } from "bun:test";
-import { twoFactorCode, type TwoFactorCode } from "./two-factor-code";
+import { twoFactorCode } from "./two-factor-code";
 
 describe("twoFactorCode", () => {
   const validator = twoFactorCode();
 
   describe("valid 2FA codes", () => {
     it("should accept valid 6-digit codes", () => {
-      expect(validator.parse("123456") as string).toBe("123456");
-      expect(validator.parse("000000") as string).toBe("000000");
-      expect(validator.parse("999999") as string).toBe("999999");
-      expect(validator.parse("567890") as string).toBe("567890");
+      expect(validator.parse("123456")).toBe("123456");
+      expect(validator.parse("000000")).toBe("000000");
+      expect(validator.parse("999999")).toBe("999999");
+      expect(validator.parse("567890")).toBe("567890");
     });
 
     it("should accept codes with leading zeros", () => {
-      expect(validator.parse("000001") as string).toBe("000001");
-      expect(validator.parse("001234") as string).toBe("001234");
-      expect(validator.parse("012345") as string).toBe("012345");
+      expect(validator.parse("000001")).toBe("000001");
+      expect(validator.parse("001234")).toBe("001234");
+      expect(validator.parse("012345")).toBe("012345");
     });
 
     it("should accept various numeric combinations", () => {
-      expect(validator.parse("111111") as string).toBe("111111");
-      expect(validator.parse("424242") as string).toBe("424242");
-      expect(validator.parse("101010") as string).toBe("101010");
+      expect(validator.parse("111111")).toBe("111111");
+      expect(validator.parse("424242")).toBe("424242");
+      expect(validator.parse("101010")).toBe("101010");
     });
   });
 
@@ -85,14 +85,14 @@ describe("twoFactorCode", () => {
       expect(() => validator.parse(123456)).toThrow();
 
       // String representation is valid
-      expect(validator.parse("123456") as string).toBe("123456");
+      expect(validator.parse("123456")).toBe("123456");
     });
 
     it("should handle codes that look like other formats", () => {
       // These are valid 6-digit codes even if they might represent dates, etc.
-      expect(validator.parse("012024") as string).toBe("012024"); // Could be Jan 2024
-      expect(validator.parse("123123") as string).toBe("123123"); // Repeated pattern
-      expect(validator.parse("000000") as string).toBe("000000"); // All zeros
+      expect(validator.parse("012024")).toBe("012024"); // Could be Jan 2024
+      expect(validator.parse("123123")).toBe("123123"); // Repeated pattern
+      expect(validator.parse("000000")).toBe("000000"); // All zeros
     });
   });
 
@@ -100,7 +100,6 @@ describe("twoFactorCode", () => {
     it("should return proper type", () => {
       const result = validator.parse("123456");
       // Test that the type is correctly inferred
-      const _typeCheck: TwoFactorCode = result;
       expect(result).toBe("123456");
     });
 
@@ -108,7 +107,6 @@ describe("twoFactorCode", () => {
       const result = validator.safeParse("567890");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: TwoFactorCode = result.data;
         expect(result.data).toBe("567890");
       }
     });

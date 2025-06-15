@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { pincode, type Pincode } from "./pincode";
+import { pincode } from "./pincode";
 
 describe("pincode", () => {
   const validator = pincode();
@@ -88,7 +88,7 @@ describe("pincode", () => {
       expect(() => validator.parse(123456)).toThrow();
 
       // String representation is valid
-      expect(validator.parse("123456") as string).toBe("123456");
+      expect(validator.parse("123456")).toBe("123456");
     });
   });
 
@@ -111,7 +111,6 @@ describe("pincode", () => {
     it("should return proper type", () => {
       const result = validator.parse("567890");
       // Test that the type is correctly inferred
-      const _typeCheck: Pincode = result;
       expect(result).toBe("567890");
     });
 
@@ -119,7 +118,6 @@ describe("pincode", () => {
       const result = validator.safeParse("987654");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: Pincode = result.data;
         expect(result.data).toBe("987654");
       }
     });

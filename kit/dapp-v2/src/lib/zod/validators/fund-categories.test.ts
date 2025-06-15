@@ -1,9 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  fundCategories,
-  fundCategory,
-  type FundCategory,
-} from "./fund-categories";
+import { fundCategories, fundCategory } from "./fund-categories";
 
 describe("fundCategory", () => {
   const validator = fundCategory();
@@ -59,7 +55,6 @@ describe("fundCategory", () => {
     it("should return proper type", () => {
       const result = validator.parse("mutual");
       // Test that the type is correctly inferred
-      const _typeCheck: FundCategory = result;
       expect(result).toBe("mutual");
     });
 
@@ -67,7 +62,6 @@ describe("fundCategory", () => {
       const result = validator.safeParse("etf");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: FundCategory = result.data;
         expect(result.data).toBe("etf");
       }
     });

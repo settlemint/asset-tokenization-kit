@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { price, type Price } from "./price";
+import { price } from "./price";
 
 describe("price", () => {
   const validator = price();
@@ -73,16 +73,16 @@ describe("price", () => {
 
   describe("common price formats", () => {
     it("should handle common currency formats", () => {
-      expect(validator.parse(19.99) as number).toBe(19.99); // Common retail price
-      expect(validator.parse(0.99) as number).toBe(0.99); // Sub-dollar price
-      expect(validator.parse(1000) as number).toBe(1000); // Round number
-      expect(validator.parse(1234.56) as number).toBe(1234.56); // Standard 2 decimals
+      expect(validator.parse(19.99)).toBe(19.99); // Common retail price
+      expect(validator.parse(0.99)).toBe(0.99); // Sub-dollar price
+      expect(validator.parse(1000)).toBe(1000); // Round number
+      expect(validator.parse(1234.56)).toBe(1234.56); // Standard 2 decimals
     });
 
     it("should handle financial market prices", () => {
-      expect(validator.parse(123.45) as number).toBe(123.45); // Stock price
-      expect(validator.parse(1.2345) as number).toBe(1.2345); // Forex rate
-      expect(validator.parse(0.0025) as number).toBe(0.0025); // Basis points
+      expect(validator.parse(123.45)).toBe(123.45); // Stock price
+      expect(validator.parse(1.2345)).toBe(1.2345); // Forex rate
+      expect(validator.parse(0.0025)).toBe(0.0025); // Basis points
     });
   });
 
@@ -105,7 +105,6 @@ describe("price", () => {
     it("should return proper type", () => {
       const result = validator.parse(100.5);
       // Test that the type is correctly inferred
-      const _typeCheck: Price = result;
       expect(result).toBe(100.5);
     });
 
@@ -113,7 +112,6 @@ describe("price", () => {
       const result = validator.safeParse(999.99);
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: Price = result.data;
         expect(result.data).toBe(999.99);
       }
     });

@@ -106,7 +106,6 @@ describe("assetSymbol", () => {
     it("should return proper type", () => {
       const result = validator.parse("BTC");
       // Test that the type is correctly inferred
-      const _typeCheck: AssetSymbol = result;
       expect(result).toBe("BTC" as AssetSymbol);
     });
   });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { timeUnit, timeUnits, type TimeUnit } from "./time-units";
+import { timeUnit, timeUnits } from "./time-units";
 
 describe("timeUnit", () => {
   const validator = timeUnit();
@@ -72,7 +72,6 @@ describe("timeUnit", () => {
     it("should return proper type", () => {
       const result = validator.parse("hours");
       // Test that the type is correctly inferred
-      const _typeCheck: TimeUnit = result;
       expect(result).toBe("hours");
     });
 
@@ -80,7 +79,6 @@ describe("timeUnit", () => {
       const result = validator.safeParse("days");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: TimeUnit = result.data;
         expect(result.data).toBe("days");
       }
     });

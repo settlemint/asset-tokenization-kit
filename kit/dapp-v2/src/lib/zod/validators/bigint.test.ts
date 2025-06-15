@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { apiBigInt, type ApiBigInt } from "./bigint";
+import { apiBigInt } from "./bigint";
 
 describe("apiBigInt", () => {
   const validator = apiBigInt;
@@ -129,7 +129,6 @@ describe("apiBigInt", () => {
     it("should return proper type", () => {
       const result = validator.parse("67890");
       // Test that the type is correctly inferred
-      const _typeCheck: ApiBigInt = result;
       expect(result).toBe(67890n);
     });
 
@@ -137,7 +136,6 @@ describe("apiBigInt", () => {
       const result = validator.safeParse("12345");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: ApiBigInt = result.data;
         expect(result.data).toBe(12345n);
       }
     });

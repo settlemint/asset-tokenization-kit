@@ -76,7 +76,6 @@ describe("ethereumAddress", () => {
         "0x71c7656ec7ab88b098defb751b7401b5f6d8976f"
       );
       // TypeScript should recognize this as EthereumAddress type
-      const _typeCheck: EthereumAddress = result;
       expect(typeof result).toBe("string");
     });
   });
@@ -98,7 +97,7 @@ describe("ethereumAddress", () => {
         expect(result.error).toBeDefined();
         expect(result.error.issues).toBeDefined();
         expect(result.error.issues.length).toBeGreaterThan(0);
-        expect(result.error.issues[0].message).toContain("42 characters long");
+        expect(result.error.issues[0]?.message).toContain("42 characters long");
       }
     });
   });

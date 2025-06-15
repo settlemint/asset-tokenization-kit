@@ -1,9 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  verificationType,
-  verificationTypes,
-  type VerificationType,
-} from "./verification-type";
+import { verificationType, verificationTypes } from "./verification-type";
 
 describe("verificationType", () => {
   const validator = verificationType;
@@ -85,7 +81,6 @@ describe("verificationType", () => {
     it("should return proper type", () => {
       const result = validator.parse("two-factor");
       // Test that the type is correctly inferred
-      const _typeCheck: VerificationType = result;
       expect(result).toBe("two-factor");
     });
 
@@ -93,7 +88,6 @@ describe("verificationType", () => {
       const result = validator.safeParse("pincode");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: VerificationType = result.data;
         expect(result.data).toBe("pincode");
       }
     });

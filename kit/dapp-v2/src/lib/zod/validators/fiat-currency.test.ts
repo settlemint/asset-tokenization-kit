@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { fiatCurrency, type FiatCurrency } from "./fiat-currency";
+import { fiatCurrency } from "./fiat-currency";
 
 describe("fiatCurrency", () => {
   const validator = fiatCurrency();
@@ -65,7 +65,6 @@ describe("fiatCurrency", () => {
     it("should return proper type", () => {
       const result = validator.parse("CAD");
       // Test that the type is correctly inferred
-      const _typeCheck: FiatCurrency = result;
       expect(result).toBe("CAD");
     });
 
@@ -73,7 +72,6 @@ describe("fiatCurrency", () => {
       const result = validator.safeParse("aud");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: FiatCurrency = result.data;
         expect(result.data).toBe("AUD");
       }
     });

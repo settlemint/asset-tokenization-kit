@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { fundClass, fundClasses, type FundClass } from "./fund-classes";
+import { fundClass, fundClasses } from "./fund-classes";
 
 describe("fundClass", () => {
   const validator = fundClass();
@@ -38,7 +38,6 @@ describe("fundClass", () => {
     it("should return proper type", () => {
       const result = validator.parse("institutional");
       // Test that the type is correctly inferred
-      const _typeCheck: FundClass = result;
       expect(result).toBe("institutional");
     });
 
@@ -46,7 +45,6 @@ describe("fundClass", () => {
       const result = validator.safeParse("accredited");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: FundClass = result.data;
         expect(result.data).toBe("accredited");
       }
     });

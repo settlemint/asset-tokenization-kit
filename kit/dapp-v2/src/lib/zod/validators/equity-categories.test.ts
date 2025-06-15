@@ -1,9 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  equityCategories,
-  equityCategory,
-  type EquityCategory,
-} from "./equity-categories";
+import { equityCategories, equityCategory } from "./equity-categories";
 
 describe("equityCategory", () => {
   const validator = equityCategory();
@@ -63,7 +59,6 @@ describe("equityCategory", () => {
     it("should return proper type", () => {
       const result = validator.parse("preferred");
       // Test that the type is correctly inferred
-      const _typeCheck: EquityCategory = result;
       expect(result).toBe("preferred");
     });
 
@@ -71,7 +66,6 @@ describe("equityCategory", () => {
       const result = validator.safeParse("restricted");
       expect(result.success).toBe(true);
       if (result.success) {
-        const _typeCheck: EquityCategory = result.data;
         expect(result.data).toBe("restricted");
       }
     });

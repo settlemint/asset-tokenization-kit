@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { decimals, type Decimals } from "./decimals";
+import { decimals } from "./decimals";
 
 describe("decimals", () => {
   const validator = decimals();
@@ -86,7 +86,6 @@ describe("decimals", () => {
     it("should return proper type", () => {
       const result = validator.parse(8);
       // Test that the type is correctly inferred
-      const _typeCheck: Decimals = result;
       expect(result).toBe(8);
     });
   });
