@@ -1,8 +1,8 @@
-import { dirname, join, resolve } from "node:path";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { dirname, join, resolve } from "node:path";
 
 const logger = createLogger({
-  level: process.env.LOG_LEVEL as LogLevel || process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info",
 });
 
 /**

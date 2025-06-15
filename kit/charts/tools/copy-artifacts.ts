@@ -7,9 +7,9 @@
  * It handles both ABI files and genesis output files.
  */
 
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { Glob } from "bun";
 import { join } from "node:path";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -29,7 +29,7 @@ const defaultConfig: Config = {
 };
 
 const logger = createLogger({
-  level: process.env.LOG_LEVEL as LogLevel || process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
+  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
 });
 
 // File paths

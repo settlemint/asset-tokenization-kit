@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { $ } from "bun";
 import { join } from "node:path";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 /**
@@ -13,7 +13,7 @@ import { getKitProjectPath } from "../../../tools/root";
  */
 
 const logger = createLogger({
-  level: process.env.LOG_LEVEL as LogLevel || process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
+  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
 });
 
 /**

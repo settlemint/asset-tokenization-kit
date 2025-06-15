@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
-import { join } from "node:path";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { join } from "node:path";
 import { getKitProjectPath } from "../../../tools/root";
 
 /**
@@ -13,7 +13,7 @@ import { getKitProjectPath } from "../../../tools/root";
 
 const HARBOR_PROXY = "harbor.settlemint.com";
 const logger = createLogger({
-  level: process.env.LOG_LEVEL as LogLevel || process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
+  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
 });
 
 /**

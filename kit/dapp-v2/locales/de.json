@@ -1,0 +1,20 @@
+{
+  "example_message": "Guten Tag {username}",
+  "counter": "Füge 1 zu {state} hinzu",
+  "general": {
+    "companyName": "SettleMint",
+    "appName": "Asset Tokenization Kit",
+    "appDescription": "In Minuten bereitstellen, einfach anpassen"
+  },
+  "theme": {
+    "dark": "Dunkel",
+    "light": "Hell",
+    "switch-to-mode": "Zu {mode} Modus wechseln",
+    "system": "System",
+    "toggle-label": "Thema umschalten"
+  },
+  "language": {
+    "switch": "Sprache wechseln",
+    "changing": "Wechseln..."
+  }
+}
