@@ -1,5 +1,5 @@
 import { metadata } from "@/config/metadata";
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { serverOnly } from "@tanstack/react-start";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -15,7 +15,6 @@ const getAuthConfig = serverOnly(() =>
     appName: metadata.title,
     secret: env.SETTLEMINT_HASURA_ADMIN_SECRET,
     baseURL: env.APP_URL,
-    basePath: "/api/auth",
     ...(env.APP_URL && { trustedOrigins: [env.APP_URL] }),
     database: drizzleAdapter(db, {
       provider: "pg",
@@ -34,17 +33,39 @@ const getAuthConfig = serverOnly(() =>
       },
       additionalFields: {
         wallet: {
-          transform: {
-            input(value) {
-              return ethereumAddress.optional().parse(value);
-            },
-            output(value) {
-              return ethereumAddress.optional().parse(value);
-            },
-          },
           type: "string",
           required: false,
           unique: true,
+          input: false,
+        },
+        pincodeEnabled: {
+          type: "boolean",
+          required: false,
+          defaultValue: false,
+          input: false,
+        },
+        pincodeVerificationId: {
+          type: "string",
+          required: false,
+          unique: true,
+          input: false,
+        },
+        twoFactorVerificationId: {
+          type: "string",
+          required: false,
+          unique: true,
+          input: false,
+        },
+        secretCodeVerificationId: {
+          type: "string",
+          required: false,
+          unique: true,
+          input: false,
+        },
+        initialOnboardingFinished: {
+          type: "boolean",
+          required: false,
+          defaultValue: false,
           input: false,
         },
       },
@@ -91,3 +112,8 @@ const getAuthConfig = serverOnly(() =>
 );
 
 export const auth = getAuthConfig();
+
+export type Session = typeof auth.$Infer.Session;
+export type User = Omit<Session["user"], "wallet"> & {
+  wallet: EthereumAddress;
+};

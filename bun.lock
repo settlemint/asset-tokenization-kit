@@ -149,6 +149,11 @@
     "kit/dapp-v2": {
       "name": "dapp-v2",
       "dependencies": {
+        "@orpc/client": "^1.5.1",
+        "@orpc/openapi": "^1.5.1",
+        "@orpc/react-query": "^1.5.1",
+        "@orpc/server": "^1.5.1",
+        "@orpc/zod": "^1.5.1",
         "@radix-ui/react-slot": "1.2.3",
         "@settlemint/sdk-blockscout": "2.4.0",
         "@settlemint/sdk-hasura": "2.4.0",
@@ -175,6 +180,7 @@
         "react": "19.1.0",
         "react-dom": "19.1.0",
         "sonner": "2.0.5",
+        "superjson": "2.2.2",
         "tailwind-merge": "3.3.1",
         "tailwindcss": "4.1.10",
         "zod": "3.25.64",
@@ -1059,6 +1065,8 @@
     "@orpc/openapi": ["@orpc/openapi@1.5.1", "", { "dependencies": { "@orpc/client": "1.5.1", "@orpc/contract": "1.5.1", "@orpc/openapi-client": "1.5.1", "@orpc/server": "1.5.1", "@orpc/shared": "1.5.1", "@orpc/standard-server": "1.5.1", "json-schema-typed": "^8.0.1", "rou3": "^0.6.0" } }, "sha512-fJAe5Y+bhAf+cgji5E7dLQLP9JvuMUjkCDCSy4GeoVn/rnlL/c04q+Z7X5TDZ48QNjZhRNQUHPsNTV56WtY0QQ=="],
 
     "@orpc/openapi-client": ["@orpc/openapi-client@1.5.1", "", { "dependencies": { "@orpc/client": "1.5.1", "@orpc/contract": "1.5.1", "@orpc/shared": "1.5.1", "@orpc/standard-server": "1.5.1" } }, "sha512-+IxzMScLb4/Susa5ruQwRJYBUkdwh+G4guzdLX4EE0iucxJDIZ3yyrEH6IipeOaSMznDg1aFFyLl6L5W18ZIwg=="],
+
+    "@orpc/react-query": ["@orpc/react-query@1.5.1", "", { "dependencies": { "@orpc/shared": "1.5.1", "@orpc/tanstack-query": "1.5.1" }, "peerDependencies": { "@orpc/client": "1.5.1", "@tanstack/react-query": ">=5.80.2", "react": ">=18.3.0" } }, "sha512-3NwDOYI2AqeRMKlW6uy7a/LSZwUzNHJ14IZ8+VcBVAnJ9fVONYtf6CGltag4/tYnTKQKwxyCG7ePr2iZv+oRYw=="],
 
     "@orpc/server": ["@orpc/server@1.5.1", "", { "dependencies": { "@orpc/client": "1.5.1", "@orpc/contract": "1.5.1", "@orpc/shared": "1.5.1", "@orpc/standard-server": "1.5.1", "@orpc/standard-server-aws-lambda": "1.5.1", "@orpc/standard-server-fetch": "1.5.1", "@orpc/standard-server-node": "1.5.1", "@orpc/standard-server-peer": "1.5.1" }, "peerDependencies": { "crossws": ">=0.3.4", "ws": ">=8.18.1" }, "optionalPeers": ["crossws", "ws"] }, "sha512-LefIbJ9q2eC14CD5VyFtT52hTCCOefbGgtOkwLIt+eN4/+INDiK8kLKpdgwKTtKZV3XF2bEn7U0WBBYEH7oSEA=="],
 
