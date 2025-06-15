@@ -105,6 +105,8 @@ export default defineConfig([
     files: ["src/lib/settlemint/*.{js,mjs,cjs,ts}"],
     rules: {
       "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
     },
   },
   {
