@@ -7,7 +7,10 @@ import {
   experimental_ZodSmartCoercionPlugin as ZodSmartCoercionPlugin,
   experimental_ZodToJsonSchemaConverter as ZodToJsonSchemaConverter,
 } from "@orpc/zod/zod4";
-import { createServerFileRoute } from "@tanstack/react-start/server";
+import {
+  createServerFileRoute,
+  getHeaders,
+} from "@tanstack/react-start/server";
 import pkgjson from "../../../package.json";
 
 // const logger = createLogger({
@@ -70,7 +73,7 @@ export async function handle({ request }: { request: Request }) {
   const { response } = await handler.handle(request, {
     prefix: "/api",
     context: {
-      headers: request.headers,
+      headers: getHeaders(),
     },
   });
 
