@@ -1,5 +1,4 @@
 import { handleChallenge } from "@/lib/orpc/helpers/challenge-response";
-import { permissionsMiddleware } from "@/lib/orpc/middlewares/auth/permissions.middleware";
 import { portalMiddleware } from "@/lib/orpc/middlewares/services/portal.middleware";
 import { ar } from "@/lib/orpc/procedures/auth.router";
 import { portalGraphql } from "@/lib/settlemint/portal";
@@ -19,12 +18,6 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
 `);
 
 export const create = ar.system.create
-  .use(
-    permissionsMiddleware({
-      requiredPermissions: ["create"],
-      roles: ["admin"],
-    })
-  )
   .use(portalMiddleware)
   .handler(async ({ input, context }) => {
     const { contract, verification } = input;

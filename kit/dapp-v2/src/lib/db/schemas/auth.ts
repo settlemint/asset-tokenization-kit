@@ -25,6 +25,11 @@ export const user = pgTable("user", {
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
   wallet: text("wallet").unique(),
+  pincodeEnabled: boolean("pincode_enabled"),
+  pincodeVerificationId: text("pincode_verification_id").unique(),
+  twoFactorVerificationId: text("two_factor_verification_id").unique(),
+  secretCodeVerificationId: text("secret_code_verification_id").unique(),
+  initialOnboardingFinished: boolean("initial_onboarding_finished"),
 });
 
 export const session = pgTable("session", {
@@ -107,4 +112,5 @@ export const passkey = pgTable("passkey", {
   backedUp: boolean("backed_up").notNull(),
   transports: text("transports"),
   createdAt: timestamp("created_at"),
+  aaguid: text("aaguid"),
 });

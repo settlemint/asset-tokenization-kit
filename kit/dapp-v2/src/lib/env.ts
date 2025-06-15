@@ -1,4 +1,4 @@
-import { createEnv } from "@t3-oss/env-nextjs";
+import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod/v4";
 
 /**
@@ -27,6 +27,7 @@ import { z } from "zod/v4";
  * @module
  */
 export const env = createEnv({
+  clientPrefix: "VITE_",
   /**
    * Server-side environment variables schema.
    *
@@ -51,7 +52,7 @@ export const env = createEnv({
     APP_URL: z
       .string()
       .default(
-        process.env.NEXT_PUBLIC_APP_URL ??
+        process.env.VITE_APP_URL ??
           process.env.BETTER_AUTH_URL ??
           process.env.NEXTAUTH_URL ??
           "http://localhost:3000"
@@ -94,6 +95,10 @@ export const env = createEnv({
         "SETTLEMINT_HD_PRIVATE_KEY can only contain lowercase letters, digits, and hyphens with no spaces"
       )
       .default("atk-hd-private-key"),
+
+    SETTLEMINT_LOG_LEVEL: z
+      .enum(["debug", "info", "warn", "error"])
+      .default("info"),
   },
 
   /**
@@ -110,10 +115,10 @@ export const env = createEnv({
      * Public application URL.
      * Used for generating absolute URLs in client-side code.
      */
-    NEXT_PUBLIC_APP_URL: z
+    VITE_APP_URL: z
       .url()
       .default(
-        process.env.NEXT_PUBLIC_APP_URL ??
+        process.env.VITE_APP_URL ??
           process.env.BETTER_AUTH_URL ??
           process.env.NEXTAUTH_URL ??
           "http://localhost:3000"
@@ -123,7 +128,7 @@ export const env = createEnv({
      * Blockchain explorer URL.
      * Used for generating links to transactions and addresses.
      */
-    NEXT_PUBLIC_EXPLORER_URL: z.url().optional(),
+    VITE_EXPLORER_URL: z.url().optional(),
   },
 
   /**
@@ -133,23 +138,7 @@ export const env = createEnv({
    * It's required by t3-env to properly access environment variables at runtime.
    * All environment variables must be explicitly mapped here.
    */
-  runtimeEnv: {
-    // Server
-    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    SETTLEMINT_HASURA_ADMIN_SECRET: process.env.SETTLEMINT_HASURA_ADMIN_SECRET,
-    RESEND_API_KEY: process.env.RESEND_API_KEY,
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-    SETTLEMINT_HD_PRIVATE_KEY: process.env.SETTLEMINT_HD_PRIVATE_KEY,
-    APP_URL: process.env.APP_URL,
-
-    // Client
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-    NEXT_PUBLIC_EXPLORER_URL: process.env.NEXT_PUBLIC_EXPLORER_URL,
-  },
+  runtimeEnv: process.env,
 
   /**
    * Skip validation flag.

@@ -10,7 +10,17 @@ import {
 import { createServerFileRoute } from "@tanstack/react-start/server";
 import pkgjson from "../../../package.json";
 
+// const logger = createLogger({
+//   level: env.SETTLEMINT_LOG_LEVEL,
+// });
+
 const handler = new OpenAPIHandler(router, {
+  // Use if you have unexplained 500 errors
+  // interceptors: [
+  //   onError((error) => {
+  //     logger.error((error as Error).message, error);
+  //   }),
+  // ],
   plugins: [
     new CORSPlugin({
       allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH"],

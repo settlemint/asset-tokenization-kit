@@ -97,5 +97,11 @@
   "typescript.experimental.expandableHover": true,
   "typescript.preferences.preferTypeOnlyAutoImports": true,
   "typescript.updateImportsOnPaste.enabled": true,
-  "typescript.updateImportsOnFileMove.enabled": "always"
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.inlayHints.parameterNames.enabled": "literals",
+  "typescript.surveys.enabled": false,
+  "typescript.tsserver.web.typeAcquisition.enabled": false,
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "typescript.preferences.useAliasesForRenames": false,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true
 }

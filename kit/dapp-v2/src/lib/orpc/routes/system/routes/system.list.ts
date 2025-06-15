@@ -1,4 +1,3 @@
-import { permissionsMiddleware } from "@/lib/orpc/middlewares/auth/permissions.middleware";
 import { theGraphMiddleware } from "@/lib/orpc/middlewares/services/the-graph.middleware";
 import { ar } from "@/lib/orpc/procedures/auth.router";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
@@ -59,12 +58,6 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
  * ```
  */
 export const list = ar.system.list
-  .use(
-    permissionsMiddleware({
-      requiredPermissions: ["read"],
-      roles: ["admin", "issuer", "user", "auditor"],
-    })
-  )
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // Extract and validate pagination parameters from the request
