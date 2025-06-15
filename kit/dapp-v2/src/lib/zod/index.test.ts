@@ -7,7 +7,9 @@ process.env.CI = "true";
 // Mock the logger to avoid console output during tests
 mock.module("@settlemint/sdk-utils/logging", () => ({
   createLogger: () => ({
-    error: mock(() => {}),
+    error: mock(() => {
+      // do nothing
+    }),
   }),
 }));
 
@@ -28,7 +30,7 @@ describe("safeParse", () => {
       const schema = z.object({
         name: z.string(),
         age: z.number().min(0),
-        email: z.string().email(),
+        email: z.email(),
       });
 
       const validData = {
@@ -141,7 +143,7 @@ describe("safeParse", () => {
     });
 
     it("should throw error for invalid email", () => {
-      const schema = z.string().email();
+      const schema = z.email();
       expect(() => safeParse(schema, "not-an-email")).toThrow(
         "Validation failed with error(s). Check logs for details."
       );
@@ -282,14 +284,6 @@ describe("safeParse", () => {
       expect(result).toBeInstanceOf(Promise);
     });
 
-    it("should handle function schemas", () => {
-      const schema = z.function(z.tuple([z.string()]), z.string());
-      const fn = (input: string) => `test: ${input}`;
-      const result = safeParse(schema, fn);
-      expect(typeof result).toBe("function");
-      expect(result("hello")).toBe("test: hello");
-    });
-
     it("should handle instanceof schemas", () => {
       const schema = z.instanceof(Date);
       const date = new Date();
@@ -318,8 +312,7 @@ describe("safeParse", () => {
 
     it("should handle void schema", () => {
       const schema = z.void();
-      const result = safeParse(schema, undefined);
-      expect(result).toBe(undefined);
+      expect(safeParse(schema, undefined)).toBe(undefined);
     });
 
     it("should handle intersection types", () => {
@@ -345,7 +338,10 @@ describe("safeParse", () => {
     });
 
     it("should handle lazy schemas", () => {
-      type Tree = { value: string; children: Tree[] };
+      interface Tree {
+        value: string;
+        children: Tree[];
+      }
       const treeSchema: z.ZodType<Tree> = z.lazy(() =>
         z.object({
           value: z.string(),
@@ -397,7 +393,7 @@ describe("safeParse", () => {
     });
 
     it("should handle passthrough on objects", () => {
-      const schema = z.object({ known: z.string() }).passthrough();
+      const schema = z.object({ known: z.string() }).loose();
       const result = safeParse(schema, { known: "value", unknown: "extra" });
       expect(result).toEqual({ known: "value", unknown: "extra" });
     });
