@@ -9,7 +9,6 @@
     "typecheck": "tsc --noEmit",
     "build": "bun --bun vite build",
     "shadcn": "bunx --bun shadcn@canary",
-    "machine-translate": "inlang machine translate --project project.inlang",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "db:check": "drizzle-kit check",
@@ -17,8 +16,7 @@
     "db:export": "(echo \"\\c hasura;\" | tee ../../tools/docker/postgres/atk.sql) && (drizzle-kit export | tee -a ../../tools/docker/postgres/atk.sql)",
     "postdb:push": "settlemint hasura track -a",
     "db:studio": "drizzle-kit studio",
-    "db:auth:generate": "bunx --bun @better-auth/cli generate -y --config=src/lib/auth/index.ts --output=src/lib/db/schemas/auth.ts",
-    "i18n:declarations": "bun ./src/lib/i18n/declarations.ts"
+    "db:auth:generate": "bunx --bun @better-auth/cli generate -y --config=src/lib/auth/index.ts --output=src/lib/db/schemas/auth.ts"
   },
   "devDependencies": {
     "@eslint/js": "9.29.0",
@@ -44,8 +42,6 @@
   "dependencies": {
     "@daveyplate/better-auth-tanstack": "^1.3.6",
     "@daveyplate/better-auth-ui": "^2.0.7",
-    "@lingui/core": "^5.3.0",
-    "@lingui/react": "^5.3.0",
     "@orpc/client": "^1.5.1",
     "@orpc/openapi": "^1.5.1",
     "@orpc/react-query": "^1.5.1",
@@ -73,12 +69,13 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "drizzle-orm": "^0.44.2",
-    "intl-t": "1.0.0-rc.68",
+    "i18next": "25.2.1",
     "lucide-react": "0.515.0",
     "next-themes": "0.4.6",
     "postcss": "8.5.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-i18next": "15.5.3",
     "sonner": "2.0.5",
     "superjson": "2.2.2",
     "tailwind-merge": "3.3.1",
