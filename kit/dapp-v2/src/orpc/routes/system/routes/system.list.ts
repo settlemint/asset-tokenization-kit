@@ -1,6 +1,6 @@
-import { theGraphMiddleware } from "@/lib/orpc/middlewares/services/the-graph.middleware";
-import { ar } from "@/lib/orpc/procedures/auth.router";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { ar } from "@/orpc/procedures/auth.router";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
 
 /**

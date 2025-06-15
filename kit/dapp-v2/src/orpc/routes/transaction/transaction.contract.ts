@@ -1,8 +1,8 @@
-import { ac } from "@/lib/orpc/procedures/auth.contract";
+import { ac } from "@/orpc/procedures/auth.contract";
 import {
   TransactionStatusInputSchema,
   TransactionStatusSchema,
-} from "@/lib/orpc/routes/transaction/routes/transaction.track.schema";
+} from "@/orpc/routes/transaction/routes/transaction.track.schema";
 import { eventIterator } from "@orpc/contract";
 
 const track = ac

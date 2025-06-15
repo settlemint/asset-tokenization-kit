@@ -1,8 +1,8 @@
-import { handleChallenge } from "@/lib/orpc/helpers/challenge-response";
-import { portalMiddleware } from "@/lib/orpc/middlewares/services/portal.middleware";
-import { ar } from "@/lib/orpc/procedures/auth.router";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
+import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { ar } from "@/orpc/procedures/auth.router";
 
 const CREATE_SYSTEM_MUTATION = portalGraphql(`
   mutation CreateSystemMutation($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {

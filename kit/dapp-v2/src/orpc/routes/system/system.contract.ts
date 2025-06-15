@@ -1,6 +1,6 @@
-import { ListSchema } from "@/lib/orpc/routes/common/schemas/list.schema";
-import { SystemCreateSchema } from "@/lib/orpc/routes/system/routes/system.create.schema";
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
+import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
 import { z } from "zod/v4";
 import { ac } from "../../procedures/auth.contract";
 import { SystemSchema } from "./routes/system.list.schema";

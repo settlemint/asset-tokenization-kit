@@ -1,9 +1,10 @@
-import type { Session, User } from "@/lib/auth";
+import type { auth } from "@/lib/auth";
 import type { db } from "@/lib/db";
 import type { hasuraClient } from "@/lib/settlemint/hasura";
 import type { client as minioClient } from "@/lib/settlemint/minio";
 import type { portalClient } from "@/lib/settlemint/portal";
 import type { theGraphClient } from "@/lib/settlemint/the-graph";
+import type { getHeaders } from "@tanstack/react-start/server";
 
 /**
  * ORPC procedure context type definition.
@@ -30,7 +31,7 @@ export interface Context {
    * These headers are essential for authentication, content negotiation,
    * and maintaining request context across procedure calls.
    */
-  headers: Headers;
+  headers: ReturnType<typeof getHeaders>;
 
   /**
    * Authentication session information.
@@ -44,10 +45,7 @@ export interface Context {
    *
    * @see {@link @/lib/auth/auth} - Authentication system implementation
    */
-  auth?: {
-    user: User;
-    session: Session;
-  };
+  auth?: Awaited<ReturnType<typeof auth.api.getSession>>;
 
   /**
    * Database connection instance.

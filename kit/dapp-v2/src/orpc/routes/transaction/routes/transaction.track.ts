@@ -1,6 +1,6 @@
-import { portalMiddleware } from "@/lib/orpc/middlewares/services/portal.middleware";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { setTimeout } from "node:timers/promises";
 import { ar } from "../../../procedures/auth.router";

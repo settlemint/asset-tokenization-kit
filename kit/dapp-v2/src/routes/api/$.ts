@@ -1,5 +1,5 @@
 import { metadata } from "@/config/metadata";
-import { router } from "@/lib/orpc/routes/router";
+import { router } from "@/orpc/routes/router";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { CORSPlugin } from "@orpc/server/plugins";

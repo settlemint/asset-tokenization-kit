@@ -1,4 +1,3 @@
-import type { Session, User } from "@/lib/auth";
 import { auth } from "@/lib/auth";
 import { br } from "../../procedures/base.router";
 
@@ -39,17 +38,20 @@ import { br } from "../../procedures/base.router";
  * @see {@link @/lib/auth/auth} - Authentication system
  */
 export const sessionMiddleware = br.middleware(async ({ context, next }) => {
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(context.headers)) {
+    if (value) {
+      headers.append(key, value);
+    }
+  }
+
+  const session = await auth.api.getSession({
+    headers,
+  });
+
   return next({
     context: {
-      // Use existing auth context if available, otherwise attempt to load session
-      auth:
-        context.auth ??
-        ((await auth.api.getSession({
-          headers: context.headers,
-        })) as unknown as {
-          user: User;
-          session: Session;
-        }),
+      auth: context.auth ?? session,
     },
   });
 });

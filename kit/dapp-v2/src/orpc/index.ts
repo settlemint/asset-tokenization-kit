@@ -6,22 +6,21 @@ import type { RouterClient } from "@orpc/server";
 import { createRouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getWebRequest } from "@tanstack/react-start/server";
+import { getHeaders } from "@tanstack/react-start/server";
 import { contract } from "./routes/contract";
 import { router } from "./routes/router";
 
 const getORPCClient = createIsomorphicFn()
   .server(() => {
-    const request = getWebRequest();
     return createRouterClient(router, {
       context: () => ({
-        headers: request.headers,
+        headers: getHeaders(),
       }),
     });
   })
   .client((): RouterClient<typeof router> => {
     const link = new OpenAPILink(contract, {
-      url: `${window.location.origin}/api/rest`,
+      url: `${window.location.origin}/api`,
       fetch(url, options) {
         return globalThis.fetch(url, {
           ...options,
