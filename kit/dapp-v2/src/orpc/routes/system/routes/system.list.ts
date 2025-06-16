@@ -60,8 +60,14 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
 export const list = authRouter.system.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
+    // TODO: Not happy about this
     // Extract and validate pagination parameters from the request
-    const { offset, limit, orderDirection, orderBy } = input;
+    const { offset, limit, orderDirection, orderBy } = input ?? {
+      offset: 0,
+      limit: 20,
+      orderDirection: "asc",
+      orderBy: "id",
+    };
 
     // Execute TheGraph query with pagination and sorting parameters
     const { systems } = await context.theGraphClient.request(

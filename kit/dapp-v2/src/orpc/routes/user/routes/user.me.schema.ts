@@ -35,6 +35,8 @@ import { z } from "zod/v4";
  * ```
  */
 export const UserMeSchema = z.object({
+  id: z.string(),
+
   /**
    * User's display name.
    * Used for personalization and identification in the UI.

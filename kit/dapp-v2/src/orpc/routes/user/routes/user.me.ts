@@ -66,7 +66,6 @@ export const me = authRouter.user.me
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {
     const user = context.auth.user;
-    console.log("user", user);
 
     let countryAlpha2: string | undefined;
     let claimsRecord: Record<string, Record<string, string>> | undefined;
@@ -98,6 +97,7 @@ export const me = authRouter.user.me
     }
 
     return {
+      id: user.id,
       name: user.name,
       email: user.email,
       wallet: user.wallet ?? null,

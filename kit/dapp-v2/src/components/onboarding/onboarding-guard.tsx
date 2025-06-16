@@ -1,3 +1,4 @@
+import { useMounted } from "@/lib/utils/use-mounted";
 import { orpc } from "@/orpc";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -8,6 +9,7 @@ type OnboardingGuardProps = PropsWithChildren<{
 }>;
 
 export function OnboardingGuard({ children, require }: OnboardingGuardProps) {
+  const isMounted = useMounted();
   const navigate = useNavigate();
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
@@ -21,7 +23,7 @@ export function OnboardingGuard({ children, require }: OnboardingGuardProps) {
   });
 
   const hasWallet = !!user.wallet;
-  const hasCountry = isSuccess && account.country !== undefined;
+  const hasCountry = isSuccess && account?.country !== undefined;
   const isOnboarded = hasWallet && hasCountry;
 
   const isCheckComplete = !hasWallet || !isLoading;
@@ -39,7 +41,7 @@ export function OnboardingGuard({ children, require }: OnboardingGuardProps) {
     }
   }, [isCheckComplete, isOnboarded, require, navigate]);
 
-  if (!isCheckComplete) {
+  if (!isMounted || !isCheckComplete) {
     return null;
   }
 

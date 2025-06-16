@@ -21,29 +21,45 @@ import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
+import { orpc } from "@/orpc";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_private/onboarding")({
+  loader: ({ context }) => {
+    void context.queryClient.prefetchQuery(orpc.user.me.queryOptions());
+    void context.queryClient.prefetchQuery(orpc.account.me.queryOptions());
+    void context.queryClient.prefetchQuery(orpc.system.list.queryOptions());
+  },
   component: OnboardingComponent,
 });
 
-/**
- * Layout component for authentication pages.
- *
- * Creates a branded, full-screen authentication experience with:
- * - Theme-aware background images that switch between light and dark modes
- * - Application logo and name prominently displayed
- * - Global controls for language and theme preferences
- * - Centered content area for child route components
- *
- * The layout ensures authentication pages feel integrated with the
- * application while maintaining a focused, distraction-free environment
- * for security-sensitive operations.
- */
 function OnboardingComponent() {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation(["onboarding", "general"]);
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+
+  const { mutate: generateWallet } = useMutation(
+    orpc.account.create.mutationOptions({
+      onSuccess: () => {
+        toast.success("Wallet generated");
+        void queryClient.invalidateQueries({
+          queryKey: orpc.user.me.queryOptions().queryKey,
+        });
+      },
+    })
+  );
 
   return (
     <OnboardingGuard require="not-onboarded">
@@ -59,7 +75,7 @@ function OnboardingComponent() {
                 SettleMint
               </span>
               <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-sm leading-snug text-primary-foreground dark:text-foreground ">
-                {t("appDescription")}
+                {t("general:appDescription")}
               </span>
             </div>
           </div>
@@ -71,7 +87,27 @@ function OnboardingComponent() {
         </div>
         {/* Centered content area for auth forms */}
         <div className="flex min-h-screen items-center justify-center">
-          Hello "/_private/onboarding"
+          <Card className="w-[90vw] lg:w-[75vw] !max-w-screen overflow-hidden">
+            <CardHeader>
+              <CardTitle>{t("onboarding:card-title")}</CardTitle>
+              <CardDescription>
+                {t("onboarding:card-description")}
+              </CardDescription>
+              <CardContent>
+                <p>This should be our step wizard</p>
+                <div>
+                  <Button
+                    disabled={!!user.wallet}
+                    onClick={() => {
+                      generateWallet({ userId: user.id });
+                    }}
+                  >
+                    Generate a new wallet
+                  </Button>
+                </div>
+              </CardContent>
+            </CardHeader>
+          </Card>
         </div>
       </div>
     </OnboardingGuard>

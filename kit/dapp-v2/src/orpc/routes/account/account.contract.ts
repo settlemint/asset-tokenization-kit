@@ -111,7 +111,7 @@ const me = baseContract
     successDescription: "Account information retrieved successfully",
     tags: ["account"],
   })
-  .output(AccountSchema);
+  .output(AccountSchema.nullable());
 
 /**
  * Account API contract collection.

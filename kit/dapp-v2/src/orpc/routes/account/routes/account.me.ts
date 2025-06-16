@@ -35,7 +35,11 @@ import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 export const me = onboardedRouter.account.me
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {
-    return orpc.account.read.call({
-      wallet: context.auth.user.wallet,
-    });
+    try {
+      return await orpc.account.read.call({
+        wallet: context.auth.user.wallet,
+      });
+    } catch {
+      return null;
+    }
   });

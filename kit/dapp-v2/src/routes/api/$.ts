@@ -19,7 +19,9 @@
  */
 
 import { metadata } from "@/config/metadata";
+import { env } from "@/lib/env";
 import { router } from "@/orpc/routes/router";
+import { onError } from "@orpc/client";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { CORSPlugin } from "@orpc/server/plugins";
@@ -27,6 +29,7 @@ import {
   experimental_ZodSmartCoercionPlugin as ZodSmartCoercionPlugin,
   experimental_ZodToJsonSchemaConverter as ZodToJsonSchemaConverter,
 } from "@orpc/zod/zod4";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   createServerFileRoute,
   getHeaders,
@@ -34,9 +37,9 @@ import {
 import pkgjson from "../../../package.json";
 
 // Uncomment for debugging API errors
-// const logger = createLogger({
-//   level: env.SETTLEMINT_LOG_LEVEL,
-// });
+const logger = createLogger({
+  level: env.SETTLEMINT_LOG_LEVEL,
+});
 
 /**
  * OpenAPI handler configuration.
@@ -49,11 +52,11 @@ import pkgjson from "../../../package.json";
  */
 const handler = new OpenAPIHandler(router, {
   // Uncomment for debugging unexplained 500 errors
-  // interceptors: [
-  //   onError((error) => {
-  //     logger.error((error as Error).message, error);
-  //   }),
-  // ],
+  interceptors: [
+    onError((error) => {
+      logger.error((error as Error).message, error);
+    }),
+  ],
   plugins: [
     /**
      * CORS plugin configuration.
