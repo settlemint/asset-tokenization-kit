@@ -33,7 +33,7 @@ import { eq } from "drizzle-orm";
  */
 export const read = authRouter.settings.read
   .use(databaseMiddleware)
-  .handler(async ({ input, context, errors }) => {
+  .handler(async ({ input, context }) => {
     const { key } = input;
 
     // Query the setting from the database
@@ -45,9 +45,7 @@ export const read = authRouter.settings.read
 
     // Check if the setting exists
     if (!setting) {
-      throw errors.NOT_FOUND({
-        message: `Setting with key '${key}' not found`,
-      });
+      return null;
     }
 
     return setting;

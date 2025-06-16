@@ -43,7 +43,13 @@ export const Route = createFileRoute("/_private/onboarding")({
   loader: ({ context }) => {
     void context.queryClient.prefetchQuery(orpc.user.me.queryOptions());
     void context.queryClient.prefetchQuery(orpc.account.me.queryOptions());
-    void context.queryClient.prefetchQuery(orpc.system.list.queryOptions());
+    void context.queryClient.prefetchQuery(
+      orpc.settings.read.queryOptions({
+        input: {
+          key: "SYSTEM_ADDRESS",
+        },
+      })
+    );
   },
   component: OnboardingComponent,
 });
@@ -52,7 +58,13 @@ function OnboardingComponent() {
   const { t } = useTranslation(["onboarding", "general"]);
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
   const { sessionKey } = useContext(AuthQueryContext);
-
+  const { data: systemAddress } = useSuspenseQuery(
+    orpc.settings.read.queryOptions({
+      input: {
+        key: "SYSTEM_ADDRESS",
+      },
+    })
+  );
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({
       onSuccess: () => {
@@ -102,8 +114,8 @@ function OnboardingComponent() {
                 {t("onboarding:card-description")}
               </CardDescription>
               <CardContent>
-                <p>This should be our step wizard</p>
-                <div>
+                <div className="flex flex-col gap-8">
+                  <p>This should be our step wizard</p>
                   <Button
                     disabled={!!user.wallet}
                     onClick={() => {
@@ -111,6 +123,14 @@ function OnboardingComponent() {
                     }}
                   >
                     Generate a new wallet
+                  </Button>
+                  <Button
+                    disabled={!!systemAddress}
+                    onClick={() => {
+                      generateWallet({ userId: user.id });
+                    }}
+                  >
+                    Deploy a new SMART system
                   </Button>
                 </div>
               </CardContent>

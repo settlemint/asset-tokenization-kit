@@ -26,7 +26,7 @@ const read = baseContract
     tags: ["settings"],
   })
   .input(SettingsReadSchema)
-  .output(SettingSchema);
+  .output(SettingSchema.nullable());
 
 /**
  * Contract definition for the settings list endpoint.
