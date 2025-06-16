@@ -331,6 +331,49 @@
     transform: rotate(180deg);
   }
 
+  /* Additional RTL styles for proper layout */
+  [dir="rtl"] {
+    text-align: right;
+  }
+
+  /* Flip margins and paddings for RTL */
+  [dir="rtl"] .ml-auto {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  [dir="rtl"] .mr-auto {
+    margin-right: 0;
+    margin-left: auto;
+  }
+
+  /* Ensure icons and buttons maintain proper spacing in RTL */
+  [dir="rtl"] .gap-2 > *:not(:last-child) {
+    margin-left: 0.5rem;
+    margin-right: 0;
+  }
+
+  [dir="rtl"] .gap-3 > *:not(:last-child) {
+    margin-left: 0.75rem;
+    margin-right: 0;
+  }
+
+  /* Flip absolute positioning for RTL */
+  [dir="rtl"] .left-8 {
+    left: auto;
+    right: 2rem;
+  }
+
+  [dir="rtl"] .right-8 {
+    right: auto;
+    left: 2rem;
+  }
+
+  /* Ensure dropdowns align properly in RTL */
+  [dir="rtl"] [data-radix-popper-content-wrapper] {
+    text-align: right;
+  }
+
   [data-slot="sidebar-menu-sub-button"].font-bold,
   [data-slot="sidebar-menu-button"].font-bold {
     @apply bg-sidebar-accent;

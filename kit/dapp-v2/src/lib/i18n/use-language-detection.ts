@@ -1,37 +1,37 @@
 /**
  * Language Detection Hook
- * 
+ *
  * This module provides a custom React hook for automatic language detection
  * and persistence. It implements a smart language selection strategy that
  * respects user preferences while providing sensible defaults.
- * 
+ *
  * @see {@link ./index} - Main i18n configuration with supported languages
  */
 
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { supportedLanguages, fallbackLng } from "./index";
+import { fallbackLng, supportedLanguages } from "./index";
 
 /**
  * Custom hook for automatic language detection and management.
- * 
+ *
  * This hook implements a three-tier language detection strategy:
  * 1. **Stored Preference**: Check localStorage for previously selected language
  * 2. **Browser Language**: Detect from navigator.language if no stored preference
  * 3. **Fallback**: Use default language if browser language is not supported
- * 
+ *
  * The hook also:
  * - Persists language changes to localStorage for future visits
  * - Validates that detected languages are actually supported
  * - Returns the current active language for component use
- * 
+ *
  * @returns {string} The current active language code
- * 
+ *
  * @example
  * ```typescript
  * function App() {
  *   const currentLanguage = useLanguageDetection();
- *   
+ *
  *   return (
  *     <div>
  *       <p>Current language: {currentLanguage}</p>
@@ -46,7 +46,7 @@ export function useLanguageDetection() {
 
   /**
    * Effect: Language detection and initialization
-   * 
+   *
    * Runs once on mount to detect and set the initial language.
    * Priority order:
    * 1. User's saved preference from localStorage
@@ -64,9 +64,10 @@ export function useLanguageDetection() {
     // Detect browser language
     // Split to get base language code (e.g., 'en' from 'en-US')
     const browserLang = navigator.language.split("-")[0];
-    const detectedLang = browserLang && supportedLanguages.includes(browserLang)
-      ? browserLang
-      : fallbackLng;
+    const detectedLang =
+      browserLang && supportedLanguages.includes(browserLang)
+        ? browserLang
+        : fallbackLng;
 
     // Set detected language
     void i18n.changeLanguage(detectedLang);
@@ -74,7 +75,7 @@ export function useLanguageDetection() {
 
   /**
    * Effect: Language persistence
-   * 
+   *
    * Saves the current language to localStorage whenever it changes.
    * This ensures the user's language preference persists across sessions.
    */
