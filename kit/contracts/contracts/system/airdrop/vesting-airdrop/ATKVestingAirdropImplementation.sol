@@ -6,7 +6,7 @@ import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { ATKAirdrop } from "../ATKAirdrop.sol";
-import { ATKAmountClaimTracker } from "../ATKAmountClaimTracker.sol";
+import { ATKAmountClaimTracker } from "../claim-tracker/ATKAmountClaimTracker.sol";
 import { IATKVestingStrategy } from "./IATKVestingStrategy.sol";
 import { IATKVestingAirdrop } from "./IATKVestingAirdrop.sol";
 import { IATKAirdrop } from "../IATKAirdrop.sol";
