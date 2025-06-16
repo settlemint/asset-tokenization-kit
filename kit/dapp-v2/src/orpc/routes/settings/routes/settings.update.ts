@@ -1,6 +1,6 @@
-import { settings } from "@/lib/db/schema-settings";
-import { databaseMiddleware } from "@/lib/orpc/middlewares/services/db.middleware";
-import { ar } from "@/lib/orpc/procedures/auth.router";
+import { settings } from "@/lib/db/schema";
+import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm";
 
 /**
@@ -30,14 +30,7 @@ import { eq } from "drizzle-orm";
  * });
  * ```
  */
-export const update = ar.settings.update
-  // TODO JAN: add permissions middleware, needs the default user role in better auth
-  // .use(
-  //   permissionsMiddleware({
-  //     requiredPermissions: ["update"],
-  //     roles: ["admin"],
-  //   })
-  // )
+export const update = authRouter.settings.update
   .use(databaseMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { key, value } = input;
@@ -64,6 +57,12 @@ export const update = ar.settings.update
       })
       .where(eq(settings.key, key))
       .returning();
+
+    if (!updatedSetting) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: `Failed to update setting with key '${key}'`,
+      });
+    }
 
     return updatedSetting;
   });

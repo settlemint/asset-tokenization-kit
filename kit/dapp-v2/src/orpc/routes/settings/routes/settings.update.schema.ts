@@ -1,4 +1,4 @@
-import { settingKeySchema } from "@/lib/utils/zod/validators/settings-key";
+import { settingKeySchema } from "@/lib/zod/validators/settings-key";
 import { z } from "zod/v4";
 
 /**

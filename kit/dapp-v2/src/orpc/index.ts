@@ -12,11 +12,10 @@
  * @see {@link ./routes/router} - Main router with all endpoints
  */
 
-import { contract } from "@/orpc/routes/contract";
+import type { contract } from "@/orpc/routes/contract";
 import { createORPCClient } from "@orpc/client";
+import { RPCLink } from "@orpc/client/fetch";
 import type { ContractRouterClient } from "@orpc/contract";
-import type { JsonifiedClient } from "@orpc/openapi-client";
-import { OpenAPILink } from "@orpc/openapi-client/fetch";
 import type { RouterClient } from "@orpc/server";
 import { createRouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
@@ -46,8 +45,8 @@ const getORPCClient = createIsomorphicFn()
     });
   })
   .client((): RouterClient<typeof router> => {
-    const link = new OpenAPILink(contract, {
-      url: `${window.location.origin}/api`,
+    const link = new RPCLink({
+      url: `${window.location.origin}/api/rpc`,
       fetch(url, options) {
         return globalThis.fetch(url, {
           ...options,
@@ -80,8 +79,7 @@ const getORPCClient = createIsomorphicFn()
  * });
  * ```
  */
-export const client: JsonifiedClient<ContractRouterClient<typeof contract>> =
-  getORPCClient();
+export const client: ContractRouterClient<typeof contract> = getORPCClient();
 
 /**
  * TanStack Query utilities for the ORPC client.

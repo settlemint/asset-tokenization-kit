@@ -1,4 +1,4 @@
-import { ListSchema } from "@/lib/orpc/routes/common/schemas/list.schema";
+import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { SettingSchema } from "./settings.read.schema";
 
 /**

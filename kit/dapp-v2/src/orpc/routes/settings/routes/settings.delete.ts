@@ -1,6 +1,6 @@
-import { settings } from "@/lib/db/schema-settings";
-import { databaseMiddleware } from "@/lib/orpc/middlewares/services/db.middleware";
-import { ar } from "@/lib/orpc/procedures/auth.router";
+import { settings } from "@/lib/db/schema";
+import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm";
 
 /**
@@ -30,7 +30,7 @@ import { eq } from "drizzle-orm";
  * console.log(result.success); // true
  * ```
  */
-export const del = ar.settings.delete
+export const del = authRouter.settings.delete
   // TODO JAN: add permissions middleware, needs the default user role in better auth
   // .use(
   //   permissionsMiddleware({

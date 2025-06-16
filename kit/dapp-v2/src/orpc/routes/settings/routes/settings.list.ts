@@ -1,6 +1,6 @@
-import { settings } from "@/lib/db/schema-settings";
-import { databaseMiddleware } from "@/lib/orpc/middlewares/services/db.middleware";
-import { ar } from "@/lib/orpc/procedures/auth.router";
+import { settings } from "@/lib/db/schema";
+import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import { asc, desc } from "drizzle-orm";
 
 /**
@@ -32,14 +32,7 @@ import { asc, desc } from "drizzle-orm";
  * });
  * ```
  */
-export const list = ar.settings.list
-  // TODO JAN: add permissions middleware, needs the default user role in better auth
-  // .use(
-  //   permissionsMiddleware({
-  //     requiredPermissions: ["read"],
-  //     roles: ["admin", "issuer", "user", "auditor"],
-  //   })
-  // )
+export const list = authRouter.settings.list
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
     // Extract pagination parameters
@@ -48,7 +41,7 @@ export const list = ar.settings.list
       limit = 100,
       orderDirection = "asc",
       orderBy = "key",
-    } = input;
+    } = input ?? {};
 
     // Determine sort order
     const order = orderDirection === "desc" ? desc : asc;

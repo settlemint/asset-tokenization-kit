@@ -1,6 +1,6 @@
-import { settings } from "@/lib/db/schema-settings";
-import { databaseMiddleware } from "@/lib/orpc/middlewares/services/db.middleware";
-import { ar } from "@/lib/orpc/procedures/auth.router";
+import { settings } from "@/lib/db/schema";
+import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm";
 
 /**
@@ -30,14 +30,7 @@ import { eq } from "drizzle-orm";
  * });
  * ```
  */
-export const create = ar.settings.create
-  // TODO JAN: add permissions middleware, needs the default user role in better auth
-  // .use(
-  //   permissionsMiddleware({
-  //     requiredPermissions: ["create"],
-  //     roles: ["admin"],
-  //   })
-  // )
+export const create = authRouter.settings.create
   .use(databaseMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { key, value } = input;
@@ -50,7 +43,7 @@ export const create = ar.settings.create
       .limit(1);
 
     if (existingSetting) {
-      throw errors.CONFLICT({
+      throw errors.RESOURCE_ALREADY_EXISTS({
         message: `Setting with key '${key}' already exists`,
       });
     }
@@ -64,6 +57,12 @@ export const create = ar.settings.create
         lastUpdated: new Date(),
       })
       .returning();
+
+    if (!newSetting) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: `Failed to create setting with key '${key}'`,
+      });
+    }
 
     return newSetting;
   });

@@ -18,6 +18,7 @@ import { Route as PrivateOnboardingRouteImport } from './routes/_private/onboard
 import { Route as PrivateOnboardedRouteImport } from './routes/_private/_onboarded'
 import { Route as PrivateOnboardedIndexRouteImport } from './routes/_private/_onboarded/index'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
+import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
@@ -53,6 +54,11 @@ const PrivateOnboardedIndexRoute = PrivateOnboardedIndexRouteImport.update({
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
   path: '/api/$',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
+  id: '/api/rpc/$',
+  path: '/api/rpc/$',
   getParentRoute: () => rootServerRouteImport,
 } as any)
 const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
@@ -104,27 +110,31 @@ export interface RootRouteChildren {
 export interface FileServerRoutesByFullPath {
   '/api/$': typeof ApiSplatServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesByTo {
   '/api/$': typeof ApiSplatServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/api/$': typeof ApiSplatServerRoute
   '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/rpc/$': typeof ApiRpcSplatServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/$' | '/api/auth/$'
+  fullPaths: '/api/$' | '/api/auth/$' | '/api/rpc/$'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/$' | '/api/auth/$'
-  id: '__root__' | '/api/$' | '/api/auth/$'
+  to: '/api/$' | '/api/auth/$' | '/api/rpc/$'
+  id: '__root__' | '/api/$' | '/api/auth/$' | '/api/rpc/$'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
   ApiSplatServerRoute: typeof ApiSplatServerRoute
   ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
+  ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -182,6 +192,13 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiSplatServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
+    '/api/rpc/$': {
+      id: '/api/rpc/$'
+      path: '/api/rpc/$'
+      fullPath: '/api/rpc/$'
+      preLoaderRoute: typeof ApiRpcSplatServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -236,6 +253,7 @@ export const routeTree = rootRouteImport
 const rootServerRouteChildren: RootServerRouteChildren = {
   ApiSplatServerRoute: ApiSplatServerRoute,
   ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
+  ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport
   ._addFileChildren(rootServerRouteChildren)
