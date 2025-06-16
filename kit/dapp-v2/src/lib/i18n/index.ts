@@ -1,17 +1,17 @@
 /**
  * Internationalization (i18n) Configuration
- * 
+ *
  * This module configures the i18next library for multi-language support
  * in the application. It sets up translation resources, language detection,
  * and React integration for seamless internationalization.
- * 
+ *
  * Features:
  * - Multi-language support (English and German)
  * - Type-safe translations via TypeScript augmentation
  * - SSR-compatible configuration
  * - Automatic language detection (via use-language-detection hook)
  * - Fallback language support
- * 
+ *
  * @see {@link ./types} - TypeScript type augmentation for translations
  * @see {@link ./use-language-detection} - Browser language detection hook
  * @see {@link ../../../locales/} - Translation JSON files
@@ -19,33 +19,46 @@
 
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import enTranslations from "../../../locales/en.json";
-import deTranslations from "../../../locales/de.json";
+
+import deAuthTranslations from "@/locales/de/auth.json";
+import deGeneralTranslations from "@/locales/de/general.json";
+import deLanguageTranslations from "@/locales/de/language.json";
+import deThemeTranslations from "@/locales/de/theme.json";
+import enAuthTranslations from "@/locales/en/auth.json";
+import enGeneralTranslations from "@/locales/en/general.json";
+import enLanguageTranslations from "@/locales/en/language.json";
+import enThemeTranslations from "@/locales/en/theme.json";
 import "./types";
 
 /**
  * Default namespace for translations.
  * This is the primary namespace used when no specific namespace is provided.
  */
-export const defaultNS = "translation";
+export const defaultNS = "general";
 
 /**
  * Translation resources object containing all available translations.
- * 
+ *
  * Structure:
  * - Each language code (e.g., 'en', 'de') maps to an object
  * - Each language object contains namespaces (currently only 'translation')
  * - Each namespace contains the actual translation key-value pairs
- * 
+ *
  * The 'as const' assertion ensures TypeScript treats this as a literal type,
  * enabling type-safe translation keys throughout the application.
  */
 export const resources = {
   en: {
-    translation: enTranslations,
+    auth: enAuthTranslations,
+    general: enGeneralTranslations,
+    theme: enThemeTranslations,
+    language: enLanguageTranslations,
   },
   de: {
-    translation: deTranslations,
+    auth: deAuthTranslations,
+    general: deGeneralTranslations,
+    theme: deThemeTranslations,
+    language: deLanguageTranslations,
   },
 } as const;
 
@@ -63,7 +76,7 @@ export const fallbackLng = "en";
 
 /**
  * Initialize i18next with React integration and configuration.
- * 
+ *
  * Configuration options:
  * - resources: Translation data for all supported languages
  * - lng: Initial language (set to fallback until detection runs)
@@ -71,7 +84,7 @@ export const fallbackLng = "en";
  * - defaultNS: Default namespace for translations
  * - interpolation.escapeValue: Disabled as React handles XSS protection
  * - react.useSuspense: Disabled for SSR compatibility
- * 
+ *
  * The void operator is used to explicitly discard the promise,
  * as initialization happens synchronously for our use case.
  */
@@ -84,22 +97,22 @@ void i18n.use(initReactI18next).init({
     escapeValue: false, // React already escapes values
   },
   react: {
-    useSuspense: false, // Important for SSR
+    useSuspense: true, // Important for SSR
   },
 });
 
 /**
  * The configured i18next instance.
- * 
+ *
  * This instance is used throughout the application via React hooks:
  * - useTranslation: Access translation function
  * - Trans: Component for complex translations with JSX
  * - I18nextProvider: Context provider (auto-configured by react-i18next)
- * 
+ *
  * @example
  * ```typescript
  * import { useTranslation } from 'react-i18next';
- * 
+ *
  * function MyComponent() {
  *   const { t } = useTranslation();
  *   return <h1>{t('welcome.title')}</h1>;

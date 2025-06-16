@@ -49,7 +49,7 @@ export function LanguageSwitcher({
   size = "icon",
   className,
 }: LanguageSwitcherProps = {}) {
-  const { i18n, t } = useTranslation();
+  const { i18n, t } = useTranslation("language");
   const [mounted, setMounted] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
@@ -89,14 +89,14 @@ export function LanguageSwitcher({
           variant={variant}
           size={size}
           className={className}
-          aria-label={t("language.switch")}
+          aria-label={t("switch")}
           disabled={isPending}
         >
           <Languages className="h-[1.2rem] w-[1.2rem]" />
           {size !== "icon" && (
             <span className="ml-2">
               {isPending
-                ? t("language.changing")
+                ? t("changing")
                 : (LANGUAGE_NAMES[i18n.language] ?? i18n.language)}
             </span>
           )}

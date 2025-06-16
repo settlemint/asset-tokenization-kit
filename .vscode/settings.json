@@ -95,7 +95,7 @@
   "typescript.preferences.useAliasesForRenames": false,
   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
   "i18n-ally.localesPaths": [
-    "kit/dapp-v2/src/locales",
+    "kit/dapp-v2/locales",
     "kit/dapp/messages",
     "kit/dapp/src/i18n",
     "kit/dapp/src/components/blocks/language"
@@ -103,10 +103,10 @@
   "i18n-ally.namespace": true,
   "i18n-ally.sortKeys": true,
   "i18n-ally.sourceLanguage": "en",
-  "i18n-ally.dirStructure": "auto",
+  "i18n-ally.dirStructure": "dir",
   "i18n-ally.displayLanguage": "en",
   "i18n-ally.editor.preferEditor": true,
-  "i18n-ally.enabledFrameworks": ["next-intl"],
+  "i18n-ally.enabledFrameworks": ["react-i18next"],
   "i18n-ally.enabledParsers": ["json"],
   "i18n-ally.extract.autoDetect": true,
   "files.watcherExclude": {
@@ -118,5 +118,8 @@
   "files.readonlyInclude": {
     "**/routeTree.gen.ts": true
   },
-  "i18n-ally.keystyle": "nested"
+  "i18n-ally.keystyle": "flat",
+  "i18n-ally.defaultNamespace": "general",
+  "i18n-ally.pathMatcher": "{locale}/{namespaces}.json",
+  "i18n-ally.extract.targetPickingStrategy": "most-similar"
 }
