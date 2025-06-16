@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
+/// @title Interface for ATK Vesting Airdrop Factory
+/// @notice This interface defines the functions for creating and managing ATK vesting airdrop contracts.
 interface IATKVestingAirdropFactory {
     /// @notice Emitted when the `atkVestingAirdropImplementation` is updated.
     /// @param oldImplementation The address of the previous implementation contract.
@@ -38,4 +40,25 @@ interface IATKVestingAirdropFactory {
     )
         external
         returns (address airdropProxyAddress);
+
+    /// @notice Predicts the deployment address of a vesting airdrop proxy.
+    /// @param token The address of the ERC20 token to be distributed.
+    /// @param root The Merkle root for verifying claims.
+    /// @param owner The initial owner of the contract.
+    /// @param vestingStrategy The address of the vesting strategy contract for vesting calculations.
+    /// @param initializationDeadline The timestamp after which no new vesting can be initialized.
+    /// @return predictedAddress The predicted address of the vesting airdrop proxy.
+    function predictVestingAirdropAddress(
+        address token,
+        bytes32 root,
+        address owner,
+        address vestingStrategy,
+        uint256 initializationDeadline
+    )
+        external
+        view
+        returns (address predictedAddress);
+
+    /// @notice Returns the total number of vesting airdrop proxy contracts created by this factory.
+    function allAirdropsLength() external view returns (uint256 count);
 }
