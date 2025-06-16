@@ -19,7 +19,8 @@ export function handleAddressFrozen(event: AddressFrozen): void {
   freezeOrUnfreezeTokenBalance(
     token,
     event.params.userAddress,
-    event.params.isFrozen
+    event.params.isFrozen,
+    event.block.timestamp
   );
 }
 
@@ -29,18 +30,29 @@ export function handleRecoverySuccess(event: RecoverySuccess): void {
   moveTokenBalanceToNewAccount(
     token,
     event.params.lostWallet,
-    event.params.newWallet
+    event.params.newWallet,
+    event.block.timestamp
   );
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {
   fetchEvent(event, "TokensFrozen");
   const token = fetchToken(event.address);
-  increaseTokenBalanceFrozen(token, event.params.user, event.params.amount);
+  increaseTokenBalanceFrozen(
+    token,
+    event.params.user,
+    event.params.amount,
+    event.block.timestamp
+  );
 }
 
 export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   fetchEvent(event, "TokensUnfrozen");
   const token = fetchToken(event.address);
-  decreaseTokenBalanceFrozen(token, event.params.user, event.params.amount);
+  decreaseTokenBalanceFrozen(
+    token,
+    event.params.user,
+    event.params.amount,
+    event.block.timestamp
+  );
 }

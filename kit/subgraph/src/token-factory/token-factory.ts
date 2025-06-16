@@ -4,6 +4,7 @@ import {
   TokenImplementationUpdated,
 } from "../../generated/templates/TokenFactory/TokenFactory";
 import { fetchAccessControl } from "../access-control/fetch/accesscontrol";
+import { fetchAccount } from "../account/fetch/account";
 import { InterfaceIds } from "../erc165/utils/interfaceids";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
@@ -24,6 +25,8 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   const token = fetchToken(event.params.tokenAddress);
   token.tokenFactory = tokenFactory.id;
   token.type = tokenFactory.name;
+  token.createdAt = event.block.timestamp;
+  token.createdBy = fetchAccount(event.transaction.from).id;
   token.identity = fetchIdentity(event.params.tokenIdentity).id;
   token.accessControl = fetchAccessControl(event.params.accessManager).id;
 
