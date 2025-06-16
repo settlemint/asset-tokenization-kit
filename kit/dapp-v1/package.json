@@ -42,7 +42,7 @@
     "@orpc/server": "1.5.2",
     "@orpc/tanstack-query": "1.5.2",
     "@orpc/zod": "1.5.2",
-    "@react-email/components": "0.0.42",
+    "@react-email/components": "0.1.0",
     "@scalar/api-reference-react": "0.7.16",
     "@scalar/types": "0.2.3",
     "@sentry/nextjs": "9.29.0",
