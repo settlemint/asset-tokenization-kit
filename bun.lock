@@ -170,7 +170,7 @@
         "react-error-boundary": "6.0.0",
         "react-hook-form": "7.58.0",
         "react-pdf": "9.2.1",
-        "react-qr-code": "2.0.15",
+        "react-qr-code": "2.0.16",
         "recharts": "2.15.3",
         "resend": "4.6.0",
         "rtl-detect": "1.1.2",
@@ -4053,7 +4053,7 @@
 
     "react-promise-suspense": ["react-promise-suspense@0.3.4", "", { "dependencies": { "fast-deep-equal": "^2.0.1" } }, "sha512-I42jl7L3Ze6kZaq+7zXWSunBa3b1on5yfvUW6Eo/3fFOj6dZ5Bqmcd264nJbTK/gn1HjjILAjSwnZbV4RpSaNQ=="],
 
-    "react-qr-code": ["react-qr-code@2.0.15", "", { "dependencies": { "prop-types": "^15.8.1", "qr.js": "0.0.0" }, "peerDependencies": { "react": "*" } }, "sha512-MkZcjEXqVKqXEIMVE0mbcGgDpkfSdd8zhuzXEl9QzYeNcw8Hq2oVIzDLWuZN2PQBwM5PWjc2S31K8Q1UbcFMfw=="],
+    "react-qr-code": ["react-qr-code@2.0.16", "", { "dependencies": { "prop-types": "^15.8.1", "qr.js": "0.0.0" }, "peerDependencies": { "react": "*" } }, "sha512-8f54aTOo7DxYr1LB47pMeclV5SL/zSbJxkXHIS2a+QnAIa4XDVIdmzYRC+CBCJeDLSCeFHn8gHtltwvwZGJD/w=="],
 
     "react-refresh": ["react-refresh@0.17.0", "", {}, "sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ=="],
 
@@ -4838,6 +4838,8 @@
     "@better-auth/cli/yocto-spinner": ["yocto-spinner@0.1.2", "", { "dependencies": { "yoctocolors": "^2.1.1" } }, "sha512-VfmLIh/ZSZOJnVRQZc/dvpPP90lWL4G0bmxQMP0+U/2vKBA8GSpcBuWv17y7F+CZItRuO97HN1wdbb4p10uhOg=="],
 
     "@cloudflare/kv-asset-handler/mime": ["mime@3.0.0", "", { "bin": { "mime": "cli.js" } }, "sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A=="],
+
+    "@daveyplate/better-auth-ui/react-qr-code": ["react-qr-code@2.0.15", "", { "dependencies": { "prop-types": "^15.8.1", "qr.js": "0.0.0" }, "peerDependencies": { "react": "*" } }, "sha512-MkZcjEXqVKqXEIMVE0mbcGgDpkfSdd8zhuzXEl9QzYeNcw8Hq2oVIzDLWuZN2PQBwM5PWjc2S31K8Q1UbcFMfw=="],
 
     "@dotenvx/dotenvx/commander": ["commander@11.1.0", "", {}, "sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ=="],
 
