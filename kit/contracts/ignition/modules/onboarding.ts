@@ -1,4 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import ATKOnboardingVestingAirdropFactoryModule from "./onboarding/addons/airdrop/vesting-airdrop-factory";
 import ATKOnboardingFixedYieldScheduleFactoryModule from "./onboarding/addons/fixed-yield-schedule-factory";
 import ATKOnboardingBondModule from "./onboarding/assets/bond";
 import ATKOnboardingDepositModule from "./onboarding/assets/deposit";
@@ -39,6 +40,10 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     ATKOnboardingFixedYieldScheduleFactoryModule
   );
 
+  const { vestingAirdropFactory } = m.useModule(
+    ATKOnboardingVestingAirdropFactoryModule
+  );
+
   return {
     system,
     compliance,
@@ -52,10 +57,12 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     equityFactory,
     fundFactory,
     stablecoinFactory,
-    fixedYieldScheduleFactory,
     // Compliance modules
     countryAllowListModule,
     countryBlockListModule,
+    // Addons
+    fixedYieldScheduleFactory,
+    vestingAirdropFactory,
   };
 });
 
