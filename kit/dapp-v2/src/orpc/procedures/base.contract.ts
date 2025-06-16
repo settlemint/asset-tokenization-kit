@@ -229,4 +229,46 @@ export const baseContract = oc.errors({
       security: [{ apiKey: [] }],
     }
   ),
+
+  /**
+   * Resource not found error.
+   *
+   * Thrown when a requested resource is not found:
+   * - Invalid URL or endpoint
+   * - Missing required parameters
+   * - Resource not found in database
+   */
+  NOT_FOUND: {
+    message: "Resource not found",
+    status: 404,
+  },
+
+  /**
+   * Resource already exists error.
+   *
+   * Thrown when a requested resource already exists:
+   * - Duplicate resource creation attempt
+   * - Resource already exists in database
+   */
+  RESOURCE_ALREADY_EXISTS: {
+    message: "Resource already exists",
+    status: 409,
+  },
+
+  /**
+   * Portal error.
+   *
+   * Thrown when a portal service error occurs:
+   * - Portal service unavailable
+   * - Portal service timeout
+   * - Portal service error
+   */
+  PORTAL_ERROR: {
+    message: "Portal error",
+    status: 500,
+    data: z.object({
+      operation: z.string(),
+      details: z.string(),
+    }),
+  },
 });

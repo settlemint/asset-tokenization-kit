@@ -1,4 +1,5 @@
 import { userContract } from "@/orpc/routes/user/user.contract";
+import { accountContract } from "./account/account.contract";
 import { systemContract } from "./system/system.contract";
 import { transactionContract } from "./transaction/transaction.contract";
 
@@ -20,6 +21,19 @@ import { transactionContract } from "./transaction/transaction.contract";
  * the type definitions for all procedures within that namespace.
  */
 export const contract = {
+  /**
+   * Account-related API contract.
+   *
+   * Contains type definitions for account management procedures.
+   * Accounts represent blockchain wallet addresses with associated identity
+   * claims in the ERC-3643 compliance system. This contract provides type-safe
+   * access to wallet creation and account information retrieval operations.
+   *
+   * @see {@link ./account/account.contract} - Account contract implementation
+   * @see {@link ./account/account.router} - Corresponding router implementation
+   */
+  account: accountContract,
+
   /**
    * System-related API contract.
    *

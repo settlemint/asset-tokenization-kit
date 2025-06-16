@@ -14,6 +14,19 @@ import { baseRouter } from "../procedures/base.router";
  */
 export const router = baseRouter.router({
   /**
+   * Account-related API procedures.
+   *
+   * Lazy-loaded module containing account management operations.
+   * Accounts represent blockchain wallet addresses and their associated
+   * identity claims within the ERC-3643 compliance framework. This module
+   * provides endpoints for creating wallets and querying account information
+   * including verified identity attributes.
+   *
+   * @see {@link ./account/account.router} - Account router implementation
+   */
+  account: baseRouter.account.lazy(() => import("./account/account.router")),
+
+  /**
    * System-related API procedures.
    *
    * Lazy-loaded module containing SMART system management operations.
