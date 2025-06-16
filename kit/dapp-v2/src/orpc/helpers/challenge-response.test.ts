@@ -1,4 +1,21 @@
-import type { User } from "@/lib/auth";
+/**
+ * Test Suite for Challenge-Response Authentication Helper
+ * 
+ * This test suite verifies the functionality of the challenge-response authentication
+ * mechanism, which handles various verification methods (pincode, secret code, and
+ * two-factor authentication) for wallet ownership verification.
+ * 
+ * The tests cover:
+ * - Successful verification flows for all authentication types
+ * - Error handling for missing verification IDs
+ * - Error handling for portal API failures
+ * - Proper error type creation and properties
+ * - Correct mapping of verification types to portal API expectations
+ * 
+ * @see {@link ./challenge-response} - Implementation being tested
+ */
+
+import type { SessionUser } from "@/lib/auth";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { VerificationCode } from "@/lib/zod/validators/verification-code";
 import { verificationType } from "@/lib/zod/validators/verification-type";
@@ -25,14 +42,14 @@ mock.module("@/lib/settlemint/portal", () => ({
 describe("challenge-response", () => {
   const mockWalletAddress =
     "0x1234567890123456789012345678901234567890" as EthereumAddress;
-  const mockUser: User = {
+  const mockUser: SessionUser = {
     id: "user-123",
     email: "test@example.com",
     pincodeVerificationId: "pincode-verification-id",
     secretCodeVerificationId: "secret-code-verification-id",
     twoFactorVerificationId: "two-factor-verification-id",
     wallet: mockWalletAddress,
-  } as User;
+  } as SessionUser;
 
   const mockCode = "123456" as VerificationCode;
 

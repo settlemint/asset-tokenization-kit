@@ -1,4 +1,4 @@
-import type { Session, User } from "@/lib/auth";
+import type { Session, SessionUser } from "@/lib/auth";
 import type { db } from "@/lib/db";
 import type { hasuraClient } from "@/lib/settlemint/hasura";
 import type { client as minioClient } from "@/lib/settlemint/minio";
@@ -46,7 +46,7 @@ export interface Context {
    * @see {@link @/lib/auth/auth} - Authentication system implementation
    */
   auth?: {
-    user: User;
+    user: SessionUser;
     session: Session;
   };
 

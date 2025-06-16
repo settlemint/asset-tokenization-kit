@@ -1,17 +1,40 @@
+/**
+ * User Management Contract
+ * 
+ * This contract defines the type-safe interfaces for user-related operations.
+ * It provides endpoints for accessing and managing user information, starting
+ * with the current authenticated user's profile data.
+ * 
+ * All endpoints in this contract require authentication, ensuring that user
+ * data is properly protected and only accessible to authorized users.
+ * 
+ * @see {@link @/orpc/procedures/auth.contract} - Base authenticated contract
+ * @see {@link ./user.router} - Implementation router
+ */
+
 import { UserMeSchema } from "@/orpc/routes/user/routes/user.me.schema";
 import { ac } from "../../procedures/auth.contract";
 
 /**
- * Contract definition for the system list endpoint.
- *
- * Defines the type-safe interface for retrieving SMART systems including:
- * - HTTP method and path configuration
- * - Input validation using the standard ListSchema for pagination
- * - Output validation ensuring an array of valid System objects
- * - OpenAPI documentation metadata
- *
- * This contract is consumed by both the server router and client for
- * end-to-end type safety.
+ * Get current authenticated user information.
+ * 
+ * This endpoint returns comprehensive information about the currently
+ * authenticated user, including their profile data, wallet address,
+ * and verification settings.
+ * 
+ * @auth Required - User must be authenticated
+ * @method GET
+ * @endpoint /user/me
+ * 
+ * @returns UserMeSchema - Complete user profile information
+ * 
+ * @example
+ * ```typescript
+ * // Fetch current user
+ * const user = await client.user.me();
+ * console.log(`Logged in as: ${user.email}`);
+ * console.log(`Wallet: ${user.wallet}`);
+ * ```
  */
 const me = ac
   .route({
@@ -21,19 +44,20 @@ const me = ac
     successDescription: "Current user",
     tags: ["user"],
   })
-  .output(UserMeSchema); // Return array of system objects
+  .output(UserMeSchema);
 
 /**
- * System API contract collection.
+ * User API contract collection.
  *
- * Exports all system-related API contracts for use in the main contract registry.
+ * Exports all user-related API contracts for use in the main contract registry.
  * Currently includes:
- * - list: Retrieve paginated list of SMART systems
+ * - me: Retrieve current authenticated user information
  *
  * Future endpoints may include:
- * - get: Retrieve a specific system by ID
- * - deploy: Deploy a new SMART system
- * - update: Update system configuration
+ * - update: Update user profile information
+ * - preferences: Manage user preferences
+ * - sessions: View and manage active sessions
+ * - notifications: Configure notification settings
  */
 export const userContract = {
   me,

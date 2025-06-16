@@ -114,6 +114,6 @@ const getAuthConfig = serverOnly(() =>
 export const auth = getAuthConfig();
 
 export type Session = typeof auth.$Infer.Session;
-export type User = Omit<Session["user"], "wallet"> & {
+export type SessionUser = Omit<Session["user"], "wallet"> & {
   wallet: EthereumAddress;
 };

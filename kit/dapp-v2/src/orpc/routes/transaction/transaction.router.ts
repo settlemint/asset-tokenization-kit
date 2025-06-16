@@ -1,17 +1,20 @@
 import { track } from "./routes/transaction.track";
 
 /**
- * System router module.
+ * Transaction router module.
  *
- * Aggregates all system-related route handlers into a single exportable object.
- * This module serves as the entry point for the lazy-loaded system namespace
+ * Aggregates all transaction-related route handlers into a single exportable object.
+ * This module serves as the entry point for the lazy-loaded transaction namespace
  * in the main ORPC router.
  *
  * Current routes:
- * - list: GET /systems - Retrieve paginated list of SMART systems
+ * - track: GET /transactions/track - Real-time transaction status tracking via SSE
  *
- * The router is designed to be extended with additional system management
- * endpoints as the application evolves.
+ * The router is designed to be extended with additional transaction management
+ * endpoints such as transaction history, gas estimation, and transaction simulation.
+ * 
+ * @see {@link ./transaction.contract} - Type-safe contract definitions
+ * @see {@link ./routes/transaction.track} - Transaction tracking implementation
  */
 const routes = {
   track,

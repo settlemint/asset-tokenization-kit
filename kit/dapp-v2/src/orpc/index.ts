@@ -1,3 +1,17 @@
+/**
+ * Main ORPC Client Configuration
+ * 
+ * This module exports the primary ORPC client used throughout the application.
+ * It creates an isomorphic client that works both on the server and client side:
+ * - Server-side: Uses direct router client with request headers from TanStack Start
+ * - Client-side: Uses OpenAPI link with automatic cookie inclusion for authentication
+ * 
+ * The client is integrated with TanStack Query for data fetching and caching.
+ * 
+ * @see {@link ./routes/contract} - Type-safe contract definitions
+ * @see {@link ./routes/router} - Main router with all endpoints
+ */
+
 import { createORPCClient } from "@orpc/client";
 import type { ContractRouterClient } from "@orpc/contract";
 import type { JsonifiedClient } from "@orpc/openapi-client";
@@ -10,6 +24,19 @@ import { getHeaders } from "@tanstack/react-start/server";
 import { contract } from "./routes/contract";
 import { router } from "./routes/router";
 
+/**
+ * Creates an isomorphic ORPC client that adapts based on the runtime environment.
+ * 
+ * Server-side behavior:
+ * - Creates a direct router client for optimal performance
+ * - Automatically includes request headers from TanStack Start
+ * - Bypasses HTTP layer for direct function calls
+ * 
+ * Client-side behavior:
+ * - Creates an OpenAPI client that communicates via HTTP
+ * - Automatically includes cookies for session-based authentication
+ * - Points to the `/api` endpoint relative to the current origin
+ */
 const getORPCClient = createIsomorphicFn()
   .server(() => {
     return createRouterClient(router, {
@@ -33,7 +60,45 @@ const getORPCClient = createIsomorphicFn()
     return createORPCClient(link);
   });
 
+/**
+ * The main ORPC client instance used throughout the application.
+ * 
+ * This client is fully type-safe and provides access to all API endpoints
+ * defined in the contract. It automatically handles JSON serialization
+ * and deserialization for all requests and responses.
+ * 
+ * @example
+ * ```typescript
+ * // Fetch current user
+ * const user = await client.user.me();
+ * 
+ * // Track a transaction
+ * const result = await client.transaction.track({
+ *   operation: 'issue',
+ *   assetId: '123',
+ *   transactionId: 'abc'
+ * });
+ * ```
+ */
 export const client: JsonifiedClient<ContractRouterClient<typeof contract>> =
   getORPCClient();
 
+/**
+ * TanStack Query utilities for the ORPC client.
+ * 
+ * Provides React hooks and utilities for data fetching with:
+ * - Automatic caching and background refetching
+ * - Optimistic updates
+ * - Request deduplication
+ * - Error and loading states
+ * 
+ * @example
+ * ```typescript
+ * // In a React component
+ * const { data, isLoading } = orpc.user.me.useQuery();
+ * 
+ * // Prefetch data
+ * await orpc.user.me.prefetch();
+ * ```
+ */
 export const orpc = createTanstackQueryUtils(client);

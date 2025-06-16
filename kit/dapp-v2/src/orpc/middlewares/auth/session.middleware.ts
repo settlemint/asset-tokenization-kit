@@ -1,4 +1,4 @@
-import { auth, type Session, type User } from "@/lib/auth";
+import { auth, type Session, type SessionUser } from "@/lib/auth";
 import { br } from "../../procedures/base.router";
 
 /**
@@ -54,7 +54,7 @@ export const sessionMiddleware = br.middleware(async ({ context, next }) => {
       auth:
         context.auth ??
         (session as unknown as {
-          user: User;
+          user: SessionUser;
           session: Session;
         }),
     },

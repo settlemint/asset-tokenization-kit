@@ -1,36 +1,49 @@
+/**
+ * Current User Handler
+ * 
+ * This handler returns information about the currently authenticated user.
+ * It provides a simple way for clients to fetch the logged-in user's profile
+ * data without needing to manage session state directly.
+ * 
+ * @see {@link ../user.me.schema} - Output schema definition
+ * @see {@link @/orpc/procedures/auth.router} - Authentication requirements
+ */
+
 import { ar } from "@/orpc/procedures/auth.router";
 
 /**
- * System listing route handler.
+ * Get current authenticated user information.
  *
- * Retrieves a paginated list of SMART system contracts from TheGraph indexer.
- * Systems are the core infrastructure contracts that manage tokenized assets,
- * compliance modules, identity registries, and access control within the SMART
- * protocol ecosystem.
+ * Returns the user object from the authentication context, which includes
+ * essential profile information such as name, email, and wallet address.
+ * This endpoint is commonly used for:
+ * - Displaying user information in the UI
+ * - Determining user permissions and capabilities
+ * - Personalizing the application experience
  *
- * Authentication: Required (uses authenticated router)
- * Permissions: Requires "read" permission - available to admin, issuer, user, and auditor roles
- * Method: GET /systems
+ * @auth Required - User must be authenticated
+ * @method GET /user/me
  *
- * @param input - List parameters including pagination and sorting options
- * @param context - Request context with TheGraph client and authenticated user
- * @returns Promise<System[]> - Array of system objects with their blockchain addresses
+ * @param context - Request context containing authenticated user information
+ * @returns User object with profile data and wallet address
  *
- * @throws UNAUTHORIZED - If user is not authenticated
- * @throws FORBIDDEN - If user lacks required read permissions
+ * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
  *
  * @example
  * ```typescript
  * // Client usage:
- * const systems = await orpc.system.list.query({
- *   offset: 0,
- *   limit: 20,
- *   orderBy: 'deployedAt',
- *   orderDirection: 'desc'
- * });
+ * const user = await orpc.user.me.query();
+ * console.log(`Welcome ${user.name}!`);
+ * 
+ * // Display wallet address
+ * console.log(`Wallet: ${user.wallet}`);
+ * 
+ * // Use in React component
+ * const { data: user, isLoading } = orpc.user.me.useQuery();
  * ```
  */
 export const me = ar.user.me.handler(({ context }) => {
-  // fetch account and identity from graph
+  // Return the authenticated user from the context
+  // The user object is validated against UserMeSchema before being sent
   return context.auth.user;
 });

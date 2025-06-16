@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 export const Route = createFileRoute("/_private/")({
   loader: ({ context }) => {
     // if you need the user, it is available in the context
-    // const user = context.user;
+    // const user: User = context.user;
 
     // loads data while the page is loading, can take longer
     // Use with useSuspenseQuery, component calling useSuspenseQuery wrapped in <Suspense> if non priority info like graph data
