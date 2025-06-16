@@ -66,10 +66,12 @@ const ACCOUNT_QUERY = theGraphGraphql(`
 export const me = ar.user.me
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {
+    console.log("me", context);
     const user = context.auth.user;
     const { account } = await context.theGraphClient.request(ACCOUNT_QUERY, {
       id: user.wallet,
     });
+    console.log("account", account);
 
     // Convert numeric country code to ISO 3166-1 alpha-2
     let countryAlpha2: string | undefined;

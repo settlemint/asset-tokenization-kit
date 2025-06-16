@@ -18,10 +18,8 @@
 
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { orpc } from "@/orpc";
-import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private")({
   /**
@@ -34,19 +32,19 @@ export const Route = createFileRoute("/_private")({
    *
    * @returns User data that will be merged into the route context
    */
-  beforeLoad: async ({ context }) => {
-    try {
-      const user: User = await context.queryClient.ensureQueryData(
-        orpc.user.me.queryOptions({})
-      );
-      return { user };
-    } catch {
-      throw redirect({
-        to: "/auth/$pathname",
-        params: { pathname: "sign-in" },
-      });
-    }
-  },
+  // beforeLoad: async ({ context }) => {
+  //   try {
+  //     const user: User = await context.queryClient.ensureQueryData(
+  //       orpc.user.me.queryOptions({})
+  //     );
+  //     return { user };
+  //   } catch {
+  //     throw redirect({
+  //       to: "/auth/$pathname",
+  //       params: { pathname: "sign-in" },
+  //     });
+  //   }
+  // },
   component: LayoutComponent,
 });
 
