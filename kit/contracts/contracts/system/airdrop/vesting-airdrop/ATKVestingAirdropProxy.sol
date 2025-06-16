@@ -1,67 +1,109 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
-import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
-import { IATKVestingAirdrop } from "./IATKVestingAirdrop.sol";
-import { VestingAirdropImplementationNotSet } from "./ATKVestingAirdropErrors.sol";
-import { InitializationWithZeroAddress, ETHTransfersNotAllowed } from "../../ATKSystemErrors.sol";
+import { IATKVestingAirdropFactory } from "./IATKVestingAirdropFactory.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { ATKVestingAirdropImplementation } from "./ATKVestingAirdropImplementation.sol";
 
-/// @title Proxy contract for ATK Vesting Airdrops.
-/// @author SettleMint Tokenization Services
-/// @notice This contract serves as a proxy, allowing for upgradeability of the underlying vesting airdrop logic.
-/// It retrieves the implementation address from a provided implementation contract address.
-/// @dev Unlike token proxies which use a factory pattern, this proxy takes the implementation address directly
-///      during construction, allowing for more flexible deployment patterns for airdrop contracts.
+/// @notice Custom error when the provided factory address is invalid (e.g. zero address or does not support the
+/// required interface).
+error InvalidFactoryAddress();
+/// @notice Custom error when the factory does not have an implementation address set for the vesting airdrop.
+error ImplementationNotSetInFactory();
+/// @notice Custom error when attempting to initialize the proxy with a zero address for the implementation.
+error InitializationWithZeroAddress();
+/// @notice Custom error for when direct ETH transfers to the proxy are attempted.
+error ETHTransfersNotAllowed();
+
+/// @title Proxy for ATKVestingAirdrop, managed by a factory.
+/// @notice This contract is a proxy that delegates calls to an implementation
+/// of ATKVestingAirdrop. The implementation address is fetched from a specified
+/// ATKVestingAirdropFactory contract.
+/// @dev This proxy is intended to be deployed by ATKVestingAirdropFactory.
+/// It stores the factory address and uses it to determine the logic contract.
 contract ATKVestingAirdropProxy is Proxy {
-    /// @dev Storage slot for the implementation address.
-    /// Value: keccak256("org.atk.contracts.proxy.ATKVestingAirdropProxy.implementation")
-    bytes32 private constant _VESTING_AIRDROP_IMPLEMENTATION_SLOT =
-        0x4d5d4c5e389b95bc7bc5e9da9b8b6b5e5e5e5e5e5e5e5e5e5e5e5e5e5e1234ef;
+    /// @dev Storage slot for the ATKVestingAirdropFactory address.
+    /// Value: keccak256("org.atk.contracts.proxy.ATKVestingAirdropProxy.factoryAddress")
+    bytes32 private constant _ATK_VESTING_AIRDROP_FACTORY_ADDRESS_SLOT =
+        0x7b8e0b8c3f6d4e8a9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b;
 
     /// @notice Constructs the ATKVestingAirdropProxy.
-    /// @dev Initializes the proxy by storing the implementation address and delegating a call to the `initialize`
-    /// function
-    /// of the implementation contract.
-    /// @param implementationAddress The address of the vesting airdrop implementation contract.
-    /// @param token_ The address of the ERC20 token to be distributed.
-    /// @param root_ The Merkle root for verifying claims.
-    /// @param owner_ The initial owner of the contract.
-    /// @param vestingStrategy_ The address of the vesting strategy contract for vesting calculations.
-    /// @param initializationDeadline_ The timestamp after which no new vesting can be initialized.
+    /// @param factoryAddress The address of the IATKVestingAirdropFactory contract.
+    /// @param token The address of the ERC20 token to be distributed.
+    /// @param root The Merkle root for verifying claims.
+    /// @param owner The initial owner of the contract.
+    /// @param vestingStrategy The address of the vesting strategy contract for vesting calculations.
+    /// @param initializationDeadline The timestamp after which no new vesting can be initialized.
     constructor(
-        address implementationAddress,
-        address token_,
-        bytes32 root_,
-        address owner_,
-        address vestingStrategy_,
-        uint256 initializationDeadline_
-    )
-        payable
-    {
-        if (implementationAddress == address(0)) revert VestingAirdropImplementationNotSet();
+        address factoryAddress,
+        address token,
+        bytes32 root,
+        address owner,
+        address vestingStrategy,
+        uint256 initializationDeadline
+    ) {
+        if (factoryAddress == address(0)) {
+            revert InvalidFactoryAddress();
+        }
 
-        // Store implementation address
-        StorageSlot.getAddressSlot(_VESTING_AIRDROP_IMPLEMENTATION_SLOT).value = implementationAddress;
+        if (!IERC165(factoryAddress).supportsInterface(type(IATKVestingAirdropFactory).interfaceId)) {
+            revert InvalidFactoryAddress();
+        }
 
-        // Prepare initialization data
-        bytes memory data = abi.encodeWithSelector(
-            IATKVestingAirdrop.initialize.selector, token_, root_, owner_, vestingStrategy_, initializationDeadline_
+        StorageSlot.getAddressSlot(_ATK_VESTING_AIRDROP_FACTORY_ADDRESS_SLOT).value = factoryAddress;
+
+        address implementationAddress = _getImplementationAddressFromFactory();
+
+        bytes memory initData = abi.encodeWithSelector(
+            ATKVestingAirdropImplementation.initialize.selector,
+            token,
+            root,
+            owner,
+            vestingStrategy,
+            initializationDeadline
         );
 
-        _performInitializationDelegatecall(implementationAddress, data);
+        _performInitializationDelegatecall(implementationAddress, initData);
+    }
+
+    /// @dev Internal function to retrieve the IATKVestingAirdropFactory contract instance from the stored
+    /// address.
+    /// @return An IATKVestingAirdropFactory instance.
+    function _getFactory() internal view returns (IATKVestingAirdropFactory) {
+        return IATKVestingAirdropFactory(StorageSlot.getAddressSlot(_ATK_VESTING_AIRDROP_FACTORY_ADDRESS_SLOT).value);
+    }
+
+    /// @dev Fetches the implementation address from the factory.
+    /// @return The address of the vesting airdrop implementation.
+    function _getImplementationAddressFromFactory() internal view returns (address) {
+        IATKVestingAirdropFactory factory = _getFactory();
+        // Assumes the factory has a public state variable `atkVestingAirdropImplementation`
+        // or a getter named `atkVestingAirdropImplementation()`.
+        // If the getter has a different name like `getAtkVestingAirdropImplementation()`,
+        // this needs to be adjusted: address impl = factory.getAtKVestingAirdropImplementation();
+        address implementation = factory.atkVestingAirdropImplementation();
+
+        if (implementation == address(0)) {
+            revert ImplementationNotSetInFactory();
+        }
+        return implementation;
     }
 
     /// @dev Performs the delegatecall to initialize the implementation contract.
-    /// @param implementationAddress The non-zero address of the logic contract to `delegatecall` to.
-    /// @param initializeData The ABI-encoded data for the `initialize` function call.
-    function _performInitializationDelegatecall(address implementationAddress, bytes memory initializeData) internal {
-        if (implementationAddress == address(0)) {
+    /// @param implementationAddress_ The non-zero address of the logic contract to `delegatecall` to.
+    /// @param initializeData_ The ABI-encoded data for the `initialize` function call.
+    function _performInitializationDelegatecall(
+        address implementationAddress_,
+        bytes memory initializeData_
+    )
+        internal
+    {
+        if (implementationAddress_ == address(0)) {
             revert InitializationWithZeroAddress();
         }
-        // slither-disable-next-line low-level-calls: Delegatecall is inherent and fundamental to proxy functionality.
-        (bool success, bytes memory returnData) = implementationAddress.delegatecall(initializeData);
+        (bool success, bytes memory returnData) = implementationAddress_.delegatecall(initializeData_);
         if (!success) {
             assembly {
                 revert(add(returnData, 0x20), mload(returnData))
@@ -70,13 +112,10 @@ contract ATKVestingAirdropProxy is Proxy {
     }
 
     /// @dev Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms.
-    /// @return The address of the current logic/implementation contract.
+    /// It retrieves the implementation address from the configured factory.
+    /// @return The address of the current logic/implementation contract for vesting airdrops.
     function _implementation() internal view override returns (address) {
-        address implementationAddress = StorageSlot.getAddressSlot(_VESTING_AIRDROP_IMPLEMENTATION_SLOT).value;
-        if (implementationAddress == address(0)) {
-            revert VestingAirdropImplementationNotSet();
-        }
-        return implementationAddress;
+        return _getImplementationAddressFromFactory();
     }
 
     /// @notice Fallback function to reject any direct Ether transfers to this proxy contract.

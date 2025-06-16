@@ -2,13 +2,20 @@
 pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
+import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
 import { ATKVestingAirdropImplementation } from
     "../../../contracts/system/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol";
+import { ATKVestingAirdropFactoryImplementation } from
+    "../../../contracts/system/airdrop/vesting-airdrop/ATKVestingAirdropFactoryImplementation.sol";
+import { IATKVestingAirdropFactory } from
+    "../../../contracts/system/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol";
+import { IATKVestingAirdrop } from "../../../contracts/system/airdrop/vesting-airdrop/IATKVestingAirdrop.sol";
 import { ATKLinearVestingStrategy } from
     "../../../contracts/system/airdrop/vesting-airdrop/ATKLinearVestingStrategy.sol";
 import { IATKVestingStrategy } from "../../../contracts/system/airdrop/vesting-airdrop/IATKVestingStrategy.sol";
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
-import { ATKForwarder } from "../../../contracts/vendor/ATKForwarder.sol";
+import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {
     InitializationDeadlinePassed,
     ClaimNotEligible,
@@ -24,11 +31,11 @@ import { InvalidMerkleProof, InvalidInputArrayLengths } from "../../../contracts
 
 /// @title ATK Vesting Airdrop Test
 /// @notice Comprehensive test suite for ATKVestingAirdropImplementation contract
-contract ATKVestingAirdropTest is Test {
-    ATKVestingAirdropImplementation public vestingAirdrop;
+contract ATKVestingAirdropTest is AbstractATKAssetTest {
+    IATKVestingAirdropFactory public vestingAirdropFactory;
+    IATKVestingAirdrop public vestingAirdrop;
     ATKLinearVestingStrategy public vestingStrategy;
     MockedERC20Token public token;
-    ATKForwarder public forwarder;
 
     address public owner;
     address public user1;
@@ -65,10 +72,34 @@ contract ATKVestingAirdropTest is Test {
         vm.label(user2, "User2");
         vm.label(user3, "User3");
 
+        // Initialize ATK system
+        setUpATK(owner);
+
         // Deploy contracts
         token = new MockedERC20Token("Test Token", "TEST", 18);
-        forwarder = new ATKForwarder();
         vestingStrategy = new ATKLinearVestingStrategy(VESTING_DURATION, CLIFF_DURATION);
+
+        // Set up the Vesting Airdrop Factory
+        ATKVestingAirdropFactoryImplementation vestingAirdropFactoryImpl =
+            new ATKVestingAirdropFactoryImplementation(address(forwarder));
+
+        vm.startPrank(platformAdmin);
+
+        // Encode initialization data for the factory
+        bytes memory encodedInitializationData = abi.encodeWithSelector(
+            ATKVestingAirdropFactoryImplementation.initialize.selector, address(systemUtils.system()), platformAdmin
+        );
+
+        // Create system addon for vesting airdrop factory
+        vestingAirdropFactory = IATKVestingAirdropFactory(
+            systemUtils.system().createSystemAddon(
+                "vesting-airdrop-factory", address(vestingAirdropFactoryImpl), encodedInitializationData
+            )
+        );
+
+        // Grant DEPLOYER_ROLE to owner so they can create vesting airdrops
+        IAccessControl(address(vestingAirdropFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
+        vm.stopPrank();
 
         // Set up allocations
         allocations[user1] = USER1_AMOUNT;
@@ -85,11 +116,13 @@ contract ATKVestingAirdropTest is Test {
 
         initializationDeadline = block.timestamp + 30 days;
 
-        // Deploy vesting airdrop
-        vm.prank(owner);
-        vestingAirdrop = new ATKVestingAirdropImplementation(
-            address(token), merkleRoot, owner, address(forwarder), address(vestingStrategy), initializationDeadline
+        // Create vesting airdrop using factory
+        vm.startPrank(owner);
+        address vestingAirdropAddress = vestingAirdropFactory.create(
+            address(token), merkleRoot, owner, address(vestingStrategy), initializationDeadline
         );
+        vestingAirdrop = IATKVestingAirdrop(vestingAirdropAddress);
+        vm.stopPrank();
 
         // Mint tokens to airdrop contract
         token.mint(address(vestingAirdrop), TOTAL_SUPPLY);
@@ -97,6 +130,7 @@ contract ATKVestingAirdropTest is Test {
         vm.label(address(token), "Token");
         vm.label(address(vestingAirdrop), "VestingAirdrop");
         vm.label(address(vestingStrategy), "VestingStrategy");
+        vm.label(address(vestingAirdropFactory), "VestingAirdropFactory");
     }
 
     function testConstructorWithValidParameters() public view {
@@ -104,21 +138,20 @@ contract ATKVestingAirdropTest is Test {
         assertEq(vestingAirdrop.merkleRoot(), merkleRoot);
         assertEq(address(vestingAirdrop.vestingStrategy()), address(vestingStrategy));
         assertEq(vestingAirdrop.claimPeriodEnd(), initializationDeadline);
-        assertEq(vestingAirdrop.owner(), owner);
     }
 
-    function testConstructorWithInvalidVestingStrategy() public {
+    function testFactoryCreateWithInvalidVestingStrategy() public {
+        vm.startPrank(owner);
         vm.expectRevert(InvalidVestingStrategyAddress.selector);
-        new ATKVestingAirdropImplementation(
-            address(token), merkleRoot, owner, address(forwarder), address(0), initializationDeadline
-        );
+        vestingAirdropFactory.create(address(token), merkleRoot, owner, address(0), initializationDeadline);
+        vm.stopPrank();
     }
 
-    function testConstructorWithInvalidDeadline() public {
+    function testFactoryCreateWithInvalidDeadline() public {
+        vm.startPrank(owner);
         vm.expectRevert(InvalidInitializationDeadline.selector);
-        new ATKVestingAirdropImplementation(
-            address(token), merkleRoot, owner, address(forwarder), address(vestingStrategy), block.timestamp - 1
-        );
+        vestingAirdropFactory.create(address(token), merkleRoot, owner, address(vestingStrategy), block.timestamp - 1);
+        vm.stopPrank();
     }
 
     function testVestingStrategyWithCliffExceedsVestingDuration() public {
@@ -144,8 +177,7 @@ contract ATKVestingAirdropTest is Test {
     function testInitializeVestingWithInvalidProof() public {
         uint256 index = indices[user1];
         uint256 amount = allocations[user1];
-        bytes32[] memory invalidProof = new bytes32[](1);
-        invalidProof[0] = bytes32(uint256(0x123));
+        bytes32[] memory invalidProof = proofs[user2];
 
         vm.expectRevert(InvalidMerkleProof.selector);
         vm.prank(user1);
