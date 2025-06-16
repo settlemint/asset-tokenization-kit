@@ -19,7 +19,7 @@ import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_private/")({
+export const Route = createFileRoute("/_private/_onboarded/")({
   /**
    * Data loader that runs when navigating to this route.
    *

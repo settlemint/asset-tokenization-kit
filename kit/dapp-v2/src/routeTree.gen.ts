@@ -13,8 +13,10 @@ import { createServerRootRoute } from '@tanstack/react-start/server'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivateRouteImport } from './routes/_private'
-import { Route as PrivateIndexRouteImport } from './routes/_private/index'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
+import { Route as PrivateOnboardingRouteImport } from './routes/_private/onboarding'
+import { Route as PrivateOnboardedRouteImport } from './routes/_private/_onboarded'
+import { Route as PrivateOnboardedIndexRouteImport } from './routes/_private/_onboarded/index'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
@@ -29,15 +31,24 @@ const PrivateRoute = PrivateRouteImport.update({
   id: '/_private',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrivateIndexRoute = PrivateIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PrivateRoute,
-} as any)
 const AuthPathnameRoute = AuthPathnameRouteImport.update({
   id: '/$pathname',
   path: '/$pathname',
   getParentRoute: () => AuthRoute,
+} as any)
+const PrivateOnboardingRoute = PrivateOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => PrivateRoute,
+} as any)
+const PrivateOnboardedRoute = PrivateOnboardedRouteImport.update({
+  id: '/_onboarded',
+  getParentRoute: () => PrivateRoute,
+} as any)
+const PrivateOnboardedIndexRoute = PrivateOnboardedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PrivateOnboardedRoute,
 } as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
@@ -52,27 +63,38 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
+  '/onboarding': typeof PrivateOnboardingRoute
   '/auth/$pathname': typeof AuthPathnameRoute
-  '/': typeof PrivateIndexRoute
+  '/': typeof PrivateOnboardedIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
+  '/onboarding': typeof PrivateOnboardingRoute
   '/auth/$pathname': typeof AuthPathnameRoute
-  '/': typeof PrivateIndexRoute
+  '/': typeof PrivateOnboardedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_private': typeof PrivateRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
+  '/_private/_onboarded': typeof PrivateOnboardedRouteWithChildren
+  '/_private/onboarding': typeof PrivateOnboardingRoute
   '/auth/$pathname': typeof AuthPathnameRoute
-  '/_private/': typeof PrivateIndexRoute
+  '/_private/_onboarded/': typeof PrivateOnboardedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/auth' | '/auth/$pathname' | '/'
+  fullPaths: '/auth' | '/onboarding' | '/auth/$pathname' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/auth/$pathname' | '/'
-  id: '__root__' | '/_private' | '/auth' | '/auth/$pathname' | '/_private/'
+  to: '/auth' | '/onboarding' | '/auth/$pathname' | '/'
+  id:
+    | '__root__'
+    | '/_private'
+    | '/auth'
+    | '/_private/_onboarded'
+    | '/_private/onboarding'
+    | '/auth/$pathname'
+    | '/_private/_onboarded/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -121,19 +143,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_private/': {
-      id: '/_private/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof PrivateIndexRouteImport
-      parentRoute: typeof PrivateRoute
-    }
     '/auth/$pathname': {
       id: '/auth/$pathname'
       path: '/$pathname'
       fullPath: '/auth/$pathname'
       preLoaderRoute: typeof AuthPathnameRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_private/onboarding': {
+      id: '/_private/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof PrivateOnboardingRouteImport
+      parentRoute: typeof PrivateRoute
+    }
+    '/_private/_onboarded': {
+      id: '/_private/_onboarded'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PrivateOnboardedRouteImport
+      parentRoute: typeof PrivateRoute
+    }
+    '/_private/_onboarded/': {
+      id: '/_private/_onboarded/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof PrivateOnboardedIndexRouteImport
+      parentRoute: typeof PrivateOnboardedRoute
     }
   }
 }
@@ -156,12 +192,25 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface PrivateOnboardedRouteChildren {
+  PrivateOnboardedIndexRoute: typeof PrivateOnboardedIndexRoute
+}
+
+const PrivateOnboardedRouteChildren: PrivateOnboardedRouteChildren = {
+  PrivateOnboardedIndexRoute: PrivateOnboardedIndexRoute,
+}
+
+const PrivateOnboardedRouteWithChildren =
+  PrivateOnboardedRoute._addFileChildren(PrivateOnboardedRouteChildren)
+
 interface PrivateRouteChildren {
-  PrivateIndexRoute: typeof PrivateIndexRoute
+  PrivateOnboardedRoute: typeof PrivateOnboardedRouteWithChildren
+  PrivateOnboardingRoute: typeof PrivateOnboardingRoute
 }
 
 const PrivateRouteChildren: PrivateRouteChildren = {
-  PrivateIndexRoute: PrivateIndexRoute,
+  PrivateOnboardedRoute: PrivateOnboardedRouteWithChildren,
+  PrivateOnboardingRoute: PrivateOnboardingRoute,
 }
 
 const PrivateRouteWithChildren =

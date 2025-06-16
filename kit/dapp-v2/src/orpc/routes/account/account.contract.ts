@@ -103,6 +103,16 @@ const read = baseContract
   .input(AccountReadSchema)
   .output(AccountSchema);
 
+const me = baseContract
+  .route({
+    method: "GET",
+    path: "/account/me",
+    description: "Read account information for the authenticated user",
+    successDescription: "Account information retrieved successfully",
+    tags: ["account"],
+  })
+  .output(AccountSchema);
+
 /**
  * Account API contract collection.
  *
@@ -120,4 +130,5 @@ const read = baseContract
 export const accountContract = {
   create,
   read,
+  me,
 };

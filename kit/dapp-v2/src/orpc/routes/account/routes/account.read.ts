@@ -14,7 +14,7 @@ import * as countries from "i18n-iso-countries";
  * Systems represent deployed SMART protocol instances that manage
  * tokenized assets and their associated compliance infrastructure.
  */
-const READ_ACCOUNT_QUERY = theGraphGraphql(`
+export const READ_ACCOUNT_QUERY = theGraphGraphql(`
 query ReadAccountQuery($walletAddress: ID!) {
   account(id: $walletAddress) {
     id
@@ -65,13 +65,13 @@ query ReadAccountQuery($walletAddress: ID!) {
 export const read = onboardedRouter.account.read
   .use(theGraphMiddleware)
   .handler(async ({ input, context, errors }) => {
-    const { walletAddress } = input;
+    const { wallet } = input;
 
     // Execute TheGraph query with pagination and sorting parameters
     const { account } = await context.theGraphClient.request(
       READ_ACCOUNT_QUERY,
       {
-        walletAddress,
+        walletAddress: wallet,
       }
     );
 

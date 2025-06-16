@@ -3,7 +3,7 @@ import { isoCountryCode } from "@/lib/zod/validators/iso-country-code";
 import { z } from "zod/v4";
 
 export const AccountReadSchema = z.object({
-  walletAddress: ethereumAddress.describe(
+  wallet: ethereumAddress.describe(
     "The wallet address of the user to read the account for"
   ),
 });
