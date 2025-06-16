@@ -1,63 +1,121 @@
-import { FlatCompat } from "@eslint/eslintrc";
+import js from "@eslint/js";
 import pluginQuery from "@tanstack/eslint-plugin-query";
+import pluginRouter from "@tanstack/eslint-plugin-router";
+import pluginReact from "eslint-plugin-react";
+import { defineConfig } from "eslint/config";
+import globals from "globals";
+import tseslint from "typescript-eslint";
 
-const compat = new FlatCompat({
-  // import.meta.dirname is available after Node.js v20.11.0
-  baseDirectory: import.meta.dirname,
-});
-const config = [
+export default defineConfig([
   {
-    ignores: ["src/components/ui/**/*"],
+    ignores: [
+      "src/routeTree.gen.ts",
+      ".tanstack/",
+      ".output/",
+      ".nitro/",
+      "dist/",
+      "node_modules/",
+    ],
   },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-  ...pluginQuery.configs["flat/recommended"],
   {
+    files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    ...js.configs.recommended,
+  },
+  {
+    files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+      parser: tseslint.parser,
+    },
+    settings: {
+      react: {
+        version: "19",
+      },
+    },
+  },
+  pluginReact.configs.flat.recommended,
+  // Base TypeScript config without type checking for all files
+  ...tseslint.configs.recommended,
+  ...pluginQuery.configs["flat/recommended"],
+  ...pluginRouter.configs["flat/recommended"],
+  // Type-checked rules only for source files
+  ...tseslint.configs.strictTypeChecked.map((config) => ({
+    ...config,
+    files: ["src/**/*.{ts,mts,cts,tsx}"],
+  })),
+  ...tseslint.configs.stylisticTypeChecked.map((config) => ({
+    ...config,
+    files: ["src/**/*.{ts,mts,cts,tsx}"],
+  })),
+  {
+    files: ["src/**/*.{ts,mts,cts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          name: "next/link",
-          message: "Please import from `@/i18n/routing` instead.",
-        },
-        {
-          name: "next/navigation",
-          importNames: [
-            "redirect",
-            "permanentRedirect",
-            "useRouter",
-            "usePathname",
-          ],
-          message: "Please import from `@/i18n/routing` instead.",
-        },
-      ],
-      "@typescript-eslint/no-import-type-side-effects": "error",
+      // React rules
+      "react/react-in-jsx-scope": "off",
 
-      "@typescript-eslint/array-type": [
+      // TypeScript strict rules
+      "@typescript-eslint/consistent-type-imports": [
         "error",
         {
-          default: "array",
+          prefer: "type-imports",
+          fixStyle: "separate-type-imports",
+          disallowTypeAnnotations: true,
         },
       ],
-      "@typescript-eslint/no-unsafe-return": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/consistent-type-exports": [
+        "error",
+        {
+          fixMixedExportsWithInlineTypeSpecifier: true,
+        },
+      ],
+
+      // Additional strict TypeScript rules
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "react/no-unescaped-entities": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-unsafe-argument": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      // Disable some rules that might be too strict for TanStack Start
+      "@typescript-eslint/only-throw-error": "off",
+      "@typescript-eslint/no-misused-promises": [
+        "error",
         {
-          args: "all",
-          argsIgnorePattern: "^_",
-          caughtErrors: "all",
-          caughtErrorsIgnorePattern: "^_",
-          destructuredArrayIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-          ignoreRestSiblings: true,
+          checksVoidReturn: {
+            attributes: false,
+          },
         },
       ],
     },
   },
-];
-
-export default config;
+  // Basic config for config files
+  {
+    files: ["*.config.{js,mjs,cjs,ts}"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  {
+    files: ["src/lib/settlemint/*.{js,mjs,cjs,ts}"],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+    },
+  },
+  {
+    files: ["**/*.test.{js,mjs,cjs,ts}"],
+    rules: {
+      "@typescript-eslint/no-confusing-void-expression": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+    },
+  },
+]);
