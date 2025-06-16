@@ -15,6 +15,8 @@ import { useTranslation } from "react-i18next";
 const LANGUAGE_NAMES: Record<string, string> = {
   en: "English",
   de: "Deutsch",
+  ar: "العربية",
+  ja: "日本語",
 };
 
 /**

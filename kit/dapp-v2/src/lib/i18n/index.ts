@@ -20,6 +20,10 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
+import arAuthTranslations from "@/locales/ar/auth.json";
+import arGeneralTranslations from "@/locales/ar/general.json";
+import arLanguageTranslations from "@/locales/ar/language.json";
+import arThemeTranslations from "@/locales/ar/theme.json";
 import deAuthTranslations from "@/locales/de/auth.json";
 import deGeneralTranslations from "@/locales/de/general.json";
 import deLanguageTranslations from "@/locales/de/language.json";
@@ -28,6 +32,10 @@ import enAuthTranslations from "@/locales/en/auth.json";
 import enGeneralTranslations from "@/locales/en/general.json";
 import enLanguageTranslations from "@/locales/en/language.json";
 import enThemeTranslations from "@/locales/en/theme.json";
+import jaAuthTranslations from "@/locales/ja/auth.json";
+import jaGeneralTranslations from "@/locales/ja/general.json";
+import jaLanguageTranslations from "@/locales/ja/language.json";
+import jaThemeTranslations from "@/locales/ja/theme.json";
 import "./types";
 
 /**
@@ -59,6 +67,18 @@ export const resources = {
     general: deGeneralTranslations,
     theme: deThemeTranslations,
     language: deLanguageTranslations,
+  },
+  ar: {
+    auth: arAuthTranslations,
+    general: arGeneralTranslations,
+    theme: arThemeTranslations,
+    language: arLanguageTranslations,
+  },
+  ja: {
+    auth: jaAuthTranslations,
+    general: jaGeneralTranslations,
+    theme: jaThemeTranslations,
+    language: jaLanguageTranslations,
   },
 } as const;
 
