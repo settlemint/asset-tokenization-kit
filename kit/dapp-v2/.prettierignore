@@ -12,3 +12,4 @@ next-env.d.ts
 .output/
 .tanstack/
 project.inlang/
+routeTree.gen.ts

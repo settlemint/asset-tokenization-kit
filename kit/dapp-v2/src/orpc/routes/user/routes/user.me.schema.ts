@@ -7,6 +7,7 @@
  */
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { isoCountryCode } from "@/lib/zod/validators/iso-country-code";
 import { z } from "zod/v4";
 
 /**
@@ -20,7 +21,17 @@ import { z } from "zod/v4";
  * const userData: User = {
  *   name: "John Doe",
  *   email: "john@example.com",
- *   wallet: "0x1234567890123456789012345678901234567890"
+ *   wallet: "0x1234567890123456789012345678901234567890",
+ *   country: "US",
+ *   claims: [
+ *     {
+ *       name: "KYC",
+ *       values: {
+ *         "level": "verified",
+ *         "date": "2024-01-01"
+ *       }
+ *     }
+ *   ]
  * };
  * ```
  */
@@ -42,6 +53,20 @@ export const UserMeSchema = z.object({
    * Used for blockchain transactions and ownership verification.
    */
   wallet: ethereumAddress,
+
+  /**
+   * User's country as ISO 3166-1 alpha-2 code.
+   * Used for geolocation and country-specific features.
+   *
+   * @example "US", "GB", "DE", "FR"
+   */
+  country: isoCountryCode.optional(),
+
+  /**
+   * User's identity claims.
+   * Each claim has a name and a set of key-value pairs representing the claim data.
+   */
+  claims: z.record(z.string(), z.record(z.string(), z.string())).optional(),
 });
 
 /**
