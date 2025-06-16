@@ -7,7 +7,6 @@ import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary"
 import { NotFound } from "@/components/error/not-found";
 import { queryClient } from "@/lib/query.client";
 
-
 export function createRouter() {
   return routerWithQueryClient(
     createTanStackRouter({

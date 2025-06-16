@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "bun --bun vite dev",
     "typecheck": "tsc --noEmit",
+    "watch": "tsc --noEmit --watch",
     "build": "bun --bun vite build",
     "shadcn": "bunx --bun shadcn@canary",
     "lint": "eslint . --max-warnings 0",
