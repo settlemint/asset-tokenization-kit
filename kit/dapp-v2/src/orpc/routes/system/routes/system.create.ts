@@ -19,7 +19,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { ar } from "@/orpc/procedures/auth.router";
+import { or } from "@/orpc/procedures/onboarded.router";
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -76,7 +76,7 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
  * });
  * ```
  */
-export const create = ar.system.create
+export const create = or.system.create
   .use(portalMiddleware)
   .handler(async ({ input, context }) => {
     const { contract, verification } = input;
@@ -85,7 +85,7 @@ export const create = ar.system.create
     // TODO: can we improve the error handling here and by default? It will come out as a generic 500 error.
     const result = await context.portalClient.request(CREATE_SYSTEM_MUTATION, {
       address: contract,
-      from: sender.wallet,
+      from: sender.wallet ?? "", // TODO restrict via middleware to onboarded users
       ...(await handleChallenge(sender, verification)),
     });
 

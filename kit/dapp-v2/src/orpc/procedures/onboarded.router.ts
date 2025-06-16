@@ -1,6 +1,5 @@
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { authMiddleware } from "../middlewares/auth/auth.middleware";
-import { pr } from "./public.router";
+import { onboardedMiddleware } from "@/orpc/middlewares/auth/onboarded.middleware";
+import { ar } from "./auth.router";
 
 /**
  * Authenticated ORPC router for protected procedures.
@@ -30,4 +29,4 @@ import { pr } from "./public.router";
  * @see {@link ./public.router} - Public router that this extends
  * @see {@link ../../middlewares/auth/auth.middleware} - Authentication middleware
  */
-export const ar = pr.use(theGraphMiddleware).use(authMiddleware);
+export const or = ar.use(onboardedMiddleware);

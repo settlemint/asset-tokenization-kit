@@ -1,4 +1,5 @@
 import { oc } from "@orpc/contract";
+import { oo } from "@orpc/openapi";
 import { z } from "zod/v4";
 
 /**
@@ -180,4 +181,25 @@ export const bc = oc.errors({
       details: z.unknown().optional(),
     }),
   },
+
+  NOT_ONBOARDED: oo.spec(
+    {
+      message: "User not onboarded",
+      status: 403,
+    },
+    {
+      // OpenAPI security requirement for API documentation
+      security: [{ apiKey: [] }],
+    }
+  ),
+
+  UNAUTHORIZED: oo.spec(
+    {
+      message: "Authentication missing or failed",
+    },
+    {
+      // OpenAPI security requirement for API documentation
+      security: [{ apiKey: [] }],
+    }
+  ),
 });

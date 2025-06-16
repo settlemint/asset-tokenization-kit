@@ -1,7 +1,7 @@
-import type { SessionUser } from "@/lib/auth";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { VerificationCode } from "@/lib/zod/validators/verification-code";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
+import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { ORPCError } from "@orpc/server";
 import { handleWalletVerificationChallenge } from "@settlemint/sdk-portal";
 
@@ -58,12 +58,18 @@ const PORTAL_VERIFICATION_TYPE_MAP = {
  * ```
  */
 export async function handleChallenge(
-  user: SessionUser,
+  user: User,
   verification: {
     code: VerificationCode;
     type: VerificationType;
   }
 ) {
+  if (!user.wallet) {
+    throw new ORPCError("USER_NOT_ONBOARDED", {
+      message: "User not onboarded",
+    });
+  }
+
   const verificationId = getVerificationId(user, verification.type);
 
   if (!verificationId) {
@@ -105,12 +111,12 @@ export async function handleChallenge(
  * @internal
  */
 function getVerificationId(
-  user: SessionUser,
+  user: User,
   verificationType: VerificationType
 ): string | undefined {
   // Extract the underlying string value from the branded type
   const baseType =
     verificationType as unknown as keyof typeof VERIFICATION_ID_MAP;
   const fieldName = VERIFICATION_ID_MAP[baseType];
-  return user[fieldName as keyof SessionUser] as string | undefined;
+  return user[fieldName as keyof User] as string | undefined;
 }

@@ -52,7 +52,7 @@ export const UserMeSchema = z.object({
    * User's Ethereum wallet address.
    * Used for blockchain transactions and ownership verification.
    */
-  wallet: ethereumAddress,
+  wallet: ethereumAddress.nullable().optional(),
 
   /**
    * User's country as ISO 3166-1 alpha-2 code.

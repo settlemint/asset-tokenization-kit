@@ -263,5 +263,5 @@ export type Session = typeof auth.$Infer.Session;
  * for additional type safety when working with blockchain addresses.
  */
 export type SessionUser = Omit<Session["user"], "wallet"> & {
-  wallet: EthereumAddress;
+  wallet?: EthereumAddress | null;
 };

@@ -22,29 +22,6 @@ import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private")({
-  /**
-   * Authentication guard that runs before the route loads.
-   *
-   * This ensures the user is authenticated before any child routes are rendered.
-   * If the user data fetch fails (401/403), the error boundary will handle it
-   * and redirect to sign-in. Successfully fetched user data is made available
-   * to all child routes through the route context.
-   *
-   * @returns User data that will be merged into the route context
-   */
-  // beforeLoad: async ({ context }) => {
-  //   try {
-  //     const user: User = await context.queryClient.ensureQueryData(
-  //       orpc.user.me.queryOptions({})
-  //     );
-  //     return { user };
-  //   } catch {
-  //     throw redirect({
-  //       to: "/auth/$pathname",
-  //       params: { pathname: "sign-in" },
-  //     });
-  //   }
-  // },
   component: LayoutComponent,
 });
 

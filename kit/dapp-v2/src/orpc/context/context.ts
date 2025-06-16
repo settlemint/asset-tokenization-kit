@@ -4,6 +4,8 @@ import type { hasuraClient } from "@/lib/settlemint/hasura";
 import type { client as minioClient } from "@/lib/settlemint/minio";
 import type { portalClient } from "@/lib/settlemint/portal";
 import type { theGraphClient } from "@/lib/settlemint/the-graph";
+import type { ACCOUNT_QUERY } from "@/orpc/middlewares/auth/auth.middleware";
+import type { ResultOf } from "@settlemint/sdk-thegraph";
 import type { getHeaders } from "@tanstack/react-start/server";
 
 /**
@@ -48,6 +50,7 @@ export interface Context {
   auth?: {
     user: SessionUser;
     session: Session;
+    account?: ResultOf<typeof ACCOUNT_QUERY>["account"] | null;
   };
 
   /**

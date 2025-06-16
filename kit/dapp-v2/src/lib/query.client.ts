@@ -77,7 +77,7 @@ const MUTATION_RETRY_DELAY = (attemptIndex: number): number =>
  * Maximum number of retry attempts for failed requests.
  * Limited to 3 to balance reliability with performance.
  */
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 1; // during development, we don't want to retry too many times
 
 /**
  * Enhanced error interface for query operations.

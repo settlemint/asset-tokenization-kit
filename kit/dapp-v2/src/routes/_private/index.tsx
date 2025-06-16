@@ -18,7 +18,6 @@
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/")({
   /**
@@ -33,7 +32,7 @@ export const Route = createFileRoute("/_private/")({
    * The current implementation uses prefetchQuery for non-blocking
    * data loading, allowing the page to render while data loads.
    */
-  loader: ({ context }) => {
+  loader: async ({ context }) => {
     // User data is available from parent _private route
     // const user: User = context.user;
 
@@ -42,6 +41,8 @@ export const Route = createFileRoute("/_private/")({
     void context.queryClient.prefetchQuery(
       orpc.system.list.queryOptions({ input: {} })
     );
+
+    await context.queryClient.ensureQueryData(orpc.user.me.queryOptions());
 
     // Alternative: Blocking data load - ensures data before render
     // Best for critical data needed for initial render
@@ -64,15 +65,15 @@ export const Route = createFileRoute("/_private/")({
  * React Suspense boundaries for loading states.
  */
 function Home() {
-  const { t } = useTranslation();
-  const usersQuery = useSuspenseQuery(
+  const { data: systems } = useSuspenseQuery(
     orpc.system.list.queryOptions({ input: {} })
   );
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
   return (
     <div className="p-2">
-      <h3>{t("example_message", { username: "John Doe" })}</h3>
-      <pre>{JSON.stringify(usersQuery.data, null, 2)}</pre>
+      <h3>{user.name}</h3>
+      <pre>{JSON.stringify(systems, null, 2)}</pre>
     </div>
   );
 }
