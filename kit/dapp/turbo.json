@@ -19,6 +19,9 @@
     "build": {
       "outputs": [".next/**", "!.next/cache/**"]
     },
+    "publish": {
+      "dependsOn": ["build"]
+    },
     "db:export": {
       "inputs": ["src/lib/db/**"]
     },
