@@ -81,6 +81,14 @@ function OnboardingComponent() {
     })
   );
 
+  const { mutate: createSystem } = useMutation(
+    orpc.system.create.mutationOptions({
+      onSuccess: () => {
+        toast.success("System created");
+      },
+    })
+  );
+
   return (
     <OnboardingGuard require="not-onboarded">
       <div className="min-h-screen w-full bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
@@ -124,10 +132,18 @@ function OnboardingComponent() {
                   >
                     Generate a new wallet
                   </Button>
+                  {/* <Button
+                    disabled={!!user.wallet}
+                    onClick={() => {
+                      // generateWallet({ userId: user.id });
+                    }}
+                  >
+                    Secure your wallet with MFA
+                  </Button> */}
                   <Button
                     disabled={!!systemAddress}
                     onClick={() => {
-                      generateWallet({ userId: user.id });
+                      createSystem({});
                     }}
                   >
                     Deploy a new SMART system

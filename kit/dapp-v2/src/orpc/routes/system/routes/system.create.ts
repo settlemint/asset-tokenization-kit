@@ -17,7 +17,6 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 
@@ -32,12 +31,10 @@ import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
  * @returns transactionHash - The blockchain transaction hash for tracking
  */
 const CREATE_SYSTEM_MUTATION = portalGraphql(`
-  mutation CreateSystemMutation($address: String!, $from: String!, $challengeResponse: String!, $verificationId: String) {
+  mutation CreateSystemMutation($address: String!, $from: String!) {
     ATKSystemFactoryCreateSystem(
       address: $address
       from: $from
-      challengeResponse: $challengeResponse
-      verificationId: $verificationId
     ) {
       transactionHash
     }
@@ -79,14 +76,14 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
 export const create = onboardedRouter.system.create
   .use(portalMiddleware)
   .handler(async ({ input, context }) => {
-    const { contract, verification } = input;
+    const { contract } = input;
     const sender = context.auth.user;
 
     // TODO: can we improve the error handling here and by default? It will come out as a generic 500 error.
     const result = await context.portalClient.request(CREATE_SYSTEM_MUTATION, {
       address: contract,
       from: sender.wallet,
-      ...(await handleChallenge(sender, verification)),
+      // ...(await handleChallenge(sender, verification)),
     });
 
     return getEthereumHash(

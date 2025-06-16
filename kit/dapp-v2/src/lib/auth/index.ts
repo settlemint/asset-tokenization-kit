@@ -110,57 +110,6 @@ const getAuthConfig = serverOnly(() =>
           unique: true,
           input: false,
         },
-
-        /**
-         * Flag indicating if pincode authentication is enabled for this user.
-         */
-        pincodeEnabled: {
-          type: "boolean",
-          required: false,
-          defaultValue: false,
-          input: false,
-        },
-
-        /**
-         * Verification ID for pincode authentication with SettleMint Portal.
-         */
-        pincodeVerificationId: {
-          type: "string",
-          required: false,
-          unique: true,
-          input: false,
-        },
-
-        /**
-         * Verification ID for two-factor authentication (TOTP).
-         */
-        twoFactorVerificationId: {
-          type: "string",
-          required: false,
-          unique: true,
-          input: false,
-        },
-
-        /**
-         * Verification ID for secret code authentication.
-         */
-        secretCodeVerificationId: {
-          type: "string",
-          required: false,
-          unique: true,
-          input: false,
-        },
-
-        /**
-         * Flag indicating if the user has completed initial onboarding.
-         * Used to guide new users through wallet setup and verification.
-         */
-        initialOnboardingFinished: {
-          type: "boolean",
-          required: false,
-          defaultValue: false,
-          input: false,
-        },
       },
     },
     /**

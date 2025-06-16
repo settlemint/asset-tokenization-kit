@@ -45,9 +45,9 @@ describe("challenge-response", () => {
   const mockUser: SessionUser = {
     id: "user-123",
     email: "test@example.com",
-    pincodeVerificationId: "pincode-verification-id",
-    secretCodeVerificationId: "secret-code-verification-id",
-    twoFactorVerificationId: "two-factor-verification-id",
+    // pincodeVerificationId: "pincode-verification-id",
+    // secretCodeVerificationId: "secret-code-verification-id",
+    // twoFactorVerificationId: "two-factor-verification-id",
     wallet: mockWalletAddress,
   } as SessionUser;
 
