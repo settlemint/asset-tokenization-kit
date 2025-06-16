@@ -20,7 +20,8 @@ import {
     InvalidMerkleRoot,
     InvalidClaimTrackerAddress,
     InvalidClaimAmount,
-    ZeroClaimAmount
+    ZeroClaimAmount,
+    BatchSizeExceedsLimit
 } from "./ATKAirdropErrors.sol";
 
 /// @title ATK Airdrop (Abstract)
@@ -44,6 +45,23 @@ import {
 /// It is not meant to be deployed directly.
 abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, ERC2771ContextUpgradeable {
     using SafeERC20 for IERC20;
+
+    // --- Constants ---
+
+    /// @notice Maximum number of items allowed in batch operations to prevent OOM and gas limit issues.
+    /// @dev Set to 100 to balance usability with gas efficiency.
+    uint256 public constant MAX_BATCH_SIZE = 100;
+
+    // --- Modifiers ---
+
+    /// @notice Modifier to check if batch size is within allowed limits.
+    /// @param batchSize The size of the batch to validate.
+    modifier checkBatchSize(uint256 batchSize) {
+        if (batchSize > MAX_BATCH_SIZE) {
+            revert BatchSizeExceedsLimit();
+        }
+        _;
+    }
 
     // --- Storage Variables ---
 
@@ -271,6 +289,7 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
         bytes32[][] calldata merkleProofs
     )
         internal
+        checkBatchSize(indices.length)
         returns (uint256 totalTransferred)
     {
         if (

@@ -20,7 +20,7 @@ import {
     VestingNotInitialized,
     VestingAlreadyInitialized
 } from "./ATKVestingAirdropErrors.sol";
-import { InvalidInputArrayLengths, InvalidMerkleProof } from "../ATKAirdropErrors.sol";
+import { InvalidInputArrayLengths, InvalidMerkleProof, BatchSizeExceedsLimit } from "../ATKAirdropErrors.sol";
 
 /// @title ATK Vesting Airdrop Implementation
 /// @author SettleMint Tokenization Services
@@ -200,6 +200,7 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
     )
         external
         nonReentrant
+        checkBatchSize(indices.length)
     {
         if (indices.length != totalAmounts.length || totalAmounts.length != merkleProofs.length) {
             revert InvalidInputArrayLengths();
@@ -272,6 +273,7 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
         external
         override(ATKAirdrop, IATKAirdrop)
         nonReentrant
+        checkBatchSize(indices.length)
     {
         if (indices.length != totalAmounts.length || totalAmounts.length != merkleProofs.length) {
             revert InvalidInputArrayLengths();

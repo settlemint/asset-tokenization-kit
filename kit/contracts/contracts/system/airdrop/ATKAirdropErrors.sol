@@ -32,3 +32,6 @@ error InvalidClaimAmount();
 
 /// @notice Error indicating that the claim amount is zero.
 error ZeroClaimAmount();
+
+/// @notice Error indicating that the batch size exceeds the maximum allowed limit.
+error BatchSizeExceedsLimit();
