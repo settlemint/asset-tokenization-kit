@@ -43,7 +43,7 @@ export const Route = createFileRoute("/_private")({
     } catch {
       throw redirect({
         to: "/auth/$pathname",
-        params: { pathname: "/sign-in" },
+        params: { pathname: "sign-in" },
       });
     }
   },
