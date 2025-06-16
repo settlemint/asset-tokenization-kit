@@ -27,7 +27,11 @@ import {
     VestingAlreadyInitialized,
     CliffExceedsVestingDuration
 } from "../../../contracts/system/airdrop/vesting-airdrop/ATKVestingAirdropErrors.sol";
-import { InvalidMerkleProof, InvalidInputArrayLengths } from "../../../contracts/system/airdrop/ATKAirdropErrors.sol";
+import {
+    InvalidMerkleProof,
+    InvalidInputArrayLengths,
+    BatchSizeExceedsLimit
+} from "../../../contracts/system/airdrop/ATKAirdropErrors.sol";
 
 /// @title ATK Vesting Airdrop Test
 /// @notice Comprehensive test suite for ATKVestingAirdropImplementation contract
@@ -324,6 +328,31 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         vestingAirdrop.batchInitializeVesting(indices_, amounts, proofs_);
     }
 
+    function testBatchInitializeVestingExceedsMaxBatchSize() public {
+        (uint256[] memory indices_, uint256[] memory amounts, bytes32[][] memory proofs_) = _createDummyBatchData(101);
+
+        vm.expectRevert(BatchSizeExceedsLimit.selector);
+        vm.prank(user1);
+        vestingAirdrop.batchInitializeVesting(indices_, amounts, proofs_);
+    }
+
+    function testBatchClaimExceedsMaxBatchSize() public {
+        (uint256[] memory indices_, uint256[] memory amounts, bytes32[][] memory proofs_) = _createDummyBatchData(101);
+
+        vm.expectRevert(BatchSizeExceedsLimit.selector);
+        vm.prank(user1);
+        vestingAirdrop.batchClaim(indices_, amounts, proofs_);
+    }
+
+    function testBatchOperationsWithMaxAllowedSize() public {
+        (uint256[] memory indices_, uint256[] memory amounts, bytes32[][] memory proofs_) = _createDummyBatchData(100);
+
+        // This should fail on merkle proof verification, not on batch size limit
+        vm.expectRevert(InvalidMerkleProof.selector);
+        vm.prank(user1);
+        vestingAirdrop.batchInitializeVesting(indices_, amounts, proofs_);
+    }
+
     function testIsVestingInitializedNotInitialized() public view {
         assertFalse(vestingAirdrop.isVestingInitialized(indices[user1]));
     }
@@ -411,5 +440,27 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
 
     function _hashPair(bytes32 a, bytes32 b) internal pure returns (bytes32) {
         return a < b ? keccak256(abi.encodePacked(a, b)) : keccak256(abi.encodePacked(b, a));
+    }
+
+    /// @dev Helper function to create dummy batch data for testing
+    /// @param size The size of arrays to create
+    /// @return dummyIndices Array of dummy indices
+    /// @return dummyAmounts Array of dummy amounts
+    /// @return dummyProofs Array of dummy merkle proofs
+    function _createDummyBatchData(uint256 size)
+        internal
+        pure
+        returns (uint256[] memory dummyIndices, uint256[] memory dummyAmounts, bytes32[][] memory dummyProofs)
+    {
+        dummyIndices = new uint256[](size);
+        dummyAmounts = new uint256[](size);
+        dummyProofs = new bytes32[][](size);
+
+        for (uint256 i = 0; i < size; i++) {
+            dummyIndices[i] = i;
+            dummyAmounts[i] = 1 ether;
+            dummyProofs[i] = new bytes32[](1);
+            dummyProofs[i][0] = bytes32(i);
+        }
     }
 }
