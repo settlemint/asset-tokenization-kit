@@ -17,7 +17,7 @@
       "outputs": ["*-cache.d.ts"]
     },
     "build": {
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".output/**"]
     },
     "publish": {
       "dependsOn": ["build"]
