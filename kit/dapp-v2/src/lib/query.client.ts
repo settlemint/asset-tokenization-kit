@@ -1,11 +1,11 @@
 /**
  * TanStack Query Client Configuration
- * 
+ *
  * This module configures and exports the TanStack Query (formerly React Query)
  * client used throughout the application for server state management. The client
  * handles data fetching, caching, synchronization, and updates with a powerful
  * set of features optimized for modern React applications.
- * 
+ *
  * Key features configured:
  * - Intelligent caching with configurable stale times
  * - Automatic background refetching
@@ -15,19 +15,19 @@
  * - Offline support with request queuing
  * - Window focus refetching
  * - Network status monitoring
- * 
+ *
  * The configuration is optimized for blockchain applications where:
  * - Data freshness is important but not real-time critical
  * - Network requests can be expensive (RPC calls)
  * - Users expect responsive UI with cached data
  * - Background updates maintain data consistency
- * 
+ *
  * @example
  * ```typescript
  * // Using the query client in a component
  * import { useQuery } from '@tanstack/react-query';
  * import { orpc } from '@/orpc';
- * 
+ *
  * function UserProfile() {
  *   const { data, isLoading, error } = useQuery({
  *     queryKey: ['user', 'profile'],
@@ -35,12 +35,15 @@
  *   });
  * }
  * ```
- * 
+ *
  * @see {@link https://tanstack.com/query} - TanStack Query documentation
  * @see {@link ../orpc} - ORPC client integration
  */
 
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
+import { persistQueryClient } from "@tanstack/react-query-persist-client";
+import superjson from "superjson";
 
 /**
  * Query cache configuration constants.
@@ -103,6 +106,7 @@ export const queryClient = new QueryClient({
 
       // Offline-first strategy for better UX when network is unreliable
       networkMode: "offlineFirst",
+      structuralSharing: true,
 
       /**
        * Smart retry logic for queries.
@@ -133,6 +137,8 @@ export const queryClient = new QueryClient({
 
       // How long before data is considered stale
       staleTime: QUERY_STALE_TIME,
+
+      placeholderData: (previousData: unknown) => previousData,
 
       /**
        * Optimized refetch behavior on component mount.
@@ -174,3 +180,32 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+/**
+ * Storage persister for offline support
+ */
+const persister = createSyncStoragePersister({
+  storage: typeof window !== "undefined" ? window.localStorage : undefined,
+  key: "atk-query-cache",
+  throttleTime: 1000,
+  serialize: (data) => superjson.stringify(data),
+  deserialize: (data) => superjson.parse(data),
+});
+
+/**
+ * Persist queries for offline support
+ */
+if (typeof window !== "undefined") {
+  void persistQueryClient({
+    queryClient,
+    persister,
+    maxAge: QUERY_CACHE_TIME,
+    buster: process.env.BUILD_ID ?? "",
+    dehydrateOptions: {
+      shouldDehydrateQuery: (query) => {
+        // Only persist successful queries
+        return query.state.status === "success";
+      },
+    },
+  });
+}

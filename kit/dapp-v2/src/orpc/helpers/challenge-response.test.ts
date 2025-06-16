@@ -1,17 +1,17 @@
 /**
  * Test Suite for Challenge-Response Authentication Helper
- * 
+ *
  * This test suite verifies the functionality of the challenge-response authentication
  * mechanism, which handles various verification methods (pincode, secret code, and
  * two-factor authentication) for wallet ownership verification.
- * 
+ *
  * The tests cover:
  * - Successful verification flows for all authentication types
  * - Error handling for missing verification IDs
  * - Error handling for portal API failures
  * - Proper error type creation and properties
  * - Correct mapping of verification types to portal API expectations
- * 
+ *
  * @see {@link ./challenge-response} - Implementation being tested
  */
 

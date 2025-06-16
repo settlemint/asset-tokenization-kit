@@ -1,18 +1,18 @@
 /**
  * Root Route Component
- * 
+ *
  * This module defines the application's root route, which serves as the foundation
  * for the entire route hierarchy. It establishes:
- * 
+ *
  * - HTML document structure and meta tags
  * - Global providers and application-wide components
  * - Error and not-found boundary components
  * - Theme initialization to prevent flash of unstyled content
  * - Development tools integration
- * 
+ *
  * The root route wraps all other routes and provides essential context like
  * QueryClient for data fetching throughout the application.
- * 
+ *
  * @see {@link https://tanstack.com/router/latest/docs/guide/route-trees#the-root-route} - TanStack Router root routes
  */
 
@@ -90,7 +90,7 @@ export const Route = createRootRouteWithContext<{
 
 /**
  * Root component that renders the application structure.
- * 
+ *
  * This component serves as the entry point for the route tree, wrapping
  * all child routes with the RootDocument component that provides the
  * HTML structure and global providers.
@@ -105,16 +105,16 @@ function RootComponent() {
 
 /**
  * Document wrapper component that provides the HTML structure.
- * 
+ *
  * This component renders the complete HTML document including:
  * - Theme initialization script to prevent FOUC (Flash of Unstyled Content)
  * - Global providers for authentication, theming, and internationalization
  * - Development tools in development mode
  * - Toast notifications container
- * 
+ *
  * The theme script runs before React hydration to immediately apply the
  * user's theme preference, preventing any visual flicker during page load.
- * 
+ *
  * @param children - The route content to render within the document
  */
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {

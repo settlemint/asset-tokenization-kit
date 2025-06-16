@@ -1,10 +1,10 @@
 /**
  * Current User Handler
- * 
+ *
  * This handler returns information about the currently authenticated user.
  * It provides a simple way for clients to fetch the logged-in user's profile
  * data without needing to manage session state directly.
- * 
+ *
  * @see {@link ../user.me.schema} - Output schema definition
  * @see {@link @/orpc/procedures/auth.router} - Authentication requirements
  */
@@ -34,10 +34,10 @@ import { ar } from "@/orpc/procedures/auth.router";
  * // Client usage:
  * const user = await orpc.user.me.query();
  * console.log(`Welcome ${user.name}!`);
- * 
+ *
  * // Display wallet address
  * console.log(`Wallet: ${user.wallet}`);
- * 
+ *
  * // Use in React component
  * const { data: user, isLoading } = orpc.user.me.useQuery();
  * ```

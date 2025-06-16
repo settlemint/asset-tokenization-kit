@@ -1,19 +1,19 @@
 /**
  * Transaction Tracking Handler
- * 
+ *
  * This handler implements real-time blockchain transaction tracking using Server-Sent Events.
  * It monitors transactions through two distinct phases:
- * 
+ *
  * 1. **Transaction Confirmation**: Polls the blockchain via Portal GraphQL to check if
  *    the transaction has been mined and included in a block.
- * 
+ *
  * 2. **Indexing Confirmation**: After blockchain confirmation, monitors TheGraph indexing
  *    service to ensure the transaction's effects are queryable in the subgraph.
- * 
+ *
  * The two-phase approach ensures that clients can safely query indexed data immediately
  * after receiving the final confirmation, preventing race conditions where blockchain
  * data exists but hasn't been indexed yet.
- * 
+ *
  * @see {@link ./transaction.track.schema} - Input/output schemas
  * @see {@link @/orpc/procedures/auth.router} - Authentication requirements
  */
@@ -27,7 +27,7 @@ import { ar } from "../../../procedures/auth.router";
 
 /**
  * GraphQL query to fetch transaction receipt from the blockchain.
- * 
+ *
  * Retrieves transaction status and block information needed to verify
  * transaction completion and track indexing progress.
  */
@@ -46,7 +46,7 @@ const GET_TRANSACTION_QUERY = portalGraphql(`
 
 /**
  * GraphQL query to check TheGraph indexing status.
- * 
+ *
  * Returns the latest block number that has been indexed, allowing us
  * to determine when transaction data is available for querying.
  */
@@ -70,19 +70,19 @@ const TIMEOUT_MS = 180_000; // Total timeout for indexing (3 minutes)
 
 /**
  * Tracks blockchain transaction status and indexing progress.
- * 
+ *
  * This generator function implements a two-phase tracking system that monitors
  * transactions from submission through to full indexing completion. It yields
  * status updates as Server-Sent Events, providing real-time feedback to clients.
- * 
+ *
  * @auth Required - User must be authenticated
  * @middleware portalMiddleware - Provides Portal GraphQL client
- * 
+ *
  * @param input.transactionHash - The transaction to track
  * @param input.messages - Customizable status messages for UX
- * 
+ *
  * @yields Transaction status updates (pending, confirmed, or failed)
- * 
+ *
  * @example
  * ```typescript
  * // Client-side consumption
@@ -106,7 +106,7 @@ export const track = ar.transaction.track
           >["receipt"]
         >
       | undefined = undefined;
-      
+
     // Poll for transaction receipt with exponential backoff
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       const { getTransaction } = await context.portalClient.request(
@@ -117,7 +117,7 @@ export const track = ar.transaction.track
       );
 
       receipt = getTransaction?.receipt ?? undefined;
-      
+
       // Transaction not yet mined, continue polling
       if (!receipt) {
         yield {

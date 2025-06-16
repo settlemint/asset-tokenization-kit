@@ -12,7 +12,7 @@ import { track } from "./routes/transaction.track";
  *
  * The router is designed to be extended with additional transaction management
  * endpoints such as transaction history, gas estimation, and transaction simulation.
- * 
+ *
  * @see {@link ./transaction.contract} - Type-safe contract definitions
  * @see {@link ./routes/transaction.track} - Transaction tracking implementation
  */

@@ -1,16 +1,16 @@
 /**
  * Client-Side Authentication Configuration
- * 
+ *
  * This module configures the client-side authentication system using Better Auth.
  * It creates a type-safe authentication client that mirrors the server-side
  * configuration, ensuring consistency across the application.
- * 
+ *
  * The client is configured with multiple authentication plugins to support:
  * - Admin functionality for user management
  * - API key authentication for programmatic access
  * - Passkey/WebAuthn support for passwordless authentication
  * - Custom user fields (wallet, pincode settings, etc.) via type inference
- * 
+ *
  * @see {@link ./index} - Server-side authentication configuration
  * @see https://better-auth.com - Better Auth documentation
  */
@@ -26,25 +26,25 @@ import type { auth } from ".";
 
 /**
  * The main authentication client instance for the application.
- * 
+ *
  * This client provides React hooks and utilities for:
  * - User authentication (sign in, sign up, sign out)
  * - Session management
  * - API key operations
  * - Admin user management
  * - Passkey/WebAuthn authentication
- * 
+ *
  * The client automatically includes credentials with requests and
  * manages authentication state across the application.
- * 
+ *
  * @example
  * ```typescript
  * // In a React component
  * import { authClient } from '@/lib/auth/auth.client';
- * 
+ *
  * function LoginComponent() {
  *   const { signIn } = authClient.useSignIn();
- *   
+ *
  *   const handleLogin = async () => {
  *     await signIn.email({
  *       email: 'user@example.com',
@@ -66,7 +66,7 @@ export const authClient = createAuthClient({
      * - verification IDs for different authentication methods
      */
     inferAdditionalFields<typeof auth>(),
-    
+
     /**
      * Admin plugin for user management operations.
      * Provides functionality for admin users to:
@@ -75,7 +75,7 @@ export const authClient = createAuthClient({
      * - Manage user accounts
      */
     adminClient(),
-    
+
     /**
      * API key plugin for programmatic access.
      * Enables:
@@ -84,7 +84,7 @@ export const authClient = createAuthClient({
      * - Revoking and rotating keys
      */
     apiKeyClient(),
-    
+
     /**
      * Passkey plugin for WebAuthn support.
      * Provides passwordless authentication using:

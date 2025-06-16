@@ -1,6 +1,6 @@
 /**
  * Server-Side Authentication Configuration
- * 
+ *
  * This module configures the server-side authentication system using Better Auth.
  * It provides a comprehensive authentication solution with support for:
  * - Email/password authentication
@@ -9,10 +9,10 @@
  * - Multi-factor authentication (pincode, 2FA, secret code)
  * - Admin functionality for user management
  * - Session management with secure cookie handling
- * 
+ *
  * The configuration includes custom user fields specific to the blockchain
  * application, such as wallet addresses and various verification methods.
- * 
+ *
  * @see {@link ./auth.client} - Client-side authentication configuration
  * @see {@link ../db/schemas/auth} - Database schema for authentication
  */
@@ -31,7 +31,7 @@ import { env } from "../env";
 
 /**
  * Creates the authentication configuration.
- * 
+ *
  * This function is wrapped with `serverOnly` to ensure it only runs on the server,
  * preventing sensitive configuration like secrets from being exposed to the client.
  */
@@ -41,25 +41,25 @@ const getAuthConfig = serverOnly(() =>
      * Application name used in authentication flows and emails.
      */
     appName: metadata.title,
-    
+
     /**
      * Secret key for signing tokens and cookies.
      * Uses the Hasura admin secret for consistency across services.
      */
     secret: env.SETTLEMINT_HASURA_ADMIN_SECRET,
-    
+
     /**
      * Base URL for the authentication endpoints.
      * Used for generating absolute URLs in emails and redirects.
      */
     baseURL: env.APP_URL,
-    
+
     /**
      * Trusted origins for CORS configuration.
      * Only included if APP_URL is defined to prevent development issues.
      */
     ...(env.APP_URL && { trustedOrigins: [env.APP_URL] }),
-    
+
     /**
      * Database adapter configuration using Drizzle ORM.
      * Connects authentication to the PostgreSQL database.
@@ -76,7 +76,7 @@ const getAuthConfig = serverOnly(() =>
       enabled: true,
       requireEmailVerification: false,
     },
-    
+
     /**
      * User management configuration with custom fields for blockchain integration.
      */
@@ -87,14 +87,14 @@ const getAuthConfig = serverOnly(() =>
       deleteUser: {
         enabled: true,
       },
-      
+
       /**
        * Allow users to change their email addresses.
        */
       changeEmail: {
         enabled: true,
       },
-      
+
       /**
        * Custom user fields for blockchain and multi-factor authentication.
        * All fields are set to input: false to prevent direct user modification.
@@ -110,7 +110,7 @@ const getAuthConfig = serverOnly(() =>
           unique: true,
           input: false,
         },
-        
+
         /**
          * Flag indicating if pincode authentication is enabled for this user.
          */
@@ -120,7 +120,7 @@ const getAuthConfig = serverOnly(() =>
           defaultValue: false,
           input: false,
         },
-        
+
         /**
          * Verification ID for pincode authentication with SettleMint Portal.
          */
@@ -130,7 +130,7 @@ const getAuthConfig = serverOnly(() =>
           unique: true,
           input: false,
         },
-        
+
         /**
          * Verification ID for two-factor authentication (TOTP).
          */
@@ -140,7 +140,7 @@ const getAuthConfig = serverOnly(() =>
           unique: true,
           input: false,
         },
-        
+
         /**
          * Verification ID for secret code authentication.
          */
@@ -150,7 +150,7 @@ const getAuthConfig = serverOnly(() =>
           unique: true,
           input: false,
         },
-        
+
         /**
          * Flag indicating if the user has completed initial onboarding.
          * Used to guide new users through wallet setup and verification.
@@ -181,7 +181,7 @@ const getAuthConfig = serverOnly(() =>
         maxAge: 10 * 60, // 10 minutes
       },
     },
-    
+
     /**
      * Rate limiting configuration to prevent abuse.
      */
@@ -189,7 +189,7 @@ const getAuthConfig = serverOnly(() =>
       window: 10, // time window in seconds
       max: 100, // max requests in the window
     },
-    
+
     /**
      * Authentication plugins for extended functionality.
      */
@@ -198,7 +198,7 @@ const getAuthConfig = serverOnly(() =>
        * Admin plugin for user management capabilities.
        */
       admin(),
-      
+
       /**
        * API key plugin configuration for programmatic access.
        */
@@ -217,7 +217,7 @@ const getAuthConfig = serverOnly(() =>
           },
         },
       }),
-      
+
       /**
        * Passkey plugin for WebAuthn support.
        * Uses the application name as the relying party name.
@@ -225,12 +225,12 @@ const getAuthConfig = serverOnly(() =>
       passkey({
         rpName: metadata.title,
       }),
-      
+
       /**
        * OpenAPI plugin for API documentation generation.
        */
       openAPI(),
-      
+
       /**
        * React Start cookie integration for SSR support.
        */
@@ -241,7 +241,7 @@ const getAuthConfig = serverOnly(() =>
 
 /**
  * The main authentication instance.
- * 
+ *
  * This instance is used throughout the server-side application for:
  * - Authenticating users
  * - Managing sessions
@@ -258,7 +258,7 @@ export type Session = typeof auth.$Infer.Session;
 
 /**
  * Enhanced type for session users with proper wallet typing.
- * 
+ *
  * The wallet field is overridden to use the branded EthereumAddress type
  * for additional type safety when working with blockchain addresses.
  */

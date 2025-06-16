@@ -1,13 +1,13 @@
 /**
  * User Management Contract
- * 
+ *
  * This contract defines the type-safe interfaces for user-related operations.
  * It provides endpoints for accessing and managing user information, starting
  * with the current authenticated user's profile data.
- * 
+ *
  * All endpoints in this contract require authentication, ensuring that user
  * data is properly protected and only accessible to authorized users.
- * 
+ *
  * @see {@link @/orpc/procedures/auth.contract} - Base authenticated contract
  * @see {@link ./user.router} - Implementation router
  */
@@ -17,17 +17,17 @@ import { ac } from "../../procedures/auth.contract";
 
 /**
  * Get current authenticated user information.
- * 
+ *
  * This endpoint returns comprehensive information about the currently
  * authenticated user, including their profile data, wallet address,
  * and verification settings.
- * 
+ *
  * @auth Required - User must be authenticated
  * @method GET
  * @endpoint /user/me
- * 
+ *
  * @returns UserMeSchema - Complete user profile information
- * 
+ *
  * @example
  * ```typescript
  * // Fetch current user

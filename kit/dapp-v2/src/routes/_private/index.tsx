@@ -1,16 +1,16 @@
 /**
  * Private Dashboard Home Page
- * 
+ *
  * This module defines the home page for authenticated users, serving as the
  * landing page after successful authentication. It demonstrates various data
  * fetching patterns available in TanStack Router with React Query.
- * 
+ *
  * The page showcases:
  * - Accessing authenticated user data from route context
  * - Different data loading strategies (prefetch vs. ensure)
  * - Internationalization with react-i18next
  * - Suspense-based data fetching with React Query
- * 
+ *
  * @see {@link https://tanstack.com/router/latest/docs/guide/data-loading} - TanStack Router data loading
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
@@ -23,13 +23,13 @@ import { useTranslation } from "react-i18next";
 export const Route = createFileRoute("/_private/")({
   /**
    * Data loader that runs when navigating to this route.
-   * 
+   *
    * Demonstrates different data loading strategies:
    * 1. Accessing user data from parent route context
    * 2. Prefetching data for better perceived performance
    * 3. Ensuring data is loaded before rendering (blocking)
    * 4. Returning data or promises for component consumption
-   * 
+   *
    * The current implementation uses prefetchQuery for non-blocking
    * data loading, allowing the page to render while data loads.
    */
@@ -58,7 +58,7 @@ export const Route = createFileRoute("/_private/")({
 
 /**
  * Home page component for authenticated users.
- * 
+ *
  * Displays a welcome message and system data fetched via ORPC.
  * Uses suspense mode for data fetching, which integrates with
  * React Suspense boundaries for loading states.
