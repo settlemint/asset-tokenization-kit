@@ -1,16 +1,10 @@
-FROM node:24.2.0-alpine
+FROM oven/bun:1.2.16 AS base
+WORKDIR /usr/src/app
 
-LABEL org.opencontainers.image.source="https://github.com/settlemint/asset-tokenization-kit"
+COPY .output/ /usr/src/app
+RUN cd /usr/src/app/server && bun install --frozen-lockfile
 
+EXPOSE 3000/tcp
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-
-COPY --chmod=0777 .next/standalone ./
-COPY --chmod=0777 public ./kit/dapp/public
-COPY --chmod=0777 .next/static ./kit/dapp/.next/static
-
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
-ENV NODE_ENV=production
-
-CMD ["node", "kit/dapp/server.js"]
+USER bun
+ENTRYPOINT [ "bun", "run", "server/index.ts" ]
