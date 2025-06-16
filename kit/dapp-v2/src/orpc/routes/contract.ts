@@ -1,3 +1,4 @@
+import { userContract } from "@/orpc/routes/user/user.contract";
 import { systemContract } from "./system/system.contract";
 import { transactionContract } from "./transaction/transaction.contract";
 
@@ -41,4 +42,14 @@ export const contract = {
    * @see {@link ./transaction/transaction.router} - Corresponding router implementation
    */
   transaction: transactionContract,
+
+  /**
+   * User-related API contract.
+   *
+   * Contains type definitions for user-related procedures.
+   *
+   * @see {@link ./user/user.contract} - User contract implementation
+   * @see {@link ./user/user.router} - Corresponding router implementation
+   */
+  user: userContract,
 };

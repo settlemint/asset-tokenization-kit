@@ -37,4 +37,12 @@ export const router = br.router({
   transaction: br.transaction.lazy(
     () => import("./transaction/transaction.router")
   ),
+
+  /**
+   * User-related API procedures.
+   *
+   * Lazy-loaded module containing user-related operations such as
+   * querying and managing user-related resources.
+   */
+  user: br.user.lazy(() => import("./user/user.router")),
 });

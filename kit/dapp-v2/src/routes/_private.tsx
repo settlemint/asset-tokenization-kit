@@ -1,9 +1,16 @@
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { orpc } from "@/orpc";
 import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private")({
+  beforeLoad: async ({ context }) => {
+    const user = await context.queryClient.ensureQueryData(
+      orpc.user.me.queryOptions({})
+    );
+    return { user };
+  },
   component: LayoutComponent,
 });
 
