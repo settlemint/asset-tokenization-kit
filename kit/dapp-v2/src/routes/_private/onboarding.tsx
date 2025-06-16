@@ -32,8 +32,10 @@ import {
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
+import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -49,13 +51,19 @@ export const Route = createFileRoute("/_private/onboarding")({
 function OnboardingComponent() {
   const { t } = useTranslation(["onboarding", "general"]);
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+  const { sessionKey } = useContext(AuthQueryContext);
 
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({
       onSuccess: () => {
         toast.success("Wallet generated");
         void queryClient.invalidateQueries({
-          queryKey: orpc.user.me.queryOptions().queryKey,
+          queryKey: sessionKey,
+          refetchType: "all",
+        });
+        void queryClient.invalidateQueries({
+          queryKey: orpc.user.me.queryKey(),
+          refetchType: "all",
         });
       },
     })

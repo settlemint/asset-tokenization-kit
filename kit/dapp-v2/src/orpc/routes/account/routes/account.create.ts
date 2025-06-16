@@ -1,4 +1,3 @@
-import { auth } from "@/lib/auth";
 import { user } from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { portalGraphql } from "@/lib/settlemint/portal";
@@ -53,21 +52,6 @@ export const create = authRouter.account.create
         wallet: createWallet.address,
       })
       .where(eq(user.id, sender.id));
-
-    const headers = new Headers();
-    for (const [key, value] of Object.entries(context.headers)) {
-      if (value) {
-        headers.append(key, value);
-      }
-    }
-
-    // Refresh the cookie cache
-    await auth.api.getSession({
-      headers,
-      query: {
-        disableCookieCache: true,
-      },
-    });
 
     return createWallet.address;
   });
