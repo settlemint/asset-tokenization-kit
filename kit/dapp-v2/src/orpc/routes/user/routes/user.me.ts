@@ -9,8 +9,27 @@
  * @see {@link @/orpc/procedures/auth.router} - Authentication requirements
  */
 
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import * as countries from "i18n-iso-countries";
+
+const ACCOUNT_QUERY = theGraphGraphql(`
+  query AccountQuery($id: ID!) {
+    account(id: $id) {
+      country
+      identity {
+        claims(where: {revoked: false}) {
+          name
+          values {
+            key
+            value
+          }
+        }
+      }
+    }
+}
+`);
 
 /**
  * Get current authenticated user information.
@@ -43,36 +62,46 @@ import * as countries from "i18n-iso-countries";
  * const { data: user, isLoading } = orpc.user.me.useQuery();
  * ```
  */
-export const me = authRouter.user.me.handler(({ context }) => {
-  const { account, user } = context.auth;
+export const me = authRouter.user.me
+  .use(theGraphMiddleware)
+  .handler(async ({ context }) => {
+    const user = context.auth.user;
+    console.log("user", user);
 
-  // Convert numeric country code to ISO 3166-1 alpha-2
-  let countryAlpha2: string | undefined;
-  if (account?.country) {
-    const numericCode = account.country.toString();
-    countryAlpha2 = countries.numericToAlpha2(numericCode);
-  }
+    let countryAlpha2: string | undefined;
+    let claimsRecord: Record<string, Record<string, string>> | undefined;
+    if (user.wallet) {
+      const { account } = await context.theGraphClient.request(ACCOUNT_QUERY, {
+        id: user.wallet,
+      });
 
-  // Transform claims array to nested record format
-  const claimsRecord = account?.identity?.claims.reduce<
-    Record<string, Record<string, string>>
-  >((acc, claim) => {
-    const valuesRecord = claim.values.reduce<Record<string, string>>(
-      (valAcc, { key, value }) => {
-        valAcc[key] = value;
-        return valAcc;
-      },
-      {}
-    );
-    acc[claim.name] = valuesRecord;
-    return acc;
-  }, {});
+      // Convert numeric country code to ISO 3166-1 alpha-2
+      if (account?.country) {
+        const numericCode = account.country.toString();
+        countryAlpha2 = countries.numericToAlpha2(numericCode);
+      }
 
-  return {
-    name: user.name,
-    email: user.email,
-    wallet: user.wallet,
-    country: countryAlpha2,
-    claims: claimsRecord,
-  };
-});
+      // Transform claims array to nested record format
+      claimsRecord = account?.identity?.claims.reduce<
+        Record<string, Record<string, string>>
+      >((acc, claim) => {
+        const valuesRecord = claim.values.reduce<Record<string, string>>(
+          (valAcc, { key, value }) => {
+            valAcc[key] = value;
+            return valAcc;
+          },
+          {}
+        );
+        acc[claim.name] = valuesRecord;
+        return acc;
+      }, {});
+    }
+
+    return {
+      name: user.name,
+      email: user.email,
+      wallet: user.wallet ?? null,
+      country: countryAlpha2,
+      claims: claimsRecord,
+    };
+  });

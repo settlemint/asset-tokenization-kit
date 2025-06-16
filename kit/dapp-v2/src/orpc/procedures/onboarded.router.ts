@@ -1,34 +1,25 @@
-import { onboardedMiddleware } from "@/orpc/middlewares/auth/onboarded.middleware";
-import { authRouter } from "./auth.router";
-
 /**
- * Onboarded ORPC router for procedures requiring completed user onboarding.
+ * Onboarded ORPC router for procedures requiring a wallet.
  *
- * This router extends the authenticated router with onboarding middleware,
- * creating a secure foundation for procedures that require users to have
- * completed the full onboarding process. It builds upon the authenticated
- * router's capabilities while adding strict onboarding enforcement.
+ * This router extends the authenticated router with wallet verification
+ * middleware. It ensures that any user accessing these procedures has
+ * completed the onboarding process and has an associated wallet address.
  *
  * Middleware composition (inherited + added):
  * 1. Error middleware (from public router)
  * 2. Session middleware (from public router)
- * 3. TheGraph middleware (from auth router)
- * 4. Auth middleware (from auth router)
- * 5. Onboarded middleware - Enforces onboarding completion
- *
- * The onboarded middleware will:
- * - Verify user has completed all onboarding steps
- * - Check for required profile fields and verifications
- * - Throw NOT_ONBOARDED errors for incomplete onboarding
- * - Ensure account object exists in the auth context
+ * 3. Auth middleware (from auth router)
+ * 4. Wallet middleware - Ensures user has a wallet
  *
  * Use this router for procedures that require:
- * - Fully onboarded users with complete profiles
- * - Access to advanced platform features
- * - Compliance-dependent operations
- * - Features requiring verified user information
+ * - A verified user wallet address
+ * - Interactions with blockchain contracts
+ * - Operations specific to onboarded users
  *
  * @see {@link ./auth.router} - Authenticated router that this extends
- * @see {@link ../../middlewares/auth/onboarded.middleware} - Onboarding middleware
+ * @see {@link ../middlewares/auth/wallet.middleware} - Wallet verification middleware
  */
-export const onboardedRouter = authRouter.use(onboardedMiddleware);
+import { walletMiddleware } from "../middlewares/auth/wallet.middleware";
+import { authRouter } from "./auth.router";
+
+export const onboardedRouter = authRouter.use(walletMiddleware);

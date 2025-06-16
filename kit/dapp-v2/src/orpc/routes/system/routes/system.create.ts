@@ -85,7 +85,7 @@ export const create = onboardedRouter.system.create
     // TODO: can we improve the error handling here and by default? It will come out as a generic 500 error.
     const result = await context.portalClient.request(CREATE_SYSTEM_MUTATION, {
       address: contract,
-      from: sender.wallet ?? "", // TODO restrict via middleware to onboarded users
+      from: sender.wallet,
       ...(await handleChallenge(sender, verification)),
     });
 

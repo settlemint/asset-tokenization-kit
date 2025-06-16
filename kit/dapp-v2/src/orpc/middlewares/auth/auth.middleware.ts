@@ -1,26 +1,4 @@
-import {
-  theGraphGraphql,
-  type theGraphClient,
-} from "@/lib/settlemint/the-graph";
-import type { Context } from "@/orpc/context/context";
 import { baseRouter } from "../../procedures/base.router";
-
-export const ACCOUNT_QUERY = theGraphGraphql(`
-  query AccountQuery($id: ID!) {
-    account(id: $id) {
-      country
-      identity {
-        claims(where: {revoked: false}) {
-          name
-          values {
-            key
-            value
-          }
-        }
-      }
-    }
-}
-`);
 
 /**
  * Authentication enforcement middleware.
@@ -62,29 +40,10 @@ export const ACCOUNT_QUERY = theGraphGraphql(`
  * @see {@link ./session.middleware} - Session loading middleware (should run first)
  * @see {@link ../../routes/procedures/auth.contract} - UNAUTHORIZED error definition
  */
-export const authMiddleware = baseRouter
-  .$context<Context & { theGraphClient: typeof theGraphClient }>()
-  .middleware(async ({ context, next, errors }) => {
+export const authMiddleware = baseRouter.middleware(
+  async ({ context, next, errors }) => {
     // Check if valid authentication context exists
     if (context.auth) {
-      const user = context.auth.user;
-      if (user.wallet) {
-        const { account } = await context.theGraphClient.request(
-          ACCOUNT_QUERY,
-          {
-            id: user.wallet,
-          }
-        );
-        return next({
-          context: {
-            auth: {
-              ...context.auth,
-              account,
-            },
-          },
-        });
-      }
-
       // Authentication is valid, proceed with the authenticated context
       return next({
         context: {
@@ -95,4 +54,5 @@ export const authMiddleware = baseRouter
 
     // No valid authentication found, reject the request
     throw errors.UNAUTHORIZED();
-  });
+  }
+);
