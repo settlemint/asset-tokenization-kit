@@ -1,3 +1,45 @@
+/**
+ * TanStack Query Client Configuration
+ * 
+ * This module configures and exports the TanStack Query (formerly React Query)
+ * client used throughout the application for server state management. The client
+ * handles data fetching, caching, synchronization, and updates with a powerful
+ * set of features optimized for modern React applications.
+ * 
+ * Key features configured:
+ * - Intelligent caching with configurable stale times
+ * - Automatic background refetching
+ * - Request deduplication
+ * - Optimistic updates support
+ * - Retry logic with exponential backoff
+ * - Offline support with request queuing
+ * - Window focus refetching
+ * - Network status monitoring
+ * 
+ * The configuration is optimized for blockchain applications where:
+ * - Data freshness is important but not real-time critical
+ * - Network requests can be expensive (RPC calls)
+ * - Users expect responsive UI with cached data
+ * - Background updates maintain data consistency
+ * 
+ * @example
+ * ```typescript
+ * // Using the query client in a component
+ * import { useQuery } from '@tanstack/react-query';
+ * import { orpc } from '@/orpc';
+ * 
+ * function UserProfile() {
+ *   const { data, isLoading, error } = useQuery({
+ *     queryKey: ['user', 'profile'],
+ *     queryFn: () => orpc.user.me()
+ *   });
+ * }
+ * ```
+ * 
+ * @see {@link https://tanstack.com/query} - TanStack Query documentation
+ * @see {@link ../orpc} - ORPC client integration
+ */
+
 import { QueryClient } from "@tanstack/react-query";
 
 /**
