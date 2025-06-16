@@ -1,5 +1,5 @@
 import { theGraphClient } from "@/lib/settlemint/the-graph";
-import { br } from "../../procedures/base.router";
+import { baseRouter } from "../../procedures/base.router";
 
 /**
  * ORPC middleware that injects The Graph client into the procedure context.
@@ -34,12 +34,14 @@ import { br } from "../../procedures/base.router";
  *   });
  * ```
  */
-export const theGraphMiddleware = br.middleware(async ({ context, next }) => {
-  return next({
-    context: {
-      // Use existing Graph client if available (e.g., for testing),
-      // otherwise inject the default Graph client instance
-      theGraphClient: context.theGraphClient ?? theGraphClient,
-    },
-  });
-});
+export const theGraphMiddleware = baseRouter.middleware(
+  async ({ context, next }) => {
+    return next({
+      context: {
+        // Use existing Graph client if available (e.g., for testing),
+        // otherwise inject the default Graph client instance
+        theGraphClient: context.theGraphClient ?? theGraphClient,
+      },
+    });
+  }
+);

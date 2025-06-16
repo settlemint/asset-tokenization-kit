@@ -2,7 +2,7 @@ import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
 import { z } from "zod/v4";
-import { ac } from "../../procedures/auth.contract";
+import { baseContract } from "../../procedures/base.contract";
 import { SystemSchema } from "./routes/system.list.schema";
 
 /**
@@ -17,7 +17,7 @@ import { SystemSchema } from "./routes/system.list.schema";
  * This contract is consumed by both the server router and client for
  * end-to-end type safety.
  */
-const list = ac
+const list = baseContract
   .route({
     method: "GET",
     path: "/systems",
@@ -28,7 +28,7 @@ const list = ac
   .input(ListSchema) // Standard list query parameters (pagination, filters, etc.)
   .output(z.array(SystemSchema)); // Return array of system objects
 
-const create = ac
+const create = baseContract
   .route({
     method: "POST",
     path: "/systems",

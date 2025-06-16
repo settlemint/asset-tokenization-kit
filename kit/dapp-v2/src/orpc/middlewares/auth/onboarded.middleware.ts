@@ -1,4 +1,4 @@
-import { br } from "../../procedures/base.router";
+import { baseRouter } from "../../procedures/base.router";
 
 /**
  * Authentication enforcement middleware.
@@ -40,7 +40,7 @@ import { br } from "../../procedures/base.router";
  * @see {@link ./session.middleware} - Session loading middleware (should run first)
  * @see {@link ../../routes/procedures/auth.contract} - UNAUTHORIZED error definition
  */
-export const onboardedMiddleware = br.middleware(
+export const onboardedMiddleware = baseRouter.middleware(
   async ({ context, next, errors }) => {
     // Check if valid authentication context exists
     if (context.auth?.account) {

@@ -1,5 +1,5 @@
 import { auth, type Session, type SessionUser } from "@/lib/auth";
-import { br } from "../../procedures/base.router";
+import { baseRouter } from "../../procedures/base.router";
 
 /**
  * Session middleware for optional authentication context.
@@ -21,7 +21,7 @@ import { br } from "../../procedures/base.router";
  * @example
  * ```typescript
  * // Used in public router
- * export const pr = br.use(errorMiddleware).use(sessionMiddleware);
+ * export const pr = baseRouter.use(errorMiddleware).use(sessionMiddleware);
  *
  * // In a procedure handler
  * export const getContent = pr.content.get.handler(async ({ context }) => {
@@ -37,26 +37,28 @@ import { br } from "../../procedures/base.router";
  * @see {@link ./auth.middleware} - Strict authentication middleware
  * @see {@link @/lib/auth/auth} - Authentication system
  */
-export const sessionMiddleware = br.middleware(async ({ context, next }) => {
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(context.headers)) {
-    if (value) {
-      headers.append(key, value);
+export const sessionMiddleware = baseRouter.middleware(
+  async ({ context, next }) => {
+    const headers = new Headers();
+    for (const [key, value] of Object.entries(context.headers)) {
+      if (value) {
+        headers.append(key, value);
+      }
     }
+
+    const session = await auth.api.getSession({
+      headers,
+    });
+
+    return next({
+      context: {
+        auth:
+          context.auth ??
+          (session as unknown as {
+            user: SessionUser;
+            session: Session;
+          }),
+      },
+    });
   }
-
-  const session = await auth.api.getSession({
-    headers,
-  });
-
-  return next({
-    context: {
-      auth:
-        context.auth ??
-        (session as unknown as {
-          user: SessionUser;
-          session: Session;
-        }),
-    },
-  });
-});
+);

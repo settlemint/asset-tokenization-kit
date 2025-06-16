@@ -1,32 +1,34 @@
 import { onboardedMiddleware } from "@/orpc/middlewares/auth/onboarded.middleware";
-import { ar } from "./auth.router";
+import { authRouter } from "./auth.router";
 
 /**
- * Authenticated ORPC router for protected procedures.
+ * Onboarded ORPC router for procedures requiring completed user onboarding.
  *
- * This router extends the public router with authentication middleware,
- * creating a secure foundation for procedures that require valid user
- * authentication. It builds upon the public router's error handling and
- * session management while adding strict authentication enforcement.
+ * This router extends the authenticated router with onboarding middleware,
+ * creating a secure foundation for procedures that require users to have
+ * completed the full onboarding process. It builds upon the authenticated
+ * router's capabilities while adding strict onboarding enforcement.
  *
  * Middleware composition (inherited + added):
  * 1. Error middleware (from public router)
  * 2. Session middleware (from public router)
- * 3. Auth middleware - Enforces authentication requirements
+ * 3. TheGraph middleware (from auth router)
+ * 4. Auth middleware (from auth router)
+ * 5. Onboarded middleware - Enforces onboarding completion
  *
- * The auth middleware will:
- * - Validate authentication tokens/sessions
- * - Throw UNAUTHORIZED errors for invalid/missing auth
- * - Populate the context with authenticated user information
- * - Ensure only authenticated users can access protected procedures
+ * The onboarded middleware will:
+ * - Verify user has completed all onboarding steps
+ * - Check for required profile fields and verifications
+ * - Throw NOT_ONBOARDED errors for incomplete onboarding
+ * - Ensure account object exists in the auth context
  *
  * Use this router for procedures that require:
- * - Valid user authentication
- * - Access to user-specific data
- * - Protected operations (create, update, delete)
- * - User permission checks
+ * - Fully onboarded users with complete profiles
+ * - Access to advanced platform features
+ * - Compliance-dependent operations
+ * - Features requiring verified user information
  *
- * @see {@link ./public.router} - Public router that this extends
- * @see {@link ../../middlewares/auth/auth.middleware} - Authentication middleware
+ * @see {@link ./auth.router} - Authenticated router that this extends
+ * @see {@link ../../middlewares/auth/onboarded.middleware} - Onboarding middleware
  */
-export const or = ar.use(onboardedMiddleware);
+export const onboardedRouter = authRouter.use(onboardedMiddleware);

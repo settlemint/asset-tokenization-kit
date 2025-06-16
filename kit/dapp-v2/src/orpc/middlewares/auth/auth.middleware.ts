@@ -3,7 +3,7 @@ import {
   type theGraphClient,
 } from "@/lib/settlemint/the-graph";
 import type { Context } from "@/orpc/context/context";
-import { br } from "../../procedures/base.router";
+import { baseRouter } from "../../procedures/base.router";
 
 export const ACCOUNT_QUERY = theGraphGraphql(`
   query AccountQuery($id: ID!) {
@@ -62,7 +62,7 @@ export const ACCOUNT_QUERY = theGraphGraphql(`
  * @see {@link ./session.middleware} - Session loading middleware (should run first)
  * @see {@link ../../routes/procedures/auth.contract} - UNAUTHORIZED error definition
  */
-export const authMiddleware = br
+export const authMiddleware = baseRouter
   .$context<Context & { theGraphClient: typeof theGraphClient }>()
   .middleware(async ({ context, next, errors }) => {
     // Check if valid authentication context exists

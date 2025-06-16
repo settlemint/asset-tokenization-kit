@@ -22,4 +22,4 @@ import { contract } from "../routes/contract";
  * @see {@link ../context} - Context type definition
  * @see {@link ../contract} - Main contract definition
  */
-export const br = implement(contract).$context<Context>();
+export const baseRouter = implement(contract).$context<Context>();

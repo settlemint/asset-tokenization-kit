@@ -19,7 +19,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { or } from "@/orpc/procedures/onboarded.router";
+import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -76,7 +76,7 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
  * });
  * ```
  */
-export const create = or.system.create
+export const create = onboardedRouter.system.create
   .use(portalMiddleware)
   .handler(async ({ input, context }) => {
     const { contract, verification } = input;

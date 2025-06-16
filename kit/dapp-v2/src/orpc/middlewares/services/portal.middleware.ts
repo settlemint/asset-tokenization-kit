@@ -1,5 +1,5 @@
 import { portalClient } from "@/lib/settlemint/portal";
-import { br } from "../../procedures/base.router";
+import { baseRouter } from "../../procedures/base.router";
 
 /**
  * ORPC middleware that injects the SettleMint Portal client into the procedure context.
@@ -22,12 +22,14 @@ import { br } from "../../procedures/base.router";
  *   });
  * ```
  */
-export const portalMiddleware = br.middleware(async ({ context, next }) => {
-  return next({
-    context: {
-      // Use existing Portal client if available (e.g., for testing),
-      // otherwise inject the default Portal client instance
-      portalClient: context.portalClient ?? portalClient,
-    },
-  });
-});
+export const portalMiddleware = baseRouter.middleware(
+  async ({ context, next }) => {
+    return next({
+      context: {
+        // Use existing Portal client if available (e.g., for testing),
+        // otherwise inject the default Portal client instance
+        portalClient: context.portalClient ?? portalClient,
+      },
+    });
+  }
+);

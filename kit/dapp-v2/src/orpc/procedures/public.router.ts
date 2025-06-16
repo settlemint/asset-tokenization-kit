@@ -1,6 +1,6 @@
 import { sessionMiddleware } from "../middlewares/auth/session.middleware";
 import { errorMiddleware } from "../middlewares/monitoring/error.middleware";
-import { br } from "./base.router";
+import { baseRouter } from "./base.router";
 
 /**
  * Public ORPC router for unauthenticated procedures.
@@ -29,4 +29,6 @@ import { br } from "./base.router";
  * @see {@link ../../middlewares/auth/session.middleware} - Session loading middleware
  * @see {@link ./base.router} - Base router implementation
  */
-export const pr = br.use(errorMiddleware).use(sessionMiddleware);
+export const publicRouter = baseRouter
+  .use(errorMiddleware)
+  .use(sessionMiddleware);

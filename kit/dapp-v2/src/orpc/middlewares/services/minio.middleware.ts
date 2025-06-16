@@ -1,5 +1,5 @@
 import { client as minioClient } from "@/lib/settlemint/minio";
-import { br } from "../../procedures/base.router";
+import { baseRouter } from "../../procedures/base.router";
 
 /**
  * ORPC middleware that injects the MinIO client into the procedure context.
@@ -22,12 +22,14 @@ import { br } from "../../procedures/base.router";
  *   });
  * ```
  */
-export const minioMiddleware = br.middleware(async ({ context, next }) => {
-  return next({
-    context: {
-      // Use existing MinIO client if available (e.g., for testing),
-      // otherwise inject the default MinIO client instance
-      minioClient: context.minioClient ?? minioClient,
-    },
-  });
-});
+export const minioMiddleware = baseRouter.middleware(
+  async ({ context, next }) => {
+    return next({
+      context: {
+        // Use existing MinIO client if available (e.g., for testing),
+        // otherwise inject the default MinIO client instance
+        minioClient: context.minioClient ?? minioClient,
+      },
+    });
+  }
+);

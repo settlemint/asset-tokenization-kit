@@ -13,7 +13,7 @@
  */
 
 import { UserMeSchema } from "@/orpc/routes/user/routes/user.me.schema";
-import { ac } from "../../procedures/auth.contract";
+import { baseContract } from "../../procedures/base.contract";
 
 /**
  * Get current authenticated user information.
@@ -36,7 +36,7 @@ import { ac } from "../../procedures/auth.contract";
  * console.log(`Wallet: ${user.wallet}`);
  * ```
  */
-const me = ac
+const me = baseContract
   .route({
     method: "GET",
     path: "/user/me",

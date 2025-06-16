@@ -1,5 +1,5 @@
 import { hasuraClient } from "@/lib/settlemint/hasura";
-import { br } from "../../procedures/base.router";
+import { baseRouter } from "../../procedures/base.router";
 
 /**
  * ORPC middleware that injects the Hasura GraphQL client into the procedure context.
@@ -22,12 +22,14 @@ import { br } from "../../procedures/base.router";
  *   });
  * ```
  */
-export const hasuraMiddleware = br.middleware(async ({ context, next }) => {
-  return next({
-    context: {
-      // Use existing Hasura client if available (e.g., for testing),
-      // otherwise inject the default Hasura client instance
-      hasuraClient: context.hasuraClient ?? hasuraClient,
-    },
-  });
-});
+export const hasuraMiddleware = baseRouter.middleware(
+  async ({ context, next }) => {
+    return next({
+      context: {
+        // Use existing Hasura client if available (e.g., for testing),
+        // otherwise inject the default Hasura client instance
+        hasuraClient: context.hasuraClient ?? hasuraClient,
+      },
+    });
+  }
+);

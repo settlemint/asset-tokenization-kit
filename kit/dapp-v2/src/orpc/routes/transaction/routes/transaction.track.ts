@@ -23,7 +23,7 @@ import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { setTimeout } from "node:timers/promises";
-import { ar } from "../../../procedures/auth.router";
+import { authRouter } from "../../../procedures/auth.router";
 
 /**
  * GraphQL query to fetch transaction receipt from the blockchain.
@@ -93,7 +93,7 @@ const TIMEOUT_MS = 180_000; // Total timeout for indexing (3 minutes)
  * };
  * ```
  */
-export const track = ar.transaction.track
+export const track = authRouter.transaction.track
   .use(portalMiddleware)
   .handler(async function* ({ input, context }) {
     const { transactionHash, messages } = input;

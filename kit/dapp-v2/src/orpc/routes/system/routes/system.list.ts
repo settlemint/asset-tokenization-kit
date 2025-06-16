@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { ar } from "@/orpc/procedures/auth.router";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
 
 /**
@@ -57,7 +57,7 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
  * });
  * ```
  */
-export const list = ar.system.list
+export const list = authRouter.system.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // Extract and validate pagination parameters from the request

@@ -13,7 +13,7 @@ import { z } from "zod/v4";
  * All other contracts should extend this base contract to inherit these common
  * error definitions, ensuring consistent error responses across the entire API.
  */
-export const bc = oc.errors({
+export const baseContract = oc.errors({
   /**
    * Input validation failure error.
    *
@@ -182,10 +182,23 @@ export const bc = oc.errors({
     }),
   },
 
-  NOT_ONBOARDED: oo.spec(
+  /**
+   * Authentication missing or failed error.
+   *
+   * Thrown when a protected procedure is accessed without valid authentication:
+   * - Missing authentication tokens
+   * - Expired or invalid sessions
+   * - Malformed authentication headers
+   * - Revoked or blacklisted tokens
+   *
+   * The OpenAPI security specification indicates that this endpoint requires
+   * API key authentication, which will be reflected in generated documentation
+   * and client SDKs.
+   */
+  UNAUTHORIZED: oo.spec(
     {
-      message: "User not onboarded",
-      status: 403,
+      message: "Authentication missing or failed",
+      status: 401,
     },
     {
       // OpenAPI security requirement for API documentation
@@ -193,9 +206,23 @@ export const bc = oc.errors({
     }
   ),
 
-  UNAUTHORIZED: oo.spec(
+  /**
+   * Onboarding not completed error.
+   *
+   * Thrown when a procedure is accessed by a user who hasn't completed onboarding:
+   * - Missing required profile information
+   * - Incomplete KYC/AML verification
+   * - Pending document verification
+   * - Unaccepted terms and conditions
+   *
+   * The OpenAPI security specification indicates that this endpoint requires
+   * both authentication and completed onboarding, which will be reflected in
+   * generated documentation and client SDKs.
+   */
+  NOT_ONBOARDED: oo.spec(
     {
-      message: "Authentication missing or failed",
+      message: "User not onboarded",
+      status: 403,
     },
     {
       // OpenAPI security requirement for API documentation

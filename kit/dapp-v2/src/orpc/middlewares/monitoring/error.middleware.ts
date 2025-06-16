@@ -2,7 +2,7 @@ import type { ORPCErrorCode } from "@orpc/client";
 import { ORPCError, ValidationError } from "@orpc/server";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { APIError } from "better-auth/api";
-import { br } from "../../procedures/base.router";
+import { baseRouter } from "../../procedures/base.router";
 
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
@@ -62,7 +62,7 @@ export function betterAuthErrorToORPCError(error: APIError) {
  * @example
  * ```typescript
  * // Used as the first middleware in router chains
- * export const pr = br.use(errorMiddleware).use(sessionMiddleware);
+ * export const pr = baseRouter.use(errorMiddleware).use(sessionMiddleware);
  *
  * // Handles various error scenarios:
  * // 1. Input validation failure -> 422 with field errors
@@ -74,7 +74,7 @@ export function betterAuthErrorToORPCError(error: APIError) {
  * @see {@link ../../routes/procedures/base.contract} - Error definitions
  * @see {@link betterAuthErrorToORPCError} - Auth error conversion utility
  */
-export const errorMiddleware = br.middleware(async ({ next }) => {
+export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
   try {
     return await next();
   } catch (error) {

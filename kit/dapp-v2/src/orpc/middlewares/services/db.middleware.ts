@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { br } from "../../procedures/base.router";
+import { baseRouter } from "../../procedures/base.router";
 
 /**
  * Database connection middleware.
@@ -27,7 +27,7 @@ import { br } from "../../procedures/base.router";
  * @example
  * ```typescript
  * // Used in router setup
- * export const pr = br.use(errorMiddleware).use(databaseMiddleware);
+ * export const pr = baseRouter.use(errorMiddleware).use(databaseMiddleware);
  *
  * // In a procedure handler
  * export const getUsers = pr.users.list.handler(async ({ context }) => {
@@ -48,12 +48,14 @@ import { br } from "../../procedures/base.router";
  *
  * @see {@link @/lib/db} - Database configuration and connection
  */
-export const databaseMiddleware = br.middleware(async ({ context, next }) => {
-  return next({
-    context: {
-      // Use existing database connection if available (e.g., for testing),
-      // otherwise inject the default database instance
-      db: context.db ?? db,
-    },
-  });
-});
+export const databaseMiddleware = baseRouter.middleware(
+  async ({ context, next }) => {
+    return next({
+      context: {
+        // Use existing database connection if available (e.g., for testing),
+        // otherwise inject the default database instance
+        db: context.db ?? db,
+      },
+    });
+  }
+);

@@ -14,7 +14,7 @@
  * @see {@link ./transaction.router} - Implementation router
  */
 
-import { ac } from "@/orpc/procedures/auth.contract";
+import { baseContract } from "@/orpc/procedures/base.contract";
 import {
   TransactionStatusInputSchema,
   TransactionStatusSchema,
@@ -49,7 +49,7 @@ import { eventIterator } from "@orpc/contract";
  * };
  * ```
  */
-const track = ac
+const track = baseContract
   .route({
     method: "GET",
     path: "/transactions/track",

@@ -9,7 +9,7 @@
  * @see {@link @/orpc/procedures/auth.router} - Authentication requirements
  */
 
-import { ar } from "@/orpc/procedures/auth.router";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import * as countries from "i18n-iso-countries";
 
 /**
@@ -43,7 +43,7 @@ import * as countries from "i18n-iso-countries";
  * const { data: user, isLoading } = orpc.user.me.useQuery();
  * ```
  */
-export const me = ar.user.me.handler(({ context }) => {
+export const me = authRouter.user.me.handler(({ context }) => {
   const { account, user } = context.auth;
 
   // Convert numeric country code to ISO 3166-1 alpha-2

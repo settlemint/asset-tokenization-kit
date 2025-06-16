@@ -1,4 +1,4 @@
-import { br } from "../procedures/base.router";
+import { baseRouter } from "../procedures/base.router";
 
 /**
  * Main ORPC router configuration.
@@ -12,7 +12,7 @@ import { br } from "../procedures/base.router";
  * (like 'planet') contains related API procedures, making the API more
  * organized and maintainable.
  */
-export const router = br.router({
+export const router = baseRouter.router({
   /**
    * System-related API procedures.
    *
@@ -24,7 +24,7 @@ export const router = br.router({
    *
    * @see {@link ./system/system.router} - System router implementation
    */
-  system: br.system.lazy(() => import("./system/system.router")),
+  system: baseRouter.system.lazy(() => import("./system/system.router")),
 
   /**
    * Transaction-related API procedures.
@@ -34,7 +34,7 @@ export const router = br.router({
    *
    * @see {@link ./transaction/transaction.router} - Transaction router implementation
    */
-  transaction: br.transaction.lazy(
+  transaction: baseRouter.transaction.lazy(
     () => import("./transaction/transaction.router")
   ),
 
@@ -44,5 +44,5 @@ export const router = br.router({
    * Lazy-loaded module containing user-related operations such as
    * querying and managing user-related resources.
    */
-  user: br.user.lazy(() => import("./user/user.router")),
+  user: baseRouter.user.lazy(() => import("./user/user.router")),
 });
