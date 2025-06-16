@@ -107,7 +107,7 @@
     "tw-animate-css": "1.3.4",
     "viem": "2.31.2",
     "zod": "3.25.64",
-    "zod-validation-error": "3.5.0"
+    "zod-validation-error": "3.5.1"
   },
   "devDependencies": {
     "@better-auth/cli": "1.2.9",
