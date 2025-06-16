@@ -27,6 +27,17 @@ export const router = baseRouter.router({
   account: baseRouter.account.lazy(() => import("./account/account.router")),
 
   /**
+   * Settings-related API procedures.
+   *
+   * Lazy-loaded module containing settings management operations.
+   *
+   * @see {@link ./settings/settings.router} - Settings router implementation
+   */
+  settings: baseRouter.settings.lazy(
+    () => import("./settings/settings.router")
+  ),
+
+  /**
    * System-related API procedures.
    *
    * Lazy-loaded module containing SMART system management operations.

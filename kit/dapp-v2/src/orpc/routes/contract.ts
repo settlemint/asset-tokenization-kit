@@ -1,3 +1,4 @@
+import { settingsContract } from "@/orpc/routes/settings/settings.contract";
 import { userContract } from "@/orpc/routes/user/user.contract";
 import { accountContract } from "./account/account.contract";
 import { systemContract } from "./system/system.contract";
@@ -33,6 +34,16 @@ export const contract = {
    * @see {@link ./account/account.router} - Corresponding router implementation
    */
   account: accountContract,
+
+  /**
+   * Settings-related API contract.
+   *
+   * Contains type definitions for settings management procedures.
+   *
+   * @see {@link ./settings/settings.contract} - Settings contract implementation
+   * @see {@link ./settings/settings.router} - Corresponding router implementation
+   */
+  settings: settingsContract,
 
   /**
    * System-related API contract.

@@ -1,5 +1,5 @@
+import { baseContract } from "@/orpc/procedures/base.contract";
 import { z } from "zod/v4";
-import { ac } from "../../procedures/auth.contract";
 import { SettingsCreateSchema } from "./routes/settings.create.schema";
 import { SettingsDeleteSchema } from "./routes/settings.delete.schema";
 import {
@@ -17,7 +17,7 @@ import { SettingsUpdateSchema } from "./routes/settings.update.schema";
  *
  * Retrieves a single setting by its key.
  */
-const read = ac
+const read = baseContract
   .route({
     method: "GET",
     path: "/settings/:key",
@@ -33,7 +33,7 @@ const read = ac
  *
  * Retrieves a paginated list of all settings.
  */
-const list = ac
+const list = baseContract
   .route({
     method: "GET",
     path: "/settings",
@@ -49,7 +49,7 @@ const list = ac
  *
  * Creates a new setting with the specified key and value.
  */
-const create = ac
+const create = baseContract
   .route({
     method: "POST",
     path: "/settings",
@@ -65,7 +65,7 @@ const create = ac
  *
  * Updates an existing setting's value.
  */
-const update = ac
+const update = baseContract
   .route({
     method: "PUT",
     path: "/settings/:key",
@@ -81,7 +81,7 @@ const update = ac
  *
  * Deletes a setting by its key.
  */
-const del = ac
+const del = baseContract
   .route({
     method: "DELETE",
     path: "/settings/:key",
