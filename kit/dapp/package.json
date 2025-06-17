@@ -88,7 +88,7 @@
     "superjson": "2.2.2",
     "tailwind-merge": "3.3.1",
     "tailwindcss": "4.1.10",
-    "zod": "3.25.65"
+    "zod": "3.25.67"
   },
   "overrides": {
     "@tanstack/react-query": "5.80.7",
