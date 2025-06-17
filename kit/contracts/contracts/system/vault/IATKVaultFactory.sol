@@ -45,4 +45,8 @@ interface IATKVaultFactory {
     /// @param forwarder_ Address of the trusted forwarder for meta-transactions
     /// @param initialAdmin_ Address that will have admin role
     function initialize(address forwarder_, address initialAdmin_) external;
+
+    /// @notice Returns the address of the current ATKVault logic contract (implementation).
+    /// @dev This function is expected to be available on the factory contract.
+    function atkVaultImplementation() external view returns (address);
 }
