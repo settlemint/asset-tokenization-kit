@@ -29,6 +29,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useBlockchainMutation } from "@/hooks/use-blockchain-mutation";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
@@ -65,6 +66,7 @@ function OnboardingComponent() {
       },
     })
   );
+
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({
       onSuccess: () => {
@@ -81,13 +83,30 @@ function OnboardingComponent() {
     })
   );
 
-  const { mutate: createSystem } = useMutation(
-    orpc.system.create.mutationOptions({
+  const {
+    mutate: createSystem,
+    isPending: isCreatingSystem,
+    isTracking,
+  } = useBlockchainMutation({
+    mutationOptions: orpc.system.create.mutationOptions({
       onSuccess: () => {
-        toast.success("System created");
+        void queryClient.invalidateQueries({
+          queryKey: orpc.settings.read.queryKey({
+            input: { key: "SYSTEM_ADDRESS" },
+          }),
+        });
       },
-    })
-  );
+    }),
+    messages: {
+      pending: {
+        mining: "Deploying your SMART system...",
+        indexing: "Indexing the new SMART system...",
+      },
+      success: "Your SMART system is deployed!",
+      error: "Failed to deploy your SMART system",
+      timeout: "Transaction tracking timeout",
+    },
+  });
 
   return (
     <OnboardingGuard require="not-onboarded">
@@ -141,12 +160,14 @@ function OnboardingComponent() {
                     Secure your wallet with MFA
                   </Button> */}
                   <Button
-                    disabled={!!systemAddress}
+                    disabled={!!systemAddress || isCreatingSystem || isTracking}
                     onClick={() => {
                       createSystem({});
                     }}
                   >
-                    Deploy a new SMART system
+                    {isCreatingSystem || isTracking
+                      ? "Deploying..."
+                      : "Deploy a new SMART system"}
                   </Button>
                 </div>
               </CardContent>
