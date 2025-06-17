@@ -36,13 +36,19 @@ import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_private/onboarding")({
+  loader: ({ context: { queryClient, orpc } }) => {
+    void queryClient.prefetchQuery(orpc.user.me.queryOptions());
+    void queryClient.prefetchQuery(
+      orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
+    );
+  },
   component: OnboardingComponent,
   head: () => ({
     meta: [
@@ -54,7 +60,11 @@ export const Route = createFileRoute("/_private/onboarding")({
 });
 
 function OnboardingComponent() {
-  const { user, systemAddress, orpc } = Route.useRouteContext();
+  const { orpc } = Route.useRouteContext();
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+  const { data: systemAddress } = useSuspenseQuery(
+    orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
+  );
   const { sessionKey } = useContext(AuthQueryContext);
   const { t } = useTranslation(["onboarding", "general"]);
   const [, setSystemAddress] = useSettings("SYSTEM_ADDRESS");

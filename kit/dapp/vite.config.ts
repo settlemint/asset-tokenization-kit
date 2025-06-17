@@ -6,6 +6,9 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  optimizeDeps: {
+    entries: ["src/**/*.tsx", "src/**/*.ts"],
+  },
   plugins: [
     tsConfigPaths(),
     tanstackStart({
