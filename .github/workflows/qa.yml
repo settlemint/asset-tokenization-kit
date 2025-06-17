@@ -30,6 +30,7 @@ jobs:
         uses: namespacelabs/nscloud-checkout-action@v7
         with:
           fetch-depth: 2
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
@@ -114,6 +115,7 @@ jobs:
           else
             echo "Running full Turbo for main branch"
             bun run ci:gha --concurrency=100%
+            bun run artifacts --concurrency=100%
           fi
         env:
           THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
@@ -127,6 +129,18 @@ jobs:
             kit/contracts/tools/genesis-output.json
             kit/contracts/portal/*.json
             kit/subgraph/subgraph-output.txt
+
+      - name: Auto-commit artifacts
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6
+        with:
+          commit_message: "chore: update artifacts [skip ci]"
+          branch: main
+          file_pattern: |
+            tools/docker/besu/genesis.json
+            tools/docker/portal/*.json
+            tools/docker/postgres/atk.sql
+            docker-compose.yml
 
   pr-labels:
     name: PR Labels
