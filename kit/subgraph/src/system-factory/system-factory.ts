@@ -6,8 +6,8 @@ import { fetchSystem } from "../system/fetch/system";
 export function handleATKSystemCreated(event: ATKSystemCreated): void {
   fetchEvent(event, "SystemCreated");
   const system = fetchSystem(event.params.systemAddress);
-  if (system.deployedInTransaction == Bytes.empty()) {
+  if (system.deployedInTransaction.equals(Bytes.empty())) {
     system.deployedInTransaction = event.transaction.hash;
-    system.save();
   }
+  system.save();
 }

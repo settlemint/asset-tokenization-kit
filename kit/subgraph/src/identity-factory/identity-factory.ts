@@ -10,7 +10,7 @@ import { fetchToken } from "../token/fetch/token";
 
 export function handleIdentityCreated(event: IdentityCreated): void {
   const identity = fetchIdentity(event.params.identity);
-  if (identity.deployedInTransaction == Bytes.empty()) {
+  if (identity.deployedInTransaction.equals(Bytes.empty())) {
     identity.deployedInTransaction = event.transaction.hash;
   }
   const account = fetchAccount(event.params.wallet);
@@ -25,7 +25,7 @@ export function handleIdentityCreated(event: IdentityCreated): void {
 
 export function handleTokenIdentityCreated(event: TokenIdentityCreated): void {
   const identity = fetchIdentity(event.params.identity);
-  if (identity.deployedInTransaction == Bytes.empty()) {
+  if (identity.deployedInTransaction.equals(Bytes.empty())) {
     identity.deployedInTransaction = event.transaction.hash;
   }
   const token = fetchToken(event.params.token);

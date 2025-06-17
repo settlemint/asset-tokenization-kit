@@ -24,7 +24,7 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   fetchEvent(event, "TokenAssetCreated");
   const tokenFactory = fetchTokenFactory(event.address);
   const token = fetchToken(event.params.tokenAddress);
-  if (token.deployedInTransaction == Bytes.empty()) {
+  if (token.deployedInTransaction.equals(Bytes.empty())) {
     token.deployedInTransaction = event.transaction.hash;
   }
   token.tokenFactory = tokenFactory.id;

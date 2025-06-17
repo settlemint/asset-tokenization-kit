@@ -29,7 +29,7 @@ export function handleClaimAdded(event: ClaimAdded): void {
   fetchEvent(event, "ClaimAdded");
   const identity = fetchIdentity(event.address);
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
-  if (identityClaim.deployedInTransaction == Bytes.empty()) {
+  if (identityClaim.deployedInTransaction.equals(Bytes.empty())) {
     identityClaim.deployedInTransaction = event.transaction.hash;
   }
   identityClaim.issuer = fetchIdentity(event.params.issuer).id;

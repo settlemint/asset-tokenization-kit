@@ -22,7 +22,7 @@ export function handleFixedYieldScheduleSet(
 ): void {
   fetchEvent(event, "FixedYieldScheduleSet");
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
-  if (fixedYieldSchedule.deployedInTransaction == Bytes.empty()) {
+  if (fixedYieldSchedule.deployedInTransaction.equals(Bytes.empty())) {
     fixedYieldSchedule.deployedInTransaction = event.transaction.hash;
   }
   const tokenAddress = Address.fromBytes(fixedYieldSchedule.token);
@@ -64,7 +64,7 @@ export function handleFixedYieldScheduleSet(
   );*/
   for (let i = 1; i <= event.params.periodEndTimestamps.length; i++) {
     const period = fetchFixedYieldSchedulePeriod(getPeriodId(event.address, i));
-    if (period.deployedInTransaction == Bytes.empty()) {
+    if (period.deployedInTransaction.equals(Bytes.empty())) {
       period.deployedInTransaction = event.transaction.hash;
     }
     period.schedule = fixedYieldSchedule.id;

@@ -9,7 +9,7 @@ export function handleATKFixedYieldScheduleCreated(
 ): void {
   fetchEvent(event, "FixedYieldScheduleCreated");
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.params.schedule);
-  if (fixedYieldSchedule.deployedInTransaction == Bytes.empty()) {
+  if (fixedYieldSchedule.deployedInTransaction.equals(Bytes.empty())) {
     fixedYieldSchedule.deployedInTransaction = event.transaction.hash;
   }
   fixedYieldSchedule.createdAt = event.block.timestamp;
