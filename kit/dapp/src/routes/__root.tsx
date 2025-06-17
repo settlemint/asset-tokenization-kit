@@ -20,6 +20,7 @@
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";
 import { seo } from "@/config/metadata";
+import type { orpc } from "@/orpc";
 import { Providers } from "@/providers";
 import appCss from "@/styles/app.css?url";
 import { type QueryClient } from "@tanstack/react-query";
@@ -36,6 +37,7 @@ import { Toaster } from "sonner";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
+  orpc: typeof orpc;
 }>()({
   head: () => ({
     meta: [

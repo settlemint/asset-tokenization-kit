@@ -20,6 +20,17 @@ import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private")({
+  beforeLoad: async ({ context: { queryClient, orpc } }) => {
+    const [user, systemAddress] = await Promise.all([
+      queryClient.ensureQueryData(orpc.user.me.queryOptions()),
+      queryClient.ensureQueryData(
+        orpc.settings.read.queryOptions({
+          input: { key: "SYSTEM_ADDRESS" },
+        })
+      ),
+    ]);
+    return { user, systemAddress };
+  },
   component: LayoutComponent,
 });
 

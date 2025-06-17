@@ -30,8 +30,9 @@
     "test:integration": {
       "dependsOn": ["codegen:gql-tada"]
     },
+    "translate": {},
     "artifacts": {
-      "dependsOn": ["build", "compile"]
+      "dependsOn": ["build", "compile", "translate"]
     }
   }
 }

@@ -5,7 +5,8 @@ import { Test } from "forge-std/Test.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 // ISMARTIdentityRegistry is not directly used for adding claims here, but good for context.
 // import { ISMARTIdentityRegistry } from "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
-import { SMARTIdentityVerificationModule } from "../../../contracts/smart/modules/SMARTIdentityVerificationModule.sol";
+import { SMARTIdentityVerificationComplianceModule } from
+    "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol"; // Import ATKTopics
 import { TestConstants } from "../../Constants.sol"; // Keep if used, e.g. INITIAL_MINT_AMOUNT
 import { SystemUtils } from "../../utils/SystemUtils.sol"; // Keep for systemUtils access
@@ -13,7 +14,7 @@ import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
 
 abstract contract SMARTIdentityVerificationTest is AbstractSMARTTest {
     // Module-specific variables
-    SMARTIdentityVerificationModule internal verificationModule;
+    SMARTIdentityVerificationComplianceModule internal verificationModule;
 
     // Represents the default KYC & AML topics the module is configured with via AbstractSMARTTest
     uint256[] internal emptyRequiredClaimTopics;
@@ -57,7 +58,7 @@ abstract contract SMARTIdentityVerificationTest is AbstractSMARTTest {
         token.transfer(clientBE, TRANSFER_AMOUNT_1 / 2);
 
         vm.startPrank(tokenIssuer);
-        vm.expectRevert(SMARTIdentityVerificationModule.RecipientNotVerified.selector);
+        vm.expectRevert(SMARTIdentityVerificationComplianceModule.RecipientNotVerified.selector);
         token.mint(clientUnverified, INITIAL_MINT_AMOUNT);
         vm.stopPrank();
 
@@ -88,7 +89,7 @@ abstract contract SMARTIdentityVerificationTest is AbstractSMARTTest {
         vm.stopPrank();
 
         vm.prank(clientBE);
-        vm.expectRevert(SMARTIdentityVerificationModule.RecipientNotVerified.selector);
+        vm.expectRevert(SMARTIdentityVerificationComplianceModule.RecipientNotVerified.selector);
         token.transfer(clientUnverified, INITIAL_MINT_AMOUNT / 2);
 
         assertEq(token.balanceOf(clientBE), INITIAL_MINT_AMOUNT, "BE balance should be unchanged");
@@ -100,7 +101,7 @@ abstract contract SMARTIdentityVerificationTest is AbstractSMARTTest {
         // Module is already added with requiredKYCAndAMLTopics by default
 
         vm.startPrank(tokenIssuer);
-        vm.expectRevert(SMARTIdentityVerificationModule.RecipientNotVerified.selector);
+        vm.expectRevert(SMARTIdentityVerificationComplianceModule.RecipientNotVerified.selector);
         token.mint(clientUnverified, INITIAL_MINT_AMOUNT);
         vm.stopPrank();
         assertEq(token.balanceOf(clientUnverified), 0, "Unverified client balance should be zero after failed mint");

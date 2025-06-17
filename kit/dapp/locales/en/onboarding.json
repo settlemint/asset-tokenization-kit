@@ -9,5 +9,6 @@
     "success": "Your SMART system is deployed!",
     "error": "Failed to deploy your SMART system",
     "timeout": "Transaction tracking timeout"
-  }
+  },
+  "wallet-generated": "Wallet generated"
 }
