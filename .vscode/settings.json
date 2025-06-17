@@ -101,12 +101,7 @@
   "i18n-ally.extract.autoDetect": true,
   "i18n-ally.extract.targetPickingStrategy": "most-similar",
   "i18n-ally.keystyle": "flat",
-  "i18n-ally.localesPaths": [
-    "kit/dapp-v2/locales",
-    "kit/dapp/messages",
-    "kit/dapp/src/i18n",
-    "kit/dapp/src/components/blocks/language"
-  ],
+  "i18n-ally.localesPaths": ["kit/dapp/locales"],
   "i18n-ally.namespace": true,
   "i18n-ally.pathMatcher": "{locale}/{namespaces}.json",
   "i18n-ally.sortKeys": true,

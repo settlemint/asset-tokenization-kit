@@ -1,4 +1,13 @@
 {
-  "card-description": "Sie benötigen eine Brieftasche und eine Identität auf der Blockchain, um diese Plattform zu nutzen.",
-  "card-title": "Lassen Sie uns Sie einrichten!"
+  "card-description": "Sie benötigen eine Wallet und eine Identität auf der Blockchain, um diese Plattform zu nutzen. ",
+  "card-title": "Lassen Sie uns alles einrichten!",
+  "messages": {
+    "pending": {
+      "mining": "Ihr SMART-System wird bereitgestellt...",
+      "indexing": "Das neue SMART-System wird indexiert..."
+    },
+    "success": "Ihr SMART-System ist bereitgestellt!",
+    "error": "Bereitstellung Ihres SMART-Systems fehlgeschlagen",
+    "timeout": "Zeitüberschreitung bei der Transaktionsverfolgung"
+  }
 }

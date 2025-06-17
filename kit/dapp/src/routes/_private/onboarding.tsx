@@ -30,6 +30,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useBlockchainMutation } from "@/hooks/use-blockchain-mutation";
+import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
@@ -69,8 +70,13 @@ function OnboardingComponent() {
 
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({
-      onSuccess: () => {
+      onSuccess: async () => {
         toast.success("Wallet generated");
+        await authClient.getSession({
+          query: {
+            disableCookieCache: true,
+          },
+        });
         void queryClient.invalidateQueries({
           queryKey: sessionKey,
           refetchType: "all",
@@ -83,28 +89,40 @@ function OnboardingComponent() {
     })
   );
 
+  const { mutate: setSystemAddress } = useMutation(
+    orpc.settings.upsert.mutationOptions({
+      onSuccess: () => {
+        void queryClient.invalidateQueries({
+          queryKey: orpc.settings.read.queryKey({
+            input: { key: "SYSTEM_ADDRESS" },
+          }),
+          refetchType: "all",
+        });
+      },
+    })
+  );
+
   const {
     mutate: createSystem,
     isPending: isCreatingSystem,
     isTracking,
   } = useBlockchainMutation({
     mutationOptions: orpc.system.create.mutationOptions({
-      onSuccess: () => {
-        void queryClient.invalidateQueries({
-          queryKey: orpc.settings.read.queryKey({
-            input: { key: "SYSTEM_ADDRESS" },
-          }),
+      onSuccess: (data) => {
+        setSystemAddress({
+          key: "SYSTEM_ADDRESS",
+          value: data,
         });
       },
     }),
     messages: {
       pending: {
-        mining: "Deploying your SMART system...",
-        indexing: "Indexing the new SMART system...",
+        mining: t("onboarding:messages.pending.mining"),
+        indexing: t("onboarding:messages.pending.indexing"),
       },
-      success: "Your SMART system is deployed!",
-      error: "Failed to deploy your SMART system",
-      timeout: "Transaction tracking timeout",
+      success: t("onboarding:messages.success"),
+      error: t("onboarding:messages.error"),
+      timeout: t("onboarding:messages.timeout"),
     },
   });
 
