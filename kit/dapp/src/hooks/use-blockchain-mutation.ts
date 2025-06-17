@@ -5,8 +5,8 @@ import {
 } from "@/lib/zod/validators/ethereum-hash";
 import { orpc } from "@/orpc";
 import type { UseMutationOptions } from "@tanstack/react-query";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface UseBlockchainMutationOptions<TData, TError, TVariables, TContext> {
@@ -34,9 +34,10 @@ export function useBlockchainMutation<
   TVariables = void,
   TContext = unknown,
 >(options: UseBlockchainMutationOptions<TData, TError, TVariables, TContext>) {
-  const [trackingState, setTrackingState] = useState<TrackingState | null>(
-    null
-  );
+  // Use a Map to track multiple transactions
+  const [trackingStates, setTrackingStates] = useState<
+    Map<EthereumHash, TrackingState>
+  >(new Map());
   const queryClient = useQueryClient();
 
   const messages = {
@@ -49,97 +50,110 @@ export function useBlockchainMutation<
     error: options.messages?.error ?? "Transaction failed",
   };
 
-  // Track the transaction using SSE
-  const { data: trackingData } = useQuery(
-    orpc.transaction.track.experimental_streamedOptions({
-      input: {
-        transactionHash: trackingState?.hash ?? "",
-      },
-      enabled: !!trackingState && isEthereumHash(trackingState.hash),
-    })
+  // Add a new transaction to track
+  const addTracking = useCallback(
+    (hash: EthereumHash, toastId: string | number) => {
+      setTrackingStates((prev) => {
+        const newMap = new Map(prev);
+        newMap.set(hash, {
+          hash,
+          toastId,
+          startTime: Date.now(),
+        });
+        return newMap;
+      });
+    },
+    []
   );
 
-  // Get the latest tracking status
-  const trackingStatus = trackingData?.[trackingData.length - 1] ?? null;
+  // Remove a transaction from tracking
+  const removeTracking = useCallback(
+    (hash: EthereumHash) => {
+      setTrackingStates((prev) => {
+        const newMap = new Map(prev);
+        newMap.delete(hash);
+        return newMap;
+      });
 
-  // Handle tracking status updates and toast updates
+      // Clean up the query cache for this transaction
+      void queryClient.cancelQueries({
+        queryKey: orpc.transaction.track.experimental_streamedKey({
+          input: {
+            transactionHash: hash,
+          },
+        }),
+      });
+      void queryClient.resetQueries({
+        queryKey: orpc.transaction.track.experimental_streamedKey({
+          input: {
+            transactionHash: hash,
+          },
+        }),
+      });
+    },
+    [queryClient]
+  );
+
+  // Convert states to array for stable reference
+  const statesArray = Array.from(trackingStates.values());
+
+  // Track all active transactions using useQueries
+  const trackingQueries = useQueries({
+    queries: statesArray.map((state) =>
+      orpc.transaction.track.experimental_streamedOptions({
+        input: {
+          transactionHash: state.hash,
+        },
+        enabled: isEthereumHash(state.hash),
+        staleTime: Infinity,
+      })
+    ),
+  });
+
+  // Extract queries data for dependency tracking
+  const queriesData = trackingQueries.map((query) => query.data);
+
+  // Process tracking updates for all transactions
   useEffect(() => {
-    if (!trackingState || !trackingStatus) return;
+    queriesData.forEach((data, index) => {
+      const state = statesArray[index];
+      if (!state || !data) return;
 
-    const { toastId, startTime } = trackingState;
-    const isTimeout = Date.now() - startTime > 180000; // 3 minutes
-    console.log("trackingStatus", trackingStatus);
-    if (trackingStatus.status === "pending") {
-      // Update loading message based on progress
-      const isIndexing = trackingData && trackingData.length > 1;
-      toast.loading(
-        isIndexing ? messages.pending.indexing : messages.pending.mining,
-        { id: toastId }
-      );
-    } else if (trackingStatus.status === "confirmed") {
-      toast.success(messages.success, { id: toastId });
-      // Stop the tracking query and clear its cache
-      void queryClient.cancelQueries({
-        queryKey: orpc.transaction.track.experimental_streamedKey({
-          input: {
-            transactionHash: trackingState.hash,
-          },
-        }),
-      });
-      void queryClient.resetQueries({
-        queryKey: orpc.transaction.track.experimental_streamedKey({
-          input: {
-            transactionHash: trackingState.hash,
-          },
-        }),
-      });
-      setTrackingState(null);
-    } else {
-      // trackingStatus.status === "failed"
-      toast.error(`${messages.error}: ${trackingStatus.reason}`, {
-        id: toastId,
-      });
-      // Stop the tracking query and clear its cache
-      void queryClient.cancelQueries({
-        queryKey: orpc.transaction.track.experimental_streamedKey({
-          input: {
-            transactionHash: trackingState.hash,
-          },
-        }),
-      });
-      void queryClient.resetQueries({
-        queryKey: orpc.transaction.track.experimental_streamedKey({
-          input: {
-            transactionHash: trackingState.hash,
-          },
-        }),
-      });
-      setTrackingState(null);
-    }
+      const trackingData = data as {
+        transactionHash: string;
+        status: "pending" | "confirmed" | "failed";
+        reason?: string;
+      }[];
 
-    // Handle timeout
-    if (isTimeout && trackingStatus.status === "pending") {
-      toast.error(`${messages.error}: Transaction tracking timeout`, {
-        id: toastId,
-      });
-      // Stop the tracking query and clear its cache
-      void queryClient.cancelQueries({
-        queryKey: orpc.transaction.track.experimental_streamedKey({
-          input: {
-            transactionHash: trackingState.hash,
-          },
-        }),
-      });
-      void queryClient.resetQueries({
-        queryKey: orpc.transaction.track.experimental_streamedKey({
-          input: {
-            transactionHash: trackingState.hash,
-          },
-        }),
-      });
-      setTrackingState(null);
-    }
-  }, [trackingStatus, trackingData, trackingState, messages, queryClient]);
+      const trackingStatus = trackingData[trackingData.length - 1];
+      if (!trackingStatus) return;
+
+      const { toastId, startTime } = state;
+      const isTimeout = Date.now() - startTime > 180000; // 3 minutes
+
+      if (trackingStatus.status === "pending" && !isTimeout) {
+        // Update loading message based on progress
+        const isIndexing = trackingData.length > 1;
+        toast.loading(
+          isIndexing ? messages.pending.indexing : messages.pending.mining,
+          { id: toastId }
+        );
+      } else if (trackingStatus.status === "confirmed") {
+        toast.success(messages.success, { id: toastId });
+        removeTracking(state.hash);
+      } else if (trackingStatus.status === "failed") {
+        toast.error(`${messages.error}: ${trackingStatus.reason}`, {
+          id: toastId,
+        });
+        removeTracking(state.hash);
+      } else if (isTimeout) {
+        toast.error(`${messages.error}: Transaction tracking timeout`, {
+          id: toastId,
+        });
+        removeTracking(state.hash);
+      }
+    });
+  }, [queriesData, statesArray, messages, removeTracking]);
 
   const mutation = useMutation<TData, TError, TVariables, TContext>({
     ...options.mutationOptions,
@@ -149,11 +163,7 @@ export function useBlockchainMutation<
 
       // Create initial toast and store tracking state
       const toastId = toast.loading(messages.pending.mining);
-      setTrackingState({
-        hash,
-        toastId,
-        startTime: Date.now(),
-      });
+      addTracking(hash, toastId);
 
       // Call the original onSuccess
       options.mutationOptions.onSuccess?.(data, variables, context);
@@ -164,9 +174,26 @@ export function useBlockchainMutation<
     },
   });
 
+  // Get all current tracking statuses
+  const trackingStatuses = trackingQueries
+    .map((query, index) => {
+      const state = statesArray[index];
+      if (!state || !query.data) return null;
+
+      const trackingData = query.data as {
+        transactionHash: string;
+        status: "pending" | "confirmed" | "failed";
+        reason?: string;
+      }[];
+      return trackingData[trackingData.length - 1] ?? null;
+    })
+    .filter(Boolean);
+
   return {
     ...mutation,
-    isTracking: !!trackingState && trackingStatus?.status === "pending",
-    trackingStatus,
+    isTracking: trackingStates.size > 0,
+    trackingCount: trackingStates.size,
+    trackingHashes: Array.from(trackingStates.keys()),
+    trackingStatuses,
   };
 }
