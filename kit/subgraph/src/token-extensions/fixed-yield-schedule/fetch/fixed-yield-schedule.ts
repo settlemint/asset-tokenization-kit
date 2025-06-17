@@ -14,6 +14,8 @@ export function fetchFixedYieldSchedule(
     fixedYieldSchedule = new TokenFixedYieldSchedule(address);
     fixedYieldSchedule.account = fetchAccount(address).id;
     fixedYieldSchedule.token = Address.zero();
+    fixedYieldSchedule.createdAt = BigInt.zero();
+    fixedYieldSchedule.createdBy = Address.zero();
     fixedYieldSchedule.endDate = BigInt.zero();
     fixedYieldSchedule.startDate = BigInt.zero();
     fixedYieldSchedule.rate = BigInt.zero();
@@ -37,12 +39,6 @@ export function fetchFixedYieldSchedule(
       DEFAULT_TOKEN_DECIMALS
     );
     fixedYieldSchedule.underlyingAsset = Address.zero();
-    setBigNumber(
-      fixedYieldSchedule,
-      "underlyingAssetBalanceAvailable",
-      BigInt.zero(),
-      DEFAULT_TOKEN_DECIMALS
-    );
     fixedYieldSchedule.save();
     FixedYieldScheduleTemplate.create(address);
   }
