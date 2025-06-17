@@ -14,6 +14,7 @@ import { toBaseUnits } from "../utils/to-base-units";
 import { mature } from "./actions/bond/mature";
 import { burn } from "./actions/burnable/burn";
 import { setCap } from "./actions/capped/set-cap";
+import { setAddressParametersForComplianceModule } from "./actions/compliance/set-address-parameters-for-compliance-module";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
 import { forcedTransfer } from "./actions/custodian/forced-transfer";
@@ -81,13 +82,30 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   // yield
   const anvilTime = await getAnvilTimeMilliseconds(owner);
-  const { advanceToNextPeriod } = await setYieldSchedule(
+  const { advanceToNextPeriod, scheduleContract } = await setYieldSchedule(
     bond,
     new Date(anvilTime + 1 * 24 * 60 * 60 * 1000), // 1 day from now
     new Date(anvilTime + 4 * 24 * 60 * 60 * 1000), // 4 days from now
     50, // 0.5%
     12 * 60 * 60 // 12 hours in seconds
   );
+
+  // Make sure bond and yield can hold deposit token
+  const allowedIdentities = await Promise.all([
+    investorA.getIdentity(),
+    investorB.getIdentity(),
+    // owner also needs to be able to hold deposit token ... topUpUnderlyingAsset will mint to owner
+    owner.getIdentity(),
+    bond.address,
+    scheduleContract.address,
+  ]);
+
+  await setAddressParametersForComplianceModule(
+    depositToken,
+    "identityAllowListModule",
+    allowedIdentities
+  );
+
   // do some mint/burns to change the yield
   await mint(bond, owner, 10n);
   await burn(bond, owner, 1n);
