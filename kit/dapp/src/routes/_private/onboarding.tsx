@@ -29,6 +29,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useBlockchainMutation } from "@/hooks/use-blockchain-mutation";
+import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
@@ -65,10 +67,16 @@ function OnboardingComponent() {
       },
     })
   );
+
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({
-      onSuccess: () => {
+      onSuccess: async () => {
         toast.success("Wallet generated");
+        await authClient.getSession({
+          query: {
+            disableCookieCache: true,
+          },
+        });
         void queryClient.invalidateQueries({
           queryKey: sessionKey,
           refetchType: "all",
@@ -81,13 +89,42 @@ function OnboardingComponent() {
     })
   );
 
-  const { mutate: createSystem } = useMutation(
-    orpc.system.create.mutationOptions({
+  const { mutate: setSystemAddress } = useMutation(
+    orpc.settings.upsert.mutationOptions({
       onSuccess: () => {
-        toast.success("System created");
+        void queryClient.invalidateQueries({
+          queryKey: orpc.settings.read.queryKey({
+            input: { key: "SYSTEM_ADDRESS" },
+          }),
+          refetchType: "all",
+        });
       },
     })
   );
+
+  const {
+    mutate: createSystem,
+    isPending: isCreatingSystem,
+    isTracking,
+  } = useBlockchainMutation({
+    mutationOptions: orpc.system.create.mutationOptions({
+      onSuccess: (data) => {
+        setSystemAddress({
+          key: "SYSTEM_ADDRESS",
+          value: data,
+        });
+      },
+    }),
+    messages: {
+      pending: {
+        mining: t("onboarding:messages.pending.mining"),
+        indexing: t("onboarding:messages.pending.indexing"),
+      },
+      success: t("onboarding:messages.success"),
+      error: t("onboarding:messages.error"),
+      timeout: t("onboarding:messages.timeout"),
+    },
+  });
 
   return (
     <OnboardingGuard require="not-onboarded">
@@ -141,12 +178,14 @@ function OnboardingComponent() {
                     Secure your wallet with MFA
                   </Button> */}
                   <Button
-                    disabled={!!systemAddress}
+                    disabled={!!systemAddress || isCreatingSystem || isTracking}
                     onClick={() => {
                       createSystem({});
                     }}
                   >
-                    Deploy a new SMART system
+                    {isCreatingSystem || isTracking
+                      ? "Deploying..."
+                      : "Deploy a new SMART system"}
                   </Button>
                 </div>
               </CardContent>

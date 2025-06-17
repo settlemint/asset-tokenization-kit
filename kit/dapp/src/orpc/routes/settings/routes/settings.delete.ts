@@ -31,31 +31,11 @@ import { eq } from "drizzle-orm";
  * ```
  */
 export const del = authRouter.settings.delete
-  // TODO JAN: add permissions middleware, needs the default user role in better auth
-  // .use(
-  //   permissionsMiddleware({
-  //     requiredPermissions: ["delete"],
-  //     roles: ["admin"],
-  //   })
-  // )
   .use(databaseMiddleware)
-  .handler(async ({ input, context, errors }) => {
+  .handler(async ({ input, context }) => {
     const { key } = input;
 
-    // Check if setting exists
-    const [existingSetting] = await context.db
-      .select()
-      .from(settings)
-      .where(eq(settings.key, key))
-      .limit(1);
-
-    if (!existingSetting) {
-      throw errors.NOT_FOUND({
-        message: `Setting with key '${key}' not found`,
-      });
-    }
-
-    // Delete the setting
+    // Delete the setting and check if it existed
     await context.db.delete(settings).where(eq(settings.key, key));
 
     return { success: true };

@@ -41,12 +41,10 @@ export const TransactionStatusSchema = z.discriminatedUnion("status", [
   z.object({
     transactionHash: ethereumHash,
     status: z.literal("pending"),
-    message: z.string(),
   }),
   z.object({
     transactionHash: ethereumHash,
     status: z.literal("confirmed"),
-    message: z.string(),
   }),
   z.object({
     transactionHash: ethereumHash,
@@ -70,18 +68,6 @@ export const TransactionStatusSchema = z.discriminatedUnion("status", [
  * ```typescript
  * const input = {
  *   transactionHash: "0x123...",
- *   messages: {
- *     transaction: {
- *       pending: "Minting your NFT...",
- *       success: "NFT minted successfully!",
- *       dropped: "Transaction was not processed"
- *     },
- *     indexing: {
- *       pending: "Updating your collection...",
- *       success: "Collection updated!",
- *       timeout: "Update is taking longer than expected"
- *     }
- *   }
  * };
  * ```
  */
@@ -91,31 +77,4 @@ export const TransactionStatusInputSchema = z.object({
    * Must be a valid Ethereum transaction hash (0x-prefixed, 32 bytes).
    */
   transactionHash: ethereumHash,
-
-  /**
-   * Customizable status messages for different tracking stages.
-   * Allows clients to provide context-specific messages for better UX.
-   */
-  messages: z.object({
-    /**
-     * Messages for blockchain transaction states.
-     */
-    transaction: z.object({
-      pending: z.string().default("Transaction is sent to the network."),
-      success: z.string().default("Transaction is included in a block."),
-      dropped: z.string().default("Transaction is dropped from the mempool."),
-    }),
-
-    /**
-     * Messages for post-transaction indexing states.
-     * These relate to TheGraph or other indexing services processing the transaction.
-     */
-    indexing: z.object({
-      pending: z.string().default("Smart contract indexing is in progress."),
-      success: z.string().default("Smart contract indexing is complete."),
-      timeout: z
-        .string()
-        .default("Smart contract indexing timed out, please try again later."),
-    }),
-  }),
 });

@@ -375,3 +375,11 @@ files:
     switch-to-mode: 66a8b43baa23b85e40869726ded57e76
     system: a45da96d0bf6575970f2d27af22be28a
     toggle-label: 5a9663b09544b4cfe12a13a805d7ac2b
+  locales/en/onboarding.json:
+    card-description: b414fac19a53a8ecd79689e7250eff2c
+    card-title: ab044cc207a6a77ad98238506d9db2d7
+    messages.pending.mining: 7e81211cc0b69f5a74f512e32fcfb8b4
+    messages.pending.indexing: a4b9d0a178b8a0163b964c356e5f7c0e
+    messages.success: c41bd99a133497fb78b776aecfb15073
+    messages.error: f8e02211ac0130a830d587bac87b42eb
+    messages.timeout: 8ec6e1597f24b3b52a3632c90d3a796a
