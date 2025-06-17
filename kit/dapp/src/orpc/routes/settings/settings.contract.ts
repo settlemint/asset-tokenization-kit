@@ -1,6 +1,5 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { z } from "zod/v4";
-import { SettingsCreateSchema } from "./routes/settings.create.schema";
 import { SettingsDeleteSchema } from "./routes/settings.delete.schema";
 import {
   SettingsListOutputSchema,
@@ -10,7 +9,7 @@ import {
   SettingSchema,
   SettingsReadSchema,
 } from "./routes/settings.read.schema";
-import { SettingsUpdateSchema } from "./routes/settings.update.schema";
+import { SettingsUpsertSchema } from "./routes/settings.upsert.schema";
 
 /**
  * Contract definition for the settings read endpoint.
@@ -45,35 +44,19 @@ const list = baseContract
   .output(SettingsListOutputSchema);
 
 /**
- * Contract definition for the settings create endpoint.
- *
- * Creates a new setting with the specified key and value.
- */
-const create = baseContract
-  .route({
-    method: "POST",
-    path: "/settings",
-    description: "Create a new setting",
-    successDescription: "Setting created successfully",
-    tags: ["settings"],
-  })
-  .input(SettingsCreateSchema)
-  .output(SettingSchema);
-
-/**
  * Contract definition for the settings update endpoint.
  *
  * Updates an existing setting's value.
  */
-const update = baseContract
+const upsert = baseContract
   .route({
-    method: "PUT",
-    path: "/settings/:key",
-    description: "Update an existing setting",
-    successDescription: "Setting updated successfully",
+    method: "POST",
+    path: "/settings",
+    description: "Upsert a setting",
+    successDescription: "Setting upserted successfully",
     tags: ["settings"],
   })
-  .input(SettingsUpdateSchema)
+  .input(SettingsUpsertSchema)
   .output(SettingSchema);
 
 /**
@@ -108,7 +91,6 @@ const del = baseContract
 export const settingsContract = {
   read,
   list,
-  create,
-  update,
+  upsert,
   delete: del,
 };

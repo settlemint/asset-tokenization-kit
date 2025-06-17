@@ -83,28 +83,40 @@ function OnboardingComponent() {
     })
   );
 
+  const { mutate: setSystemAddress } = useMutation(
+    orpc.settings.upsert.mutationOptions({
+      onSuccess: () => {
+        void queryClient.invalidateQueries({
+          queryKey: orpc.settings.read.queryKey({
+            input: { key: "SYSTEM_ADDRESS" },
+          }),
+          refetchType: "all",
+        });
+      },
+    })
+  );
+
   const {
     mutate: createSystem,
     isPending: isCreatingSystem,
     isTracking,
   } = useBlockchainMutation({
     mutationOptions: orpc.system.create.mutationOptions({
-      onSuccess: () => {
-        void queryClient.invalidateQueries({
-          queryKey: orpc.settings.read.queryKey({
-            input: { key: "SYSTEM_ADDRESS" },
-          }),
+      onSuccess: (data) => {
+        setSystemAddress({
+          key: "SYSTEM_ADDRESS",
+          value: data,
         });
       },
     }),
     messages: {
       pending: {
-        mining: "Deploying your SMART system...",
-        indexing: "Indexing the new SMART system...",
+        mining: t("onboarding:messages.pending.mining"),
+        indexing: t("onboarding:messages.pending.indexing"),
       },
-      success: "Your SMART system is deployed!",
-      error: "Failed to deploy your SMART system",
-      timeout: "Transaction tracking timeout",
+      success: t("onboarding:messages.success"),
+      error: t("onboarding:messages.error"),
+      timeout: t("onboarding:messages.timeout"),
     },
   });
 

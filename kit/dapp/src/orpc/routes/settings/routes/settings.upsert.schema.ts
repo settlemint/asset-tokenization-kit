@@ -6,7 +6,7 @@ import { z } from "zod/v4";
  *
  * Validates the setting key and new value before update.
  */
-export const SettingsUpdateSchema = z.object({
+export const SettingsUpsertSchema = z.object({
   /**
    * The setting key to update.
    * Must be one of the predefined SETTING_KEYS values.
