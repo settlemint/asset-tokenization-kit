@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.27;
 
-import { IATKSystem } from "../IATKSystem.sol";
+import { IATKSystem } from "../../system/IATKSystem.sol";
 import { IATKXvPSettlementFactory } from "./IATKXvPSettlementFactory.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
