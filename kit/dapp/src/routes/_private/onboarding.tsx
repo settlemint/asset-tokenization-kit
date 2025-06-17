@@ -29,13 +29,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -65,6 +66,8 @@ function OnboardingComponent() {
       },
     })
   );
+  const [systemTxHash, setSystemTxHash] = useState<string | undefined>();
+
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({
       onSuccess: () => {
@@ -81,13 +84,61 @@ function OnboardingComponent() {
     })
   );
 
-  const { mutate: createSystem } = useMutation(
+  const { mutate: createSystem, isPending: isCreatingSystem } = useMutation(
     orpc.system.create.mutationOptions({
-      onSuccess: () => {
-        toast.success("System created");
+      onSuccess: (data) => {
+        setSystemTxHash(data);
+      },
+      onError: (error) => {
+        toast.error(`Failed to create system: ${error.message}`);
       },
     })
   );
+
+  // Use streamedOptions for transaction tracking
+  const { data: trackingData } = useQuery(
+    orpc.transaction.track.experimental_streamedOptions({
+      input: {
+        transactionHash: systemTxHash ?? "",
+        messages: {
+          transaction: {
+            pending: "Deploying SMART system on blockchain...",
+            dropped: "Transaction was dropped from the network",
+          },
+          indexing: {
+            pending: "Indexing smart contracts...",
+            success: "SMART system deployed successfully!",
+            timeout: "Indexing is taking longer than expected",
+          },
+        },
+      },
+      enabled: !!systemTxHash,
+    })
+  );
+
+  // Get the latest tracking status from streamed data
+  const trackingStatus = trackingData?.[trackingData.length - 1] ?? null;
+  const isTracking =
+    !!systemTxHash &&
+    trackingStatus?.status !== "confirmed" &&
+    trackingStatus?.status !== "failed";
+
+  // Handle tracking completion
+  useEffect(() => {
+    if (!trackingStatus) return;
+
+    if (trackingStatus.status === "confirmed") {
+      toast.success("SMART system deployed successfully!");
+      void queryClient.invalidateQueries({
+        queryKey: orpc.settings.read.queryKey({
+          input: { key: "SYSTEM_ADDRESS" },
+        }),
+      });
+    } else if (trackingStatus.status === "failed") {
+      toast.error(`System deployment failed: ${trackingStatus.reason}`);
+      setSystemTxHash(undefined);
+    }
+  }, [trackingStatus]);
 
   return (
     <OnboardingGuard require="not-onboarded">
@@ -140,14 +191,49 @@ function OnboardingComponent() {
                   >
                     Secure your wallet with MFA
                   </Button> */}
-                  <Button
-                    disabled={!!systemAddress}
-                    onClick={() => {
-                      createSystem({});
-                    }}
-                  >
-                    Deploy a new SMART system
-                  </Button>
+                  <div className="flex flex-col gap-4">
+                    <Button
+                      disabled={
+                        !!systemAddress || isCreatingSystem || isTracking
+                      }
+                      onClick={() => {
+                        createSystem({});
+                      }}
+                    >
+                      {isCreatingSystem || isTracking
+                        ? "Deploying..."
+                        : "Deploy a new SMART system"}
+                    </Button>
+                    {(isCreatingSystem || isTracking) && trackingStatus && (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">
+                            {trackingStatus.status === "failed"
+                              ? trackingStatus.reason
+                              : trackingStatus.message}
+                          </span>
+                          {trackingStatus.status === "pending" && (
+                            <span className="text-xs text-muted-foreground animate-pulse">
+                              Processing...
+                            </span>
+                          )}
+                        </div>
+                        <Progress
+                          value={
+                            trackingStatus.status === "pending" &&
+                            trackingStatus.message.includes("Indexing")
+                              ? 66
+                              : trackingStatus.status === "confirmed"
+                                ? 100
+                                : trackingStatus.status === "failed"
+                                  ? 0
+                                  : 33
+                          }
+                          className="h-2"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </CardHeader>
