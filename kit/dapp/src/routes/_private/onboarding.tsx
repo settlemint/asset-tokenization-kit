@@ -135,9 +135,11 @@ function OnboardingComponent() {
                 <div className="flex flex-col gap-8">
                   <p>This should be our step wizard</p>
                   <Button
-                    disabled={!!user.wallet}
+                    disabled={!!user?.wallet || !user?.id}
                     onClick={() => {
-                      generateWallet({ userId: user.id });
+                      if (user?.id) {
+                        generateWallet({ userId: user.id });
+                      }
                     }}
                   >
                     Generate a new wallet
