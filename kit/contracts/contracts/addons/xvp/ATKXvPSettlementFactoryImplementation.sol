@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.27;
 
-import { XvPSettlement } from "./ATKXvPSettlement.sol";
+import { ATKXvPSettlementImplementation } from "./ATKXvPSettlementImplementation.sol";
+import { IATKXvPSettlement } from "./IATKXvPSettlement.sol";
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -12,6 +13,10 @@ import { IATKXvPSettlementFactory } from "./IATKXvPSettlementFactory.sol";
 import { IWithTypeIdentifier } from "../../system/IWithTypeIdentifier.sol";
 import { AbstractATKSystemAddonFactoryImplementation } from
     "../../system/AbstractATKSystemAddonFactoryImplementation.sol";
+import { ATKXvPSettlementProxy } from "./ATKXvPSettlementProxy.sol";
+import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
+import { IATKSystem } from "../../system/IATKSystem.sol";
+import { IATKComplianceBypassList } from "../../system/compliance/IATKComplianceBypassList.sol";
 
 /// @title XvPSettlementFactory - A factory contract for creating XvPSettlement contracts
 /// @notice This contract allows the creation of new XvPSettlement contracts with deterministic addresses using CREATE2.
@@ -31,18 +36,29 @@ contract ATKXvPSettlementFactoryImplementation is
     error ZeroAddressNotAllowed();
     error InvalidCutoffDate();
     error EmptyFlows();
+    error InvalidAddress();
+    error SameAddress();
+    error InvalidImplementation();
 
-    /// @notice The address of the trusted forwarder for meta-transactions
-    address private _trustedForwarder;
+    /// @notice Address of the current XvPSettlement logic contract (implementation).
+    address public xvpSettlementImplementation;
+
+    /// @notice An array that stores references (addresses cast to `IATKXvPSettlement`) to all XvP settlement
+    /// proxy contracts created by this factory.
+    IATKXvPSettlement[] private allSettlements;
 
     /// @notice Emitted when a new XvPSettlement contract is created
     /// @param settlement The address of the newly created settlement contract
     /// @param creator The address that created the settlement contract
-    event XvPSettlementCreated(address indexed settlement, address indexed creator);
+    event ATKXvPSettlementCreated(address indexed settlement, address indexed creator);
+
+    /// @notice Emitted when the implementation is updated
+    /// @param oldImplementation The address of the previous implementation
+    /// @param newImplementation The address of the new implementation
+    event ImplementationUpdated(address indexed oldImplementation, address indexed newImplementation);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) {
-        _trustedForwarder = forwarder;
         _disableInitializers();
     }
 
@@ -56,37 +72,68 @@ contract ATKXvPSettlementFactoryImplementation is
 
         __ERC165_init();
         _initializeAbstractSystemAddonFactory(systemAddress, initialAdmin);
+
+        // Deploy the initial XvPSettlement implementation
+        ATKXvPSettlementImplementation initialImplementation = new ATKXvPSettlementImplementation(trustedForwarder());
+
+        xvpSettlementImplementation = address(initialImplementation);
+        emit ImplementationUpdated(address(0), xvpSettlementImplementation);
+    }
+
+    /// @notice Updates the address of the XvPSettlement implementation contract.
+    /// @dev Only callable by the implementation manager. New proxies created after this call will use the new
+    /// implementation.
+    /// This does NOT automatically upgrade existing proxy instances.
+    /// @param _newImplementation The address of the new XvPSettlement logic contract.
+    function updateImplementation(address _newImplementation)
+        external
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
+        if (_newImplementation == address(0)) revert InvalidAddress();
+        if (_newImplementation == xvpSettlementImplementation) revert SameAddress();
+        if (!IERC165(_newImplementation).supportsInterface(type(IATKXvPSettlement).interfaceId)) {
+            revert InvalidImplementation();
+        }
+
+        address oldImplementation = xvpSettlementImplementation;
+        xvpSettlementImplementation = _newImplementation;
+        emit ImplementationUpdated(oldImplementation, xvpSettlementImplementation);
     }
 
     /// @notice Creates a new XvPSettlement contract
-    /// @dev Uses CREATE2 for deterministic addresses, includes reentrancy protection,
-    /// and validates that the predicted address hasn't been used before.
+    /// @dev Uses CREATE2 for deterministic addresses and the system addon pattern for deployment.
     /// @param flows The array of token flows to include in the settlement
     /// @param cutoffDate Timestamp after which the settlement expires
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
     /// @return contractAddress The address of the newly created settlement contract
     function create(
-        XvPSettlement.Flow[] memory flows,
+        IATKXvPSettlement.Flow[] memory flows,
         uint256 cutoffDate,
         bool autoExecute
     )
         external
+        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
         returns (address contractAddress)
     {
         if (cutoffDate <= block.timestamp) revert InvalidCutoffDate();
         if (flows.length == 0) revert EmptyFlows();
 
-        bytes memory saltInputData = abi.encode(flows, cutoffDate, autoExecute);
-        bytes memory proxyCreationCode = type(XvPSettlement).creationCode;
-        bytes memory encodedConstructorArgs = abi.encode(_trustedForwarder, cutoffDate, autoExecute, flows);
+        bytes memory saltInputData = abi.encode(address(this), flows, cutoffDate, autoExecute, _msgSender());
+        bytes memory constructorArgs = abi.encode(address(this), cutoffDate, autoExecute, flows);
+        bytes memory proxyBytecode = type(ATKXvPSettlementProxy).creationCode;
 
         // Predict the address first for validation
-        address expectedAddress = _predictProxyAddress(proxyCreationCode, encodedConstructorArgs, saltInputData);
+        address expectedAddress = _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
 
         // Deploy using the abstract factory method
-        contractAddress = _deploySystemAddon(proxyCreationCode, encodedConstructorArgs, saltInputData, expectedAddress);
+        contractAddress = _deploySystemAddon(proxyBytecode, constructorArgs, saltInputData, expectedAddress);
 
-        emit XvPSettlementCreated(contractAddress, _msgSender());
+        // Add to registry
+        // Cast the proxy to IATKXvPSettlement for storage, as the proxy behaves like one.
+        allSettlements.push(IATKXvPSettlement(contractAddress));
+
+        emit ATKXvPSettlementCreated(contractAddress, _msgSender());
+        return contractAddress;
     }
 
     /// @notice Predicts the address where a XvPSettlement contract would be deployed
@@ -97,7 +144,7 @@ contract ATKXvPSettlementFactoryImplementation is
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
     /// @return predicted The address where the settlement contract would be deployed
     function predictAddress(
-        XvPSettlement.Flow[] memory flows,
+        IATKXvPSettlement.Flow[] memory flows,
         uint256 cutoffDate,
         bool autoExecute
     )
@@ -105,12 +152,11 @@ contract ATKXvPSettlementFactoryImplementation is
         view
         returns (address predicted)
     {
-        bytes memory saltInputData = abi.encode(flows, cutoffDate, autoExecute);
-        bytes memory proxyCreationCode = type(XvPSettlement).creationCode;
-        bytes memory encodedConstructorArgs = abi.encode(_trustedForwarder, cutoffDate, autoExecute, flows);
+        bytes memory saltInputData = abi.encode(address(this), flows, cutoffDate, autoExecute, _msgSender());
+        bytes memory constructorArgs = abi.encode(address(this), cutoffDate, autoExecute, flows);
+        bytes memory proxyBytecode = type(ATKXvPSettlementProxy).creationCode;
 
-        predicted = _predictProxyAddress(proxyCreationCode, encodedConstructorArgs, saltInputData);
-        return predicted;
+        return _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
     }
 
     /// @notice Checks if an address was deployed by this factory
@@ -118,6 +164,29 @@ contract ATKXvPSettlementFactoryImplementation is
     /// @param settlement The address to check
     /// @return True if the address was created by this factory, false otherwise
     function isAddressDeployed(address settlement) public view returns (bool) {
-        return isFactorySystemAddon[settlement];
+        for (uint256 i = 0; i < allSettlements.length; i++) {
+            if (address(allSettlements[i]) == settlement) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// @notice Returns the total number of settlements created by this factory
+    function allSettlementsLength() external view returns (uint256) {
+        return allSettlements.length;
+    }
+
+    /// @notice Checks if the contract implements an interface
+    /// @param interfaceId The interface identifier
+    /// @return True if the contract implements the interface, false otherwise
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AbstractATKSystemAddonFactoryImplementation, IERC165)
+        returns (bool)
+    {
+        return interfaceId == type(IATKXvPSettlementFactory).interfaceId || super.supportsInterface(interfaceId);
     }
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.27;
 
-import { XvPSettlement } from "./ATKXvPSettlement.sol";
+import { IATKXvPSettlement } from "./IATKXvPSettlement.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title IATKXvPSettlementFactory Interface
@@ -10,6 +10,10 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 interface IATKXvPSettlementFactory is IERC165 {
     /// @notice Returns a unique identifier for the type of this contract.
     function typeId() external pure returns (bytes32);
+
+    /// @notice Returns the address of the current XvPSettlement implementation contract
+    /// @return The address of the XvPSettlement logic contract
+    function xvpSettlementImplementation() external view returns (address);
 
     /// @notice Initializes the factory with a trusted forwarder and an admin address
     /// @param forwarder The address of the trusted forwarder
@@ -22,7 +26,7 @@ interface IATKXvPSettlementFactory is IERC165 {
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
     /// @return contractAddress The address of the newly created settlement contract
     function create(
-        XvPSettlement.Flow[] memory flows,
+        IATKXvPSettlement.Flow[] memory flows,
         uint256 cutoffDate,
         bool autoExecute
     )
@@ -35,7 +39,7 @@ interface IATKXvPSettlementFactory is IERC165 {
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
     /// @return predicted The address where the settlement contract would be deployed
     function predictAddress(
-        XvPSettlement.Flow[] memory flows,
+        IATKXvPSettlement.Flow[] memory flows,
         uint256 cutoffDate,
         bool autoExecute
     )
