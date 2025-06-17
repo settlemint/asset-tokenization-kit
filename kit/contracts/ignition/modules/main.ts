@@ -29,9 +29,8 @@ const ATKModule = buildModule("ATKModule", (m) => {
   const { fixedYieldScheduleFactoryImplementation } = m.useModule(
     FixedYieldScheduleFactoryModule
   );
-  const { xvpSettlementFactoryImplementation } = m.useModule(
-    XvPSettlementFactoryModule
-  );
+  const { xvpSettlementImplementation, xvpSettlementFactoryImplementation } =
+    m.useModule(XvPSettlementFactoryModule);
   const { vestingAirdropFactoryImplementation } = m.useModule(
     VestingAirdropFactoryModule
   );
@@ -48,6 +47,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
     stablecoinImplementation,
     stablecoinFactoryImplementation,
     fixedYieldScheduleFactoryImplementation,
+    xvpSettlementImplementation,
     xvpSettlementFactoryImplementation,
     vestingAirdropFactoryImplementation,
   };

@@ -6,12 +6,22 @@ const XvPSettlementFactoryModule = buildModule(
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
+    // Deploy the XvPSettlement implementation (the logic contract)
+    const xvpSettlementImplementation = m.contract(
+      "ATKXvPSettlementImplementation",
+      [forwarder]
+    );
+
+    // Deploy the XvPSettlementFactory implementation
     const xvpSettlementFactoryImplementation = m.contract(
       "ATKXvPSettlementFactoryImplementation",
       [forwarder]
     );
 
-    return { xvpSettlementFactoryImplementation };
+    return {
+      xvpSettlementImplementation,
+      xvpSettlementFactoryImplementation,
+    };
   }
 );
 
