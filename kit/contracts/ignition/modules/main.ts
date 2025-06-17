@@ -31,6 +31,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
   );
   const { xvpSettlementFactoryImplementation } = m.useModule(
     XvPSettlementFactoryModule
+  );
   const { vestingAirdropFactoryImplementation } = m.useModule(
     VestingAirdropFactoryModule
   );
