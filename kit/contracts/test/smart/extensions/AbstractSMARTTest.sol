@@ -21,7 +21,8 @@ import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.
 import { SMARTToken } from "../examples/SMARTToken.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
-import { SMARTIdentityVerificationModule } from "../../../contracts/smart/modules/SMARTIdentityVerificationModule.sol";
+import { SMARTIdentityVerificationComplianceModule } from
+    "../../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 abstract contract AbstractSMARTTest is Test {
     // --- State Variables ---

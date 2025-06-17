@@ -46,7 +46,8 @@ import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMAR
 // Compliance Modules
 import { CountryAllowListComplianceModule } from "../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
 import { CountryBlockListComplianceModule } from "../../contracts/smart/modules/CountryBlockListComplianceModule.sol";
-import { SMARTIdentityVerificationModule } from "../../contracts/smart/modules/SMARTIdentityVerificationModule.sol";
+import { SMARTIdentityVerificationComplianceModule } from
+    "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 contract SystemUtils is Test {
     // System
@@ -64,7 +65,7 @@ contract SystemUtils is Test {
     MockedComplianceModule public mockedComplianceModule;
     CountryAllowListComplianceModule public countryAllowListComplianceModule;
     CountryBlockListComplianceModule public countryBlockListComplianceModule;
-    SMARTIdentityVerificationModule public identityVerificationModule;
+    SMARTIdentityVerificationComplianceModule public identityVerificationModule;
 
     // --- Setup ---
     constructor(address platformAdmin) {
@@ -85,7 +86,7 @@ contract SystemUtils is Test {
         ATKTopicSchemeRegistryImplementation topicSchemeRegistryImpl =
             new ATKTopicSchemeRegistryImplementation(forwarder);
 
-        identityVerificationModule = new SMARTIdentityVerificationModule(forwarder);
+        identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
         vm.label(address(identityVerificationModule), "Identity Verification Module");
 
         systemFactory = new ATKSystemFactory(

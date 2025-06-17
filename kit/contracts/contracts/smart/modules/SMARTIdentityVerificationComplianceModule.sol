@@ -9,7 +9,7 @@ import { ISMART } from "../interface/ISMART.sol";
 /// @author SettleMint Tokenization Services
 /// @notice This module is used to verify the identity of an investor.
 /// @dev This module is used to verify the identity of an investor.
-contract SMARTIdentityVerificationModule is AbstractComplianceModule {
+contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
     /// @notice Reverted when a token operation (like transfer or mint) is attempted, but the recipient
     ///         (or potentially sender, depending on the operation) does not meet the required identity verification
     /// status.

@@ -39,7 +39,8 @@ import {
 import { ATKSystemAddonProxy } from "./ATKSystemAddonProxy.sol";
 
 // Compliance modules
-import { SMARTIdentityVerificationModule } from "../smart/modules/SMARTIdentityVerificationModule.sol";
+import { SMARTIdentityVerificationComplianceModule } from
+    "../smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 // Constants
 import { ATKSystemRoles } from "./ATKSystemRoles.sol";
