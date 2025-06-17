@@ -31,6 +31,7 @@ export function fetchFixedYieldSchedulePeriod(
       BigInt.zero(),
       DEFAULT_TOKEN_DECIMALS
     );
+    fixedYieldSchedulePeriod.deployedInTransaction = Bytes.empty();
     fixedYieldSchedulePeriod.save();
   }
 

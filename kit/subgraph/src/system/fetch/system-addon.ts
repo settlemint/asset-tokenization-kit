@@ -12,6 +12,7 @@ export function fetchSystemAddon(address: Address): SystemAddon {
     systemAddon.account = fetchAccount(address).id;
     systemAddon.name = "unknown";
     systemAddon.typeId = Bytes.fromHexString("0x00");
+    systemAddon.deployedInTransaction = Bytes.empty();
     systemAddon.save();
     // FixedYieldScheduleFactoryTemplate.create(address);
   }

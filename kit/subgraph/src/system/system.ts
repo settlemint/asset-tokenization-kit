@@ -1,4 +1,4 @@
-import { ByteArray, crypto } from "@graphprotocol/graph-ts";
+import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
 
 import {
   BondFactory as BondFactoryTemplate,
@@ -33,22 +33,44 @@ import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 export function handleBootstrapped(event: Bootstrapped): void {
   fetchEvent(event, "Bootstrapped");
   const system = fetchSystem(event.address);
+  
+  // Set deployedInTransaction for all entities created during bootstrap
+  const identityRegistry = fetchIdentityRegistry(event.params.identityRegistryProxy);
+  if (identityRegistry.deployedInTransaction == Bytes.empty()) {
+    identityRegistry.deployedInTransaction = event.transaction.hash;
+    identityRegistry.save();
+  }
+  
+  const identityRegistryStorage = fetchIdentityRegistryStorage(event.params.identityRegistryStorageProxy);
+  if (identityRegistryStorage.deployedInTransaction == Bytes.empty()) {
+    identityRegistryStorage.deployedInTransaction = event.transaction.hash;
+    identityRegistryStorage.save();
+  }
+  
+  const trustedIssuersRegistry = fetchTrustedIssuersRegistry(event.params.trustedIssuersRegistryProxy);
+  if (trustedIssuersRegistry.deployedInTransaction == Bytes.empty()) {
+    trustedIssuersRegistry.deployedInTransaction = event.transaction.hash;
+    trustedIssuersRegistry.save();
+  }
+  
+  const identityFactory = fetchIdentityFactory(event.params.identityFactoryProxy);
+  if (identityFactory.deployedInTransaction == Bytes.empty()) {
+    identityFactory.deployedInTransaction = event.transaction.hash;
+    identityFactory.save();
+  }
+  
+  const topicSchemeRegistry = fetchTopicSchemeRegistry(event.params.topicSchemeRegistryProxy);
+  if (topicSchemeRegistry.deployedInTransaction == Bytes.empty()) {
+    topicSchemeRegistry.deployedInTransaction = event.transaction.hash;
+    topicSchemeRegistry.save();
+  }
+  
   system.compliance = fetchCompliance(event.params.complianceProxy).id;
-  system.identityRegistry = fetchIdentityRegistry(
-    event.params.identityRegistryProxy
-  ).id;
-  system.identityRegistryStorage = fetchIdentityRegistryStorage(
-    event.params.identityRegistryStorageProxy
-  ).id;
-  system.trustedIssuersRegistry = fetchTrustedIssuersRegistry(
-    event.params.trustedIssuersRegistryProxy
-  ).id;
-  system.identityFactory = fetchIdentityFactory(
-    event.params.identityFactoryProxy
-  ).id;
-  system.topicSchemeRegistry = fetchTopicSchemeRegistry(
-    event.params.topicSchemeRegistryProxy
-  ).id;
+  system.identityRegistry = identityRegistry.id;
+  system.identityRegistryStorage = identityRegistryStorage.id;
+  system.trustedIssuersRegistry = trustedIssuersRegistry.id;
+  system.identityFactory = identityFactory.id;
+  system.topicSchemeRegistry = topicSchemeRegistry.id;
   system.save();
 }
 
@@ -114,6 +136,9 @@ export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
 export function handleSystemAddonCreated(event: SystemAddonCreated): void {
   fetchEvent(event, "SystemAddonCreated");
   const systemAddon = fetchSystemAddon(event.params.proxyAddress);
+  if (systemAddon.deployedInTransaction == Bytes.empty()) {
+    systemAddon.deployedInTransaction = event.transaction.hash;
+  }
   systemAddon.name = event.params.name;
   systemAddon.typeId = event.params.typeId;
   if (
