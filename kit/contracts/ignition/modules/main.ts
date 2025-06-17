@@ -1,7 +1,8 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import VestingAirdropFactoryModule from "./predeployed/addons/airdrop/vesting-airdrop-factory";
 import FixedYieldScheduleFactoryModule from "./predeployed/addons/fixed-yield-schedule-factory";
-import VaultFactoryModule from "./predeployed/addons/vault-factory";
+import VaultModule from "./predeployed/addons/vault/vault";
+import VaultFactoryModule from "./predeployed/addons/vault/vault-factory";
 import BondModule from "./predeployed/assets/bond";
 import DepositModule from "./predeployed/assets/deposit";
 import EquityModule from "./predeployed/assets/equity";
@@ -33,6 +34,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
     VestingAirdropFactoryModule
   );
   const { vaultFactoryImplementation } = m.useModule(VaultFactoryModule);
+  const { atkVaultImplementation } = m.useModule(VaultModule);
   return {
     systemFactory,
     bondImplementation,
@@ -48,6 +50,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
     fixedYieldScheduleFactoryImplementation,
     vestingAirdropFactoryImplementation,
     vaultFactoryImplementation,
+    atkVaultImplementation,
   };
 });
 

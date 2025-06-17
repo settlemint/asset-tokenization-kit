@@ -1,5 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "../forwarder";
+import ForwarderModule from "../../forwarder";
 
 const VaultFactoryModule = buildModule("VaultFactoryModule", (m) => {
   const { forwarder } = m.useModule(ForwarderModule);
