@@ -17,16 +17,22 @@
  * @see {@link https://tanstack.com/query/latest} - TanStack Query documentation
  */
 
+import { env } from "@/lib/env";
 import {
   getEthereumHash,
   isEthereumHash,
   type EthereumHash,
 } from "@/lib/zod/validators/ethereum-hash";
 import { orpc } from "@/orpc";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { UseMutationOptions } from "@tanstack/react-query";
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+
+const logger = createLogger({
+  level: env.VITE_SETTLEMINT_LOG_LEVEL,
+});
 
 /**
  * Configuration options for blockchain mutations.
@@ -85,7 +91,10 @@ interface TrackingState {
  * - Multi-transaction support with parallel tracking
  * - Automatic cleanup and timeout handling
  *
- * @template TData - The type of data returned by the mutation (must include transaction hash)
+ * @template TData - The type of data returned by the mutation. For transaction tracking
+ *                   to work, this should be a valid Ethereum transaction hash string
+ *                   (0x-prefixed, 32 bytes). If the mutation returns a different type,
+ *                   tracking will be skipped with a warning logged to the console.
  * @template TError - The type of error that can be thrown
  * @template TVariables - The type of variables passed to the mutation
  * @template TContext - The type of context for mutation callbacks
@@ -256,11 +265,29 @@ export function useBlockchainMutation<
     ...options.mutationOptions,
 
     onSuccess: (data, variables, context) => {
-      const hash = getEthereumHash(data);
+      // Check if the mutation result contains a valid transaction hash
+      if (isEthereumHash(data)) {
+        try {
+          // Extract and validate the transaction hash
+          const hash = getEthereumHash(data);
 
-      // Create initial toast and store tracking state
-      const toastId = toast.loading(messages.pending.mining);
-      addTracking(hash, toastId);
+          // Create initial toast and store tracking state
+          const toastId = toast.loading(messages.pending.mining);
+          addTracking(hash, toastId);
+        } catch (error) {
+          // This shouldn't happen if isEthereumHash returned true, but handle it defensively
+          logger.error(
+            "useBlockchainMutation: Unexpected error extracting transaction hash",
+            { data, error }
+          );
+        }
+      } else {
+        // Log warning if mutation result doesn't contain a valid hash
+        logger.warn(
+          "useBlockchainMutation: Mutation result does not contain a valid transaction hash",
+          { data, type: typeof data }
+        );
+      }
 
       // Call the original onSuccess
       options.mutationOptions.onSuccess?.(data, variables, context);

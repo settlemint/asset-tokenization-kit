@@ -113,6 +113,14 @@ export const track = authRouter.transaction.track
     // Poll for transaction receipt with exponential backoff
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
+        yield withEventMeta(
+          {
+            status: "failed",
+            reason: "Transaction tracking timed out after 90 seconds",
+            transactionHash,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
         return; // Stream timeout
       }
       const { getTransaction } = await context.portalClient.request(
@@ -184,6 +192,14 @@ export const track = authRouter.transaction.track
     // Poll TheGraph until transaction block is indexed or timeout
     while (Date.now() - indexingStartTime <= INDEXING_TIMEOUT_MS) {
       if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
+        yield withEventMeta(
+          {
+            status: "failed",
+            reason: "Transaction tracking timed out after 90 seconds",
+            transactionHash,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
         return; // Stream timeout
       }
       const { _meta } = await theGraphClient.request(GET_INDEXING_STATUS_QUERY);
