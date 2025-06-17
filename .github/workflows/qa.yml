@@ -5,6 +5,7 @@ on:
     branches:
       - main
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - main
 
@@ -115,12 +116,6 @@ jobs:
             bun run ci:gha --concurrency=100%
           fi
         env:
-          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: settlemintcom
-          SENTRY_PROJECT: atk
           THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
           THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
 

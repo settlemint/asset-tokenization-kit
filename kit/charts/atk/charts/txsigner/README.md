@@ -44,7 +44,7 @@ Kubernetes: `>=1.21.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://registry-1.docker.io/bitnamicharts | common | 2.31.1 |
+| oci://registry-1.docker.io/bitnamicharts | common | 2.31.3 |
 
 ## Prerequisites
 

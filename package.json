@@ -44,12 +44,12 @@
     "ci:publish": "turbo run ci:publish",
     "version": "bun run tools/version.ts",
     "clean": "git clean -fdX -e '.env' -e '.env.*' -e '!.env' -e '!.env.*' && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' -o -name 'bun.lock' \\) -exec rm -f {} + && bun install",
-    "dev": "turbo dev watch",
+    "dev": "turbo dev watch db:studio",
     "lint": "turbo lint",
     "format": "turbo format",
     "test": "turbo test",
-    "deploy:local": "turbo deploy:local",
-    "deploy:remote": "turbo deploy:remote",
+    "test:integration": "turbo test:integration",
+    "publish": "turbo publish",
     "test:e2e:ui": "bun run --cwd kit/e2e playwright test --config=playwright.ui.config.ts --project=ui-tests",
     "test:e2e:ui:debug": "bun run --cwd kit/e2e playwright test --config=playwright.ui.config.ts --project=ui-tests --ui",
     "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
@@ -65,10 +65,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@settlemint/sdk-cli": "2.3.14",
-    "lefthook": "1.11.13",
-    "pino": "9.7.0",
-    "pino-pretty": "13.0.0",
+    "@settlemint/sdk-cli": "2.4.0",
+    "lefthook": "1.11.14",
     "prettier": "3.5.3",
     "turbo": "2.5.4",
     "typescript": "5.8.3"
@@ -98,10 +96,13 @@
     "adm-zip": "0.5.16",
     "undici": "7.10.0",
     "prettier": "3.5.3",
-    "zod": "3.25.63",
-    "@tanstack/query-sync-storage-persister": "5.80.7",
+    "zod": "3.25.67",
     "@tanstack/react-query": "5.80.7",
     "@tanstack/react-query-devtools": "5.80.7",
-    "@tanstack/react-query-persist-client": "5.80.7"
+    "@tanstack/react-router": "1.121.21",
+    "@tanstack/react-router-devtools": "1.121.21",
+    "@tanstack/react-router-with-query": "1.121.21",
+    "@tanstack/react-start": "1.121.21",
+    "@tanstack/router-devtools": "1.121.21"
   }
 }

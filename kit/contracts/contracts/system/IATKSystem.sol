@@ -95,24 +95,32 @@ interface IATKSystem is IERC165 {
 
     /// @notice Emitted when a ATKTokenFactory is registered.
     /// @param sender The address that registered the token factory.
-    /// @param typeName The human-readable type name of the token factory.
+    /// @param name The human-readable name of the token factory.
+    /// @param typeId The type identifier of the token factory.
     /// @param proxyAddress The address of the deployed token factory proxy.
     /// @param implementationAddress The address of the deployed token factory implementation.
     /// @param timestamp The timestamp of the token factory creation.
     event TokenFactoryCreated(
-        address indexed sender, string typeName, address proxyAddress, address implementationAddress, uint256 timestamp
+        address indexed sender,
+        string name,
+        bytes32 typeId,
+        address proxyAddress,
+        address implementationAddress,
+        uint256 timestamp
     );
 
     /// @notice Emitted when a system addon is created.
     /// @param sender The address that created the system addon.
-    /// @param typeName The human-readable type name of the system addon.
+    /// @param name The human-readable name of the system addon.
+    /// @param typeId The type identifier of the system addon.
     /// @param proxyAddress The address of the deployed system addon proxy.
     /// @param implementation The address of the deployed system addon implementation.
     /// @param initializationData The encoded function call to initialize the system addon.
     /// @param timestamp The timestamp of the system addon creation.
     event SystemAddonCreated(
         address indexed sender,
-        string typeName,
+        string name,
+        bytes32 typeId,
         address proxyAddress,
         address implementation,
         bytes initializationData,
@@ -130,11 +138,11 @@ interface IATKSystem is IERC165 {
     function bootstrap() external;
 
     /// @notice Creates a new token factory implementation and proxy.
-    /// @param _typeName The human-readable type name of the token factory.
+    /// @param _name The human-readable name of the token factory.
     /// @param _factoryImplementation The address of the token factory implementation contract.
     /// @param _tokenImplementation The address of the token implementation contract.
     function createTokenFactory(
-        string calldata _typeName,
+        string calldata _name,
         address _factoryImplementation,
         address _tokenImplementation
     )
@@ -142,12 +150,12 @@ interface IATKSystem is IERC165 {
         returns (address);
 
     /// @notice Deploys and registers a new system addon with a proxy and initializer.
-    /// @param typeName A human-readable identifier (e.g., "Swap", "YieldContract").
+    /// @param name A human-readable identifier (e.g., "Swap", "YieldContract").
     /// @param implementation The address of the logic contract to use for the proxy.
     /// @param initializationData Encoded function call to initialize the proxy (e.g., abi.encodeWithSelector(...)).
     /// @return proxyAddress The address of the newly deployed proxy.
     function createSystemAddon(
-        string calldata typeName,
+        string calldata name,
         address implementation,
         bytes calldata initializationData
     )
