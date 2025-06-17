@@ -139,7 +139,7 @@ jobs:
           commit_message: "chore: update artifacts [skip ci]"
           branch: main
           file_pattern: |
-            "tools/docker/**/* docker-compose.yml kit/dapp/locales/**/* kit/charts/**/README.md"
+            "tools/docker/ docker-compose.yml kit/dapp/locales/**/*.json kit/charts/**/README.md"
 
   pr-labels:
     name: PR Labels
