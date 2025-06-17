@@ -42,9 +42,9 @@ interface IATKVaultFactory {
         returns (address predictedAddress);
 
     /// @notice Initializes the factory contract
-    /// @param forwarder_ Address of the trusted forwarder for meta-transactions
+    /// @param systemAddress_ Address of the ATK system contract
     /// @param initialAdmin_ Address that will have admin role
-    function initialize(address forwarder_, address initialAdmin_) external;
+    function initialize(address systemAddress_, address initialAdmin_) external;
 
     /// @notice Returns the address of the current ATKVault logic contract (implementation).
     /// @dev This function is expected to be available on the factory contract.

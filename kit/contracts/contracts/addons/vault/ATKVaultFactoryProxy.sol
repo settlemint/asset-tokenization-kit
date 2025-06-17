@@ -14,7 +14,7 @@ contract ATKVaultFactoryProxy {
 
     /// @notice Constructor for the ATKVaultFactoryProxy
     /// @param systemAddress Address of the ATK System contract
-    /// @param forwarder_ Address of the trusted forwarder for meta-transactions
+    /// @param forwarder_ Address of the trusted forwarder for meta-transactions (passed to implementation constructor)
     /// @param initialAdmin_ Address that will have admin role
     constructor(address systemAddress, address forwarder_, address initialAdmin_) {
         if (systemAddress == address(0)) revert("Invalid system address");
@@ -26,7 +26,7 @@ contract ATKVaultFactoryProxy {
 
         // Initialize the implementation
         (bool success,) = implementation.delegatecall(
-            abi.encodeWithSelector(IATKVaultFactory.initialize.selector, forwarder_, initialAdmin_)
+            abi.encodeWithSelector(IATKVaultFactory.initialize.selector, systemAddress, initialAdmin_)
         );
         if (!success) revert("Initialization failed");
     }
