@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { IdentityRegistry } from "../../../generated/schema";
 import { IdentityRegistry as IdentityRegistryTemplate } from "../../../generated/templates";
 import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
@@ -11,6 +11,7 @@ export function fetchIdentityRegistry(address: Address): IdentityRegistry {
     identityRegistry = new IdentityRegistry(address);
     identityRegistry.accessControl = fetchAccessControl(address).id;
     identityRegistry.account = fetchAccount(address).id;
+    identityRegistry.deployedInTransaction = Bytes.empty();
     identityRegistry.save();
     IdentityRegistryTemplate.create(address);
   }

@@ -11,6 +11,7 @@ export function fetchTopicScheme(topicId: BigInt): TopicScheme {
     topicScheme.name = "";
     topicScheme.signature = "";
     topicScheme.enabled = true;
+    topicScheme.deployedInTransaction = Bytes.empty();
     topicScheme.save();
   }
 

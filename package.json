@@ -1,7 +1,7 @@
 {
   "name": "@settlemint/asset-tokenization-kit",
   "description": "SettleMint Kit - Asset Tokenization",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
@@ -87,7 +87,7 @@
   "workspaces": [
     "kit/*"
   ],
-  "packageManager": "bun@1.2.10",
+  "packageManager": "bun@1.2.16",
   "overrides": {
     "react-is": "19.1.0",
     "graphql": "16.11.0",
@@ -102,7 +102,7 @@
     "@tanstack/react-router": "1.121.21",
     "@tanstack/react-router-devtools": "1.121.21",
     "@tanstack/react-router-with-query": "1.121.21",
-    "@tanstack/react-start": "1.121.21",
+    "@tanstack/react-start": "1.121.22",
     "@tanstack/router-devtools": "1.121.21"
   }
 }

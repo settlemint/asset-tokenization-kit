@@ -1,3 +1,4 @@
+import { Bytes } from "@graphprotocol/graph-ts";
 import {
   TopicSchemeRegistered,
   TopicSchemeRemoved,
@@ -12,6 +13,9 @@ export function handleTopicSchemeRegistered(
 ): void {
   fetchEvent(event, "TopicSchemeRegistered");
   const topicScheme = fetchTopicScheme(event.params.topicId);
+  if (topicScheme.deployedInTransaction.equals(Bytes.empty())) {
+    topicScheme.deployedInTransaction = event.transaction.hash;
+  }
   topicScheme.name = event.params.name;
   topicScheme.signature = event.params.signature;
   topicScheme.save();
@@ -43,6 +47,9 @@ export function handleTopicSchemesBatchRegistered(
 
   for (let i = 0; i < topicIds.length; i++) {
     const topicScheme = fetchTopicScheme(topicIds[i]);
+    if (topicScheme.deployedInTransaction.equals(Bytes.empty())) {
+      topicScheme.deployedInTransaction = event.transaction.hash;
+    }
     topicScheme.name = names[i];
     topicScheme.signature = signatures[i];
     topicScheme.save();
