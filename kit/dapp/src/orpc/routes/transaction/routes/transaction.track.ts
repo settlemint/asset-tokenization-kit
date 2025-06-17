@@ -21,6 +21,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { withEventMeta } from "@orpc/server";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { setTimeout } from "node:timers/promises";
 import { authRouter } from "../../../procedures/auth.router";
@@ -66,7 +67,8 @@ const GET_INDEXING_STATUS_QUERY = theGraphGraphql(
 const MAX_ATTEMPTS = 30; // Maximum attempts to fetch transaction receipt
 const DELAY_MS = 2000; // Delay between transaction receipt checks
 const POLLING_INTERVAL_MS = 500; // Interval for indexing status checks
-const TIMEOUT_MS = 180_000; // Total timeout for indexing (3 minutes)
+const INDEXING_TIMEOUT_MS = 60_000; // Total timeout for indexing (3 minutes)
+const STREAM_TIMEOUT_MS = 90_000; // Total timeout for the stream (90 seconds)
 
 /**
  * Tracks blockchain transaction status and indexing progress.
@@ -96,7 +98,8 @@ const TIMEOUT_MS = 180_000; // Total timeout for indexing (3 minutes)
 export const track = authRouter.transaction.track
   .use(portalMiddleware)
   .handler(async function* ({ input, context }) {
-    const { transactionHash, messages } = input;
+    const { transactionHash } = input;
+    const streamStartTime = Date.now();
 
     // Phase 1: Monitor transaction confirmation on blockchain
     let receipt:
@@ -109,6 +112,17 @@ export const track = authRouter.transaction.track
 
     // Poll for transaction receipt with exponential backoff
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
+        yield withEventMeta(
+          {
+            status: "failed",
+            reason: "Transaction tracking timed out after 90 seconds",
+            transactionHash,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
+        return; // Stream timeout
+      }
       const { getTransaction } = await context.portalClient.request(
         GET_TRANSACTION_QUERY,
         {
@@ -120,57 +134,86 @@ export const track = authRouter.transaction.track
 
       // Transaction not yet mined, continue polling
       if (!receipt) {
-        yield {
-          status: "pending",
-          message: messages.transaction.pending,
-          transactionHash,
-        };
+        yield withEventMeta(
+          {
+            status: "pending",
+            transactionHash,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
         await setTimeout(DELAY_MS);
         continue;
       }
 
       // Transaction failed or reverted
       if (receipt.status !== "Success") {
-        yield {
-          status: "failed",
-          reason: receipt.revertReasonDecoded ?? "",
-          transactionHash,
-        };
-        break;
+        yield withEventMeta(
+          {
+            status: "failed",
+            reason:
+              receipt.revertReasonDecoded ??
+              receipt.revertReason ??
+              "Transaction failed",
+            transactionHash,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
+        return;
       }
+
+      // Transaction successful, break to phase 2
+      break;
     }
 
     // Transaction dropped from mempool or not found after max attempts
     if (!receipt) {
-      yield {
-        status: "failed",
-        reason: messages.transaction.dropped,
-        transactionHash,
-      };
+      yield withEventMeta(
+        {
+          status: "failed",
+          reason: "Transaction was not confirmed on-chain in time.",
+          transactionHash,
+        },
+        { id: transactionHash, retry: 1000 }
+      );
       return;
     }
 
     // Phase 2: Monitor indexing progress
-    yield {
-      status: "pending",
-      message: messages.indexing.pending,
-      transactionHash,
-    };
+    yield withEventMeta(
+      {
+        status: "pending",
+        transactionHash,
+      },
+      { id: transactionHash, retry: 1000 }
+    );
 
-    const startTime = Date.now();
+    const indexingStartTime = Date.now();
 
     // Poll TheGraph until transaction block is indexed or timeout
-    while (Date.now() - startTime <= TIMEOUT_MS) {
+    while (Date.now() - indexingStartTime <= INDEXING_TIMEOUT_MS) {
+      if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
+        yield withEventMeta(
+          {
+            status: "failed",
+            reason: "Transaction tracking timed out after 90 seconds",
+            transactionHash,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
+        return; // Stream timeout
+      }
       const { _meta } = await theGraphClient.request(GET_INDEXING_STATUS_QUERY);
       const indexedBlock = _meta?.block.number ?? 0;
 
       // Check if TheGraph has indexed up to or past the transaction block
       if (indexedBlock >= Number(receipt.blockNumber)) {
-        yield {
-          status: "confirmed",
-          message: messages.indexing.success,
-          transactionHash,
-        };
+        yield withEventMeta(
+          {
+            status: "confirmed",
+            transactionHash,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
         return;
       }
 
@@ -178,10 +221,13 @@ export const track = authRouter.transaction.track
     }
 
     // Indexing timeout - transaction confirmed but not yet queryable
-    yield {
-      status: "failed",
-      reason: messages.indexing.timeout,
-      transactionHash,
-    };
+    yield withEventMeta(
+      {
+        status: "failed",
+        reason: "Smart contract indexing timed out, please try again later",
+        transactionHash,
+      },
+      { id: transactionHash, retry: 1000 }
+    );
     return;
   });

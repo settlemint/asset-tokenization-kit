@@ -22,6 +22,7 @@ import { env } from "@/lib/env";
 import { router } from "@/orpc/routes/router";
 import { onError } from "@orpc/client";
 import { RPCHandler } from "@orpc/server/fetch";
+import { BatchHandlerPlugin } from "@orpc/server/plugins";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   createServerFileRoute,
@@ -49,6 +50,7 @@ const handler = new RPCHandler(router, {
       logger.error((error as Error).message, error);
     }),
   ],
+  plugins: [new BatchHandlerPlugin()],
 });
 
 /**
