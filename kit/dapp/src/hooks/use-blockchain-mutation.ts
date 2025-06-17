@@ -79,6 +79,8 @@ interface TrackingState {
   toastId: string | number;
   /** Timestamp when tracking started (for timeout detection) */
   startTime: number;
+  /** True if the first pending status has been seen */
+  isIndexing: boolean;
 }
 
 /**
@@ -155,6 +157,7 @@ export function useBlockchainMutation<
           hash,
           toastId,
           startTime: Date.now(),
+          isIndexing: false,
         });
         return newMap;
       });
@@ -219,31 +222,41 @@ export function useBlockchainMutation<
    * Process tracking updates for all active transactions.
    * Updates toast messages based on transaction status and handles
    * completion, failure, and timeout scenarios.
+   * We stringify queriesData to prevent re-renders on every render
    */
   useEffect(() => {
     queriesData.forEach((data, index) => {
       const state = statesArray[index];
       if (!state || !data) return;
 
-      const trackingData = data as {
+      const trackingData = Array.isArray(data) ? data : [data];
+      const trackingStatus = trackingData[trackingData.length - 1] as {
         transactionHash: string;
         status: "pending" | "confirmed" | "failed";
         reason?: string;
-      }[];
-
-      const trackingStatus = trackingData[trackingData.length - 1];
-      if (!trackingStatus) return;
+      };
 
       const { toastId, startTime } = state;
-      const isTimeout = Date.now() - startTime > 180000; // 3 minutes
+      const isTimeout = Date.now() - startTime > 90000; // 90 seconds timeout
 
       if (trackingStatus.status === "pending" && !isTimeout) {
         // Update loading message based on progress
-        const isIndexing = trackingData.length > 1;
+        const isIndexing = state.isIndexing;
         toast.loading(
           isIndexing ? messages.pending.indexing : messages.pending.mining,
           { id: toastId }
         );
+        if (!isIndexing) {
+          // First pending message, it's mining. Mark it so next one is indexing.
+          setTrackingStates((prev) => {
+            const newMap = new Map(prev);
+            const s = newMap.get(state.hash);
+            if (s) {
+              newMap.set(state.hash, { ...s, isIndexing: true });
+            }
+            return newMap;
+          });
+        }
       } else if (trackingStatus.status === "confirmed") {
         toast.success(messages.success, { id: toastId });
         removeTracking(state.hash);
@@ -259,7 +272,7 @@ export function useBlockchainMutation<
         removeTracking(state.hash);
       }
     });
-  }, [queriesData, statesArray, messages, removeTracking]);
+  }, [JSON.stringify(queriesData), statesArray, messages, removeTracking]);
 
   const mutation = useMutation<TData, TError, TVariables, TContext>({
     ...options.mutationOptions,
@@ -307,12 +320,17 @@ export function useBlockchainMutation<
       const state = statesArray[index];
       if (!state || !query.data) return null;
 
-      const trackingData = query.data as {
+      const trackingData = Array.isArray(query.data)
+        ? query.data
+        : [query.data];
+      const trackingStatus = trackingData[
+        trackingData.length - 1
+      ] as unknown as {
         transactionHash: string;
         status: "pending" | "confirmed" | "failed";
         reason?: string;
-      }[];
-      return trackingData[trackingData.length - 1] ?? null;
+      };
+      return trackingStatus;
     })
     .filter(Boolean);
 
