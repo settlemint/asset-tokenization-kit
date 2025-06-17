@@ -85,7 +85,7 @@ const ABI_PATHS = {
   ismartCapped: `${ARTIFACTS_DIR}/contracts/smart/extensions/capped/ISMARTCapped.sol/ISMARTCapped.json`,
   ismartRedeemable: `${ARTIFACTS_DIR}/contracts/smart/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json`,
   // compliance modules
-  identityVerification: `${ARTIFACTS_DIR}/contracts/smart/modules/SMARTIdentityVerificationModule.sol/SMARTIdentityVerificationModule.json`,
+  identityVerification: `${ARTIFACTS_DIR}/contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol/SMARTIdentityVerificationComplianceModule.json`,
   countryAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
   countryBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
   addressBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/AddressBlockListComplianceModule.sol/AddressBlockListComplianceModule.json`,

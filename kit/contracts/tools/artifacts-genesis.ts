@@ -86,12 +86,18 @@ const CONTRACT_ADDRESSES = {
     "0x5e771e1417100000000000000000000000020019",
 
   // Compliance modules
-  SMARTIdentityVerificationModule: "0x5e771e1417100000000000000000000000020100",
-  CountryAllowListModule: "0x5e771e1417100000000000000000000000020101",
-  CountryBlockListModule: "0x5e771e1417100000000000000000000000020102",
-  AddressBlockListModule: "0x5e771e1417100000000000000000000000020103",
-  IdentityBlockListModule: "0x5e771e1417100000000000000000000000020104",
-  IdentityAllowListModule: "0x5e771e1417100000000000000000000000020105",
+  SMARTIdentityVerificationComplianceModule:
+    "0x5e771e1417100000000000000000000000020100",
+  CountryAllowListComplianceModule:
+    "0x5e771e1417100000000000000000000000020101",
+  CountryBlockListComplianceModule:
+    "0x5e771e1417100000000000000000000000020102",
+  AddressBlockListComplianceModule:
+    "0x5e771e1417100000000000000000000000020103",
+  IdentityBlockListComplianceModule:
+    "0x5e771e1417100000000000000000000000020104",
+  IdentityAllowListComplianceModule:
+    "0x5e771e1417100000000000000000000000020105",
 } as const;
 
 const CONTRACT_FILES = {
@@ -143,17 +149,17 @@ const CONTRACT_FILES = {
     "contracts/assets/stable-coin/ATKStableCoinFactoryImplementation.sol",
 
   // Compliance modules
-  SMARTIdentityVerificationModule:
-    "contracts/smart/modules/SMARTIdentityVerificationModule.sol",
-  CountryAllowListModule:
+  SMARTIdentityVerificationComplianceModule:
+    "contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol",
+  CountryAllowListComplianceModule:
     "contracts/smart/modules/CountryAllowListComplianceModule.sol",
-  CountryBlockListModule:
+  CountryBlockListComplianceModule:
     "contracts/smart/modules/CountryBlockListComplianceModule.sol",
-  AddressBlockListModule:
+  AddressBlockListComplianceModule:
     "contracts/smart/modules/AddressBlockListComplianceModule.sol",
-  IdentityBlockListModule:
+  IdentityBlockListComplianceModule:
     "contracts/smart/modules/IdentityBlockListComplianceModule.sol",
-  IdentityAllowListModule:
+  IdentityAllowListComplianceModule:
     "contracts/smart/modules/IdentityAllowListComplianceModule.sol",
 } as const;
 
@@ -442,7 +448,7 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKIdentityImplementation,
           CONTRACT_ADDRESSES.ATKTokenIdentityImplementation,
           CONTRACT_ADDRESSES.ATKTokenAccessManagerImplementation,
-          CONTRACT_ADDRESSES.SMARTIdentityVerificationModule,
+          CONTRACT_ADDRESSES.SMARTIdentityVerificationComplianceModule,
           forwarderAddress,
         ];
 
