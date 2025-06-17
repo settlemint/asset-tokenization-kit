@@ -7,7 +7,9 @@ import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/m
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKXvPSettlementFactory } from "./IATKXvPSettlementFactory.sol";
+import { IWithTypeIdentifier } from "../IWithTypeIdentifier.sol";
 
 /// @title XvPSettlementFactory - A factory contract for creating XvPSettlement contracts
 /// @notice This contract allows the creation of new XvPSettlement contracts with deterministic addresses using CREATE2.
@@ -18,10 +20,14 @@ import { IATKXvPSettlementFactory } from "./IATKXvPSettlementFactory.sol";
 contract ATKXvPSettlementFactoryImplementation is
     Initializable,
     IATKXvPSettlementFactory,
+    IWithTypeIdentifier,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable
 {
+    bytes32 public constant override(IATKXvPSettlementFactory, IWithTypeIdentifier) typeId =
+        keccak256("ATKXvPSettlementFactory");
+
     /// @notice Custom errors for the XvPSettlementFactory contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error AddressAlreadyDeployed();
@@ -161,7 +167,8 @@ contract ATKXvPSettlementFactoryImplementation is
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(AccessControlUpgradeable, ERC165Upgradeable)
+        virtual
+        override(AccessControlUpgradeable, ERC165Upgradeable, IERC165)
         returns (bool)
     {
         return interfaceId == type(IATKXvPSettlementFactory).interfaceId || super.supportsInterface(interfaceId);

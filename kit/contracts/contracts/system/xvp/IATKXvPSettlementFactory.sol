@@ -2,11 +2,15 @@
 pragma solidity ^0.8.27;
 
 import { XvPSettlement } from "./ATKXvPSettlement.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title IATKXvPSettlementFactory Interface
 /// @notice Interface for the XvP Settlement Factory contract
 /// @dev Defines the core functionality that must be implemented by the XvP Settlement Factory
-interface IATKXvPSettlementFactory {
+interface IATKXvPSettlementFactory is IERC165 {
+    /// @notice Returns a unique identifier for the type of this contract.
+    function typeId() external pure returns (bytes32);
+
     /// @notice Initializes the factory with a trusted forwarder and an admin address
     /// @param forwarder The address of the trusted forwarder
     /// @param initialAdmin The address that will be granted admin role
