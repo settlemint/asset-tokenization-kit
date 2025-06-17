@@ -148,7 +148,10 @@ export const queryClient = new QueryClient({
        * unnecessary refetches when navigating between pages.
        */
       refetchOnMount: (query) => {
-        return query.state.dataUpdateCount === 0 || query.state.isInvalidated;
+        // Always refetch if invalidated
+        if (query.state.isInvalidated) return true;
+        // Otherwise, only refetch if this is the first fetch
+        return query.state.dataUpdateCount === 0;
       },
     },
     mutations: {

@@ -29,49 +29,40 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { seo } from "@/config/metadata";
 import { useBlockchainMutation } from "@/hooks/use-blockchain-mutation";
+import { useSettings } from "@/hooks/use-settings";
 import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
-import { orpc } from "@/orpc";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_private/onboarding")({
-  loader: ({ context }) => {
-    void context.queryClient.prefetchQuery(orpc.user.me.queryOptions());
-    void context.queryClient.prefetchQuery(orpc.account.me.queryOptions());
-    void context.queryClient.prefetchQuery(
-      orpc.settings.read.queryOptions({
-        input: {
-          key: "SYSTEM_ADDRESS",
-        },
-      })
-    );
-  },
   component: OnboardingComponent,
+  head: () => ({
+    meta: [
+      ...seo({
+        title: "Onboarding",
+      }),
+    ],
+  }),
 });
 
 function OnboardingComponent() {
-  const { t } = useTranslation(["onboarding", "general"]);
-  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+  const { user, systemAddress, orpc } = Route.useRouteContext();
   const { sessionKey } = useContext(AuthQueryContext);
-  const { data: systemAddress } = useSuspenseQuery(
-    orpc.settings.read.queryOptions({
-      input: {
-        key: "SYSTEM_ADDRESS",
-      },
-    })
-  );
+  const { t } = useTranslation(["onboarding", "general"]);
+  const [, setSystemAddress] = useSettings("SYSTEM_ADDRESS");
 
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({
       onSuccess: async () => {
-        toast.success("Wallet generated");
+        toast.success(t("onboarding:wallet-generated"));
         await authClient.getSession({
           query: {
             disableCookieCache: true,
@@ -79,24 +70,9 @@ function OnboardingComponent() {
         });
         void queryClient.invalidateQueries({
           queryKey: sessionKey,
-          refetchType: "all",
         });
         void queryClient.invalidateQueries({
-          queryKey: orpc.user.me.queryKey(),
-          refetchType: "all",
-        });
-      },
-    })
-  );
-
-  const { mutate: setSystemAddress } = useMutation(
-    orpc.settings.upsert.mutationOptions({
-      onSuccess: () => {
-        void queryClient.invalidateQueries({
-          queryKey: orpc.settings.read.queryKey({
-            input: { key: "SYSTEM_ADDRESS" },
-          }),
-          refetchType: "all",
+          queryKey: orpc.user.me.key(),
         });
       },
     })
@@ -109,10 +85,7 @@ function OnboardingComponent() {
   } = useBlockchainMutation({
     mutationOptions: orpc.system.create.mutationOptions({
       onSuccess: (data) => {
-        setSystemAddress({
-          key: "SYSTEM_ADDRESS",
-          value: data,
-        });
+        setSystemAddress(data);
       },
     }),
     messages: {
