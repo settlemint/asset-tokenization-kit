@@ -15,8 +15,8 @@ const ATKVaultModule = buildModule("ATKVault", (m) => {
   const atkVaultImplementation = m.contract(
     "ATKVault",
     [
-      [], // Empty signers array for implementation
-      1, // Minimum required for implementation
+      [m.getAccount(0)], // Single signer for implementation (placeholder)
+      1, // Required confirmations matches signer count
       m.getAccount(0), // Placeholder initial owner for implementation
       forwarder,
     ],
