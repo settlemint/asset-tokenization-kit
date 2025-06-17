@@ -1,5 +1,3 @@
-import { encodeAbiParameters, parseAbiParameters } from "viem";
-
 import { atkDeployer } from "../services/deployer";
 
 import {
@@ -20,6 +18,7 @@ import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
+import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
 
 export const createStableCoin = async () => {
   console.log("\n=== Creating stablecoin... ===\n");
@@ -34,22 +33,12 @@ export const createStableCoin = async () => {
     stablecoinFactory
   );
 
-  const encodedBlockedCountries = encodeAbiParameters(
-    parseAbiParameters("uint16[]"),
-    [[]]
-  );
-
   const transactionHash = await stablecoinFactory.write.createStableCoin([
     stableCoin.name,
     stableCoin.symbol,
     stableCoin.decimals,
     [topicManager.getTopicId(ATKTopic.kyc)],
-    [
-      {
-        module: atkDeployer.getContractAddress("countryBlockListModule"),
-        params: encodedBlockedCountries,
-      },
-    ],
+    getDefaultComplianceModules(),
   ]);
 
   await stableCoin.waitUntilDeployed(transactionHash);

@@ -11,10 +11,10 @@
  *   bun run codegen-types.ts bond equity  # Generate specific ABIs
  */
 
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -88,6 +88,9 @@ const ABI_PATHS = {
   identityVerification: `${ARTIFACTS_DIR}/contracts/smart/modules/SMARTIdentityVerificationModule.sol/SMARTIdentityVerificationModule.json`,
   countryAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
   countryBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
+  addressBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/AddressBlockListComplianceModule.sol/AddressBlockListComplianceModule.json`,
+  identityBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityBlockListComplianceModule.sol/IdentityBlockListComplianceModule.json`,
+  identityAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityAllowListComplianceModule.sol/IdentityAllowListComplianceModule.json`,
 } as const;
 
 const AVAILABLE_ABIS = {
@@ -123,6 +126,9 @@ const AVAILABLE_ABIS = {
     "identityVerification",
     "countryAllowList",
     "countryBlockList",
+    "addressBlockList",
+    "identityBlockList",
+    "identityAllowList",
   ],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 

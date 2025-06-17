@@ -1,6 +1,7 @@
 import {
   accessControlAbi,
   accessManagerAbi,
+  addressBlockListAbi,
   bondAbi,
   bondFactoryAbi,
   complianceAbi,
@@ -14,6 +15,8 @@ import {
   fundAbi,
   fundFactoryAbi,
   identityAbi,
+  identityAllowListAbi,
+  identityBlockListAbi,
   identityFactoryAbi,
   identityRegistryAbi,
   identityRegistryStorageAbi,
@@ -72,4 +75,7 @@ export const ATKContracts = {
   // compliance modules
   countryAllowListModule: countryAllowListAbi,
   countryBlockListModule: countryBlockListAbi,
+  addressBlockListModule: addressBlockListAbi,
+  identityBlockListModule: identityBlockListAbi,
+  identityAllowListModule: identityAllowListAbi,
 } as const;
