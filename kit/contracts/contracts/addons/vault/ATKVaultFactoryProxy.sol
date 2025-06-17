@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
-import { ATKSystemAddonProxy } from "../ATKSystemAddonProxy.sol";
+import { ATKSystemAddonProxy } from "../../system/ATKSystemAddonProxy.sol";
 import { IATKVaultFactory } from "./IATKVaultFactory.sol";
-import { IATKSystem } from "../IATKSystem.sol";
+import { IATKSystem } from "../../system/IATKSystem.sol";
 
 /// @title ATKVaultFactoryProxy
 /// @notice Proxy contract for the ATK Vault Factory addon

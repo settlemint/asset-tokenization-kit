@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { ATKVault } from "../../../contracts/system/vault/ATKVault.sol";
+import { ATKVault } from "../../../contracts/addons/vault/ATKVault.sol";
 
 contract ATKVaultTest is Test {
     ATKVault public vault;

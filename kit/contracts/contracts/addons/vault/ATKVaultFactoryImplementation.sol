@@ -6,14 +6,15 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 
 // Interfaces
 import { IATKVaultFactory } from "./IATKVaultFactory.sol";
-import { IATKSystem } from "../IATKSystem.sol";
+import { IATKSystem } from "../../system/IATKSystem.sol";
 
 // Implementations
-import { AbstractATKSystemAddonFactoryImplementation } from "../AbstractATKSystemAddonFactoryImplementation.sol";
+import { AbstractATKSystemAddonFactoryImplementation } from
+    "../../system/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKVault } from "./ATKVault.sol";
 
 // Constants
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
 
 /// @title Factory for Creating ATKVault Proxies
 /// @notice This contract serves as a factory to deploy new UUPS proxy instances of `ATKVault` contracts.
