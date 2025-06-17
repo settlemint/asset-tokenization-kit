@@ -136,11 +136,7 @@ jobs:
         with:
           commit_message: "chore: update artifacts [skip ci]"
           branch: main
-          file_pattern: |
-            tools/docker/besu/genesis.json
-            tools/docker/portal/*.json
-            tools/docker/postgres/atk.sql
-            docker-compose.yml
+          file_pattern: "tools/docker/**/* docker-compose.yml"
 
   pr-labels:
     name: PR Labels
