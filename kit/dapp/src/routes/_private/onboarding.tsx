@@ -30,6 +30,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useBlockchainMutation } from "@/hooks/use-blockchain-mutation";
+import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
@@ -69,8 +70,13 @@ function OnboardingComponent() {
 
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({
-      onSuccess: () => {
+      onSuccess: async () => {
         toast.success("Wallet generated");
+        await authClient.getSession({
+          query: {
+            disableCookieCache: true,
+          },
+        });
         void queryClient.invalidateQueries({
           queryKey: sessionKey,
           refetchType: "all",
