@@ -92,7 +92,7 @@
     "db:push": {
       "cache": false
     },
-    "dev:connect": {
+    "//#dev:connect": {
       "outputs": ["**/.env", "**/.env.local"],
       "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
     }
