@@ -331,5 +331,6 @@ minio:
           name: eu-central-1
     extraCommands: |-
       if ! mc admin user svcacct info provisioning atk-service >/dev/null 2>&1; then
+        echo "Adding atk-service user"
         mc admin user svcacct add provisioning "admin" --access-key "atk-service" --secret-key "atk-service-secret"
       fi
