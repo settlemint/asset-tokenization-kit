@@ -29,7 +29,7 @@
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "^publish", "codegen:interfaceid"]
+      "dependsOn": ["package", "^publish", "codegen:interfaceid", "contracts#deploy:local"]
     },
     "test:integration": {
       "dependsOn": ["codegen:gql-tada"]

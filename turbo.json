@@ -20,7 +20,10 @@
       "dependsOn": ["ci:base", "build", "artifacts"]
     },
     "ci:gha:main": {
-      "dependsOn": ["ci:gha", "test:integration", "publish"]
+      "dependsOn": ["ci:gha", "publish"]
+    },
+    "ci:gha:nightly": {
+      "dependsOn": ["ci:gha:main", "test:integration"]
     },
     "//#version": {
       "cache": false,

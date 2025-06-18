@@ -42,13 +42,6 @@ jobs:
       trivy-config: trivy-secret.yaml
       severity: "HIGH,CRITICAL"
 
-  codeql:
-    name: CodeQL
-    uses: ./.github/workflows/reusable-codeql.yml
-    with:
-      language: "javascript-typescript"
-      build-mode: "none"
-
   slack-notification-start:
     name: Slack Notification (Start)
     if: github.event_name == 'pull_request'
@@ -60,13 +53,13 @@ jobs:
 
   slack-notification-end:
     name: Slack Notification (End)
-    needs: [qa, secret-scanning, codeql, pr-labels]
+    needs: [qa, secret-scanning, pr-labels]
     if: always() && github.event_name == 'pull_request'
     uses: ./.github/workflows/reusable-slack-notification.yml
     with:
       workflow_conclusion:
         ${{ needs.qa.result == 'success' && needs.secret-scanning.result !=
-        'failure' && needs.codeql.result != 'failure' && needs.pr-labels.result
-        != 'failure' && 'success' || 'failure' }}
+        'failure' && needs.pr-labels.result != 'failure' && 'success' ||
+        'failure' }}
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}

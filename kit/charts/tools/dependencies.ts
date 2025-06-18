@@ -115,20 +115,33 @@ async function getChartsWithDependencies(projectDir: string): Promise<string[]> 
 }
 
 /**
- * Update Helm dependencies for a specific chart
+ * Update Helm dependencies for a specific chart with retry logic
  */
-async function updateHelmDependencies(chartDir: string): Promise<void> {
+async function updateHelmDependencies(chartDir: string, maxRetries = 3): Promise<void> {
   const chartName = chartDir.split("/").pop() || "unknown";
 
   logger.info(`Updating dependencies for ${chartName}...`);
 
-  try {
-    await $`helm dependency update`.cwd(chartDir).quiet();
-    logger.info(`Updated dependencies for ${chartName}`);
-  } catch (error) {
-    logger.error(`Failed to update dependencies for ${chartName}: ${error}`);
-    throw error;
+  let lastError: Error | unknown;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await $`helm dependency update`.cwd(chartDir).quiet();
+      logger.info(`Updated dependencies for ${chartName}`);
+      return; // Success, exit function
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxRetries) {
+        logger.warn(`Failed to update dependencies for ${chartName} (attempt ${attempt}/${maxRetries}): ${error}`);
+        logger.info(`Retrying in ${attempt * 2} seconds...`);
+        await Bun.sleep(attempt * 2000); // Exponential backoff: 2s, 4s, 6s
+      } else {
+        logger.error(`Failed to update dependencies for ${chartName} after ${maxRetries} attempts: ${error}`);
+      }
+    }
   }
+  
+  throw lastError;
 }
 
 /**
