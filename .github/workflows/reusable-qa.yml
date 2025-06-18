@@ -154,8 +154,9 @@ jobs:
         with:
           name: predeployed-output
           path: |
-            kit/contracts/tools/genesis-output.json
-            kit/contracts/portal/*.json
+            kit/artifacts/portal/*.json
+            kit/artifacts/genesis/*.json
+            kit/artifacts/postgres/*.sql
             kit/subgraph/subgraph-output.txt
 
       - name: Auto-commit artifacts
@@ -167,7 +168,7 @@ jobs:
           commit_message: "chore: update artifacts [skip ci]"
           branch: main
           file_pattern: |
-            tools/docker/
+            kit/artifacts/
             docker-compose.yml
             kit/dapp/locales/**/*.json
             kit/charts/**/README.md

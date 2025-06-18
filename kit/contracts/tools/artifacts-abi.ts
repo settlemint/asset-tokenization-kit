@@ -43,7 +43,8 @@ const OUT_DIR = join(CONTRACTS_ROOT, "out");
 const CONTRACTS_DIR = join(CONTRACTS_ROOT, "contracts");
 const PORTAL_DIR = join(CONTRACTS_ROOT, "portal");
 const ROOT_DIR = (await findTurboRoot())?.monorepoRoot;
-const ROOT_PORTAL_DIR = join(ROOT_DIR, "tools/docker/portal");
+const ARTIFACTS_DIR = join(ROOT_DIR, "kit/artifacts");
+const ARTIFACTS_PORTAL_DIR = join(ARTIFACTS_DIR, "portal");
 
 // =============================================================================
 // ABI COLLECTOR
@@ -118,14 +119,14 @@ class AbiCollector {
 
       if (correspondingSolFile) {
         const outputPath = join(PORTAL_DIR, `${contractName}.json`);
-        const rootOutputPath = join(ROOT_PORTAL_DIR, `${contractName}.json`);
+        const artifactsOutputPath = join(ARTIFACTS_PORTAL_DIR, `${contractName}.json`);
 
         abiFiles.push({
           contractName,
           sourcePath: correspondingSolFile,
           abiPath: fullPath,
           outputPath,
-          rootOutputPath,
+          rootOutputPath: artifactsOutputPath,
         });
       }
     }
@@ -181,16 +182,16 @@ class AbiCollector {
     }
   }
 
-  async initializeRootPortalDir(): Promise<void> {
-    logger.info("Initializing root portal directory...");
+  async initializeArtifactsPortalDir(): Promise<void> {
+    logger.info("Initializing artifacts portal directory...");
 
-    if (this.config.cleanPortalDir && existsSync(ROOT_PORTAL_DIR)) {
-      logger.debug("Cleaning existing portal directory...");
-      await $`rm -rf ${ROOT_PORTAL_DIR}`.quiet();
+    if (this.config.cleanPortalDir && existsSync(ARTIFACTS_PORTAL_DIR)) {
+      logger.debug("Cleaning existing artifacts portal directory...");
+      await $`rm -rf ${ARTIFACTS_PORTAL_DIR}`.quiet();
     }
 
-    await mkdir(ROOT_PORTAL_DIR, { recursive: true });
-    logger.info("Root portal directory initialized");
+    await mkdir(ARTIFACTS_PORTAL_DIR, { recursive: true });
+    logger.info("Artifacts portal directory initialized");
   }
 
   async initializePortalDir(): Promise<void> {
@@ -441,7 +442,7 @@ async function main(): Promise<void> {
   try {
     // Initialize portal directory
     await collector.initializePortalDir();
-    await collector.initializeRootPortalDir();
+    await collector.initializeArtifactsPortalDir();
 
     // Process all ABI files
     await collector.processAllAbis();

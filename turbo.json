@@ -31,13 +31,27 @@
       ]
     },
     "build": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["codegen"],
+      "outputs": ["dist/**"]
     },
     "codegen": {
-      "dependsOn": ["dependencies", "docs"]
+      "dependsOn": ["dependencies", "docs"],
+      "outputs": [
+        "src/lib/contracts.ts",
+        "src/lib/types/**",
+        "src/generated/**",
+        "generated/**",
+        "*.graphql.ts"
+      ]
     },
     "compile": {
-      "dependsOn": ["dependencies", "codegen", "^compile"]
+      "dependsOn": ["dependencies", "codegen", "^compile"],
+      "outputs": [
+        "out/**",
+        "out-genesis/**",
+        "portal/**",
+        "subgraph-output.txt"
+      ]
     },
     "package": {
       "cache": false,
@@ -47,9 +61,15 @@
       "cache": false,
       "dependsOn": ["package"]
     },
-    "dependencies": {},
-    "format": {},
-    "lint": {},
+    "dependencies": {
+      "outputs": ["node_modules/**", ".next/**"]
+    },
+    "format": {
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
+    },
     "dev": {
       "cache": false,
       "persistent": true
@@ -61,13 +81,63 @@
     "helm": {
       "cache": false
     },
-    "docs": {},
-    "test": {},
-    "artifacts": {},
-    "test:integration": {},
+    "docs": {
+      "outputs": ["README.md", "docs/**"]
+    },
+    "test": {
+      "outputs": ["coverage/**", ".coverage/**"]
+    },
+    "artifacts": {
+      "dependsOn": ["compile", "@atk/artifacts#artifacts"],
+      "outputs": [
+        "kit/artifacts/portal/**",
+        "kit/artifacts/genesis/**",
+        "kit/artifacts/postgres/**",
+        "kit/artifacts/docker-compose/**"
+      ]
+    },
+    "@atk/artifacts#artifacts": {
+      "dependsOn": ["^compile"],
+      "outputs": [
+        "portal/**",
+        "genesis/**",
+        "postgres/**",
+        "docker-compose/**"
+      ]
+    },
+    "@atk/artifacts#artifacts:contracts": {
+      "dependsOn": ["contracts#compile"],
+      "outputs": [
+        "portal/**",
+        "genesis/**"
+      ]
+    },
+    "@atk/artifacts#artifacts:charts": {
+      "dependsOn": ["@atk/artifacts#artifacts:contracts"],
+      "outputs": []
+    },
+    "@atk/artifacts#artifacts:docker-compose": {
+      "dependsOn": ["subgraph#compile"],
+      "outputs": ["docker-compose/**"],
+      "inputs": ["../subgraph/subgraph-output.txt"]
+    },
+    "@atk/artifacts#artifacts:database": {
+      "dependsOn": ["dapp#db:export"],
+      "outputs": ["postgres/**"],
+      "inputs": ["../dapp/database-export.sql"]
+    },
+    "test:integration": {
+      "outputs": ["test-results/**", "playwright-report/**"]
+    },
     "db:studio": {
       "cache": false,
       "persistent": true
+    },
+    "db:export": {
+      "outputs": ["database-export.sql"]
+    },
+    "db:push": {
+      "cache": false
     }
   }
 }

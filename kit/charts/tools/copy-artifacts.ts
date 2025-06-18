@@ -35,10 +35,11 @@ const logger = createLogger({
 // File paths
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
 const CHARTS_ROOT = await getKitProjectPath("charts");
+const ARTIFACTS_ROOT = await getKitProjectPath("artifacts");
 
 // Source paths
-const PORTAL_DIR = join(CONTRACTS_ROOT, "portal");
-const GENESIS_OUTPUT_FILE = join(CONTRACTS_ROOT, "tools/genesis-output.json");
+const PORTAL_DIR = join(ARTIFACTS_ROOT, "portal");
+const GENESIS_OUTPUT_FILE = join(ARTIFACTS_ROOT, "genesis/genesis-output.json");
 
 // Destination paths
 const CHARTS_PORTAL_DIR = join(CHARTS_ROOT, "atk/charts/portal/abis");
@@ -116,7 +117,7 @@ class ArtifactsCopier {
 
     if (!(await directoryExists(PORTAL_DIR))) {
       logger.warn(`Portal directory not found: ${PORTAL_DIR}`);
-      logger.warn("Run 'bun run codegen-abi' first to generate ABI files");
+      logger.warn("Run 'bun run artifacts:contracts' in the artifacts workspace first to generate ABI files");
       return;
     }
 
@@ -165,7 +166,7 @@ class ArtifactsCopier {
     const genesisFile = Bun.file(GENESIS_OUTPUT_FILE);
     if (!(await genesisFile.exists())) {
       logger.warn(`Genesis output file not found: ${GENESIS_OUTPUT_FILE}`);
-      logger.warn("Run 'bun run codegen-genesis' first to generate genesis output");
+      logger.warn("Run 'bun run artifacts:contracts' in the artifacts workspace first to generate genesis output");
       return;
     }
 

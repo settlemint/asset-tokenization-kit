@@ -34,7 +34,7 @@
     "turbo.json"
   ],
   "scripts": {
-    "postinstall": "turbo run dependencies",
+    "dependencies": "turbo run dependencies",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
     "build": "turbo build",
@@ -57,9 +57,9 @@
     "test:e2e:api:debug": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests --ui",
     "helm": "turbo run helm",
     "dev:up": "docker compose -p atk up -d",
-    "postdev:up": "settlemint connect --instance local && settlemint hasura track -a",
+    "dev:connect": "settlemint connect --instance local && settlemint hasura track -a",
     "dev:reset": "(docker compose -p atk down || true) && (docker volume ls -q --filter name=^atk | xargs -r docker volume rm || true)",
-    "postdev:reset": "bun run dev:up",
+    "dev:start": "bun run dev:up && bun run dev:connect",
     "artifacts": "turbo run artifacts",
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"

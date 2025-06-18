@@ -44,7 +44,8 @@ const CONTRACTS_ROOT = await getKitProjectPath("contracts");
 const FORGE_OUT_DIR = `${CONTRACTS_ROOT}/out-genesis`;
 const ALL_ALLOCATIONS_FILE = `${CONTRACTS_ROOT}/tools/genesis-output.json`;
 const ROOT_DIR = (await findTurboRoot())?.monorepoRoot;
-const GENESIS_FILE = `${ROOT_DIR}/tools/docker/besu/genesis.json`;
+const ARTIFACTS_DIR = `${ROOT_DIR}/kit/artifacts`;
+const ARTIFACTS_GENESIS_FILE = `${ARTIFACTS_DIR}/genesis/genesis-output.json`;
 
 // Contract configuration
 const CONTRACT_ADDRESSES = {
@@ -920,11 +921,8 @@ class GenesisGenerator {
   async generateFinalGenesis(): Promise<void> {
     logger.info("Generating final genesis.json file...");
 
-    // Check if template exists
-    const genesisFile = Bun.file(GENESIS_FILE);
-    if (!(await genesisFile.exists())) {
-      throw new Error(`Genesis not found: ${GENESIS_FILE}`);
-    }
+    // Ensure artifacts genesis directory exists
+    await $`mkdir -p ${ARTIFACTS_DIR}/genesis`.quiet();
 
     // Check if allocations exist
     const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
@@ -933,46 +931,25 @@ class GenesisGenerator {
     }
 
     try {
-      // Read template and allocations
-      const template = await genesisFile.json();
+      // Read allocations
       const contractAllocations = await allocFile.json();
 
-      logger.debug(
-        `Template allocations: ${Object.keys(template.alloc || {}).length}`
-      );
       logger.debug(
         `Contract allocations: ${Object.keys(contractAllocations).length}`
       );
 
-      // Merge allocations
-      const finalGenesis = {
-        ...template,
-        alloc: contractAllocations,
-      };
+      // Copy allocations to artifacts directory
+      await Bun.write(ARTIFACTS_GENESIS_FILE, JSON.stringify(contractAllocations, null, 2));
 
-      // Ensure output directory exists
-      const outputDir = `${CONTRACTS_ROOT}/tools/docker/besu`;
-      await $`mkdir -p ${outputDir}`.quiet();
-
-      // Validate the final genesis structure
-      if (!finalGenesis.config || !finalGenesis.alloc) {
-        throw new Error("Invalid genesis structure: missing config or alloc");
-      }
-
-      // Write final genesis file
-      await Bun.write(GENESIS_FILE, JSON.stringify(finalGenesis, null, 2));
-
-      logger.info(`Final genesis file written to: ${GENESIS_FILE}`);
+      logger.info(`Genesis allocations written to: ${ARTIFACTS_GENESIS_FILE}`);
       logger.info(
-        `Total allocations: ${Object.keys(finalGenesis.alloc).length} (${
-          Object.keys(template.alloc || {}).length
-        } from template + ${Object.keys(contractAllocations).length} contracts)`
+        `Total allocations: ${Object.keys(contractAllocations).length} contracts`
       );
 
       // Verify the written file can be read back
-      const verificationFile = Bun.file(GENESIS_FILE);
+      const verificationFile = Bun.file(ARTIFACTS_GENESIS_FILE);
       const verification = await verificationFile.json();
-      if (!verification.config || !verification.alloc) {
+      if (!verification || Object.keys(verification).length === 0) {
         throw new Error("Written genesis file is invalid");
       }
       logger.debug("Genesis file verification passed");
@@ -1193,12 +1170,12 @@ async function main(): Promise<void> {
       `Processing summary: ${stats.processed} processed, ${stats.skipped} skipped, ${stats.failed} failed`
     );
     logger.info(`Contract allocations written to: ${ALL_ALLOCATIONS_FILE}`);
-    logger.info(`Final genesis file written to: ${GENESIS_FILE}`);
+    logger.info(`Final genesis file written to: ${ARTIFACTS_GENESIS_FILE}`);
 
     // Show output if requested
     if (config.showOutput) {
       logger.info("=== FINAL GENESIS OUTPUT ===");
-      const genesisFile = Bun.file(GENESIS_FILE);
+      const genesisFile = Bun.file(ARTIFACTS_GENESIS_FILE);
       const genesisContent = await genesisFile.text();
       logger.info(genesisContent);
     }
