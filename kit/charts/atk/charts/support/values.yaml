@@ -313,3 +313,23 @@ reloader:
     deployment:
       labels:
         kots.io/app-slug: settlemint-atk
+
+minio:
+  enabled: true
+  fullnameOverride: 'minio'
+  # defaultBuckets: atk
+  auth:
+    rootUser: admin
+    rootPassword: atk-password
+  statefulset:
+    replicaCount: 1
+  provisioning:
+    enabled: true
+    config:
+      - name: region
+        options:
+          name: eu-central-1
+    extraCommands: |-
+      if ! mc admin user svcacct info provisioning atk-service >/dev/null 2>&1; then
+        mc admin user svcacct add provisioning "admin" --access-key "atk-service" --secret-key "atk-service-secret"
+      fi
