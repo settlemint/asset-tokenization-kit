@@ -6,6 +6,11 @@ import DepositModule from "./predeployed/assets/deposit";
 import EquityModule from "./predeployed/assets/equity";
 import FundModule from "./predeployed/assets/fund";
 import StableCoinModule from "./predeployed/assets/stablecoin";
+import AddressBlockListModule from "./predeployed/modules/address-block-list-module";
+import CountryAllowListModule from "./predeployed/modules/country-allow-list-module";
+import CountryBlockListModule from "./predeployed/modules/country-block-list-module";
+import IdentityAllowListModule from "./predeployed/modules/identity-allow-list-module";
+import IdentityBlockListModule from "./predeployed/modules/identity-block-list-module";
 import SystemFactoryModule from "./predeployed/system-factory";
 
 /**
@@ -31,6 +36,13 @@ const ATKModule = buildModule("ATKModule", (m) => {
   const { vestingAirdropFactoryImplementation } = m.useModule(
     VestingAirdropFactoryModule
   );
+
+  const { countryAllowListModule } = m.useModule(CountryAllowListModule);
+  const { countryBlockListModule } = m.useModule(CountryBlockListModule);
+  const { addressBlockListModule } = m.useModule(AddressBlockListModule);
+  const { identityBlockListModule } = m.useModule(IdentityBlockListModule);
+  const { identityAllowListModule } = m.useModule(IdentityAllowListModule);
+
   return {
     systemFactory,
     bondImplementation,
@@ -45,6 +57,12 @@ const ATKModule = buildModule("ATKModule", (m) => {
     stablecoinFactoryImplementation,
     fixedYieldScheduleFactoryImplementation,
     vestingAirdropFactoryImplementation,
+    // modules
+    countryAllowListModule,
+    countryBlockListModule,
+    addressBlockListModule,
+    identityBlockListModule,
+    identityAllowListModule,
   };
 });
 

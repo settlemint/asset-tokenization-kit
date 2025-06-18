@@ -6,12 +6,12 @@ import ATKOnboardingDepositModule from "./onboarding/assets/deposit";
 import ATKOnboardingEquityModule from "./onboarding/assets/equity";
 import ATKOnboardingFundModule from "./onboarding/assets/fund";
 import ATKOnboardingStableCoinModule from "./onboarding/assets/stablecoin";
+import AddressBlockListModule from "./onboarding/modules/address-block-list-module";
+import CountryAllowListModule from "./onboarding/modules/country-allow-list-module";
+import CountryBlockListModule from "./onboarding/modules/country-block-list-module";
+import IdentityAllowListModule from "./onboarding/modules/identity-allow-list-module";
+import IdentityBlockListModule from "./onboarding/modules/identity-block-list-module";
 import ATKOnboardingSystemModule from "./onboarding/system";
-import AddressBlockListModule from "./predeployed/modules/address-block-list-module";
-import CountryAllowListModule from "./predeployed/modules/country-allow-list-module";
-import CountryBlockListModule from "./predeployed/modules/country-block-list-module";
-import IdentityAllowListModule from "./predeployed/modules/identity-allow-list-module";
-import IdentityBlockListModule from "./predeployed/modules/identity-block-list-module";
 
 /**
  * This module is used to deploy the ATK contracts, this should be used to
@@ -29,19 +29,14 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     identityFactory,
   } = m.useModule(ATKOnboardingSystemModule);
 
-  // This can be setup based out of configuration in the onboarding wizard at some point
+  // Setup factories
   const { bondFactory } = m.useModule(ATKOnboardingBondModule);
   const { depositFactory } = m.useModule(ATKOnboardingDepositModule);
   const { equityFactory } = m.useModule(ATKOnboardingEquityModule);
   const { fundFactory } = m.useModule(ATKOnboardingFundModule);
   const { stablecoinFactory } = m.useModule(ATKOnboardingStableCoinModule);
 
-  const { countryAllowListModule } = m.useModule(CountryAllowListModule);
-  const { countryBlockListModule } = m.useModule(CountryBlockListModule);
-  const { addressBlockListModule } = m.useModule(AddressBlockListModule);
-  const { identityBlockListModule } = m.useModule(IdentityBlockListModule);
-  const { identityAllowListModule } = m.useModule(IdentityAllowListModule);
-
+  // Setup addons
   const { fixedYieldScheduleFactory } = m.useModule(
     ATKOnboardingFixedYieldScheduleFactoryModule
   );
@@ -49,6 +44,13 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
   const { vestingAirdropFactory } = m.useModule(
     ATKOnboardingVestingAirdropFactoryModule
   );
+
+  // Setup compliance modules
+  const { countryAllowListModule } = m.useModule(CountryAllowListModule);
+  const { countryBlockListModule } = m.useModule(CountryBlockListModule);
+  const { addressBlockListModule } = m.useModule(AddressBlockListModule);
+  const { identityBlockListModule } = m.useModule(IdentityBlockListModule);
+  const { identityAllowListModule } = m.useModule(IdentityAllowListModule);
 
   return {
     system,
