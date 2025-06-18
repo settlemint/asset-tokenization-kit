@@ -62,7 +62,6 @@ const ABI_PATHS = {
   equityFactory: `${ARTIFACTS_DIR}/contracts/assets/equity/IATKEquityFactory.sol/IATKEquityFactory.json`,
   fundFactory: `${ARTIFACTS_DIR}/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json`,
   stablecoinFactory: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/IATKStableCoinFactory.sol/IATKStableCoinFactory.json`,
-  fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json`,
   // token
   accessManager: `${ARTIFACTS_DIR}/contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
   identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKIdentityImplementation.sol/ATKIdentityImplementation.json`,
@@ -91,6 +90,9 @@ const ABI_PATHS = {
   addressBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/AddressBlockListComplianceModule.sol/AddressBlockListComplianceModule.json`,
   identityBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityBlockListComplianceModule.sol/IdentityBlockListComplianceModule.json`,
   identityAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityAllowListComplianceModule.sol/IdentityAllowListComplianceModule.json`,
+  // addons
+  fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json`,
+  vestingAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol/IATKVestingAirdropFactory.json`,
 } as const;
 
 const AVAILABLE_ABIS = {
@@ -107,7 +109,6 @@ const AVAILABLE_ABIS = {
     "equityFactory",
     "fundFactory",
     "stablecoinFactory",
-    "fixedYieldScheduleFactory",
   ],
   tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
@@ -130,6 +131,7 @@ const AVAILABLE_ABIS = {
     "identityBlockList",
     "identityAllowList",
   ],
+  addons: ["fixedYieldScheduleFactory", "vestingAirdropFactory"],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 
 const ALL_ABIS = [
@@ -139,6 +141,7 @@ const ALL_ABIS = [
   ...AVAILABLE_ABIS.openZeppelin,
   ...AVAILABLE_ABIS.coreSmart,
   ...AVAILABLE_ABIS.complianceModules,
+  ...AVAILABLE_ABIS.addons,
 ];
 
 // =============================================================================
@@ -213,6 +216,9 @@ AVAILABLE ABI NAMES:
 
     Compliance Modules:
       ${AVAILABLE_ABIS.complianceModules.join(", ")}
+
+    Addons:
+      ${AVAILABLE_ABIS.addons.join(", ")}
 `);
 }
 
@@ -317,6 +323,9 @@ function listAbiNames(): void {
   AVAILABLE_ABIS.complianceModules.forEach((name) =>
     logger.info(`  • ${name}`)
   );
+
+  logger.info("\nAddons:");
+  AVAILABLE_ABIS.addons.forEach((name) => logger.info(`  • ${name}`));
 }
 
 function findArtifactFile(contractName: string): string | null {
