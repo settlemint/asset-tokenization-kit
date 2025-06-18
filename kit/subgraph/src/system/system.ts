@@ -4,6 +4,7 @@ import {
   BondFactory as BondFactoryTemplate,
   FixedYieldScheduleFactory as FixedYieldScheduleFactoryTemplate,
   FundFactory as FundFactoryTemplate,
+  VaultFactory as VaultFactoryTemplate,
   XvPSettlementFactory as XvPSettlementFactoryTemplate,
 } from "../../generated/templates";
 import {
@@ -163,6 +164,12 @@ export function handleSystemAddonCreated(event: SystemAddonCreated): void {
     crypto.keccak256(ByteArray.fromUTF8("ATKXvPSettlementFactory"))
   ) {
     XvPSettlementFactoryTemplate.create(event.params.proxyAddress);
+  }
+  if (
+    event.params.typeId ==
+    crypto.keccak256(ByteArray.fromUTF8("ATKVaultFactory"))
+  ) {
+    VaultFactoryTemplate.create(event.params.proxyAddress);
   }
   systemAddon.system = fetchSystem(event.address).id;
   systemAddon.save();

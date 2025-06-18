@@ -20,6 +20,24 @@ import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private")({
+  beforeLoad: async ({ context: { queryClient, orpc } }) => {
+    // Try to get user data, but don't throw if unauthenticated
+    try {
+      const [user, systemAddress] = await Promise.all([
+        queryClient.ensureQueryData(orpc.user.me.queryOptions()),
+        queryClient.ensureQueryData(
+          orpc.settings.read.queryOptions({
+            input: { key: "SYSTEM_ADDRESS" },
+          })
+        ),
+      ]);
+      return { user, systemAddress };
+    } catch {
+      // If authentication fails, return null values
+      // The authentication will be handled by the component
+      return { user: null, systemAddress: null };
+    }
+  },
   component: LayoutComponent,
 });
 
