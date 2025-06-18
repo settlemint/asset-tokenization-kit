@@ -9,11 +9,11 @@
       "dependsOn": ["compile:forge", "compile:hardhat"]
     },
     "compile:forge": {
-      "outputs": ["out/**", "cache_forge/**"],
+      "outputs": [".generated/out/**", ".generated/cache_forge/**"],
       "inputs": ["**/*.sol"]
     },
     "compile:hardhat": {
-      "outputs": ["artifacts/**", "cache/**"],
+      "outputs": [".generated/artifacts/**", ".generated/cache/**"],
       "inputs": ["**/*.sol"]
     },
     "compile:typescript": {
@@ -51,6 +51,11 @@
     "publish": {
       "cache": false,
       "dependsOn": ["package", "codegen"]
+    },
+    "test": {
+      "dependsOn": ["compile:forge"],
+      "outputs": [],
+      "inputs": ["**/*.sol", "test/**"]
     }
   }
 }

@@ -41,7 +41,7 @@ const logger = createLogger({
 
 // File paths
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
-const FORGE_OUT_DIR = `${CONTRACTS_ROOT}/out-genesis`;
+const FORGE_OUT_DIR = `${CONTRACTS_ROOT}/.generated/out-genesis`;
 const OUTPUT_DIR = `${CONTRACTS_ROOT}/.generated`;
 const ALL_ALLOCATIONS_FILE = `${OUTPUT_DIR}/genesis-allocations.json`;
 const ROOT_DIR = (await findTurboRoot())?.monorepoRoot;

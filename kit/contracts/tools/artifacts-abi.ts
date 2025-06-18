@@ -37,7 +37,7 @@ const logger = createLogger({
 
 // File paths
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
-const OUT_DIR = join(CONTRACTS_ROOT, "out");
+const OUT_DIR = join(CONTRACTS_ROOT, ".generated", "out");
 const CONTRACTS_DIR = join(CONTRACTS_ROOT, "contracts");
 const OUTPUT_DIR = join(CONTRACTS_ROOT, ".generated");
 const PORTAL_DIR = join(OUTPUT_DIR, "portal");

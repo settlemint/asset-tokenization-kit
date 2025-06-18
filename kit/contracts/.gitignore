@@ -1,10 +1,11 @@
 node_modules
 .env
+.generated
 
 # Hardhat files
-/cache
-/artifacts
-/cache_forge
+/.generated/cache
+/.generated/artifacts
+/.generated/cache_forge
 
 # TypeChain files
 /typechain
@@ -30,6 +31,9 @@ portal
 
 # Scripts
 scripts/hardhat/abi
-out-genesis
+.generated/out-genesis
 .docker
 tools/docker/besu/genesis.json
+
+# Foundry files
+.generated/out

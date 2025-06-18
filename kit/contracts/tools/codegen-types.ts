@@ -44,7 +44,7 @@ const logger = createLogger({
     "info",
 });
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
-const ARTIFACTS_DIR = join(CONTRACTS_ROOT, "artifacts");
+const ARTIFACTS_DIR = join(CONTRACTS_ROOT, ".generated", "artifacts");
 const OUTPUT_DIR = join(CONTRACTS_ROOT, "scripts/hardhat/abi");
 
 const ABI_PATHS = {
