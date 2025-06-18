@@ -39,7 +39,8 @@ const logger = createLogger({
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
 const OUT_DIR = join(CONTRACTS_ROOT, "out");
 const CONTRACTS_DIR = join(CONTRACTS_ROOT, "contracts");
-const PORTAL_DIR = join(CONTRACTS_ROOT, "portal");
+const OUTPUT_DIR = join(CONTRACTS_ROOT, ".generated");
+const PORTAL_DIR = join(OUTPUT_DIR, "portal");
 const ROOT_DIR = (await findTurboRoot())?.monorepoRoot;
 
 // =============================================================================
@@ -83,9 +84,9 @@ class AbiCollector {
     logger.debug("Finding ABI files in out directory...");
     const abiFiles: AbiFile[] = [];
 
-    const outDirFile = Bun.file(join(OUT_DIR, '.gitkeep'));
+    const outDirFile = Bun.file(join(OUT_DIR, ".gitkeep"));
     try {
-      await Bun.write(join(OUT_DIR, '.gitkeep'), '');
+      await Bun.write(join(OUT_DIR, ".gitkeep"), "");
       await outDirFile.unlink();
     } catch {
       throw new Error(
@@ -178,15 +179,14 @@ class AbiCollector {
     }
   }
 
-
   async initializePortalDir(): Promise<void> {
     logger.info("Initializing portal directory...");
 
     if (this.config.cleanPortalDir) {
-      const portalFile = Bun.file(join(PORTAL_DIR, '.gitkeep'));
+      const portalFile = Bun.file(join(PORTAL_DIR, ".gitkeep"));
       try {
         // Check if directory exists by trying to write a file
-        await Bun.write(join(PORTAL_DIR, '.gitkeep'), '');
+        await Bun.write(join(PORTAL_DIR, ".gitkeep"), "");
         await portalFile.unlink();
         logger.debug("Cleaning existing portal directory...");
         await $`rm -rf ${PORTAL_DIR}`.quiet();
@@ -196,8 +196,8 @@ class AbiCollector {
     }
 
     // Create directory by writing a temporary file
-    await Bun.write(join(PORTAL_DIR, '.gitkeep'), '');
-    await Bun.file(join(PORTAL_DIR, '.gitkeep')).unlink();
+    await Bun.write(join(PORTAL_DIR, ".gitkeep"), "");
+    await Bun.file(join(PORTAL_DIR, ".gitkeep")).unlink();
     logger.info("Portal directory initialized");
   }
 
@@ -242,9 +242,9 @@ class AbiCollector {
   async verifyCollection(): Promise<void> {
     logger.info("Verifying ABI collection...");
 
-    const portalDirFile = Bun.file(join(PORTAL_DIR, '.gitkeep'));
+    const portalDirFile = Bun.file(join(PORTAL_DIR, ".gitkeep"));
     try {
-      await Bun.write(join(PORTAL_DIR, '.gitkeep'), '');
+      await Bun.write(join(PORTAL_DIR, ".gitkeep"), "");
       await portalDirFile.unlink();
     } catch {
       throw new Error(`Portal directory not found: ${PORTAL_DIR}`);
@@ -426,17 +426,17 @@ async function main(): Promise<void> {
   // Check prerequisites
   logger.info("Checking prerequisites...");
 
-  const contractsDirFile = Bun.file(join(CONTRACTS_DIR, '.gitkeep'));
+  const contractsDirFile = Bun.file(join(CONTRACTS_DIR, ".gitkeep"));
   try {
-    await Bun.write(join(CONTRACTS_DIR, '.gitkeep'), '');
+    await Bun.write(join(CONTRACTS_DIR, ".gitkeep"), "");
     await contractsDirFile.unlink();
   } catch {
     throw new Error(`Contracts directory not found: ${CONTRACTS_DIR}`);
   }
 
-  const outDirFile = Bun.file(join(OUT_DIR, '.gitkeep'));
+  const outDirFile = Bun.file(join(OUT_DIR, ".gitkeep"));
   try {
-    await Bun.write(join(OUT_DIR, '.gitkeep'), '');
+    await Bun.write(join(OUT_DIR, ".gitkeep"), "");
     await outDirFile.unlink();
   } catch {
     throw new Error(

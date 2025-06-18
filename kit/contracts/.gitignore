@@ -27,6 +27,7 @@ genesis-output.json
 /dependencies
 portal
 
+
 # Scripts
 scripts/hardhat/abi
 out-genesis

@@ -31,29 +31,13 @@
       ]
     },
     "build": {
-      "dependsOn": ["codegen"],
-      "outputs": ["dist/**"]
+      "dependsOn": ["codegen"]
     },
     "codegen": {
-      "dependsOn": ["dependencies", "docs"],
-      "outputs": [
-        "src/lib/contracts.ts",
-        "src/lib/types/**",
-        "src/generated/**",
-        "generated/**",
-        "*.graphql.ts"
-      ]
+      "dependsOn": ["dependencies", "docs"]
     },
     "compile": {
-      "dependsOn": ["dependencies", "codegen", "^compile"],
-      "outputs": [
-        "out/**",
-        "out-genesis/**",
-        "portal/**",
-        "genesis/**",
-        "subgraph-output.txt",
-        ".env.subgraph"
-      ]
+      "dependsOn": ["dependencies", "codegen", "^compile"]
     },
     "package": {
       "cache": false,
@@ -63,15 +47,9 @@
       "cache": false,
       "dependsOn": ["package"]
     },
-    "dependencies": {
-      "outputs": ["node_modules/**", ".next/**"]
-    },
-    "format": {
-      "outputs": []
-    },
-    "lint": {
-      "outputs": []
-    },
+    "dependencies": {},
+    "format": {},
+    "lint": {},
     "dev": {
       "cache": false,
       "persistent": true
@@ -83,22 +61,15 @@
     "helm": {
       "cache": false
     },
-    "docs": {
-      "outputs": ["README.md", "docs/**"]
-    },
-    "test": {
-      "outputs": ["coverage/**", ".coverage/**"]
-    },
-    "test:integration": {
-      "outputs": ["test-results/**", "playwright-report/**"]
-    },
+    "docs": {},
+    "test": {},
+    "artifacts": {},
+    "test:integration": {},
     "db:studio": {
       "cache": false,
       "persistent": true
     },
-    "db:export": {
-      "outputs": ["database-export.sql", "../../tools/docker/postgres/atk.sql"]
-    },
+    "db:export": {},
     "db:push": {
       "cache": false
     }

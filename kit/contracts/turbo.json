@@ -32,12 +32,15 @@
       "dependsOn": ["artifacts:genesis", "artifacts:abi"]
     },
     "artifacts:genesis": {
-      "outputs": ["tools/genesis-output.json"],
+      "outputs": [
+        ".generated/genesis-allocations.json",
+        ".generated/genesis.json"
+      ],
       "inputs": ["contracts/**"]
     },
     "artifacts:abi": {
       "dependsOn": ["compile"],
-      "outputs": ["portal/**"],
+      "outputs": [".generated/portal/**"],
       "inputs": ["contracts/**"]
     },
     "format": {

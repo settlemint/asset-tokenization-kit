@@ -130,7 +130,7 @@ export const track = authRouter.transaction.track
         }
       );
 
-      receipt = getTransaction?.receipt ?? undefined;
+      receipt = getTransaction?.receipt;
 
       // Transaction not yet mined, continue polling
       if (!receipt) {

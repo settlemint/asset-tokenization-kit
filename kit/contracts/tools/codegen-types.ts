@@ -350,8 +350,8 @@ export type ${contractName}Abi = typeof ${contractName}Abi;
 `;
 
     // Ensure output directory exists by writing a temporary file
-    const tempPath = join(OUTPUT_DIR, '.gitkeep');
-    await Bun.write(tempPath, '');
+    const tempPath = join(OUTPUT_DIR, ".gitkeep");
+    await Bun.write(tempPath, "");
     await Bun.file(tempPath).unlink();
 
     const outputPath = join(OUTPUT_DIR, `${contractName}.ts`);
@@ -387,7 +387,9 @@ async function generateAllAbiTypings(): Promise<boolean> {
   return failureCount === 0;
 }
 
-async function generateSpecificAbiTypings(abiNames: string[]): Promise<boolean> {
+async function generateSpecificAbiTypings(
+  abiNames: string[]
+): Promise<boolean> {
   // Validate ABI names
   const validAbiNames = new Set(ALL_ABIS);
   const invalidAbis = abiNames.filter(
@@ -422,7 +424,7 @@ async function generateSpecificAbiTypings(abiNames: string[]): Promise<boolean> 
 
 async function generateIndexFile(): Promise<void> {
   const exports: string[] = [];
-  
+
   for (const name of ALL_ABIS) {
     const file = Bun.file(join(OUTPUT_DIR, `${name}.ts`));
     if (await file.exists()) {

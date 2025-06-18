@@ -42,10 +42,11 @@ const logger = createLogger({
 // File paths
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
 const FORGE_OUT_DIR = `${CONTRACTS_ROOT}/out-genesis`;
-const ALL_ALLOCATIONS_FILE = `${CONTRACTS_ROOT}/tools/genesis-output.json`;
+const OUTPUT_DIR = `${CONTRACTS_ROOT}/.generated`;
+const ALL_ALLOCATIONS_FILE = `${OUTPUT_DIR}/genesis-allocations.json`;
 const ROOT_DIR = (await findTurboRoot())?.monorepoRoot;
 const GENESIS_TEMPLATE_FILE = `${ROOT_DIR}/tools/docker/besu/genesis.json`;
-const CONTRACTS_GENESIS_FILE = `${CONTRACTS_ROOT}/genesis/genesis.json`;
+const CONTRACTS_GENESIS_FILE = `${OUTPUT_DIR}/genesis.json`;
 
 // Contract configuration
 const CONTRACT_ADDRESSES = {
@@ -745,9 +746,11 @@ class GenesisGenerator {
   async initializeGenesisFile(): Promise<void> {
     logger.info("Initializing genesis allocation file...");
 
-    // Create forge output directory
+    // Create output directories
     await $`mkdir -p ${FORGE_OUT_DIR}`.quiet();
+    await $`mkdir -p ${OUTPUT_DIR}`.quiet();
     logger.debug(`Created forge output directory: ${FORGE_OUT_DIR}`);
+    logger.debug(`Created output directory: ${OUTPUT_DIR}`);
 
     // Remove existing file if it exists
     const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
@@ -947,15 +950,18 @@ class GenesisGenerator {
         ...template,
         alloc: {
           ...(template.alloc || {}),
-          ...contractAllocations
-        }
+          ...contractAllocations,
+        },
       };
 
       // Ensure output directory exists
       await $`mkdir -p ${CONTRACTS_ROOT}/genesis`.quiet();
 
       // Write complete genesis file
-      await Bun.write(CONTRACTS_GENESIS_FILE, JSON.stringify(finalGenesis, null, 2));
+      await Bun.write(
+        CONTRACTS_GENESIS_FILE,
+        JSON.stringify(finalGenesis, null, 2)
+      );
 
       logger.info(`Complete genesis written to: ${CONTRACTS_GENESIS_FILE}`);
       logger.info(
