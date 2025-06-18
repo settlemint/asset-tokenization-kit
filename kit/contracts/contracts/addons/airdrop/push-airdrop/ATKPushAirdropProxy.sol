@@ -3,87 +3,74 @@ pragma solidity 0.8.28;
 
 import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
-import { IATKVestingAirdropFactory } from "./IATKVestingAirdropFactory.sol";
+import { IATKPushAirdropFactory } from "./IATKPushAirdropFactory.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ATKVestingAirdropImplementation } from "./ATKVestingAirdropImplementation.sol";
+import { ATKPushAirdropImplementation } from "./ATKPushAirdropImplementation.sol";
 
 /// @notice Custom error when the provided factory address is invalid (e.g. zero address or does not support the
 /// required interface).
 error InvalidFactoryAddress();
-/// @notice Custom error when the factory does not have an implementation address set for the vesting airdrop.
+/// @notice Custom error when the factory does not have an implementation address set for the push airdrop.
 error ImplementationNotSetInFactory();
 /// @notice Custom error when attempting to initialize the proxy with a zero address for the implementation.
 error InitializationWithZeroAddress();
 /// @notice Custom error for when direct ETH transfers to the proxy are attempted.
 error ETHTransfersNotAllowed();
 
-/// @title Proxy for ATKVestingAirdrop, managed by a factory.
+/// @title Proxy for ATKPushAirdrop, managed by a factory.
 /// @notice This contract is a proxy that delegates calls to an implementation
-/// of ATKVestingAirdrop. The implementation address is fetched from a specified
-/// ATKVestingAirdropFactory contract.
-/// @dev This proxy is intended to be deployed by ATKVestingAirdropFactory.
+/// of ATKPushAirdrop. The implementation address is fetched from a specified
+/// ATKPushAirdropFactory contract.
+/// @dev This proxy is intended to be deployed by ATKPushAirdropFactory.
 /// It stores the factory address and uses it to determine the logic contract.
-contract ATKVestingAirdropProxy is Proxy {
-    /// @dev Storage slot for the ATKVestingAirdropFactory address.
-    /// Value: keccak256("org.atk.contracts.proxy.ATKVestingAirdropProxy.factoryAddress")
-    bytes32 private constant _ATK_VESTING_AIRDROP_FACTORY_ADDRESS_SLOT =
-        0x9182acb7d36456962952de6a17a922790a6f2f803b6ff6a425ef31721c0444d5;
+contract ATKPushAirdropProxy is Proxy {
+    /// @dev Storage slot for the ATKPushAirdropFactory address.
+    /// Value: keccak256("org.atk.contracts.proxy.ATKPushAirdropProxy.factoryAddress")
+    bytes32 private constant _ATK_PUSH_AIRDROP_FACTORY_ADDRESS_SLOT =
+        0x13d1d4a8f07d9c8a456b07fb81827712a7d862be074b1dc4f3c9fbbdab826869;
 
-    /// @notice Constructs the ATKVestingAirdropProxy.
-    /// @param factoryAddress The address of the IATKVestingAirdropFactory contract.
+    /// @notice Constructs the ATKPushAirdropProxy.
+    /// @param factoryAddress The address of the IATKPushAirdropFactory contract.
     /// @param token The address of the ERC20 token to be distributed.
-    /// @param root The Merkle root for verifying claims.
-    /// @param owner The initial owner of the contract.
-    /// @param vestingStrategy The address of the vesting strategy contract for vesting calculations.
-    /// @param initializationDeadline The timestamp after which no new vesting can be initialized.
-    constructor(
-        address factoryAddress,
-        address token,
-        bytes32 root,
-        address owner,
-        address vestingStrategy,
-        uint256 initializationDeadline
-    ) {
+    /// @param root The Merkle root for verifying distributions.
+    /// @param owner The initial owner of the contract (admin who can distribute tokens).
+    /// @param distributionCap The maximum tokens that can be distributed (0 for no cap).
+    constructor(address factoryAddress, address token, bytes32 root, address owner, uint256 distributionCap) {
         if (factoryAddress == address(0)) {
             revert InvalidFactoryAddress();
         }
 
-        if (!IERC165(factoryAddress).supportsInterface(type(IATKVestingAirdropFactory).interfaceId)) {
+        if (!IERC165(factoryAddress).supportsInterface(type(IATKPushAirdropFactory).interfaceId)) {
             revert InvalidFactoryAddress();
         }
 
-        StorageSlot.getAddressSlot(_ATK_VESTING_AIRDROP_FACTORY_ADDRESS_SLOT).value = factoryAddress;
+        StorageSlot.getAddressSlot(_ATK_PUSH_AIRDROP_FACTORY_ADDRESS_SLOT).value = factoryAddress;
 
         address implementationAddress = _getImplementationAddressFromFactory();
 
         bytes memory initData = abi.encodeWithSelector(
-            ATKVestingAirdropImplementation.initialize.selector,
-            token,
-            root,
-            owner,
-            vestingStrategy,
-            initializationDeadline
+            ATKPushAirdropImplementation.initialize.selector, token, root, owner, distributionCap
         );
 
         _performInitializationDelegatecall(implementationAddress, initData);
     }
 
-    /// @dev Internal function to retrieve the IATKVestingAirdropFactory contract instance from the stored
+    /// @dev Internal function to retrieve the IATKPushAirdropFactory contract instance from the stored
     /// address.
-    /// @return An IATKVestingAirdropFactory instance.
-    function _getFactory() internal view returns (IATKVestingAirdropFactory) {
-        return IATKVestingAirdropFactory(StorageSlot.getAddressSlot(_ATK_VESTING_AIRDROP_FACTORY_ADDRESS_SLOT).value);
+    /// @return An IATKPushAirdropFactory instance.
+    function _getFactory() internal view returns (IATKPushAirdropFactory) {
+        return IATKPushAirdropFactory(StorageSlot.getAddressSlot(_ATK_PUSH_AIRDROP_FACTORY_ADDRESS_SLOT).value);
     }
 
     /// @dev Fetches the implementation address from the factory.
-    /// @return The address of the vesting airdrop implementation.
+    /// @return The address of the push airdrop implementation.
     function _getImplementationAddressFromFactory() internal view returns (address) {
-        IATKVestingAirdropFactory factory = _getFactory();
-        // Assumes the factory has a public state variable `atkVestingAirdropImplementation`
-        // or a getter named `atkVestingAirdropImplementation()`.
-        // If the getter has a different name like `getAtkVestingAirdropImplementation()`,
-        // this needs to be adjusted: address impl = factory.getAtKVestingAirdropImplementation();
-        address implementation = factory.atkVestingAirdropImplementation();
+        IATKPushAirdropFactory factory = _getFactory();
+        // Assumes the factory has a public state variable `atkPushAirdropImplementation`
+        // or a getter named `atkPushAirdropImplementation()`.
+        // If the getter has a different name like `getAtkPushAirdropImplementation()`,
+        // this needs to be adjusted: address impl = factory.getAtKPushAirdropImplementation();
+        address implementation = factory.atkPushAirdropImplementation();
 
         if (implementation == address(0)) {
             revert ImplementationNotSetInFactory();
@@ -113,7 +100,7 @@ contract ATKVestingAirdropProxy is Proxy {
 
     /// @dev Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms.
     /// It retrieves the implementation address from the configured factory.
-    /// @return The address of the current logic/implementation contract for vesting airdrops.
+    /// @return The address of the current logic/implementation contract for push airdrops.
     function _implementation() internal view override returns (address) {
         return _getImplementationAddressFromFactory();
     }

@@ -3,22 +3,16 @@ pragma solidity 0.8.28;
 
 // OpenZeppelin Contracts
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interfaces
 import { IATKFixedYieldScheduleFactory } from "./IATKFixedYieldScheduleFactory.sol";
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
-import { IATKSystem } from "../../system/IATKSystem.sol";
-import { IATKComplianceBypassList } from "../../system/compliance/IATKComplianceBypassList.sol";
-import { IWithTypeIdentifier } from "../../system/IWithTypeIdentifier.sol";
 
 // Implementations
+import { AbstractATKSystemAddonFactoryImplementation } from
+    "../../system/AbstractATKSystemAddonFactoryImplementation.sol";
 import { SMARTFixedYieldScheduleUpgradeable } from
     "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
 import { ATKFixedYieldProxy } from "./ATKFixedYieldProxy.sol";
@@ -39,29 +33,20 @@ import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
 /// - **Meta-transactions**: Inherits `ERC2771Context` to support gasless operations if a trusted forwarder is
 /// configured.
 contract ATKFixedYieldScheduleFactoryImplementation is
-    Initializable,
-    IATKFixedYieldScheduleFactory,
-    ERC165Upgradeable,
-    ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
-    IWithTypeIdentifier
+    AbstractATKSystemAddonFactoryImplementation,
+    IATKFixedYieldScheduleFactory
 {
     bytes32 public constant override typeId = keccak256("ATKFixedYieldScheduleFactory");
 
     /// @notice Address of the current `ATKFixedYieldSchedule` logic contract (implementation).
     address public atkFixedYieldScheduleImplementation;
 
-    /// @notice The address of the `IATKSystem` contract.
-    address private systemAddress;
-
     /// @notice An array that stores references (addresses cast to `ISMARTFixedYieldSchedule`) to all fixed yield
     /// schedule proxy contracts created by this factory.
     ISMARTFixedYieldSchedule[] private allSchedules;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
-        _disableInitializers();
-    }
+    constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) { }
 
     /// @notice Initializes the `ATKFixedYieldScheduleFactory`.
     /// @dev Initializes the factory, deploys the initial `ATKFixedYieldSchedule` implementation,
@@ -69,13 +54,7 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     /// @param systemAddress_ The address of the `IATKSystem` contract.
     /// @param initialAdmin_ The address of the initial admin.
     function initialize(address systemAddress_, address initialAdmin_) public initializer {
-        __AccessControl_init();
-
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin_);
-        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin_);
-        _grantRole(ATKSystemRoles.DEPLOYER_ROLE, initialAdmin_);
-
-        systemAddress = systemAddress_;
+        _initializeAbstractSystemAddonFactory(systemAddress_, initialAdmin_);
 
         address forwarder = trustedForwarder();
         // Deploy the initial implementation contract for SMARTFixedYieldSchedule.
@@ -132,28 +111,23 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
         returns (address scheduleProxyAddress)
     {
-        bytes32 salt = keccak256(abi.encode(address(this), address(token), startTime, endTime, rate, interval));
+        bytes memory saltInputData = abi.encode(address(this), address(token), startTime, endTime, rate, interval);
+        bytes memory constructorArgs =
+            abi.encode(address(this), address(token), startTime, endTime, rate, interval, _msgSender());
+        bytes memory proxyBytecode = type(ATKFixedYieldProxy).creationCode;
 
-        // Deploy the new ATKFixedYieldProxy contract using CREATE2, pointing to the current implementation.
-        ATKFixedYieldProxy newScheduleProxy = new ATKFixedYieldProxy{ salt: salt }(
-            address(this), address(token), startTime, endTime, rate, interval, _msgSender()
-        );
-        scheduleProxyAddress = address(newScheduleProxy);
+        // Predict the address first for validation
+        address expectedAddress = _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
+
+        // Deploy using the abstract factory method
+        scheduleProxyAddress = _deploySystemAddon(proxyBytecode, constructorArgs, saltInputData, expectedAddress);
 
         // Emit an event to log the creation of the new schedule proxy.
         emit ATKFixedYieldScheduleCreated(scheduleProxyAddress, _msgSender());
+
         // Add the new schedule proxy to the list of all schedules created by this factory.
         // Cast the proxy to ISMARTFixedYieldSchedule for storage, as the proxy behaves like one.
         allSchedules.push(ISMARTFixedYieldSchedule(payable(scheduleProxyAddress)));
-
-        address complianceProxy = IATKSystem(systemAddress).complianceProxy();
-        if (
-            complianceProxy != address(0)
-                && IERC165(complianceProxy).supportsInterface(type(IATKComplianceBypassList).interfaceId)
-        ) {
-            // Allow schedule to receive tokens
-            IATKComplianceBypassList(complianceProxy).addToBypassList(scheduleProxyAddress);
-        }
 
         return scheduleProxyAddress;
     }
@@ -168,40 +142,9 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         public
         view
         virtual
-        override(AccessControlUpgradeable, ERC165Upgradeable)
+        override(AbstractATKSystemAddonFactoryImplementation)
         returns (bool)
     {
         return interfaceId == type(IATKFixedYieldScheduleFactory).interfaceId || super.supportsInterface(interfaceId);
-    }
-
-    /// @dev Overridden from `Context` and `ERC2771Context` to correctly identify the transaction sender,
-    /// accounting for meta-transactions if a trusted forwarder is used.
-    /// @return The actual sender of the transaction (`msg.sender` or the relayed sender).
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
-        return super._msgSender();
-    }
-
-    /// @dev Overridden from `Context` and `ERC2771Context` to correctly retrieve the transaction data,
-    /// accounting for meta-transactions.
-    /// @return The actual transaction data (`msg.data` or the relayed data).
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return super._msgData();
-    }
-
-    /// @dev Overridden from `ERC2771Context` to define the length of the suffix appended to `msg.data` for relayed
-    /// calls.
-    /// @return The length of the context suffix (typically 20 bytes for the sender's address).
-    function _contextSuffixLength()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
-        return super._contextSuffixLength();
     }
 }

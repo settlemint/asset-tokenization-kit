@@ -55,13 +55,12 @@ contract ATKLinearVestingStrategy is IATKVestingStrategy {
     /// @notice Calculates the amount claimable based on linear vesting parameters.
     /// @dev Implements linear vesting with optional cliff period. No tokens are claimable before cliff.
     ///      After cliff, tokens vest linearly until the full vesting duration is reached.
-    /// @param account The address of the claimant (unused in this strategy but required by interface).
     /// @param totalAmount The total allocation for the specific index being claimed.
     /// @param vestingStartTime The timestamp when vesting started for this allocation.
     /// @param claimedAmount The amount already claimed for this specific index.
     /// @return claimableAmount The amount that can be claimed now.
     function calculateClaimableAmount(
-        address account,
+        address, /* account - unused */
         uint256 totalAmount,
         uint256 vestingStartTime,
         uint256 claimedAmount
@@ -71,9 +70,6 @@ contract ATKLinearVestingStrategy is IATKVestingStrategy {
         override
         returns (uint256 claimableAmount)
     {
-        // Suppress unused variable warning for account parameter
-        account;
-
         // Calculate time elapsed since vesting started
         uint256 timeElapsed = block.timestamp - vestingStartTime;
 
