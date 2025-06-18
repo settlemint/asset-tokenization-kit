@@ -529,6 +529,68 @@ templates:
           handler: handleATKFixedYieldScheduleCreated
       file: ./src/token-extensions/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
   - kind: ethereum
+    name: VaultFactory
+    network: settlemint
+    source:
+      abi: VaultFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - VaultCreated
+      abis:
+        - name: VaultFactory
+          file: ../contracts/artifacts/contracts/addons/vault/IATKVaultFactory.sol/IATKVaultFactory.json
+        - name: Vault
+          file: ../contracts/artifacts/contracts/addons/vault/ATKVault.sol/ATKVault.json
+      eventHandlers:
+        - event: ATKVaultCreated(indexed address,indexed address)
+          handler: handleATKVaultCreated
+      file: ./src/addons/vault/vault-factory.ts
+  - kind: ethereum
+    name: Vault
+    network: settlemint
+    source:
+      abi: Vault
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - VaultDeposit
+        - VaultTransactionSubmitted
+        - VaultTransactionConfirmed
+        - VaultTransactionRevoked
+        - VaultTransactionExecuted
+        - VaultRequirementChanged
+      abis:
+        - name: Vault
+          file: ../contracts/artifacts/contracts/addons/vault/ATKVault.sol/ATKVault.json
+      eventHandlers:
+        - event: Deposit(indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: SubmitTransaction(indexed address,indexed uint256,indexed
+            address,uint256,bytes,string)
+          handler: handleSubmitTransaction
+        - event: SubmitERC20TransferTransaction(indexed address,indexed uint256,indexed
+            address,address,uint256,string)
+          handler: handleSubmitERC20TransferTransaction
+        - event: SubmitContractCallTransaction(indexed address,indexed uint256,indexed
+            address,uint256,bytes4,bytes,string)
+          handler: handleSubmitContractCallTransaction
+        - event: ConfirmTransaction(indexed address,indexed uint256)
+          handler: handleConfirmTransaction
+        - event: RevokeConfirmation(indexed address,indexed uint256)
+          handler: handleRevokeConfirmation
+        - event: ExecuteTransaction(indexed address,indexed uint256)
+          handler: handleExecuteTransaction
+        - event: RequirementChanged(indexed address,uint256)
+          handler: handleRequirementChanged
+        - event: TransactionExecutionFailed(indexed uint256,address,bytes)
+          handler: handleTransactionExecutionFailed
+      file: ./src/addons/vault/vault.ts
+  - kind: ethereum
     name: GenericERC165
     network: settlemint
     source:

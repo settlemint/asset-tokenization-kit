@@ -81,6 +81,78 @@ type SystemAddon @entity(immutable: false) {
   account: Account!
 }
 
+type VaultFactory @entity(immutable: false) {
+  id: Bytes!
+  deployedInTransaction: Bytes!
+  accessControl: AccessControl!
+  systemAddon: SystemAddon!
+  system: System!
+  account: Account!
+  vaults: [Vault!]! @derivedFrom(field: "factory")
+}
+
+type Vault @entity(immutable: false) {
+  id: Bytes!
+  createdAt: BigInt!
+  createdBy: Account!
+  factory: VaultFactory!
+  account: Account!
+  accessControl: AccessControl!
+  required: BigInt!
+  signers: [Account!]!
+  transactions: [VaultTransaction!]! @derivedFrom(field: "vault")
+  balance: BigDecimal!
+  balanceExact: BigInt!
+  deployedInTransaction: Bytes!
+}
+
+type VaultTransaction @entity(immutable: false) {
+  id: Bytes!
+  vault: Vault!
+  txIndex: BigInt!
+  to: Account!
+  value: BigDecimal!
+  valueExact: BigInt!
+  data: Bytes!
+  comment: String!
+  executed: Boolean!
+  confirmationsRequired: BigInt!
+  confirmationsCount: BigInt!
+  confirmations: [VaultTransactionConfirmation!]! @derivedFrom(field: "transaction")
+  submittedBy: Account!
+  submittedAt: BigInt!
+  executedAt: BigInt
+  executedBy: Account
+  # Type-specific fields
+  erc20Transfer: VaultERC20Transfer
+  contractCall: VaultContractCall
+  deployedInTransaction: Bytes!
+}
+
+type VaultTransactionConfirmation @entity(immutable: false) {
+  id: Bytes!
+  transaction: VaultTransaction!
+  signer: Account!
+  confirmed: Boolean!
+  confirmedAt: BigInt
+  revokedAt: BigInt
+  deployedInTransaction: Bytes!
+}
+
+type VaultERC20Transfer @entity(immutable: false) {
+  id: Bytes!
+  token: Account!
+  amount: BigDecimal!
+  amountExact: BigInt!
+}
+
+type VaultContractCall @entity(immutable: false) {
+  id: Bytes!
+  target: Account!
+  calldata: Bytes!
+  returnData: Bytes
+}
+
 type Compliance @entity(immutable: false) {
   id: Bytes!
   account: Account!
