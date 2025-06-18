@@ -72,16 +72,26 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     /// @notice Initializes the push airdrop contract with specified parameters.
     /// @dev Sets up the base airdrop functionality and push-specific parameters.
     ///      Deploys its own bitmap claim tracker for efficient distribution tracking.
+    /// @param name_ The human-readable name for this airdrop.
     /// @param token_ The address of the ERC20 token to be distributed.
     /// @param root_ The Merkle root for verifying distributions.
     /// @param owner_ The initial owner of the contract (admin who can distribute tokens).
     /// @param distributionCap_ The maximum tokens that can be distributed (0 for no cap).
-    function initialize(address token_, bytes32 root_, address owner_, uint256 distributionCap_) external initializer {
+    function initialize(
+        string memory name_,
+        address token_,
+        bytes32 root_,
+        address owner_,
+        uint256 distributionCap_
+    )
+        external
+        initializer
+    {
         // Deploy bitmap claim tracker for this contract
         address claimTracker_ = address(new ATKBitmapClaimTracker(address(this)));
 
         // Initialize base airdrop contract
-        __ATKAirdrop_init(token_, root_, owner_, claimTracker_);
+        __ATKAirdrop_init(name_, token_, root_, owner_, claimTracker_);
         __ReentrancyGuard_init();
 
         // Set push-specific state

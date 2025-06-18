@@ -1,11 +1,11 @@
 import { Address, type Hex } from "viem";
 import {
   ATKOnboardingContracts,
-  type ContractName,
+  type PredeployedContractName,
 } from "../services/deployer";
 import { waitForEvent } from "../utils/wait-for-event";
 
-export class Asset<T extends ContractName> {
+export class Asset<T extends PredeployedContractName> {
   public address!: Address;
   public identity!: Address;
   public accessManager!: Address;
