@@ -20,8 +20,8 @@
     "publish": "DOCKER_BUILD_TAG=$(jq -r .version ../../package.json); if [ -z \"$CI\" ]; then DOCKER_BUILD_TAG=\"$DOCKER_BUILD_TAG-dev.$(date +%s)\"; fi; docker buildx build . --platform=linux/amd64,linux/arm64 --provenance true --sbom true -t ghcr.io/settlemint/asset-tokenization-kit:$DOCKER_BUILD_TAG --push",
     "db:check": "drizzle-kit check",
     "db:push": "drizzle-kit push",
-    "db:export": "(echo \"\\c hasura;\" | tee ../../tools/docker/postgres/atk.sql) && (drizzle-kit export | tee -a ../../tools/docker/postgres/atk.sql)",
-    "postdb:push": "settlemint hasura track -a",
+    "db:export": "bun run ./tools/export-database.ts",
+    "db:track": "settlemint hasura track -a",
     "db:studio": "drizzle-kit studio",
     "db:auth:generate": "bunx --bun @better-auth/cli generate -y --config=src/lib/auth/index.ts --output=src/lib/db/schemas/auth.ts"
   },
@@ -75,11 +75,11 @@
     "@tanstack/react-query": "5.80.7",
     "@tanstack/react-query-devtools": "5.80.7",
     "@tanstack/react-query-persist-client": "5.80.7",
-    "@tanstack/react-router": "1.121.21",
-    "@tanstack/react-router-devtools": "1.121.21",
-    "@tanstack/react-router-with-query": "1.121.21",
-    "@tanstack/react-start": "1.121.23",
-    "@tanstack/router-devtools": "1.121.21",
+    "@tanstack/react-router": "1.121.24",
+    "@tanstack/react-router-devtools": "1.121.24",
+    "@tanstack/react-router-with-query": "1.121.24",
+    "@tanstack/react-start": "1.121.25",
+    "@tanstack/router-devtools": "1.121.24",
     "better-auth": "1.2.9",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
@@ -87,7 +87,7 @@
     "drizzle-orm": "0.44.2",
     "i18n-iso-countries": "7.14.0",
     "i18next": "25.2.1",
-    "lucide-react": "0.516.0",
+    "lucide-react": "0.517.0",
     "next-themes": "0.4.6",
     "postcss": "8.5.6",
     "react": "19.1.0",
@@ -103,10 +103,10 @@
   "overrides": {
     "@tanstack/react-query": "5.80.7",
     "@tanstack/react-query-devtools": "5.80.7",
-    "@tanstack/react-router": "1.121.21",
-    "@tanstack/react-router-devtools": "1.121.21",
-    "@tanstack/react-router-with-query": "1.121.21",
-    "@tanstack/react-start": "1.121.23",
-    "@tanstack/router-devtools": "1.121.21"
+    "@tanstack/react-router": "1.121.24",
+    "@tanstack/react-router-devtools": "1.121.24",
+    "@tanstack/react-router-with-query": "1.121.24",
+    "@tanstack/react-start": "1.121.25",
+    "@tanstack/router-devtools": "1.121.24"
   }
 }

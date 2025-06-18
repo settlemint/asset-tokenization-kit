@@ -118,7 +118,8 @@ type VaultTransaction @entity(immutable: false) {
   executed: Boolean!
   confirmationsRequired: BigInt!
   confirmationsCount: BigInt!
-  confirmations: [VaultTransactionConfirmation!]! @derivedFrom(field: "transaction")
+  confirmations: [VaultTransactionConfirmation!]!
+    @derivedFrom(field: "transaction")
   submittedBy: Account!
   submittedAt: BigInt!
   executedAt: BigInt
