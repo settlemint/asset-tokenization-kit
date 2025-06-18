@@ -31,13 +31,16 @@
       ]
     },
     "build": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["codegen"],
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
     },
     "codegen": {
-      "dependsOn": ["dependencies", "docs"]
+      "dependsOn": ["dependencies", "docs"],
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
     },
     "compile": {
-      "dependsOn": ["dependencies", "codegen", "^compile"]
+      "dependsOn": ["dependencies", "codegen", "^compile"],
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
     },
     "package": {
       "cache": false,
@@ -47,9 +50,15 @@
       "cache": false,
       "dependsOn": ["package"]
     },
-    "dependencies": {},
-    "format": {},
-    "lint": {},
+    "dependencies": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
+    "format": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
+    "lint": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
@@ -61,15 +70,25 @@
     "helm": {
       "cache": false
     },
-    "docs": {},
-    "test": {},
-    "artifacts": {},
-    "test:integration": {},
+    "docs": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
+    "test": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
+    "artifacts": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
+    "test:integration": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
     "db:studio": {
       "cache": false,
       "persistent": true
     },
-    "db:export": {},
+    "db:export": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
     "db:push": {
       "cache": false
     }

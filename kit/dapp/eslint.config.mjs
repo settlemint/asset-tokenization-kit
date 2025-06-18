@@ -15,6 +15,8 @@ export default defineConfig([
       ".nitro/",
       "dist/",
       "node_modules/",
+      ".generated/",
+      ".generated/**",
     ],
   },
   {
