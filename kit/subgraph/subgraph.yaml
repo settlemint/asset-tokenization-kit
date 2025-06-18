@@ -523,7 +523,7 @@ templates:
         - ATKFixedYieldScheduleCreated
       abis:
         - name: FixedYieldScheduleFactory
-          file: ../contracts/artifacts/contracts/system/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json
+          file: ../contracts/artifacts/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json
       eventHandlers:
         - event: ATKFixedYieldScheduleCreated(indexed address,indexed address)
           handler: handleATKFixedYieldScheduleCreated
