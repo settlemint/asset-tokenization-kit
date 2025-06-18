@@ -1,6 +1,7 @@
 {
   "name": "e2e",
   "module": "index.ts",
+  "version": "2.0.0",
   "type": "module",
   "dependencies": {},
   "devDependencies": {
