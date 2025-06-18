@@ -2,11 +2,6 @@
   "name": "subgraph",
   "version": "2.0.0",
   "license": "FSL-1.1-MIT",
-  "author": {
-    "name": "SettleMint",
-    "email": "support@settlemint.com",
-    "url": "https://settlemint.com"
-  },
   "scripts": {
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
@@ -25,9 +20,10 @@
   },
   "devDependencies": {
     "@settlemint/sdk-thegraph": "2.4.0",
-    "contracts": "workspace:*",
     "matchstick-as": "0.6.0",
     "yaml": "2.8.0"
   },
-  "peerDependencies": {}
+  "peerDependencies": {
+    "contracts": "workspace:*"
+  }
 }

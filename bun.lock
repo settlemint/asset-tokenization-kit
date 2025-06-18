@@ -22,7 +22,7 @@
     "kit/contracts": {
       "name": "contracts",
       "version": "2.0.0",
-      "dependencies": {
+      "devDependencies": {
         "@nomicfoundation/hardhat-foundry": "1.1.4",
         "@nomicfoundation/hardhat-toolbox-viem": "3.0.0",
         "@nomiclabs/hardhat-solhint": "4.0.2",
@@ -36,6 +36,8 @@
       "dependencies": {
         "@daveyplate/better-auth-tanstack": "1.3.6",
         "@daveyplate/better-auth-ui": "2.0.8",
+        "@fontsource-variable/figtree": "5.2.8",
+        "@fontsource-variable/roboto-mono": "5.2.6",
         "@orpc/client": "1.5.2",
         "@orpc/openapi": "1.5.2",
         "@orpc/react-query": "1.5.2",
@@ -67,6 +69,7 @@
         "better-auth": "1.2.9",
         "class-variance-authority": "0.7.1",
         "clsx": "2.1.1",
+        "dnum": "2.15.0",
         "drizzle-orm": "0.44.2",
         "i18n-iso-countries": "7.14.0",
         "i18next": "25.2.1",
@@ -80,12 +83,11 @@
         "superjson": "2.2.2",
         "tailwind-merge": "3.3.1",
         "tailwindcss": "4.1.10",
+        "tw-animate-css": "1.3.4",
         "zod": "3.25.67",
       },
       "devDependencies": {
         "@eslint/js": "9.29.0",
-        "@fontsource-variable/figtree": "5.2.8",
-        "@fontsource-variable/roboto-mono": "5.2.6",
         "@tanstack/eslint-plugin-query": "5.78.0",
         "@tanstack/eslint-plugin-router": "1.121.21",
         "@types/bun": "1.2.16",
@@ -96,7 +98,6 @@
         "eslint-plugin-react": "7.37.5",
         "globals": "16.2.0",
         "languine": "3.1.4",
-        "tw-animate-css": "1.3.4",
         "typescript": "5.8.3",
         "typescript-eslint": "8.34.1",
         "vite": "6.3.5",
@@ -116,7 +117,7 @@
       "version": "2.0.0",
       "devDependencies": {
         "@playwright/test": "1.53.0",
-        "@types/bun": "latest",
+        "@types/bun": "1.2.16",
       },
       "peerDependencies": {
         "typescript": "5.8.3",
@@ -131,9 +132,11 @@
       },
       "devDependencies": {
         "@settlemint/sdk-thegraph": "2.4.0",
-        "contracts": "workspace:*",
         "matchstick-as": "0.6.0",
         "yaml": "2.8.0",
+      },
+      "peerDependencies": {
+        "contracts": "workspace:*",
       },
     },
   },
@@ -1774,6 +1777,8 @@
 
     "dns-packet": ["dns-packet@5.6.1", "", { "dependencies": { "@leichtgewicht/ip-codec": "^2.0.1" } }, "sha512-l4gcSouhcgIKRvyy99RNVOgxXiicE+2jZoNmaNmZ6JXiGajBOJAesk1OBlJuM5k2c+eudGdLxDqXuPCKIj6kpw=="],
 
+    "dnum": ["dnum@2.15.0", "", { "dependencies": { "from-exponential": "^1.1.1" } }, "sha512-7wyYHrTq32laVKSQSuWsUysCY8kMjFjfgbZmcVECROyeT3yvwF9oaSDFWL1s1s8nAfhhERC04LdtFVbmx8xRWQ=="],
+
     "docker-compose": ["docker-compose@1.2.0", "", { "dependencies": { "yaml": "^2.2.2" } }, "sha512-wIU1eHk3Op7dFgELRdmOYlPYS4gP8HhH1ZmZa13QZF59y0fblzFDFmKPhyc05phCy2hze9OEvNZAsoljrs+72w=="],
 
     "doctrine": ["doctrine@2.1.0", "", { "dependencies": { "esutils": "^2.0.2" } }, "sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw=="],
@@ -2013,6 +2018,8 @@
     "fp-ts": ["fp-ts@1.19.3", "", {}, "sha512-H5KQDspykdHuztLTg+ajGN0Z2qUjcEf3Ybxc6hLt0k7/zPkn29XnKnxlBPyW2XIddWrGaJBzBl4VLYOtk39yZg=="],
 
     "fresh": ["fresh@2.0.0", "", {}, "sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A=="],
+
+    "from-exponential": ["from-exponential@1.1.1", "", {}, "sha512-VBE7f5OVnYwdgB3LHa+Qo29h8qVpxhVO9Trlc+AWm+/XNAgks1tAwMFHb33mjeiof77GglsJzeYF7OqXrROP/A=="],
 
     "fs-extra": ["fs-extra@7.0.1", "", { "dependencies": { "graceful-fs": "^4.1.2", "jsonfile": "^4.0.0", "universalify": "^0.1.0" } }, "sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw=="],
 
