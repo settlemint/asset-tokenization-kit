@@ -23,7 +23,7 @@
     "helm": "helm upgrade --install atk ./atk -f ./tools/values-orbstack.yaml -n atk --create-namespace --timeout 15m --debug",
     "helm:extract-env": "bun run tools/extract-env.ts",
     "helm:connect": "cd ../../ && bunx settlemint connect -a",
-    "helm:subgraph": "yq eval '.graph-node.graphNodeDefaults.env.SUBGRAPH = \"kit:'$(cat ../subgraph/subgraph-output.txt | tr -d '\\n')'\"' -i atk/charts/thegraph/values.yaml",
+    "helm:subgraph": "yq eval '.graph-node.graphNodeDefaults.env.SUBGRAPH = \"kit:'$(cat ../subgraph/.generated/subgraph-hash.txt | tr -d '\\n')'\"' -i atk/charts/thegraph/values.yaml",
     "docs": "helm-docs --chart-search-root=. --skip-version-footer"
   },
   "dependencies": {},
