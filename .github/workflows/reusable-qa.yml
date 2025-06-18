@@ -154,10 +154,12 @@ jobs:
         with:
           name: predeployed-output
           path: |
-            kit/artifacts/portal/*.json
-            kit/artifacts/genesis/*.json
-            kit/artifacts/postgres/*.sql
+            kit/contracts/portal/*.json
+            kit/contracts/genesis/*.json
+            kit/contracts/tools/genesis-output.json
             kit/subgraph/subgraph-output.txt
+            kit/subgraph/.env.subgraph
+            kit/dapp/database-export.sql
 
       - name: Auto-commit artifacts
         if: |
@@ -168,7 +170,7 @@ jobs:
           commit_message: "chore: update artifacts [skip ci]"
           branch: main
           file_pattern: |
-            kit/artifacts/
-            docker-compose.yml
+            tools/docker/postgres/atk.sql
+            kit/subgraph/.env.subgraph
             kit/dapp/locales/**/*.json
             kit/charts/**/README.md

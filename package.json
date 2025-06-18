@@ -60,7 +60,6 @@
     "dev:connect": "settlemint connect --instance local && settlemint hasura track -a",
     "dev:reset": "(docker compose -p atk down || true) && (docker volume ls -q --filter name=^atk | xargs -r docker volume rm || true)",
     "dev:start": "bun run dev:up && bun run dev:connect",
-    "artifacts": "turbo run artifacts",
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },

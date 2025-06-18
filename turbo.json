@@ -20,7 +20,7 @@
       "dependsOn": ["ci:base", "build"]
     },
     "ci:gha:main": {
-      "dependsOn": ["ci:gha", "test:integration", "artifacts", "publish"]
+      "dependsOn": ["ci:gha", "test:integration", "publish"]
     },
     "//#version": {
       "cache": false,
@@ -50,7 +50,9 @@
         "out/**",
         "out-genesis/**",
         "portal/**",
-        "subgraph-output.txt"
+        "genesis/**",
+        "subgraph-output.txt",
+        ".env.subgraph"
       ]
     },
     "package": {
@@ -87,45 +89,6 @@
     "test": {
       "outputs": ["coverage/**", ".coverage/**"]
     },
-    "artifacts": {
-      "dependsOn": ["compile", "@atk/artifacts#artifacts"],
-      "outputs": [
-        "kit/artifacts/portal/**",
-        "kit/artifacts/genesis/**",
-        "kit/artifacts/postgres/**",
-        "kit/artifacts/docker-compose/**"
-      ]
-    },
-    "@atk/artifacts#artifacts": {
-      "dependsOn": ["^compile"],
-      "outputs": [
-        "portal/**",
-        "genesis/**",
-        "postgres/**",
-        "docker-compose/**"
-      ]
-    },
-    "@atk/artifacts#artifacts:contracts": {
-      "dependsOn": ["contracts#compile"],
-      "outputs": [
-        "portal/**",
-        "genesis/**"
-      ]
-    },
-    "@atk/artifacts#artifacts:charts": {
-      "dependsOn": ["@atk/artifacts#artifacts:contracts"],
-      "outputs": []
-    },
-    "@atk/artifacts#artifacts:docker-compose": {
-      "dependsOn": ["subgraph#compile"],
-      "outputs": ["docker-compose/**"],
-      "inputs": ["../subgraph/subgraph-output.txt"]
-    },
-    "@atk/artifacts#artifacts:database": {
-      "dependsOn": ["dapp#db:export"],
-      "outputs": ["postgres/**"],
-      "inputs": ["../dapp/database-export.sql"]
-    },
     "test:integration": {
       "outputs": ["test-results/**", "playwright-report/**"]
     },
@@ -134,7 +97,7 @@
       "persistent": true
     },
     "db:export": {
-      "outputs": ["database-export.sql"]
+      "outputs": ["database-export.sql", "../../tools/docker/postgres/atk.sql"]
     },
     "db:push": {
       "cache": false

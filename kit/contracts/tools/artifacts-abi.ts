@@ -10,8 +10,6 @@
  */
 
 import { $, Glob } from "bun";
-import { existsSync } from "node:fs";
-import { mkdir } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
@@ -43,8 +41,6 @@ const OUT_DIR = join(CONTRACTS_ROOT, "out");
 const CONTRACTS_DIR = join(CONTRACTS_ROOT, "contracts");
 const PORTAL_DIR = join(CONTRACTS_ROOT, "portal");
 const ROOT_DIR = (await findTurboRoot())?.monorepoRoot;
-const ARTIFACTS_DIR = join(ROOT_DIR, "kit/artifacts");
-const ARTIFACTS_PORTAL_DIR = join(ARTIFACTS_DIR, "portal");
 
 // =============================================================================
 // ABI COLLECTOR
@@ -55,7 +51,6 @@ interface AbiFile {
   sourcePath: string;
   abiPath: string;
   outputPath: string;
-  rootOutputPath: string;
 }
 
 class AbiCollector {
@@ -88,7 +83,11 @@ class AbiCollector {
     logger.debug("Finding ABI files in out directory...");
     const abiFiles: AbiFile[] = [];
 
-    if (!existsSync(OUT_DIR)) {
+    const outDirFile = Bun.file(join(OUT_DIR, '.gitkeep'));
+    try {
+      await Bun.write(join(OUT_DIR, '.gitkeep'), '');
+      await outDirFile.unlink();
+    } catch {
       throw new Error(
         `Out directory not found: ${OUT_DIR}. Please run 'forge build' first.`
       );
@@ -119,14 +118,12 @@ class AbiCollector {
 
       if (correspondingSolFile) {
         const outputPath = join(PORTAL_DIR, `${contractName}.json`);
-        const artifactsOutputPath = join(ARTIFACTS_PORTAL_DIR, `${contractName}.json`);
 
         abiFiles.push({
           contractName,
           sourcePath: correspondingSolFile,
           abiPath: fullPath,
           outputPath,
-          rootOutputPath: artifactsOutputPath,
         });
       }
     }
@@ -172,7 +169,6 @@ class AbiCollector {
 
       // Write the entire artifact to portal directory using Bun's file API
       await Bun.write(abiFile.outputPath, JSON.stringify(parsed, null, 2));
-      await Bun.write(abiFile.rootOutputPath, JSON.stringify(parsed, null, 2));
 
       this.collectedCount++;
       logger.debug(`Successfully copied ${abiFile.contractName} artifact`);
@@ -182,27 +178,26 @@ class AbiCollector {
     }
   }
 
-  async initializeArtifactsPortalDir(): Promise<void> {
-    logger.info("Initializing artifacts portal directory...");
-
-    if (this.config.cleanPortalDir && existsSync(ARTIFACTS_PORTAL_DIR)) {
-      logger.debug("Cleaning existing artifacts portal directory...");
-      await $`rm -rf ${ARTIFACTS_PORTAL_DIR}`.quiet();
-    }
-
-    await mkdir(ARTIFACTS_PORTAL_DIR, { recursive: true });
-    logger.info("Artifacts portal directory initialized");
-  }
 
   async initializePortalDir(): Promise<void> {
     logger.info("Initializing portal directory...");
 
-    if (this.config.cleanPortalDir && existsSync(PORTAL_DIR)) {
-      logger.debug("Cleaning existing portal directory...");
-      await $`rm -rf ${PORTAL_DIR}`.quiet();
+    if (this.config.cleanPortalDir) {
+      const portalFile = Bun.file(join(PORTAL_DIR, '.gitkeep'));
+      try {
+        // Check if directory exists by trying to write a file
+        await Bun.write(join(PORTAL_DIR, '.gitkeep'), '');
+        await portalFile.unlink();
+        logger.debug("Cleaning existing portal directory...");
+        await $`rm -rf ${PORTAL_DIR}`.quiet();
+      } catch {
+        // Directory doesn't exist, nothing to clean
+      }
     }
 
-    await mkdir(PORTAL_DIR, { recursive: true });
+    // Create directory by writing a temporary file
+    await Bun.write(join(PORTAL_DIR, '.gitkeep'), '');
+    await Bun.file(join(PORTAL_DIR, '.gitkeep')).unlink();
     logger.info("Portal directory initialized");
   }
 
@@ -247,7 +242,11 @@ class AbiCollector {
   async verifyCollection(): Promise<void> {
     logger.info("Verifying ABI collection...");
 
-    if (!existsSync(PORTAL_DIR)) {
+    const portalDirFile = Bun.file(join(PORTAL_DIR, '.gitkeep'));
+    try {
+      await Bun.write(join(PORTAL_DIR, '.gitkeep'), '');
+      await portalDirFile.unlink();
+    } catch {
       throw new Error(`Portal directory not found: ${PORTAL_DIR}`);
     }
 
@@ -427,11 +426,19 @@ async function main(): Promise<void> {
   // Check prerequisites
   logger.info("Checking prerequisites...");
 
-  if (!existsSync(CONTRACTS_DIR)) {
+  const contractsDirFile = Bun.file(join(CONTRACTS_DIR, '.gitkeep'));
+  try {
+    await Bun.write(join(CONTRACTS_DIR, '.gitkeep'), '');
+    await contractsDirFile.unlink();
+  } catch {
     throw new Error(`Contracts directory not found: ${CONTRACTS_DIR}`);
   }
 
-  if (!existsSync(OUT_DIR)) {
+  const outDirFile = Bun.file(join(OUT_DIR, '.gitkeep'));
+  try {
+    await Bun.write(join(OUT_DIR, '.gitkeep'), '');
+    await outDirFile.unlink();
+  } catch {
     throw new Error(
       `Out directory not found: ${OUT_DIR}. Please run 'forge build' first.`
     );
@@ -442,7 +449,6 @@ async function main(): Promise<void> {
   try {
     // Initialize portal directory
     await collector.initializePortalDir();
-    await collector.initializeArtifactsPortalDir();
 
     // Process all ABI files
     await collector.processAllAbis();
