@@ -57,7 +57,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
     stablecoinFactoryImplementation,
     fixedYieldScheduleFactoryImplementation,
     vestingAirdropFactoryImplementation,
-    // modules
+    // compliancemodules
     countryAllowListModule,
     countryBlockListModule,
     addressBlockListModule,
