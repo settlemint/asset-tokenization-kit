@@ -36,9 +36,9 @@ import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { useContext } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -61,13 +61,25 @@ export const Route = createFileRoute("/_private/onboarding")({
 
 function OnboardingComponent() {
   const { orpc } = Route.useRouteContext();
-  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
-  const { data: systemAddress } = useSuspenseQuery(
+  const navigate = useNavigate();
+  const { data: user, isError, error } = useQuery(orpc.user.me.queryOptions());
+  const { data: systemAddress } = useQuery(
     orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
   );
   const { sessionKey } = useContext(AuthQueryContext);
   const { t } = useTranslation(["onboarding", "general"]);
   const [, setSystemAddress] = useSettings("SYSTEM_ADDRESS");
+
+  // Handle authentication errors
+  useEffect(() => {
+    if (isError) {
+      // For ORPC errors, the error object will have a code property
+      const errorObj = error as { code?: string };
+      if (errorObj.code === "UNAUTHORIZED") {
+        void navigate({ to: "/auth/$pathname", params: { pathname: "signin" }, replace: true });
+      }
+    }
+  }, [isError, error, navigate]);
 
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({
@@ -145,9 +157,11 @@ function OnboardingComponent() {
                 <div className="flex flex-col gap-8">
                   <p>This should be our step wizard</p>
                   <Button
-                    disabled={!!user.wallet}
+                    disabled={!user || !!user.wallet}
                     onClick={() => {
-                      generateWallet({ userId: user.id });
+                      if (user) {
+                        generateWallet({ userId: user.id });
+                      }
                     }}
                   >
                     Generate a new wallet
