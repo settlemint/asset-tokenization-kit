@@ -13,7 +13,7 @@ import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 // Interfaces
 import { IATKSystem } from "./IATKSystem.sol";
 import { IATKComplianceBypassList } from "./compliance/IATKComplianceBypassList.sol";
-import { IWithTypeIdentifier } from "./IWithTypeIdentifier.sol";
+import { IWithTypeIdentifier } from "./../smart/interface/IWithTypeIdentifier.sol";
 
 // Constants
 import { ATKSystemRoles } from "./ATKSystemRoles.sol";

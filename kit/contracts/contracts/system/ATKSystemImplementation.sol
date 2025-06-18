@@ -42,6 +42,11 @@ import { ATKSystemAddonProxy } from "./ATKSystemAddonProxy.sol";
 import { SMARTIdentityVerificationComplianceModule } from
     "../smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
+import { ISMARTComplianceModule } from "../smart/interface/ISMARTComplianceModule.sol";
+
+error ComplianceModuleAlreadyRegistered(string name);
+error InvalidComplianceModuleAddress();
+
 // Constants
 import { ATKSystemRoles } from "./ATKSystemRoles.sol";
 import { ATKTopics } from "./ATKTopics.sol";
@@ -62,7 +67,7 @@ import { ATKTrustedIssuersRegistryProxy } from "./trusted-issuers-registry/ATKTr
 import { ATKTopicSchemeRegistryProxy } from "./topic-scheme-registry/ATKTopicSchemeRegistryProxy.sol";
 import { ATKIdentityFactoryProxy } from "./identity-factory/ATKIdentityFactoryProxy.sol";
 import { ATKTokenFactoryProxy } from "./token-factory/ATKTokenFactoryProxy.sol";
-import { IWithTypeIdentifier } from "./IWithTypeIdentifier.sol";
+import { IWithTypeIdentifier } from "./../smart/interface/IWithTypeIdentifier.sol";
 
 /// @title ATKSystem Contract
 /// @author SettleMint Tokenization Services
@@ -100,6 +105,7 @@ contract ATKSystemImplementation is
     bytes4 private constant _IIDENTITY_ID = type(IIdentity).interfaceId;
     bytes4 private constant _IATK_TOKEN_FACTORY_ID = type(IATKTokenFactory).interfaceId;
     bytes4 private constant _ISMART_TOKEN_ACCESS_MANAGER_ID = type(ISMARTTokenAccessManager).interfaceId;
+    bytes4 private constant _ISMART_COMPLIANCE_MODULE_ID = type(ISMARTComplianceModule).interfaceId;
 
     // --- State Variables ---
     // State variables store data persistently on the blockchain.
@@ -162,6 +168,9 @@ contract ATKSystemImplementation is
     // System Addons by Type
     mapping(bytes32 typeHash => address addonImplementationAddress) private addonImplementationsByType;
     mapping(bytes32 typeHash => address addonProxyAddress) private addonProxiesByType;
+
+    // Compliance Modules by Type
+    mapping(bytes32 typeHash => address moduleAddress) private complianceModulesByType;
 
     // --- Internal Helper for Interface Check ---
     /// @dev Internal helper function to check if a given contract address (`implAddress`)
@@ -409,6 +418,20 @@ contract ATKSystemImplementation is
             ATKTopics.names(), ATKTopics.signatures()
         );
 
+        // Register the identity verification module
+        if (_identityVerificationModule != address(0)) {
+            _checkInterface(_identityVerificationModule, _ISMART_COMPLIANCE_MODULE_ID);
+            string memory name = ISMARTComplianceModule(_identityVerificationModule).name();
+            bytes32 moduleTypeHash = ISMARTComplianceModule(_identityVerificationModule).typeId();
+
+            if (complianceModulesByType[moduleTypeHash] == address(0)) {
+                complianceModulesByType[moduleTypeHash] = _identityVerificationModule;
+                emit ComplianceModuleRegistered(
+                    initialAdmin, name, moduleTypeHash, _identityVerificationModule, block.timestamp
+                );
+            }
+        }
+
         // Mark the system as bootstrapped
         _bootstrapped = true;
 
@@ -537,6 +560,33 @@ contract ATKSystemImplementation is
         );
 
         return _addonProxy;
+    }
+
+    /// @inheritdoc IATKSystem
+    function registerComplianceModule(address _moduleAddress)
+        external
+        override
+        nonReentrant
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        // System must be bootstrapped before registering compliance modules
+        if (!_bootstrapped) {
+            revert SystemNotBootstrapped();
+        }
+
+        if (_moduleAddress == address(0)) revert InvalidComplianceModuleAddress();
+        _checkInterface(_moduleAddress, _ISMART_COMPLIANCE_MODULE_ID);
+
+        string memory name = ISMARTComplianceModule(_moduleAddress).name();
+        bytes32 moduleTypeHash = ISMARTComplianceModule(_moduleAddress).typeId();
+
+        if (complianceModulesByType[moduleTypeHash] != address(0)) {
+            revert ComplianceModuleAlreadyRegistered(name);
+        }
+
+        complianceModulesByType[moduleTypeHash] = _moduleAddress;
+
+        emit ComplianceModuleRegistered(_msgSender(), name, moduleTypeHash, _moduleAddress, block.timestamp);
     }
 
     // --- Implementation Setter Functions ---
@@ -721,6 +771,11 @@ contract ATKSystemImplementation is
     /// @inheritdoc IATKSystem
     function addonImplementation(bytes32 addonTypeHash) public view override returns (address) {
         return addonImplementationsByType[addonTypeHash];
+    }
+
+    /// @inheritdoc IATKSystem
+    function complianceModule(bytes32 moduleTypeHash) public view override returns (address) {
+        return complianceModulesByType[moduleTypeHash];
     }
 
     // --- Proxy Getter Functions ---

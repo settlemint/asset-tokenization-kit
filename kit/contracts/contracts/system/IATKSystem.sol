@@ -113,6 +113,16 @@ interface IATKSystem is IERC165 {
         uint256 timestamp
     );
 
+    /// @notice Emitted when a compliance module is registered.
+    /// @param sender The address that registered the compliance module.
+    /// @param name The human-readable name of the compliance module.
+    /// @param typeId The type identifier of the compliance module.
+    /// @param moduleAddress The address of the registered compliance module.
+    /// @param timestamp The timestamp of the compliance module registration.
+    event ComplianceModuleRegistered(
+        address indexed sender, string name, bytes32 typeId, address indexed moduleAddress, uint256 timestamp
+    );
+
     /// @notice Initializes and sets up the entire ATK Protocol system.
     /// @dev This function is responsible for the initial deployment and configuration of the ATK Protocol.
     /// This involves deploying necessary smart contracts, setting initial parameters, and defining the relationships
@@ -147,6 +157,10 @@ interface IATKSystem is IERC165 {
     )
         external
         returns (address proxyAddress);
+
+    /// @notice Registers a new compliance module in the system.
+    /// @param _moduleAddress The address of the compliance module implementation contract.
+    function registerComplianceModule(address _moduleAddress) external;
 
     /// @notice Retrieves the current, active smart contract address of the compliance module's logic.
     /// @dev Compliance modules are responsible for enforcing rules and restrictions on token transfers, account
@@ -271,6 +285,11 @@ interface IATKSystem is IERC165 {
     /// @param addonTypeHash The hash of the addon type.
     /// @return The address of the system addon implementation contract.
     function addonImplementation(bytes32 addonTypeHash) external view returns (address);
+
+    /// @notice Returns the address of the current compliance module implementation.
+    /// @param moduleTypeHash The hash of the module type.
+    /// @return The address of the compliance module implementation contract.
+    function complianceModule(bytes32 moduleTypeHash) external view returns (address);
 
     /// @notice Retrieves the smart contract address of the proxy for the compliance module.
     /// @dev A proxy contract is an intermediary contract that delegates all function calls it receives to another

@@ -16,7 +16,7 @@ import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { IATKComplianceBypassList } from "../compliance/IATKComplianceBypassList.sol";
-import { IWithTypeIdentifier } from "../IWithTypeIdentifier.sol";
+import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 
 // Implementations
 import { SMARTFixedYieldScheduleUpgradeable } from
