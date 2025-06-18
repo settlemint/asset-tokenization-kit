@@ -111,6 +111,7 @@
     },
     "kit/e2e": {
       "name": "e2e",
+      "version": "2.0.0",
       "devDependencies": {
         "@playwright/test": "1.53.0",
         "@types/bun": "latest",
@@ -151,11 +152,11 @@
     "@tanstack/react-query-devtools": "5.80.7",
     "zod": "3.25.67",
     "@tanstack/react-router-devtools": "1.121.21",
-    "react-is": "19.1.0",
+    "graphql": "16.11.0",
     "@tanstack/react-router-with-query": "1.121.21",
     "ws": "8.18.2",
     "undici": "7.10.0",
-    "graphql": "16.11.0",
+    "react-is": "19.1.0",
     "elliptic": "6.6.1",
     "@tanstack/react-router": "1.121.21",
     "prettier": "3.5.3",
