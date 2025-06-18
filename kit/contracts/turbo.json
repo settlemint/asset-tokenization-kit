@@ -10,15 +10,15 @@
     },
     "compile:forge": {
       "outputs": [".generated/out/**", ".generated/cache_forge/**"],
-      "inputs": ["**/*.sol"]
+      "inputs": ["**/*.sol", "!.generated/**"]
     },
     "compile:hardhat": {
       "outputs": [".generated/artifacts/**", ".generated/cache/**"],
-      "inputs": ["**/*.sol"]
+      "inputs": ["**/*.sol", "!.generated/**"]
     },
     "compile:typescript": {
       "outputs": [".tsbuildinfo"],
-      "inputs": ["**/*.ts"]
+      "inputs": ["**/*.ts", "!.generated/**"]
     },
     "codegen": {
       "dependsOn": ["codegen:types"]
@@ -55,7 +55,7 @@
     "test": {
       "dependsOn": ["compile:forge"],
       "outputs": [],
-      "inputs": ["**/*.sol", "test/**"]
+      "inputs": ["**/*.sol", "test/**", "!.generated/**"]
     }
   }
 }
