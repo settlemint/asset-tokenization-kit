@@ -36,7 +36,7 @@ jobs:
         env:
           HARBOR_USER: op://platform/harbor/username
           HARBOR_PASS: op://platform/harbor/password
-          PAT_TOKEN: ${{ env.PAT_TOKEN }}
+          PAT_TOKEN: op://platform/github-commit-pat/credential
 
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
