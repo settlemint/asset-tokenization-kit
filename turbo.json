@@ -17,10 +17,16 @@
       "dependsOn": ["compile", "codegen", "lint", "test"]
     },
     "ci:gha": {
-      "dependsOn": ["ci:base", "test:integration", "build"]
+      "dependsOn": ["ci:base", "build"]
     },
-    "ci:gha:main": {
-      "dependsOn": ["publish", "ci:gha", "artifacts"]
+    "ci:gha:integration": {
+      "dependsOn": ["test:integration"]
+    },
+    "ci:gha:artifacts": {
+      "dependsOn": ["artifacts"]
+    },
+    "ci:gha:publish": {
+      "dependsOn": ["publish"]
     },
     "//#version": {
       "cache": false,

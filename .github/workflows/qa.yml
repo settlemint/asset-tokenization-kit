@@ -42,6 +42,108 @@ jobs:
         uses: namespacelabs/nscloud-checkout-action@v7
         with:
           fetch-depth: 2
+
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v5
+
+      - name: Set up turbo caching
+        uses: namespace-actions/setup-turbocache@v0
+
+      - name: Setup bun caches
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            ./node_modules
+            ./.turbo
+            ./**/.turbo
+            ~/.bun/install/cache
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Harbor
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        with:
+          registry: harbor.settlemint.com
+          username: ${{ env.HARBOR_USER }}
+          password: ${{ env.HARBOR_PASS }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Install Helm Docs
+        run: |
+          brew install norwoodj/tap/helm-docs
+
+      - name: Install Bun dependencies
+        run: bun install
+
+      - name: Launch docker compose
+        run: |
+          bun run dev:up
+
+      - name: Install Helm
+        uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
+
+      - name: Turbo
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "Running Turbo with --affected flag for PR"
+            bunx turbo run ci:gha --affected --concurrency=100%
+          else
+            echo "Running full Turbo for main branch"
+            bun run ci:gha --concurrency=100%
+          fi
+        env:
+          THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
+          THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
+
+  publish:
+    name: Publish
+    runs-on: namespace-profile-atk
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      statuses: write
+      checks: write
+      packages: write
+      id-token: write
+    steps:
+      - name: Setup 1Password
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load secrets
+        uses: 1password/load-secrets-action@v2
+        env:
+          HARBOR_USER: op://platform/harbor/username
+          HARBOR_PASS: op://platform/harbor/password
+          PAT_TOKEN: op://platform/github-commit-pat/credential
+
+      - name: Checkout repository
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          fetch-depth: 2
           token: ${{ env.PAT_TOKEN }}
 
       - name: Inject slug/short variables
@@ -103,20 +205,106 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
 
-      - name: Connect to SettleMint
-        uses: settlemint/settlemint-action@main
+      - name: Turbo
+        run: |
+          bun run ci:gha:publish --concurrency=100%
+        env:
+          THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
+          THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
+
+  artifacts:
+    name: Artifacts
+    runs-on: namespace-profile-atk
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      statuses: write
+      checks: write
+      packages: write
+      id-token: write
+    steps:
+      - name: Setup 1Password
+        uses: 1password/load-secrets-action/configure@v2
         with:
-          instance: local
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load secrets
+        uses: 1password/load-secrets-action@v2
+        env:
+          HARBOR_USER: op://platform/harbor/username
+          HARBOR_PASS: op://platform/harbor/password
+          PAT_TOKEN: op://platform/github-commit-pat/credential
+
+      - name: Checkout repository
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          fetch-depth: 2
+          token: ${{ env.PAT_TOKEN }}
+
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v5
+
+      - name: Set up turbo caching
+        uses: namespace-actions/setup-turbocache@v0
+
+      - name: Setup bun caches
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            ./node_modules
+            ./.turbo
+            ./**/.turbo
+            ~/.bun/install/cache
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Harbor
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        with:
+          registry: harbor.settlemint.com
+          username: ${{ env.HARBOR_USER }}
+          password: ${{ env.HARBOR_PASS }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Install Helm Docs
+        run: |
+          brew install norwoodj/tap/helm-docs
+
+      - name: Install Bun dependencies
+        run: bun install
+
+      - name: Launch docker compose
+        run: |
+          bun run dev:up
+
+      - name: Install Helm
+        uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
 
       - name: Turbo
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "Running Turbo with --affected flag for PR"
-            bunx turbo run ci:gha --affected --concurrency=100%
-          else
-            echo "Running full Turbo for main branch"
-            bun run ci:gha:main --concurrency=100%
-          fi
+          bun run ci:gha:artifacts --concurrency=100%
         env:
           THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
           THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
