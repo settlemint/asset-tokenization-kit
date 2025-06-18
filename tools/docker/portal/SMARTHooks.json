@@ -84,5 +84,5 @@
     "details": "The hooks are empty by default (`internal virtual { }`). This means that if an extension      doesn't need to react to a specific lifecycle event, it doesn't need to implement that hook.      The key design principle here is that when an extension *does* override a hook,      it should **always call `super.hookName()` first** within its implementation.      This ensures that if multiple extensions are used and they all override the same hook,      a chain of calls is maintained, allowing all extensions to execute their logic.      For example:      `function _beforeMint(address to, uint256 amount) internal virtual override {`      `    super._beforeMint(to, amount); // Call parent/previous hook first!`      `    // Custom logic for this extension...`      `}`      An 'abstract contract' provides a template or partial implementation, and cannot be deployed directly.      `internal virtual` functions are callable only from the contract itself or derived contracts,      and they are designed to be overridden.",
     "title": "Abstract Contract for SMART Token Operation Hooks"
   },
-  "id": 51
+  "id": 56
 }
