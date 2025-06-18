@@ -1,0 +1,242 @@
+{
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        {
+          "name": "systemAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "forwarder_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "initialAdmin_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "fallback",
+      "stateMutability": "payable"
+    },
+    {
+      "type": "receive",
+      "stateMutability": "payable"
+    }
+  ],
+  "bytecode": {
+    "object": "0x60a0806040523461022c57606081610464803803809161001f8285610288565b83398101031261022c5761004b6040610037836102ab565b92610044602082016102ab565b50016102ab565b6001600160a01b039091169081156102435760808290526040516370aaa33360e11b81527fc957105032e204887bec07551590f4bb855cc985edd07408ed15736bbbf595d96004820152602081602481865afa908115610238575f916101fa575b506001600160a01b038116156101a9575f92839260405190602082019263485cc95560e01b8452602483015260018060a01b03166044820152604481526100f4606482610288565b51915af43d156101a4573d6001600160401b0381116101905760405190610125601f8201601f191660200183610288565b81525f60203d92013e5b1561014b576040516101a490816102c082396080518160b50152f35b60405162461bcd60e51b815260206004820152601560248201527f496e697469616c697a6174696f6e206661696c656400000000000000000000006044820152606490fd5b634e487b7160e01b5f52604160045260245ffd5b61012f565b60405162461bcd60e51b8152602060048201526024808201527f5661756c7420666163746f727920696d706c656d656e746174696f6e206e6f74604482015263081cd95d60e21b6064820152608490fd5b90506020813d602011610230575b8161021560209383610288565b8101031261022c57610226906102ab565b5f6100ac565b5f80fd5b3d9150610208565b6040513d5f823e3d90fd5b60405162461bcd60e51b815260206004820152601660248201527f496e76616c69642073797374656d2061646472657373000000000000000000006044820152606490fd5b601f909101601f19168101906001600160401b0382119082101761019057604052565b51906001600160a01b038216820361022c5756fe60806040523661007257610072565b90601f8019910116810190811067ffffffffffffffff82111761003057604052565b634e487b7160e01b5f52604160045260245ffd5b9081602091031261006357516001600160a01b03811681036100635790565b5f80fd5b6040513d5f823e3d90fd5b6040516370aaa33360e11b81527fc957105032e204887bec07551590f4bb855cc985edd07408ed15736bbbf595d960048201526020816024816001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000165afa908115610192575f91610163575b506001600160a01b03811615610112575f8091368280378136915af43d5f803e1561010e573d5ff35b3d5ffd5b60405162461bcd60e51b8152602060048201526024808201527f5661756c7420666163746f727920696d706c656d656e746174696f6e206e6f74604482015263081cd95d60e21b6064820152608490fd5b610185915060203d60201161018b575b61017d818361000e565b810190610044565b5f6100e5565b503d610173565b61006756fea164736f6c634300081c000a",
+    "sourceMap": "431:2897:22:-:0;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;:::i;:::-;;;;;;;:::i;:::-;;;;:::i;:::-;-1:-1:-1;;;;;431:2897:22;;;;981:27;;977:65;;1052:35;;;;431:2897;;-1:-1:-1;;;1181:54:22;;1209:25;1181:54;;;431:2897;;;1181:54;431:2897;1052:35;1181:54;;;;;;;-1:-1:-1;1181:54:22;;;-1:-1:-1;;;;;;;431:2897:22;;1249:28;1245:80;;-1:-1:-1;431:2897:22;;;;;1436:90;431:2897;1436:90;;1459:36;;;;1436:90;;1181:54;1436:90;;431:2897;;;;;;;;;;;;1436:90;;;;;;:::i;:::-;1395:141;;;;431:2897;;;;;-1:-1:-1;;;;;431:2897:22;;;;;;;;1436:90;431:2897;;-1:-1:-1;;431:2897:22;;;;;:::i;:::-;;;-1:-1:-1;431:2897:22;;;;;;1550:8;1546:45;;431:2897;;;;;;;;1052:35;431:2897;;;;;;1546:45;431:2897;;-1:-1:-1;;;1560:31:22;;431:2897;1181:54;1560:31;;431:2897;;1181:54;431:2897;;;;;;;;1436:90;;1560:31;431:2897;;;;-1:-1:-1;431:2897:22;;1181:54;431:2897;1181:54;-1:-1:-1;431:2897:22;;;;1245:80;431:2897;;-1:-1:-1;;;1279:46:22;;431:2897;1181:54;1279:46;;431:2897;1181:54;431:2897;;;;;;;;;-1:-1:-1;;;431:2897:22;;;;1279:46;;;1181:54;;;431:2897;1181:54;;431:2897;1181:54;;;;;;431:2897;1181:54;;;:::i;:::-;;;431:2897;;;;;;;:::i;:::-;1181:54;;;431:2897;-1:-1:-1;431:2897:22;;1181:54;;;-1:-1:-1;1181:54:22;;;431:2897;;;-1:-1:-1;431:2897:22;;;;;977:65;431:2897;;-1:-1:-1;;;1010:32:22;;431:2897;1010:32;;;431:2897;;;;;;;;;;;1010:32;;;431:2897;;;;;-1:-1:-1;;431:2897:22;;;;-1:-1:-1;;;;;431:2897:22;;;;;;;;;;:::o;:::-;;;-1:-1:-1;;;;;431:2897:22;;;;;;:::o",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x60806040523661007257610072565b90601f8019910116810190811067ffffffffffffffff82111761003057604052565b634e487b7160e01b5f52604160045260245ffd5b9081602091031261006357516001600160a01b03811681036100635790565b5f80fd5b6040513d5f823e3d90fd5b6040516370aaa33360e11b81527fc957105032e204887bec07551590f4bb855cc985edd07408ed15736bbbf595d960048201526020816024816001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000165afa908115610192575f91610163575b506001600160a01b03811615610112575f8091368280378136915af43d5f803e1561010e573d5ff35b3d5ffd5b60405162461bcd60e51b8152602060048201526024808201527f5661756c7420666163746f727920696d706c656d656e746174696f6e206e6f74604482015263081cd95d60e21b6064820152608490fd5b610185915060203d60201161018b575b61017d818361000e565b810190610044565b5f6100e5565b503d610173565b61006756fea164736f6c634300081c000a",
+    "sourceMap": "431:2897:22:-:0;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;-1:-1:-1;431:2897:22;;;;;-1:-1:-1;431:2897:22;;;;;;;;;;;-1:-1:-1;;;;;431:2897:22;;;;;;;:::o;:::-;-1:-1:-1;431:2897:22;;;;;;;;;;;;2566:760;431:2897;;-1:-1:-1;;;2628:54:22;;2656:25;2628:54;;;431:2897;2628:54;431:2897;;;-1:-1:-1;;;;;2628:7:22;431:2897;2628:54;;;;;;;-1:-1:-1;2628:54:22;;;2566:760;-1:-1:-1;;;;;;431:2897:22;;2696:28;2692:80;;-1:-1:-1;2783:537:22;;;;;;;;;;;;-1:-1:-1;2783:537:22;;;;;;-1:-1:-1;2783:537:22;;;-1:-1:-1;2783:537:22;2692:80;431:2897;;-1:-1:-1;;;2726:46:22;;431:2897;2628:54;2726:46;;431:2897;;;;;;;;;;;-1:-1:-1;;;431:2897:22;;;;;;2726:46;2628:54;;;;;;;;;;;;;;;:::i;:::-;;;;;:::i;:::-;;;;;;;;;;;:::i",
+    "linkReferences": {},
+    "immutableReferences": {
+      "5769": [
+        {
+          "start": 181,
+          "length": 32
+        }
+      ]
+    }
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"systemAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"forwarder_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"initialAdmin_\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"details\":\"This contract serves as a proxy to the ATK Vault Factory implementation\",\"kind\":\"dev\",\"methods\":{\"constructor\":{\"params\":{\"forwarder_\":\"Address of the trusted forwarder for meta-transactions (passed to implementation constructor)\",\"initialAdmin_\":\"Address that will have admin role\",\"systemAddress\":\"Address of the ATK System contract\"}}},\"title\":\"ATKVaultFactoryProxy\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"constructor\":{\"notice\":\"Constructor for the ATKVaultFactoryProxy\"}},\"notice\":\"Proxy contract for the ATK Vault Factory addon\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/vault/ATKVaultFactoryProxy.sol\":\"ATKVaultFactoryProxy\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/vault/ATKVaultFactoryProxy.sol\":{\"keccak256\":\"0x6e8798146a6586d30b8031bb2648c693547ce1e74eed29dd502ac9e4b3708e0e\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://a53e7133f5b08a19f2b7e16bf0d9e223d0ab88192a2b2349d9cecc350f151a26\",\"dweb:/ipfs/QmRoZR5iMXULnPAE12dDaBkeQNn5gitDU13QPE23meLBqv\"]},\"contracts/addons/vault/IATKVaultFactory.sol\":{\"keccak256\":\"0xd55488b864ae1faf4e314fc4eddd0afabf2d465854e46afacdb595f5b9a8cd09\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://25ffe5915fbc91500631793972b8465572d0c515e5f300c9142569d9f601708c\",\"dweb:/ipfs/QmWxmXv2VrouDe6G67r8FwJuAN3kR3tNkdaqTCtCkk1HSv\"]},\"contracts/system/ATKSystemAddonProxy.sol\":{\"keccak256\":\"0x623cd7515dce5623946a16238fe489da8558bac88450a917ed2ba59a668fecb0\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://80d505e355d44eb8e1481d14ef96fd0140c6d62ed25bac289277256a3bd4d3db\",\"dweb:/ipfs/QmQVkJEzkVkW528WFUbvZt5jpSpiDN9zcF6zh4bB73TAdb\"]},\"contracts/system/ATKSystemErrors.sol\":{\"keccak256\":\"0x85d02e1d6fb4ee127073c8cfc6effadb23579771aa5ebb0a09abc736b30a2cf2\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://95d385cbab46aecdd99df43c550212fa82e36e45fa32b4d5dde79ba46e142503\",\"dweb:/ipfs/QmT8vANsK8VjU14ZLzEvvGfXePeYThqP9wosD58APn5vCD\"]},\"contracts/system/ATKSystemProxy.sol\":{\"keccak256\":\"0x12c010a68ad78794ba027937670830daf64096a0679935f905aba52d6f59fcbd\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://7ff81a994ac5b99823ffe2a52f9474561719c9e33edf133c637388e6b5ab8790\",\"dweb:/ipfs/QmdjMocxoF2HCMpmpz37HgL2MMLYW69ZFbRYhQeF9wZ7wZ\"]},\"contracts/system/IATKSystem.sol\":{\"keccak256\":\"0xd5003b5cc8d60d6294bd8ef78aedc102250d48e6f9414cd665fce1bf06c47cad\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://76da38c57bfb2ebc21bdc229f9a7a5a48c858102e90b82682542719b303b639c\",\"dweb:/ipfs/QmUMgEPYLSkYqqdBGz5jK5xURpNf4PmSaACW8UV3LrXiiU\"]},\"dependencies/@openzeppelin-contracts-5.3.0/proxy/Proxy.sol\":{\"keccak256\":\"0xc3f2ec76a3de8ed7a7007c46166f5550c72c7709e3fc7e8bb3111a7191cdedbd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e73efb4c2ca655882dc237c6b4f234a9bd36d97159d8fcaa837eb01171f726ac\",\"dweb:/ipfs/QmTNnnv7Gu5fs5G1ZMh7Fexp8N4XUs3XrNAngjcxgiss3e\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/StorageSlot.sol\":{\"keccak256\":\"0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9f660b1f351b757dfe01438e59888f31f33ded3afcf5cb5b0d9bf9aa6f320a8b\",\"dweb:/ipfs/QmarDJ5hZEgBtCmmrVzEZWjub9769eD686jmzb2XpSU1cM\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "systemAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "forwarder_",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "initialAdmin_",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "fallback"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "receive"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "constructor": {
+            "params": {
+              "forwarder_": "Address of the trusted forwarder for meta-transactions (passed to implementation constructor)",
+              "initialAdmin_": "Address that will have admin role",
+              "systemAddress": "Address of the ATK System contract"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "constructor": {
+            "notice": "Constructor for the ATKVaultFactoryProxy"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/addons/vault/ATKVaultFactoryProxy.sol": "ATKVaultFactoryProxy"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/addons/vault/ATKVaultFactoryProxy.sol": {
+        "keccak256": "0x6e8798146a6586d30b8031bb2648c693547ce1e74eed29dd502ac9e4b3708e0e",
+        "urls": [
+          "bzz-raw://a53e7133f5b08a19f2b7e16bf0d9e223d0ab88192a2b2349d9cecc350f151a26",
+          "dweb:/ipfs/QmRoZR5iMXULnPAE12dDaBkeQNn5gitDU13QPE23meLBqv"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/addons/vault/IATKVaultFactory.sol": {
+        "keccak256": "0xd55488b864ae1faf4e314fc4eddd0afabf2d465854e46afacdb595f5b9a8cd09",
+        "urls": [
+          "bzz-raw://25ffe5915fbc91500631793972b8465572d0c515e5f300c9142569d9f601708c",
+          "dweb:/ipfs/QmWxmXv2VrouDe6G67r8FwJuAN3kR3tNkdaqTCtCkk1HSv"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/system/ATKSystemAddonProxy.sol": {
+        "keccak256": "0x623cd7515dce5623946a16238fe489da8558bac88450a917ed2ba59a668fecb0",
+        "urls": [
+          "bzz-raw://80d505e355d44eb8e1481d14ef96fd0140c6d62ed25bac289277256a3bd4d3db",
+          "dweb:/ipfs/QmQVkJEzkVkW528WFUbvZt5jpSpiDN9zcF6zh4bB73TAdb"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/system/ATKSystemErrors.sol": {
+        "keccak256": "0x85d02e1d6fb4ee127073c8cfc6effadb23579771aa5ebb0a09abc736b30a2cf2",
+        "urls": [
+          "bzz-raw://95d385cbab46aecdd99df43c550212fa82e36e45fa32b4d5dde79ba46e142503",
+          "dweb:/ipfs/QmT8vANsK8VjU14ZLzEvvGfXePeYThqP9wosD58APn5vCD"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/system/ATKSystemProxy.sol": {
+        "keccak256": "0x12c010a68ad78794ba027937670830daf64096a0679935f905aba52d6f59fcbd",
+        "urls": [
+          "bzz-raw://7ff81a994ac5b99823ffe2a52f9474561719c9e33edf133c637388e6b5ab8790",
+          "dweb:/ipfs/QmdjMocxoF2HCMpmpz37HgL2MMLYW69ZFbRYhQeF9wZ7wZ"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/system/IATKSystem.sol": {
+        "keccak256": "0xd5003b5cc8d60d6294bd8ef78aedc102250d48e6f9414cd665fce1bf06c47cad",
+        "urls": [
+          "bzz-raw://76da38c57bfb2ebc21bdc229f9a7a5a48c858102e90b82682542719b303b639c",
+          "dweb:/ipfs/QmUMgEPYLSkYqqdBGz5jK5xURpNf4PmSaACW8UV3LrXiiU"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/proxy/Proxy.sol": {
+        "keccak256": "0xc3f2ec76a3de8ed7a7007c46166f5550c72c7709e3fc7e8bb3111a7191cdedbd",
+        "urls": [
+          "bzz-raw://e73efb4c2ca655882dc237c6b4f234a9bd36d97159d8fcaa837eb01171f726ac",
+          "dweb:/ipfs/QmTNnnv7Gu5fs5G1ZMh7Fexp8N4XUs3XrNAngjcxgiss3e"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/StorageSlot.sol": {
+        "keccak256": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+        "urls": [
+          "bzz-raw://9f660b1f351b757dfe01438e59888f31f33ded3afcf5cb5b0d9bf9aa6f320a8b",
+          "dweb:/ipfs/QmarDJ5hZEgBtCmmrVzEZWjub9769eD686jmzb2XpSU1cM"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "constructor": {
+        "notice": "Constructor for the ATKVaultFactoryProxy"
+      }
+    },
+    "notice": "Proxy contract for the ATK Vault Factory addon"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "details": "This contract serves as a proxy to the ATK Vault Factory implementation",
+    "methods": {
+      "constructor": {
+        "params": {
+          "forwarder_": "Address of the trusted forwarder for meta-transactions (passed to implementation constructor)",
+          "initialAdmin_": "Address that will have admin role",
+          "systemAddress": "Address of the ATK System contract"
+        }
+      }
+    },
+    "title": "ATKVaultFactoryProxy"
+  },
+  "id": 22
+}

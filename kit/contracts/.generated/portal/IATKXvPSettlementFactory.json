@@ -1,0 +1,601 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "create",
+      "inputs": [
+        {
+          "name": "flows",
+          "type": "tuple[]",
+          "internalType": "struct IATKXvPSettlement.Flow[]",
+          "components": [
+            {
+              "name": "asset",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "from",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "to",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        },
+        {
+          "name": "cutoffDate",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "autoExecute",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contractAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "initialize",
+      "inputs": [
+        {
+          "name": "forwarder",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "initialAdmin",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "isAddressDeployed",
+      "inputs": [
+        {
+          "name": "settlement",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "predictAddress",
+      "inputs": [
+        {
+          "name": "flows",
+          "type": "tuple[]",
+          "internalType": "struct IATKXvPSettlement.Flow[]",
+          "components": [
+            {
+              "name": "asset",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "from",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "to",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        },
+        {
+          "name": "cutoffDate",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "autoExecute",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "predicted",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "supportsInterface",
+      "inputs": [
+        {
+          "name": "interfaceId",
+          "type": "bytes4",
+          "internalType": "bytes4"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "typeId",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "xvpSettlementImplementation",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "create((address,address,address,uint256)[],uint256,bool)": "6758889e",
+    "initialize(address,address)": "485cc955",
+    "isAddressDeployed(address)": "4e7f6dea",
+    "predictAddress((address,address,address,uint256)[],uint256,bool)": "6a8b903d",
+    "supportsInterface(bytes4)": "01ffc9a7",
+    "typeId()": "8f940f63",
+    "xvpSettlementImplementation()": "61cdf47a"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"asset\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"internalType\":\"struct IATKXvPSettlement.Flow[]\",\"name\":\"flows\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"cutoffDate\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"autoExecute\",\"type\":\"bool\"}],\"name\":\"create\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"forwarder\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"initialAdmin\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"settlement\",\"type\":\"address\"}],\"name\":\"isAddressDeployed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"asset\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"internalType\":\"struct IATKXvPSettlement.Flow[]\",\"name\":\"flows\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"cutoffDate\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"autoExecute\",\"type\":\"bool\"}],\"name\":\"predictAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"predicted\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"typeId\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"xvpSettlementImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Defines the core functionality that must be implemented by the XvP Settlement Factory\",\"kind\":\"dev\",\"methods\":{\"create((address,address,address,uint256)[],uint256,bool)\":{\"params\":{\"autoExecute\":\"If true, settlement executes automatically when all approvals are received\",\"cutoffDate\":\"Timestamp after which the settlement expires\",\"flows\":\"The array of token flows to include in the settlement\"},\"returns\":{\"contractAddress\":\"The address of the newly created settlement contract\"}},\"initialize(address,address)\":{\"params\":{\"forwarder\":\"The address of the trusted forwarder\",\"initialAdmin\":\"The address that will be granted admin role\"}},\"isAddressDeployed(address)\":{\"params\":{\"settlement\":\"The address to check\"},\"returns\":{\"_0\":\"True if the address was created by this factory, false otherwise\"}},\"predictAddress((address,address,address,uint256)[],uint256,bool)\":{\"params\":{\"autoExecute\":\"If true, settlement executes automatically when all approvals are received\",\"cutoffDate\":\"Timestamp after which the settlement expires\",\"flows\":\"The array of token flows that will be used in deployment\"},\"returns\":{\"predicted\":\"The address where the settlement contract would be deployed\"}},\"supportsInterface(bytes4)\":{\"details\":\"Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas.\"},\"xvpSettlementImplementation()\":{\"returns\":{\"_0\":\"The address of the XvPSettlement logic contract\"}}},\"title\":\"IATKXvPSettlementFactory Interface\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"create((address,address,address,uint256)[],uint256,bool)\":{\"notice\":\"Creates a new XvPSettlement contract\"},\"initialize(address,address)\":{\"notice\":\"Initializes the factory with a trusted forwarder and an admin address\"},\"isAddressDeployed(address)\":{\"notice\":\"Checks if an address was deployed by this factory\"},\"predictAddress((address,address,address,uint256)[],uint256,bool)\":{\"notice\":\"Predicts the address where a XvPSettlement contract would be deployed\"},\"typeId()\":{\"notice\":\"Returns a unique identifier for the type of this contract.\"},\"xvpSettlementImplementation()\":{\"notice\":\"Returns the address of the current XvPSettlement implementation contract\"}},\"notice\":\"Interface for the XvP Settlement Factory contract\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/xvp/IATKXvPSettlementFactory.sol\":\"IATKXvPSettlementFactory\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/xvp/IATKXvPSettlement.sol\":{\"keccak256\":\"0x5edcebd2bd8dc58fd341247735394c19df53ce1c56bb3dfaeb1242735252abde\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://78d5212d4f15f7031861d3f3b3ce685404cce537168dda65eaacbca02095063d\",\"dweb:/ipfs/Qmbi8tEJKyazqiTM8oASWQW98Ks3FsZBvumBkrGShKz7Ng\"]},\"contracts/addons/xvp/IATKXvPSettlementFactory.sol\":{\"keccak256\":\"0xad16b25ba9b692318c8ee302d642bd6f3fa308ab75b3b85f075f9ef602ed82a1\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://d8d84721720e63237aa2fb264f7356c8b01b343e6f347c87749249e0268cad65\",\"dweb:/ipfs/QmZN5Pi6sTk9kGkYbNBTFpwZ5FQP4pixnDotkF4U2n5cRn\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "struct IATKXvPSettlement.Flow[]",
+              "name": "flows",
+              "type": "tuple[]",
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "asset",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "from",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ]
+            },
+            {
+              "internalType": "uint256",
+              "name": "cutoffDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "autoExecute",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "create",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "forwarder",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "initialAdmin",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "initialize"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "settlement",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isAddressDeployed",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "struct IATKXvPSettlement.Flow[]",
+              "name": "flows",
+              "type": "tuple[]",
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "asset",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "from",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ]
+            },
+            {
+              "internalType": "uint256",
+              "name": "cutoffDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "autoExecute",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "predictAddress",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "predicted",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "typeId",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "xvpSettlementImplementation",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "create((address,address,address,uint256)[],uint256,bool)": {
+            "params": {
+              "autoExecute": "If true, settlement executes automatically when all approvals are received",
+              "cutoffDate": "Timestamp after which the settlement expires",
+              "flows": "The array of token flows to include in the settlement"
+            },
+            "returns": {
+              "contractAddress": "The address of the newly created settlement contract"
+            }
+          },
+          "initialize(address,address)": {
+            "params": {
+              "forwarder": "The address of the trusted forwarder",
+              "initialAdmin": "The address that will be granted admin role"
+            }
+          },
+          "isAddressDeployed(address)": {
+            "params": {
+              "settlement": "The address to check"
+            },
+            "returns": {
+              "_0": "True if the address was created by this factory, false otherwise"
+            }
+          },
+          "predictAddress((address,address,address,uint256)[],uint256,bool)": {
+            "params": {
+              "autoExecute": "If true, settlement executes automatically when all approvals are received",
+              "cutoffDate": "Timestamp after which the settlement expires",
+              "flows": "The array of token flows that will be used in deployment"
+            },
+            "returns": {
+              "predicted": "The address where the settlement contract would be deployed"
+            }
+          },
+          "supportsInterface(bytes4)": {
+            "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+          },
+          "xvpSettlementImplementation()": {
+            "returns": {
+              "_0": "The address of the XvPSettlement logic contract"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "create((address,address,address,uint256)[],uint256,bool)": {
+            "notice": "Creates a new XvPSettlement contract"
+          },
+          "initialize(address,address)": {
+            "notice": "Initializes the factory with a trusted forwarder and an admin address"
+          },
+          "isAddressDeployed(address)": {
+            "notice": "Checks if an address was deployed by this factory"
+          },
+          "predictAddress((address,address,address,uint256)[],uint256,bool)": {
+            "notice": "Predicts the address where a XvPSettlement contract would be deployed"
+          },
+          "typeId()": {
+            "notice": "Returns a unique identifier for the type of this contract."
+          },
+          "xvpSettlementImplementation()": {
+            "notice": "Returns the address of the current XvPSettlement implementation contract"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/addons/xvp/IATKXvPSettlementFactory.sol": "IATKXvPSettlementFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/addons/xvp/IATKXvPSettlement.sol": {
+        "keccak256": "0x5edcebd2bd8dc58fd341247735394c19df53ce1c56bb3dfaeb1242735252abde",
+        "urls": [
+          "bzz-raw://78d5212d4f15f7031861d3f3b3ce685404cce537168dda65eaacbca02095063d",
+          "dweb:/ipfs/Qmbi8tEJKyazqiTM8oASWQW98Ks3FsZBvumBkrGShKz7Ng"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/addons/xvp/IATKXvPSettlementFactory.sol": {
+        "keccak256": "0xad16b25ba9b692318c8ee302d642bd6f3fa308ab75b3b85f075f9ef602ed82a1",
+        "urls": [
+          "bzz-raw://d8d84721720e63237aa2fb264f7356c8b01b343e6f347c87749249e0268cad65",
+          "dweb:/ipfs/QmZN5Pi6sTk9kGkYbNBTFpwZ5FQP4pixnDotkF4U2n5cRn"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "create((address,address,address,uint256)[],uint256,bool)": {
+        "notice": "Creates a new XvPSettlement contract"
+      },
+      "initialize(address,address)": {
+        "notice": "Initializes the factory with a trusted forwarder and an admin address"
+      },
+      "isAddressDeployed(address)": {
+        "notice": "Checks if an address was deployed by this factory"
+      },
+      "predictAddress((address,address,address,uint256)[],uint256,bool)": {
+        "notice": "Predicts the address where a XvPSettlement contract would be deployed"
+      },
+      "typeId()": {
+        "notice": "Returns a unique identifier for the type of this contract."
+      },
+      "xvpSettlementImplementation()": {
+        "notice": "Returns the address of the current XvPSettlement implementation contract"
+      }
+    },
+    "notice": "Interface for the XvP Settlement Factory contract"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "details": "Defines the core functionality that must be implemented by the XvP Settlement Factory",
+    "methods": {
+      "create((address,address,address,uint256)[],uint256,bool)": {
+        "params": {
+          "autoExecute": "If true, settlement executes automatically when all approvals are received",
+          "cutoffDate": "Timestamp after which the settlement expires",
+          "flows": "The array of token flows to include in the settlement"
+        },
+        "returns": {
+          "contractAddress": "The address of the newly created settlement contract"
+        }
+      },
+      "initialize(address,address)": {
+        "params": {
+          "forwarder": "The address of the trusted forwarder",
+          "initialAdmin": "The address that will be granted admin role"
+        }
+      },
+      "isAddressDeployed(address)": {
+        "params": {
+          "settlement": "The address to check"
+        },
+        "returns": {
+          "_0": "True if the address was created by this factory, false otherwise"
+        }
+      },
+      "predictAddress((address,address,address,uint256)[],uint256,bool)": {
+        "params": {
+          "autoExecute": "If true, settlement executes automatically when all approvals are received",
+          "cutoffDate": "Timestamp after which the settlement expires",
+          "flows": "The array of token flows that will be used in deployment"
+        },
+        "returns": {
+          "predicted": "The address where the settlement contract would be deployed"
+        }
+      },
+      "supportsInterface(bytes4)": {
+        "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+      },
+      "xvpSettlementImplementation()": {
+        "returns": {
+          "_0": "The address of the XvPSettlement logic contract"
+        }
+      }
+    },
+    "title": "IATKXvPSettlementFactory Interface"
+  },
+  "id": 28
+}

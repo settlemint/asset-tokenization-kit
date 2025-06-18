@@ -1,6 +1,10 @@
 node_modules
 .env
-.generated
+
+# Generated files - ignore everything except what's needed for docker-compose
+.generated/*
+!.generated/genesis.json
+!.generated/portal/
 
 # Hardhat files
 /.generated/cache
@@ -26,7 +30,6 @@ genesis-output.json
 
 # Soldeer
 /dependencies
-portal
 
 
 # Scripts

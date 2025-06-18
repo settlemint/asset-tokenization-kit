@@ -1,0 +1,548 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "allAirdropsLength",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "count",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "atkPushAirdropImplementation",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "create",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "root",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "owner",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "distributionCap",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "airdropProxyAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "predictPushAirdropAddress",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "root",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "owner",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "distributionCap",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "predictedAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "event",
+      "name": "ATKPushAirdropCreated",
+      "inputs": [
+        {
+          "name": "airdropAddress",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "creator",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ImplementationUpdated",
+      "inputs": [
+        {
+          "name": "oldImplementation",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newImplementation",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "InvalidAddress",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidImplementation",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "SameAddress",
+      "inputs": []
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "allAirdropsLength()": "150117bd",
+    "atkPushAirdropImplementation()": "7bbbcb05",
+    "create(address,bytes32,address,uint256)": "b442bc11",
+    "predictPushAirdropAddress(address,bytes32,address,uint256)": "e480318a"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"InvalidAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidImplementation\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"SameAddress\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"airdropAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"creator\",\"type\":\"address\"}],\"name\":\"ATKPushAirdropCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldImplementation\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"ImplementationUpdated\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"allAirdropsLength\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"count\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"atkPushAirdropImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"root\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"distributionCap\",\"type\":\"uint256\"}],\"name\":\"create\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"airdropProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"root\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"distributionCap\",\"type\":\"uint256\"}],\"name\":\"predictPushAirdropAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"predictedAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This interface defines the standard for factories that create push airdrop contracts\",\"events\":{\"ATKPushAirdropCreated(address,address)\":{\"params\":{\"airdropAddress\":\"The address of the newly created push airdrop proxy\",\"creator\":\"The address that created the push airdrop\"}},\"ImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new implementation\",\"oldImplementation\":\"The address of the previous implementation\"}}},\"kind\":\"dev\",\"methods\":{\"allAirdropsLength()\":{\"returns\":{\"count\":\"The number of push airdrop proxies created\"}},\"atkPushAirdropImplementation()\":{\"returns\":{\"_0\":\"The address of the push airdrop implementation\"}},\"create(address,bytes32,address,uint256)\":{\"params\":{\"distributionCap\":\"The maximum tokens that can be distributed (0 for no cap)\",\"owner\":\"The initial owner of the contract (admin who can distribute tokens)\",\"root\":\"The Merkle root for verifying distributions\",\"token\":\"The address of the ERC20 token to be distributed\"},\"returns\":{\"airdropProxyAddress\":\"The address of the newly created push airdrop proxy\"}},\"predictPushAirdropAddress(address,bytes32,address,uint256)\":{\"params\":{\"distributionCap\":\"The maximum tokens that can be distributed\",\"owner\":\"The initial owner of the contract\",\"root\":\"The Merkle root for verifying distributions\",\"token\":\"The address of the ERC20 token to be distributed\"},\"returns\":{\"predictedAddress\":\"The predicted address of the push airdrop proxy\"}}},\"title\":\"Interface for ATK Push Airdrop Factory\",\"version\":1},\"userdoc\":{\"errors\":{\"InvalidAddress()\":[{\"notice\":\"Custom error for invalid address parameter.\"}],\"InvalidImplementation()\":[{\"notice\":\"Custom error for invalid implementation address.\"}],\"SameAddress()\":[{\"notice\":\"Custom error when attempting to set the same address.\"}]},\"events\":{\"ATKPushAirdropCreated(address,address)\":{\"notice\":\"Emitted when a new push airdrop proxy is created\"},\"ImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation contract is updated\"}},\"kind\":\"user\",\"methods\":{\"allAirdropsLength()\":{\"notice\":\"Returns the total number of push airdrop proxies created by this factory\"},\"atkPushAirdropImplementation()\":{\"notice\":\"Returns the address of the current ATKPushAirdrop logic contract (implementation)\"},\"create(address,bytes32,address,uint256)\":{\"notice\":\"Creates a new push airdrop proxy contract\"},\"predictPushAirdropAddress(address,bytes32,address,uint256)\":{\"notice\":\"Predicts the deployment address of a push airdrop proxy\"}},\"notice\":\"Interface for creating and managing ATK Push Airdrop proxies\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol\":\"IATKPushAirdropFactory\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/airdrop/IATKAirdrop.sol\":{\"keccak256\":\"0x5693909b573592bc415bc92930d365b8ec1d7ef8eddc0a9e45e3fb3ca07c9eb7\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://fbeaa32c2f1ad5513f01abb8500f05fc86e756180a386f933f502ae8f8457fee\",\"dweb:/ipfs/QmciPuDp6YuJjHuGTJxpi7eBBSL2Ac1aX9p8US7wP7YzA7\"]},\"contracts/addons/airdrop/claim-tracker/IATKClaimTracker.sol\":{\"keccak256\":\"0x9e3a319030370650afc13f8c1fc8c3fb3570072849200787b68c19546b6c68be\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://85ba8ece757f0f2bce8a517ac93e7a967cd5fc60eb5b4af65004396453fe792f\",\"dweb:/ipfs/QmQ9Wvi78aWmEvT3LmisnM1QGKRPBLJUhKeRKM6g8yUzne\"]},\"contracts/addons/airdrop/push-airdrop/IATKPushAirdrop.sol\":{\"keccak256\":\"0x213d72f20969e05bcee296ae6c8e045f35b7097b88a868232ba548480c49a9a7\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://b9b66ca6f17ffde3198a1689a6e706280086435f13da18ac939f538b0ae2e615\",\"dweb:/ipfs/QmZAaZHhbyYsRVx1XSAQzVgpcK21BJsS6bbRWVTmKayPAw\"]},\"contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol\":{\"keccak256\":\"0x89dd99e5b66b0107f6fced64397a51cf7ab624e97069ce4e05183c3107866a30\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://cdaa31e9feeb8060ed4ac4ff034501be992669772441f1c1d85467893bedb5f1\",\"dweb:/ipfs/QmSEVaJPG3S7ett7EZVZUgkynEJuRVDvhyuNUCGUzLVhz6\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db\",\"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidAddress"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidImplementation"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "SameAddress"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "airdropAddress",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "creator",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "ATKPushAirdropCreated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "oldImplementation",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newImplementation",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "ImplementationUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "allAirdropsLength",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "count",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "atkPushAirdropImplementation",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "root",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "distributionCap",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "create",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "airdropProxyAddress",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "root",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "distributionCap",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "predictPushAirdropAddress",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "predictedAddress",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "allAirdropsLength()": {
+            "returns": {
+              "count": "The number of push airdrop proxies created"
+            }
+          },
+          "atkPushAirdropImplementation()": {
+            "returns": {
+              "_0": "The address of the push airdrop implementation"
+            }
+          },
+          "create(address,bytes32,address,uint256)": {
+            "params": {
+              "distributionCap": "The maximum tokens that can be distributed (0 for no cap)",
+              "owner": "The initial owner of the contract (admin who can distribute tokens)",
+              "root": "The Merkle root for verifying distributions",
+              "token": "The address of the ERC20 token to be distributed"
+            },
+            "returns": {
+              "airdropProxyAddress": "The address of the newly created push airdrop proxy"
+            }
+          },
+          "predictPushAirdropAddress(address,bytes32,address,uint256)": {
+            "params": {
+              "distributionCap": "The maximum tokens that can be distributed",
+              "owner": "The initial owner of the contract",
+              "root": "The Merkle root for verifying distributions",
+              "token": "The address of the ERC20 token to be distributed"
+            },
+            "returns": {
+              "predictedAddress": "The predicted address of the push airdrop proxy"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "allAirdropsLength()": {
+            "notice": "Returns the total number of push airdrop proxies created by this factory"
+          },
+          "atkPushAirdropImplementation()": {
+            "notice": "Returns the address of the current ATKPushAirdrop logic contract (implementation)"
+          },
+          "create(address,bytes32,address,uint256)": {
+            "notice": "Creates a new push airdrop proxy contract"
+          },
+          "predictPushAirdropAddress(address,bytes32,address,uint256)": {
+            "notice": "Predicts the deployment address of a push airdrop proxy"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol": "IATKPushAirdropFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/addons/airdrop/IATKAirdrop.sol": {
+        "keccak256": "0x5693909b573592bc415bc92930d365b8ec1d7ef8eddc0a9e45e3fb3ca07c9eb7",
+        "urls": [
+          "bzz-raw://fbeaa32c2f1ad5513f01abb8500f05fc86e756180a386f933f502ae8f8457fee",
+          "dweb:/ipfs/QmciPuDp6YuJjHuGTJxpi7eBBSL2Ac1aX9p8US7wP7YzA7"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/addons/airdrop/claim-tracker/IATKClaimTracker.sol": {
+        "keccak256": "0x9e3a319030370650afc13f8c1fc8c3fb3570072849200787b68c19546b6c68be",
+        "urls": [
+          "bzz-raw://85ba8ece757f0f2bce8a517ac93e7a967cd5fc60eb5b4af65004396453fe792f",
+          "dweb:/ipfs/QmQ9Wvi78aWmEvT3LmisnM1QGKRPBLJUhKeRKM6g8yUzne"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/addons/airdrop/push-airdrop/IATKPushAirdrop.sol": {
+        "keccak256": "0x213d72f20969e05bcee296ae6c8e045f35b7097b88a868232ba548480c49a9a7",
+        "urls": [
+          "bzz-raw://b9b66ca6f17ffde3198a1689a6e706280086435f13da18ac939f538b0ae2e615",
+          "dweb:/ipfs/QmZAaZHhbyYsRVx1XSAQzVgpcK21BJsS6bbRWVTmKayPAw"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol": {
+        "keccak256": "0x89dd99e5b66b0107f6fced64397a51cf7ab624e97069ce4e05183c3107866a30",
+        "urls": [
+          "bzz-raw://cdaa31e9feeb8060ed4ac4ff034501be992669772441f1c1d85467893bedb5f1",
+          "dweb:/ipfs/QmSEVaJPG3S7ett7EZVZUgkynEJuRVDvhyuNUCGUzLVhz6"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol": {
+        "keccak256": "0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7",
+        "urls": [
+          "bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db",
+          "dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "allAirdropsLength()": {
+        "notice": "Returns the total number of push airdrop proxies created by this factory"
+      },
+      "atkPushAirdropImplementation()": {
+        "notice": "Returns the address of the current ATKPushAirdrop logic contract (implementation)"
+      },
+      "create(address,bytes32,address,uint256)": {
+        "notice": "Creates a new push airdrop proxy contract"
+      },
+      "predictPushAirdropAddress(address,bytes32,address,uint256)": {
+        "notice": "Predicts the deployment address of a push airdrop proxy"
+      }
+    },
+    "events": {
+      "ATKPushAirdropCreated(address,address)": {
+        "notice": "Emitted when a new push airdrop proxy is created"
+      },
+      "ImplementationUpdated(address,address)": {
+        "notice": "Emitted when the implementation contract is updated"
+      }
+    },
+    "errors": {
+      "InvalidAddress()": [
+        {
+          "notice": "Custom error for invalid address parameter."
+        }
+      ],
+      "InvalidImplementation()": [
+        {
+          "notice": "Custom error for invalid implementation address."
+        }
+      ],
+      "SameAddress()": [
+        {
+          "notice": "Custom error when attempting to set the same address."
+        }
+      ]
+    },
+    "notice": "Interface for creating and managing ATK Push Airdrop proxies"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "details": "This interface defines the standard for factories that create push airdrop contracts",
+    "methods": {
+      "allAirdropsLength()": {
+        "returns": {
+          "count": "The number of push airdrop proxies created"
+        }
+      },
+      "atkPushAirdropImplementation()": {
+        "returns": {
+          "_0": "The address of the push airdrop implementation"
+        }
+      },
+      "create(address,bytes32,address,uint256)": {
+        "params": {
+          "distributionCap": "The maximum tokens that can be distributed (0 for no cap)",
+          "owner": "The initial owner of the contract (admin who can distribute tokens)",
+          "root": "The Merkle root for verifying distributions",
+          "token": "The address of the ERC20 token to be distributed"
+        },
+        "returns": {
+          "airdropProxyAddress": "The address of the newly created push airdrop proxy"
+        }
+      },
+      "predictPushAirdropAddress(address,bytes32,address,uint256)": {
+        "params": {
+          "distributionCap": "The maximum tokens that can be distributed",
+          "owner": "The initial owner of the contract",
+          "root": "The Merkle root for verifying distributions",
+          "token": "The address of the ERC20 token to be distributed"
+        },
+        "returns": {
+          "predictedAddress": "The predicted address of the push airdrop proxy"
+        }
+      }
+    },
+    "events": {
+      "ATKPushAirdropCreated(address,address)": {
+        "params": {
+          "airdropAddress": "The address of the newly created push airdrop proxy",
+          "creator": "The address that created the push airdrop"
+        }
+      },
+      "ImplementationUpdated(address,address)": {
+        "params": {
+          "newImplementation": "The address of the new implementation",
+          "oldImplementation": "The address of the previous implementation"
+        }
+      }
+    },
+    "title": "Interface for ATK Push Airdrop Factory"
+  },
+  "id": 11
+}
