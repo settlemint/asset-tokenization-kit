@@ -19,14 +19,8 @@
     "ci:gha": {
       "dependsOn": ["ci:base", "build"]
     },
-    "ci:gha:integration": {
-      "dependsOn": ["test:integration"]
-    },
-    "ci:gha:artifacts": {
-      "dependsOn": ["artifacts"]
-    },
-    "ci:gha:publish": {
-      "dependsOn": ["publish"]
+    "ci:gha:main": {
+      "dependsOn": ["ci:gha", "test:integration", "artifacts", "publish"]
     },
     "//#version": {
       "cache": false,

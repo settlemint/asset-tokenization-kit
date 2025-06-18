@@ -1,15 +1,18 @@
-name: Artifacts (Reusable)
+name: QA (Reusable)
 
-# This is a reusable workflow for running the artifacts job
-# which includes setup, turbo command, artifact upload, and auto-commit.
+# This is a reusable workflow for setting up the common infrastructure
+# needed for QA, integration, publish, and artifacts jobs.
 #
 # Usage:
 # ```yaml
 # jobs:
-#   artifacts:
-#     uses: ./.github/workflows/reusable-artifacts.yml
+#   setup-and-run:
+#     uses: ./.github/workflows/reusable-setup.yml
 #     with:
+#       turbo-command: 'ci:gha'  # required
 #       runs-on: 'namespace-profile-atk'  # optional, defaults to 'namespace-profile-atk'
+#       fetch-depth: 2  # optional, defaults to 2
+#       use-pat-token: false  # optional, defaults to false
 #     secrets:
 #       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 # ```
@@ -17,11 +20,25 @@ name: Artifacts (Reusable)
 on:
   workflow_call:
     inputs:
+      turbo-command:
+        description: "Turbo command to run"
+        required: true
+        type: string
       runs-on:
         description: "Runner to use for the job"
         required: false
         type: string
         default: "namespace-profile-atk"
+      fetch-depth:
+        description: "Fetch depth for checkout"
+        required: false
+        type: number
+        default: 2
+      use-pat-token:
+        description: "Whether to use PAT token for checkout"
+        required: false
+        type: boolean
+        default: false
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN:
         required: true
@@ -36,8 +53,8 @@ permissions:
   id-token: write
 
 jobs:
-  artifacts:
-    name: Artifacts
+  setup-and-run:
+    name: Setup and Run
     runs-on: ${{ inputs.runs-on }}
     steps:
       - name: Setup 1Password
@@ -52,11 +69,18 @@ jobs:
           HARBOR_PASS: op://platform/harbor/password
           PAT_TOKEN: op://platform/github-commit-pat/credential
 
-      - name: Checkout repository
+      - name: Checkout repository (with PAT)
+        if: ${{ inputs.use-pat-token }}
         uses: namespacelabs/nscloud-checkout-action@v7
         with:
-          fetch-depth: 2
+          fetch-depth: ${{ inputs.fetch-depth }}
           token: ${{ env.PAT_TOKEN }}
+
+      - name: Checkout repository (without PAT)
+        if: ${{ !inputs.use-pat-token }}
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          fetch-depth: ${{ inputs.fetch-depth }}
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
@@ -119,12 +143,13 @@ jobs:
 
       - name: Turbo
         run: |
-          bun run ci:gha:artifacts --concurrency=100%
+          ${{ inputs.turbo-command }}
         env:
           THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
           THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
 
       - name: Store predeployed output
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
           name: predeployed-output
@@ -136,7 +161,7 @@ jobs:
       - name: Auto-commit artifacts
         if: |
           github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' &&
-          github.event_name != 'pull_request'
+          github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6
         with:
           commit_message: "chore: update artifacts [skip ci]"
