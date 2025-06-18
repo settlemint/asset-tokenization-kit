@@ -56,6 +56,20 @@ interface IATKSystem is IERC165 {
     /// @param sender The address that called the `updateTokenAccessManagerImplementation` function.
     /// @param newImplementation The address of the new token access manager module implementation contract.
     event TokenAccessManagerImplementationUpdated(address indexed sender, address indexed newImplementation);
+    /// @notice Emitted when the implementation (logic contract) for a token factory is updated.
+    /// @param sender The address that called the `updateTokenFactoryImplementation` function.
+    /// @param factoryTypeHash The hash of the factory type being updated.
+    /// @param newImplementation The address of the new token factory implementation contract.
+    event TokenFactoryImplementationUpdated(
+        address indexed sender, bytes32 indexed factoryTypeHash, address indexed newImplementation
+    );
+    /// @notice Emitted when the implementation (logic contract) for a system addon is updated.
+    /// @param sender The address that called the `setAddonImplementation` function.
+    /// @param addonTypeHash The hash of the addon type being updated.
+    /// @param newImplementation The address of the new system addon implementation contract.
+    event AddonImplementationUpdated(
+        address indexed sender, bytes32 indexed addonTypeHash, address indexed newImplementation
+    );
 
     /// @notice Emitted when the `bootstrap` function has been successfully executed, creating and linking proxy
     /// contracts
@@ -281,10 +295,20 @@ interface IATKSystem is IERC165 {
     /// @return The address of the token factory implementation contract.
     function tokenFactoryImplementation(bytes32 factoryTypeHash) external view returns (address);
 
+    /// @notice Sets (updates) the address of a token factory's implementation (logic) contract.
+    /// @param factoryTypeHash The hash of the factory type to update.
+    /// @param implementation The new address for the token factory logic contract.
+    function setTokenFactoryImplementation(bytes32 factoryTypeHash, address implementation) external;
+
     /// @notice Returns the address of the current system addon implementation.
     /// @param addonTypeHash The hash of the addon type.
     /// @return The address of the system addon implementation contract.
     function addonImplementation(bytes32 addonTypeHash) external view returns (address);
+
+    /// @notice Sets (updates) the address of a system addon's implementation (logic) contract.
+    /// @param addonTypeHash The hash of the addon type to update.
+    /// @param implementation The new address for the system addon logic contract.
+    function setAddonImplementation(bytes32 addonTypeHash, address implementation) external;
 
     /// @notice Returns the address of the current compliance module implementation.
     /// @param moduleTypeHash The hash of the module type.
