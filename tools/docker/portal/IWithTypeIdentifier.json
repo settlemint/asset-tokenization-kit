@@ -123,5 +123,5 @@
     "details": "This interface is used to identify the type of a contract.      It is used to identify the type of a contract.      It is used to identify the type of a contract.",
     "title": "IWithTypeIdentifier"
   },
-  "id": 120
+  "id": 110
 }
