@@ -1,12 +1,15 @@
 import { atkDeployer } from "../../services/deployer";
 
 import { owner } from "../../entities/actors/owner";
+import { AirdropMerkleTree } from "../../entities/airdrop/merkle-tree";
 import { VestingAirdrop } from "../../entities/airdrop/vesting-airdrop";
 import { Asset } from "../../entities/asset";
 import { getAnvilTimeSeconds } from "../../utils/anvil";
-import { merkleRoot } from "./distribution";
 
-export const createVestingAirdrop = async (asset: Asset<any>) => {
+export const createVestingAirdrop = async (
+  asset: Asset<any>,
+  merkleTree: AirdropMerkleTree
+) => {
   console.log("\n=== Creating vesting airdrop... ===\n");
 
   // Create linear vesting strategy
@@ -21,7 +24,7 @@ export const createVestingAirdrop = async (asset: Asset<any>) => {
   const vestingAirdrop = new VestingAirdrop(
     "Test Vesting Airdrop",
     asset,
-    merkleRoot,
+    merkleTree.getRoot(),
     owner.address,
     linearVestingStrategy,
     BigInt(anvilTimeSeconds + 30 * 24 * 60 * 60),

@@ -93,6 +93,7 @@ const ABI_PATHS = {
   // addons
   fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json`,
   vestingAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol/IATKVestingAirdropFactory.json`,
+  pushAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol/IATKPushAirdropFactory.json`,
 } as const;
 
 const AVAILABLE_ABIS = {
@@ -131,7 +132,11 @@ const AVAILABLE_ABIS = {
     "identityBlockList",
     "identityAllowList",
   ],
-  addons: ["fixedYieldScheduleFactory", "vestingAirdropFactory"],
+  addons: [
+    "fixedYieldScheduleFactory",
+    "vestingAirdropFactory",
+    "pushAirdropFactory",
+  ],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 
 const ALL_ABIS = [

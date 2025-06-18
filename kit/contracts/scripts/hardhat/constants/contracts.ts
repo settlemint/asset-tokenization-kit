@@ -28,6 +28,7 @@ import {
   ismartPausableAbi,
   ismartRedeemableAbi,
   ismartYieldAbi,
+  pushAirdropFactoryAbi,
   stablecoinAbi,
   stablecoinFactoryAbi,
   systemAbi,
@@ -81,4 +82,5 @@ export const ATKContracts = {
   // addons
   fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
   vestingAirdropFactory: vestingAirdropFactoryAbi,
+  pushAirdropFactory: pushAirdropFactoryAbi,
 } as const;
