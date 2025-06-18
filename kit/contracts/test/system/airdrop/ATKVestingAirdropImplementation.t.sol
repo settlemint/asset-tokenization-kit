@@ -4,15 +4,15 @@ pragma solidity 0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
 import { ATKVestingAirdropImplementation } from
-    "../../../contracts/system/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol";
+    "../../../contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol";
 import { ATKVestingAirdropFactoryImplementation } from
-    "../../../contracts/system/airdrop/vesting-airdrop/ATKVestingAirdropFactoryImplementation.sol";
+    "../../../contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropFactoryImplementation.sol";
 import { IATKVestingAirdropFactory } from
-    "../../../contracts/system/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol";
-import { IATKVestingAirdrop } from "../../../contracts/system/airdrop/vesting-airdrop/IATKVestingAirdrop.sol";
+    "../../../contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol";
+import { IATKVestingAirdrop } from "../../../contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdrop.sol";
 import { ATKLinearVestingStrategy } from
-    "../../../contracts/system/airdrop/vesting-airdrop/ATKLinearVestingStrategy.sol";
-import { IATKVestingStrategy } from "../../../contracts/system/airdrop/vesting-airdrop/IATKVestingStrategy.sol";
+    "../../../contracts/addons/airdrop/vesting-airdrop/ATKLinearVestingStrategy.sol";
+import { IATKVestingStrategy } from "../../../contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol";
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
@@ -26,12 +26,12 @@ import {
     VestingNotInitialized,
     VestingAlreadyInitialized,
     CliffExceedsVestingDuration
-} from "../../../contracts/system/airdrop/vesting-airdrop/ATKVestingAirdropErrors.sol";
+} from "../../../contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropErrors.sol";
 import {
     InvalidMerkleProof,
     InvalidInputArrayLengths,
     BatchSizeExceedsLimit
-} from "../../../contracts/system/airdrop/ATKAirdropErrors.sol";
+} from "../../../contracts/addons/airdrop/ATKAirdropErrors.sol";
 
 /// @title ATK Vesting Airdrop Test
 /// @notice Comprehensive test suite for ATKVestingAirdropImplementation contract

@@ -8,16 +8,17 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 // Interfaces
 import { IATKVestingAirdropFactory } from "./IATKVestingAirdropFactory.sol";
 import { IATKVestingAirdrop } from "./IATKVestingAirdrop.sol";
-import { IATKSystem } from "../../IATKSystem.sol";
-import { IATKComplianceBypassList } from "../../compliance/IATKComplianceBypassList.sol";
+import { IATKSystem } from "../../../system/IATKSystem.sol";
+import { IATKComplianceBypassList } from "../../../system/compliance/IATKComplianceBypassList.sol";
 
 // Implementations
-import { AbstractATKSystemAddonFactoryImplementation } from "../../AbstractATKSystemAddonFactoryImplementation.sol";
+import { AbstractATKSystemAddonFactoryImplementation } from
+    "../../../system/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKVestingAirdropImplementation } from "./ATKVestingAirdropImplementation.sol";
 import { ATKVestingAirdropProxy } from "./ATKVestingAirdropProxy.sol";
 
 // Constants
-import { ATKSystemRoles } from "../../ATKSystemRoles.sol";
+import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
 
 /// @title Factory for Creating ATKVestingAirdrop Proxies
 /// @notice This contract serves as a factory to deploy new UUPS proxy instances of `ATKVestingAirdrop` contracts.
