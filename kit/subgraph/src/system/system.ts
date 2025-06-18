@@ -8,6 +8,7 @@ import {
 import {
   Bootstrapped,
   ComplianceImplementationUpdated,
+  ComplianceModuleRegistered,
   IdentityFactoryImplementationUpdated,
   IdentityImplementationUpdated,
   IdentityRegistryImplementationUpdated,
