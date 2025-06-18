@@ -10,8 +10,7 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 /// @notice Implementation of binary claim tracking using bitmaps for ATK airdrop contracts.
 /// @dev This contract implements claim tracking for airdrops where users can only claim their full
 ///      allocation in a single transaction (all-or-nothing claims). It uses a bitmap for gas-efficient
-///      storage, tracking claimed status as binary flags without performing validation - validation
-///      is handled by the calling airdrop contracts.
+///      storage, tracking claimed status as binary flags.
 ///
 ///      This implementation is optimized for scenarios with fixed allocation amounts and single claims.
 ///      Only the owner (typically the airdrop contract) can record claims to prevent unauthorized manipulation.
@@ -33,10 +32,16 @@ contract ATKBitmapClaimTracker is IATKClaimTracker, Ownable {
     /// @dev For bitmap tracking, once claimed, the full amount is always claimed.
     ///      The totalAmount parameter is kept for interface compatibility but not used in logic.
     /// @param index The index to check in the Merkle tree.
-    /// @param totalAmount The total amount allocated for this index (unused in bitmap logic).
     /// @return claimed True if the index has been claimed, false otherwise.
-    function isClaimed(uint256 index, uint256 totalAmount) external view override returns (bool claimed) {
-        totalAmount; // Silence unused parameter warning
+    function isClaimed(
+        uint256 index,
+        uint256 /* totalAmount - unused */
+    )
+        external
+        view
+        override
+        returns (bool claimed)
+    {
         return _isClaimedBitmap(index);
     }
 
@@ -62,21 +67,17 @@ contract ATKBitmapClaimTracker is IATKClaimTracker, Ownable {
     /// @notice Checks if a new claim amount is valid for a specific index.
     /// @dev For bitmap tracking, only valid if the index hasn't been claimed yet.
     /// @param index The index to check.
-    /// @param claimAmount The amount being claimed (unused in bitmap logic).
-    /// @param totalAmount The total amount allocated for this index (unused in bitmap logic).
     /// @return isValid True if the index hasn't been claimed yet, false otherwise.
     function isClaimAmountValid(
         uint256 index,
-        uint256 claimAmount,
-        uint256 totalAmount
+        uint256, /* claimAmount - unused */
+        uint256 /* totalAmount - unused */
     )
         external
         view
         override
         returns (bool isValid)
     {
-        claimAmount; // Silence unused parameter warning
-        totalAmount; // Silence unused parameter warning
         return !_isClaimedBitmap(index);
     }
 

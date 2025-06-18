@@ -243,42 +243,32 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     /// @notice Claims tokens for a recipient - NOT ALLOWED in push airdrops.
     /// @dev Overrides the abstract claim function from ATKAirdrop to prevent user-initiated claims.
     ///      In push airdrops, only the admin can distribute tokens.
-    /// @param index The index of the claim (unused).
-    /// @param totalAmount The total amount (unused).
-    /// @param merkleProof The Merkle proof (unused).
+    ///      All parameters are unused as this function always reverts.
     function claim(
-        uint256 index,
-        uint256 totalAmount,
-        bytes32[] calldata merkleProof
+        uint256, /* index - unused */
+        uint256, /* totalAmount - unused */
+        bytes32[] calldata /* merkleProof - unused */
     )
         external
         pure
         override(ATKAirdrop, IATKAirdrop)
     {
-        index; // Silence unused parameter warning
-        totalAmount; // Silence unused parameter warning
-        merkleProof; // Silence unused parameter warning
         revert PushAirdropClaimNotAllowed();
     }
 
     /// @notice Claims tokens for multiple recipients - NOT ALLOWED in push airdrops.
     /// @dev Overrides the abstract batchClaim function from ATKAirdrop to prevent user-initiated claims.
     ///      In push airdrops, only the admin can distribute tokens.
-    /// @param indices The indices of the claims (unused).
-    /// @param totalAmounts The total amounts (unused).
-    /// @param merkleProofs The Merkle proofs (unused).
+    ///      All parameters are unused as this function always reverts.
     function batchClaim(
-        uint256[] calldata indices,
-        uint256[] calldata totalAmounts,
-        bytes32[][] calldata merkleProofs
+        uint256[] calldata, /* indices - unused */
+        uint256[] calldata, /* totalAmounts - unused */
+        bytes32[][] calldata /* merkleProofs - unused */
     )
         external
         pure
         override(ATKAirdrop, IATKAirdrop)
     {
-        indices; // Silence unused parameter warnings
-        totalAmounts; // Silence unused parameter warnings
-        merkleProofs; // Silence unused parameter warnings
         revert PushAirdropClaimNotAllowed();
     }
 }
