@@ -24,7 +24,7 @@ jobs:
           bunx turbo run ci:gha --affected --concurrency=100%
         else
           echo "Running full Turbo for main branch"
-          bun run ci:gha --concurrency=100%
+          bun run ci:gha:main --concurrency=100%
         fi
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
