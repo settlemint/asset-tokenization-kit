@@ -13,6 +13,7 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 600,
     rollupOptions: {
+      treeshake: "smallest",
       output: {
         manualChunks: (id) => {
           // Separate vendor chunks for better caching
