@@ -136,14 +136,20 @@
     },
     "settings": {
       "remappings": [
+        "@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/",
         "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
         "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/",
         "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
         "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/",
         "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
         "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/",
+        "forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/",
         "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
-        "forge-std/=dependencies/forge-std-1.9.7/src/"
+        "forge-std/=dependencies/forge-std-1.9.7/src/",
+        "openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/"
       ],
       "optimizer": {
         "enabled": true,
