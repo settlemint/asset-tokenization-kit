@@ -1,0 +1,1035 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "approvals",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "approve",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "autoExecute",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "cancel",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "cancelled",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "createdAt",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "cutoffDate",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "execute",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "executed",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "flows",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "tuple[]",
+          "internalType": "struct IATKXvPSettlement.Flow[]",
+          "components": [
+            {
+              "name": "asset",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "from",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "to",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isFullyApproved",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "revokeApproval",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "supportsInterface",
+      "inputs": [
+        {
+          "name": "interfaceId",
+          "type": "bytes4",
+          "internalType": "bytes4"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "event",
+      "name": "XvPSettlementApprovalRevoked",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "XvPSettlementApproved",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "XvPSettlementCancelled",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "XvPSettlementExecuted",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "EmptyFlows",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InsufficientAllowance",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "owner",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "spender",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "required",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "allowed",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "InvalidCutoffDate",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidToken",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "SenderAlreadyApprovedSettlement",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "SenderNotApprovedSettlement",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "SenderNotInvolvedInSettlement",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "XvPSettlementAlreadyCancelled",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "XvPSettlementAlreadyExecuted",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "XvPSettlementExpired",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "XvPSettlementNotApproved",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "XvPSettlementNotExpired",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ZeroAddress",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ZeroAmount",
+      "inputs": []
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "approvals(address)": "5d0341ba",
+    "approve()": "12424e3f",
+    "autoExecute()": "a911f736",
+    "cancel()": "ea8a1af0",
+    "cancelled()": "9a82a09a",
+    "createdAt()": "cf09e0d0",
+    "cutoffDate()": "ca00ed2b",
+    "execute()": "61461954",
+    "executed()": "31a38c89",
+    "flows()": "a7dd8a96",
+    "isFullyApproved()": "7bf3b6c5",
+    "revokeApproval()": "90d02b3c",
+    "supportsInterface(bytes4)": "01ffc9a7"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"EmptyFlows\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"required\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"allowed\",\"type\":\"uint256\"}],\"name\":\"InsufficientAllowance\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidCutoffDate\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidToken\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"SenderAlreadyApprovedSettlement\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"SenderNotApprovedSettlement\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"SenderNotInvolvedInSettlement\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"XvPSettlementAlreadyCancelled\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"XvPSettlementAlreadyExecuted\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"XvPSettlementExpired\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"XvPSettlementNotApproved\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"XvPSettlementNotExpired\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAmount\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"XvPSettlementApprovalRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"XvPSettlementApproved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"XvPSettlementCancelled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"XvPSettlementExecuted\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"approvals\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"autoExecute\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"cancel\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"cancelled\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"createdAt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"cutoffDate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"execute\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"executed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"flows\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"asset\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"internalType\":\"struct IATKXvPSettlement.Flow[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isFullyApproved\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"revokeApproval\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"custom:security-contact\":\"support@settlemint.com\",\"kind\":\"dev\",\"methods\":{\"approvals(address)\":{\"params\":{\"account\":\"The account to check approvals for\"},\"returns\":{\"_0\":\"True if the account has approved the settlement\"}},\"approve()\":{\"details\":\"The caller must be a party in the settlement's flows\",\"returns\":{\"_0\":\"True if the approval was successful\"}},\"autoExecute()\":{\"returns\":{\"_0\":\"True if auto-execute is enabled\"}},\"cancel()\":{\"returns\":{\"_0\":\"True if the cancellation was successful\"}},\"cancelled()\":{\"returns\":{\"_0\":\"True if the settlement has been cancelled\"}},\"createdAt()\":{\"returns\":{\"_0\":\"The creation timestamp\"}},\"cutoffDate()\":{\"returns\":{\"_0\":\"The cutoff date timestamp\"}},\"execute()\":{\"returns\":{\"_0\":\"True if execution was successful\"}},\"executed()\":{\"returns\":{\"_0\":\"True if the settlement has been executed\"}},\"flows()\":{\"returns\":{\"_0\":\"Array of all flows\"}},\"isFullyApproved()\":{\"returns\":{\"_0\":\"True if all parties have approved\"}},\"revokeApproval()\":{\"details\":\"The caller must have previously approved the settlement\",\"returns\":{\"_0\":\"True if the revocation was successful\"}},\"supportsInterface(bytes4)\":{\"details\":\"Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas.\"}},\"title\":\"IATKXvPSettlement - Interface for cross-value proposition settlements\",\"version\":1},\"userdoc\":{\"events\":{\"XvPSettlementApprovalRevoked(address)\":{\"notice\":\"Event emitted when an XvP settlement approval is revoked\"},\"XvPSettlementApproved(address)\":{\"notice\":\"Event emitted when an XvP settlement is approved by a party\"},\"XvPSettlementCancelled(address)\":{\"notice\":\"Event emitted when an XvP settlement is cancelled\"},\"XvPSettlementExecuted(address)\":{\"notice\":\"Event emitted when an XvP settlement is executed\"}},\"kind\":\"user\",\"methods\":{\"approvals(address)\":{\"notice\":\"Returns whether an account has approved the settlement\"},\"approve()\":{\"notice\":\"Approves a XvP settlement for execution\"},\"autoExecute()\":{\"notice\":\"Returns whether the settlement should auto-execute when all approvals are received\"},\"cancel()\":{\"notice\":\"Cancels the settlement\"},\"cancelled()\":{\"notice\":\"Returns whether the settlement has been cancelled\"},\"createdAt()\":{\"notice\":\"Returns the timestamp when the settlement was created\"},\"cutoffDate()\":{\"notice\":\"Returns the cutoff date after which the settlement expires\"},\"execute()\":{\"notice\":\"Executes the settlement if all approvals are in place\"},\"executed()\":{\"notice\":\"Returns whether the settlement has been executed\"},\"flows()\":{\"notice\":\"Returns all flows in the settlement\"},\"isFullyApproved()\":{\"notice\":\"Checks if all parties have approved the settlement\"},\"revokeApproval()\":{\"notice\":\"Revokes approval for a XvP settlement\"}},\"notice\":\"Interface for contracts that facilitate atomic swaps between parties with multiple token flows\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/xvp/IATKXvPSettlement.sol\":\"IATKXvPSettlement\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/xvp/IATKXvPSettlement.sol\":{\"keccak256\":\"0x5edcebd2bd8dc58fd341247735394c19df53ce1c56bb3dfaeb1242735252abde\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://78d5212d4f15f7031861d3f3b3ce685404cce537168dda65eaacbca02095063d\",\"dweb:/ipfs/Qmbi8tEJKyazqiTM8oASWQW98Ks3FsZBvumBkrGShKz7Ng\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "EmptyFlows"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "required",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "allowed",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "InsufficientAllowance"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidCutoffDate"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidToken"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "SenderAlreadyApprovedSettlement"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "SenderNotApprovedSettlement"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "SenderNotInvolvedInSettlement"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "XvPSettlementAlreadyCancelled"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "XvPSettlementAlreadyExecuted"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "XvPSettlementExpired"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "XvPSettlementNotApproved"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "XvPSettlementNotExpired"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ZeroAddress"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ZeroAmount"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "XvPSettlementApprovalRevoked",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "XvPSettlementApproved",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "XvPSettlementCancelled",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "XvPSettlementExecuted",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "approvals",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "approve",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "autoExecute",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "cancel",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "cancelled",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "createdAt",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "cutoffDate",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "execute",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "executed",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "flows",
+          "outputs": [
+            {
+              "internalType": "struct IATKXvPSettlement.Flow[]",
+              "name": "",
+              "type": "tuple[]",
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "asset",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "from",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isFullyApproved",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "revokeApproval",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "approvals(address)": {
+            "params": {
+              "account": "The account to check approvals for"
+            },
+            "returns": {
+              "_0": "True if the account has approved the settlement"
+            }
+          },
+          "approve()": {
+            "details": "The caller must be a party in the settlement's flows",
+            "returns": {
+              "_0": "True if the approval was successful"
+            }
+          },
+          "autoExecute()": {
+            "returns": {
+              "_0": "True if auto-execute is enabled"
+            }
+          },
+          "cancel()": {
+            "returns": {
+              "_0": "True if the cancellation was successful"
+            }
+          },
+          "cancelled()": {
+            "returns": {
+              "_0": "True if the settlement has been cancelled"
+            }
+          },
+          "createdAt()": {
+            "returns": {
+              "_0": "The creation timestamp"
+            }
+          },
+          "cutoffDate()": {
+            "returns": {
+              "_0": "The cutoff date timestamp"
+            }
+          },
+          "execute()": {
+            "returns": {
+              "_0": "True if execution was successful"
+            }
+          },
+          "executed()": {
+            "returns": {
+              "_0": "True if the settlement has been executed"
+            }
+          },
+          "flows()": {
+            "returns": {
+              "_0": "Array of all flows"
+            }
+          },
+          "isFullyApproved()": {
+            "returns": {
+              "_0": "True if all parties have approved"
+            }
+          },
+          "revokeApproval()": {
+            "details": "The caller must have previously approved the settlement",
+            "returns": {
+              "_0": "True if the revocation was successful"
+            }
+          },
+          "supportsInterface(bytes4)": {
+            "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "approvals(address)": {
+            "notice": "Returns whether an account has approved the settlement"
+          },
+          "approve()": {
+            "notice": "Approves a XvP settlement for execution"
+          },
+          "autoExecute()": {
+            "notice": "Returns whether the settlement should auto-execute when all approvals are received"
+          },
+          "cancel()": {
+            "notice": "Cancels the settlement"
+          },
+          "cancelled()": {
+            "notice": "Returns whether the settlement has been cancelled"
+          },
+          "createdAt()": {
+            "notice": "Returns the timestamp when the settlement was created"
+          },
+          "cutoffDate()": {
+            "notice": "Returns the cutoff date after which the settlement expires"
+          },
+          "execute()": {
+            "notice": "Executes the settlement if all approvals are in place"
+          },
+          "executed()": {
+            "notice": "Returns whether the settlement has been executed"
+          },
+          "flows()": {
+            "notice": "Returns all flows in the settlement"
+          },
+          "isFullyApproved()": {
+            "notice": "Checks if all parties have approved the settlement"
+          },
+          "revokeApproval()": {
+            "notice": "Revokes approval for a XvP settlement"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/addons/xvp/IATKXvPSettlement.sol": "IATKXvPSettlement"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/addons/xvp/IATKXvPSettlement.sol": {
+        "keccak256": "0x5edcebd2bd8dc58fd341247735394c19df53ce1c56bb3dfaeb1242735252abde",
+        "urls": [
+          "bzz-raw://78d5212d4f15f7031861d3f3b3ce685404cce537168dda65eaacbca02095063d",
+          "dweb:/ipfs/Qmbi8tEJKyazqiTM8oASWQW98Ks3FsZBvumBkrGShKz7Ng"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "approvals(address)": {
+        "notice": "Returns whether an account has approved the settlement"
+      },
+      "approve()": {
+        "notice": "Approves a XvP settlement for execution"
+      },
+      "autoExecute()": {
+        "notice": "Returns whether the settlement should auto-execute when all approvals are received"
+      },
+      "cancel()": {
+        "notice": "Cancels the settlement"
+      },
+      "cancelled()": {
+        "notice": "Returns whether the settlement has been cancelled"
+      },
+      "createdAt()": {
+        "notice": "Returns the timestamp when the settlement was created"
+      },
+      "cutoffDate()": {
+        "notice": "Returns the cutoff date after which the settlement expires"
+      },
+      "execute()": {
+        "notice": "Executes the settlement if all approvals are in place"
+      },
+      "executed()": {
+        "notice": "Returns whether the settlement has been executed"
+      },
+      "flows()": {
+        "notice": "Returns all flows in the settlement"
+      },
+      "isFullyApproved()": {
+        "notice": "Checks if all parties have approved the settlement"
+      },
+      "revokeApproval()": {
+        "notice": "Revokes approval for a XvP settlement"
+      }
+    },
+    "events": {
+      "XvPSettlementApprovalRevoked(address)": {
+        "notice": "Event emitted when an XvP settlement approval is revoked"
+      },
+      "XvPSettlementApproved(address)": {
+        "notice": "Event emitted when an XvP settlement is approved by a party"
+      },
+      "XvPSettlementCancelled(address)": {
+        "notice": "Event emitted when an XvP settlement is cancelled"
+      },
+      "XvPSettlementExecuted(address)": {
+        "notice": "Event emitted when an XvP settlement is executed"
+      }
+    },
+    "notice": "Interface for contracts that facilitate atomic swaps between parties with multiple token flows"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "approvals(address)": {
+        "params": {
+          "account": "The account to check approvals for"
+        },
+        "returns": {
+          "_0": "True if the account has approved the settlement"
+        }
+      },
+      "approve()": {
+        "details": "The caller must be a party in the settlement's flows",
+        "returns": {
+          "_0": "True if the approval was successful"
+        }
+      },
+      "autoExecute()": {
+        "returns": {
+          "_0": "True if auto-execute is enabled"
+        }
+      },
+      "cancel()": {
+        "returns": {
+          "_0": "True if the cancellation was successful"
+        }
+      },
+      "cancelled()": {
+        "returns": {
+          "_0": "True if the settlement has been cancelled"
+        }
+      },
+      "createdAt()": {
+        "returns": {
+          "_0": "The creation timestamp"
+        }
+      },
+      "cutoffDate()": {
+        "returns": {
+          "_0": "The cutoff date timestamp"
+        }
+      },
+      "execute()": {
+        "returns": {
+          "_0": "True if execution was successful"
+        }
+      },
+      "executed()": {
+        "returns": {
+          "_0": "True if the settlement has been executed"
+        }
+      },
+      "flows()": {
+        "returns": {
+          "_0": "Array of all flows"
+        }
+      },
+      "isFullyApproved()": {
+        "returns": {
+          "_0": "True if all parties have approved"
+        }
+      },
+      "revokeApproval()": {
+        "details": "The caller must have previously approved the settlement",
+        "returns": {
+          "_0": "True if the revocation was successful"
+        }
+      },
+      "supportsInterface(bytes4)": {
+        "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+      }
+    },
+    "title": "IATKXvPSettlement - Interface for cross-value proposition settlements"
+  },
+  "id": 3
+}
