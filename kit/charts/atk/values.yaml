@@ -358,6 +358,18 @@ support:
   reloader:
     enabled: true
 
+  minio:
+    enabled: true
+    image:
+      pullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+    ingress:
+      enabled: true
+      ingressClassName: "settlemint-nginx"
+      hostname: minio.k8s.orb.local
+
 observability:
   enabled: true
 

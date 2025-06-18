@@ -1,7 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import * as countries from "i18n-iso-countries";
 
 /**
  * GraphQL query for retrieving SMART systems from TheGraph.
@@ -18,16 +17,6 @@ export const READ_ACCOUNT_QUERY = theGraphGraphql(`
 query ReadAccountQuery($walletAddress: ID!) {
   account(id: $walletAddress) {
     id
-    country
-    identity {
-      claims(where: {revoked: false}) {
-        name
-        values {
-          key
-          value
-        }
-      }
-    }
   }
 }
 `);
@@ -81,33 +70,11 @@ export const read = onboardedRouter.account.read
       });
     }
 
-    let countryAlpha2: string | undefined;
-
-    // Convert numeric country code to ISO 3166-1 alpha-2
-    if (account.country) {
-      const numericCode = account.country.toString();
-      countryAlpha2 = countries.numericToAlpha2(numericCode);
-    }
-
-    // Transform claims array to nested record format
-    const claimsRecord = account.identity?.claims.reduce<
-      Record<string, Record<string, string>>
-    >((acc, claim) => {
-      const valuesRecord = claim.values.reduce<Record<string, string>>(
-        (valAcc, { key, value }) => {
-          valAcc[key] = value;
-          return valAcc;
-        },
-        {}
-      );
-      acc[claim.name] = valuesRecord;
-      return acc;
-    }, {});
-
-    // Return the array of system contracts
+    // Return the account with basic information only
+    // Country and claims data not available in current subgraph schema
     return {
       id: account.id,
-      country: countryAlpha2,
-      claims: claimsRecord,
+      country: undefined,
+      claims: undefined,
     };
   });

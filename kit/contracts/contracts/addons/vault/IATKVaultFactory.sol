@@ -1,0 +1,52 @@
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
+
+/// @title IATKVaultFactory Interface
+/// @notice Interface for the ATK Vault Factory contract
+/// @dev Defines the functions for creating and managing ATK Vault contracts
+interface IATKVaultFactory {
+    /// @notice Emitted when a new ATK Vault contract is created
+    /// @param vault Address of the newly created vault
+    /// @param creator Address of the account that created the vault
+    event ATKVaultCreated(address indexed vault, address indexed creator);
+
+    /// @notice Creates a new ATK Vault contract
+    /// @param signers Array of initial signer addresses
+    /// @param required Number of confirmations required to execute a transaction
+    /// @param initialOwner Address that will have admin role
+    /// @param salt Salt value for deterministic address generation
+    /// @return contractAddress Address of the newly created vault
+    function createVault(
+        address[] memory signers,
+        uint256 required,
+        address initialOwner,
+        bytes32 salt
+    )
+        external
+        returns (address contractAddress);
+
+    /// @notice Predicts the address where an ATK Vault contract would be deployed
+    /// @param signers Array of initial signer addresses
+    /// @param required Number of confirmations required to execute a transaction
+    /// @param initialOwner Address that will have admin role
+    /// @param salt Salt value for deterministic address generation
+    /// @return predictedAddress The predicted address of the vault
+    function predictVaultAddress(
+        address[] memory signers,
+        uint256 required,
+        address initialOwner,
+        bytes32 salt
+    )
+        external
+        view
+        returns (address predictedAddress);
+
+    /// @notice Initializes the factory contract
+    /// @param systemAddress_ Address of the ATK system contract
+    /// @param initialAdmin_ Address that will have admin role
+    function initialize(address systemAddress_, address initialAdmin_) external;
+
+    /// @notice Returns the address of the current ATKVault logic contract (implementation).
+    /// @dev This function is expected to be available on the factory contract.
+    function atkVaultImplementation() external view returns (address);
+}

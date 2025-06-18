@@ -1,7 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import type { VariablesOf } from "@settlemint/sdk-thegraph";
 
 /**
  * GraphQL query for retrieving SMART systems from TheGraph.
@@ -15,10 +14,9 @@ import type { VariablesOf } from "@settlemint/sdk-thegraph";
  * tokenized assets and their associated compliance infrastructure.
  */
 const LIST_SYSTEM_QUERY = theGraphGraphql(`
-  query ListSystemQuery($skip: Int!, $orderDirection: OrderDirection = asc, $orderBy: System_orderBy = id, $first: Int = 20) {
+  query ListSystemQuery($skip: Int!, $orderDirection: OrderDirection = asc, $first: Int = 20) {
     systems(
         first: $first
-        orderBy: $orderBy
         orderDirection: $orderDirection
         skip: $skip
       ) {
@@ -62,11 +60,10 @@ export const list = authRouter.system.list
   .handler(async ({ input, context }) => {
     // TODO: Not happy about this
     // Extract and validate pagination parameters from the request
-    const { offset, limit, orderDirection, orderBy } = input ?? {
+    const { offset, limit, orderDirection } = input ?? {
       offset: 0,
       limit: 20,
       orderDirection: "asc",
-      orderBy: "id",
     };
 
     // Execute TheGraph query with pagination and sorting parameters
@@ -75,7 +72,6 @@ export const list = authRouter.system.list
       {
         skip: offset,
         orderDirection,
-        orderBy: orderBy as VariablesOf<typeof LIST_SYSTEM_QUERY>["orderBy"],
         first: limit,
       }
     );
