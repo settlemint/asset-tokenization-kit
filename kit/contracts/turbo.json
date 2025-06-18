@@ -9,10 +9,12 @@
       "dependsOn": ["compile:forge", "compile:hardhat"]
     },
     "compile:forge": {
+      "dependsOn": ["dependencies"],
       "outputs": [".generated/out/**", ".generated/cache_forge/**"],
       "inputs": ["**/*.sol", "!.generated/**"]
     },
     "compile:hardhat": {
+      "dependsOn": ["dependencies"],
       "outputs": [".generated/artifacts/**", ".generated/cache/**"],
       "inputs": ["**/*.sol", "!.generated/**"]
     },
@@ -32,6 +34,7 @@
       "dependsOn": ["artifacts:genesis", "artifacts:abi"]
     },
     "artifacts:genesis": {
+      "dependsOn": ["compile:forge"],
       "outputs": [
         ".generated/genesis-allocations.json",
         ".generated/genesis.json"
