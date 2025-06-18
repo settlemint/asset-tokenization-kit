@@ -7,6 +7,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import { IATKSystem } from "./IATKSystem.sol";
 import { InvalidSystemAddress, ETHTransfersNotAllowed, InitializationWithZeroAddress } from "./ATKSystemErrors.sol";
+import { IATKTypedImplementationRegistry } from "./IATKTypedImplementationRegistry.sol";
 
 /// @title Abstract Base Proxy for ATK System Components
 /// @author SettleMint Tokenization Services
@@ -18,41 +19,53 @@ import { InvalidSystemAddress, ETHTransfersNotAllowed, InitializationWithZeroAdd
 ///         and revert with a specific error if not found.
 ///      3. In their own constructor, fetch the implementation address, prepare initialization data,
 ///         and then call `_performInitializationDelegatecall`.
-abstract contract ATKSystemProxy is Proxy {
-    /// @dev Fixed storage slot for the IATKSystem address.
-    /// Value: keccak256("org.smart.contracts.proxy.ATKSystemProxy.systemAddress")
-    bytes32 private constant _ATK_SYSTEM_ADDRESS_SLOT =
-        0x4ec051ecf420fd16e0db567197da76ec7f1f5f47763970d604b97e75cb0064d3;
+contract ATKTypedImplementationProxy is Proxy {
+    /// @dev Fixed storage slot for the IATKTypedImplementationRegistry address.
+    /// Value: keccak256("org.smart.contracts.proxy.ATKTypedImplementationProxy.registryAddress")
+    bytes32 private constant _ATK_TYPED_IMPLEMENTATION_REGISTRY_ADDRESS_SLOT =
+        0xa31119ed2f30cf540b9f48eb7e1890285b3a2287937a099a1e0f359fc5ce172b;
 
-    /// @notice Child contracts MUST implement this function.
-    /// @dev It should retrieve the specific implementation address for the child proxy from the provided `IATKSystem`
-    /// instance.
-    /// If the implementation address from the system is `address(0)`, this function MUST revert with the
-    /// child proxy's specific "ImplementationNotSet" error (e.g., `TrustedIssuersRegistryImplementationNotSet`).
-    /// @param system The `IATKSystem` instance to query.
-    /// @return implementationAddress The address of the child's logic/implementation contract.
-    function _getSpecificImplementationAddress(IATKSystem system)
-        internal
-        view
-        virtual
-        returns (address implementationAddress);
+    /// @dev Fixed storage slot for the type hash.
+    /// Value: keccak256("org.smart.contracts.proxy.ATKTypedImplementationProxy.typeHash")
+    bytes32 private constant _ATK_TYPED_IMPLEMENTATION_REGISTRY_TYPE_HASH_SLOT =
+        0x2a94c78684c8756e2c9669f50cc2acf3b762274c5f6f55e8495bba510078ce48;
 
-    /// @notice Constructs the ATKSystemProxy.
-    /// @dev Validates and stores the `systemAddress_`.
-    /// @param systemAddress_ The address of the IATKSystem contract.
-    constructor(address systemAddress_) {
-        if (systemAddress_ == address(0) || !IERC165(systemAddress_).supportsInterface(type(IATKSystem).interfaceId)) {
-            revert InvalidSystemAddress();
-        }
-        // Store systemAddress_ at the fixed slot
-        StorageSlot.getAddressSlot(_ATK_SYSTEM_ADDRESS_SLOT).value = systemAddress_;
+    /// @dev Internal function to retrieve the `IATKTypedImplementationRegistry` contract instance from the stored
+    /// address.
+    /// @return An `IATKTypedImplementationRegistry` instance pointing to the stored registry contract address.
+    function _getRegistry() internal view returns (IATKTypedImplementationRegistry) {
+        // Retrieve registry address from the fixed slot
+        return IATKTypedImplementationRegistry(
+            StorageSlot.getAddressSlot(_ATK_TYPED_IMPLEMENTATION_REGISTRY_ADDRESS_SLOT).value
+        );
     }
 
-    /// @dev Internal function to retrieve the `IATKSystem` contract instance from the stored address.
-    /// @return An `IATKSystem` instance pointing to the stored system contract address.
-    function _getSystem() internal view returns (IATKSystem) {
-        // Retrieve system address from the fixed slot
-        return IATKSystem(StorageSlot.getAddressSlot(_ATK_SYSTEM_ADDRESS_SLOT).value);
+    function _getTypeHash() internal view returns (bytes32) {
+        return StorageSlot.getBytes32Slot(_ATK_TYPED_IMPLEMENTATION_REGISTRY_TYPE_HASH_SLOT).value;
+    }
+
+    /// @notice Constructs the ATKTypedImplementationProxy.
+    /// @dev Validates and stores the `registryAddress_` and `typeHash_`.
+    /// @param registryAddress_ The address of the IATKTypedImplementationRegistry contract.
+    /// @param typeHash_ The type hash of the implementation.
+    /// @param initializeData_ The data to pass to the implementation's `initialize` function.
+    constructor(address registryAddress_, bytes32 typeHash_, bytes memory initializeData_) {
+        if (
+            registryAddress_ == address(0)
+                || !IERC165(registryAddress_).supportsInterface(type(IATKTypedImplementationRegistry).interfaceId)
+        ) {
+            revert InvalidSystemAddress();
+        }
+        // Store registryAddress_ at the fixed slot
+        StorageSlot.getAddressSlot(_ATK_TYPED_IMPLEMENTATION_REGISTRY_ADDRESS_SLOT).value = registryAddress_;
+        // Store typeHash_ at the fixed slot
+        StorageSlot.getBytes32Slot(_ATK_TYPED_IMPLEMENTATION_REGISTRY_TYPE_HASH_SLOT).value = typeHash_;
+
+        // Get the implementation address
+        address implementationAddress = _implementation();
+
+        // Call the implementation's `initialize` function
+        _performInitializationDelegatecall(implementationAddress, initializeData_);
     }
 
     /// @dev Performs the delegatecall to initialize the implementation contract.
@@ -81,8 +94,9 @@ abstract contract ATKSystemProxy is Proxy {
     /// address or reverting with its specific "ImplementationNotSet" error.
     /// @return The address of the current logic/implementation contract.
     function _implementation() internal view override returns (address) {
-        IATKSystem system_ = _getSystem();
-        return _getSpecificImplementationAddress(system_);
+        IATKTypedImplementationRegistry registry_ = _getRegistry();
+        bytes32 typeHash = _getTypeHash();
+        return registry_.implementation(typeHash);
     }
 
     /// @notice Fallback function to reject any direct Ether transfers to this proxy contract.

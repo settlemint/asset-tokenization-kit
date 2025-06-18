@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
+import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
+
 /// @title ATK Compliance Bypass List Interface
 /// @author SettleMint Tokenization Services
 /// @notice Interface for managing the compliance bypass list functionality.
 /// @dev This interface defines the standard functions for managing addresses that bypass compliance checks.
-interface IATKComplianceBypassList {
+interface IATKCompliance is ISMARTCompliance {
     // --- Events ---
     /// @notice Emitted when an address is added to the compliance bypass list.
     /// @param account The address that was added to the bypass list.
@@ -23,6 +25,9 @@ interface IATKComplianceBypassList {
 
     /// @notice Error thrown when trying to add an address that is already on the bypass list.
     error AddressAlreadyOnBypassList(address account);
+
+    // --- Functions ---
+    function initialize(address[] memory initialAdmins) external;
 
     // --- Functions ---
     /// @notice Adds an address to the compliance bypass list.

@@ -11,7 +11,7 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 
 // Interface imports
 import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
-import { IATKComplianceBypassList } from "./IATKComplianceBypassList.sol";
+import { IATKCompliance } from "./IATKCompliance.sol";
 import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
@@ -36,8 +36,7 @@ contract ATKComplianceImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
-    ISMARTCompliance,
-    IATKComplianceBypassList
+    IATKCompliance
 {
     // --- Storage ---
     /// @notice Mapping of addresses that are on the bypass list to bypass compliance checks
@@ -366,8 +365,8 @@ contract ATKComplianceImplementation is
         override(AccessControlUpgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(ISMARTCompliance).interfaceId
-            || interfaceId == type(IATKComplianceBypassList).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(ISMARTCompliance).interfaceId || interfaceId == type(IATKCompliance).interfaceId
+            || super.supportsInterface(interfaceId);
     }
 
     /// @notice Override _msgSender to support meta-transactions via ERC2771

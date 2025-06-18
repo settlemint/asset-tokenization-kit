@@ -18,6 +18,7 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 // Interface imports
 import { IERC3643IdentityRegistryStorage } from "./../../smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol";
 import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
+import { IATKIdentityRegistryStorage } from "./IATKIdentityRegistryStorage.sol";
 
 // --- Custom Errors for Lost Wallet Management ---
 // It's good practice to define specific errors if not already available for clarity.
@@ -52,7 +53,7 @@ contract ATKIdentityRegistryStorageImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
-    ISMARTIdentityRegistryStorage
+    IATKIdentityRegistryStorage
 {
     // --- Storage Variables ---
     /// @notice Defines a structure to hold the comprehensive information for a registered identity.
