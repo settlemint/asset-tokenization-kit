@@ -1,6 +1,6 @@
 import { Bytes } from "@graphprotocol/graph-ts";
-import { ATKXvPSettlementCreated } from "../../generated/templates/XvPSettlementFactory/XvPSettlementFactory";
-import { fetchEvent } from "../event/fetch/event";
+import { ATKXvPSettlementCreated } from "../../../generated/templates/XvPSettlementFactory/XvPSettlementFactory";
+import { fetchEvent } from "../../event/fetch/event";
 import { fetchXvPSettlement } from "./fetch/xvp-settlement";
 
 export function handleATKXvPSettlementCreated(

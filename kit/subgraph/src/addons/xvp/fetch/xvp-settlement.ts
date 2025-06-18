@@ -3,14 +3,12 @@ import {
   XvPSettlement,
   XvPSettlementApproval,
   XvPSettlementFlow,
-} from "../../../generated/schema";
-import {
-  XvPSettlement as XvPSettlementContract,
-  XvPSettlement as XvPSettlementTemplate,
-} from "../../../generated/templates";
-import { fetchAccount } from "../../account/fetch/account";
-import { fetchToken } from "../../token/fetch/token";
-import { setBigNumber } from "../../utils/bignumber";
+} from "../../../../generated/schema";
+import { XvPSettlement as XvPSettlementTemplate } from "../../../../generated/templates";
+import { XvPSettlement as XvPSettlementContract } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
+import { fetchAccount } from "../../../account/fetch/account";
+import { fetchToken } from "../../../token/fetch/token";
+import { setBigNumber } from "../../../utils/bignumber";
 
 /**
  * Fetches or creates a Flow entity
