@@ -1,6 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "continue": true,
   "globalPassThroughEnv": [
     "THE_GRAPH_PORT_LOCAL_DEPLOY",
     "THE_GRAPH_PORT_LOCAL_QUERY",
