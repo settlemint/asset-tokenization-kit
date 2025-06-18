@@ -20,6 +20,7 @@ import {
   TopicSchemeRegistryImplementationUpdated,
   TrustedIssuersRegistryImplementationUpdated,
 } from "../../generated/templates/System/System";
+import { fetchComplianceModule } from "../compliance/fetch/compliance-module";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
@@ -184,4 +185,13 @@ export function handleComplianceModuleRegistered(
   event: ComplianceModuleRegistered
 ): void {
   fetchEvent(event, "ComplianceModuleRegistered");
+
+  const complianceModule = fetchComplianceModule(event.params.moduleAddress);
+  if (complianceModule.deployedInTransaction.equals(Bytes.empty())) {
+    complianceModule.deployedInTransaction = event.transaction.hash;
+  }
+  complianceModule.name = event.params.name;
+  complianceModule.typeId = event.params.typeId;
+
+  complianceModule.save();
 }

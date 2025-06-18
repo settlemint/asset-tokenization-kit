@@ -166,6 +166,19 @@ type IdentityClaimValue @entity(immutable: false) {
   value: String!
 }
 
+
+# ==================================================
+# Compliance
+# ==================================================
+
+type ComplianceModule @entity(immutable: false) {
+  id: Bytes!
+  name: String!
+  typeId: Bytes!
+  account: Account!
+  deployedInTransaction: Bytes!
+}
+
 # ==================================================
 # TOKEN MANAGEMENT
 # ==================================================
