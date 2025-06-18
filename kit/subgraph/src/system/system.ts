@@ -178,3 +178,9 @@ export function handleTopicSchemeRegistryImplementationUpdated(
 ): void {
   fetchEvent(event, "TopicSchemeRegistryImplementationUpdated");
 }
+
+export function handleComplianceModuleRegistered(
+  event: ComplianceModuleRegistered
+): void {
+  fetchEvent(event, "ComplianceModuleRegistered");
+}

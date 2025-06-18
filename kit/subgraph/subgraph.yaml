@@ -100,6 +100,9 @@ templates:
           handler: handleTrustedIssuersRegistryImplementationUpdated
         - event: TopicSchemeRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleTopicSchemeRegistryImplementationUpdated
+        - event: ComplianceModuleRegistered(indexed address,string,bytes32,indexed
+            address,uint256)
+          handler: handleComplianceModuleRegistered
       file: ./src/system/system.ts
   - kind: ethereum
     name: TokenFactory
