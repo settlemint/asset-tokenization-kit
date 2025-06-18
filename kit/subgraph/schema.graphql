@@ -173,6 +173,7 @@ type IdentityClaimValue @entity(immutable: false) {
 
 type ComplianceModule @entity(immutable: false) {
   id: Bytes!
+  accessControl: AccessControl!
   name: String!
   typeId: Bytes!
   account: Account!
