@@ -35,6 +35,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     using SafeERC20 for IERC20;
 
     // --- Storage Variables ---
+
     /// @notice Total tokens distributed so far.
     /// @dev Tracks the cumulative amount of tokens that have been distributed.
     uint256 private _totalDistributed;
@@ -44,6 +45,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     uint256 private _distributionCap;
 
     // --- Events ---
+
     /// @notice Emitted when tokens are distributed to a recipient.
     /// @param recipient The address that received the tokens.
     /// @param amount The amount of tokens distributed.
@@ -61,14 +63,12 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     /// @param newCap The new distribution cap.
     event DistributionCapUpdated(uint256 oldCap, uint256 newCap);
 
-    // --- Constructor ---
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ATKAirdrop(forwarder_) {
         _disableInitializers();
     }
 
-    // --- Initializer ---
     /// @notice Initializes the push airdrop contract with specified parameters.
     /// @dev Sets up the base airdrop functionality and push-specific parameters.
     ///      Deploys its own bitmap claim tracker for efficient distribution tracking.
@@ -89,6 +89,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     }
 
     // --- View Functions ---
+
     /// @notice Returns the total amount of tokens distributed so far.
     /// @return The total amount distributed.
     function totalDistributed() external view returns (uint256) {
@@ -109,6 +110,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     }
 
     // --- External Functions ---
+
     /// @notice Updates the distribution cap.
     /// @dev Only the owner can update the distribution cap.
     /// @param newDistributionCap_ The new distribution cap (0 for no cap).
@@ -137,17 +139,17 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
         if (recipient == address(0)) revert InvalidDistributionAddress();
         if (amount == 0) revert ZeroAmountToDistribute();
 
+        // Check distribution cap
+        if (_distributionCap > 0 && _totalDistributed + amount > _distributionCap) {
+            revert DistributionCapExceeded();
+        }
+
         // Check if already distributed
         if (getClaimedAmount(index) != 0) revert AlreadyDistributed();
 
         // Verify Merkle proof
         if (!_verifyMerkleProof(index, recipient, amount, merkleProof)) {
             revert InvalidMerkleProof();
-        }
-
-        // Check distribution cap
-        if (_distributionCap > 0 && _totalDistributed + amount > _distributionCap) {
-            revert DistributionCapExceeded();
         }
 
         // Record the distribution in the claim tracker
@@ -188,11 +190,13 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
         uint256 batchTotal = 0;
         uint256 distributedCount = 0;
 
+        // Perform cheap validations and calculate total
         for (uint256 i = 0; i < indices.length; i++) {
             uint256 index = indices[i];
             address recipient = recipients[i];
             uint256 amount = amounts[i];
 
+            // Fail fast on simple validations
             if (recipient == address(0)) revert InvalidDistributionAddress();
             if (amount == 0) revert ZeroAmountToDistribute();
 
@@ -201,26 +205,33 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
                 continue;
             }
 
-            // Verify Merkle proof
+            // Add to batch total and count
+            batchTotal += amount;
+            distributedCount++;
+        }
+
+        // Check distribution cap early to avoid wasting gas
+        if (_distributionCap > 0 && _totalDistributed + batchTotal > _distributionCap) {
+            revert DistributionCapExceeded();
+        }
+
+        // Verify Merkle proofs and perform actual distributions
+        for (uint256 i = 0; i < indices.length; i++) {
+            uint256 index = indices[i];
+            address recipient = recipients[i];
+            uint256 amount = amounts[i];
+
+            // Verify Merkle proof right before transfer
             if (!_verifyMerkleProof(index, recipient, amount, merkleProofs[i])) {
-                continue;
+                revert InvalidMerkleProof();
             }
 
             // Record the distribution in the claim tracker
             _claimTracker.recordClaim(index, amount, amount);
 
-            // Add to batch total
-            batchTotal += amount;
-            distributedCount++;
-
             // Transfer tokens
             _token.safeTransfer(recipient, amount);
             emit TokensDistributed(recipient, amount, index);
-        }
-
-        // Check distribution cap after calculating batch total
-        if (_distributionCap > 0 && _totalDistributed + batchTotal > _distributionCap) {
-            revert DistributionCapExceeded();
         }
 
         // Update total distributed
@@ -235,7 +246,15 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     /// @param index The index of the claim (unused).
     /// @param totalAmount The total amount (unused).
     /// @param merkleProof The Merkle proof (unused).
-    function claim(uint256 index, uint256 totalAmount, bytes32[] calldata merkleProof) external pure override {
+    function claim(
+        uint256 index,
+        uint256 totalAmount,
+        bytes32[] calldata merkleProof
+    )
+        external
+        pure
+        override(ATKAirdrop, IATKAirdrop)
+    {
         index; // Silence unused parameter warning
         totalAmount; // Silence unused parameter warning
         merkleProof; // Silence unused parameter warning
@@ -255,7 +274,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     )
         external
         pure
-        override
+        override(ATKAirdrop, IATKAirdrop)
     {
         indices; // Silence unused parameter warnings
         totalAmounts; // Silence unused parameter warnings
