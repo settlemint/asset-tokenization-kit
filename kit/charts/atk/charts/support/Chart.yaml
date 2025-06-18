@@ -23,7 +23,7 @@ dependencies:
     version: 2.1.4
     repository: https://stakater.github.io/stakater-charts
   - name: minio
-    version: 17.0.4
+    version: 17.0.5
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: minio.enabled
 
