@@ -4,6 +4,7 @@ import { grantRole } from "./actions/grant-role";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
+import { createAirdrops } from "./addons/airdrop";
 import { grantRoles } from "./assets/actions/core/grant-roles";
 import { mint } from "./assets/actions/core/mint";
 import { recoverErc20Tokens } from "./assets/actions/core/recover-erc20-tokens";
@@ -104,6 +105,9 @@ async function main() {
   const equity = await createEquity();
   const fund = await createFund();
   const stableCoin = await createStableCoin();
+
+  // Create the addons
+  const airdrops = await createAirdrops(stableCoin);
 
   await createPausedAsset();
 

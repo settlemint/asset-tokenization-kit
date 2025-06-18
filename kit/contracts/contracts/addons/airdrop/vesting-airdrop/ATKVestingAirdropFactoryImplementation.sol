@@ -125,7 +125,9 @@ contract ATKVestingAirdropFactoryImplementation is
         airdropProxyAddress = _deploySystemAddon(proxyBytecode, constructorArgs, saltInputData, expectedAddress);
 
         // Emit an event to log the creation of the new airdrop proxy.
-        emit ATKVestingAirdropCreated(airdropProxyAddress, _msgSender());
+        emit ATKVestingAirdropCreated(
+            airdropProxyAddress, name, token, root, owner, vestingStrategy, initializationDeadline, _msgSender()
+        );
 
         // Add the new airdrop proxy to the list of all airdrops created by this factory.
         // Cast the proxy to IATKVestingAirdrop for storage, as the proxy behaves like one.

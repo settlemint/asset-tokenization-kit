@@ -12,7 +12,16 @@ interface IATKVestingAirdropFactory {
     /// @notice Emitted when a new `ATKVestingAirdrop` proxy contract is successfully created and deployed.
     /// @param airdrop The address of the newly deployed `ATKVestingAirdropProxy` contract.
     /// @param creator The address that initiated the creation of the airdrop proxy.
-    event ATKVestingAirdropCreated(address indexed airdrop, address indexed creator);
+    event ATKVestingAirdropCreated(
+        address indexed airdrop,
+        string name,
+        address token,
+        bytes32 root,
+        address owner,
+        address vestingStrategy,
+        uint256 initializationDeadline,
+        address creator
+    );
 
     /// @notice Custom error for invalid address parameter.
     error InvalidAddress();
