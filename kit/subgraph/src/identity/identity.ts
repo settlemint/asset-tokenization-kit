@@ -1,3 +1,4 @@
+import { Bytes } from "@graphprotocol/graph-ts";
 import {
   Approved,
   ClaimAdded,
@@ -28,6 +29,9 @@ export function handleClaimAdded(event: ClaimAdded): void {
   fetchEvent(event, "ClaimAdded");
   const identity = fetchIdentity(event.address);
   const identityClaim = fetchIdentityClaim(identity, event.params.claimId);
+  if (identityClaim.deployedInTransaction.equals(Bytes.empty())) {
+    identityClaim.deployedInTransaction = event.transaction.hash;
+  }
   identityClaim.issuer = fetchIdentity(event.params.issuer).id;
   identityClaim.uri = event.params.uri;
   identityClaim.save();

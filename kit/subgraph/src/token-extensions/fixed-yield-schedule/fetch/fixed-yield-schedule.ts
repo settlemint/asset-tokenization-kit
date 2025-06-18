@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { TokenFixedYieldSchedule } from "../../../../generated/schema";
 import { FixedYieldSchedule as FixedYieldScheduleTemplate } from "../../../../generated/templates";
 import { fetchAccount } from "../../../account/fetch/account";
@@ -39,6 +39,7 @@ export function fetchFixedYieldSchedule(
       DEFAULT_TOKEN_DECIMALS
     );
     fixedYieldSchedule.underlyingAsset = Address.zero();
+    fixedYieldSchedule.deployedInTransaction = Bytes.empty();
     fixedYieldSchedule.save();
     FixedYieldScheduleTemplate.create(address);
   }

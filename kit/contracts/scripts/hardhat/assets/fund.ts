@@ -1,5 +1,3 @@
-import { encodeAbiParameters, parseAbiParameters } from "viem";
-
 import { atkDeployer } from "../services/deployer";
 
 import {
@@ -21,6 +19,7 @@ import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { collectManagementFee } from "./actions/fund/collect-management-fee";
 import { setupAsset } from "./actions/setup-asset";
+import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
 
 export const createFund = async () => {
   console.log("\n=== Creating fund... ===\n");
@@ -35,23 +34,13 @@ export const createFund = async () => {
     fundFactory
   );
 
-  const encodedBlockedCountries = encodeAbiParameters(
-    parseAbiParameters("uint16[]"),
-    [[]]
-  );
-
   const transactionHash = await fundFactory.write.createFund([
     fund.name,
     fund.symbol,
     fund.decimals,
     20,
     [topicManager.getTopicId(ATKTopic.kyc)],
-    [
-      {
-        module: atkDeployer.getContractAddress("countryBlockListModule"),
-        params: encodedBlockedCountries,
-      },
-    ],
+    getDefaultComplianceModules(),
   ]);
 
   await fund.waitUntilDeployed(transactionHash);

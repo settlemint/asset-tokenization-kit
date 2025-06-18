@@ -16,14 +16,13 @@
  * @see {@link https://tanstack.com/router/latest/docs/framework/react/guide/data-loading} - Router with Query integration
  */
 
-import { createRouter as createTanStackRouter } from "@tanstack/react-router";
-import { routerWithQueryClient } from "@tanstack/react-router-with-query";
-
-import { routeTree } from "./routeTree.gen";
-
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";
 import { queryClient } from "@/lib/query.client";
+import { orpc } from "@/orpc";
+import { createRouter as createTanStackRouter } from "@tanstack/react-router";
+import { routerWithQueryClient } from "@tanstack/react-router-with-query";
+import { routeTree } from "./routeTree.gen";
 
 /**
  * Creates and configures the application router.
@@ -66,7 +65,7 @@ export function createRouter() {
        * Global context available to all routes.
        * Includes the query client for data fetching operations.
        */
-      context: { queryClient },
+      context: { queryClient, orpc },
 
       /**
        * Default preloading strategy.
@@ -74,6 +73,7 @@ export function createRouter() {
        * improving perceived performance.
        */
       defaultPreload: "intent",
+      defaultPreloadStaleTime: 0,
 
       /**
        * Default error boundary component.

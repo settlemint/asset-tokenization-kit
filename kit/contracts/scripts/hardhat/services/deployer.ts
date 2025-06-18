@@ -18,7 +18,7 @@ import { owner } from "../entities/actors/owner";
 // --- Utility Imports ---
 
 // Type for the keys of CONTRACT_METADATA, e.g., "system" | "compliance" | ...
-export type ContractName = keyof Pick<
+export type PredeployedContractName = keyof Pick<
   typeof ATKContracts,
   | "system"
   | "compliance"
@@ -34,6 +34,9 @@ export type ContractName = keyof Pick<
   | "stablecoinFactory"
   | "countryAllowListModule"
   | "countryBlockListModule"
+  | "addressBlockListModule"
+  | "identityBlockListModule"
+  | "identityAllowListModule"
   | "fixedYieldScheduleFactory"
 >;
 
@@ -51,7 +54,7 @@ export type ViemContract<
  * typed with Viem for write operations (includes WalletClient).
  */
 export type ATKOnboardingContracts = {
-  [K in ContractName]: ViemContract<
+  [K in PredeployedContractName]: ViemContract<
     (typeof ATKContracts)[K], // Access ABI by key
     { public: PublicClient; wallet: WalletClient<Transport, Chain, Account> }
   >;
@@ -59,7 +62,7 @@ export type ATKOnboardingContracts = {
 
 // Type for storing deployed contract addresses
 type DeployedContractAddresses = {
-  [K in ContractName]: { address: Address };
+  [K in PredeployedContractName]: { address: Address };
 };
 
 /**
@@ -194,8 +197,8 @@ export class ATKDeployer {
     return this._deployedContractAddresses !== undefined;
   }
 
-  private getContract<K extends ContractName>(
-    // Use ContractName here
+  private getContract<K extends PredeployedContractName>(
+    // Use PredeployedContractName here
     contractName: K,
     explicitWalletClient?: WalletClient<Transport, Chain, Account>
   ): ViemContract<
@@ -223,7 +226,7 @@ export class ATKDeployer {
     });
   }
 
-  public getContractAddress(contractName: ContractName): Address {
+  public getContractAddress(contractName: PredeployedContractName): Address {
     if (!this._deployedContractAddresses) {
       throw new Error(
         "Contracts not deployed. Call setUp() before accessing contracts."

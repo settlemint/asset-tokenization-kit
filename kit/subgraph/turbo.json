@@ -25,13 +25,14 @@
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "^publish"]
+      "dependsOn": ["package", "^publish", "codegen:interfaceid"]
     },
     "test:integration": {
       "dependsOn": ["codegen:gql-tada"]
     },
+    "translate": {},
     "artifacts": {
-      "dependsOn": ["build", "compile"]
+      "dependsOn": ["build", "compile", "translate"]
     }
   }
 }

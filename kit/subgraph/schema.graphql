@@ -59,6 +59,7 @@ type AccessControl @entity(immutable: false) {
 
 type System @entity(immutable: false) {
   id: Bytes!
+  deployedInTransaction: Bytes!
   accessControl: AccessControl!
   account: Account
   compliance: Compliance
@@ -72,6 +73,7 @@ type System @entity(immutable: false) {
 
 type SystemAddon @entity(immutable: false) {
   id: Bytes!
+  deployedInTransaction: Bytes!
   accessControl: AccessControl!
   name: String!
   typeId: Bytes!
@@ -92,12 +94,14 @@ type IdentityRegistryStorage @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
   account: Account!
+  deployedInTransaction: Bytes!
 }
 
 type IdentityFactory @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
   account: Account!
+  deployedInTransaction: Bytes!
 }
 
 type IdentityRegistry @entity(immutable: false) {
@@ -108,12 +112,14 @@ type IdentityRegistry @entity(immutable: false) {
   trustedIssuersRegistry: TrustedIssuersRegistry
   topicSchemeRegistry: TopicSchemeRegistry
   identityRegistryStorage: IdentityRegistryStorage
+  deployedInTransaction: Bytes!
 }
 
 type TrustedIssuersRegistry @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
   account: Account!
+  deployedInTransaction: Bytes!
 }
 
 type TopicSchemeRegistry @entity(immutable: false) {
@@ -121,6 +127,7 @@ type TopicSchemeRegistry @entity(immutable: false) {
   accessControl: AccessControl!
   account: Account!
   schemes: [TopicScheme!]! @derivedFrom(field: "registry")
+  deployedInTransaction: Bytes!
 }
 
 type TopicScheme @entity(immutable: false) {
@@ -129,6 +136,7 @@ type TopicScheme @entity(immutable: false) {
   name: String!
   signature: String!
   enabled: Boolean!
+  deployedInTransaction: Bytes!
 }
 
 type Identity @entity(immutable: false) {
@@ -137,6 +145,7 @@ type Identity @entity(immutable: false) {
   claims: [IdentityClaim!]! @derivedFrom(field: "identity")
   account: Account
   token: Token
+  deployedInTransaction: Bytes!
 }
 
 type IdentityClaim @entity(immutable: false) {
@@ -147,6 +156,7 @@ type IdentityClaim @entity(immutable: false) {
   uri: String
   revoked: Boolean!
   values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
+  deployedInTransaction: Bytes!
 }
 
 type IdentityClaimValue @entity(immutable: false) {
@@ -196,6 +206,7 @@ type Token @entity(immutable: false) {
   fund: TokenFund
   # Price
   basePriceClaim: IdentityClaim
+  deployedInTransaction: Bytes!
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -262,6 +273,41 @@ type TokenFund @entity(immutable: false) {
 }
 
 # ==================================================
+# XVP SETTLEMENT
+# ==================================================
+
+type XvPSettlement @entity(immutable: false) {
+  id: Bytes!
+  cutoffDate: BigInt!
+  autoExecute: Boolean!
+  executed: Boolean!
+  cancelled: Boolean!
+  createdAt: BigInt!
+  flows: [XvPSettlementFlow!]! @derivedFrom(field: "xvpSettlement")
+  approvals: [XvPSettlementApproval!]! @derivedFrom(field: "xvpSettlement")
+  participants: [Account!]!
+  deployedInTransaction: Bytes!
+}
+
+type XvPSettlementFlow @entity(immutable: false) {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  asset: Token!
+  from: Account!
+  to: Account!
+  amount: BigDecimal!
+  amountExact: BigInt!
+}
+
+type XvPSettlementApproval @entity(immutable: false) {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  account: Account!
+  approved: Boolean!
+  timestamp: BigInt
+}
+
+# ==================================================
 # YIELD SCHEDULES
 # ==================================================
 
@@ -285,6 +331,7 @@ type TokenFixedYieldSchedule @entity(immutable: false) {
   currentPeriod: TokenFixedYieldSchedulePeriod
   nextPeriod: TokenFixedYieldSchedulePeriod
   periods: [TokenFixedYieldSchedulePeriod!]! @derivedFrom(field: "schedule")
+  deployedInTransaction: Bytes!
 }
 
 type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
@@ -298,6 +345,7 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
   totalUnclaimedYieldExact: BigInt!
   totalYield: BigDecimal!
   totalYieldExact: BigInt!
+  deployedInTransaction: Bytes!
 }
 
 # ==================================================

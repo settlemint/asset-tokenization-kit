@@ -11,10 +11,10 @@
  *   bun run codegen-types.ts bond equity  # Generate specific ABIs
  */
 
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { $ } from "bun";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -62,7 +62,7 @@ const ABI_PATHS = {
   equityFactory: `${ARTIFACTS_DIR}/contracts/assets/equity/IATKEquityFactory.sol/IATKEquityFactory.json`,
   fundFactory: `${ARTIFACTS_DIR}/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json`,
   stablecoinFactory: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/IATKStableCoinFactory.sol/IATKStableCoinFactory.json`,
-  fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/system/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json`,
+  fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json`,
   // token
   accessManager: `${ARTIFACTS_DIR}/contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
   identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKIdentityImplementation.sol/ATKIdentityImplementation.json`,
@@ -85,9 +85,12 @@ const ABI_PATHS = {
   ismartCapped: `${ARTIFACTS_DIR}/contracts/smart/extensions/capped/ISMARTCapped.sol/ISMARTCapped.json`,
   ismartRedeemable: `${ARTIFACTS_DIR}/contracts/smart/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json`,
   // compliance modules
-  identityVerification: `${ARTIFACTS_DIR}/contracts/smart/modules/SMARTIdentityVerificationModule.sol/SMARTIdentityVerificationModule.json`,
+  identityVerification: `${ARTIFACTS_DIR}/contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol/SMARTIdentityVerificationComplianceModule.json`,
   countryAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
   countryBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
+  addressBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/AddressBlockListComplianceModule.sol/AddressBlockListComplianceModule.json`,
+  identityBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityBlockListComplianceModule.sol/IdentityBlockListComplianceModule.json`,
+  identityAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityAllowListComplianceModule.sol/IdentityAllowListComplianceModule.json`,
 } as const;
 
 const AVAILABLE_ABIS = {
@@ -123,6 +126,9 @@ const AVAILABLE_ABIS = {
     "identityVerification",
     "countryAllowList",
     "countryBlockList",
+    "addressBlockList",
+    "identityBlockList",
+    "identityAllowList",
   ],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 

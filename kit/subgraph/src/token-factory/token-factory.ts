@@ -1,3 +1,4 @@
+import { Bytes } from "@graphprotocol/graph-ts";
 import { Burnable as BurnableTemplate } from "../../generated/templates";
 import {
   TokenAssetCreated,
@@ -23,6 +24,9 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   fetchEvent(event, "TokenAssetCreated");
   const tokenFactory = fetchTokenFactory(event.address);
   const token = fetchToken(event.params.tokenAddress);
+  if (token.deployedInTransaction.equals(Bytes.empty())) {
+    token.deployedInTransaction = event.transaction.hash;
+  }
   token.tokenFactory = tokenFactory.id;
   token.type = tokenFactory.name;
   token.createdAt = event.block.timestamp;

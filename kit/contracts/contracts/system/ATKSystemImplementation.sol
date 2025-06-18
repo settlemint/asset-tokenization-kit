@@ -34,12 +34,14 @@ import {
     TopicSchemeRegistryImplementationNotSet,
     IdentityVerificationModuleNotSet,
     AddonTypeAlreadyRegistered,
-    InvalidAddonAddress
+    InvalidAddonAddress,
+    AddonImplementationNotSet
 } from "./ATKSystemErrors.sol";
 import { ATKSystemAddonProxy } from "./ATKSystemAddonProxy.sol";
 
 // Compliance modules
-import { SMARTIdentityVerificationModule } from "../smart/modules/SMARTIdentityVerificationModule.sol";
+import { SMARTIdentityVerificationComplianceModule } from
+    "../smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 // Constants
 import { ATKSystemRoles } from "./ATKSystemRoles.sol";
@@ -651,6 +653,47 @@ contract ATKSystemImplementation is
         _checkInterface(implementation, _ISMART_TOKEN_ACCESS_MANAGER_ID);
         _tokenAccessManagerImplementation = implementation;
         emit TokenAccessManagerImplementationUpdated(_msgSender(), implementation);
+    }
+
+    /// @notice Sets (updates) the address of a token factory's implementation (logic) contract.
+    /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
+    /// Reverts if the `implementation` address is zero or if the factory type has not been registered.
+    /// Emits a `TokenFactoryImplementationUpdated` event upon successful update.
+    /// @param factoryTypeHash The hash of the factory type to update.
+    /// @param implementation The new address for the token factory logic contract.
+    function setTokenFactoryImplementation(
+        bytes32 factoryTypeHash,
+        address implementation
+    )
+        public
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        if (implementation == address(0)) revert InvalidTokenFactoryAddress();
+        if (tokenFactoryImplementationsByType[factoryTypeHash] == address(0)) revert InvalidTokenFactoryAddress();
+        _checkInterface(implementation, _IATK_TOKEN_FACTORY_ID);
+
+        tokenFactoryImplementationsByType[factoryTypeHash] = implementation;
+        emit TokenFactoryImplementationUpdated(_msgSender(), factoryTypeHash, implementation);
+    }
+
+    /// @notice Sets (updates) the address of a system addon's implementation (logic) contract.
+    /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
+    /// Reverts if the `implementation` address is zero or if the addon type has not been registered.
+    /// Emits an `AddonImplementationUpdated` event upon successful update.
+    /// @param addonTypeHash The hash of the addon type to update.
+    /// @param implementation The new address for the system addon logic contract.
+    function setAddonImplementation(
+        bytes32 addonTypeHash,
+        address implementation
+    )
+        public
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        if (implementation == address(0)) revert InvalidAddonAddress();
+        if (addonImplementationsByType[addonTypeHash] == address(0)) revert AddonImplementationNotSet(addonTypeHash);
+
+        addonImplementationsByType[addonTypeHash] = implementation;
+        emit AddonImplementationUpdated(_msgSender(), addonTypeHash, implementation);
     }
 
     // --- Implementation Getter Functions ---

@@ -129,6 +129,10 @@ export const env = createEnv({
      * Used for generating links to transactions and addresses.
      */
     VITE_EXPLORER_URL: z.url().optional(),
+
+    VITE_SETTLEMINT_LOG_LEVEL: z
+      .enum(["debug", "info", "warn", "error"])
+      .default("info"),
   },
 
   /**

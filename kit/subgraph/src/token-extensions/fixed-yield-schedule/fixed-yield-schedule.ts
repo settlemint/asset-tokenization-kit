@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { TokenFixedYieldSchedulePeriod } from "../../../generated/schema";
 import {
   FixedYieldScheduleSet,
@@ -22,6 +22,9 @@ export function handleFixedYieldScheduleSet(
 ): void {
   fetchEvent(event, "FixedYieldScheduleSet");
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
+  if (fixedYieldSchedule.deployedInTransaction.equals(Bytes.empty())) {
+    fixedYieldSchedule.deployedInTransaction = event.transaction.hash;
+  }
   const tokenAddress = Address.fromBytes(fixedYieldSchedule.token);
   const tokenDecimals = getTokenDecimals(tokenAddress);
   fixedYieldSchedule.startDate = event.params.startDate;
@@ -61,6 +64,9 @@ export function handleFixedYieldScheduleSet(
   );*/
   for (let i = 1; i <= event.params.periodEndTimestamps.length; i++) {
     const period = fetchFixedYieldSchedulePeriod(getPeriodId(event.address, i));
+    if (period.deployedInTransaction.equals(Bytes.empty())) {
+      period.deployedInTransaction = event.transaction.hash;
+    }
     period.schedule = fixedYieldSchedule.id;
     const isFirstPeriod = i == 1;
     period.startDate = isFirstPeriod

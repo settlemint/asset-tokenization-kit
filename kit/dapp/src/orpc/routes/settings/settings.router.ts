@@ -1,8 +1,7 @@
-import { read } from "./routes/settings.read";
-import { list } from "./routes/settings.list";
-import { create } from "./routes/settings.create";
-import { update } from "./routes/settings.update";
 import { del } from "./routes/settings.delete";
+import { list } from "./routes/settings.list";
+import { read } from "./routes/settings.read";
+import { upsert } from "./routes/settings.upsert";
 
 /**
  * Settings router module.
@@ -24,8 +23,7 @@ import { del } from "./routes/settings.delete";
 const routes = {
   read,
   list,
-  create,
-  update,
+  upsert,
   delete: del,
 };
 

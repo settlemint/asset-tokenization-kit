@@ -523,7 +523,7 @@ templates:
         - ATKFixedYieldScheduleCreated
       abis:
         - name: FixedYieldScheduleFactory
-          file: ../contracts/artifacts/contracts/system/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json
+          file: ../contracts/artifacts/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json
       eventHandlers:
         - event: ATKFixedYieldScheduleCreated(indexed address,indexed address)
           handler: handleATKFixedYieldScheduleCreated
@@ -546,3 +546,48 @@ templates:
       callHandlers: []
       eventHandlers: []
       file: ./src/erc165/erc165.ts
+  - kind: ethereum
+    name: XvPSettlementFactory
+    network: settlemint
+    source:
+      abi: XvPSettlementFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ATKXvPSettlementCreated
+      abis:
+        - name: XvPSettlementFactory
+          file: ../contracts/artifacts/contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol/ATKXvPSettlementFactoryImplementation.json
+      eventHandlers:
+        - event: ATKXvPSettlementCreated(indexed address,indexed address)
+          handler: handleATKXvPSettlementCreated
+      file: ./src/addons/xvp/xvp-settlement-factory.ts
+  - kind: ethereum
+    name: XvPSettlement
+    network: settlemint
+    source:
+      abi: XvPSettlement
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - XvPSettlementApproved
+        - XvPSettlementApprovalRevoked
+        - XvPSettlementExecuted
+        - XvPSettlementCancelled
+      abis:
+        - name: XvPSettlement
+          file: ../contracts/artifacts/contracts/addons/xvp/ATKXvPSettlementImplementation.sol/ATKXvPSettlementImplementation.json
+      eventHandlers:
+        - event: XvPSettlementApproved(indexed address)
+          handler: handleXvPSettlementApproved
+        - event: XvPSettlementApprovalRevoked(indexed address)
+          handler: handleXvPSettlementApprovalRevoked
+        - event: XvPSettlementExecuted(indexed address)
+          handler: handleXvPSettlementExecuted
+        - event: XvPSettlementCancelled(indexed address)
+          handler: handleXvPSettlementCancelled
+      file: ./src/addons/xvp/xvp-settlement.ts

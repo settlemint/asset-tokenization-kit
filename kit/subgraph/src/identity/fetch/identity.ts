@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { Identity } from "../../../generated/schema";
 import { Identity as IdentityTemplate } from "../../../generated/templates";
 
@@ -8,6 +8,7 @@ export function fetchIdentity(address: Address): Identity {
   if (!identity) {
     identity = new Identity(address);
     identity.registry = Address.zero();
+    identity.deployedInTransaction = Bytes.empty();
     identity.save();
     IdentityTemplate.create(address);
   }

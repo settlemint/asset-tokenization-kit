@@ -6,7 +6,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ISMARTYield } from "../../contracts/smart/extensions/yield/ISMARTYield.sol";
 import { ISMARTFixedYieldSchedule } from
     "../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
-import { IATKFixedYieldScheduleFactory } from "../../contracts/system/yield/IATKFixedYieldScheduleFactory.sol";
+import { IATKFixedYieldScheduleFactory } from "../../contracts/addons/yield/IATKFixedYieldScheduleFactory.sol";
 
 /// @title Helper utilities for SMART Yield tests
 /// @notice Provides common helper functions and utilities for testing yield functionality

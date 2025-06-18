@@ -41,7 +41,8 @@ import { ATKTokenAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
 
 // Import compliance module
-import { SMARTIdentityVerificationModule } from "../../contracts/smart/modules/SMARTIdentityVerificationModule.sol";
+import { SMARTIdentityVerificationComplianceModule } from
+    "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 contract ATKSystemFactoryTest is Test {
     ATKSystemFactory public factory;
@@ -81,7 +82,7 @@ contract ATKSystemFactoryTest is Test {
         identityImpl = address(new ATKIdentityImplementation(forwarder));
         tokenIdentityImpl = address(new ATKTokenIdentityImplementation(forwarder));
         tokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
-        identityVerificationModule = address(new SMARTIdentityVerificationModule(forwarder));
+        identityVerificationModule = address(new SMARTIdentityVerificationComplianceModule(forwarder));
 
         // Deploy factory with valid implementations
         factory = new ATKSystemFactory(

@@ -29,65 +29,97 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { seo } from "@/config/metadata";
+import { useBlockchainMutation } from "@/hooks/use-blockchain-mutation";
+import { useSettings } from "@/hooks/use-settings";
+import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
-import { orpc } from "@/orpc";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { useContext } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_private/onboarding")({
-  loader: ({ context }) => {
-    void context.queryClient.prefetchQuery(orpc.user.me.queryOptions());
-    void context.queryClient.prefetchQuery(orpc.account.me.queryOptions());
-    void context.queryClient.prefetchQuery(
-      orpc.settings.read.queryOptions({
-        input: {
-          key: "SYSTEM_ADDRESS",
-        },
-      })
+  loader: ({ context: { queryClient, orpc } }) => {
+    void queryClient.prefetchQuery(orpc.user.me.queryOptions());
+    void queryClient.prefetchQuery(
+      orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
     );
   },
   component: OnboardingComponent,
+  head: () => ({
+    meta: [
+      ...seo({
+        title: "Onboarding",
+      }),
+    ],
+  }),
 });
 
 function OnboardingComponent() {
-  const { t } = useTranslation(["onboarding", "general"]);
-  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
-  const { sessionKey } = useContext(AuthQueryContext);
-  const { data: systemAddress } = useSuspenseQuery(
-    orpc.settings.read.queryOptions({
-      input: {
-        key: "SYSTEM_ADDRESS",
-      },
-    })
+  const { orpc } = Route.useRouteContext();
+  const navigate = useNavigate();
+  const { data: user, isError, error } = useQuery(orpc.user.me.queryOptions());
+  const { data: systemAddress } = useQuery(
+    orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
   );
+  const { sessionKey } = useContext(AuthQueryContext);
+  const { t } = useTranslation(["onboarding", "general"]);
+  const [, setSystemAddress] = useSettings("SYSTEM_ADDRESS");
+
+  // Handle authentication errors
+  useEffect(() => {
+    if (isError) {
+      // For ORPC errors, the error object will have a code property
+      const errorObj = error as { code?: string };
+      if (errorObj.code === "UNAUTHORIZED") {
+        void navigate({ to: "/auth/$pathname", params: { pathname: "signin" }, replace: true });
+      }
+    }
+  }, [isError, error, navigate]);
+
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({
-      onSuccess: () => {
-        toast.success("Wallet generated");
-        void queryClient.invalidateQueries({
-          queryKey: sessionKey,
-          refetchType: "all",
+      onSuccess: async () => {
+        toast.success(t("onboarding:wallet-generated"));
+        await authClient.getSession({
+          query: {
+            disableCookieCache: true,
+          },
         });
         void queryClient.invalidateQueries({
-          queryKey: orpc.user.me.queryKey(),
-          refetchType: "all",
+          queryKey: sessionKey,
+        });
+        void queryClient.invalidateQueries({
+          queryKey: orpc.user.me.key(),
         });
       },
     })
   );
 
-  const { mutate: createSystem } = useMutation(
-    orpc.system.create.mutationOptions({
-      onSuccess: () => {
-        toast.success("System created");
+  const {
+    mutate: createSystem,
+    isPending: isCreatingSystem,
+    isTracking,
+  } = useBlockchainMutation({
+    mutationOptions: orpc.system.create.mutationOptions({
+      onSuccess: (data) => {
+        setSystemAddress(data);
       },
-    })
-  );
+    }),
+    messages: {
+      pending: {
+        mining: t("onboarding:messages.pending.mining"),
+        indexing: t("onboarding:messages.pending.indexing"),
+      },
+      success: t("onboarding:messages.success"),
+      error: t("onboarding:messages.error"),
+      timeout: t("onboarding:messages.timeout"),
+    },
+  });
 
   return (
     <OnboardingGuard require="not-onboarded">
@@ -125,9 +157,11 @@ function OnboardingComponent() {
                 <div className="flex flex-col gap-8">
                   <p>This should be our step wizard</p>
                   <Button
-                    disabled={!!user.wallet}
+                    disabled={!user || !!user.wallet}
                     onClick={() => {
-                      generateWallet({ userId: user.id });
+                      if (user) {
+                        generateWallet({ userId: user.id });
+                      }
                     }}
                   >
                     Generate a new wallet
@@ -141,12 +175,14 @@ function OnboardingComponent() {
                     Secure your wallet with MFA
                   </Button> */}
                   <Button
-                    disabled={!!systemAddress}
+                    disabled={!!systemAddress || isCreatingSystem || isTracking}
                     onClick={() => {
                       createSystem({});
                     }}
                   >
-                    Deploy a new SMART system
+                    {isCreatingSystem || isTracking
+                      ? "Deploying..."
+                      : "Deploy a new SMART system"}
                   </Button>
                 </div>
               </CardContent>

@@ -17,7 +17,7 @@ A Helm chart for the supporting components
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.12.3 |
 | https://stakater.github.io/stakater-charts | reloader | 2.1.3 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql-ha | 16.0.14 |
-| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.3 |
+| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.4 |
 
 ## Values
 

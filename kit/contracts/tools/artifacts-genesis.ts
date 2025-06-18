@@ -86,7 +86,18 @@ const CONTRACT_ADDRESSES = {
     "0x5e771e1417100000000000000000000000020019",
 
   // Compliance modules
-  SMARTIdentityVerificationModule: "0x5e771e1417100000000000000000000000020100",
+  SMARTIdentityVerificationComplianceModule:
+    "0x5e771e1417100000000000000000000000020100",
+  CountryAllowListComplianceModule:
+    "0x5e771e1417100000000000000000000000020101",
+  CountryBlockListComplianceModule:
+    "0x5e771e1417100000000000000000000000020102",
+  AddressBlockListComplianceModule:
+    "0x5e771e1417100000000000000000000000020103",
+  IdentityBlockListComplianceModule:
+    "0x5e771e1417100000000000000000000000020104",
+  IdentityAllowListComplianceModule:
+    "0x5e771e1417100000000000000000000000020105",
 } as const;
 
 const CONTRACT_FILES = {
@@ -138,8 +149,18 @@ const CONTRACT_FILES = {
     "contracts/assets/stable-coin/ATKStableCoinFactoryImplementation.sol",
 
   // Compliance modules
-  SMARTIdentityVerificationModule:
-    "contracts/smart/modules/SMARTIdentityVerificationModule.sol",
+  SMARTIdentityVerificationComplianceModule:
+    "contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol",
+  CountryAllowListComplianceModule:
+    "contracts/smart/modules/CountryAllowListComplianceModule.sol",
+  CountryBlockListComplianceModule:
+    "contracts/smart/modules/CountryBlockListComplianceModule.sol",
+  AddressBlockListComplianceModule:
+    "contracts/smart/modules/AddressBlockListComplianceModule.sol",
+  IdentityBlockListComplianceModule:
+    "contracts/smart/modules/IdentityBlockListComplianceModule.sol",
+  IdentityAllowListComplianceModule:
+    "contracts/smart/modules/IdentityAllowListComplianceModule.sol",
 } as const;
 
 // =============================================================================
@@ -427,7 +448,7 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKIdentityImplementation,
           CONTRACT_ADDRESSES.ATKTokenIdentityImplementation,
           CONTRACT_ADDRESSES.ATKTokenAccessManagerImplementation,
-          CONTRACT_ADDRESSES.SMARTIdentityVerificationModule,
+          CONTRACT_ADDRESSES.SMARTIdentityVerificationComplianceModule,
           forwarderAddress,
         ];
 

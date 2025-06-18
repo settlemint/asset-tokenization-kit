@@ -55,7 +55,8 @@ import { ATKTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 
 // Import compliance module
-import { SMARTIdentityVerificationModule } from "../../contracts/smart/modules/SMARTIdentityVerificationModule.sol";
+import { SMARTIdentityVerificationComplianceModule } from
+    "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 // Mock contracts for testing edge cases that require invalid contracts
 contract MockInvalidContract {
@@ -80,7 +81,7 @@ contract ATKSystemTest is Test {
     ATKIdentityImplementation public identityImpl;
     ATKTokenIdentityImplementation public tokenIdentityImpl;
     ATKTokenAccessManagerImplementation public tokenAccessManagerImpl;
-    SMARTIdentityVerificationModule public identityVerificationModule;
+    SMARTIdentityVerificationComplianceModule public identityVerificationModule;
 
     address public forwarder = address(0x5);
 
@@ -99,7 +100,7 @@ contract ATKSystemTest is Test {
         identityImpl = new ATKIdentityImplementation(forwarder);
         tokenIdentityImpl = new ATKTokenIdentityImplementation(forwarder);
         tokenAccessManagerImpl = new ATKTokenAccessManagerImplementation(forwarder);
-        identityVerificationModule = new SMARTIdentityVerificationModule(forwarder);
+        identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
     }
 
     function test_InitialState() public view {
@@ -140,7 +141,7 @@ contract ATKSystemTest is Test {
         address newIdentityImplAddr = address(new ATKIdentityImplementation(forwarder));
         address newTokenIdentityImpl = address(new ATKTokenIdentityImplementation(forwarder));
         address newTokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
-        address newIdentityVerificationModule = address(new SMARTIdentityVerificationModule(forwarder));
+        address newIdentityVerificationModule = address(new SMARTIdentityVerificationComplianceModule(forwarder));
 
         ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
         bytes memory initData = abi.encodeWithSelector(
@@ -529,7 +530,7 @@ contract ATKSystemTest is Test {
 
     function test_Constructor_IdentityVerificationModule_ValidAddress() public {
         // Test constructor succeeds with valid identity verification module address
-        SMARTIdentityVerificationModule newModule = new SMARTIdentityVerificationModule(forwarder);
+        SMARTIdentityVerificationComplianceModule newModule = new SMARTIdentityVerificationComplianceModule(forwarder);
         ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
 
         bytes memory initData = abi.encodeWithSelector(
@@ -564,7 +565,7 @@ contract ATKSystemTest is Test {
         address newIdentityImplAddr = address(new ATKIdentityImplementation(forwarder));
         address newTokenIdentityImpl = address(new ATKTokenIdentityImplementation(forwarder));
         address newTokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
-        SMARTIdentityVerificationModule newModule = new SMARTIdentityVerificationModule(forwarder);
+        SMARTIdentityVerificationComplianceModule newModule = new SMARTIdentityVerificationComplianceModule(forwarder);
 
         ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
         bytes memory initData = abi.encodeWithSelector(
@@ -617,7 +618,7 @@ contract ATKSystemTest is Test {
 
     function test_ConstructorWithAllValidParameters_IncludingIdentityVerificationModule() public {
         // Test constructor with all valid parameters including identity verification module
-        SMARTIdentityVerificationModule newModule = new SMARTIdentityVerificationModule(forwarder);
+        SMARTIdentityVerificationComplianceModule newModule = new SMARTIdentityVerificationComplianceModule(forwarder);
         ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
 
         address newComplianceImpl = address(new ATKComplianceImplementation(forwarder));

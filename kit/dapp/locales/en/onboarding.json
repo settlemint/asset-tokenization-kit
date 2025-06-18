@@ -1,4 +1,14 @@
 {
   "card-description": "You will need a wallet and an identity on the blockchain to use this platform. ",
-  "card-title": "Let's get you set up!"
+  "card-title": "Let's get you set up!",
+  "messages": {
+    "pending": {
+      "mining": "Deploying your SMART system...",
+      "indexing": "Indexing the new SMART system..."
+    },
+    "success": "Your SMART system is deployed!",
+    "error": "Failed to deploy your SMART system",
+    "timeout": "Transaction tracking timeout"
+  },
+  "wallet-generated": "Wallet generated"
 }

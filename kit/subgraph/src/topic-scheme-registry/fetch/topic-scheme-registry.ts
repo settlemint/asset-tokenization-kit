@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { TopicSchemeRegistry } from "../../../generated/schema";
 import { TopicSchemeRegistry as TopicSchemeRegistryTemplate } from "../../../generated/templates";
 import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
@@ -13,6 +13,7 @@ export function fetchTopicSchemeRegistry(
     topicSchemeRegistry = new TopicSchemeRegistry(address);
     topicSchemeRegistry.accessControl = fetchAccessControl(address).id;
     topicSchemeRegistry.account = fetchAccount(address).id;
+    topicSchemeRegistry.deployedInTransaction = Bytes.empty();
     topicSchemeRegistry.save();
     TopicSchemeRegistryTemplate.create(address);
   }

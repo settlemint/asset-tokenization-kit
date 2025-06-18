@@ -220,7 +220,7 @@ services:
       GRAPH_IPFS_TIMEOUT: 60
       GRAPH_MAX_IPFS_FILE_BYTES: 52428800
       GRAPH_IPFS_REQUEST_RETRIES: 10
-      SUBGRAPH: "kit:QmZVbbtrMxL1pPQSMejraDHRB5hBXXZ6J6o1ZcyzL1n5PB"
+      SUBGRAPH: "kit:QmYHaRgjsdE2C7PSFhmE8nt6bJLv1sk6dmuWnRxRqigAdy"
     healthcheck:
       test: ["CMD-SHELL", "if timeout 1 bash -c '</dev/tcp/localhost/8000'; then echo 'Graph Node health check: SUCCESS'; else echo 'Graph Node health check: FAILED'; exit 1; fi"]
       interval: 2s

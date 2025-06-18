@@ -15,7 +15,7 @@ A Helm chart for the observability components
 | Repository | Name | Version |
 |------------|------|---------|
 | https://grafana.github.io/helm-charts | alloy | 1.1.1 |
-| https://grafana.github.io/helm-charts | grafana | 9.2.3 |
+| https://grafana.github.io/helm-charts | grafana | 9.2.6 |
 | https://grafana.github.io/helm-charts | loki | 6.30.1 |
 | https://grafana.github.io/helm-charts | tempo | 1.23.1 |
 | https://kubernetes-sigs.github.io/metrics-server/ | metrics-server | 3.12.2 |

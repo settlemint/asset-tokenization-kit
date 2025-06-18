@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { System } from "../../../generated/schema";
 import { System as SystemTemplate } from "../../../generated/templates";
 import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
@@ -11,6 +11,7 @@ export function fetchSystem(address: Address): System {
     system = new System(address);
     system.accessControl = fetchAccessControl(address).id;
     system.account = fetchAccount(address).id;
+    system.deployedInTransaction = Bytes.empty();
     system.save();
     SystemTemplate.create(address);
   }

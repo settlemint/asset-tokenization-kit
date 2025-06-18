@@ -1,7 +1,7 @@
 {
   "name": "@settlemint/asset-tokenization-kit",
   "description": "SettleMint Kit - Asset Tokenization",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
@@ -40,6 +40,7 @@
     "build": "turbo build",
     "docs": "turbo run docs",
     "ci:gha": "turbo run ci:gha",
+    "ci:gha:main": "turbo run ci:gha:main",
     "ci": "turbo run ci",
     "ci:publish": "turbo run ci:publish",
     "version": "bun run tools/version.ts",
@@ -87,7 +88,7 @@
   "workspaces": [
     "kit/*"
   ],
-  "packageManager": "bun@1.2.10",
+  "packageManager": "bun@1.2.16",
   "overrides": {
     "react-is": "19.1.0",
     "graphql": "16.11.0",
@@ -96,13 +97,13 @@
     "adm-zip": "0.5.16",
     "undici": "7.10.0",
     "prettier": "3.5.3",
-    "zod": "3.25.64",
+    "zod": "3.25.67",
     "@tanstack/react-query": "5.80.7",
     "@tanstack/react-query-devtools": "5.80.7",
-    "@tanstack/react-router": "1.121.16",
-    "@tanstack/react-router-devtools": "1.121.16",
-    "@tanstack/react-router-with-query": "1.121.16",
-    "@tanstack/react-start": "1.121.16",
-    "@tanstack/router-devtools": "1.121.16"
+    "@tanstack/react-router": "1.121.21",
+    "@tanstack/react-router-devtools": "1.121.21",
+    "@tanstack/react-router-with-query": "1.121.21",
+    "@tanstack/react-start": "1.121.23",
+    "@tanstack/router-devtools": "1.121.21"
   }
 }
