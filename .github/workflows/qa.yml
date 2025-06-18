@@ -16,7 +16,7 @@ concurrency:
 jobs:
   qa:
     name: QA
-    uses: ./.github/workflows/reusable-setup.yml
+    uses: ./.github/workflows/reusable-qa.yml
     with:
       turbo-command: |
         if [ "${{ github.event_name }}" == "pull_request" ]; then
@@ -26,32 +26,6 @@ jobs:
           echo "Running full Turbo for main branch"
           bun run ci:gha --concurrency=100%
         fi
-    secrets:
-      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
-  integration:
-    name: Integration
-    uses: ./.github/workflows/reusable-setup.yml
-    with:
-      turbo-command: bun run ci:gha:integration --concurrency=100%
-      use-pat-token: true
-    secrets:
-      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
-  publish:
-    name: Publish
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/reusable-setup.yml
-    with:
-      turbo-command: bun run ci:gha:publish --concurrency=100%
-      use-pat-token: true
-    secrets:
-      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
-  artifacts:
-    name: Artifacts
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/reusable-artifacts.yml
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 

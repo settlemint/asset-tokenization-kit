@@ -1,6 +1,6 @@
 import { useMounted } from "@/lib/utils/use-mounted";
 import { orpc } from "@/orpc";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { type PropsWithChildren, useEffect } from "react";
 
@@ -11,7 +11,7 @@ type OnboardingGuardProps = PropsWithChildren<{
 export function OnboardingGuard({ children, require }: OnboardingGuardProps) {
   const isMounted = useMounted();
   const navigate = useNavigate();
-  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+  const { data: user, isError, error } = useQuery(orpc.user.me.queryOptions());
 
   const {
     data: account,
@@ -19,17 +19,28 @@ export function OnboardingGuard({ children, require }: OnboardingGuardProps) {
     isLoading,
   } = useQuery({
     ...orpc.account.me.queryOptions(),
-    enabled: !!user.wallet,
+    enabled: !!user?.wallet,
   });
 
-  const hasWallet = !!user.wallet;
+  // Handle authentication errors
+  useEffect(() => {
+    if (isError) {
+      // For ORPC errors, the error object will have a code property
+      const errorObj = error as { code?: string };
+      if (errorObj.code === "UNAUTHORIZED") {
+        void navigate({ to: "/auth/$pathname", params: { pathname: "signin" }, replace: true });
+      }
+    }
+  }, [isError, error, navigate]);
+
+  const hasWallet = !!user?.wallet;
   const hasCountry = isSuccess && account?.country !== undefined;
   const isOnboarded = hasWallet && hasCountry;
 
-  const isCheckComplete = !hasWallet || !isLoading;
+  const isCheckComplete = (!hasWallet || !isLoading) && !isError;
 
   useEffect(() => {
-    if (!isCheckComplete) {
+    if (!isCheckComplete || !user) {
       return;
     }
 
@@ -39,7 +50,7 @@ export function OnboardingGuard({ children, require }: OnboardingGuardProps) {
     if (require === "not-onboarded" && isOnboarded) {
       void navigate({ to: "/" });
     }
-  }, [isCheckComplete, isOnboarded, require, navigate]);
+  }, [isCheckComplete, isOnboarded, require, navigate, user]);
 
   if (!isMounted || !isCheckComplete) {
     return null;
