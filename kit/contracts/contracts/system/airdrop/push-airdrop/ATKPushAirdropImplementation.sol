@@ -199,10 +199,8 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
             // Fail fast on simple validations
             if (recipient == address(0)) revert InvalidDistributionAddress();
             if (amount == 0) revert ZeroAmountToDistribute();
-
-            // Skip if already distributed
             if (getClaimedAmount(index) != 0) {
-                continue;
+                revert AlreadyDistributed();
             }
 
             // Add to batch total and count

@@ -449,12 +449,12 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         assertEq(noCapAirdrop.totalDistributed(), allocations[user1]);
     }
 
-    function testBatchDistributeSkipsAlreadyDistributed() public {
+    function testBatchDistributeRevertsOnAlreadyDistributed() public {
         // First, distribute to user1
         vm.prank(owner);
         pushAirdrop.distribute(indices[user1], user1, allocations[user1], proofs[user1]);
 
-        // Now try batch distribute including user1 (should skip) and user2 (should succeed)
+        // Now try batch distribute including user1 (already distributed) and user2
         uint256[] memory indices_ = new uint256[](2);
         address[] memory recipients = new address[](2);
         uint256[] memory amounts = new uint256[](2);
@@ -470,16 +470,10 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         amounts[1] = allocations[user2];
         proofs_[1] = proofs[user2];
 
-        uint256 user2BalanceBefore = token.balanceOf(user2);
-        uint256 totalDistributedBefore = pushAirdrop.totalDistributed();
-
+        // Batch distribute should revert because user1 index is already distributed
         vm.prank(owner);
+        vm.expectRevert(AlreadyDistributed.selector);
         pushAirdrop.batchDistribute(indices_, recipients, amounts, proofs_);
-
-        // User1 balance should not change (already distributed)
-        // User2 should receive tokens
-        assertEq(token.balanceOf(user2), user2BalanceBefore + allocations[user2]);
-        assertEq(pushAirdrop.totalDistributed(), totalDistributedBefore + allocations[user2]);
     }
 
     // Helper functions for Merkle tree generation
