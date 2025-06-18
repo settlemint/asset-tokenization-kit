@@ -59,6 +59,7 @@ export const setYieldSchedule = async (
   );
 
   return {
+    scheduleContract,
     advanceToNextPeriod: async (): Promise<boolean> => {
       const totalPeriods = Math.floor(
         (endTime.getTime() - startTime.getTime()) / (interval * 1000)

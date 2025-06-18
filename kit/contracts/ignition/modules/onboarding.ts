@@ -8,8 +8,11 @@ import ATKOnboardingEquityModule from "./onboarding/assets/equity";
 import ATKOnboardingFundModule from "./onboarding/assets/fund";
 import ATKOnboardingStableCoinModule from "./onboarding/assets/stablecoin";
 import ATKOnboardingSystemModule from "./onboarding/system";
+import AddressBlockListModule from "./predeployed/modules/address-block-list-module";
 import CountryAllowListModule from "./predeployed/modules/country-allow-list-module";
 import CountryBlockListModule from "./predeployed/modules/country-block-list-module";
+import IdentityAllowListModule from "./predeployed/modules/identity-allow-list-module";
+import IdentityBlockListModule from "./predeployed/modules/identity-block-list-module";
 
 /**
  * This module is used to deploy the ATK contracts, this should be used to
@@ -36,6 +39,9 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
 
   const { countryAllowListModule } = m.useModule(CountryAllowListModule);
   const { countryBlockListModule } = m.useModule(CountryBlockListModule);
+  const { addressBlockListModule } = m.useModule(AddressBlockListModule);
+  const { identityBlockListModule } = m.useModule(IdentityBlockListModule);
+  const { identityAllowListModule } = m.useModule(IdentityAllowListModule);
 
   const { fixedYieldScheduleFactory } = m.useModule(
     ATKOnboardingFixedYieldScheduleFactoryModule
@@ -65,6 +71,9 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     // Compliance modules
     countryAllowListModule,
     countryBlockListModule,
+    addressBlockListModule,
+    identityBlockListModule,
+    identityAllowListModule,
     // Addons
     fixedYieldScheduleFactory,
     xvpSettlementFactory,

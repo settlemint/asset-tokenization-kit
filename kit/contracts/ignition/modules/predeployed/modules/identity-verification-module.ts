@@ -7,7 +7,7 @@ const IdentityVerificationModule = buildModule(
     const { forwarder } = m.useModule(ForwarderModule);
 
     const identityVerificationModule = m.contract(
-      "SMARTIdentityVerificationModule",
+      "SMARTIdentityVerificationComplianceModule",
       [forwarder]
     );
 
