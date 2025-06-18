@@ -26,41 +26,32 @@ interface IATKXvPSettlement is IERC165 {
     }
 
     // Events
-    /// @notice Emitted when a flow is approved by its sender
-    /// @param flowIndex The index of the approved flow
-    /// @param approver The address that approved the flow
-    event FlowApproved(uint256 indexed flowIndex, address indexed approver);
+    /// @notice Event emitted when an XvP settlement is approved by a party
+    event XvPSettlementApproved(address indexed sender);
 
-    /// @notice Emitted when a flow approval is revoked by its sender
-    /// @param flowIndex The index of the flow whose approval was revoked
-    /// @param revoker The address that revoked the approval
-    event FlowApprovalRevoked(uint256 indexed flowIndex, address indexed revoker);
+    /// @notice Event emitted when an XvP settlement approval is revoked
+    event XvPSettlementApprovalRevoked(address indexed sender);
 
-    /// @notice Emitted when the settlement is successfully executed
-    /// @param executor The address that triggered the execution
-    event SettlementExecuted(address indexed executor);
+    /// @notice Event emitted when an XvP settlement is executed
+    event XvPSettlementExecuted(address indexed sender);
 
-    /// @notice Emitted when the settlement is cancelled
-    /// @param canceller The address that cancelled the settlement
-    event SettlementCancelled(address indexed canceller);
-
-    /// @notice Emitted when the settlement expires
-    event SettlementExpired();
+    /// @notice Event emitted when an XvP settlement is cancelled
+    event XvPSettlementCancelled(address indexed sender);
 
     // Custom errors
-    error SettlementExpiredError();
-    error SettlementNotActive();
-    error FlowNotApproved();
-    error NotInvolved();
-    error EmptyFlows();
-    error InvalidToken();
-    error ZeroAddress();
-    error SameAddress();
-    error AlreadyApproved();
-    error NotApproved();
+    error XvPSettlementAlreadyExecuted();
+    error XvPSettlementAlreadyCancelled();
+    error XvPSettlementExpired();
+    error XvPSettlementNotExpired();
     error ZeroAmount();
-    error AllFlowsNotApproved();
-    error TokenValidationFailed();
+    error ZeroAddress();
+    error EmptyFlows();
+    error InvalidCutoffDate();
+    error InvalidToken();
+    error SenderNotInvolvedInSettlement();
+    error SenderAlreadyApprovedSettlement();
+    error SenderNotApprovedSettlement();
+    error XvPSettlementNotApproved();
     error InsufficientAllowance(address token, address owner, address spender, uint256 required, uint256 allowed);
 
     // View functions
@@ -84,33 +75,33 @@ interface IATKXvPSettlement is IERC165 {
     /// @return Array of all flows
     function flows() external view returns (Flow[] memory);
 
-    /// @notice Returns whether an account has approved their flows
+    /// @notice Returns whether an account has approved the settlement
     /// @param account The account to check approvals for
-    /// @return True if the account has approved their flows
+    /// @return True if the account has approved the settlement
     function approvals(address account) external view returns (bool);
 
     /// @notice Returns the timestamp when the settlement was created
     /// @return The creation timestamp
     function createdAt() external view returns (uint256);
 
-    /// @notice Checks if all flows are approved
-    /// @return True if all flows are approved
+    /// @notice Checks if all parties have approved the settlement
+    /// @return True if all parties have approved
     function isFullyApproved() external view returns (bool);
 
     // State-changing functions
-    /// @notice Approves a flow for execution
-    /// @param flowIndex The index of the flow to approve
+    /// @notice Approves a XvP settlement for execution
+    /// @dev The caller must be a party in the settlement's flows
     /// @return True if the approval was successful
-    function approve(uint256 flowIndex) external returns (bool);
+    function approve() external returns (bool);
 
     /// @notice Executes the settlement if all approvals are in place
     /// @return True if execution was successful
     function execute() external returns (bool);
 
-    /// @notice Revokes approval for a flow
-    /// @param flowIndex The index of the flow to revoke approval for
+    /// @notice Revokes approval for a XvP settlement
+    /// @dev The caller must have previously approved the settlement
     /// @return True if the revocation was successful
-    function revokeApproval(uint256 flowIndex) external returns (bool);
+    function revokeApproval() external returns (bool);
 
     /// @notice Cancels the settlement
     /// @return True if the cancellation was successful

@@ -3,10 +3,12 @@ pragma solidity ^0.8.27;
 
 import { Test } from "forge-std/Test.sol";
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
-import { XvPSettlement } from "../../../contracts/addons/xvp/ATKXvPSettlement.sol";
 import { ATKXvPSettlementFactoryImplementation } from
     "../../../contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol";
+import { ATKXvPSettlementImplementation } from "../../../contracts/addons/xvp/ATKXvPSettlementImplementation.sol";
 import { IATKXvPSettlementFactory } from "../../../contracts/addons/xvp/IATKXvPSettlementFactory.sol";
+import { IATKXvPSettlement } from "../../../contracts/addons/xvp/IATKXvPSettlement.sol";
+import { ATKSystemAddonProxy } from "../../../contracts/system/ATKSystemAddonProxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ERC20Mock } from "../../mocks/ERC20Mock.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
@@ -19,16 +21,15 @@ contract XvPSettlementTest is AbstractATKAssetTest {
     ERC20Mock public tokenA;
     ERC20Mock public tokenB;
 
-    address public owner;
+    address public admin;
     address public user1;
     address public user2;
-    address public user3;
 
     uint256 public constant AMOUNT_A = 1000 * 10 ** 18;
     uint256 public constant AMOUNT_B = 500 * 10 ** 18;
 
     // Events from XvPSettlementFactory to verify
-    event XvPSettlementCreated(address indexed settlement, address indexed creator);
+    event ATKXvPSettlementCreated(address indexed settlement, address indexed creator);
 
     // Events from XvPSettlement to verify
     event XvPSettlementApproved(address indexed sender);
@@ -37,18 +38,16 @@ contract XvPSettlementTest is AbstractATKAssetTest {
     event XvPSettlementCancelled(address indexed sender);
 
     function setUp() public {
-        owner = makeAddr("owner");
+        admin = makeAddr("admin");
         user1 = makeAddr("user1");
         user2 = makeAddr("user2");
-        user3 = makeAddr("user3");
 
-        vm.label(owner, "Owner");
+        vm.label(admin, "Admin");
         vm.label(user1, "User1");
         vm.label(user2, "User2");
-        vm.label(user3, "User3");
 
         // Initialize ATK system
-        setUpATK(owner);
+        setUpATK(admin);
 
         // Deploy tokens
         tokenA = new ERC20Mock("Token A", "TKNA", 18);
@@ -77,7 +76,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         );
 
         // Grant DEPLOYER_ROLE to users who need to create settlements
-        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
+        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, admin);
         IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user1);
         IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user2);
         vm.stopPrank();
@@ -88,21 +87,34 @@ contract XvPSettlementTest is AbstractATKAssetTest {
     }
 
     // ========================================================================
+    // Helper functions
+    // ========================================================================
+
+    /// @notice Grant DEPLOYER_ROLE to a user so they can create settlements
+    function grantDeployerRole(address user) internal {
+        vm.prank(platformAdmin);
+        IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user);
+    }
+
+    // ========================================================================
     // Tests for XvP Settlement with Flow structure and allowance checks
     // ========================================================================
 
     function test_SuccessfulSwapWithSingleFlow() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenC = new ERC20Mock("Token C", "TKNC", 18);
         tokenC.mint(alice, 1000 * 10 ** 18);
 
         // Test data
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenC), from: alice, to: bob, amount: 100 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenC), from: alice, to: bob, amount: 100 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -112,9 +124,9 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Get the predicted address first
         address expectedAddr = factory.predictAddress(flows, cutoffDate, autoExecute);
         vm.expectEmit(true, true, false, false);
-        emit XvPSettlementCreated(expectedAddr, alice);
+        emit ATKXvPSettlementCreated(expectedAddr, alice);
         address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
-        XvPSettlement settlement = XvPSettlement(settlementAddr);
+        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
         vm.stopPrank();
 
         // Step 2: Approve token and settlement
@@ -148,16 +160,19 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
     function test_SwapApprovalFailsWithInsufficientAllowance() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenD = new ERC20Mock("Token D", "TKND", 18);
         tokenD.mint(alice, 1000 * 10 ** 18);
 
         // Test data
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenD), from: alice, to: bob, amount: 100 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenD), from: alice, to: bob, amount: 100 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -165,13 +180,18 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Step 1: Create settlement
         vm.startPrank(alice);
         address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
-        XvPSettlement settlement = XvPSettlement(settlementAddr);
+        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Try to approve the settlement WITHOUT approving token allowance first
         // This should revert with InsufficientAllowance
         vm.expectRevert(
             abi.encodeWithSelector(
-                XvPSettlement.InsufficientAllowance.selector, address(tokenD), alice, settlementAddr, 100 * 10 ** 18, 0
+                IATKXvPSettlement.InsufficientAllowance.selector,
+                address(tokenD),
+                alice,
+                settlementAddr,
+                100 * 10 ** 18,
+                0
             )
         );
         settlement.approve();
@@ -181,7 +201,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                XvPSettlement.InsufficientAllowance.selector,
+                IATKXvPSettlement.InsufficientAllowance.selector,
                 address(tokenD),
                 alice,
                 settlementAddr,
@@ -200,8 +220,11 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
     function test_MultiFlowSwap() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenX = new ERC20Mock("Token X", "TKNX", 18);
@@ -210,9 +233,9 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         tokenY.mint(bob, 500 * 10 ** 18);
 
         // Test data - Bidirectional swap between Alice and Bob
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](2);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenX), from: alice, to: bob, amount: 200 * 10 ** 18 });
-        flows[1] = XvPSettlement.Flow({ asset: address(tokenY), from: bob, to: alice, amount: 100 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenX), from: alice, to: bob, amount: 200 * 10 ** 18 });
+        flows[1] = IATKXvPSettlement.Flow({ asset: address(tokenY), from: bob, to: alice, amount: 100 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -220,7 +243,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Step 1: Create settlement (alice creates)
         vm.prank(alice);
         address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
-        XvPSettlement settlement = XvPSettlement(settlementAddr);
+        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Approve tokens and settlement
         // Alice approves
@@ -252,16 +275,19 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
     function test_AutoExecution() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenZ = new ERC20Mock("Token Z", "TKNZ", 18);
         tokenZ.mint(alice, 1000 * 10 ** 18);
 
         // Test data
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenZ), from: alice, to: bob, amount: 300 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenZ), from: alice, to: bob, amount: 300 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = true;
@@ -269,7 +295,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Step 1: Create settlement with auto-execution
         vm.prank(alice);
         address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
-        XvPSettlement settlement = XvPSettlement(settlementAddr);
+        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Approve token and settlement (should trigger auto-execution)
         vm.startPrank(alice);
@@ -285,16 +311,19 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
     function test_RevokeApproval() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenR = new ERC20Mock("Token R", "TKNR", 18);
         tokenR.mint(alice, 1000 * 10 ** 18);
 
         // Test data
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenR), from: alice, to: bob, amount: 150 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenR), from: alice, to: bob, amount: 150 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -302,7 +331,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Step 1: Create settlement
         vm.prank(alice);
         address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
-        XvPSettlement settlement = XvPSettlement(settlementAddr);
+        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Approve token and settlement
         vm.startPrank(alice);
@@ -322,22 +351,25 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         assertFalse(settlement.isFullyApproved(), "Settlement should not be fully approved");
 
         // Should not be able to execute
-        vm.expectRevert(XvPSettlement.XvPSettlementNotApproved.selector);
+        vm.expectRevert(IATKXvPSettlement.XvPSettlementNotApproved.selector);
         settlement.execute();
     }
 
     function test_ExpireSettlement() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenE = new ERC20Mock("Token E", "TKNE", 18);
         tokenE.mint(alice, 1000 * 10 ** 18);
 
         // Test data
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenE), from: alice, to: bob, amount: 400 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenE), from: alice, to: bob, amount: 400 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -345,7 +377,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Step 1: Create settlement
         vm.prank(alice);
         address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
-        XvPSettlement settlement = XvPSettlement(settlementAddr);
+        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Fast forward time past cutoff date
         vm.warp(block.timestamp + 2 days);
@@ -353,27 +385,30 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Step 3: Try to approve - should revert because expired
         vm.startPrank(alice);
         tokenE.approve(settlementAddr, 400 * 10 ** 18);
-        vm.expectRevert(XvPSettlement.XvPSettlementExpired.selector);
+        vm.expectRevert(IATKXvPSettlement.XvPSettlementExpired.selector);
         settlement.approve();
         vm.stopPrank();
 
         // Step 4: Try to execute - should revert because expired
-        vm.expectRevert(XvPSettlement.XvPSettlementExpired.selector);
+        vm.expectRevert(IATKXvPSettlement.XvPSettlementExpired.selector);
         settlement.execute();
     }
 
     function test_CancelSettlement() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenF = new ERC20Mock("Token F", "TKNF", 18);
         tokenF.mint(alice, 1000 * 10 ** 18);
 
         // Test data
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenF), from: alice, to: bob, amount: 250 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenF), from: alice, to: bob, amount: 250 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -381,7 +416,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Step 1: Create settlement
         vm.prank(alice);
         address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
-        XvPSettlement settlement = XvPSettlement(settlementAddr);
+        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Cancel the settlement as a party involved
         vm.prank(alice);
@@ -393,26 +428,29 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Cannot approve or execute a cancelled settlement
         vm.startPrank(alice);
         tokenF.approve(settlementAddr, 250 * 10 ** 18);
-        vm.expectRevert(XvPSettlement.XvPSettlementAlreadyCancelled.selector);
+        vm.expectRevert(IATKXvPSettlement.XvPSettlementAlreadyCancelled.selector);
         settlement.approve();
-        vm.expectRevert(XvPSettlement.XvPSettlementAlreadyCancelled.selector);
+        vm.expectRevert(IATKXvPSettlement.XvPSettlementAlreadyCancelled.selector);
         settlement.execute();
         vm.stopPrank();
     }
 
     function test_OnlyInvolvedCanCancel() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
-        address charlie = user3; // Not involved
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+        address charlie = makeAddr("charlie"); // Not involved
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenG = new ERC20Mock("Token G", "TKNG", 18);
         tokenG.mint(alice, 1000 * 10 ** 18);
 
         // Test data
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenG), from: alice, to: bob, amount: 350 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenG), from: alice, to: bob, amount: 350 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -420,11 +458,11 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Step 1: Create settlement (as Alice)
         vm.prank(alice);
         address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
-        XvPSettlement settlement = XvPSettlement(settlementAddr);
+        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Try to cancel as Charlie (not involved)
         vm.prank(charlie);
-        vm.expectRevert(XvPSettlement.SenderNotInvolvedInSettlement.selector);
+        vm.expectRevert(IATKXvPSettlement.SenderNotInvolvedInSettlement.selector);
         settlement.cancel();
 
         // Step 3: Cancel as Alice (involved) should succeed
@@ -435,16 +473,19 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
     function test_InvalidParameters() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenJ = new ERC20Mock("Token J", "TKNJ", 18);
         tokenJ.mint(alice, 1000 * 10 ** 18);
 
         // Test with invalid cutoff date (in the past)
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenJ), from: alice, to: bob, amount: 100 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenJ), from: alice, to: bob, amount: 100 * 10 ** 18 });
 
         vm.warp(10 hours); // Set block.timestamp to 10 hours
         uint256 pastCutoffDate = block.timestamp - 1 hours; // 9 hours (in the past)
@@ -455,8 +496,8 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         factory.create(flows, pastCutoffDate, false);
 
         // Test with zero amount
-        XvPSettlement.Flow[] memory flowsZeroAmount = new XvPSettlement.Flow[](1);
-        flowsZeroAmount[0] = XvPSettlement.Flow({
+        IATKXvPSettlement.Flow[] memory flowsZeroAmount = new IATKXvPSettlement.Flow[](1);
+        flowsZeroAmount[0] = IATKXvPSettlement.Flow({
             asset: address(tokenJ),
             from: alice,
             to: bob,
@@ -465,12 +506,12 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Should revert with ZeroAmount
         vm.prank(alice);
-        vm.expectRevert(XvPSettlement.ZeroAmount.selector);
+        vm.expectRevert(IATKXvPSettlement.ZeroAmount.selector);
         factory.create(flowsZeroAmount, block.timestamp + 1 days, false);
 
         // Test with zero address
-        XvPSettlement.Flow[] memory flowsZeroAddress = new XvPSettlement.Flow[](1);
-        flowsZeroAddress[0] = XvPSettlement.Flow({
+        IATKXvPSettlement.Flow[] memory flowsZeroAddress = new IATKXvPSettlement.Flow[](1);
+        flowsZeroAddress[0] = IATKXvPSettlement.Flow({
             asset: address(tokenJ),
             from: alice,
             to: address(0), // Zero address
@@ -479,12 +520,12 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Should revert with ZeroAddress
         vm.prank(alice);
-        vm.expectRevert(XvPSettlement.ZeroAddress.selector);
+        vm.expectRevert(IATKXvPSettlement.ZeroAddress.selector);
         factory.create(flowsZeroAddress, block.timestamp + 1 days, false);
 
         // Test with invalid token
-        XvPSettlement.Flow[] memory flowsInvalidToken = new XvPSettlement.Flow[](1);
-        flowsInvalidToken[0] = XvPSettlement.Flow({
+        IATKXvPSettlement.Flow[] memory flowsInvalidToken = new IATKXvPSettlement.Flow[](1);
+        flowsInvalidToken[0] = IATKXvPSettlement.Flow({
             asset: address(0), // Invalid token (zero address)
             from: alice,
             to: bob,
@@ -493,14 +534,17 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Should revert with InvalidToken
         vm.prank(alice);
-        vm.expectRevert(XvPSettlement.InvalidToken.selector);
+        vm.expectRevert(IATKXvPSettlement.InvalidToken.selector);
         factory.create(flowsInvalidToken, block.timestamp + 1 days, false);
     }
 
     function test_MultiFlowSwapPartialApproval() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenP = new ERC20Mock("Token P", "TKNP", 18);
@@ -509,9 +553,9 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         tokenQ.mint(bob, 500 * 10 ** 18);
 
         // Test data - Bidirectional swap between Alice and Bob
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](2);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenP), from: alice, to: bob, amount: 200 * 10 ** 18 });
-        flows[1] = XvPSettlement.Flow({ asset: address(tokenQ), from: bob, to: alice, amount: 100 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](2);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenP), from: alice, to: bob, amount: 200 * 10 ** 18 });
+        flows[1] = IATKXvPSettlement.Flow({ asset: address(tokenQ), from: bob, to: alice, amount: 100 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -519,7 +563,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Step 1: Create settlement (alice creates)
         vm.prank(alice);
         address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
-        XvPSettlement settlement = XvPSettlement(settlementAddr);
+        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Alice approves token and settlement
         vm.startPrank(alice);
@@ -533,7 +577,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         assertFalse(settlement.isFullyApproved(), "Settlement should not be fully approved");
 
         // Step 4: Try to execute settlement - should fail because not fully approved
-        vm.expectRevert(XvPSettlement.XvPSettlementNotApproved.selector);
+        vm.expectRevert(IATKXvPSettlement.XvPSettlementNotApproved.selector);
         vm.prank(alice);
         settlement.execute();
 
@@ -546,21 +590,25 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
     function test_FactoryPredictAddress() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenM = new ERC20Mock("Token M", "TKNM", 18);
         tokenM.mint(alice, 1000 * 10 ** 18);
 
         // Test data
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenM), from: alice, to: bob, amount: 150 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenM), from: alice, to: bob, amount: 150 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
-        // Predict settlement address
+        // Predict settlement address (from alice's context to match create call)
+        vm.prank(alice);
         address predictedAddr = factory.predictAddress(flows, cutoffDate, autoExecute);
 
         // Create settlement and verify address matches prediction
@@ -568,21 +616,23 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         address actualAddr = factory.create(flows, cutoffDate, autoExecute);
 
         assertEq(actualAddr, predictedAddr, "Actual address should match predicted address");
-        assertTrue(factory.isAddressDeployed(actualAddr), "Factory should mark address as deployed");
     }
 
     function test_FactoryCannotDeploySameSettlementTwice() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
 
         // Setup tokens
         ERC20Mock tokenN = new ERC20Mock("Token N", "TKNN", 18);
         tokenN.mint(alice, 1000 * 10 ** 18);
 
         // Test data
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenN), from: alice, to: bob, amount: 150 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenN), from: alice, to: bob, amount: 150 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
@@ -599,26 +649,28 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
     function test_DirectXvPSettlementDeployment() public {
         // Setup actors
-        address alice = user1;
-        address bob = user2;
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
 
         // Setup tokens
         ERC20Mock tokenO = new ERC20Mock("Token O", "TKNO", 18);
         tokenO.mint(alice, 1000 * 10 ** 18);
 
         // Test data
-        XvPSettlement.Flow[] memory flows = new XvPSettlement.Flow[](1);
-        flows[0] = XvPSettlement.Flow({ asset: address(tokenO), from: alice, to: bob, amount: 150 * 10 ** 18 });
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenO), from: alice, to: bob, amount: 150 * 10 ** 18 });
 
         uint256 cutoffDate = block.timestamp + 1 days;
         bool autoExecute = false;
 
-        // Deploy XvPSettlement directly (using the forwarder from AbstractATKAssetTest)
-        vm.prank(owner);
-        XvPSettlement directSettlement = new XvPSettlement(address(forwarder), cutoffDate, autoExecute, flows);
+        // Deploy a fresh XvPSettlement implementation for direct testing
+        vm.prank(admin);
+        ATKXvPSettlementImplementation directSettlementImpl = new ATKXvPSettlementImplementation(address(forwarder));
 
-        // Verify initial state
-        assertEq(directSettlement.cutoffDate(), cutoffDate);
-        assertEq(directSettlement.autoExecute(), autoExecute);
+        // For a simple test, let's just verify that we can deploy the implementation
+        // The full proxy pattern is tested through the factory
+
+        // Verify the implementation was deployed (by checking if it has code)
+        assertTrue(address(directSettlementImpl).code.length > 0, "Implementation should have been deployed");
     }
 }

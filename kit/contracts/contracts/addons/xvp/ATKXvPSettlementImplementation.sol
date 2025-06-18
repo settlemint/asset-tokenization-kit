@@ -14,13 +14,13 @@ import { IATKXvPSettlement } from "./IATKXvPSettlement.sol";
 
 /// @title ATKXvPSettlementImplementation - A contract for cross-value proposition settlements
 /// @notice This contract facilitates atomic swaps between parties with multiple token flows.
-/// Parties can approve individual flows, and once all flows are approved, the settlement can be executed.
+/// Parties can approve the settlement, and once all parties are approved, the settlement can be executed.
 /// @dev This contract supports:
 /// - **Multi-party settlements**: Any number of participants with different tokens
 /// - **Atomic execution**: All transfers happen together or none at all
-/// - **Individual approvals**: Each party approves only their outgoing flows
+/// - **Per-sender approvals**: Each party approves the entire settlement once
 /// - **Expiration mechanism**: Settlements expire after a cutoff date
-/// - **Cancellation**: Any involved party can cancel before execution
+/// - **Cancellation**: Any involved sender can cancel before execution
 /// - **Auto-execution**: Optional automatic execution when all approvals are received
 /// @custom:security-contact support@settlemint.com
 contract ATKXvPSettlementImplementation is
@@ -38,36 +38,46 @@ contract ATKXvPSettlementImplementation is
     /// @notice Whether the settlement should auto-execute when all approvals are received
     bool private _autoExecute;
 
-    /// @notice The timestamp when this settlement was created (in seconds since epoch)
-    uint256 private _createdAt;
+    /// @notice Whether the settlement has been executed
+    bool private _executed;
+
+    /// @notice Whether the settlement has been cancelled
+    bool private _cancelled;
 
     /// @notice Array of all flows that need to be executed in this settlement
     Flow[] private _flows;
 
-    /// @notice Mapping to track which flows have been approved by their respective 'from' addresses
-    /// @dev flowIndex => isApproved
-    mapping(uint256 => bool) private _flowApprovals;
+    /// @notice Mapping to track which addresses have approved the settlement
+    /// @dev sender address => isApproved
+    mapping(address => bool) private _approvals;
 
-    /// @notice Mapping to track which addresses are involved in this settlement (either as sender or receiver)
-    /// @dev This is used for access control in cancellation functionality
-    mapping(address => bool) private _involvedAddresses;
+    /// @notice The timestamp when this settlement was created (in seconds since epoch)
+    uint256 private _createdAt;
 
-    SettlementStatus private _status;
-
-    /// @notice Modifier to ensure the settlement is still active and not expired
-    modifier onlyActiveSettlement() {
-        if (block.timestamp > _cutoffDate) {
-            _status = SettlementStatus.EXPIRED;
-            emit SettlementExpired();
-            revert SettlementExpiredError();
-        }
-        if (_status != SettlementStatus.ACTIVE) revert SettlementNotActive();
+    /// @notice Modifier to check if a settlement is open
+    modifier onlyOpen() {
+        if (_executed) revert XvPSettlementAlreadyExecuted();
+        if (_cancelled) revert XvPSettlementAlreadyCancelled();
+        if (block.timestamp >= _cutoffDate) revert XvPSettlementExpired();
         _;
     }
 
-    /// @notice Modifier to ensure only addresses involved in the settlement can perform certain actions
-    modifier onlyInvolved() {
-        if (!_involvedAddresses[_msgSender()]) revert NotInvolved();
+    /// @notice Modifier to check if a settlement is not executed
+    modifier onlyNotExecuted() {
+        if (_executed) revert XvPSettlementAlreadyExecuted();
+        _;
+    }
+
+    /// @notice Modifier to check if the sender is involved in a settlement
+    modifier onlyInvolvedSender() {
+        bool involved = false;
+        for (uint256 i = 0; i < _flows.length; i++) {
+            if (_flows[i].from == _msgSender()) {
+                involved = true;
+                break;
+            }
+        }
+        if (!involved) revert SenderNotInvolvedInSettlement();
         _;
     }
 
@@ -102,20 +112,14 @@ contract ATKXvPSettlementImplementation is
             if (flow.asset == address(0)) revert InvalidToken();
             if (flow.from == address(0)) revert ZeroAddress();
             if (flow.to == address(0)) revert ZeroAddress();
-            if (flow.from == flow.to) revert SameAddress();
             if (flow.amount == 0) revert ZeroAmount();
 
-            // Validate that the asset address actually points to a token contract
-            // by calling decimals() function and ensuring it returns valid data
-            (bool success, bytes memory data) = flow.asset.staticcall(abi.encodeWithSignature("decimals()"));
-            if (!success || data.length != 32) revert TokenValidationFailed();
+            // Validate ERC20 token by checking if it has decimals() function
+            (bool success, bytes memory result) = flow.asset.staticcall(abi.encodeWithSelector(bytes4(0x313ce567)));
+            if (!success || result.length != 32) revert InvalidToken();
 
             _flows.push(flow);
-            _involvedAddresses[flow.from] = true;
-            _involvedAddresses[flow.to] = true;
         }
-
-        _status = SettlementStatus.ACTIVE;
     }
 
     function cutoffDate() public view returns (uint256) {
@@ -127,11 +131,11 @@ contract ATKXvPSettlementImplementation is
     }
 
     function executed() public view returns (bool) {
-        return _status == SettlementStatus.EXECUTED;
+        return _executed;
     }
 
     function cancelled() public view returns (bool) {
-        return _status == SettlementStatus.CANCELLED;
+        return _cancelled;
     }
 
     function flows() public view returns (Flow[] memory) {
@@ -139,42 +143,35 @@ contract ATKXvPSettlementImplementation is
     }
 
     function approvals(address account) public view returns (bool) {
-        for (uint256 i = 0; i < _flows.length; i++) {
-            if (_flows[i].from == account) {
-                return _flowApprovals[i];
-            }
-        }
-        return false;
+        return _approvals[account];
     }
 
     function createdAt() public view returns (uint256) {
         return _createdAt;
     }
 
-    /// @notice Approves a flow for execution
+    /// @notice Approves a XvP settlement for execution
     /// @dev The caller must be a party in the settlement's flows
-    /// @param flowIndex The index of the flow to approve
     /// @return success True if the approval was successful
-    function approve(uint256 flowIndex)
-        external
-        nonReentrant
-        onlyActiveSettlement
-        onlyInvolved
-        returns (bool success)
-    {
-        if (_flowApprovals[flowIndex]) revert AlreadyApproved();
+    function approve() external nonReentrant onlyOpen onlyInvolvedSender returns (bool success) {
+        if (_approvals[_msgSender()]) revert SenderAlreadyApprovedSettlement();
 
-        Flow storage flow = _flows[flowIndex];
-        uint256 currentAllowance = IERC20(flow.asset).allowance(flow.from, address(this));
-        if (currentAllowance < flow.amount) {
-            revert InsufficientAllowance(flow.asset, flow.from, address(this), flow.amount, currentAllowance);
+        uint256 flowsLength = _flows.length;
+        for (uint256 i = 0; i < flowsLength; i++) {
+            Flow storage flow = _flows[i];
+            if (flow.from == _msgSender()) {
+                uint256 currentAllowance = IERC20(flow.asset).allowance(_msgSender(), address(this));
+                if (currentAllowance < flow.amount) {
+                    revert InsufficientAllowance(flow.asset, _msgSender(), address(this), flow.amount, currentAllowance);
+                }
+            }
         }
 
         // Mark as approved
-        _flowApprovals[flowIndex] = true;
-        emit FlowApproved(flowIndex, flow.from);
+        _approvals[_msgSender()] = true;
+        emit XvPSettlementApproved(_msgSender());
 
-        // If auto-execution and all flows approved, execute settlement directly
+        // If auto-execution and all parties approved, execute swap directly
         if (_autoExecute && isFullyApproved()) {
             _executeSettlement();
         }
@@ -184,54 +181,56 @@ contract ATKXvPSettlementImplementation is
 
     /// @notice Executes the flows if all approvals are in place
     /// @return success True if execution was successful
-    function execute() external nonReentrant onlyActiveSettlement returns (bool) {
+    function execute() external nonReentrant onlyOpen returns (bool) {
         return _executeSettlement();
     }
 
     /// @notice Internal function to execute settlement
     /// @return success True if execution was successful
     function _executeSettlement() private returns (bool) {
-        if (!isFullyApproved()) revert AllFlowsNotApproved();
+        if (!isFullyApproved()) revert XvPSettlementNotApproved();
 
         for (uint256 i = 0; i < _flows.length; i++) {
             Flow storage flow = _flows[i];
             IERC20(flow.asset).safeTransferFrom(flow.from, flow.to, flow.amount);
         }
 
-        _status = SettlementStatus.EXECUTED;
-        emit SettlementExecuted(_msgSender());
+        _executed = true;
+        emit XvPSettlementExecuted(_msgSender());
 
         return true;
     }
 
-    /// @notice Revokes approval for a flow
-    /// @dev The caller must have previously approved the flow
-    /// @param flowIndex The index of the flow to revoke approval for
+    /// @notice Revokes approval for a XvP settlement
+    /// @dev The caller must have previously approved the settlement
     /// @return success True if the revocation was successful
-    function revokeApproval(uint256 flowIndex) external nonReentrant onlyInvolved returns (bool success) {
-        if (!_flowApprovals[flowIndex]) revert NotApproved();
+    function revokeApproval() external nonReentrant onlyInvolvedSender returns (bool) {
+        if (!_approvals[_msgSender()]) revert SenderNotApprovedSettlement();
 
-        _flowApprovals[flowIndex] = false;
-        emit FlowApprovalRevoked(flowIndex, _msgSender());
+        _approvals[_msgSender()] = false;
+        emit XvPSettlementApprovalRevoked(_msgSender());
 
         return true;
     }
 
-    function cancel() external nonReentrant onlyInvolved returns (bool) {
-        _status = SettlementStatus.CANCELLED;
+    function cancel() external nonReentrant onlyNotExecuted onlyInvolvedSender returns (bool) {
+        _cancelled = true;
 
-        emit SettlementCancelled(_msgSender());
+        emit XvPSettlementCancelled(_msgSender());
         return true;
     }
 
-    /// @notice Checks if all flows are approved
-    /// @return approved True if all flows are approved
+    /// @notice Checks if all parties have approved the settlement
+    /// @return approved True if all parties have approved
     function isFullyApproved() public view returns (bool) {
+        // Check all unique "from" addresses for approval
         for (uint256 i = 0; i < _flows.length; i++) {
-            if (!_flowApprovals[i]) {
+            address from = _flows[i].from;
+            if (!_approvals[from]) {
                 return false;
             }
         }
+
         return true;
     }
 
