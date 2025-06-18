@@ -30,6 +30,7 @@
     "@tanstack/eslint-plugin-query": "5.78.0",
     "@tanstack/eslint-plugin-router": "1.121.21",
     "@types/bun": "1.2.16",
+    "@types/pg": "8.15.4",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "dotenv": "16.5.0",
