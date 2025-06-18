@@ -193,5 +193,30 @@ export function handleComplianceModuleRegistered(
   complianceModule.name = event.params.name;
   complianceModule.typeId = event.params.typeId;
 
+  if (
+    event.params.typeId ==
+      crypto.keccak256(
+        ByteArray.fromUTF8("AddressBlockListComplianceModule")
+      ) ||
+    event.params.typeId ==
+      crypto.keccak256(
+        ByteArray.fromUTF8("IdentityAllowListComplianceModule")
+      ) ||
+    event.params.typeId ==
+      crypto.keccak256(ByteArray.fromUTF8("IdentityBlockListComplianceModule"))
+  ) {
+    // TODO
+  }
+  if (
+    event.params.typeId ==
+      crypto.keccak256(
+        ByteArray.fromUTF8("CountryAllowListComplianceModule")
+      ) ||
+    event.params.typeId ==
+      crypto.keccak256(ByteArray.fromUTF8("CountryBlockListComplianceModule"))
+  ) {
+    // TODO
+  }
+
   complianceModule.save();
 }

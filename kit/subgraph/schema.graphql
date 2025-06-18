@@ -178,6 +178,18 @@ type ComplianceModule @entity(immutable: false) {
   typeId: Bytes!
   account: Account!
   deployedInTransaction: Bytes!
+  addressList: AddressListComplianceModule
+  countryList: CountryListComplianceModule
+}
+
+type AddressListComplianceModule @entity(immutable: false) {
+  id: Bytes!
+  addresses: [Bytes!]!
+}
+
+type CountryListComplianceModule @entity(immutable: false) {
+  id: Bytes!
+  countries: [Int!]!
 }
 
 # ==================================================
@@ -598,4 +610,62 @@ type TokenDistributionStats @aggregation(intervals: ["hour", "day"], source: "To
   balancesCountSegment5: Int! @aggregate(fn: "last", arg: "balancesCountSegment5")
   totalValueSegment5: BigDecimal! @aggregate(fn: "last", arg: "totalValueSegment5")
   totalValueSegment5Exact: BigInt! @aggregate(fn: "last", arg: "totalValueSegment5Exact")
+}
+type RoleAdminChanged @entity(immutable: true) {
+  id: Bytes!
+  role: Bytes! # bytes32
+  previousAdminRole: Bytes! # bytes32
+  newAdminRole: Bytes! # bytes32
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RoleGranted @entity(immutable: true) {
+  id: Bytes!
+  role: Bytes! # bytes32
+  account: Bytes! # address
+  sender: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RoleRevoked @entity(immutable: true) {
+  id: Bytes!
+  role: Bytes! # bytes32
+  account: Bytes! # address
+  sender: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+type AbstractCountryComplianceModuleRoleAdminChanged @entity(immutable: true) {
+  id: Bytes!
+  role: Bytes! # bytes32
+  previousAdminRole: Bytes! # bytes32
+  newAdminRole: Bytes! # bytes32
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type AbstractCountryComplianceModuleRoleGranted @entity(immutable: true) {
+  id: Bytes!
+  role: Bytes! # bytes32
+  account: Bytes! # address
+  sender: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type AbstractCountryComplianceModuleRoleRevoked @entity(immutable: true) {
+  id: Bytes!
+  role: Bytes! # bytes32
+  account: Bytes! # address
+  sender: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
 }

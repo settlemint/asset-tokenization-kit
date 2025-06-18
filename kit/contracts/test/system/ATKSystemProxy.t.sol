@@ -169,6 +169,14 @@ contract MockATKSystem is IATKSystem {
     function addonImplementation(bytes32) external pure returns (address) {
         return address(0); // Return zero instead of revert
     }
+
+    function registerComplianceModule(address) external pure {
+        return; // Empty implementation instead of revert
+    }
+
+    function complianceModule(bytes32) external pure returns (address) {
+        return address(0); // Return zero instead of revert
+    }
 }
 
 // Mock implementation for testing

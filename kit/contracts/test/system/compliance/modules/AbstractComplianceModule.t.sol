@@ -8,6 +8,8 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 contract TestComplianceModule is AbstractComplianceModule {
+    bytes32 public constant override typeId = keccak256("TestComplianceModule");
+
     string private _moduleName;
     bool private _allowTransfers;
     bool private _shouldRevertOnValidation;

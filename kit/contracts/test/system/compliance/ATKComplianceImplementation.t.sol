@@ -53,6 +53,8 @@ contract MockATKToken {
 }
 
 contract MockFailingModule is ISMARTComplianceModule {
+    bytes32 public constant override typeId = keccak256("MockFailingModule");
+
     string public failureReason;
     bool public shouldFailTransfer;
     bool public shouldFailValidation;
