@@ -17,30 +17,18 @@
  * @see {@link ./auth.$pathname} - Dynamic auth route for specific auth pages
  */
 
+import { StepWizard, type Step } from "@/components/kit/step-wizard";
+import { SystemStep, WalletStep } from "@/components/kit/step-wizard/steps";
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { seo } from "@/config/metadata";
-import { useBlockchainMutation } from "@/hooks/use-blockchain-mutation";
-import { useSettings } from "@/hooks/use-settings";
-import { authClient } from "@/lib/auth/auth.client";
-import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
-import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useContext, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/_private/onboarding")({
   loader: ({ context: { queryClient, orpc } }) => {
@@ -59,6 +47,21 @@ export const Route = createFileRoute("/_private/onboarding")({
   }),
 });
 
+const STEPS: Step[] = [
+  {
+    id: "wallet",
+    title: "Generate Wallet",
+    description: "Create your secure blockchain wallet",
+    status: "pending",
+  },
+  {
+    id: "system",
+    title: "Deploy System",
+    description: "Deploy your SMART tokenization system",
+    status: "pending",
+  },
+];
+
 function OnboardingComponent() {
   const { orpc } = Route.useRouteContext();
   const navigate = useNavigate();
@@ -66,9 +69,11 @@ function OnboardingComponent() {
   const { data: systemAddress } = useQuery(
     orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
   );
-  const { sessionKey } = useContext(AuthQueryContext);
   const { t } = useTranslation(["onboarding", "general"]);
-  const [, setSystemAddress] = useSettings("SYSTEM_ADDRESS");
+
+  const [currentStepId, setCurrentStepId] = useState("wallet");
+  const [steps, setSteps] = useState<Step[]>(STEPS);
+  const [hasManuallyNavigated, setHasManuallyNavigated] = useState(false);
 
   // Handle authentication errors
   useEffect(() => {
@@ -76,50 +81,105 @@ function OnboardingComponent() {
       // For ORPC errors, the error object will have a code property
       const errorObj = error as { code?: string };
       if (errorObj.code === "UNAUTHORIZED") {
-        void navigate({ to: "/auth/$pathname", params: { pathname: "signin" }, replace: true });
+        void navigate({
+          to: "/auth/$pathname",
+          params: { pathname: "signin" },
+          replace: true,
+        });
       }
     }
   }, [isError, error, navigate]);
 
-  const { mutate: generateWallet } = useMutation(
-    orpc.account.create.mutationOptions({
-      onSuccess: async () => {
-        toast.success(t("onboarding:wallet-generated"));
-        await authClient.getSession({
-          query: {
-            disableCookieCache: true,
-          },
-        });
-        void queryClient.invalidateQueries({
-          queryKey: sessionKey,
-        });
-        void queryClient.invalidateQueries({
-          queryKey: orpc.user.me.key(),
-        });
-      },
-    })
-  );
+  // Update step statuses based on current state
+  useEffect(() => {
+    setSteps((prevSteps) =>
+      prevSteps.map((step) => {
+        if (step.id === "wallet") {
+          return {
+            ...step,
+            status: user?.wallet ? "completed" : "active",
+          };
+        }
+        if (step.id === "system") {
+          const isWalletComplete = !!user?.wallet;
+          return {
+            ...step,
+            status: systemAddress
+              ? "completed"
+              : isWalletComplete
+                ? "active"
+                : "pending",
+          };
+        }
+        return step;
+      })
+    );
+  }, [user?.wallet, systemAddress]);
 
-  const {
-    mutate: createSystem,
-    isPending: isCreatingSystem,
-    isTracking,
-  } = useBlockchainMutation({
-    mutationOptions: orpc.system.create.mutationOptions({
-      onSuccess: (data) => {
-        setSystemAddress(data);
-      },
-    }),
-    messages: {
-      pending: {
-        mining: t("onboarding:messages.pending.mining"),
-        indexing: t("onboarding:messages.pending.indexing"),
-      },
-      success: t("onboarding:messages.success"),
-      error: t("onboarding:messages.error"),
-      timeout: t("onboarding:messages.timeout"),
-    },
-  });
+  // Auto-advance to next incomplete step (only if user hasn't manually navigated)
+  useEffect(() => {
+    // Only auto-advance if user hasn't manually navigated
+    if (
+      !hasManuallyNavigated &&
+      user?.wallet &&
+      currentStepId === "wallet" &&
+      !systemAddress
+    ) {
+      // Small delay to allow user to see completion before advancing
+      const timeout = setTimeout(() => {
+        setCurrentStepId("system");
+      }, 1500);
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [user?.wallet, systemAddress, currentStepId, hasManuallyNavigated]);
+
+  const handleStepChange = (stepId: string) => {
+    setHasManuallyNavigated(true);
+    setCurrentStepId(stepId);
+  };
+
+  const handleWalletComplete = () => {
+    setSteps((prevSteps) =>
+      prevSteps.map((step) =>
+        step.id === "wallet" ? { ...step, status: "completed" } : step
+      )
+    );
+    // Only auto-advance if user hasn't manually navigated
+    if (!hasManuallyNavigated) {
+      setTimeout(() => {
+        setCurrentStepId("system");
+      }, 2000);
+    }
+  };
+
+  const handleSystemComplete = () => {
+    setSteps((prevSteps) =>
+      prevSteps.map((step) =>
+        step.id === "system" ? { ...step, status: "completed" } : step
+      )
+    );
+    // Navigate to main app or show completion message
+    void navigate({ to: "/" });
+  };
+
+  const renderStepContent = () => {
+    switch (currentStepId) {
+      case "wallet":
+        return (
+          <WalletStep
+            orpc={orpc}
+            user={user}
+            onComplete={handleWalletComplete}
+          />
+        );
+      case "system":
+        return <SystemStep orpc={orpc} onComplete={handleSystemComplete} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <OnboardingGuard require="not-onboarded">
@@ -145,49 +205,21 @@ function OnboardingComponent() {
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
-        {/* Centered content area for auth forms */}
-        <div className="flex min-h-screen items-center justify-center">
-          <Card className="w-[90vw] lg:w-[75vw] !max-w-screen overflow-hidden">
-            <CardHeader>
-              <CardTitle>{t("onboarding:card-title")}</CardTitle>
-              <CardDescription>
-                {t("onboarding:card-description")}
-              </CardDescription>
-              <CardContent>
-                <div className="flex flex-col gap-8">
-                  <p>This should be our step wizard</p>
-                  <Button
-                    disabled={!user || !!user.wallet}
-                    onClick={() => {
-                      if (user) {
-                        generateWallet({ userId: user.id });
-                      }
-                    }}
-                  >
-                    Generate a new wallet
-                  </Button>
-                  {/* <Button
-                    disabled={!!user.wallet}
-                    onClick={() => {
-                      // generateWallet({ userId: user.id });
-                    }}
-                  >
-                    Secure your wallet with MFA
-                  </Button> */}
-                  <Button
-                    disabled={!!systemAddress || isCreatingSystem || isTracking}
-                    onClick={() => {
-                      createSystem({});
-                    }}
-                  >
-                    {isCreatingSystem || isTracking
-                      ? "Deploying..."
-                      : "Deploy a new SMART system"}
-                  </Button>
-                </div>
-              </CardContent>
-            </CardHeader>
-          </Card>
+        {/* Centered content area with step wizard */}
+        <div className="flex min-h-screen items-center justify-center p-6">
+          <div className="w-full max-w-6xl">
+            <StepWizard
+              steps={steps}
+              currentStepId={currentStepId}
+              title={t("onboarding:card-title")}
+              description={t("onboarding:card-description")}
+              onStepChange={handleStepChange}
+              showBackButton={false}
+              showNextButton={false}
+            >
+              {renderStepContent()}
+            </StepWizard>
+          </div>
         </div>
       </div>
     </OnboardingGuard>

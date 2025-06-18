@@ -1,13 +1,34 @@
 {
-  "card-description": "このプラットフォームを使用するには、ウォレットとブロックチェーン上のアイデンティティが必要です。 ",
-  "card-title": "設定を始めましょう！",
+  "card-description": "このプラットフォームを使用するには、ウォレットとブロックチェーン上のアイデンティティが必要です。",
+  "card-title": "セットアップしましょう！",
   "messages": {
     "pending": {
-      "mining": "あなたのSMARTシステムを展開しています...",
+      "mining": "SMARTシステムをデプロイしています...",
       "indexing": "新しいSMARTシステムをインデックスしています..."
     },
-    "success": "あなたのSMARTシステムが展開されました！",
-    "error": "あなたのSMARTシステムの展開に失敗しました",
-    "timeout": "取引追跡のタイムアウト"
-  }
+    "success": "SMARTシステムがデプロイされました！",
+    "error": "SMARTシステムのデプロイに失敗しました",
+    "timeout": "トランザクション追跡がタイムアウトしました"
+  },
+  "wallet-generated": "ウォレットが生成されました",
+  "wallet-step-title": "ウォレットを生成",
+  "wallet-step-description": "プラットフォームと対話するための安全なブロックチェーンウォレットを作成",
+  "what-is-wallet": "ウォレットとは？",
+  "wallet-explanation": "ブロックチェーンウォレットは、スマートコントラクトと対話し、デジタル資産を安全に管理できるデジタルアイデンティティです。",
+  "wallet-already-exists": "ウォレットは既に存在します",
+  "wallet-ready-next-step": "次のステップに進む準備ができました",
+  "secure-wallet-generation": "安全なウォレット生成",
+  "wallet-generation-time": "この処理には数秒かかります",
+  "generating-wallet": "ウォレットを生成中...",
+  "generate-new-wallet": "新しいウォレットを生成",
+  "wallet-generated-success": "ウォレットが正常に生成されました！",
+  "wallet-generated-error": "ウォレットの生成に失敗しました",
+  "system-step-title": "SMARTシステムをデプロイ",
+  "system-step-description": "資産トークン化のためのブロックチェーンインフラストラクチャをデプロイ",
+  "what-is-smart-system": "SMARTシステムとは？",
+  "smart-system-explanation": "SMARTシステムは、アイデンティティ管理と規制遵守が組み込まれた、準拠する資産トークン化を可能にするSettleMintの包括的なブロックチェーンシステムです。",
+  "system-deployment-info": "システムデプロイメント",
+  "system-deployment-time": "この処理は完了まで2〜3分かかる場合があります",
+  "deploying-system": "システムをデプロイ中...",
+  "deploy-smart-system": "SMARTシステムをデプロイ"
 }

@@ -1,13 +1,34 @@
 {
-  "card-description": "Sie benötigen eine Wallet und eine Identität auf der Blockchain, um diese Plattform zu nutzen. ",
-  "card-title": "Lassen Sie uns alles einrichten!",
+  "card-description": "Sie benötigen eine Wallet und eine Identität auf der Blockchain, um diese Plattform zu nutzen.",
+  "card-title": "Lassen Sie uns Sie einrichten!",
   "messages": {
     "pending": {
       "mining": "Ihr SMART-System wird bereitgestellt...",
       "indexing": "Das neue SMART-System wird indexiert..."
     },
     "success": "Ihr SMART-System ist bereitgestellt!",
-    "error": "Bereitstellung Ihres SMART-Systems fehlgeschlagen",
+    "error": "Fehler bei der Bereitstellung Ihres SMART-Systems",
     "timeout": "Zeitüberschreitung bei der Transaktionsverfolgung"
-  }
+  },
+  "wallet-generated": "Wallet generiert",
+  "wallet-step-title": "Ihre Wallet erstellen",
+  "wallet-step-description": "Erstellen Sie eine sichere Blockchain-Wallet zur Interaktion mit der Plattform",
+  "what-is-wallet": "Was ist eine Wallet?",
+  "wallet-explanation": "Eine Blockchain-Wallet ist Ihre digitale Identität, mit der Sie sicher mit Smart Contracts interagieren und digitale Assets verwalten können.",
+  "wallet-already-exists": "Wallet bereits vorhanden",
+  "wallet-ready-next-step": "Sie können zum nächsten Schritt übergehen",
+  "secure-wallet-generation": "Sichere Wallet-Generierung",
+  "wallet-generation-time": "Dieser Vorgang dauert einige Sekunden",
+  "generating-wallet": "Wallet wird generiert...",
+  "generate-new-wallet": "Neue Wallet generieren",
+  "wallet-generated-success": "Wallet erfolgreich generiert!",
+  "wallet-generated-error": "Fehler beim Generieren der Wallet",
+  "system-step-title": "SMART-System bereitstellen",
+  "system-step-description": "Stellen Sie Ihre Blockchain-Infrastruktur für Asset-Tokenisierung bereit",
+  "what-is-smart-system": "Was ist ein SMART-System?",
+  "smart-system-explanation": "SMART System ist SettleMints umfassendes Blockchain-System, das konforme Asset-Tokenisierung mit integriertem Identitätsmanagement und regulatorischer Compliance ermöglicht.",
+  "system-deployment-info": "System-Bereitstellung",
+  "system-deployment-time": "Dieser Vorgang kann 2-3 Minuten dauern",
+  "deploying-system": "System wird bereitgestellt...",
+  "deploy-smart-system": "SMART-System bereitstellen"
 }

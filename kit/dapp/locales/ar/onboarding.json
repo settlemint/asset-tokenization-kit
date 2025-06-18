@@ -1,13 +1,34 @@
 {
-  "card-description": "ستحتاج إلى محفظة وهوية على البلوكشين لاستخدام هذه المنصة. ",
-  "card-title": "دعنا نساعدك في الإعداد!",
+  "card-description": "ستحتاج إلى محفظة وهوية على البلوك تشين لاستخدام هذه المنصة.",
+  "card-title": "دعنا نعدك!",
   "messages": {
     "pending": {
-      "mining": "جارٍ نشر نظام SMART الخاص بك...",
-      "indexing": "جارٍ فهرسة نظام SMART الجديد..."
+      "mining": "يتم نشر نظام SMART الخاص بك...",
+      "indexing": "يتم فهرسة نظام SMART الجديد..."
     },
     "success": "تم نشر نظام SMART الخاص بك!",
     "error": "فشل في نشر نظام SMART الخاص بك",
     "timeout": "انتهت مهلة تتبع المعاملة"
-  }
+  },
+  "wallet-generated": "تم إنشاء المحفظة",
+  "wallet-step-title": "إنشاء محفظتك",
+  "wallet-step-description": "أنشئ محفظة بلوك تشين آمنة للتفاعل مع المنصة",
+  "what-is-wallet": "ما هي المحفظة؟",
+  "wallet-explanation": "محفظة البلوك تشين هي هويتك الرقمية التي تسمح لك بالتفاعل مع العقود الذكية وإدارة الأصول الرقمية بأمان.",
+  "wallet-already-exists": "المحفظة موجودة بالفعل",
+  "wallet-ready-next-step": "أنت جاهز للانتقال إلى الخطوة التالية",
+  "secure-wallet-generation": "إنشاء محفظة آمنة",
+  "wallet-generation-time": "تستغرق هذه العملية بضع ثوانٍ",
+  "generating-wallet": "يتم إنشاء المحفظة...",
+  "generate-new-wallet": "إنشاء محفظة جديدة",
+  "wallet-generated-success": "تم إنشاء المحفظة بنجاح!",
+  "wallet-generated-error": "فشل في إنشاء المحفظة",
+  "system-step-title": "نشر نظام SMART",
+  "system-step-description": "انشر البنية التحتية للبلوك تشين الخاصة بك لرمزة الأصول",
+  "what-is-smart-system": "ما هو نظام SMART؟",
+  "smart-system-explanation": "نظام SMART هو نظام البلوك تشين الشامل من SettleMint الذي يمكّن رمزة الأصول المتوافقة مع إدارة الهوية المدمجة والامتثال التنظيمي.",
+  "system-deployment-info": "نشر النظام",
+  "system-deployment-time": "قد تستغرق هذه العملية 2-3 دقائق لإكمالها",
+  "deploying-system": "يتم نشر النظام...",
+  "deploy-smart-system": "نشر نظام SMART"
 }

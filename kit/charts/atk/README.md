@@ -231,6 +231,9 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
 | observability.victoria-metrics-single.server.resources | object | `{}` |  |
 | portal.enabled | bool | `true` |  |
+| portal.image.pullSecrets[0] | string | `"image-pull-secret-docker"` |  |
+| portal.image.pullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
+| portal.image.pullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
 | portal.initContainers[0].command[0] | string | `"/usr/bin/wait-for-it"` |  |
 | portal.initContainers[0].command[1] | string | `"postgresql-pgpool:5432"` |  |
 | portal.initContainers[0].command[2] | string | `"-t"` |  |
