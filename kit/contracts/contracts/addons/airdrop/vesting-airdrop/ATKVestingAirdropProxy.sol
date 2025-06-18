@@ -27,7 +27,7 @@ contract ATKVestingAirdropProxy is Proxy {
     /// @dev Storage slot for the ATKVestingAirdropFactory address.
     /// Value: keccak256("org.atk.contracts.proxy.ATKVestingAirdropProxy.factoryAddress")
     bytes32 private constant _ATK_VESTING_AIRDROP_FACTORY_ADDRESS_SLOT =
-        0x7b8e0b8c3f6d4e8a9c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b;
+        0x9182acb7d36456962952de6a17a922790a6f2f803b6ff6a425ef31721c0444d5;
 
     /// @notice Constructs the ATKVestingAirdropProxy.
     /// @param factoryAddress The address of the IATKVestingAirdropFactory contract.

@@ -31,12 +31,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding")({
-  loader: ({ context: { queryClient, orpc } }) => {
-    void queryClient.prefetchQuery(orpc.user.me.queryOptions());
-    void queryClient.prefetchQuery(
-      orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
-    );
-  },
   component: OnboardingComponent,
   head: () => ({
     meta: [
