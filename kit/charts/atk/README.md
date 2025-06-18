@@ -250,6 +250,13 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.ingress-nginx.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
 | support.ingress-nginx.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | support.ingress-nginx.replicaCount | int | `1` |  |
+| support.minio.enabled | bool | `true` |  |
+| support.minio.image.pullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
+| support.minio.image.pullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
+| support.minio.image.pullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| support.minio.ingress.enabled | bool | `true` |  |
+| support.minio.ingress.hostname | string | `"minio.k8s.orb.local"` |  |
+| support.minio.ingress.ingressClassName | string | `"settlemint-nginx"` |  |
 | support.postgresql-ha.pgpool.pullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | support.postgresql-ha.pgpool.pullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | support.postgresql-ha.pgpool.pullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
