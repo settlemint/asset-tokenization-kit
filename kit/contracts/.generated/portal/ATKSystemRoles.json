@@ -1,0 +1,451 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "BYPASS_LIST_MANAGER_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "CLAIM_MANAGER_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "DEFAULT_ADMIN_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "DEPLOYER_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "IDENTITY_ISSUER_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "IMPLEMENTATION_MANAGER_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "MANAGE_REGISTRIES_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "REGISTRAR_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "STORAGE_MODIFIER_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TOKEN_IDENTITY_ISSUER_ADMIN_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TOKEN_IDENTITY_ISSUER_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608080604052346019576102cb908161001e823930815050f35b5f80fdfe6080806040526004361015610012575f80fd5b5f3560e01c9081635a129a8a1461028b575080639f4530df14610256578063a217fddf14610241578063a7da5cd51461020c578063aa683370146101d7578063c34e09f0146101a2578063c65490d21461016d578063c958113714610138578063ecd0026114610103578063f68e9553146100ce5763fd27264614610095575f80fd5b5f3660031901126100ca5760206040517ff926905b211c4fe59c7d68bb001aa504586558fd2888c1ea46e1b382450050cf8152f35b5f80fd5b5f3660031901126100ca5760206040517fedcc084d3dcd65a1f7f23c65c46722faca6953d28e43150a467cf43e5c3092388152f35b5f3660031901126100ca5760206040517ffc425f2263d0df187444b70e47283d622c70181c5baebb1306a01edba1ce184c8152f35b5f3660031901126100ca5760206040517feca77a5bbbcf8baa6d8f93054311a3e6672f982247f67ba40cb896ecf1992aec8152f35b5f3660031901126100ca5760206040517f3878ec43b99c41b142f55c5c47e7aa371ea82865d891af952bc6234dbce14f188152f35b5f3660031901126100ca5760206040517fab55121422db2e83f3da68f1a86ef03984cbd0d4c289dad3bc39e9ccee18e4118152f35b5f3660031901126100ca5760206040517f5d6fb899ea6f7759b4c48caf04de64c7c9bd9cbb87888fa6007adffafe90bb858152f35b5f3660031901126100ca5760206040517f7c42e8dffc95f75177e883ddc14f7ed7caa053d3f0d4e84d6b7f0b0033223dcb8152f35b5f3660031901126100ca5760206040515f8152f35b5f3660031901126100ca5760206040517feaeeb45c1b9029a6e392e1e7aa6f4af6bd8111f85c32809598bc9903a16227a38152f35b5f3660031901126100ca57807fecaefa0171c08a6ded02d98b9432940d3852ef2c7f5007661eb8de37c5a1adc560209252f3fea164736f6c634300081c000a",
+    "sourceMap": "253:3408:142:-:0;;;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080806040526004361015610012575f80fd5b5f3560e01c9081635a129a8a1461028b575080639f4530df14610256578063a217fddf14610241578063a7da5cd51461020c578063aa683370146101d7578063c34e09f0146101a2578063c65490d21461016d578063c958113714610138578063ecd0026114610103578063f68e9553146100ce5763fd27264614610095575f80fd5b5f3660031901126100ca5760206040517ff926905b211c4fe59c7d68bb001aa504586558fd2888c1ea46e1b382450050cf8152f35b5f80fd5b5f3660031901126100ca5760206040517fedcc084d3dcd65a1f7f23c65c46722faca6953d28e43150a467cf43e5c3092388152f35b5f3660031901126100ca5760206040517ffc425f2263d0df187444b70e47283d622c70181c5baebb1306a01edba1ce184c8152f35b5f3660031901126100ca5760206040517feca77a5bbbcf8baa6d8f93054311a3e6672f982247f67ba40cb896ecf1992aec8152f35b5f3660031901126100ca5760206040517f3878ec43b99c41b142f55c5c47e7aa371ea82865d891af952bc6234dbce14f188152f35b5f3660031901126100ca5760206040517fab55121422db2e83f3da68f1a86ef03984cbd0d4c289dad3bc39e9ccee18e4118152f35b5f3660031901126100ca5760206040517f5d6fb899ea6f7759b4c48caf04de64c7c9bd9cbb87888fa6007adffafe90bb858152f35b5f3660031901126100ca5760206040517f7c42e8dffc95f75177e883ddc14f7ed7caa053d3f0d4e84d6b7f0b0033223dcb8152f35b5f3660031901126100ca5760206040515f8152f35b5f3660031901126100ca5760206040517feaeeb45c1b9029a6e392e1e7aa6f4af6bd8111f85c32809598bc9903a16227a38152f35b5f3660031901126100ca57807fecaefa0171c08a6ded02d98b9432940d3852ef2c7f5007661eb8de37c5a1adc560209252f3fea164736f6c634300081c000a",
+    "sourceMap": "253:3408:142:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;253:3408:142;;;;;;;2557:34;253:3408;;;;;;;;;;-1:-1:-1;;253:3408:142;;;;;;;658:27;253:3408;;;;;;-1:-1:-1;;253:3408:142;;;;;;;1730:26;253:3408;;;;;;-1:-1:-1;;253:3408:142;;;;;;;850:31;253:3408;;;;;;-1:-1:-1;;253:3408:142;;;;;;;3292:35;253:3408;;;;;;-1:-1:-1;;253:3408:142;;;;;;;1526:45;253:3408;;;;;;-1:-1:-1;;253:3408:142;;;;;;;1062:33;253:3408;;;;;;-1:-1:-1;;253:3408:142;;;;;;;1282:39;253:3408;;;;;;-1:-1:-1;;253:3408:142;;;;;;;;;;;;;;-1:-1:-1;;253:3408:142;;;;;;;3621:37;253:3408;;;;;;-1:-1:-1;;253:3408:142;;;;;1960:40;253:3408;;;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "BYPASS_LIST_MANAGER_ROLE()": "9f4530df",
+    "CLAIM_MANAGER_ROLE()": "c9581137",
+    "DEFAULT_ADMIN_ROLE()": "a217fddf",
+    "DEPLOYER_ROLE()": "ecd00261",
+    "IDENTITY_ISSUER_ROLE()": "aa683370",
+    "IMPLEMENTATION_MANAGER_ROLE()": "5a129a8a",
+    "MANAGE_REGISTRIES_ROLE()": "c65490d2",
+    "REGISTRAR_ROLE()": "f68e9553",
+    "STORAGE_MODIFIER_ROLE()": "fd272646",
+    "TOKEN_IDENTITY_ISSUER_ADMIN_ROLE()": "c34e09f0",
+    "TOKEN_IDENTITY_ISSUER_ROLE()": "a7da5cd5"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"BYPASS_LIST_MANAGER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"CLAIM_MANAGER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEPLOYER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"IDENTITY_ISSUER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"IMPLEMENTATION_MANAGER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"MANAGE_REGISTRIES_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"REGISTRAR_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"STORAGE_MODIFIER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TOKEN_IDENTITY_ISSUER_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TOKEN_IDENTITY_ISSUER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"These roles are used with OpenZeppelin's AccessControl contract\",\"kind\":\"dev\",\"methods\":{},\"stateVariables\":{\"BYPASS_LIST_MANAGER_ROLE\":{\"details\":\"This role allows adding/removing addresses from the bypass list that can bypass compliance checks\"},\"CLAIM_MANAGER_ROLE\":{\"details\":\"Assigned to entities responsible for handling token claims\"},\"DEFAULT_ADMIN_ROLE\":{\"details\":\"Matches the default admin role in OpenZeppelin's AccessControl\"},\"DEPLOYER_ROLE\":{\"details\":\"Assigned to entities responsible for deploying new tokens\"},\"IDENTITY_ISSUER_ROLE\":{\"details\":\"Assigned to entities responsible for handling identity issuers\"},\"IMPLEMENTATION_MANAGER_ROLE\":{\"details\":\"Assigned to entities responsible for managing implementation addresses\"},\"MANAGE_REGISTRIES_ROLE\":{\"details\":\"Addresses holding this role can call `bindIdentityRegistry` to authorize a new registry contract and `unbindIdentityRegistry` to revoke authorization from an existing one. This role is crucial for controlling which external contracts can write to this storage. It is typically assigned to a high-level system management contract (e.g., `ATKSystem` or an identity factory contract). The value is calculated as `keccak256(\\\"MANAGE_REGISTRIES_ROLE\\\")`.\"},\"REGISTRAR_ROLE\":{\"details\":\"Assigned to entities responsible for user registration\"},\"STORAGE_MODIFIER_ROLE\":{\"details\":\"This role is typically granted to `ATKIdentityRegistry` contracts that are \\\"bound\\\" to this storage. Only addresses holding this role can call functions like `addIdentityToStorage`, `removeIdentityFromStorage`, `modifyStoredIdentity`, and `modifyStoredInvestorCountry`. The value is calculated as `keccak256(\\\"STORAGE_MODIFIER_ROLE\\\")`.\"},\"TOKEN_IDENTITY_ISSUER_ADMIN_ROLE\":{\"details\":\"Assigned to entities responsible for managing token identity issuers\"},\"TOKEN_IDENTITY_ISSUER_ROLE\":{\"details\":\"Assigned to entities responsible for issuing new token identities\"}},\"title\":\"ATKSystemRoles\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"BYPASS_LIST_MANAGER_ROLE()\":{\"notice\":\"Role identifier for addresses that can manage the compliance bypass list\"},\"CLAIM_MANAGER_ROLE()\":{\"notice\":\"Role for managing claims\"},\"DEFAULT_ADMIN_ROLE()\":{\"notice\":\"The default admin role that can grant and revoke other roles\"},\"DEPLOYER_ROLE()\":{\"notice\":\"Role for token deployers\"},\"IDENTITY_ISSUER_ROLE()\":{\"notice\":\"Role for managing identity issuers\"},\"IMPLEMENTATION_MANAGER_ROLE()\":{\"notice\":\"Role for managing implementation addresses\"},\"MANAGE_REGISTRIES_ROLE()\":{\"notice\":\"A unique identifier (hash) for the role that grants permission to manage the list of bound identity registry contracts.\"},\"REGISTRAR_ROLE()\":{\"notice\":\"Role for managing registration operations\"},\"STORAGE_MODIFIER_ROLE()\":{\"notice\":\"A unique identifier (hash) for the role that grants permission to modify the data stored in this contract.\"},\"TOKEN_IDENTITY_ISSUER_ADMIN_ROLE()\":{\"notice\":\"Role for managing token identity issuers\"},\"TOKEN_IDENTITY_ISSUER_ROLE()\":{\"notice\":\"Role for token identity issuers\"}},\"notice\":\"Library defining role constants for the ATK protocol's access control system\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/system/ATKSystemRoles.sol\":\"ATKSystemRoles\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/system/ATKSystemRoles.sol\":{\"keccak256\":\"0x7c5a50fcea7ee061d1bf5451217fbf83cfbc42cae638a0de4b8fc41fa5d7d980\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://8dc4128ddb017dfd71ff70bd4b292bcf5e60ae6f81a07b1ceb15439607bb93c0\",\"dweb:/ipfs/QmWJpzgR3YuLvRXZPdFzvyZ1mHAyV3fhSUMcdFG4QJ3xzx\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "BYPASS_LIST_MANAGER_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "CLAIM_MANAGER_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "DEFAULT_ADMIN_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "DEPLOYER_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "IDENTITY_ISSUER_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "IMPLEMENTATION_MANAGER_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "MANAGE_REGISTRIES_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "REGISTRAR_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "STORAGE_MODIFIER_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOKEN_IDENTITY_ISSUER_ADMIN_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOKEN_IDENTITY_ISSUER_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "BYPASS_LIST_MANAGER_ROLE()": {
+            "notice": "Role identifier for addresses that can manage the compliance bypass list"
+          },
+          "CLAIM_MANAGER_ROLE()": {
+            "notice": "Role for managing claims"
+          },
+          "DEFAULT_ADMIN_ROLE()": {
+            "notice": "The default admin role that can grant and revoke other roles"
+          },
+          "DEPLOYER_ROLE()": {
+            "notice": "Role for token deployers"
+          },
+          "IDENTITY_ISSUER_ROLE()": {
+            "notice": "Role for managing identity issuers"
+          },
+          "IMPLEMENTATION_MANAGER_ROLE()": {
+            "notice": "Role for managing implementation addresses"
+          },
+          "MANAGE_REGISTRIES_ROLE()": {
+            "notice": "A unique identifier (hash) for the role that grants permission to manage the list of bound identity registry contracts."
+          },
+          "REGISTRAR_ROLE()": {
+            "notice": "Role for managing registration operations"
+          },
+          "STORAGE_MODIFIER_ROLE()": {
+            "notice": "A unique identifier (hash) for the role that grants permission to modify the data stored in this contract."
+          },
+          "TOKEN_IDENTITY_ISSUER_ADMIN_ROLE()": {
+            "notice": "Role for managing token identity issuers"
+          },
+          "TOKEN_IDENTITY_ISSUER_ROLE()": {
+            "notice": "Role for token identity issuers"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/system/ATKSystemRoles.sol": "ATKSystemRoles"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/system/ATKSystemRoles.sol": {
+        "keccak256": "0x7c5a50fcea7ee061d1bf5451217fbf83cfbc42cae638a0de4b8fc41fa5d7d980",
+        "urls": [
+          "bzz-raw://8dc4128ddb017dfd71ff70bd4b292bcf5e60ae6f81a07b1ceb15439607bb93c0",
+          "dweb:/ipfs/QmWJpzgR3YuLvRXZPdFzvyZ1mHAyV3fhSUMcdFG4QJ3xzx"
+        ],
+        "license": "FSL-1.1-MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "BYPASS_LIST_MANAGER_ROLE()": {
+        "notice": "Role identifier for addresses that can manage the compliance bypass list"
+      },
+      "CLAIM_MANAGER_ROLE()": {
+        "notice": "Role for managing claims"
+      },
+      "DEFAULT_ADMIN_ROLE()": {
+        "notice": "The default admin role that can grant and revoke other roles"
+      },
+      "DEPLOYER_ROLE()": {
+        "notice": "Role for token deployers"
+      },
+      "IDENTITY_ISSUER_ROLE()": {
+        "notice": "Role for managing identity issuers"
+      },
+      "IMPLEMENTATION_MANAGER_ROLE()": {
+        "notice": "Role for managing implementation addresses"
+      },
+      "MANAGE_REGISTRIES_ROLE()": {
+        "notice": "A unique identifier (hash) for the role that grants permission to manage the list of bound identity registry contracts."
+      },
+      "REGISTRAR_ROLE()": {
+        "notice": "Role for managing registration operations"
+      },
+      "STORAGE_MODIFIER_ROLE()": {
+        "notice": "A unique identifier (hash) for the role that grants permission to modify the data stored in this contract."
+      },
+      "TOKEN_IDENTITY_ISSUER_ADMIN_ROLE()": {
+        "notice": "Role for managing token identity issuers"
+      },
+      "TOKEN_IDENTITY_ISSUER_ROLE()": {
+        "notice": "Role for token identity issuers"
+      }
+    },
+    "notice": "Library defining role constants for the ATK protocol's access control system"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "details": "These roles are used with OpenZeppelin's AccessControl contract",
+    "title": "ATKSystemRoles"
+  },
+  "id": 142
+}

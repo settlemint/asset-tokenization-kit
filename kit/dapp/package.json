@@ -20,8 +20,8 @@
     "publish": "DOCKER_BUILD_TAG=$(jq -r .version ../../package.json); if [ -z \"$CI\" ]; then DOCKER_BUILD_TAG=\"$DOCKER_BUILD_TAG-dev.$(date +%s)\"; fi; docker buildx build . --platform=linux/amd64,linux/arm64 --provenance true --sbom true -t ghcr.io/settlemint/asset-tokenization-kit:$DOCKER_BUILD_TAG --push",
     "db:check": "drizzle-kit check",
     "db:push": "drizzle-kit push",
-    "db:export": "(echo \"\\c hasura;\" | tee ../../tools/docker/postgres/atk.sql) && (drizzle-kit export | tee -a ../../tools/docker/postgres/atk.sql)",
-    "postdb:push": "settlemint hasura track -a",
+    "db:export": "bun run ./tools/export-database.ts",
+    "db:track": "settlemint hasura track -a",
     "db:studio": "drizzle-kit studio",
     "db:auth:generate": "bunx --bun @better-auth/cli generate -y --config=src/lib/auth/index.ts --output=src/lib/db/schemas/auth.ts"
   },

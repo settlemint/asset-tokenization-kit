@@ -51,7 +51,7 @@ services:
     command: ["--config-file=/opt/besu/config.toml", "--identity=atk"]
     volumes:
       - ./tools/docker/besu/config.toml:/opt/besu/config.toml:ro
-      - ./tools/docker/besu/genesis.json:/opt/besu/genesis.json:ro
+      - ./kit/contracts/.generated/genesis.json:/opt/besu/genesis.json:ro
       - ./tools/docker/besu/anvil-test-key:/opt/besu/key:ro
       - atk-besu:/opt/besu/data
   txsigner:
@@ -108,7 +108,7 @@ services:
     command: ["postgres", "-cshared_preload_libraries=pg_stat_statements", "-cmax_connections=200", "-clog_statement=all", "-clog_duration=on", "-clog_min_duration_statement=100"]
     volumes:
       - ./tools/docker/postgres/init.sql:/docker-entrypoint-initdb.d/1_init.sql:ro
-      - ./tools/docker/postgres/atk.sql:/docker-entrypoint-initdb.d/2_atk.sql:ro
+      - ./kit/dapp/.generated/database-export.sql:/docker-entrypoint-initdb.d/2_atk.sql:ro
       - atk-postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
@@ -134,7 +134,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./tools/docker/portal:/abis:ro
+      - ./kit/contracts/.generated/portal:/abis:ro
     environment:
       BLOCKCHAIN_JSON_RPC_ENDPOINT: http://txsigner:3000
       BLOCKCHAIN_NETWORK_ID: "${CHAIN_ID:-1337}"
@@ -208,6 +208,8 @@ services:
       - "8020:8020" # Index Node
       - "8030:8030" # Query Node
       - "8040:8040" # Subgraph
+    env_file:
+      - ./kit/subgraph/.generated/.env.subgraph
     environment:
       postgres_host: postgres
       postgres_user: thegraph
@@ -220,7 +222,7 @@ services:
       GRAPH_IPFS_TIMEOUT: 60
       GRAPH_MAX_IPFS_FILE_BYTES: 52428800
       GRAPH_IPFS_REQUEST_RETRIES: 10
-      SUBGRAPH: "kit:QmYHaRgjsdE2C7PSFhmE8nt6bJLv1sk6dmuWnRxRqigAdy"
+      SUBGRAPH: "kit:${SUBGRAPH_HASH:-QmYHaRgjsdE2C7PSFhmE8nt6bJLv1sk6dmuWnRxRqigAdy}"
     healthcheck:
       test: ["CMD-SHELL", "if timeout 1 bash -c '</dev/tcp/localhost/8000'; then echo 'Graph Node health check: SUCCESS'; else echo 'Graph Node health check: FAILED'; exit 1; fi"]
       interval: 2s

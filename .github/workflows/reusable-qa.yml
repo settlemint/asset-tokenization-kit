@@ -149,25 +149,30 @@ jobs:
           THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
 
       - name: Store predeployed output
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && always()
         uses: actions/upload-artifact@v4
         with:
           name: predeployed-output
           path: |
-            kit/contracts/tools/genesis-output.json
-            kit/contracts/portal/*.json
+            kit/contracts/.generated/portal/*.json
+            kit/contracts/.generated/genesis.json
+            kit/contracts/.generated/genesis-allocations.json
             kit/subgraph/subgraph-output.txt
+            kit/subgraph/.generated/.env.subgraph
+            kit/dapp/.generated/database-export.sql
 
       - name: Auto-commit artifacts
         if: |
           github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' &&
-          github.event_name != 'pull_request'
+          github.event_name != 'pull_request' && always()
         uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6
         with:
           commit_message: "chore: update artifacts [skip ci]"
           branch: main
           file_pattern: |
-            tools/docker/
-            docker-compose.yml
+            kit/contracts/.generated/genesis.json
+            kit/contracts/.generated/portal/*.json
+            kit/subgraph/.generated/.env.subgraph
+            kit/dapp/.generated/database-export.sql
             kit/dapp/locales/**/*.json
             kit/charts/**/README.md

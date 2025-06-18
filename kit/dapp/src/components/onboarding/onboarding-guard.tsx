@@ -28,7 +28,11 @@ export function OnboardingGuard({ children, require }: OnboardingGuardProps) {
       // For ORPC errors, the error object will have a code property
       const errorObj = error as { code?: string };
       if (errorObj.code === "UNAUTHORIZED") {
-        void navigate({ to: "/auth/$pathname", params: { pathname: "signin" }, replace: true });
+        void navigate({
+          to: "/auth/$pathname",
+          params: { pathname: "signin" },
+          replace: true,
+        });
       }
     }
   }, [isError, error, navigate]);

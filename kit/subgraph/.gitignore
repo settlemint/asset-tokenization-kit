@@ -21,6 +21,11 @@ yarn-error.log*
 
 # dotenv environment variables file
 .env
+.env.subgraph
+
+# Generated folder
+.generated
+!.generated/.env.subgraph
 
 # Testing
 coverage

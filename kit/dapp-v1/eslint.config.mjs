@@ -7,7 +7,7 @@ const compat = new FlatCompat({
 });
 const config = [
   {
-    ignores: ["src/components/ui/**/*"],
+    ignores: ["src/components/ui/**/*", ".generated/", ".generated/**"],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   ...pluginQuery.configs["flat/recommended"],

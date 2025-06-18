@@ -37,3 +37,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .output
 .tanstack
 ./paraglide/
+
+# Generated files
+.generated
+!.generated/database-export.sql

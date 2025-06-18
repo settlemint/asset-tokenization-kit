@@ -116,7 +116,7 @@ class ArtifactsCopier {
 
     if (!(await directoryExists(PORTAL_DIR))) {
       logger.warn(`Portal directory not found: ${PORTAL_DIR}`);
-      logger.warn("Run 'bun run codegen-abi' first to generate ABI files");
+      logger.warn("Run 'bun run compile' in the contracts workspace first to generate ABI files");
       return;
     }
 
@@ -165,7 +165,7 @@ class ArtifactsCopier {
     const genesisFile = Bun.file(GENESIS_OUTPUT_FILE);
     if (!(await genesisFile.exists())) {
       logger.warn(`Genesis output file not found: ${GENESIS_OUTPUT_FILE}`);
-      logger.warn("Run 'bun run codegen-genesis' first to generate genesis output");
+      logger.warn("Run 'bun run artifacts:genesis' in the contracts workspace first to generate genesis output");
       return;
     }
 
