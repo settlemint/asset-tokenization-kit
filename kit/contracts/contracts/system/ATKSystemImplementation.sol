@@ -83,6 +83,8 @@ import { IWithTypeIdentifier } from "./../smart/interface/IWithTypeIdentifier.so
 /// trusted forwarder is used) and AccessControl for role-based permissions (restricting sensitive functions to
 /// authorized
 /// administrators). It also inherits ReentrancyGuard to protect against reentrancy attacks on certain functions.
+/// @dev If this contract's size becomes a concern, the management of token factories, system addons, and compliance
+/// modules could be refactored into separate, bootstrapped registry contracts to improve modularity.
 contract ATKSystemImplementation is
     Initializable,
     IATKSystem,
