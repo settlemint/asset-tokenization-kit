@@ -3,6 +3,7 @@ import VestingAirdropFactoryModule from "./predeployed/addons/airdrop/vesting-ai
 import FixedYieldScheduleFactoryModule from "./predeployed/addons/fixed-yield-schedule-factory";
 import VaultModule from "./predeployed/addons/vault/vault";
 import VaultFactoryModule from "./predeployed/addons/vault/vault-factory";
+import XvPSettlementFactoryModule from "./predeployed/addons/xvp-settlement-factory";
 import BondModule from "./predeployed/assets/bond";
 import DepositModule from "./predeployed/assets/deposit";
 import EquityModule from "./predeployed/assets/equity";
@@ -30,6 +31,8 @@ const ATKModule = buildModule("ATKModule", (m) => {
   const { fixedYieldScheduleFactoryImplementation } = m.useModule(
     FixedYieldScheduleFactoryModule
   );
+  const { xvpSettlementImplementation, xvpSettlementFactoryImplementation } =
+    m.useModule(XvPSettlementFactoryModule);
   const { vestingAirdropFactoryImplementation } = m.useModule(
     VestingAirdropFactoryModule
   );
@@ -48,6 +51,8 @@ const ATKModule = buildModule("ATKModule", (m) => {
     stablecoinImplementation,
     stablecoinFactoryImplementation,
     fixedYieldScheduleFactoryImplementation,
+    xvpSettlementImplementation,
+    xvpSettlementFactoryImplementation,
     vestingAirdropFactoryImplementation,
     vaultFactoryImplementation,
     atkVaultImplementation,

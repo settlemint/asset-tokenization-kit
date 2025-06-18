@@ -14,9 +14,9 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IATKFixedYieldScheduleFactory } from "./IATKFixedYieldScheduleFactory.sol";
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
-import { IATKSystem } from "../IATKSystem.sol";
-import { IATKComplianceBypassList } from "../compliance/IATKComplianceBypassList.sol";
-import { IWithTypeIdentifier } from "../IWithTypeIdentifier.sol";
+import { IATKSystem } from "../../system/IATKSystem.sol";
+import { IATKComplianceBypassList } from "../../system/compliance/IATKComplianceBypassList.sol";
+import { IWithTypeIdentifier } from "../../system/IWithTypeIdentifier.sol";
 
 // Implementations
 import { SMARTFixedYieldScheduleUpgradeable } from
@@ -24,7 +24,7 @@ import { SMARTFixedYieldScheduleUpgradeable } from
 import { ATKFixedYieldProxy } from "./ATKFixedYieldProxy.sol";
 
 // Constants
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
 
 /// @title Factory for Creating ATKFixedYieldSchedule Proxies
 /// @notice This contract serves as a factory to deploy new UUPS proxy instances of `ATKFixedYieldSchedule` contracts.

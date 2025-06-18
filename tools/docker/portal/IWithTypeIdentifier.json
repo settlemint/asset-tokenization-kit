@@ -27,7 +27,7 @@
   "methodIdentifiers": {
     "typeId()": "8f940f63"
   },
-  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"typeId\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This interface is used to identify the type of a contract.      It is used to identify the type of a contract.      It is used to identify the type of a contract.\",\"kind\":\"dev\",\"methods\":{},\"title\":\"IWithTypeIdentifier\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"typeId()\":{\"notice\":\"Returns a unique identifier for the type of this contract.\"}},\"notice\":\"Interface for contracts that have a unique type identifier.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/system/IWithTypeIdentifier.sol\":\"IWithTypeIdentifier\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/\",\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.2.0/=dependencies/@openzeppelin-contracts-upgradeable-5.2.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@smartprotocol-v0.0.1/=dependencies/@smartprotocol-v0.0.1/contracts/\",\":eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/\",\":forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/\",\":forge-std-1.9.6/=dependencies/forge-std-1.9.6/src/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\",\":hardhat/=dependencies/smart-protocol-8.0.8/node_modules/hardhat/\",\":openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\",\":smart-protocol-8.0.10/=dependencies/smart-protocol-8.0.10/contracts/\",\":smart-protocol-8.0.5/=dependencies/smart-protocol-8.0.5/contracts/\",\":smart-protocol-8.0.7/=dependencies/smart-protocol-8.0.7/contracts/\",\":smart-protocol-8.0.8/=dependencies/smart-protocol-8.0.8/contracts/\"],\"viaIR\":true},\"sources\":{\"contracts/system/IWithTypeIdentifier.sol\":{\"keccak256\":\"0x5daeff2cd8e4fdd75391e29db38bce1dce171216a0155fba695e0b7d5cabd4ee\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://ea7a2fb858b8c9a05d6e67791264656a7577f1642a3a4310bd35164d73794764\",\"dweb:/ipfs/QmNnL4GMCsa7p1TBkbC43g7jcDNoUJNRdHe5CpJrTZTQTY\"]}},\"version\":1}",
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"typeId\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This interface is used to identify the type of a contract.      It is used to identify the type of a contract.      It is used to identify the type of a contract.\",\"kind\":\"dev\",\"methods\":{},\"title\":\"IWithTypeIdentifier\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"typeId()\":{\"notice\":\"Returns a unique identifier for the type of this contract.\"}},\"notice\":\"Interface for contracts that have a unique type identifier.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/system/IWithTypeIdentifier.sol\":\"IWithTypeIdentifier\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/\",\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/\",\":forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\",\":openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\"],\"viaIR\":true},\"sources\":{\"contracts/system/IWithTypeIdentifier.sol\":{\"keccak256\":\"0x5daeff2cd8e4fdd75391e29db38bce1dce171216a0155fba695e0b7d5cabd4ee\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://ea7a2fb858b8c9a05d6e67791264656a7577f1642a3a4310bd35164d73794764\",\"dweb:/ipfs/QmNnL4GMCsa7p1TBkbC43g7jcDNoUJNRdHe5CpJrTZTQTY\"]}},\"version\":1}",
   "metadata": {
     "compiler": {
       "version": "0.8.28+commit.7893614a"
@@ -71,23 +71,15 @@
         "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
         "@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/",
         "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
-        "@openzeppelin-contracts-upgradeable-5.2.0/=dependencies/@openzeppelin-contracts-upgradeable-5.2.0/",
         "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
         "@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/",
         "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
         "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
-        "@smartprotocol-v0.0.1/=dependencies/@smartprotocol-v0.0.1/contracts/",
         "eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/",
         "forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/",
-        "forge-std-1.9.6/=dependencies/forge-std-1.9.6/src/",
         "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
         "forge-std/=dependencies/forge-std-1.9.7/src/",
-        "hardhat/=dependencies/smart-protocol-8.0.8/node_modules/hardhat/",
-        "openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/",
-        "smart-protocol-8.0.10/=dependencies/smart-protocol-8.0.10/contracts/",
-        "smart-protocol-8.0.5/=dependencies/smart-protocol-8.0.5/contracts/",
-        "smart-protocol-8.0.7/=dependencies/smart-protocol-8.0.7/contracts/",
-        "smart-protocol-8.0.8/=dependencies/smart-protocol-8.0.8/contracts/"
+        "openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/"
       ],
       "optimizer": {
         "enabled": true,
@@ -131,5 +123,5 @@
     "details": "This interface is used to identify the type of a contract.      It is used to identify the type of a contract.      It is used to identify the type of a contract.",
     "title": "IWithTypeIdentifier"
   },
-  "id": 114
+  "id": 110
 }

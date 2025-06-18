@@ -24,16 +24,27 @@ import type { orpc } from "@/orpc";
 import { Providers } from "@/providers";
 import appCss from "@/styles/app.css?url";
 import { type QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import type { ReactNode } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { Toaster } from "sonner";
+
+// Lazy load dev tools to reduce bundle size in production
+const ReactQueryDevtools = lazy(() =>
+  import("@tanstack/react-query-devtools").then((m) => ({
+    default: m.ReactQueryDevtools,
+  }))
+);
+
+const TanStackRouterDevtools = lazy(() =>
+  import("@tanstack/react-router-devtools").then((m) => ({
+    default: m.TanStackRouterDevtools,
+  }))
+);
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -167,8 +178,12 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <Providers>
           {children}
           <Toaster richColors />
-          <TanStackRouterDevtools initialIsOpen={false} />
-          <ReactQueryDevtools initialIsOpen={false} />
+          {import.meta.env.DEV && (
+            <Suspense fallback={null}>
+              <TanStackRouterDevtools initialIsOpen={false} />
+              <ReactQueryDevtools initialIsOpen={false} />
+            </Suspense>
+          )}
         </Providers>
         <Scripts />
       </body>

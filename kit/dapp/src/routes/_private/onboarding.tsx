@@ -36,9 +36,9 @@ import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { useMutation } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { useContext } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -54,10 +54,30 @@ export const Route = createFileRoute("/_private/onboarding")({
 });
 
 function OnboardingComponent() {
-  const { user, systemAddress, orpc } = Route.useRouteContext();
+  const { orpc } = Route.useRouteContext();
+  const navigate = useNavigate();
+  const { data: user, isError, error } = useQuery(orpc.user.me.queryOptions());
+  const { data: systemAddress } = useQuery(
+    orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
+  );
   const { sessionKey } = useContext(AuthQueryContext);
   const { t } = useTranslation(["onboarding", "general"]);
   const [, setSystemAddress] = useSettings("SYSTEM_ADDRESS");
+
+  // Handle authentication errors
+  useEffect(() => {
+    if (isError) {
+      // For ORPC errors, the error object will have a code property
+      const errorObj = error as { code?: string };
+      if (errorObj.code === "UNAUTHORIZED") {
+        void navigate({
+          to: "/auth/$pathname",
+          params: { pathname: "signin" },
+          replace: true,
+        });
+      }
+    }
+  }, [isError, error, navigate]);
 
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({

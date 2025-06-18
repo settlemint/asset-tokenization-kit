@@ -345,6 +345,41 @@ type TokenFund @entity(immutable: false) {
 }
 
 # ==================================================
+# XVP SETTLEMENT
+# ==================================================
+
+type XvPSettlement @entity(immutable: false) {
+  id: Bytes!
+  cutoffDate: BigInt!
+  autoExecute: Boolean!
+  executed: Boolean!
+  cancelled: Boolean!
+  createdAt: BigInt!
+  flows: [XvPSettlementFlow!]! @derivedFrom(field: "xvpSettlement")
+  approvals: [XvPSettlementApproval!]! @derivedFrom(field: "xvpSettlement")
+  participants: [Account!]!
+  deployedInTransaction: Bytes!
+}
+
+type XvPSettlementFlow @entity(immutable: false) {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  asset: Token!
+  from: Account!
+  to: Account!
+  amount: BigDecimal!
+  amountExact: BigInt!
+}
+
+type XvPSettlementApproval @entity(immutable: false) {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  account: Account!
+  approved: Boolean!
+  timestamp: BigInt
+}
+
+# ==================================================
 # YIELD SCHEDULES
 # ==================================================
 
