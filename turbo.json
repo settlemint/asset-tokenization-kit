@@ -17,7 +17,7 @@
       "dependsOn": ["compile", "codegen", "lint", "test"]
     },
     "ci:gha": {
-      "dependsOn": ["ci:base", "build"]
+      "dependsOn": ["ci:base", "build", "artifacts"]
     },
     "ci:gha:main": {
       "dependsOn": ["ci:gha", "test:integration", "publish"]
