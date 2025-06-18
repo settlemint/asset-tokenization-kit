@@ -75,11 +75,11 @@
     "@tanstack/react-query": "5.80.7",
     "@tanstack/react-query-devtools": "5.80.7",
     "@tanstack/react-query-persist-client": "5.80.7",
-    "@tanstack/react-router": "1.121.21",
-    "@tanstack/react-router-devtools": "1.121.21",
-    "@tanstack/react-router-with-query": "1.121.21",
-    "@tanstack/react-start": "1.121.23",
-    "@tanstack/router-devtools": "1.121.21",
+    "@tanstack/react-router": "1.121.24",
+    "@tanstack/react-router-devtools": "1.121.24",
+    "@tanstack/react-router-with-query": "1.121.24",
+    "@tanstack/react-start": "1.121.25",
+    "@tanstack/router-devtools": "1.121.24",
     "better-auth": "1.2.9",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
@@ -103,10 +103,10 @@
   "overrides": {
     "@tanstack/react-query": "5.80.7",
     "@tanstack/react-query-devtools": "5.80.7",
-    "@tanstack/react-router": "1.121.21",
-    "@tanstack/react-router-devtools": "1.121.21",
-    "@tanstack/react-router-with-query": "1.121.21",
-    "@tanstack/react-start": "1.121.23",
-    "@tanstack/router-devtools": "1.121.21"
+    "@tanstack/react-router": "1.121.24",
+    "@tanstack/react-router-devtools": "1.121.24",
+    "@tanstack/react-router-with-query": "1.121.24",
+    "@tanstack/react-start": "1.121.25",
+    "@tanstack/router-devtools": "1.121.24"
   }
 }
