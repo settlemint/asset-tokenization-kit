@@ -2,6 +2,7 @@
   "name": "dapp",
   "version": "2.0.0",
   "type": "module",
+  "license": "FSL-1.1-MIT",
   "private": true,
   "sideEffects": false,
   "scripts": {
@@ -26,11 +27,10 @@
   },
   "devDependencies": {
     "@eslint/js": "9.29.0",
-    "@fontsource-variable/figtree": "5.2.8",
-    "@fontsource-variable/roboto-mono": "5.2.6",
     "@tanstack/eslint-plugin-query": "5.78.0",
     "@tanstack/eslint-plugin-router": "1.121.21",
     "@types/bun": "1.2.16",
+    "@types/pg": "8.15.4",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "dotenv": "16.5.0",
@@ -38,17 +38,20 @@
     "eslint-plugin-react": "7.37.5",
     "globals": "16.2.0",
     "languine": "3.1.4",
-    "tw-animate-css": "1.3.4",
     "typescript": "5.8.3",
     "typescript-eslint": "8.34.1",
     "vite": "6.3.5",
     "vite-bundle-analyzer": "0.22.3",
     "vite-tsconfig-paths": "5.1.4"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "contracts": "workspace:*"
+  },
   "dependencies": {
     "@daveyplate/better-auth-tanstack": "1.3.6",
     "@daveyplate/better-auth-ui": "2.0.8",
+    "@fontsource-variable/figtree": "5.2.8",
+    "@fontsource-variable/roboto-mono": "5.2.6",
     "@orpc/client": "1.5.2",
     "@orpc/openapi": "1.5.2",
     "@orpc/react-query": "1.5.2",
@@ -68,8 +71,10 @@
     "@settlemint/sdk-utils": "2.4.0",
     "@t3-oss/env-core": "0.13.8",
     "@tailwindcss/postcss": "4.1.10",
+    "@tanstack/query-sync-storage-persister": "5.80.7",
     "@tanstack/react-query": "5.80.7",
     "@tanstack/react-query-devtools": "5.80.7",
+    "@tanstack/react-query-persist-client": "5.80.7",
     "@tanstack/react-router": "1.121.21",
     "@tanstack/react-router-devtools": "1.121.21",
     "@tanstack/react-router-with-query": "1.121.21",
@@ -78,6 +83,7 @@
     "better-auth": "1.2.9",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
+    "dnum": "2.15.0",
     "drizzle-orm": "0.44.2",
     "i18n-iso-countries": "7.14.0",
     "i18next": "25.2.1",
@@ -91,6 +97,7 @@
     "superjson": "2.2.2",
     "tailwind-merge": "3.3.1",
     "tailwindcss": "4.1.10",
+    "tw-animate-css": "1.3.4",
     "zod": "3.25.67"
   },
   "overrides": {

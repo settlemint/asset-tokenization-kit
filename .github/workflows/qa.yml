@@ -11,13 +11,14 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   qa:
     name: QA
     uses: ./.github/workflows/reusable-qa.yml
     with:
+      use-pat-token: true
       turbo-command: |
         if [ "${{ github.event_name }}" == "pull_request" ]; then
           echo "Running Turbo with --affected flag for PR"
