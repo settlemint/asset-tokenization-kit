@@ -25,12 +25,6 @@ export default defineConfig({
             return "vendor-react";
           }
           if (
-            id.includes("node_modules/better-auth") ||
-            id.includes("node_modules/@daveryplate/")
-          ) {
-            return "vendor-auth";
-          }
-          if (
             id.includes("kit/dapp/locales") ||
             id.includes("node_modules/i18n")
           ) {
