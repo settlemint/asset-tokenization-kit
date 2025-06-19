@@ -48,7 +48,7 @@ contract ATKTokenFactoryRegistryImplementation is
         _system = IATKSystem(systemAddress);
     }
 
-    function createTokenFactory(
+    function registerTokenFactory(
         string calldata _name,
         address _factoryImplementation,
         address _tokenImplementation
@@ -87,11 +87,11 @@ contract ATKTokenFactoryRegistryImplementation is
 
         tokenFactoryProxiesByType[factoryTypeHash] = _tokenFactoryProxy;
 
-        IAccessControl(address(_system.identityFactoryProxy())).grantRole(
+        IAccessControl(address(_system.identityFactory())).grantRole(
             ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ROLE, _tokenFactoryProxy
         );
 
-        IAccessControl(address(_system.complianceProxy())).grantRole(
+        IAccessControl(address(_system.compliance())).grantRole(
             ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
         );
 
@@ -109,18 +109,18 @@ contract ATKTokenFactoryRegistryImplementation is
 
     function setTokenFactoryImplementation(
         bytes32 factoryTypeHash,
-        address implementation
+        address implementation_
     )
         public
         override
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
-        if (implementation == address(0)) revert InvalidTokenFactoryAddress();
+        if (implementation_ == address(0)) revert InvalidTokenFactoryAddress();
         if (tokenFactoryImplementationsByType[factoryTypeHash] == address(0)) revert InvalidTokenFactoryAddress();
-        _checkInterface(implementation, _IATK_TOKEN_FACTORY_ID);
+        _checkInterface(implementation_, _IATK_TOKEN_FACTORY_ID);
 
-        tokenFactoryImplementationsByType[factoryTypeHash] = implementation;
-        emit TokenFactoryImplementationUpdated(_msgSender(), factoryTypeHash, implementation);
+        tokenFactoryImplementationsByType[factoryTypeHash] = implementation_;
+        emit TokenFactoryImplementationUpdated(_msgSender(), factoryTypeHash, implementation_);
     }
 
     function implementation(bytes32 factoryTypeHash) public view override returns (address) {

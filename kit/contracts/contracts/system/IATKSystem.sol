@@ -129,7 +129,7 @@ interface IATKSystem is IERC165 {
     /// This function returns the stable, unchanging address of the compliance module's proxy contract.
     /// All interactions with the compliance module should go through this proxy address.
     /// @return complianceProxyAddress The blockchain address of the compliance module's proxy contract.
-    function complianceProxy() external view returns (address complianceProxyAddress);
+    function compliance() external view returns (address complianceProxyAddress);
 
     /// @notice Retrieves the smart contract address of the proxy for the identity registry module.
     /// @dev Similar to the compliance proxy, this function returns the stable, unchanging address of the identity
@@ -138,7 +138,7 @@ interface IATKSystem is IERC165 {
     /// depending on its features), you should use this proxy address. It will automatically forward your requests
     /// to the current logic implementation contract.
     /// @return identityRegistryProxyAddress The blockchain address of the identity registry module's proxy contract.
-    function identityRegistryProxy() external view returns (address identityRegistryProxyAddress);
+    function identityRegistry() external view returns (address identityRegistryProxyAddress);
 
     /// @notice Retrieves the smart contract address of the proxy for the identity registry storage module.
     /// @dev This function returns the stable, unchanging address of the identity registry storage's proxy contract.
@@ -146,7 +146,7 @@ interface IATKSystem is IERC165 {
     /// It ensures that calls are directed to the current logic implementation for identity data management.
     /// @return identityRegistryStorageProxyAddress The blockchain address of the identity registry storage module's
     /// proxy contract.
-    function identityRegistryStorageProxy() external view returns (address identityRegistryStorageProxyAddress);
+    function identityRegistryStorage() external view returns (address identityRegistryStorageProxyAddress);
 
     /// @notice Retrieves the smart contract address of the proxy for the trusted issuers registry module.
     /// @dev This function returns the stable, unchanging address of the trusted issuers registry's proxy contract.
@@ -155,7 +155,7 @@ interface IATKSystem is IERC165 {
     /// current logic implementation.
     /// @return trustedIssuersRegistryProxyAddress The blockchain address of the trusted issuers registry module's
     /// proxy.
-    function trustedIssuersRegistryProxy() external view returns (address trustedIssuersRegistryProxyAddress);
+    function trustedIssuersRegistry() external view returns (address trustedIssuersRegistryProxyAddress);
 
     /// @notice Retrieves the smart contract address of the proxy for the identity factory module.
     /// @dev This function returns the stable, unchanging address of the identity factory's proxy contract.
@@ -163,26 +163,26 @@ interface IATKSystem is IERC165 {
     /// It will delegate the identity creation requests to the current active logic implementation of the
     /// identity factory.
     /// @return identityFactoryProxyAddress The blockchain address of the identity factory module's proxy contract.
-    function identityFactoryProxy() external view returns (address identityFactoryProxyAddress);
+    function identityFactory() external view returns (address identityFactoryProxyAddress);
 
     /// @notice Retrieves the smart contract address of the proxy for the topic scheme registry module.
     /// @dev This function returns the stable, unchanging address of the topic scheme registry's proxy contract.
     /// To interact with the topic scheme registry (e.g., to register topic schemes or retrieve topic signatures),
     /// you should use this proxy address. It will forward calls to the current logic implementation.
     /// @return topicSchemeRegistryProxyAddress The blockchain address of the topic scheme registry module's proxy.
-    function topicSchemeRegistryProxy() external view returns (address topicSchemeRegistryProxyAddress);
+    function topicSchemeRegistry() external view returns (address topicSchemeRegistryProxyAddress);
 
     /// @notice Returns the address of the token factory registry.
     /// @return The address of the token factory registry contract.
-    function tokenFactoryRegistryProxy() external view returns (address);
+    function tokenFactoryRegistry() external view returns (address);
 
     /// @notice Returns the address of the system addon registry.
     /// @return The address of the system addon registry contract.
-    function systemAddonRegistryProxy() external view returns (address);
+    function systemAddonRegistry() external view returns (address);
 
     /// @notice Returns the address of the compliance module registry.
     /// @return The address of the compliance module registry contract.
-    function complianceModuleRegistryProxy() external view returns (address);
+    function complianceModuleRegistry() external view returns (address);
 
     /// @notice Retrieves the smart contract address of the proxy for the identity verification module.
     /// @dev This function returns the stable, unchanging address of the identity verification module's proxy contract.

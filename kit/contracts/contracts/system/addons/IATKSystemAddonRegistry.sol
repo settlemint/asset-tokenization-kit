@@ -18,7 +18,7 @@ interface IATKSystemAddonRegistry is IAccessControl {
         address indexed sender, bytes32 indexed addonTypeHash, address indexed newImplementation
     );
 
-    function createSystemAddon(
+    function registerSystemAddon(
         string calldata name,
         address implementation,
         bytes calldata initializationData
@@ -28,7 +28,7 @@ interface IATKSystemAddonRegistry is IAccessControl {
 
     function setAddonImplementation(bytes32 addonTypeHash, address implementation) external;
 
-    function addonProxy(bytes32 addonTypeHash) external view returns (address);
+    function addon(bytes32 addonTypeHash) external view returns (address);
 
     function initialize(address initialAdmin, address systemAddress) external;
 }

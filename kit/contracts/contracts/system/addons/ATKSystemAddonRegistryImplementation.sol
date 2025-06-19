@@ -39,7 +39,7 @@ contract ATKSystemAddonRegistryImplementation is
         _system = IATKSystem(systemAddress);
     }
 
-    function createSystemAddon(
+    function registerSystemAddon(
         string calldata name,
         address implementation_,
         bytes calldata initializationData
@@ -64,9 +64,7 @@ contract ATKSystemAddonRegistryImplementation is
 
         addonProxiesByType[addonTypeHash] = _addonProxy;
 
-        IAccessControl(address(_system.complianceProxy())).grantRole(
-            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _addonProxy
-        );
+        IAccessControl(address(_system.compliance())).grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _addonProxy);
 
         (bool success, bytes memory data) =
             _addonProxy.staticcall(abi.encodeWithSelector(bytes4(keccak256("typeId()"))));
@@ -102,7 +100,7 @@ contract ATKSystemAddonRegistryImplementation is
         return addonImplementationsByType[addonTypeHash];
     }
 
-    function addonProxy(bytes32 addonTypeHash) public view override returns (address) {
+    function addon(bytes32 addonTypeHash) public view override returns (address) {
         return addonProxiesByType[addonTypeHash];
     }
 

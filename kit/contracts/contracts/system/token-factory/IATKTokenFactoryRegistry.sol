@@ -17,7 +17,7 @@ interface IATKTokenFactoryRegistry is IAccessControl {
         address indexed sender, bytes32 indexed factoryTypeHash, address indexed newImplementation
     );
 
-    function createTokenFactory(
+    function registerTokenFactory(
         string calldata name,
         address factoryImplementation,
         address tokenImplementation
@@ -27,7 +27,7 @@ interface IATKTokenFactoryRegistry is IAccessControl {
 
     function setTokenFactoryImplementation(bytes32 factoryTypeHash, address implementation) external;
 
-    function tokenFactoryProxy(bytes32 factoryTypeHash) external view returns (address);
+    function tokenFactory(bytes32 factoryTypeHash) external view returns (address);
 
     function initialize(address initialAdmin, address systemAddress) external;
 }
