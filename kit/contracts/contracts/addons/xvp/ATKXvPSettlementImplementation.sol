@@ -54,6 +54,9 @@ contract ATKXvPSettlementImplementation is
     /// @notice The timestamp when this settlement was created (in seconds since epoch)
     uint256 private _createdAt;
 
+    /// @notice The name of this settlement
+    string private _name;
+
     /// @notice Modifier to check if a settlement is open
     modifier onlyOpen() {
         if (_executed) revert XvPSettlementAlreadyExecuted();
@@ -88,10 +91,12 @@ contract ATKXvPSettlementImplementation is
 
     /// @notice Initializes the ATKXvPSettlementImplementation contract for proxy usage
     /// @dev Replaces constructor for upgradeable pattern
+    /// @param settlementName The name of this settlement
     /// @param settlementCutoffDate Timestamp after which the settlement expires
     /// @param settlementAutoExecute Whether to auto-execute after all approvals
     /// @param settlementFlows Array of token flows for this settlement
     function initialize(
+        string memory settlementName,
         uint256 settlementCutoffDate,
         bool settlementAutoExecute,
         Flow[] memory settlementFlows
@@ -102,6 +107,7 @@ contract ATKXvPSettlementImplementation is
         __ReentrancyGuard_init();
         __ERC165_init();
 
+        _name = settlementName;
         _cutoffDate = settlementCutoffDate;
         _autoExecute = settlementAutoExecute;
         _createdAt = block.timestamp;
@@ -148,6 +154,10 @@ contract ATKXvPSettlementImplementation is
 
     function createdAt() public view returns (uint256) {
         return _createdAt;
+    }
+
+    function name() public view returns (string memory) {
+        return _name;
     }
 
     /// @notice Approves a XvP settlement for execution

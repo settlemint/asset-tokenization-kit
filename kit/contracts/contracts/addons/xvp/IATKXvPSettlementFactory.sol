@@ -21,11 +21,13 @@ interface IATKXvPSettlementFactory is IERC165 {
     function initialize(address forwarder, address initialAdmin) external;
 
     /// @notice Creates a new XvPSettlement contract
+    /// @param name The name of the settlement
     /// @param flows The array of token flows to include in the settlement
     /// @param cutoffDate Timestamp after which the settlement expires
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
     /// @return contractAddress The address of the newly created settlement contract
     function create(
+        string memory name,
         IATKXvPSettlement.Flow[] memory flows,
         uint256 cutoffDate,
         bool autoExecute
@@ -34,11 +36,13 @@ interface IATKXvPSettlementFactory is IERC165 {
         returns (address contractAddress);
 
     /// @notice Predicts the address where a XvPSettlement contract would be deployed
+    /// @param name The name of the settlement
     /// @param flows The array of token flows that will be used in deployment
     /// @param cutoffDate Timestamp after which the settlement expires
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
     /// @return predicted The address where the settlement contract would be deployed
     function predictAddress(
+        string memory name,
         IATKXvPSettlement.Flow[] memory flows,
         uint256 cutoffDate,
         bool autoExecute
