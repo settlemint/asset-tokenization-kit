@@ -57,7 +57,7 @@
         "package",
         "codegen",
         "subgraph#codegen:interfaceid",
-        "//#dev:up"
+        "//#setup:dev"
       ]
     },
     "test": {
