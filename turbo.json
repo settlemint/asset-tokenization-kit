@@ -37,7 +37,7 @@
       "dependsOn": ["codegen"]
     },
     "codegen": {
-      "dependsOn": ["dependencies", "docs"]
+      "dependsOn": ["dependencies", "docs", "//#setup:dev"]
     },
     "compile": {
       "dependsOn": ["dependencies", "codegen", "^compile"]
@@ -52,7 +52,9 @@
     },
     "dependencies": {},
     "format": {},
-    "lint": {},
+    "lint": {
+      "dependsOn": ["//#setup:dev"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
