@@ -44,7 +44,7 @@
       "inputs": ["**/values-orbstack.1p.yaml"]
     },
     "artifacts": {
-      "dependsOn": ["^artifacts"]
+      "dependsOn": ["contracts#artifacts:genesis", "contracts#artifacts:abi"]
     },
     "docs": {
       "inputs": ["**/values.yaml"]

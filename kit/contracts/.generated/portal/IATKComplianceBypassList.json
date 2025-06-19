@@ -1,0 +1,483 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "addMultipleToBypassList",
+      "inputs": [
+        {
+          "name": "accounts",
+          "type": "address[]",
+          "internalType": "address[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "addToBypassList",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "isBypassed",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "removeFromBypassList",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "removeMultipleFromBypassList",
+      "inputs": [
+        {
+          "name": "accounts",
+          "type": "address[]",
+          "internalType": "address[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "AddressAddedToBypassList",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "manager",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "AddressRemovedFromBypassList",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "manager",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "AddressAlreadyOnBypassList",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "AddressNotOnBypassList",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "addMultipleToBypassList(address[])": "03792104",
+    "addToBypassList(address)": "882f1ea8",
+    "isBypassed(address)": "204b6001",
+    "removeFromBypassList(address)": "8a668634",
+    "removeMultipleFromBypassList(address[])": "ad02d621"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"AddressAlreadyOnBypassList\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"AddressNotOnBypassList\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"}],\"name\":\"AddressAddedToBypassList\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"}],\"name\":\"AddressRemovedFromBypassList\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"accounts\",\"type\":\"address[]\"}],\"name\":\"addMultipleToBypassList\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"addToBypassList\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"isBypassed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"removeFromBypassList\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"accounts\",\"type\":\"address[]\"}],\"name\":\"removeMultipleFromBypassList\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"details\":\"This interface defines the standard functions for managing addresses that bypass compliance checks.\",\"events\":{\"AddressAddedToBypassList(address,address)\":{\"params\":{\"account\":\"The address that was added to the bypass list.\",\"manager\":\"The address that performed the addition.\"}},\"AddressRemovedFromBypassList(address,address)\":{\"params\":{\"account\":\"The address that was removed from the bypass list.\",\"manager\":\"The address that performed the removal.\"}}},\"kind\":\"dev\",\"methods\":{\"addMultipleToBypassList(address[])\":{\"details\":\"Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function. This is a gas-efficient way to add multiple addresses to the bypass list at once.\",\"params\":{\"accounts\":\"Array of addresses to add to the bypass list.\"}},\"addToBypassList(address)\":{\"details\":\"Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function. Addresses on the bypass list can bypass compliance checks in canTransfer function.\",\"params\":{\"account\":\"The address to add to the bypass list.\"}},\"isBypassed(address)\":{\"params\":{\"account\":\"The address to check.\"},\"returns\":{\"_0\":\"True if the address is on the bypass list, false otherwise.\"}},\"removeFromBypassList(address)\":{\"details\":\"Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.\",\"params\":{\"account\":\"The address to remove from the bypass list.\"}},\"removeMultipleFromBypassList(address[])\":{\"details\":\"Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.\",\"params\":{\"accounts\":\"Array of addresses to remove from the bypass list.\"}}},\"title\":\"ATK Compliance Bypass List Interface\",\"version\":1},\"userdoc\":{\"errors\":{\"AddressAlreadyOnBypassList(address)\":[{\"notice\":\"Error thrown when trying to add an address that is already on the bypass list.\"}],\"AddressNotOnBypassList(address)\":[{\"notice\":\"Error thrown when trying to remove an address that is not on the bypass list.\"}]},\"events\":{\"AddressAddedToBypassList(address,address)\":{\"notice\":\"Emitted when an address is added to the compliance bypass list.\"},\"AddressRemovedFromBypassList(address,address)\":{\"notice\":\"Emitted when an address is removed from the compliance bypass list.\"}},\"kind\":\"user\",\"methods\":{\"addMultipleToBypassList(address[])\":{\"notice\":\"Adds multiple addresses to the compliance bypass list in a single transaction.\"},\"addToBypassList(address)\":{\"notice\":\"Adds an address to the compliance bypass list.\"},\"isBypassed(address)\":{\"notice\":\"Checks if an address is on the bypass list.\"},\"removeFromBypassList(address)\":{\"notice\":\"Removes an address from the compliance bypass list.\"},\"removeMultipleFromBypassList(address[])\":{\"notice\":\"Removes multiple addresses from the compliance bypass list in a single transaction.\"}},\"notice\":\"Interface for managing the compliance bypass list functionality.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/system/compliance/IATKComplianceBypassList.sol\":\"IATKComplianceBypassList\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/system/compliance/IATKComplianceBypassList.sol\":{\"keccak256\":\"0x5b3d452616a287e6232fb66301b06c53663e0d19588b0cb9fa04a8be9001e4ee\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://9103ec8fd0709a1696269ca441c0ec3f2b88141973d301c7656ae405d75c7b77\",\"dweb:/ipfs/QmbgrEKtfZ3HTBpGugibrMq2DmdoowK5rb2zV1WLLpcfFc\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "AddressAlreadyOnBypassList"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "AddressNotOnBypassList"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "manager",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "AddressAddedToBypassList",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "manager",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "AddressRemovedFromBypassList",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "accounts",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "addMultipleToBypassList"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "addToBypassList"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isBypassed",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "removeFromBypassList"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "accounts",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "removeMultipleFromBypassList"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "addMultipleToBypassList(address[])": {
+            "details": "Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function. This is a gas-efficient way to add multiple addresses to the bypass list at once.",
+            "params": {
+              "accounts": "Array of addresses to add to the bypass list."
+            }
+          },
+          "addToBypassList(address)": {
+            "details": "Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function. Addresses on the bypass list can bypass compliance checks in canTransfer function.",
+            "params": {
+              "account": "The address to add to the bypass list."
+            }
+          },
+          "isBypassed(address)": {
+            "params": {
+              "account": "The address to check."
+            },
+            "returns": {
+              "_0": "True if the address is on the bypass list, false otherwise."
+            }
+          },
+          "removeFromBypassList(address)": {
+            "details": "Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.",
+            "params": {
+              "account": "The address to remove from the bypass list."
+            }
+          },
+          "removeMultipleFromBypassList(address[])": {
+            "details": "Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.",
+            "params": {
+              "accounts": "Array of addresses to remove from the bypass list."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "addMultipleToBypassList(address[])": {
+            "notice": "Adds multiple addresses to the compliance bypass list in a single transaction."
+          },
+          "addToBypassList(address)": {
+            "notice": "Adds an address to the compliance bypass list."
+          },
+          "isBypassed(address)": {
+            "notice": "Checks if an address is on the bypass list."
+          },
+          "removeFromBypassList(address)": {
+            "notice": "Removes an address from the compliance bypass list."
+          },
+          "removeMultipleFromBypassList(address[])": {
+            "notice": "Removes multiple addresses from the compliance bypass list in a single transaction."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/system/compliance/IATKComplianceBypassList.sol": "IATKComplianceBypassList"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/system/compliance/IATKComplianceBypassList.sol": {
+        "keccak256": "0x5b3d452616a287e6232fb66301b06c53663e0d19588b0cb9fa04a8be9001e4ee",
+        "urls": [
+          "bzz-raw://9103ec8fd0709a1696269ca441c0ec3f2b88141973d301c7656ae405d75c7b77",
+          "dweb:/ipfs/QmbgrEKtfZ3HTBpGugibrMq2DmdoowK5rb2zV1WLLpcfFc"
+        ],
+        "license": "FSL-1.1-MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "addMultipleToBypassList(address[])": {
+        "notice": "Adds multiple addresses to the compliance bypass list in a single transaction."
+      },
+      "addToBypassList(address)": {
+        "notice": "Adds an address to the compliance bypass list."
+      },
+      "isBypassed(address)": {
+        "notice": "Checks if an address is on the bypass list."
+      },
+      "removeFromBypassList(address)": {
+        "notice": "Removes an address from the compliance bypass list."
+      },
+      "removeMultipleFromBypassList(address[])": {
+        "notice": "Removes multiple addresses from the compliance bypass list in a single transaction."
+      }
+    },
+    "events": {
+      "AddressAddedToBypassList(address,address)": {
+        "notice": "Emitted when an address is added to the compliance bypass list."
+      },
+      "AddressRemovedFromBypassList(address,address)": {
+        "notice": "Emitted when an address is removed from the compliance bypass list."
+      }
+    },
+    "errors": {
+      "AddressAlreadyOnBypassList(address)": [
+        {
+          "notice": "Error thrown when trying to add an address that is already on the bypass list."
+        }
+      ],
+      "AddressNotOnBypassList(address)": [
+        {
+          "notice": "Error thrown when trying to remove an address that is not on the bypass list."
+        }
+      ]
+    },
+    "notice": "Interface for managing the compliance bypass list functionality."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "author": "SettleMint Tokenization Services",
+    "details": "This interface defines the standard functions for managing addresses that bypass compliance checks.",
+    "methods": {
+      "addMultipleToBypassList(address[])": {
+        "details": "Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function. This is a gas-efficient way to add multiple addresses to the bypass list at once.",
+        "params": {
+          "accounts": "Array of addresses to add to the bypass list."
+        }
+      },
+      "addToBypassList(address)": {
+        "details": "Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function. Addresses on the bypass list can bypass compliance checks in canTransfer function.",
+        "params": {
+          "account": "The address to add to the bypass list."
+        }
+      },
+      "isBypassed(address)": {
+        "params": {
+          "account": "The address to check."
+        },
+        "returns": {
+          "_0": "True if the address is on the bypass list, false otherwise."
+        }
+      },
+      "removeFromBypassList(address)": {
+        "details": "Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.",
+        "params": {
+          "account": "The address to remove from the bypass list."
+        }
+      },
+      "removeMultipleFromBypassList(address[])": {
+        "details": "Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.",
+        "params": {
+          "accounts": "Array of addresses to remove from the bypass list."
+        }
+      }
+    },
+    "events": {
+      "AddressAddedToBypassList(address,address)": {
+        "params": {
+          "account": "The address that was added to the bypass list.",
+          "manager": "The address that performed the addition."
+        }
+      },
+      "AddressRemovedFromBypassList(address,address)": {
+        "params": {
+          "account": "The address that was removed from the bypass list.",
+          "manager": "The address that performed the removal."
+        }
+      }
+    },
+    "title": "ATK Compliance Bypass List Interface"
+  },
+  "id": 152
+}

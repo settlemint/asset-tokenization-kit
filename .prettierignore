@@ -5,3 +5,5 @@ bun.lock
 .prettierignore
 *.d.ts
 *.graphql
+**/.generated
+**/.generated/**

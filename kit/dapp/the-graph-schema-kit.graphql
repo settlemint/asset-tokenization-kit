@@ -180,6 +180,127 @@ type Account {
   balances(skip: Int = 0, first: Int = 100, orderBy: TokenBalance_orderBy, orderDirection: OrderDirection, where: TokenBalance_filter): [TokenBalance!]!
 }
 
+type AccountStats {
+  id: Int8!
+  timestamp: Timestamp!
+  account: Account!
+  totalValueInBaseCurrency: BigDecimal!
+  balancesCount: Int!
+}
+
+type AccountStatsData {
+  id: Int8!
+  timestamp: Timestamp!
+  account: Account!
+  totalValueInBaseCurrency: BigDecimal!
+  balancesCount: Int!
+}
+
+input AccountStatsData_filter {
+  id: Int8
+  id_not: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  id_not_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_not: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  timestamp_not_in: [Timestamp!]
+  account: String
+  account_not: String
+  account_gt: String
+  account_lt: String
+  account_gte: String
+  account_lte: String
+  account_in: [String!]
+  account_not_in: [String!]
+  account_contains: String
+  account_contains_nocase: String
+  account_not_contains: String
+  account_not_contains_nocase: String
+  account_starts_with: String
+  account_starts_with_nocase: String
+  account_not_starts_with: String
+  account_not_starts_with_nocase: String
+  account_ends_with: String
+  account_ends_with_nocase: String
+  account_not_ends_with: String
+  account_not_ends_with_nocase: String
+  account_: Account_filter
+  totalValueInBaseCurrency: BigDecimal
+  totalValueInBaseCurrency_not: BigDecimal
+  totalValueInBaseCurrency_gt: BigDecimal
+  totalValueInBaseCurrency_lt: BigDecimal
+  totalValueInBaseCurrency_gte: BigDecimal
+  totalValueInBaseCurrency_lte: BigDecimal
+  totalValueInBaseCurrency_in: [BigDecimal!]
+  totalValueInBaseCurrency_not_in: [BigDecimal!]
+  balancesCount: Int
+  balancesCount_not: Int
+  balancesCount_gt: Int
+  balancesCount_lt: Int
+  balancesCount_gte: Int
+  balancesCount_lte: Int
+  balancesCount_in: [Int!]
+  balancesCount_not_in: [Int!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [AccountStatsData_filter]
+  or: [AccountStatsData_filter]
+}
+
+enum AccountStatsData_orderBy {
+  id
+  timestamp
+  account
+  account__id
+  account__isContract
+  account__country
+  totalValueInBaseCurrency
+  balancesCount
+}
+
+input AccountStats_filter {
+  id: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  account: String
+  account_: Account_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [AccountStats_filter]
+  or: [AccountStats_filter]
+}
+
+enum AccountStats_orderBy {
+  id
+  timestamp
+  account
+  account__id
+  account__isContract
+  account__country
+  totalValueInBaseCurrency
+  balancesCount
+}
+
 input Account_filter {
   id: Bytes
   id_not: Bytes
@@ -237,6 +358,7 @@ enum Account_orderBy {
   isContract
   identity
   identity__id
+  identity__deployedInTransaction
   country
   balances
 }
@@ -325,6 +447,130 @@ type Event {
   sender: Account!
   involved(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
   values(skip: Int = 0, first: Int = 100, orderBy: EventValue_orderBy, orderDirection: OrderDirection, where: EventValue_filter): [EventValue!]!
+}
+
+type EventStats {
+  id: Int8!
+  timestamp: Timestamp!
+  account: Account!
+  eventName: String!
+  eventsCount: Int!
+}
+
+type EventStatsData {
+  id: Int8!
+  timestamp: Timestamp!
+  account: Account!
+  eventName: String!
+}
+
+input EventStatsData_filter {
+  id: Int8
+  id_not: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  id_not_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_not: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  timestamp_not_in: [Timestamp!]
+  account: String
+  account_not: String
+  account_gt: String
+  account_lt: String
+  account_gte: String
+  account_lte: String
+  account_in: [String!]
+  account_not_in: [String!]
+  account_contains: String
+  account_contains_nocase: String
+  account_not_contains: String
+  account_not_contains_nocase: String
+  account_starts_with: String
+  account_starts_with_nocase: String
+  account_not_starts_with: String
+  account_not_starts_with_nocase: String
+  account_ends_with: String
+  account_ends_with_nocase: String
+  account_not_ends_with: String
+  account_not_ends_with_nocase: String
+  account_: Account_filter
+  eventName: String
+  eventName_not: String
+  eventName_gt: String
+  eventName_lt: String
+  eventName_gte: String
+  eventName_lte: String
+  eventName_in: [String!]
+  eventName_not_in: [String!]
+  eventName_contains: String
+  eventName_contains_nocase: String
+  eventName_not_contains: String
+  eventName_not_contains_nocase: String
+  eventName_starts_with: String
+  eventName_starts_with_nocase: String
+  eventName_not_starts_with: String
+  eventName_not_starts_with_nocase: String
+  eventName_ends_with: String
+  eventName_ends_with_nocase: String
+  eventName_not_ends_with: String
+  eventName_not_ends_with_nocase: String
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [EventStatsData_filter]
+  or: [EventStatsData_filter]
+}
+
+enum EventStatsData_orderBy {
+  id
+  timestamp
+  account
+  account__id
+  account__isContract
+  account__country
+  eventName
+}
+
+input EventStats_filter {
+  id: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  account: String
+  account_: Account_filter
+  eventName: String
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [EventStats_filter]
+  or: [EventStats_filter]
+}
+
+enum EventStats_orderBy {
+  id
+  timestamp
+  account
+  account__id
+  account__isContract
+  account__country
+  eventName
+  eventsCount
 }
 
 type EventValue {
@@ -573,6 +819,7 @@ type Identity {
   claims(skip: Int = 0, first: Int = 100, orderBy: IdentityClaim_orderBy, orderDirection: OrderDirection, where: IdentityClaim_filter): [IdentityClaim!]!
   account: Account
   token: Token
+  deployedInTransaction: Bytes!
 }
 
 type IdentityClaim {
@@ -583,6 +830,7 @@ type IdentityClaim {
   uri: String
   revoked: Boolean!
   values(skip: Int = 0, first: Int = 100, orderBy: IdentityClaimValue_orderBy, orderDirection: OrderDirection, where: IdentityClaimValue_filter): [IdentityClaimValue!]!
+  deployedInTransaction: Bytes!
 }
 
 type IdentityClaimValue {
@@ -678,6 +926,7 @@ enum IdentityClaimValue_orderBy {
   claim__name
   claim__uri
   claim__revoked
+  claim__deployedInTransaction
   key
   value
 }
@@ -780,6 +1029,16 @@ input IdentityClaim_filter {
   revoked_in: [Boolean!]
   revoked_not_in: [Boolean!]
   values_: IdentityClaimValue_filter
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -791,18 +1050,22 @@ enum IdentityClaim_orderBy {
   id
   identity
   identity__id
+  identity__deployedInTransaction
   name
   issuer
   issuer__id
+  issuer__deployedInTransaction
   uri
   revoked
   values
+  deployedInTransaction
 }
 
 type IdentityFactory {
   id: Bytes!
   accessControl: AccessControl!
   account: Account!
+  deployedInTransaction: Bytes!
 }
 
 input IdentityFactory_filter {
@@ -858,6 +1121,16 @@ input IdentityFactory_filter {
   account_not_ends_with: String
   account_not_ends_with_nocase: String
   account_: Account_filter
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -873,6 +1146,7 @@ enum IdentityFactory_orderBy {
   account__id
   account__isContract
   account__country
+  deployedInTransaction
 }
 
 type IdentityRegistry {
@@ -883,12 +1157,14 @@ type IdentityRegistry {
   trustedIssuersRegistry: TrustedIssuersRegistry
   topicSchemeRegistry: TopicSchemeRegistry
   identityRegistryStorage: IdentityRegistryStorage
+  deployedInTransaction: Bytes!
 }
 
 type IdentityRegistryStorage {
   id: Bytes!
   accessControl: AccessControl!
   account: Account!
+  deployedInTransaction: Bytes!
 }
 
 input IdentityRegistryStorage_filter {
@@ -944,6 +1220,16 @@ input IdentityRegistryStorage_filter {
   account_not_ends_with: String
   account_not_ends_with_nocase: String
   account_: Account_filter
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -959,6 +1245,7 @@ enum IdentityRegistryStorage_orderBy {
   account__id
   account__isContract
   account__country
+  deployedInTransaction
 }
 
 input IdentityRegistry_filter {
@@ -1078,6 +1365,16 @@ input IdentityRegistry_filter {
   identityRegistryStorage_not_ends_with: String
   identityRegistryStorage_not_ends_with_nocase: String
   identityRegistryStorage_: IdentityRegistryStorage_filter
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -1096,10 +1393,14 @@ enum IdentityRegistry_orderBy {
   identities
   trustedIssuersRegistry
   trustedIssuersRegistry__id
+  trustedIssuersRegistry__deployedInTransaction
   topicSchemeRegistry
   topicSchemeRegistry__id
+  topicSchemeRegistry__deployedInTransaction
   identityRegistryStorage
   identityRegistryStorage__id
+  identityRegistryStorage__deployedInTransaction
+  deployedInTransaction
 }
 
 input Identity_filter {
@@ -1177,6 +1478,16 @@ input Identity_filter {
   token_not_ends_with: String
   token_not_ends_with_nocase: String
   token_: Token_filter
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -1188,6 +1499,7 @@ enum Identity_orderBy {
   id
   registry
   registry__id
+  registry__deployedInTransaction
   claims
   account
   account__id
@@ -1195,12 +1507,15 @@ enum Identity_orderBy {
   account__country
   token
   token__id
+  token__createdAt
   token__type
   token__name
   token__symbol
   token__decimals
   token__totalSupply
   token__totalSupplyExact
+  token__deployedInTransaction
+  deployedInTransaction
 }
 
 "8 bytes signed integer\n"
@@ -1363,6 +1678,36 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [System!]!
+  systemAddon(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): SystemAddon
+  systemAddons(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: SystemAddon_orderBy
+    orderDirection: OrderDirection
+    where: SystemAddon_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [SystemAddon!]!
   compliance(
     id: ID!
 
@@ -1573,6 +1918,96 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TopicScheme!]!
+  identity(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Identity
+  identities(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Identity_orderBy
+    orderDirection: OrderDirection
+    where: Identity_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Identity!]!
+  identityClaim(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): IdentityClaim
+  identityClaims(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: IdentityClaim_orderBy
+    orderDirection: OrderDirection
+    where: IdentityClaim_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [IdentityClaim!]!
+  identityClaimValue(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): IdentityClaimValue
+  identityClaimValues(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: IdentityClaimValue_orderBy
+    orderDirection: OrderDirection
+    where: IdentityClaimValue_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [IdentityClaimValue!]!
   tokenFactory(
     id: ID!
 
@@ -1873,6 +2308,96 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenFund!]!
+  xvPSettlement(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): XvPSettlement
+  xvPSettlements(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: XvPSettlement_orderBy
+    orderDirection: OrderDirection
+    where: XvPSettlement_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [XvPSettlement!]!
+  xvPSettlementFlow(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): XvPSettlementFlow
+  xvPSettlementFlows(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: XvPSettlementFlow_orderBy
+    orderDirection: OrderDirection
+    where: XvPSettlementFlow_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [XvPSettlementFlow!]!
+  xvPSettlementApproval(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): XvPSettlementApproval
+  xvPSettlementApprovals(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: XvPSettlementApproval_orderBy
+    orderDirection: OrderDirection
+    where: XvPSettlementApproval_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [XvPSettlementApproval!]!
   tokenFixedYieldSchedule(
     id: ID!
 
@@ -1933,7 +2458,7 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenFixedYieldSchedulePeriod!]!
-  identity(
+  systemStatsData(
     id: ID!
 
     """
@@ -1945,13 +2470,13 @@ type Query {
     Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
-  ): Identity
-  identities(
+  ): SystemStatsData
+  systemStatsDatas(
     skip: Int = 0
     first: Int = 100
-    orderBy: Identity_orderBy
+    orderBy: SystemStatsData_orderBy
     orderDirection: OrderDirection
-    where: Identity_filter
+    where: SystemStatsData_filter
 
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -1962,8 +2487,8 @@ type Query {
     Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [Identity!]!
-  identityClaim(
+  ): [SystemStatsData!]!
+  accountStatsData(
     id: ID!
 
     """
@@ -1975,13 +2500,13 @@ type Query {
     Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
-  ): IdentityClaim
-  identityClaims(
+  ): AccountStatsData
+  accountStatsDatas(
     skip: Int = 0
     first: Int = 100
-    orderBy: IdentityClaim_orderBy
+    orderBy: AccountStatsData_orderBy
     orderDirection: OrderDirection
-    where: IdentityClaim_filter
+    where: AccountStatsData_filter
 
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -1992,8 +2517,8 @@ type Query {
     Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [IdentityClaim!]!
-  identityClaimValue(
+  ): [AccountStatsData!]!
+  eventStatsData(
     id: ID!
 
     """
@@ -2005,13 +2530,13 @@ type Query {
     Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
-  ): IdentityClaimValue
-  identityClaimValues(
+  ): EventStatsData
+  eventStatsDatas(
     skip: Int = 0
     first: Int = 100
-    orderBy: IdentityClaimValue_orderBy
+    orderBy: EventStatsData_orderBy
     orderDirection: OrderDirection
-    where: IdentityClaimValue_filter
+    where: EventStatsData_filter
 
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -2022,8 +2547,8 @@ type Query {
     Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [IdentityClaimValue!]!
-  systemAddon(
+  ): [EventStatsData!]!
+  tokenTypeStatsData(
     id: ID!
 
     """
@@ -2035,13 +2560,13 @@ type Query {
     Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
-  ): SystemAddon
-  systemAddons(
+  ): TokenTypeStatsData
+  tokenTypeStatsDatas(
     skip: Int = 0
     first: Int = 100
-    orderBy: SystemAddon_orderBy
+    orderBy: TokenTypeStatsData_orderBy
     orderDirection: OrderDirection
-    where: SystemAddon_filter
+    where: TokenTypeStatsData_filter
 
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -2052,7 +2577,287 @@ type Query {
     Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [SystemAddon!]!
+  ): [TokenTypeStatsData!]!
+  tokenStatsData(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TokenStatsData
+  tokenStatsDatas(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenStatsData_orderBy
+    orderDirection: OrderDirection
+    where: TokenStatsData_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenStatsData!]!
+  tokenCollateralStatsData(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TokenCollateralStatsData
+  tokenCollateralStatsDatas(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenCollateralStatsData_orderBy
+    orderDirection: OrderDirection
+    where: TokenCollateralStatsData_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenCollateralStatsData!]!
+  tokenBondStatsData(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TokenBondStatsData
+  tokenBondStatsDatas(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenBondStatsData_orderBy
+    orderDirection: OrderDirection
+    where: TokenBondStatsData_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenBondStatsData!]!
+  tokenDistributionStatsData(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TokenDistributionStatsData
+  tokenDistributionStatsDatas(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenDistributionStatsData_orderBy
+    orderDirection: OrderDirection
+    where: TokenDistributionStatsData_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenDistributionStatsData!]!
+
+  """Collection of aggregated `SystemStats` values"""
+  systemStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    orderBy: SystemStats_orderBy
+    orderDirection: OrderDirection
+    where: SystemStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [SystemStats!]!
+
+  """Collection of aggregated `AccountStats` values"""
+  accountStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    orderBy: AccountStats_orderBy
+    orderDirection: OrderDirection
+    where: AccountStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [AccountStats!]!
+
+  """Collection of aggregated `EventStats` values"""
+  eventStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    orderBy: EventStats_orderBy
+    orderDirection: OrderDirection
+    where: EventStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [EventStats!]!
+
+  """Collection of aggregated `TokenTypeStats` values"""
+  tokenTypeStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    orderBy: TokenTypeStats_orderBy
+    orderDirection: OrderDirection
+    where: TokenTypeStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenTypeStats!]!
+
+  """Collection of aggregated `TokenStats` values"""
+  tokenStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    orderBy: TokenStats_orderBy
+    orderDirection: OrderDirection
+    where: TokenStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenStats!]!
+
+  """Collection of aggregated `TokenCollateralStats` values"""
+  tokenCollateralStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    orderBy: TokenCollateralStats_orderBy
+    orderDirection: OrderDirection
+    where: TokenCollateralStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenCollateralStats!]!
+
+  """Collection of aggregated `TokenBondStats` values"""
+  tokenBondStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    orderBy: TokenBondStats_orderBy
+    orderDirection: OrderDirection
+    where: TokenBondStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenBondStats!]!
+
+  """Collection of aggregated `TokenDistributionStats` values"""
+  tokenDistributionStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    orderBy: TokenDistributionStats_orderBy
+    orderDirection: OrderDirection
+    where: TokenDistributionStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenDistributionStats!]!
 
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
@@ -2060,6 +2865,7 @@ type Query {
 
 type System {
   id: Bytes!
+  deployedInTransaction: Bytes!
   accessControl: AccessControl!
   account: Account
   compliance: Compliance
@@ -2073,8 +2879,10 @@ type System {
 
 type SystemAddon {
   id: Bytes!
+  deployedInTransaction: Bytes!
   accessControl: AccessControl!
-  type: String!
+  name: String!
+  typeId: Bytes!
   system: System
   account: Account!
 }
@@ -2090,6 +2898,16 @@ input SystemAddon_filter {
   id_not_in: [Bytes!]
   id_contains: Bytes
   id_not_contains: Bytes
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
   accessControl: String
   accessControl_not: String
   accessControl_gt: String
@@ -2111,26 +2929,36 @@ input SystemAddon_filter {
   accessControl_not_ends_with: String
   accessControl_not_ends_with_nocase: String
   accessControl_: AccessControl_filter
-  type: String
-  type_not: String
-  type_gt: String
-  type_lt: String
-  type_gte: String
-  type_lte: String
-  type_in: [String!]
-  type_not_in: [String!]
-  type_contains: String
-  type_contains_nocase: String
-  type_not_contains: String
-  type_not_contains_nocase: String
-  type_starts_with: String
-  type_starts_with_nocase: String
-  type_not_starts_with: String
-  type_not_starts_with_nocase: String
-  type_ends_with: String
-  type_ends_with_nocase: String
-  type_not_ends_with: String
-  type_not_ends_with_nocase: String
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_contains_nocase: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  typeId: Bytes
+  typeId_not: Bytes
+  typeId_gt: Bytes
+  typeId_lt: Bytes
+  typeId_gte: Bytes
+  typeId_lte: Bytes
+  typeId_in: [Bytes!]
+  typeId_not_in: [Bytes!]
+  typeId_contains: Bytes
+  typeId_not_contains: Bytes
   system: String
   system_not: String
   system_gt: String
@@ -2182,15 +3010,125 @@ input SystemAddon_filter {
 
 enum SystemAddon_orderBy {
   id
+  deployedInTransaction
   accessControl
   accessControl__id
-  type
+  name
+  typeId
   system
   system__id
+  system__deployedInTransaction
   account
   account__id
   account__isContract
   account__country
+}
+
+type SystemStats {
+  id: Int8!
+  timestamp: Timestamp!
+  system: System!
+  totalValueInBaseCurrency: BigDecimal!
+}
+
+type SystemStatsData {
+  id: Int8!
+  timestamp: Timestamp!
+  system: System!
+  totalValueInBaseCurrency: BigDecimal!
+}
+
+input SystemStatsData_filter {
+  id: Int8
+  id_not: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  id_not_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_not: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  timestamp_not_in: [Timestamp!]
+  system: String
+  system_not: String
+  system_gt: String
+  system_lt: String
+  system_gte: String
+  system_lte: String
+  system_in: [String!]
+  system_not_in: [String!]
+  system_contains: String
+  system_contains_nocase: String
+  system_not_contains: String
+  system_not_contains_nocase: String
+  system_starts_with: String
+  system_starts_with_nocase: String
+  system_not_starts_with: String
+  system_not_starts_with_nocase: String
+  system_ends_with: String
+  system_ends_with_nocase: String
+  system_not_ends_with: String
+  system_not_ends_with_nocase: String
+  system_: System_filter
+  totalValueInBaseCurrency: BigDecimal
+  totalValueInBaseCurrency_not: BigDecimal
+  totalValueInBaseCurrency_gt: BigDecimal
+  totalValueInBaseCurrency_lt: BigDecimal
+  totalValueInBaseCurrency_gte: BigDecimal
+  totalValueInBaseCurrency_lte: BigDecimal
+  totalValueInBaseCurrency_in: [BigDecimal!]
+  totalValueInBaseCurrency_not_in: [BigDecimal!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [SystemStatsData_filter]
+  or: [SystemStatsData_filter]
+}
+
+enum SystemStatsData_orderBy {
+  id
+  timestamp
+  system
+  system__id
+  system__deployedInTransaction
+  totalValueInBaseCurrency
+}
+
+input SystemStats_filter {
+  id: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  system: String
+  system_: System_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [SystemStats_filter]
+  or: [SystemStats_filter]
+}
+
+enum SystemStats_orderBy {
+  id
+  timestamp
+  system
+  system__id
+  system__deployedInTransaction
+  totalValueInBaseCurrency
 }
 
 input System_filter {
@@ -2204,6 +3142,16 @@ input System_filter {
   id_not_in: [Bytes!]
   id_contains: Bytes
   id_not_contains: Bytes
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
   accessControl: String
   accessControl_not: String
   accessControl_gt: String
@@ -2382,6 +3330,7 @@ input System_filter {
 
 enum System_orderBy {
   id
+  deployedInTransaction
   accessControl
   accessControl__id
   account
@@ -2392,14 +3341,19 @@ enum System_orderBy {
   compliance__id
   identityRegistryStorage
   identityRegistryStorage__id
+  identityRegistryStorage__deployedInTransaction
   identityFactory
   identityFactory__id
+  identityFactory__deployedInTransaction
   identityRegistry
   identityRegistry__id
+  identityRegistry__deployedInTransaction
   trustedIssuersRegistry
   trustedIssuersRegistry__id
+  trustedIssuersRegistry__deployedInTransaction
   topicSchemeRegistry
   topicSchemeRegistry__id
+  topicSchemeRegistry__deployedInTransaction
   tokenFactories
 }
 
@@ -2408,6 +3362,8 @@ scalar Timestamp
 
 type Token {
   id: Bytes!
+  createdAt: BigInt!
+  createdBy: Account!
   account: Account!
   accessControl: AccessControl
   identity: Identity
@@ -2426,10 +3382,13 @@ type Token {
   redeemable: TokenRedeemable
   bond: TokenBond
   fund: TokenFund
+  basePriceClaim: IdentityClaim
+  deployedInTransaction: Bytes!
 }
 
 type TokenBalance {
   id: Bytes!
+  lastUpdatedAt: BigInt!
   token: Token!
   account: Account!
   value: BigDecimal!
@@ -2452,6 +3411,14 @@ input TokenBalance_filter {
   id_not_in: [Bytes!]
   id_contains: Bytes
   id_not_contains: Bytes
+  lastUpdatedAt: BigInt
+  lastUpdatedAt_not: BigInt
+  lastUpdatedAt_gt: BigInt
+  lastUpdatedAt_lt: BigInt
+  lastUpdatedAt_gte: BigInt
+  lastUpdatedAt_lte: BigInt
+  lastUpdatedAt_in: [BigInt!]
+  lastUpdatedAt_not_in: [BigInt!]
   token: String
   token_not: String
   token_gt: String
@@ -2555,14 +3522,17 @@ input TokenBalance_filter {
 
 enum TokenBalance_orderBy {
   id
+  lastUpdatedAt
   token
   token__id
+  token__createdAt
   token__type
   token__name
   token__symbol
   token__decimals
   token__totalSupply
   token__totalSupplyExact
+  token__deployedInTransaction
   account
   account__id
   account__isContract
@@ -2582,6 +3552,166 @@ type TokenBond {
   faceValueExact: BigInt!
   maturityDate: BigInt!
   isMatured: Boolean!
+  underlyingAsset: Token!
+}
+
+type TokenBondStats {
+  id: Int8!
+  timestamp: Timestamp!
+  token: Token!
+  underlyingAssetBalanceAvailable: BigDecimal!
+  underlyingAssetBalanceAvailableExact: BigInt!
+  underlyingAssetBalanceRequired: BigDecimal!
+  underlyingAssetBalanceRequiredExact: BigInt!
+  coveredPercentage: BigDecimal!
+}
+
+type TokenBondStatsData {
+  id: Int8!
+  timestamp: Timestamp!
+  token: Token!
+  underlyingAssetBalanceAvailable: BigDecimal!
+  underlyingAssetBalanceAvailableExact: BigInt!
+  underlyingAssetBalanceRequired: BigDecimal!
+  underlyingAssetBalanceRequiredExact: BigInt!
+}
+
+input TokenBondStatsData_filter {
+  id: Int8
+  id_not: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  id_not_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_not: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  timestamp_not_in: [Timestamp!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_contains_nocase: String
+  token_not_contains: String
+  token_not_contains_nocase: String
+  token_starts_with: String
+  token_starts_with_nocase: String
+  token_not_starts_with: String
+  token_not_starts_with_nocase: String
+  token_ends_with: String
+  token_ends_with_nocase: String
+  token_not_ends_with: String
+  token_not_ends_with_nocase: String
+  token_: Token_filter
+  underlyingAssetBalanceAvailable: BigDecimal
+  underlyingAssetBalanceAvailable_not: BigDecimal
+  underlyingAssetBalanceAvailable_gt: BigDecimal
+  underlyingAssetBalanceAvailable_lt: BigDecimal
+  underlyingAssetBalanceAvailable_gte: BigDecimal
+  underlyingAssetBalanceAvailable_lte: BigDecimal
+  underlyingAssetBalanceAvailable_in: [BigDecimal!]
+  underlyingAssetBalanceAvailable_not_in: [BigDecimal!]
+  underlyingAssetBalanceAvailableExact: BigInt
+  underlyingAssetBalanceAvailableExact_not: BigInt
+  underlyingAssetBalanceAvailableExact_gt: BigInt
+  underlyingAssetBalanceAvailableExact_lt: BigInt
+  underlyingAssetBalanceAvailableExact_gte: BigInt
+  underlyingAssetBalanceAvailableExact_lte: BigInt
+  underlyingAssetBalanceAvailableExact_in: [BigInt!]
+  underlyingAssetBalanceAvailableExact_not_in: [BigInt!]
+  underlyingAssetBalanceRequired: BigDecimal
+  underlyingAssetBalanceRequired_not: BigDecimal
+  underlyingAssetBalanceRequired_gt: BigDecimal
+  underlyingAssetBalanceRequired_lt: BigDecimal
+  underlyingAssetBalanceRequired_gte: BigDecimal
+  underlyingAssetBalanceRequired_lte: BigDecimal
+  underlyingAssetBalanceRequired_in: [BigDecimal!]
+  underlyingAssetBalanceRequired_not_in: [BigDecimal!]
+  underlyingAssetBalanceRequiredExact: BigInt
+  underlyingAssetBalanceRequiredExact_not: BigInt
+  underlyingAssetBalanceRequiredExact_gt: BigInt
+  underlyingAssetBalanceRequiredExact_lt: BigInt
+  underlyingAssetBalanceRequiredExact_gte: BigInt
+  underlyingAssetBalanceRequiredExact_lte: BigInt
+  underlyingAssetBalanceRequiredExact_in: [BigInt!]
+  underlyingAssetBalanceRequiredExact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenBondStatsData_filter]
+  or: [TokenBondStatsData_filter]
+}
+
+enum TokenBondStatsData_orderBy {
+  id
+  timestamp
+  token
+  token__id
+  token__createdAt
+  token__type
+  token__name
+  token__symbol
+  token__decimals
+  token__totalSupply
+  token__totalSupplyExact
+  token__deployedInTransaction
+  underlyingAssetBalanceAvailable
+  underlyingAssetBalanceAvailableExact
+  underlyingAssetBalanceRequired
+  underlyingAssetBalanceRequiredExact
+}
+
+input TokenBondStats_filter {
+  id: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  token: String
+  token_: Token_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenBondStats_filter]
+  or: [TokenBondStats_filter]
+}
+
+enum TokenBondStats_orderBy {
+  id
+  timestamp
+  token
+  token__id
+  token__createdAt
+  token__type
+  token__name
+  token__symbol
+  token__decimals
+  token__totalSupply
+  token__totalSupplyExact
+  token__deployedInTransaction
+  underlyingAssetBalanceAvailable
+  underlyingAssetBalanceAvailableExact
+  underlyingAssetBalanceRequired
+  underlyingAssetBalanceRequiredExact
+  coveredPercentage
 }
 
 input TokenBond_filter {
@@ -2623,6 +3753,27 @@ input TokenBond_filter {
   isMatured_not: Boolean
   isMatured_in: [Boolean!]
   isMatured_not_in: [Boolean!]
+  underlyingAsset: String
+  underlyingAsset_not: String
+  underlyingAsset_gt: String
+  underlyingAsset_lt: String
+  underlyingAsset_gte: String
+  underlyingAsset_lte: String
+  underlyingAsset_in: [String!]
+  underlyingAsset_not_in: [String!]
+  underlyingAsset_contains: String
+  underlyingAsset_contains_nocase: String
+  underlyingAsset_not_contains: String
+  underlyingAsset_not_contains_nocase: String
+  underlyingAsset_starts_with: String
+  underlyingAsset_starts_with_nocase: String
+  underlyingAsset_not_starts_with: String
+  underlyingAsset_not_starts_with_nocase: String
+  underlyingAsset_ends_with: String
+  underlyingAsset_ends_with_nocase: String
+  underlyingAsset_not_ends_with: String
+  underlyingAsset_not_ends_with_nocase: String
+  underlyingAsset_: Token_filter
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -2636,6 +3787,16 @@ enum TokenBond_orderBy {
   faceValueExact
   maturityDate
   isMatured
+  underlyingAsset
+  underlyingAsset__id
+  underlyingAsset__createdAt
+  underlyingAsset__type
+  underlyingAsset__name
+  underlyingAsset__symbol
+  underlyingAsset__decimals
+  underlyingAsset__totalSupply
+  underlyingAsset__totalSupplyExact
+  underlyingAsset__deployedInTransaction
 }
 
 type TokenCapped {
@@ -2689,6 +3850,187 @@ type TokenCollateral {
   identityClaim: IdentityClaim
 }
 
+type TokenCollateralStats {
+  id: Int8!
+  timestamp: Timestamp!
+  token: Token!
+  collateral: BigDecimal!
+  collateralExact: BigInt!
+  collateralAvailable: BigDecimal!
+  collateralAvailableExact: BigInt!
+  collateralUsed: BigDecimal!
+  collateralUsedExact: BigInt!
+}
+
+type TokenCollateralStatsData {
+  id: Int8!
+  timestamp: Timestamp!
+  token: Token!
+  collateral: BigDecimal!
+  collateralExact: BigInt!
+  collateralAvailable: BigDecimal!
+  collateralAvailableExact: BigInt!
+  collateralUsed: BigDecimal!
+  collateralUsedExact: BigInt!
+}
+
+input TokenCollateralStatsData_filter {
+  id: Int8
+  id_not: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  id_not_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_not: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  timestamp_not_in: [Timestamp!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_contains_nocase: String
+  token_not_contains: String
+  token_not_contains_nocase: String
+  token_starts_with: String
+  token_starts_with_nocase: String
+  token_not_starts_with: String
+  token_not_starts_with_nocase: String
+  token_ends_with: String
+  token_ends_with_nocase: String
+  token_not_ends_with: String
+  token_not_ends_with_nocase: String
+  token_: Token_filter
+  collateral: BigDecimal
+  collateral_not: BigDecimal
+  collateral_gt: BigDecimal
+  collateral_lt: BigDecimal
+  collateral_gte: BigDecimal
+  collateral_lte: BigDecimal
+  collateral_in: [BigDecimal!]
+  collateral_not_in: [BigDecimal!]
+  collateralExact: BigInt
+  collateralExact_not: BigInt
+  collateralExact_gt: BigInt
+  collateralExact_lt: BigInt
+  collateralExact_gte: BigInt
+  collateralExact_lte: BigInt
+  collateralExact_in: [BigInt!]
+  collateralExact_not_in: [BigInt!]
+  collateralAvailable: BigDecimal
+  collateralAvailable_not: BigDecimal
+  collateralAvailable_gt: BigDecimal
+  collateralAvailable_lt: BigDecimal
+  collateralAvailable_gte: BigDecimal
+  collateralAvailable_lte: BigDecimal
+  collateralAvailable_in: [BigDecimal!]
+  collateralAvailable_not_in: [BigDecimal!]
+  collateralAvailableExact: BigInt
+  collateralAvailableExact_not: BigInt
+  collateralAvailableExact_gt: BigInt
+  collateralAvailableExact_lt: BigInt
+  collateralAvailableExact_gte: BigInt
+  collateralAvailableExact_lte: BigInt
+  collateralAvailableExact_in: [BigInt!]
+  collateralAvailableExact_not_in: [BigInt!]
+  collateralUsed: BigDecimal
+  collateralUsed_not: BigDecimal
+  collateralUsed_gt: BigDecimal
+  collateralUsed_lt: BigDecimal
+  collateralUsed_gte: BigDecimal
+  collateralUsed_lte: BigDecimal
+  collateralUsed_in: [BigDecimal!]
+  collateralUsed_not_in: [BigDecimal!]
+  collateralUsedExact: BigInt
+  collateralUsedExact_not: BigInt
+  collateralUsedExact_gt: BigInt
+  collateralUsedExact_lt: BigInt
+  collateralUsedExact_gte: BigInt
+  collateralUsedExact_lte: BigInt
+  collateralUsedExact_in: [BigInt!]
+  collateralUsedExact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenCollateralStatsData_filter]
+  or: [TokenCollateralStatsData_filter]
+}
+
+enum TokenCollateralStatsData_orderBy {
+  id
+  timestamp
+  token
+  token__id
+  token__createdAt
+  token__type
+  token__name
+  token__symbol
+  token__decimals
+  token__totalSupply
+  token__totalSupplyExact
+  token__deployedInTransaction
+  collateral
+  collateralExact
+  collateralAvailable
+  collateralAvailableExact
+  collateralUsed
+  collateralUsedExact
+}
+
+input TokenCollateralStats_filter {
+  id: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  token: String
+  token_: Token_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenCollateralStats_filter]
+  or: [TokenCollateralStats_filter]
+}
+
+enum TokenCollateralStats_orderBy {
+  id
+  timestamp
+  token
+  token__id
+  token__createdAt
+  token__type
+  token__name
+  token__symbol
+  token__decimals
+  token__totalSupply
+  token__totalSupplyExact
+  token__deployedInTransaction
+  collateral
+  collateralExact
+  collateralAvailable
+  collateralAvailableExact
+  collateralUsed
+  collateralUsedExact
+}
+
 input TokenCollateral_filter {
   id: Bytes
   id_not: Bytes
@@ -2735,12 +4077,315 @@ enum TokenCollateral_orderBy {
   identityClaim__name
   identityClaim__uri
   identityClaim__revoked
+  identityClaim__deployedInTransaction
+}
+
+type TokenDistributionStats {
+  id: Int8!
+  timestamp: Timestamp!
+  token: Token!
+  percentageOwnedByTop5Holders: BigDecimal!
+  balancesCountSegment1: Int!
+  totalValueSegment1: BigDecimal!
+  totalValueSegment1Exact: BigInt!
+  balancesCountSegment2: Int!
+  totalValueSegment2: BigDecimal!
+  totalValueSegment2Exact: BigInt!
+  balancesCountSegment3: Int!
+  totalValueSegment3: BigDecimal!
+  totalValueSegment3Exact: BigInt!
+  balancesCountSegment4: Int!
+  totalValueSegment4: BigDecimal!
+  totalValueSegment4Exact: BigInt!
+  balancesCountSegment5: Int!
+  totalValueSegment5: BigDecimal!
+  totalValueSegment5Exact: BigInt!
+}
+
+type TokenDistributionStatsData {
+  id: Int8!
+  timestamp: Timestamp!
+  token: Token!
+  percentageOwnedByTop5Holders: BigDecimal!
+  balancesCountSegment1: Int!
+  totalValueSegment1: BigDecimal!
+  totalValueSegment1Exact: BigInt!
+  balancesCountSegment2: Int!
+  totalValueSegment2: BigDecimal!
+  totalValueSegment2Exact: BigInt!
+  balancesCountSegment3: Int!
+  totalValueSegment3: BigDecimal!
+  totalValueSegment3Exact: BigInt!
+  balancesCountSegment4: Int!
+  totalValueSegment4: BigDecimal!
+  totalValueSegment4Exact: BigInt!
+  balancesCountSegment5: Int!
+  totalValueSegment5: BigDecimal!
+  totalValueSegment5Exact: BigInt!
+}
+
+input TokenDistributionStatsData_filter {
+  id: Int8
+  id_not: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  id_not_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_not: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  timestamp_not_in: [Timestamp!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_contains_nocase: String
+  token_not_contains: String
+  token_not_contains_nocase: String
+  token_starts_with: String
+  token_starts_with_nocase: String
+  token_not_starts_with: String
+  token_not_starts_with_nocase: String
+  token_ends_with: String
+  token_ends_with_nocase: String
+  token_not_ends_with: String
+  token_not_ends_with_nocase: String
+  token_: Token_filter
+  percentageOwnedByTop5Holders: BigDecimal
+  percentageOwnedByTop5Holders_not: BigDecimal
+  percentageOwnedByTop5Holders_gt: BigDecimal
+  percentageOwnedByTop5Holders_lt: BigDecimal
+  percentageOwnedByTop5Holders_gte: BigDecimal
+  percentageOwnedByTop5Holders_lte: BigDecimal
+  percentageOwnedByTop5Holders_in: [BigDecimal!]
+  percentageOwnedByTop5Holders_not_in: [BigDecimal!]
+  balancesCountSegment1: Int
+  balancesCountSegment1_not: Int
+  balancesCountSegment1_gt: Int
+  balancesCountSegment1_lt: Int
+  balancesCountSegment1_gte: Int
+  balancesCountSegment1_lte: Int
+  balancesCountSegment1_in: [Int!]
+  balancesCountSegment1_not_in: [Int!]
+  totalValueSegment1: BigDecimal
+  totalValueSegment1_not: BigDecimal
+  totalValueSegment1_gt: BigDecimal
+  totalValueSegment1_lt: BigDecimal
+  totalValueSegment1_gte: BigDecimal
+  totalValueSegment1_lte: BigDecimal
+  totalValueSegment1_in: [BigDecimal!]
+  totalValueSegment1_not_in: [BigDecimal!]
+  totalValueSegment1Exact: BigInt
+  totalValueSegment1Exact_not: BigInt
+  totalValueSegment1Exact_gt: BigInt
+  totalValueSegment1Exact_lt: BigInt
+  totalValueSegment1Exact_gte: BigInt
+  totalValueSegment1Exact_lte: BigInt
+  totalValueSegment1Exact_in: [BigInt!]
+  totalValueSegment1Exact_not_in: [BigInt!]
+  balancesCountSegment2: Int
+  balancesCountSegment2_not: Int
+  balancesCountSegment2_gt: Int
+  balancesCountSegment2_lt: Int
+  balancesCountSegment2_gte: Int
+  balancesCountSegment2_lte: Int
+  balancesCountSegment2_in: [Int!]
+  balancesCountSegment2_not_in: [Int!]
+  totalValueSegment2: BigDecimal
+  totalValueSegment2_not: BigDecimal
+  totalValueSegment2_gt: BigDecimal
+  totalValueSegment2_lt: BigDecimal
+  totalValueSegment2_gte: BigDecimal
+  totalValueSegment2_lte: BigDecimal
+  totalValueSegment2_in: [BigDecimal!]
+  totalValueSegment2_not_in: [BigDecimal!]
+  totalValueSegment2Exact: BigInt
+  totalValueSegment2Exact_not: BigInt
+  totalValueSegment2Exact_gt: BigInt
+  totalValueSegment2Exact_lt: BigInt
+  totalValueSegment2Exact_gte: BigInt
+  totalValueSegment2Exact_lte: BigInt
+  totalValueSegment2Exact_in: [BigInt!]
+  totalValueSegment2Exact_not_in: [BigInt!]
+  balancesCountSegment3: Int
+  balancesCountSegment3_not: Int
+  balancesCountSegment3_gt: Int
+  balancesCountSegment3_lt: Int
+  balancesCountSegment3_gte: Int
+  balancesCountSegment3_lte: Int
+  balancesCountSegment3_in: [Int!]
+  balancesCountSegment3_not_in: [Int!]
+  totalValueSegment3: BigDecimal
+  totalValueSegment3_not: BigDecimal
+  totalValueSegment3_gt: BigDecimal
+  totalValueSegment3_lt: BigDecimal
+  totalValueSegment3_gte: BigDecimal
+  totalValueSegment3_lte: BigDecimal
+  totalValueSegment3_in: [BigDecimal!]
+  totalValueSegment3_not_in: [BigDecimal!]
+  totalValueSegment3Exact: BigInt
+  totalValueSegment3Exact_not: BigInt
+  totalValueSegment3Exact_gt: BigInt
+  totalValueSegment3Exact_lt: BigInt
+  totalValueSegment3Exact_gte: BigInt
+  totalValueSegment3Exact_lte: BigInt
+  totalValueSegment3Exact_in: [BigInt!]
+  totalValueSegment3Exact_not_in: [BigInt!]
+  balancesCountSegment4: Int
+  balancesCountSegment4_not: Int
+  balancesCountSegment4_gt: Int
+  balancesCountSegment4_lt: Int
+  balancesCountSegment4_gte: Int
+  balancesCountSegment4_lte: Int
+  balancesCountSegment4_in: [Int!]
+  balancesCountSegment4_not_in: [Int!]
+  totalValueSegment4: BigDecimal
+  totalValueSegment4_not: BigDecimal
+  totalValueSegment4_gt: BigDecimal
+  totalValueSegment4_lt: BigDecimal
+  totalValueSegment4_gte: BigDecimal
+  totalValueSegment4_lte: BigDecimal
+  totalValueSegment4_in: [BigDecimal!]
+  totalValueSegment4_not_in: [BigDecimal!]
+  totalValueSegment4Exact: BigInt
+  totalValueSegment4Exact_not: BigInt
+  totalValueSegment4Exact_gt: BigInt
+  totalValueSegment4Exact_lt: BigInt
+  totalValueSegment4Exact_gte: BigInt
+  totalValueSegment4Exact_lte: BigInt
+  totalValueSegment4Exact_in: [BigInt!]
+  totalValueSegment4Exact_not_in: [BigInt!]
+  balancesCountSegment5: Int
+  balancesCountSegment5_not: Int
+  balancesCountSegment5_gt: Int
+  balancesCountSegment5_lt: Int
+  balancesCountSegment5_gte: Int
+  balancesCountSegment5_lte: Int
+  balancesCountSegment5_in: [Int!]
+  balancesCountSegment5_not_in: [Int!]
+  totalValueSegment5: BigDecimal
+  totalValueSegment5_not: BigDecimal
+  totalValueSegment5_gt: BigDecimal
+  totalValueSegment5_lt: BigDecimal
+  totalValueSegment5_gte: BigDecimal
+  totalValueSegment5_lte: BigDecimal
+  totalValueSegment5_in: [BigDecimal!]
+  totalValueSegment5_not_in: [BigDecimal!]
+  totalValueSegment5Exact: BigInt
+  totalValueSegment5Exact_not: BigInt
+  totalValueSegment5Exact_gt: BigInt
+  totalValueSegment5Exact_lt: BigInt
+  totalValueSegment5Exact_gte: BigInt
+  totalValueSegment5Exact_lte: BigInt
+  totalValueSegment5Exact_in: [BigInt!]
+  totalValueSegment5Exact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenDistributionStatsData_filter]
+  or: [TokenDistributionStatsData_filter]
+}
+
+enum TokenDistributionStatsData_orderBy {
+  id
+  timestamp
+  token
+  token__id
+  token__createdAt
+  token__type
+  token__name
+  token__symbol
+  token__decimals
+  token__totalSupply
+  token__totalSupplyExact
+  token__deployedInTransaction
+  percentageOwnedByTop5Holders
+  balancesCountSegment1
+  totalValueSegment1
+  totalValueSegment1Exact
+  balancesCountSegment2
+  totalValueSegment2
+  totalValueSegment2Exact
+  balancesCountSegment3
+  totalValueSegment3
+  totalValueSegment3Exact
+  balancesCountSegment4
+  totalValueSegment4
+  totalValueSegment4Exact
+  balancesCountSegment5
+  totalValueSegment5
+  totalValueSegment5Exact
+}
+
+input TokenDistributionStats_filter {
+  id: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  token: String
+  token_: Token_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenDistributionStats_filter]
+  or: [TokenDistributionStats_filter]
+}
+
+enum TokenDistributionStats_orderBy {
+  id
+  timestamp
+  token
+  token__id
+  token__createdAt
+  token__type
+  token__name
+  token__symbol
+  token__decimals
+  token__totalSupply
+  token__totalSupplyExact
+  token__deployedInTransaction
+  percentageOwnedByTop5Holders
+  balancesCountSegment1
+  totalValueSegment1
+  totalValueSegment1Exact
+  balancesCountSegment2
+  totalValueSegment2
+  totalValueSegment2Exact
+  balancesCountSegment3
+  totalValueSegment3
+  totalValueSegment3Exact
+  balancesCountSegment4
+  totalValueSegment4
+  totalValueSegment4Exact
+  balancesCountSegment5
+  totalValueSegment5
+  totalValueSegment5Exact
 }
 
 type TokenFactory {
   id: Bytes!
   accessControl: AccessControl!
-  type: String!
+  name: String!
+  typeId: Bytes!
   system: System
   account: Account!
   tokens(skip: Int = 0, first: Int = 100, orderBy: Token_orderBy, orderDirection: OrderDirection, where: Token_filter): [Token!]!
@@ -2778,26 +4423,36 @@ input TokenFactory_filter {
   accessControl_not_ends_with: String
   accessControl_not_ends_with_nocase: String
   accessControl_: AccessControl_filter
-  type: String
-  type_not: String
-  type_gt: String
-  type_lt: String
-  type_gte: String
-  type_lte: String
-  type_in: [String!]
-  type_not_in: [String!]
-  type_contains: String
-  type_contains_nocase: String
-  type_not_contains: String
-  type_not_contains_nocase: String
-  type_starts_with: String
-  type_starts_with_nocase: String
-  type_not_starts_with: String
-  type_not_starts_with_nocase: String
-  type_ends_with: String
-  type_ends_with_nocase: String
-  type_not_ends_with: String
-  type_not_ends_with_nocase: String
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_contains_nocase: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  typeId: Bytes
+  typeId_not: Bytes
+  typeId_gt: Bytes
+  typeId_lt: Bytes
+  typeId_gte: Bytes
+  typeId_lte: Bytes
+  typeId_in: [Bytes!]
+  typeId_not_in: [Bytes!]
+  typeId_contains: Bytes
+  typeId_not_contains: Bytes
   system: String
   system_not: String
   system_gt: String
@@ -2852,9 +4507,11 @@ enum TokenFactory_orderBy {
   id
   accessControl
   accessControl__id
-  type
+  name
+  typeId
   system
   system__id
+  system__deployedInTransaction
   account
   account__id
   account__isContract
@@ -2864,6 +4521,8 @@ enum TokenFactory_orderBy {
 
 type TokenFixedYieldSchedule {
   id: Bytes!
+  createdAt: BigInt!
+  createdBy: Account!
   account: Account!
   token: Token!
   startDate: BigInt!
@@ -2877,11 +4536,10 @@ type TokenFixedYieldSchedule {
   totalYield: BigDecimal!
   totalYieldExact: BigInt!
   underlyingAsset: Token!
-  underlyingAssetBalanceAvailable: BigDecimal!
-  underlyingAssetBalanceAvailableExact: BigInt!
   currentPeriod: TokenFixedYieldSchedulePeriod
   nextPeriod: TokenFixedYieldSchedulePeriod
   periods(skip: Int = 0, first: Int = 100, orderBy: TokenFixedYieldSchedulePeriod_orderBy, orderDirection: OrderDirection, where: TokenFixedYieldSchedulePeriod_filter): [TokenFixedYieldSchedulePeriod!]!
+  deployedInTransaction: Bytes!
 }
 
 type TokenFixedYieldSchedulePeriod {
@@ -2895,6 +4553,7 @@ type TokenFixedYieldSchedulePeriod {
   totalUnclaimedYieldExact: BigInt!
   totalYield: BigDecimal!
   totalYieldExact: BigInt!
+  deployedInTransaction: Bytes!
 }
 
 input TokenFixedYieldSchedulePeriod_filter {
@@ -2993,6 +4652,16 @@ input TokenFixedYieldSchedulePeriod_filter {
   totalYieldExact_lte: BigInt
   totalYieldExact_in: [BigInt!]
   totalYieldExact_not_in: [BigInt!]
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -3004,6 +4673,7 @@ enum TokenFixedYieldSchedulePeriod_orderBy {
   id
   schedule
   schedule__id
+  schedule__createdAt
   schedule__startDate
   schedule__endDate
   schedule__rate
@@ -3014,8 +4684,7 @@ enum TokenFixedYieldSchedulePeriod_orderBy {
   schedule__totalUnclaimedYieldExact
   schedule__totalYield
   schedule__totalYieldExact
-  schedule__underlyingAssetBalanceAvailable
-  schedule__underlyingAssetBalanceAvailableExact
+  schedule__deployedInTransaction
   startDate
   endDate
   totalClaimed
@@ -3024,6 +4693,7 @@ enum TokenFixedYieldSchedulePeriod_orderBy {
   totalUnclaimedYieldExact
   totalYield
   totalYieldExact
+  deployedInTransaction
 }
 
 input TokenFixedYieldSchedule_filter {
@@ -3037,6 +4707,35 @@ input TokenFixedYieldSchedule_filter {
   id_not_in: [Bytes!]
   id_contains: Bytes
   id_not_contains: Bytes
+  createdAt: BigInt
+  createdAt_not: BigInt
+  createdAt_gt: BigInt
+  createdAt_lt: BigInt
+  createdAt_gte: BigInt
+  createdAt_lte: BigInt
+  createdAt_in: [BigInt!]
+  createdAt_not_in: [BigInt!]
+  createdBy: String
+  createdBy_not: String
+  createdBy_gt: String
+  createdBy_lt: String
+  createdBy_gte: String
+  createdBy_lte: String
+  createdBy_in: [String!]
+  createdBy_not_in: [String!]
+  createdBy_contains: String
+  createdBy_contains_nocase: String
+  createdBy_not_contains: String
+  createdBy_not_contains_nocase: String
+  createdBy_starts_with: String
+  createdBy_starts_with_nocase: String
+  createdBy_not_starts_with: String
+  createdBy_not_starts_with_nocase: String
+  createdBy_ends_with: String
+  createdBy_ends_with_nocase: String
+  createdBy_not_ends_with: String
+  createdBy_not_ends_with_nocase: String
+  createdBy_: Account_filter
   account: String
   account_not: String
   account_gt: String
@@ -3180,22 +4879,6 @@ input TokenFixedYieldSchedule_filter {
   underlyingAsset_not_ends_with: String
   underlyingAsset_not_ends_with_nocase: String
   underlyingAsset_: Token_filter
-  underlyingAssetBalanceAvailable: BigDecimal
-  underlyingAssetBalanceAvailable_not: BigDecimal
-  underlyingAssetBalanceAvailable_gt: BigDecimal
-  underlyingAssetBalanceAvailable_lt: BigDecimal
-  underlyingAssetBalanceAvailable_gte: BigDecimal
-  underlyingAssetBalanceAvailable_lte: BigDecimal
-  underlyingAssetBalanceAvailable_in: [BigDecimal!]
-  underlyingAssetBalanceAvailable_not_in: [BigDecimal!]
-  underlyingAssetBalanceAvailableExact: BigInt
-  underlyingAssetBalanceAvailableExact_not: BigInt
-  underlyingAssetBalanceAvailableExact_gt: BigInt
-  underlyingAssetBalanceAvailableExact_lt: BigInt
-  underlyingAssetBalanceAvailableExact_gte: BigInt
-  underlyingAssetBalanceAvailableExact_lte: BigInt
-  underlyingAssetBalanceAvailableExact_in: [BigInt!]
-  underlyingAssetBalanceAvailableExact_not_in: [BigInt!]
   currentPeriod: String
   currentPeriod_not: String
   currentPeriod_gt: String
@@ -3239,6 +4922,16 @@ input TokenFixedYieldSchedule_filter {
   nextPeriod_not_ends_with_nocase: String
   nextPeriod_: TokenFixedYieldSchedulePeriod_filter
   periods_: TokenFixedYieldSchedulePeriod_filter
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -3248,18 +4941,25 @@ input TokenFixedYieldSchedule_filter {
 
 enum TokenFixedYieldSchedule_orderBy {
   id
+  createdAt
+  createdBy
+  createdBy__id
+  createdBy__isContract
+  createdBy__country
   account
   account__id
   account__isContract
   account__country
   token
   token__id
+  token__createdAt
   token__type
   token__name
   token__symbol
   token__decimals
   token__totalSupply
   token__totalSupplyExact
+  token__deployedInTransaction
   startDate
   endDate
   rate
@@ -3272,14 +4972,14 @@ enum TokenFixedYieldSchedule_orderBy {
   totalYieldExact
   underlyingAsset
   underlyingAsset__id
+  underlyingAsset__createdAt
   underlyingAsset__type
   underlyingAsset__name
   underlyingAsset__symbol
   underlyingAsset__decimals
   underlyingAsset__totalSupply
   underlyingAsset__totalSupplyExact
-  underlyingAssetBalanceAvailable
-  underlyingAssetBalanceAvailableExact
+  underlyingAsset__deployedInTransaction
   currentPeriod
   currentPeriod__id
   currentPeriod__startDate
@@ -3290,6 +4990,7 @@ enum TokenFixedYieldSchedule_orderBy {
   currentPeriod__totalUnclaimedYieldExact
   currentPeriod__totalYield
   currentPeriod__totalYieldExact
+  currentPeriod__deployedInTransaction
   nextPeriod
   nextPeriod__id
   nextPeriod__startDate
@@ -3300,7 +5001,9 @@ enum TokenFixedYieldSchedule_orderBy {
   nextPeriod__totalUnclaimedYieldExact
   nextPeriod__totalYield
   nextPeriod__totalYieldExact
+  nextPeriod__deployedInTransaction
   periods
+  deployedInTransaction
 }
 
 type TokenFund {
@@ -3417,6 +5120,361 @@ enum TokenRedeemable_orderBy {
   redeemedAmountExact
 }
 
+type TokenStats {
+  id: Int8!
+  timestamp: Timestamp!
+  token: Token!
+  type: String!
+  balancesCount: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  totalMinted: BigDecimal!
+  totalMintedExact: BigInt!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalTransfered: BigDecimal!
+  totalTransferedExact: BigInt!
+}
+
+type TokenStatsData {
+  id: Int8!
+  timestamp: Timestamp!
+  token: Token!
+  type: String!
+  balancesCount: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  minted: BigDecimal!
+  mintedExact: BigInt!
+  burned: BigDecimal!
+  burnedExact: BigInt!
+  transfered: BigDecimal!
+  transferedExact: BigInt!
+}
+
+input TokenStatsData_filter {
+  id: Int8
+  id_not: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  id_not_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_not: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  timestamp_not_in: [Timestamp!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_contains_nocase: String
+  token_not_contains: String
+  token_not_contains_nocase: String
+  token_starts_with: String
+  token_starts_with_nocase: String
+  token_not_starts_with: String
+  token_not_starts_with_nocase: String
+  token_ends_with: String
+  token_ends_with_nocase: String
+  token_not_ends_with: String
+  token_not_ends_with_nocase: String
+  token_: Token_filter
+  type: String
+  type_not: String
+  type_gt: String
+  type_lt: String
+  type_gte: String
+  type_lte: String
+  type_in: [String!]
+  type_not_in: [String!]
+  type_contains: String
+  type_contains_nocase: String
+  type_not_contains: String
+  type_not_contains_nocase: String
+  type_starts_with: String
+  type_starts_with_nocase: String
+  type_not_starts_with: String
+  type_not_starts_with_nocase: String
+  type_ends_with: String
+  type_ends_with_nocase: String
+  type_not_ends_with: String
+  type_not_ends_with_nocase: String
+  balancesCount: Int
+  balancesCount_not: Int
+  balancesCount_gt: Int
+  balancesCount_lt: Int
+  balancesCount_gte: Int
+  balancesCount_lte: Int
+  balancesCount_in: [Int!]
+  balancesCount_not_in: [Int!]
+  totalSupply: BigDecimal
+  totalSupply_not: BigDecimal
+  totalSupply_gt: BigDecimal
+  totalSupply_lt: BigDecimal
+  totalSupply_gte: BigDecimal
+  totalSupply_lte: BigDecimal
+  totalSupply_in: [BigDecimal!]
+  totalSupply_not_in: [BigDecimal!]
+  totalSupplyExact: BigInt
+  totalSupplyExact_not: BigInt
+  totalSupplyExact_gt: BigInt
+  totalSupplyExact_lt: BigInt
+  totalSupplyExact_gte: BigInt
+  totalSupplyExact_lte: BigInt
+  totalSupplyExact_in: [BigInt!]
+  totalSupplyExact_not_in: [BigInt!]
+  minted: BigDecimal
+  minted_not: BigDecimal
+  minted_gt: BigDecimal
+  minted_lt: BigDecimal
+  minted_gte: BigDecimal
+  minted_lte: BigDecimal
+  minted_in: [BigDecimal!]
+  minted_not_in: [BigDecimal!]
+  mintedExact: BigInt
+  mintedExact_not: BigInt
+  mintedExact_gt: BigInt
+  mintedExact_lt: BigInt
+  mintedExact_gte: BigInt
+  mintedExact_lte: BigInt
+  mintedExact_in: [BigInt!]
+  mintedExact_not_in: [BigInt!]
+  burned: BigDecimal
+  burned_not: BigDecimal
+  burned_gt: BigDecimal
+  burned_lt: BigDecimal
+  burned_gte: BigDecimal
+  burned_lte: BigDecimal
+  burned_in: [BigDecimal!]
+  burned_not_in: [BigDecimal!]
+  burnedExact: BigInt
+  burnedExact_not: BigInt
+  burnedExact_gt: BigInt
+  burnedExact_lt: BigInt
+  burnedExact_gte: BigInt
+  burnedExact_lte: BigInt
+  burnedExact_in: [BigInt!]
+  burnedExact_not_in: [BigInt!]
+  transfered: BigDecimal
+  transfered_not: BigDecimal
+  transfered_gt: BigDecimal
+  transfered_lt: BigDecimal
+  transfered_gte: BigDecimal
+  transfered_lte: BigDecimal
+  transfered_in: [BigDecimal!]
+  transfered_not_in: [BigDecimal!]
+  transferedExact: BigInt
+  transferedExact_not: BigInt
+  transferedExact_gt: BigInt
+  transferedExact_lt: BigInt
+  transferedExact_gte: BigInt
+  transferedExact_lte: BigInt
+  transferedExact_in: [BigInt!]
+  transferedExact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenStatsData_filter]
+  or: [TokenStatsData_filter]
+}
+
+enum TokenStatsData_orderBy {
+  id
+  timestamp
+  token
+  token__id
+  token__createdAt
+  token__type
+  token__name
+  token__symbol
+  token__decimals
+  token__totalSupply
+  token__totalSupplyExact
+  token__deployedInTransaction
+  type
+  balancesCount
+  totalSupply
+  totalSupplyExact
+  minted
+  mintedExact
+  burned
+  burnedExact
+  transfered
+  transferedExact
+}
+
+input TokenStats_filter {
+  id: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  token: String
+  token_: Token_filter
+  type: String
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenStats_filter]
+  or: [TokenStats_filter]
+}
+
+enum TokenStats_orderBy {
+  id
+  timestamp
+  token
+  token__id
+  token__createdAt
+  token__type
+  token__name
+  token__symbol
+  token__decimals
+  token__totalSupply
+  token__totalSupplyExact
+  token__deployedInTransaction
+  type
+  balancesCount
+  totalSupply
+  totalSupplyExact
+  totalMinted
+  totalMintedExact
+  totalBurned
+  totalBurnedExact
+  totalTransfered
+  totalTransferedExact
+}
+
+type TokenTypeStats {
+  id: Int8!
+  timestamp: Timestamp!
+  type: String!
+  count: Int!
+  percentageOfTotalSupply: BigDecimal!
+}
+
+type TokenTypeStatsData {
+  id: Int8!
+  timestamp: Timestamp!
+  type: String!
+  count: Int!
+  percentageOfTotalSupply: BigDecimal!
+}
+
+input TokenTypeStatsData_filter {
+  id: Int8
+  id_not: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  id_not_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_not: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  timestamp_not_in: [Timestamp!]
+  type: String
+  type_not: String
+  type_gt: String
+  type_lt: String
+  type_gte: String
+  type_lte: String
+  type_in: [String!]
+  type_not_in: [String!]
+  type_contains: String
+  type_contains_nocase: String
+  type_not_contains: String
+  type_not_contains_nocase: String
+  type_starts_with: String
+  type_starts_with_nocase: String
+  type_not_starts_with: String
+  type_not_starts_with_nocase: String
+  type_ends_with: String
+  type_ends_with_nocase: String
+  type_not_ends_with: String
+  type_not_ends_with_nocase: String
+  count: Int
+  count_not: Int
+  count_gt: Int
+  count_lt: Int
+  count_gte: Int
+  count_lte: Int
+  count_in: [Int!]
+  count_not_in: [Int!]
+  percentageOfTotalSupply: BigDecimal
+  percentageOfTotalSupply_not: BigDecimal
+  percentageOfTotalSupply_gt: BigDecimal
+  percentageOfTotalSupply_lt: BigDecimal
+  percentageOfTotalSupply_gte: BigDecimal
+  percentageOfTotalSupply_lte: BigDecimal
+  percentageOfTotalSupply_in: [BigDecimal!]
+  percentageOfTotalSupply_not_in: [BigDecimal!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenTypeStatsData_filter]
+  or: [TokenTypeStatsData_filter]
+}
+
+enum TokenTypeStatsData_orderBy {
+  id
+  timestamp
+  type
+  count
+  percentageOfTotalSupply
+}
+
+input TokenTypeStats_filter {
+  id: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  type: String
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenTypeStats_filter]
+  or: [TokenTypeStats_filter]
+}
+
+enum TokenTypeStats_orderBy {
+  id
+  timestamp
+  type
+  count
+  percentageOfTotalSupply
+}
+
 type TokenYield {
   id: Bytes!
   schedule: TokenFixedYieldSchedule!
@@ -3465,6 +5523,7 @@ enum TokenYield_orderBy {
   id
   schedule
   schedule__id
+  schedule__createdAt
   schedule__startDate
   schedule__endDate
   schedule__rate
@@ -3475,8 +5534,7 @@ enum TokenYield_orderBy {
   schedule__totalUnclaimedYieldExact
   schedule__totalYield
   schedule__totalYieldExact
-  schedule__underlyingAssetBalanceAvailable
-  schedule__underlyingAssetBalanceAvailableExact
+  schedule__deployedInTransaction
 }
 
 input Token_filter {
@@ -3490,6 +5548,35 @@ input Token_filter {
   id_not_in: [Bytes!]
   id_contains: Bytes
   id_not_contains: Bytes
+  createdAt: BigInt
+  createdAt_not: BigInt
+  createdAt_gt: BigInt
+  createdAt_lt: BigInt
+  createdAt_gte: BigInt
+  createdAt_lte: BigInt
+  createdAt_in: [BigInt!]
+  createdAt_not_in: [BigInt!]
+  createdBy: String
+  createdBy_not: String
+  createdBy_gt: String
+  createdBy_lt: String
+  createdBy_gte: String
+  createdBy_lte: String
+  createdBy_in: [String!]
+  createdBy_not_in: [String!]
+  createdBy_contains: String
+  createdBy_contains_nocase: String
+  createdBy_not_contains: String
+  createdBy_not_contains_nocase: String
+  createdBy_starts_with: String
+  createdBy_starts_with_nocase: String
+  createdBy_not_starts_with: String
+  createdBy_not_starts_with_nocase: String
+  createdBy_ends_with: String
+  createdBy_ends_with_nocase: String
+  createdBy_not_ends_with: String
+  createdBy_not_ends_with_nocase: String
+  createdBy_: Account_filter
   account: String
   account_not: String
   account_gt: String
@@ -3806,6 +5893,37 @@ input Token_filter {
   fund_not_ends_with: String
   fund_not_ends_with_nocase: String
   fund_: TokenFund_filter
+  basePriceClaim: String
+  basePriceClaim_not: String
+  basePriceClaim_gt: String
+  basePriceClaim_lt: String
+  basePriceClaim_gte: String
+  basePriceClaim_lte: String
+  basePriceClaim_in: [String!]
+  basePriceClaim_not_in: [String!]
+  basePriceClaim_contains: String
+  basePriceClaim_contains_nocase: String
+  basePriceClaim_not_contains: String
+  basePriceClaim_not_contains_nocase: String
+  basePriceClaim_starts_with: String
+  basePriceClaim_starts_with_nocase: String
+  basePriceClaim_not_starts_with: String
+  basePriceClaim_not_starts_with_nocase: String
+  basePriceClaim_ends_with: String
+  basePriceClaim_ends_with_nocase: String
+  basePriceClaim_not_ends_with: String
+  basePriceClaim_not_ends_with_nocase: String
+  basePriceClaim_: IdentityClaim_filter
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -3815,6 +5933,11 @@ input Token_filter {
 
 enum Token_orderBy {
   id
+  createdAt
+  createdBy
+  createdBy__id
+  createdBy__isContract
+  createdBy__country
   account
   account__id
   account__isContract
@@ -3823,11 +5946,13 @@ enum Token_orderBy {
   accessControl__id
   identity
   identity__id
+  identity__deployedInTransaction
   balances
   type
   tokenFactory
   tokenFactory__id
-  tokenFactory__type
+  tokenFactory__name
+  tokenFactory__typeId
   name
   symbol
   decimals
@@ -3857,6 +5982,13 @@ enum Token_orderBy {
   fund
   fund__id
   fund__managementFeeBps
+  basePriceClaim
+  basePriceClaim__id
+  basePriceClaim__name
+  basePriceClaim__uri
+  basePriceClaim__revoked
+  basePriceClaim__deployedInTransaction
+  deployedInTransaction
 }
 
 type TopicScheme {
@@ -3865,6 +5997,7 @@ type TopicScheme {
   name: String!
   signature: String!
   enabled: Boolean!
+  deployedInTransaction: Bytes!
 }
 
 type TopicSchemeRegistry {
@@ -3872,6 +6005,7 @@ type TopicSchemeRegistry {
   accessControl: AccessControl!
   account: Account!
   schemes(skip: Int = 0, first: Int = 100, orderBy: TopicScheme_orderBy, orderDirection: OrderDirection, where: TopicScheme_filter): [TopicScheme!]!
+  deployedInTransaction: Bytes!
 }
 
 input TopicSchemeRegistry_filter {
@@ -3928,6 +6062,16 @@ input TopicSchemeRegistry_filter {
   account_not_ends_with_nocase: String
   account_: Account_filter
   schemes_: TopicScheme_filter
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -3944,6 +6088,7 @@ enum TopicSchemeRegistry_orderBy {
   account__isContract
   account__country
   schemes
+  deployedInTransaction
 }
 
 input TopicScheme_filter {
@@ -4022,6 +6167,16 @@ input TopicScheme_filter {
   enabled_not: Boolean
   enabled_in: [Boolean!]
   enabled_not_in: [Boolean!]
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -4033,15 +6188,18 @@ enum TopicScheme_orderBy {
   id
   registry
   registry__id
+  registry__deployedInTransaction
   name
   signature
   enabled
+  deployedInTransaction
 }
 
 type TrustedIssuersRegistry {
   id: Bytes!
   accessControl: AccessControl!
   account: Account!
+  deployedInTransaction: Bytes!
 }
 
 input TrustedIssuersRegistry_filter {
@@ -4097,6 +6255,16 @@ input TrustedIssuersRegistry_filter {
   account_not_ends_with: String
   account_not_ends_with_nocase: String
   account_: Account_filter
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -4112,6 +6280,356 @@ enum TrustedIssuersRegistry_orderBy {
   account__id
   account__isContract
   account__country
+  deployedInTransaction
+}
+
+type XvPSettlement {
+  id: Bytes!
+  cutoffDate: BigInt!
+  autoExecute: Boolean!
+  executed: Boolean!
+  cancelled: Boolean!
+  createdAt: BigInt!
+  flows(skip: Int = 0, first: Int = 100, orderBy: XvPSettlementFlow_orderBy, orderDirection: OrderDirection, where: XvPSettlementFlow_filter): [XvPSettlementFlow!]!
+  approvals(skip: Int = 0, first: Int = 100, orderBy: XvPSettlementApproval_orderBy, orderDirection: OrderDirection, where: XvPSettlementApproval_filter): [XvPSettlementApproval!]!
+  participants(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
+  deployedInTransaction: Bytes!
+}
+
+type XvPSettlementApproval {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  account: Account!
+  approved: Boolean!
+  timestamp: BigInt
+}
+
+input XvPSettlementApproval_filter {
+  id: Bytes
+  id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
+  id_in: [Bytes!]
+  id_not_in: [Bytes!]
+  id_contains: Bytes
+  id_not_contains: Bytes
+  xvpSettlement: String
+  xvpSettlement_not: String
+  xvpSettlement_gt: String
+  xvpSettlement_lt: String
+  xvpSettlement_gte: String
+  xvpSettlement_lte: String
+  xvpSettlement_in: [String!]
+  xvpSettlement_not_in: [String!]
+  xvpSettlement_contains: String
+  xvpSettlement_contains_nocase: String
+  xvpSettlement_not_contains: String
+  xvpSettlement_not_contains_nocase: String
+  xvpSettlement_starts_with: String
+  xvpSettlement_starts_with_nocase: String
+  xvpSettlement_not_starts_with: String
+  xvpSettlement_not_starts_with_nocase: String
+  xvpSettlement_ends_with: String
+  xvpSettlement_ends_with_nocase: String
+  xvpSettlement_not_ends_with: String
+  xvpSettlement_not_ends_with_nocase: String
+  xvpSettlement_: XvPSettlement_filter
+  account: String
+  account_not: String
+  account_gt: String
+  account_lt: String
+  account_gte: String
+  account_lte: String
+  account_in: [String!]
+  account_not_in: [String!]
+  account_contains: String
+  account_contains_nocase: String
+  account_not_contains: String
+  account_not_contains_nocase: String
+  account_starts_with: String
+  account_starts_with_nocase: String
+  account_not_starts_with: String
+  account_not_starts_with_nocase: String
+  account_ends_with: String
+  account_ends_with_nocase: String
+  account_not_ends_with: String
+  account_not_ends_with_nocase: String
+  account_: Account_filter
+  approved: Boolean
+  approved_not: Boolean
+  approved_in: [Boolean!]
+  approved_not_in: [Boolean!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [XvPSettlementApproval_filter]
+  or: [XvPSettlementApproval_filter]
+}
+
+enum XvPSettlementApproval_orderBy {
+  id
+  xvpSettlement
+  xvpSettlement__id
+  xvpSettlement__cutoffDate
+  xvpSettlement__autoExecute
+  xvpSettlement__executed
+  xvpSettlement__cancelled
+  xvpSettlement__createdAt
+  xvpSettlement__deployedInTransaction
+  account
+  account__id
+  account__isContract
+  account__country
+  approved
+  timestamp
+}
+
+type XvPSettlementFlow {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  asset: Token!
+  from: Account!
+  to: Account!
+  amount: BigDecimal!
+  amountExact: BigInt!
+}
+
+input XvPSettlementFlow_filter {
+  id: Bytes
+  id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
+  id_in: [Bytes!]
+  id_not_in: [Bytes!]
+  id_contains: Bytes
+  id_not_contains: Bytes
+  xvpSettlement: String
+  xvpSettlement_not: String
+  xvpSettlement_gt: String
+  xvpSettlement_lt: String
+  xvpSettlement_gte: String
+  xvpSettlement_lte: String
+  xvpSettlement_in: [String!]
+  xvpSettlement_not_in: [String!]
+  xvpSettlement_contains: String
+  xvpSettlement_contains_nocase: String
+  xvpSettlement_not_contains: String
+  xvpSettlement_not_contains_nocase: String
+  xvpSettlement_starts_with: String
+  xvpSettlement_starts_with_nocase: String
+  xvpSettlement_not_starts_with: String
+  xvpSettlement_not_starts_with_nocase: String
+  xvpSettlement_ends_with: String
+  xvpSettlement_ends_with_nocase: String
+  xvpSettlement_not_ends_with: String
+  xvpSettlement_not_ends_with_nocase: String
+  xvpSettlement_: XvPSettlement_filter
+  asset: String
+  asset_not: String
+  asset_gt: String
+  asset_lt: String
+  asset_gte: String
+  asset_lte: String
+  asset_in: [String!]
+  asset_not_in: [String!]
+  asset_contains: String
+  asset_contains_nocase: String
+  asset_not_contains: String
+  asset_not_contains_nocase: String
+  asset_starts_with: String
+  asset_starts_with_nocase: String
+  asset_not_starts_with: String
+  asset_not_starts_with_nocase: String
+  asset_ends_with: String
+  asset_ends_with_nocase: String
+  asset_not_ends_with: String
+  asset_not_ends_with_nocase: String
+  asset_: Token_filter
+  from: String
+  from_not: String
+  from_gt: String
+  from_lt: String
+  from_gte: String
+  from_lte: String
+  from_in: [String!]
+  from_not_in: [String!]
+  from_contains: String
+  from_contains_nocase: String
+  from_not_contains: String
+  from_not_contains_nocase: String
+  from_starts_with: String
+  from_starts_with_nocase: String
+  from_not_starts_with: String
+  from_not_starts_with_nocase: String
+  from_ends_with: String
+  from_ends_with_nocase: String
+  from_not_ends_with: String
+  from_not_ends_with_nocase: String
+  from_: Account_filter
+  to: String
+  to_not: String
+  to_gt: String
+  to_lt: String
+  to_gte: String
+  to_lte: String
+  to_in: [String!]
+  to_not_in: [String!]
+  to_contains: String
+  to_contains_nocase: String
+  to_not_contains: String
+  to_not_contains_nocase: String
+  to_starts_with: String
+  to_starts_with_nocase: String
+  to_not_starts_with: String
+  to_not_starts_with_nocase: String
+  to_ends_with: String
+  to_ends_with_nocase: String
+  to_not_ends_with: String
+  to_not_ends_with_nocase: String
+  to_: Account_filter
+  amount: BigDecimal
+  amount_not: BigDecimal
+  amount_gt: BigDecimal
+  amount_lt: BigDecimal
+  amount_gte: BigDecimal
+  amount_lte: BigDecimal
+  amount_in: [BigDecimal!]
+  amount_not_in: [BigDecimal!]
+  amountExact: BigInt
+  amountExact_not: BigInt
+  amountExact_gt: BigInt
+  amountExact_lt: BigInt
+  amountExact_gte: BigInt
+  amountExact_lte: BigInt
+  amountExact_in: [BigInt!]
+  amountExact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [XvPSettlementFlow_filter]
+  or: [XvPSettlementFlow_filter]
+}
+
+enum XvPSettlementFlow_orderBy {
+  id
+  xvpSettlement
+  xvpSettlement__id
+  xvpSettlement__cutoffDate
+  xvpSettlement__autoExecute
+  xvpSettlement__executed
+  xvpSettlement__cancelled
+  xvpSettlement__createdAt
+  xvpSettlement__deployedInTransaction
+  asset
+  asset__id
+  asset__createdAt
+  asset__type
+  asset__name
+  asset__symbol
+  asset__decimals
+  asset__totalSupply
+  asset__totalSupplyExact
+  asset__deployedInTransaction
+  from
+  from__id
+  from__isContract
+  from__country
+  to
+  to__id
+  to__isContract
+  to__country
+  amount
+  amountExact
+}
+
+input XvPSettlement_filter {
+  id: Bytes
+  id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
+  id_in: [Bytes!]
+  id_not_in: [Bytes!]
+  id_contains: Bytes
+  id_not_contains: Bytes
+  cutoffDate: BigInt
+  cutoffDate_not: BigInt
+  cutoffDate_gt: BigInt
+  cutoffDate_lt: BigInt
+  cutoffDate_gte: BigInt
+  cutoffDate_lte: BigInt
+  cutoffDate_in: [BigInt!]
+  cutoffDate_not_in: [BigInt!]
+  autoExecute: Boolean
+  autoExecute_not: Boolean
+  autoExecute_in: [Boolean!]
+  autoExecute_not_in: [Boolean!]
+  executed: Boolean
+  executed_not: Boolean
+  executed_in: [Boolean!]
+  executed_not_in: [Boolean!]
+  cancelled: Boolean
+  cancelled_not: Boolean
+  cancelled_in: [Boolean!]
+  cancelled_not_in: [Boolean!]
+  createdAt: BigInt
+  createdAt_not: BigInt
+  createdAt_gt: BigInt
+  createdAt_lt: BigInt
+  createdAt_gte: BigInt
+  createdAt_lte: BigInt
+  createdAt_in: [BigInt!]
+  createdAt_not_in: [BigInt!]
+  flows_: XvPSettlementFlow_filter
+  approvals_: XvPSettlementApproval_filter
+  participants: [String!]
+  participants_not: [String!]
+  participants_contains: [String!]
+  participants_contains_nocase: [String!]
+  participants_not_contains: [String!]
+  participants_not_contains_nocase: [String!]
+  participants_: Account_filter
+  deployedInTransaction: Bytes
+  deployedInTransaction_not: Bytes
+  deployedInTransaction_gt: Bytes
+  deployedInTransaction_lt: Bytes
+  deployedInTransaction_gte: Bytes
+  deployedInTransaction_lte: Bytes
+  deployedInTransaction_in: [Bytes!]
+  deployedInTransaction_not_in: [Bytes!]
+  deployedInTransaction_contains: Bytes
+  deployedInTransaction_not_contains: Bytes
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [XvPSettlement_filter]
+  or: [XvPSettlement_filter]
+}
+
+enum XvPSettlement_orderBy {
+  id
+  cutoffDate
+  autoExecute
+  executed
+  cancelled
+  createdAt
+  flows
+  approvals
+  participants
+  deployedInTransaction
 }
 
 type _Block_ {

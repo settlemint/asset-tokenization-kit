@@ -436,22 +436,6 @@ contract InterfaceIdCalculator is Script {
   return tempContractPath;
 }
 
-async function compileContracts(skipBuild: boolean): Promise<void> {
-  if (skipBuild) {
-    logger.info("Skipping contract compilation");
-    return;
-  }
-
-  logger.info("Compiling contracts... (this can take a while)");
-
-  try {
-    await $`forge build --silent`.cwd(CONTRACTS_ROOT).quiet();
-    logger.info("Contracts compiled successfully");
-  } catch (error) {
-    throw new Error(`Contract compilation failed: ${error}`);
-  }
-}
-
 async function calculateInterfaceIds(
   tempContractPath: string
 ): Promise<string> {
@@ -671,8 +655,6 @@ async function main() {
     // Main workflow
     const interfaceFiles = await findInterfaceFiles();
     const interfaces = await extractInterfaceMetadata(interfaceFiles);
-
-    await compileContracts(options.skipBuild);
 
     const tempContractPath = await createCalculatorContract(
       interfaces,

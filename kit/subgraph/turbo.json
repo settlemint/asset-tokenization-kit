@@ -11,7 +11,7 @@
     "codegen:interfaceid": {
       "dependsOn": ["contracts#compile"],
       "outputs": ["src/erc165/utils/interfaceids.ts"],
-      "inputs": ["**/*.sol"]
+      "inputs": ["**/*.sol", "!.generated/**"]
     },
     "codegen:gql-tada": {
       "dependsOn": ["publish"],
@@ -20,7 +20,11 @@
     },
     "compile": {
       "dependsOn": ["^compile", "codegen"],
-      "outputs": ["build/**"],
+      "outputs": [
+        "build/**",
+        ".generated/subgraph-hash.txt",
+        ".generated/.env.subgraph"
+      ],
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },
     "publish": {

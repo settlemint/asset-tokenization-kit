@@ -4,9 +4,9 @@ pragma solidity ^0.8.28;
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
 import { SMARTYieldHelpers, MockERC20 } from "./../../utils/SMARTYieldHelpers.sol";
-import { IATKFixedYieldScheduleFactory } from "../../../contracts/system/yield/IATKFixedYieldScheduleFactory.sol";
+import { IATKFixedYieldScheduleFactory } from "../../../contracts/addons/yield/IATKFixedYieldScheduleFactory.sol";
 import { ATKFixedYieldScheduleFactoryImplementation } from
-    "../../../contracts/system/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
+    "../../../contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 
 /// @title Base test contract for SMART Yield functionality

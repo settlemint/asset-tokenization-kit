@@ -41,10 +41,12 @@ const logger = createLogger({
 
 // File paths
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
-const FORGE_OUT_DIR = `${CONTRACTS_ROOT}/out-genesis`;
-const ALL_ALLOCATIONS_FILE = `${CONTRACTS_ROOT}/tools/genesis-output.json`;
+const FORGE_OUT_DIR = `${CONTRACTS_ROOT}/.generated/out-genesis`;
+const OUTPUT_DIR = `${CONTRACTS_ROOT}/.generated`;
+const ALL_ALLOCATIONS_FILE = `${OUTPUT_DIR}/genesis-allocations.json`;
 const ROOT_DIR = (await findTurboRoot())?.monorepoRoot;
-const GENESIS_FILE = `${ROOT_DIR}/tools/docker/besu/genesis.json`;
+const GENESIS_TEMPLATE_FILE = `${ROOT_DIR}/tools/docker/besu/genesis.json`;
+const CONTRACTS_GENESIS_FILE = `${OUTPUT_DIR}/genesis.json`;
 
 // Contract configuration
 const CONTRACT_ADDRESSES = {
@@ -528,7 +530,7 @@ class ContractDeployer {
       "--broadcast",
       "--unlocked",
       "--from",
-      "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
       "--json",
       "--rpc-url",
       `http://localhost:${this.config.anvilPort}`,
@@ -548,18 +550,18 @@ class ContractDeployer {
     let result;
     if (args.length > 0) {
       result = isDebugEnabled()
-        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --constructor-args ${args}`.cwd(
+        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --constructor-args ${args}`.cwd(
             CONTRACTS_ROOT
           )
-        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --constructor-args ${args}`
+        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --constructor-args ${args}`
             .cwd(CONTRACTS_ROOT)
             .quiet();
     } else {
       result = isDebugEnabled()
-        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR}`.cwd(
+        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR}`.cwd(
             CONTRACTS_ROOT
           )
-        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR}`
+        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR}`
             .cwd(CONTRACTS_ROOT)
             .quiet();
     }
@@ -761,9 +763,11 @@ class GenesisGenerator {
   async initializeGenesisFile(): Promise<void> {
     logger.info("Initializing genesis allocation file...");
 
-    // Create forge output directory
+    // Create output directories
     await $`mkdir -p ${FORGE_OUT_DIR}`.quiet();
+    await $`mkdir -p ${OUTPUT_DIR}`.quiet();
     logger.debug(`Created forge output directory: ${FORGE_OUT_DIR}`);
+    logger.debug(`Created output directory: ${OUTPUT_DIR}`);
 
     // Remove existing file if it exists
     const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
@@ -937,12 +941,6 @@ class GenesisGenerator {
   async generateFinalGenesis(): Promise<void> {
     logger.info("Generating final genesis.json file...");
 
-    // Check if template exists
-    const genesisFile = Bun.file(GENESIS_FILE);
-    if (!(await genesisFile.exists())) {
-      throw new Error(`Genesis not found: ${GENESIS_FILE}`);
-    }
-
     // Check if allocations exist
     const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
     if (!(await allocFile.exists())) {
@@ -950,36 +948,39 @@ class GenesisGenerator {
     }
 
     try {
-      // Read template and allocations
-      const template = await genesisFile.json();
+      // Read allocations
       const contractAllocations = await allocFile.json();
 
-      logger.debug(
-        `Template allocations: ${Object.keys(template.alloc || {}).length}`
-      );
       logger.debug(
         `Contract allocations: ${Object.keys(contractAllocations).length}`
       );
 
-      // Merge allocations
+      // Read genesis template
+      const templateFile = Bun.file(GENESIS_TEMPLATE_FILE);
+      if (!(await templateFile.exists())) {
+        throw new Error(`Genesis template not found: ${GENESIS_TEMPLATE_FILE}`);
+      }
+      const template = await templateFile.json();
+
+      // Merge allocations into template
       const finalGenesis = {
         ...template,
-        alloc: contractAllocations,
+        alloc: {
+          ...(template.alloc || {}),
+          ...contractAllocations,
+        },
       };
 
       // Ensure output directory exists
-      const outputDir = `${CONTRACTS_ROOT}/tools/docker/besu`;
-      await $`mkdir -p ${outputDir}`.quiet();
+      await $`mkdir -p ${CONTRACTS_ROOT}/genesis`.quiet();
 
-      // Validate the final genesis structure
-      if (!finalGenesis.config || !finalGenesis.alloc) {
-        throw new Error("Invalid genesis structure: missing config or alloc");
-      }
+      // Write complete genesis file
+      await Bun.write(
+        CONTRACTS_GENESIS_FILE,
+        JSON.stringify(finalGenesis, null, 2)
+      );
 
-      // Write final genesis file
-      await Bun.write(GENESIS_FILE, JSON.stringify(finalGenesis, null, 2));
-
-      logger.info(`Final genesis file written to: ${GENESIS_FILE}`);
+      logger.info(`Complete genesis written to: ${CONTRACTS_GENESIS_FILE}`);
       logger.info(
         `Total allocations: ${Object.keys(finalGenesis.alloc).length} (${
           Object.keys(template.alloc || {}).length
@@ -987,9 +988,9 @@ class GenesisGenerator {
       );
 
       // Verify the written file can be read back
-      const verificationFile = Bun.file(GENESIS_FILE);
+      const verificationFile = Bun.file(CONTRACTS_GENESIS_FILE);
       const verification = await verificationFile.json();
-      if (!verification.config || !verification.alloc) {
+      if (!verification || !verification.config || !verification.alloc) {
         throw new Error("Written genesis file is invalid");
       }
       logger.debug("Genesis file verification passed");
@@ -1210,12 +1211,12 @@ async function main(): Promise<void> {
       `Processing summary: ${stats.processed} processed, ${stats.skipped} skipped, ${stats.failed} failed`
     );
     logger.info(`Contract allocations written to: ${ALL_ALLOCATIONS_FILE}`);
-    logger.info(`Final genesis file written to: ${GENESIS_FILE}`);
+    logger.info(`Final genesis file written to: ${CONTRACTS_GENESIS_FILE}`);
 
     // Show output if requested
     if (config.showOutput) {
       logger.info("=== FINAL GENESIS OUTPUT ===");
-      const genesisFile = Bun.file(GENESIS_FILE);
+      const genesisFile = Bun.file(CONTRACTS_GENESIS_FILE);
       const genesisContent = await genesisFile.text();
       logger.info(genesisContent);
     }

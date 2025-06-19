@@ -1,11 +1,12 @@
 {
   "name": "e2e",
   "module": "index.ts",
+  "version": "2.0.0",
   "type": "module",
   "dependencies": {},
   "devDependencies": {
-    "@playwright/test": "1.53.0",
-    "@types/bun": "latest"
+    "@playwright/test": "1.53.1",
+    "@types/bun": "1.2.16"
   },
   "peerDependencies": {
     "typescript": "5.8.3"

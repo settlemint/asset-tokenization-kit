@@ -14,9 +14,9 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { ISMARTCapped } from "../../contracts/smart/extensions/capped/ISMARTCapped.sol";
-import { IATKFixedYieldScheduleFactory } from "../../contracts/system/yield/IATKFixedYieldScheduleFactory.sol";
+import { IATKFixedYieldScheduleFactory } from "../../contracts/addons/yield/IATKFixedYieldScheduleFactory.sol";
 import { ATKFixedYieldScheduleFactoryImplementation } from
-    "../../contracts/system/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
+    "../../contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
 import { SMARTFixedYieldSchedule } from
     "../../contracts/smart/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
 import { ATKBondFactoryImplementation } from "../../contracts/assets/bond/ATKBondFactoryImplementation.sol";

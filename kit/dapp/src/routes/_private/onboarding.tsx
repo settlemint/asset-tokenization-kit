@@ -43,12 +43,6 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_private/onboarding")({
-  loader: ({ context: { queryClient, orpc } }) => {
-    void queryClient.prefetchQuery(orpc.user.me.queryOptions());
-    void queryClient.prefetchQuery(
-      orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
-    );
-  },
   component: OnboardingComponent,
   head: () => ({
     meta: [
@@ -76,7 +70,11 @@ function OnboardingComponent() {
       // For ORPC errors, the error object will have a code property
       const errorObj = error as { code?: string };
       if (errorObj.code === "UNAUTHORIZED") {
-        void navigate({ to: "/auth/$pathname", params: { pathname: "signin" }, replace: true });
+        void navigate({
+          to: "/auth/$pathname",
+          params: { pathname: "signin" },
+          replace: true,
+        });
       }
     }
   }, [isError, error, navigate]);
@@ -157,9 +155,9 @@ function OnboardingComponent() {
                 <div className="flex flex-col gap-8">
                   <p>This should be our step wizard</p>
                   <Button
-                    disabled={!user || !!user.wallet}
+                    disabled={!!user?.wallet || !user?.id}
                     onClick={() => {
-                      if (user) {
+                      if (user?.id) {
                         generateWallet({ userId: user.id });
                       }
                     }}
