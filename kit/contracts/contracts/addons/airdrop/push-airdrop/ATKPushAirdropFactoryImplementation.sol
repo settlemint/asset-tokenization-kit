@@ -10,7 +10,7 @@ import { IATKPushAirdrop } from "./IATKPushAirdrop.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
-    "../../../system/AbstractATKSystemAddonFactoryImplementation.sol";
+    "../../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKPushAirdropImplementation } from "./ATKPushAirdropImplementation.sol";
 import { ATKPushAirdropProxy } from "./ATKPushAirdropProxy.sol";
 
