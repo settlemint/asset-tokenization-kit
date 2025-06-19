@@ -24,6 +24,14 @@ interface MessageConfig {
 }
 
 /**
+ * Extended message configuration that includes backend messages
+ */
+interface ExtendedMessageConfig<TMutationMessages = Record<string, string>> extends MessageConfig {
+  // Messages that will be passed to the mutation
+  mutationMessages?: TMutationMessages;
+}
+
+/**
  * Extract the result type from an async iterator of events
  * Handles AsyncIteratorObject (used by ORPC), AsyncGenerator and AsyncIterable types
  */
@@ -39,13 +47,14 @@ type ExtractResultType<T> =
 /**
  * Streaming mutation options that transform callbacks to work with extracted result
  */
-interface StreamingMutationOptions<TData, TError, TVariables, TContext> {
+interface StreamingMutationOptions<TData, TError, TVariables, TContext, TMutationMessages = Record<string, string>> {
   mutationOptions: UseMutationOptions<TData, TError, TVariables, TContext>;
   onSuccess?: (
     data: ExtractResultType<TData>,
     variables: TVariables,
     context: TContext
   ) => unknown;
+  messages?: ExtendedMessageConfig<TMutationMessages>;
 }
 
 /**
@@ -53,21 +62,25 @@ interface StreamingMutationOptions<TData, TError, TVariables, TContext> {
  *
  * @example
  * ```tsx
- * const { mutate, isTracking } = useStreamingMutation(
- *   {
- *     mutationOptions: orpc.system.create.mutationOptions(),
- *     onSuccess: (data) => {
- *       // data is properly typed as string (the system address)
- *       console.log("System created:", data);
- *     }
+ * const { mutate, isTracking } = useStreamingMutation({
+ *   mutationOptions: orpc.system.create.mutationOptions(),
+ *   onSuccess: (data) => {
+ *     // data is properly typed as string (the system address)
+ *     console.log("System created:", data);
  *   },
- *   {
- *     initialLoading: "Creating system...",
- *     messageMap: {
- *       "system.created": "System created successfully!"
+ *   messages: {
+ *     // Frontend messages
+ *     initialLoading: t("onboarding:create-system-messages.initial-loading"),
+ *     noResultError: t("onboarding:create-system-messages.no-result-error"),
+ *     defaultError: t("onboarding:create-system-messages.default-error"),
+ *     // Backend messages that will be passed to the mutation
+ *     mutationMessages: {
+ *       systemCreated: t("onboarding:create-system-messages.system-created"),
+ *       creatingSystem: t("onboarding:create-system-messages.creating-system"),
+ *       // ... other messages
  *     }
  *   }
- * );
+ * });
  * ```
  */
 export function useStreamingMutation<
@@ -75,9 +88,9 @@ export function useStreamingMutation<
   TError = Error,
   TVariables = void,
   TContext = unknown,
+  TMutationMessages = Record<string, string>,
 >(
-  options: StreamingMutationOptions<TData, TError, TVariables, TContext>,
-  messages?: MessageConfig
+  options: StreamingMutationOptions<TData, TError, TVariables, TContext, TMutationMessages>
 ): UseMutationResult<ExtractResultType<TData>, TError, TVariables, TContext> & {
   isTracking: boolean;
   latestMessage: string | null;
@@ -88,12 +101,16 @@ export function useStreamingMutation<
 
   // Process async iterator events
   const processStream = useCallback(
-    async (iterator: TData): Promise<ExtractResultType<TData>> => {
+    async (
+      iterator: TData
+    ): Promise<ExtractResultType<TData>> => {
       setIsTracking(true);
       setLatestMessage(null);
       toastIdRef.current = undefined;
 
       let finalResult: ExtractResultType<TData> | undefined;
+
+      const messages = options.messages ?? {};
 
       try {
         const asyncIterable = iterator as AsyncIterable<{
@@ -105,7 +122,7 @@ export function useStreamingMutation<
         for await (const event of asyncIterable) {
           // Translate message if mapping provided
           const message =
-            messages?.messageMap?.[event.message] ?? event.message;
+            messages.messageMap?.[event.message] ?? event.message;
 
           setLatestMessage(message);
 
@@ -118,7 +135,7 @@ export function useStreamingMutation<
             case "pending":
               if (!toastIdRef.current) {
                 const loadingMessage =
-                  message || (messages?.initialLoading ?? "Loading...");
+                  message || (messages.initialLoading ?? "Loading...");
                 toastIdRef.current = toast.loading(loadingMessage);
               } else {
                 toast.loading(message, { id: toastIdRef.current });
@@ -145,7 +162,7 @@ export function useStreamingMutation<
         }
 
         if (finalResult === undefined) {
-          const errorMessage = messages?.noResultError ?? "No result received";
+          const errorMessage = messages.noResultError ?? "No result received";
           toast.error(errorMessage, { id: toastIdRef.current });
           throw new Error(errorMessage);
         }
@@ -155,7 +172,7 @@ export function useStreamingMutation<
         const errorMessage =
           error instanceof Error
             ? error.message
-            : (messages?.defaultError ?? "An error occurred");
+            : messages.defaultError ?? "An error occurred";
         toast.error(errorMessage, { id: toastIdRef.current });
         throw error;
       } finally {
@@ -163,7 +180,7 @@ export function useStreamingMutation<
         toastIdRef.current = undefined;
       }
     },
-    [messages]
+    [options.messages]
   );
 
   // Create mutation with streaming processor
@@ -181,8 +198,17 @@ export function useStreamingMutation<
         throw new Error("Mutation function not found");
       }
 
+      // Inject mutation messages into variables if configured
+      let enhancedVariables = variables;
+      if (options.messages?.mutationMessages) {
+        enhancedVariables = {
+          ...variables,
+          messages: options.messages.mutationMessages,
+        } as TVariables;
+      }
+
       // Execute the original mutation to get the iterator
-      const iterator = await originalMutationFn(variables);
+      const iterator = await originalMutationFn(enhancedVariables);
 
       // Process the stream and return just the result field
       return processStream(iterator);

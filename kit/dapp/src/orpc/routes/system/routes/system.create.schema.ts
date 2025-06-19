@@ -43,6 +43,10 @@ export const SystemCreateMessagesSchema = TransactionTrackingMessagesSchema.exte
     .string()
     .optional()
     .default("Failed to create system. Please try again."),
+  // Messages used by useStreamingMutation hook
+  initialLoading: z.string().optional().default("Creating new system..."),
+  noResultError: z.string().optional().default("No system address received from transaction."),
+  defaultError: z.string().optional().default("Failed to create system."),
 });
 
 export const SystemCreateSchema = CreateSchema.extend({

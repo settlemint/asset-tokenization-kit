@@ -35,6 +35,7 @@ import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
+import type { SystemCreateMessages } from "@/orpc/routes/system/routes/system.create.schema";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -55,17 +56,17 @@ export const Route = createFileRoute("/_private/onboarding")({
 
 /**
  * Onboarding Component
- * 
+ *
  * Guides new users through the initial setup process for the SettleMint Asset Tokenization Kit.
  * This component handles the following onboarding steps:
- * 
+ *
  * 1. Wallet Generation - Creates a new blockchain wallet for the user
  * 2. MFA Setup (commented out) - Secures the wallet with multi-factor authentication
  * 3. System Deployment - Deploys the SMART system contracts required for the platform
- * 
+ *
  * The component tracks user progress through the onboarding flow and provides
  * real-time feedback for blockchain operations using server-sent events.
- * 
+ *
  * @returns The onboarding UI with step-by-step actions for platform setup
  */
 function OnboardingComponent() {
@@ -121,19 +122,53 @@ function OnboardingComponent() {
     mutate: createSystem,
     isPending: isCreatingSystem,
     isTracking,
-  } = useStreamingMutation(
-    {
-      mutationOptions: orpc.system.create.mutationOptions(),
-      onSuccess: (data) => {
-        setSystemAddress(data);
-      },
+  } = useStreamingMutation({
+    mutationOptions: orpc.system.create.mutationOptions(),
+    onSuccess: (data) => {
+      setSystemAddress(data);
     },
-    {
+    messages: {
+      // Frontend messages for toast notifications
       initialLoading: t("onboarding:create-system-messages.initial-loading"),
       noResultError: t("onboarding:create-system-messages.no-result-error"),
       defaultError: t("onboarding:create-system-messages.default-error"),
-    }
-  );
+      // Backend messages that will be passed to the mutation
+      mutationMessages: {
+        // System-specific messages
+        systemCreated: t("onboarding:create-system-messages.system-created"),
+        creatingSystem: t("onboarding:create-system-messages.creating-system"),
+        systemCreationFailed: t(
+          "onboarding:create-system-messages.system-creation-failed"
+        ),
+        // Transaction tracking messages
+        streamTimeout: t(
+          "onboarding:create-system-messages.transaction-tracking.stream-timeout"
+        ),
+        waitingForMining: t(
+          "onboarding:create-system-messages.transaction-tracking.waiting-for-mining"
+        ),
+        transactionFailed: t(
+          "onboarding:create-system-messages.transaction-tracking.transaction-failed"
+        ),
+        transactionDropped: t(
+          "onboarding:create-system-messages.transaction-tracking.transaction-dropped"
+        ),
+        waitingForIndexing: t(
+          "onboarding:create-system-messages.transaction-tracking.waiting-for-indexing"
+        ),
+        transactionIndexed: t(
+          "onboarding:create-system-messages.transaction-tracking.transaction-indexed"
+        ),
+        indexingTimeout: t(
+          "onboarding:create-system-messages.transaction-tracking.indexing-timeout"
+        ),
+        // useStreamingMutation messages (these are also passed to backend)
+        initialLoading: t("onboarding:create-system-messages.initial-loading"),
+        noResultError: t("onboarding:create-system-messages.no-result-error"),
+        defaultError: t("onboarding:create-system-messages.default-error"),
+      } satisfies SystemCreateMessages,
+    },
+  });
 
   return (
     <OnboardingGuard require="not-onboarded">
@@ -202,42 +237,7 @@ function OnboardingComponent() {
                   <Button
                     disabled={!!systemAddress || isCreatingSystem || isTracking}
                     onClick={() => {
-                      createSystem({
-                        messages: {
-                          // System-specific messages
-                          systemCreated: t(
-                            "onboarding:create-system-messages.system-created"
-                          ),
-                          creatingSystem: t(
-                            "onboarding:create-system-messages.creating-system"
-                          ),
-                          systemCreationFailed: t(
-                            "onboarding:create-system-messages.system-creation-failed"
-                          ),
-                          // Transaction tracking messages
-                          streamTimeout: t(
-                            "onboarding:create-system-messages.transaction-tracking.stream-timeout"
-                          ),
-                          waitingForMining: t(
-                            "onboarding:create-system-messages.transaction-tracking.waiting-for-mining"
-                          ),
-                          transactionFailed: t(
-                            "onboarding:create-system-messages.transaction-tracking.transaction-failed"
-                          ),
-                          transactionDropped: t(
-                            "onboarding:create-system-messages.transaction-tracking.transaction-dropped"
-                          ),
-                          waitingForIndexing: t(
-                            "onboarding:create-system-messages.transaction-tracking.waiting-for-indexing"
-                          ),
-                          transactionIndexed: t(
-                            "onboarding:create-system-messages.transaction-tracking.transaction-indexed"
-                          ),
-                          indexingTimeout: t(
-                            "onboarding:create-system-messages.transaction-tracking.indexing-timeout"
-                          ),
-                        },
-                      });
+                      createSystem({});
                     }}
                   >
                     {isCreatingSystem || isTracking
