@@ -14,8 +14,8 @@ import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IATKTypedImplementationRegistry } from "../../../contracts/system/IATKTypedImplementationRegistry.sol";
 import {
     InvalidAddonAddress,
-    AddonTypeAlreadyRegistered,
-    AddonImplementationNotSet
+    SystemAddonTypeAlreadyRegistered,
+    SystemAddonImplementationNotSet
 } from "../../../contracts/system/ATKSystemErrors.sol";
 
 // Mock for an addon implementation
@@ -161,7 +161,7 @@ contract ATKSystemAddonRegistryTest is Test {
         bytes memory initData = abi.encodeWithSelector(mockAddon.initialize.selector, address(systemUtils.system()));
         registry.registerSystemAddon(addonName, address(mockAddon), initData);
 
-        vm.expectRevert(abi.encodeWithSelector(AddonTypeAlreadyRegistered.selector, addonName));
+        vm.expectRevert(abi.encodeWithSelector(SystemAddonTypeAlreadyRegistered.selector, addonName));
         registry.registerSystemAddon(addonName, address(mockAddon), initData);
         vm.stopPrank();
     }
@@ -221,7 +221,7 @@ contract ATKSystemAddonRegistryTest is Test {
         bytes32 addonTypeHash = keccak256(abi.encodePacked("NonExistentAddon"));
         MockAddon newMockAddon = new MockAddon();
 
-        vm.expectRevert(abi.encodeWithSelector(AddonImplementationNotSet.selector, addonTypeHash));
+        vm.expectRevert(abi.encodeWithSelector(SystemAddonImplementationNotSet.selector, addonTypeHash));
         registry.setAddonImplementation(addonTypeHash, address(newMockAddon));
         vm.stopPrank();
     }

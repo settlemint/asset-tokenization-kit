@@ -65,7 +65,7 @@ interface IATKSystem is IERC165 {
     /// @notice Emitted when the implementation (logic contract) for the addon registry is updated.
     /// @param sender The address that called the function.
     /// @param newImplementation The address of the new addon registry implementation contract.
-    event AddonRegistryImplementationUpdated(address indexed sender, address indexed newImplementation);
+    event SystemAddonRegistryImplementationUpdated(address indexed sender, address indexed newImplementation);
 
     /// @notice Emitted when the implementation (logic contract) for the token factory registry is updated.
     /// @param sender The address that called the function.

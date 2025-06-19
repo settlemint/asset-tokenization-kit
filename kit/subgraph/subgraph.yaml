@@ -94,9 +94,11 @@ templates:
           handler: handleTrustedIssuersRegistryImplementationUpdated
         - event: TopicSchemeRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleTopicSchemeRegistryImplementationUpdated
-        - event: TokenFactoryRegistryImplementationUpdated(indexed address,indexed address)
+        - event: TokenFactoryRegistryImplementationUpdated(indexed address,indexed
+            address)
           handler: handleTokenFactoryRegistryImplementationUpdated
-        - event: ComplianceModuleRegistryImplementationUpdated(indexed address,indexed address)
+        - event: ComplianceModuleRegistryImplementationUpdated(indexed address,indexed
+            address)
           handler: handleComplianceModuleRegistryImplementationUpdated
         - event: SystemAddonRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleSystemAddonRegistryImplementationUpdated

@@ -16,8 +16,8 @@ import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/
 
 import { IATKSystem } from "./IATKSystem.sol";
 import {
-    AddonImplementationNotSet,
-    AddonTypeAlreadyRegistered,
+    SystemAddonImplementationNotSet,
+    SystemAddonTypeAlreadyRegistered,
     ComplianceImplementationNotSet,
     IdentityFactoryImplementationNotSet,
     IdentityImplementationNotSet,
@@ -338,7 +338,7 @@ contract ATKSystemImplementation is
         _checkInterface(addonRegistryImplementation_, _ADDON_REGISTRY_ID); // Ensure it supports
             // ISMARTAddonRegistry
         _implementations[ADDON_REGISTRY] = addonRegistryImplementation_;
-        emit AddonRegistryImplementationUpdated(initialAdmin_, addonRegistryImplementation_);
+        emit SystemAddonRegistryImplementationUpdated(initialAdmin_, addonRegistryImplementation_);
 
         // Validate and set the token factory registry implementation address.
         if (tokenFactoryRegistryImplementation_ == address(0)) revert TokenFactoryRegistryImplementationNotSet();
@@ -671,13 +671,13 @@ contract ATKSystemImplementation is
     /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
     /// Reverts if the provided `implementation` address is the zero address or does not support the
     /// `ISystemAddonRegistry` interface.
-    /// Emits a `AddonRegistryImplementationUpdated` event upon successful update.
+    /// Emits a `SystemAddonRegistryImplementationUpdated` event upon successful update.
     /// @param implementation_ The new address for the addon registry logic contract.
     function setAddonRegistryImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
         if (implementation_ == address(0)) revert AddonRegistryImplementationNotSet();
         _checkInterface(implementation_, _ADDON_REGISTRY_ID);
         _implementations[ADDON_REGISTRY] = implementation_;
-        emit AddonRegistryImplementationUpdated(_msgSender(), implementation_);
+        emit SystemAddonRegistryImplementationUpdated(_msgSender(), implementation_);
     }
 
     /// @notice Sets (updates) the address of the token factory registry's implementation (logic) contract.

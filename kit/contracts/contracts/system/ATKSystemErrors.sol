@@ -76,7 +76,7 @@ error IdentityVerificationModuleNotSet();
 /// @notice Error indicating that the system addon implementation address has not been set.
 /// @dev This error is thrown if an operation requires the system addon implementation, but its logic contract address
 /// is zero or has not been configured in the `SMARTSystem`.
-error AddonImplementationNotSet(bytes32 addonTypeHash);
+error SystemAddonImplementationNotSet(bytes32 addonTypeHash);
 
 /// @notice Error indicating that an index provided for accessing an array or list is out of its valid range.
 /// @dev For example, trying to access the 5th element in an array that only has 3 elements.
@@ -107,7 +107,7 @@ error TokenFactoryImplementationNotSet(bytes32 registryTypeHash);
 error TokenFactoryTypeAlreadyRegistered(string typeName);
 
 /// @notice Error indicating that a system addon type hash has already been registered.
-error AddonTypeAlreadyRegistered(string typeName);
+error SystemAddonTypeAlreadyRegistered(string typeName);
 
 /// @notice Error indicating that a compliance module has already been registered with the given name.
 /// @param name The name of the compliance module that was already registered.

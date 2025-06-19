@@ -10,7 +10,11 @@ import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/m
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { IATKSystemAddonRegistry } from "./IATKSystemAddonRegistry.sol";
-import { InvalidAddonAddress, AddonTypeAlreadyRegistered, AddonImplementationNotSet } from "../ATKSystemErrors.sol";
+import {
+    InvalidAddonAddress,
+    SystemAddonTypeAlreadyRegistered,
+    SystemAddonImplementationNotSet
+} from "../ATKSystemErrors.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";
 import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
@@ -57,7 +61,7 @@ contract ATKSystemAddonRegistryImplementation is
         bytes32 addonTypeHash = keccak256(abi.encodePacked(name));
 
         if (addonImplementationsByType[addonTypeHash] != address(0)) {
-            revert AddonTypeAlreadyRegistered(name);
+            revert SystemAddonTypeAlreadyRegistered(name);
         }
 
         addonImplementationsByType[addonTypeHash] = implementation_;
@@ -92,7 +96,9 @@ contract ATKSystemAddonRegistryImplementation is
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
         if (implementation_ == address(0)) revert InvalidAddonAddress();
-        if (addonImplementationsByType[addonTypeHash] == address(0)) revert AddonImplementationNotSet(addonTypeHash);
+        if (addonImplementationsByType[addonTypeHash] == address(0)) {
+            revert SystemAddonImplementationNotSet(addonTypeHash);
+        }
 
         addonImplementationsByType[addonTypeHash] = implementation_;
         emit AddonImplementationUpdated(_msgSender(), addonTypeHash, implementation_);
