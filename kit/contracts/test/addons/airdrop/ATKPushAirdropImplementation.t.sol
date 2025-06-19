@@ -88,7 +88,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
 
         // Create system addon for push airdrop factory
         pushAirdropFactory = IATKPushAirdropFactory(
-            systemUtils.system().createSystemAddon(
+            systemUtils.systemAddonRegistry().registerSystemAddon(
                 "push-airdrop-factory", address(pushAirdropFactoryImpl), encodedInitializationData
             )
         );
