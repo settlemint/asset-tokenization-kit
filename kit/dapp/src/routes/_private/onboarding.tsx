@@ -102,9 +102,14 @@ function OnboardingComponent() {
     mutate: createSystem,
     isPending: isCreatingSystem,
     isTracking,
-  } = useStreamingMutation<`0x${string}`, Error, { contract?: string }>({
-    mutation: orpc.system.create,
-    messages: {
+  } = useStreamingMutation(
+    {
+      mutationOptions: orpc.system.create.mutationOptions(),
+      onSuccess: (data) => {
+        setSystemAddress(data);
+      },
+    },
+    {
       initialLoading: t("onboarding:create-system-messages.initial-loading"),
       noResultError: t("onboarding:create-system-messages.no-result-error"),
       defaultError: t("onboarding:create-system-messages.default-error"),
@@ -133,8 +138,8 @@ function OnboardingComponent() {
           "onboarding:create-system-messages.transaction-tracking.indexing-timeout"
         ),
       },
-    },
-  });
+    }
+  );
 
   return (
     <OnboardingGuard require="not-onboarded">
@@ -192,14 +197,7 @@ function OnboardingComponent() {
                   <Button
                     disabled={!!systemAddress || isCreatingSystem || isTracking}
                     onClick={() => {
-                      createSystem(
-                        {},
-                        {
-                          onSuccess: (address) => {
-                            setSystemAddress(address);
-                          },
-                        }
-                      );
+                      createSystem({});
                     }}
                   >
                     {isCreatingSystem || isTracking

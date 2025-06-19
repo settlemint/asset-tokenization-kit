@@ -1,304 +1,206 @@
 /**
  * Streaming Mutation Hook
  *
- * This module provides a React hook that handles ORPC mutations that return
- * streaming responses (AsyncIterator). It processes each yielded event and
- * provides real-time feedback via toast notifications.
- *
- * Key features:
- * - Processes streaming responses from ORPC mutations
- * - Shows toast notifications for each event
- * - Tracks the latest message and final result
- * - Provides a mutate function similar to useMutation
- * - Automatic cleanup and error handling
- * - Automatically adds streaming context to mutation options
- *
- * @see {@link https://tanstack.com/query/latest} - TanStack Query documentation
+ * A simplified React hook that handles ORPC mutations returning AsyncIterable
+ * responses. Preserves full type inference from ORPC.
  */
 
-import type { UseMutationOptions } from "@tanstack/react-query";
+import type {
+  UseMutationOptions,
+  UseMutationResult,
+} from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 
 /**
- * Event structure yielded by streaming mutations
+ * Message configuration for translations
  */
-interface StreamingEvent<TResult = unknown> {
-  status: "pending" | "confirmed" | "failed";
-  message: string;
-  result?: TResult;
-}
-
-/**
- * Configurable messages for the streaming mutation hook
- */
-interface StreamingMutationMessages {
-  /** Message shown when starting the operation */
+interface MessageConfig {
   initialLoading?: string;
-  /** Message shown when no result is received from the stream */
   noResultError?: string;
-  /** Default error message when an error occurs without a specific message */
   defaultError?: string;
-  /** Optional message translations map for server-side messages */
   messageMap?: Record<string, string>;
 }
 
 /**
- * ORPC mutation object interface
+ * Extract the result type from an async iterator of events
+ * Handles AsyncIteratorObject (used by ORPC), AsyncGenerator and AsyncIterable types
  */
-interface ORPCMutation<TResult, TError, TVariables> {
-  mutationOptions: (options?: {
-    context?: Record<string, unknown>;
-  }) => UseMutationOptions<
-    AsyncIteratorObject<StreamingEvent<TResult>, unknown, void>,
-    TError,
-    TVariables
-  >;
-}
+type ExtractResultType<T> =
+  T extends AsyncIteratorObject<{ result?: infer R }>
+    ? R
+    : T extends AsyncGenerator<{ result?: infer R }, unknown>
+      ? R
+      : T extends AsyncIterable<{ result?: infer R }>
+        ? R
+        : never;
 
 /**
- * Configuration options for streaming mutations.
- *
- * @template TResult - The type of the final result
- * @template TError - The type of error returned by a failed mutation
- * @template TVariables - The type of variables passed to the mutation
+ * Streaming mutation options that transform callbacks to work with extracted result
  */
-interface UseStreamingMutationOptions<TResult, TError, TVariables> {
-  /** ORPC mutation object - streaming context will be automatically added */
-  mutation: ORPCMutation<TResult, TError, TVariables>;
-  /** Configurable messages for different states */
-  messages?: StreamingMutationMessages;
-}
-
-/**
- * Result object returned by the streaming mutation hook
- */
-interface UseStreamingMutationResult<TResult, TError, TVariables> {
-  /** Function to execute the mutation */
-  mutate: (
+interface StreamingMutationOptions<TData, TError, TVariables, TContext> {
+  mutationOptions: UseMutationOptions<TData, TError, TVariables, TContext>;
+  onSuccess?: (
+    data: ExtractResultType<TData>,
     variables: TVariables,
-    options?: {
-      onSuccess?: (data: TResult) => void;
-      onError?: (error: TError) => void;
-    }
-  ) => void;
-  /** Async function to execute the mutation */
-  mutateAsync: (
-    variables: TVariables,
-    options?: {
-      onSuccess?: (data: TResult) => void;
-      onError?: (error: TError) => void;
-    }
-  ) => Promise<TResult>;
-  /** Whether the mutation is currently executing */
-  isPending: boolean;
-  /** Whether the mutation is tracking/processing events */
-  isTracking: boolean;
-  /** The latest message from the stream */
-  latestMessage?: string;
-  /** The final result from the stream */
-  result?: TResult;
-  /** Any error that occurred */
-  error: TError | null;
-  /** Reset the mutation state */
-  reset: () => void;
+    context: TContext
+  ) => unknown;
 }
 
 /**
- * React hook for streaming mutations with automatic event processing.
- *
- * This hook wraps a standard TanStack Query mutation that returns an AsyncIterator,
- * processing each yielded event and showing toast notifications for progress updates.
- * It automatically adds the streaming context to the mutation options.
- *
- * @template TResult - The type of the final result from the stream
- * @template TError - The type of error that can be thrown
- * @template TVariables - The type of variables passed to the mutation
- *
- * @param options - Configuration options for the streaming mutation
- * @returns Enhanced mutation object with streaming capabilities
+ * React hook for ORPC streaming mutations with automatic event processing.
  *
  * @example
- * ```typescript
- * const { mutate, result, isTracking } = useStreamingMutation({
- *   mutation: orpc.system.create,
- *   messages: {
- *     initialLoading: t("system.creating"),
- *     noResultError: t("system.noResult"),
- *     defaultError: t("system.error")
+ * ```tsx
+ * const { mutate, isTracking } = useStreamingMutation(
+ *   {
+ *     mutationOptions: orpc.system.create.mutationOptions(),
+ *     onSuccess: (data) => {
+ *       // data is properly typed as string (the system address)
+ *       console.log("System created:", data);
+ *     }
+ *   },
+ *   {
+ *     initialLoading: "Creating system...",
+ *     messageMap: {
+ *       "system.created": "System created successfully!"
+ *     }
  *   }
- * });
- *
- * // Execute mutation
- * mutate({}, {
- *   onSuccess: (systemAddress) => {
- *     console.log("System created:", systemAddress);
- *   }
- * });
+ * );
  * ```
  */
 export function useStreamingMutation<
-  TResult = unknown,
+  TData,
   TError = Error,
   TVariables = void,
+  TContext = unknown,
 >(
-  options: UseStreamingMutationOptions<TResult, TError, TVariables>
-): UseStreamingMutationResult<TResult, TError, TVariables> {
+  options: StreamingMutationOptions<TData, TError, TVariables, TContext>,
+  messages?: MessageConfig
+): UseMutationResult<ExtractResultType<TData>, TError, TVariables, TContext> & {
+  isTracking: boolean;
+  latestMessage: string | null;
+} {
   const [isTracking, setIsTracking] = useState(false);
-  const [latestMessage, setLatestMessage] = useState<string>();
-  const [result, setResult] = useState<TResult>();
+  const [latestMessage, setLatestMessage] = useState<string | null>(null);
   const toastIdRef = useRef<string | number | undefined>(undefined);
-  const onSuccessCallbackRef = useRef<((data: TResult) => void) | undefined>(
-    undefined
-  );
 
-  // Default messages with English fallbacks
-  const messages = {
-    initialLoading: options.messages?.initialLoading ?? "Starting operation...",
-    noResultError:
-      options.messages?.noResultError ?? "No result received from operation",
-    defaultError: options.messages?.defaultError ?? "Operation failed",
-  };
-
-  // Process the async iterator and handle toasts
+  // Process async iterator events
   const processStream = useCallback(
-    async (
-      asyncIterator: AsyncIteratorObject<StreamingEvent<TResult>, unknown, void>
-    ) => {
+    async (iterator: TData): Promise<ExtractResultType<TData>> => {
       setIsTracking(true);
-      let finalResult: TResult | undefined;
+      setLatestMessage(null);
+      toastIdRef.current = undefined;
+
+      let finalResult: ExtractResultType<TData> | undefined;
 
       try {
-        // Create initial toast
-        toastIdRef.current = toast.loading(messages.initialLoading);
+        const asyncIterable = iterator as AsyncIterable<{
+          status: string;
+          message: string;
+          result?: ExtractResultType<TData>;
+        }>;
 
-        // Process each event from the stream
-        for await (const event of asyncIterator) {
-          // Translate the message if a translation map is provided
-          const displayMessage =
-            options.messages?.messageMap?.[event.message] ?? event.message;
-          setLatestMessage(displayMessage);
+        for await (const event of asyncIterable) {
+          // Translate message if mapping provided
+          const message =
+            messages?.messageMap?.[event.message] ?? event.message;
 
-          if (event.status === "pending") {
-            // Update the existing toast with the new message
-            toast.loading(displayMessage, { id: toastIdRef.current });
-          } else if (event.status === "confirmed") {
-            // Success - show success toast and store result
-            toast.success(displayMessage, { id: toastIdRef.current });
-            if (event.result !== undefined) {
-              setResult(event.result);
-              finalResult = event.result;
-            }
-          } else {
-            // Failed status - show error toast
-            toast.error(displayMessage, { id: toastIdRef.current });
-            throw new Error(displayMessage);
+          setLatestMessage(message);
+
+          // Access metadata if available
+          const meta = Reflect.get(event, Symbol.for("orpc.event.meta")) as
+            | { retry?: number }
+            | undefined;
+
+          switch (event.status) {
+            case "pending":
+              if (!toastIdRef.current) {
+                const loadingMessage =
+                  message || (messages?.initialLoading ?? "Loading...");
+                toastIdRef.current = toast.loading(loadingMessage);
+              } else {
+                toast.loading(message, { id: toastIdRef.current });
+              }
+              break;
+
+            case "confirmed":
+              if (event.result !== undefined) {
+                finalResult = event.result;
+              }
+              toast.success(message || "Success", {
+                id: toastIdRef.current,
+                duration: meta?.retry ?? 5000,
+              });
+              break;
+
+            case "failed":
+              toast.error(message || "Failed", {
+                id: toastIdRef.current,
+                duration: 5000,
+              });
+              throw new Error(message || "Operation failed");
           }
         }
 
-        // Call the onSuccess callback if provided
-        if (finalResult !== undefined && onSuccessCallbackRef.current) {
-          onSuccessCallbackRef.current(finalResult);
+        if (finalResult === undefined) {
+          const errorMessage = messages?.noResultError ?? "No result received";
+          toast.error(errorMessage, { id: toastIdRef.current });
+          throw new Error(errorMessage);
         }
+
+        return finalResult;
       } catch (error) {
-        // Handle any errors during stream processing
-        const errorMsg =
-          error instanceof Error ? error.message : messages.defaultError;
-        toast.error(errorMsg, { id: toastIdRef.current });
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : (messages?.defaultError ?? "An error occurred");
+        toast.error(errorMessage, { id: toastIdRef.current });
         throw error;
       } finally {
         setIsTracking(false);
+        toastIdRef.current = undefined;
       }
-
-      return finalResult;
     },
     [messages]
   );
 
-  // Get mutation options with streaming context automatically applied
-  const mutationOptionsWithContext = options.mutation.mutationOptions();
-
+  // Create mutation with streaming processor
   const mutation = useMutation<
-    AsyncIteratorObject<StreamingEvent<TResult>, unknown, void>,
+    ExtractResultType<TData>,
     TError,
-    TVariables
+    TVariables,
+    TContext
   >({
-    ...mutationOptionsWithContext,
-    onSuccess: async (asyncIterator, variables, context) => {
-      await processStream(asyncIterator);
-      // Call the original onSuccess if provided
-      mutationOptionsWithContext.onSuccess?.(asyncIterator, variables, context);
+    mutationKey: options.mutationOptions.mutationKey,
+    meta: options.mutationOptions.meta,
+    mutationFn: async (variables: TVariables) => {
+      const originalMutationFn = options.mutationOptions.mutationFn;
+      if (!originalMutationFn) {
+        throw new Error("Mutation function not found");
+      }
+
+      // Execute the original mutation to get the iterator
+      const iterator = await originalMutationFn(variables);
+
+      // Process the stream and return just the result field
+      return processStream(iterator);
     },
-    onError: (error, variables, context) => {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      toast.error(errorMsg, { id: toastIdRef.current });
-      mutationOptionsWithContext.onError?.(error, variables, context);
-    },
+    onMutate: options.mutationOptions.onMutate,
+    onError: options.mutationOptions.onError,
+    onSuccess: options.onSuccess,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onSettled: options.mutationOptions.onSettled as any,
+    retry: options.mutationOptions.retry,
+    retryDelay: options.mutationOptions.retryDelay,
+    networkMode: options.mutationOptions.networkMode,
+    gcTime: options.mutationOptions.gcTime,
   });
 
-  const {
-    mutate: baseMutate,
-    mutateAsync: baseMutateAsync,
-    reset: baseReset,
-  } = mutation;
-
-  const mutate = useCallback(
-    (
-      variables: TVariables,
-      mutationOptions?: {
-        onSuccess?: (data: TResult) => void;
-        onError?: (error: TError) => void;
-      }
-    ) => {
-      // Store the onSuccess callback for use in processStream
-      onSuccessCallbackRef.current = mutationOptions?.onSuccess;
-
-      baseMutate(variables, {
-        onError: mutationOptions?.onError,
-      });
-    },
-    [baseMutate]
-  );
-
-  const mutateAsync = useCallback(
-    async (
-      variables: TVariables,
-      mutationOptions?: {
-        onSuccess?: (data: TResult) => void;
-        onError?: (error: TError) => void;
-      }
-    ): Promise<TResult> => {
-      const asyncIterator = await baseMutateAsync(variables);
-      const finalResult = await processStream(asyncIterator);
-
-      if (finalResult !== undefined) {
-        mutationOptions?.onSuccess?.(finalResult);
-        return finalResult;
-      }
-
-      throw new Error(messages.noResultError);
-    },
-    [baseMutateAsync, processStream, messages.noResultError]
-  );
-
-  const reset = useCallback(() => {
-    baseReset();
-    setIsTracking(false);
-    setLatestMessage(undefined);
-    setResult(undefined);
-    toastIdRef.current = undefined;
-    onSuccessCallbackRef.current = undefined;
-  }, [baseReset]);
-
   return {
-    mutate,
-    mutateAsync,
-    isPending: mutation.isPending,
+    ...mutation,
     isTracking,
     latestMessage,
-    result,
-    error: mutation.error,
-    reset,
   };
 }
