@@ -28,8 +28,8 @@ contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
 
     function initialize(address, address, address, address) external override { }
 
-    function isValidTokenImplementation(address tokenImplementation) external pure override returns (bool) {
-        return tokenImplementation != address(0);
+    function isValidTokenImplementation(address tokenImplementation_) external pure override returns (bool) {
+        return tokenImplementation_ != address(0);
     }
 
     function tokenImplementation() external view override returns (address) {
