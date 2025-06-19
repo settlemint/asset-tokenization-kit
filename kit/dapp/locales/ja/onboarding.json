@@ -6,29 +6,28 @@
       "mining": "SMARTシステムをデプロイしています...",
       "indexing": "新しいSMARTシステムをインデックスしています..."
     },
-    "success": "SMARTシステムがデプロイされました！",
-    "error": "SMARTシステムのデプロイに失敗しました",
-    "timeout": "トランザクション追跡がタイムアウトしました"
+    "success": "あなたのSMARTシステムが展開されました！",
+    "error": "あなたのSMARTシステムの展開に失敗しました",
+    "timeout": "取引追跡のタイムアウト"
   },
-  "wallet-generated": "ウォレットが生成されました",
-  "wallet-step-title": "ウォレットを生成",
-  "wallet-step-description": "プラットフォームと対話するための安全なブロックチェーンウォレットを作成",
-  "what-is-wallet": "ウォレットとは？",
-  "wallet-explanation": "ブロックチェーンウォレットは、スマートコントラクトと対話し、デジタル資産を安全に管理できるデジタルアイデンティティです。",
-  "wallet-already-exists": "ウォレットは既に存在します",
-  "wallet-ready-next-step": "次のステップに進む準備ができました",
-  "secure-wallet-generation": "安全なウォレット生成",
-  "wallet-generation-time": "この処理には数秒かかります",
-  "generating-wallet": "ウォレットを生成中...",
-  "generate-new-wallet": "新しいウォレットを生成",
-  "wallet-generated-success": "ウォレットが正常に生成されました！",
-  "wallet-generated-error": "ウォレットの生成に失敗しました",
-  "system-step-title": "SMARTシステムをデプロイ",
-  "system-step-description": "資産トークン化のためのブロックチェーンインフラストラクチャをデプロイ",
-  "what-is-smart-system": "SMARTシステムとは？",
-  "smart-system-explanation": "SMARTシステムは、アイデンティティ管理と規制遵守が組み込まれた、準拠する資産トークン化を可能にするSettleMintの包括的なブロックチェーンシステムです。",
-  "system-deployment-info": "システムデプロイメント",
-  "system-deployment-time": "この処理は完了まで2〜3分かかる場合があります",
-  "deploying-system": "システムをデプロイ中...",
-  "deploy-smart-system": "SMARTシステムをデプロイ"
+  "create-system-messages": {
+    "initial-loading": "SMARTシステムのデプロイを準備中...",
+    "no-result-error": "システムのデプロイが完了しましたが、アドレスが返されませんでした",
+    "default-error": "SMARTシステムのデプロイに失敗しました",
+    "system-created": "SMARTシステムが正常に作成されました",
+    "creating-system": "新しいシステムを作成中...",
+    "system-creation-failed": "システムの作成に失敗しました。もう一度お試しください。",
+    "transaction-tracking": {
+      "stream-timeout": "システムデプロイの追跡が90秒後にタイムアウトしました",
+      "waiting-for-mining": "チェーン上でSMARTシステムをデプロイ中...",
+      "transaction-failed": "システムデプロイのトランザクションが失敗しました",
+      "transaction-dropped": "システムデプロイのトランザクションが時間内にオンチェーンで確認されませんでした",
+      "waiting-for-indexing": "システムがインデックスされるのを待っています...",
+      "transaction-indexed": "システムが正常にインデックスされ、使用準備が整いました",
+      "indexing-timeout": "システムのインデックス作成がタイムアウトしました。ページを更新してください"
+    }
+  },
+  "wallet-generated": "ウォレットが正常に生成されました",
+  "wallet-already-exists": "このユーザーのウォレットは既に存在します",
+  "wallet-creation-failed": "ウォレットの作成に失敗しました。もう一度お試しください。"
 }

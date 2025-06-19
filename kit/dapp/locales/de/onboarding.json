@@ -10,25 +10,24 @@
     "error": "Fehler bei der Bereitstellung Ihres SMART-Systems",
     "timeout": "Zeitüberschreitung bei der Transaktionsverfolgung"
   },
-  "wallet-generated": "Wallet generiert",
-  "wallet-step-title": "Ihre Wallet erstellen",
-  "wallet-step-description": "Erstellen Sie eine sichere Blockchain-Wallet zur Interaktion mit der Plattform",
-  "what-is-wallet": "Was ist eine Wallet?",
-  "wallet-explanation": "Eine Blockchain-Wallet ist Ihre digitale Identität, mit der Sie sicher mit Smart Contracts interagieren und digitale Assets verwalten können.",
-  "wallet-already-exists": "Wallet bereits vorhanden",
-  "wallet-ready-next-step": "Sie können zum nächsten Schritt übergehen",
-  "secure-wallet-generation": "Sichere Wallet-Generierung",
-  "wallet-generation-time": "Dieser Vorgang dauert einige Sekunden",
-  "generating-wallet": "Wallet wird generiert...",
-  "generate-new-wallet": "Neue Wallet generieren",
-  "wallet-generated-success": "Wallet erfolgreich generiert!",
-  "wallet-generated-error": "Fehler beim Generieren der Wallet",
-  "system-step-title": "SMART-System bereitstellen",
-  "system-step-description": "Stellen Sie Ihre Blockchain-Infrastruktur für Asset-Tokenisierung bereit",
-  "what-is-smart-system": "Was ist ein SMART-System?",
-  "smart-system-explanation": "SMART System ist SettleMints umfassendes Blockchain-System, das konforme Asset-Tokenisierung mit integriertem Identitätsmanagement und regulatorischer Compliance ermöglicht.",
-  "system-deployment-info": "System-Bereitstellung",
-  "system-deployment-time": "Dieser Vorgang kann 2-3 Minuten dauern",
-  "deploying-system": "System wird bereitgestellt...",
-  "deploy-smart-system": "SMART-System bereitstellen"
+  "create-system-messages": {
+    "initial-loading": "Bereite die Bereitstellung deines SMART-Systems vor...",
+    "no-result-error": "Die Bereitstellung des Systems wurde abgeschlossen, aber es wurde keine Adresse zurückgegeben",
+    "default-error": "Die Bereitstellung deines SMART-Systems ist fehlgeschlagen",
+    "system-created": "SMART-System erfolgreich erstellt",
+    "creating-system": "Neues System wird erstellt...",
+    "system-creation-failed": "Die Erstellung des Systems ist fehlgeschlagen. Bitte versuche es erneut.",
+    "transaction-tracking": {
+      "stream-timeout": "Die Verfolgung der Systembereitstellung hat nach 90 Sekunden abgelaufen",
+      "waiting-for-mining": "Bereitstellung deines SMART-Systems auf der Blockchain...",
+      "transaction-failed": "Die Transaktion zur Bereitstellung des Systems ist fehlgeschlagen",
+      "transaction-dropped": "Die Transaktion zur Bereitstellung des Systems wurde nicht rechtzeitig on-chain bestätigt",
+      "waiting-for-indexing": "Warte darauf, dass das System indiziert wird...",
+      "transaction-indexed": "System erfolgreich indiziert und bereit zur Nutzung",
+      "indexing-timeout": "Die Indizierung des Systems hat abgelaufen, bitte lade die Seite neu"
+    }
+  },
+  "wallet-generated": "Wallet erfolgreich erstellt",
+  "wallet-already-exists": "Wallet existiert bereits für diesen Benutzer",
+  "wallet-creation-failed": "Die Erstellung der Wallet ist fehlgeschlagen. Bitte versuche es erneut."
 }

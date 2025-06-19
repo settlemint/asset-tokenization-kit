@@ -7,3 +7,4 @@ bun.lock
 *.graphql
 **/.generated
 **/.generated/**
+.github/workflows/**

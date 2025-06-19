@@ -14,8 +14,13 @@ import { IATKClaimTracker } from "./claim-tracker/IATKClaimTracker.sol";
 ///      - Claim tracking
 ///      - Token distribution
 ///      - Meta-transaction support
+///      - Named airdrop identification
 interface IATKAirdrop {
     // --- View Functions ---
+
+    /// @notice Returns the name of this airdrop.
+    /// @return The human-readable name of the airdrop.
+    function name() external view returns (string memory);
 
     /// @notice Returns the token being distributed in this airdrop.
     /// @return The ERC20 token being distributed.

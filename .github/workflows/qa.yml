@@ -41,6 +41,8 @@ jobs:
         fi
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      LANGUINE_API_KEY: ${{ secrets.LANGUINE_API_KEY }}
+      LANGUINE_PROJECT_ID: ${{ secrets.LANGUINE_PROJECT_ID }}
 
   pr-labels:
     name: PR Labels

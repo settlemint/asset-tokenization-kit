@@ -84,6 +84,10 @@ interface IATKXvPSettlement is IERC165 {
     /// @return The creation timestamp
     function createdAt() external view returns (uint256);
 
+    /// @notice Returns the name of the settlement
+    /// @return The settlement name
+    function name() external view returns (string memory);
+
     /// @notice Checks if all parties have approved the settlement
     /// @return True if all parties have approved
     function isFullyApproved() external view returns (bool);

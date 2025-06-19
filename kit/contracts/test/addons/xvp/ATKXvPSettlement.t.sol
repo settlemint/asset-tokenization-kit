@@ -122,10 +122,10 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Step 1: Create settlement
         vm.startPrank(alice);
         // Get the predicted address first
-        address expectedAddr = factory.predictAddress(flows, cutoffDate, autoExecute);
+        address expectedAddr = factory.predictAddress("Settlement Name", flows, cutoffDate, autoExecute);
         vm.expectEmit(true, true, false, false);
         emit ATKXvPSettlementCreated(expectedAddr, alice);
-        address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
+        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute);
         IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
         vm.stopPrank();
 
@@ -179,7 +179,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Step 1: Create settlement
         vm.startPrank(alice);
-        address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
+        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute);
         IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Try to approve the settlement WITHOUT approving token allowance first
@@ -242,7 +242,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Step 1: Create settlement (alice creates)
         vm.prank(alice);
-        address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
+        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute);
         IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Approve tokens and settlement
@@ -294,7 +294,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Step 1: Create settlement with auto-execution
         vm.prank(alice);
-        address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
+        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute);
         IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Approve token and settlement (should trigger auto-execution)
@@ -330,7 +330,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Step 1: Create settlement
         vm.prank(alice);
-        address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
+        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute);
         IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Approve token and settlement
@@ -376,7 +376,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Step 1: Create settlement
         vm.prank(alice);
-        address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
+        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute);
         IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Fast forward time past cutoff date
@@ -415,7 +415,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Step 1: Create settlement
         vm.prank(alice);
-        address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
+        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute);
         IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Cancel the settlement as a party involved
@@ -457,7 +457,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Step 1: Create settlement (as Alice)
         vm.prank(alice);
-        address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
+        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute);
         IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Try to cancel as Charlie (not involved)
@@ -493,7 +493,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Should revert with InvalidCutoffDate
         vm.prank(alice);
         vm.expectRevert(ATKXvPSettlementFactoryImplementation.InvalidCutoffDate.selector);
-        factory.create(flows, pastCutoffDate, false);
+        factory.create("Settlement Name", flows, pastCutoffDate, false);
 
         // Test with zero amount
         IATKXvPSettlement.Flow[] memory flowsZeroAmount = new IATKXvPSettlement.Flow[](1);
@@ -507,7 +507,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Should revert with ZeroAmount
         vm.prank(alice);
         vm.expectRevert(IATKXvPSettlement.ZeroAmount.selector);
-        factory.create(flowsZeroAmount, block.timestamp + 1 days, false);
+        factory.create("Settlement Name", flowsZeroAmount, block.timestamp + 1 days, false);
 
         // Test with zero address
         IATKXvPSettlement.Flow[] memory flowsZeroAddress = new IATKXvPSettlement.Flow[](1);
@@ -521,7 +521,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Should revert with ZeroAddress
         vm.prank(alice);
         vm.expectRevert(IATKXvPSettlement.ZeroAddress.selector);
-        factory.create(flowsZeroAddress, block.timestamp + 1 days, false);
+        factory.create("Settlement Name", flowsZeroAddress, block.timestamp + 1 days, false);
 
         // Test with invalid token
         IATKXvPSettlement.Flow[] memory flowsInvalidToken = new IATKXvPSettlement.Flow[](1);
@@ -535,7 +535,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         // Should revert with InvalidToken
         vm.prank(alice);
         vm.expectRevert(IATKXvPSettlement.InvalidToken.selector);
-        factory.create(flowsInvalidToken, block.timestamp + 1 days, false);
+        factory.create("Settlement Name", flowsInvalidToken, block.timestamp + 1 days, false);
     }
 
     function test_MultiFlowSwapPartialApproval() public {
@@ -562,7 +562,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Step 1: Create settlement (alice creates)
         vm.prank(alice);
-        address settlementAddr = factory.create(flows, cutoffDate, autoExecute);
+        address settlementAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute);
         IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
 
         // Step 2: Alice approves token and settlement
@@ -609,11 +609,11 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Predict settlement address (from alice's context to match create call)
         vm.prank(alice);
-        address predictedAddr = factory.predictAddress(flows, cutoffDate, autoExecute);
+        address predictedAddr = factory.predictAddress("Settlement Name", flows, cutoffDate, autoExecute);
 
         // Create settlement and verify address matches prediction
         vm.prank(alice);
-        address actualAddr = factory.create(flows, cutoffDate, autoExecute);
+        address actualAddr = factory.create("Settlement Name", flows, cutoffDate, autoExecute);
 
         assertEq(actualAddr, predictedAddr, "Actual address should match predicted address");
     }
@@ -639,12 +639,12 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Create settlement
         vm.prank(alice);
-        factory.create(flows, cutoffDate, autoExecute);
+        factory.create("Settlement Name", flows, cutoffDate, autoExecute);
 
         // Try to create the same settlement again
         vm.prank(alice);
         vm.expectRevert();
-        factory.create(flows, cutoffDate, autoExecute);
+        factory.create("Settlement Name", flows, cutoffDate, autoExecute);
     }
 
     function test_DirectXvPSettlementDeployment() public {
@@ -660,9 +660,6 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
         flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenO), from: alice, to: bob, amount: 150 * 10 ** 18 });
 
-        uint256 cutoffDate = block.timestamp + 1 days;
-        bool autoExecute = false;
-
         // Deploy a fresh XvPSettlement implementation for direct testing
         vm.prank(admin);
         ATKXvPSettlementImplementation directSettlementImpl = new ATKXvPSettlementImplementation(address(forwarder));
@@ -672,5 +669,35 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Verify the implementation was deployed (by checking if it has code)
         assertTrue(address(directSettlementImpl).code.length > 0, "Implementation should have been deployed");
+    }
+
+    function test_SettlementNameIsStoredCorrectly() public {
+        // Setup actors
+        address alice = makeAddr("alice");
+        address bob = makeAddr("bob");
+
+        // Grant deployer role to alice
+        grantDeployerRole(alice);
+
+        // Setup tokens
+        ERC20Mock tokenS = new ERC20Mock("Token S", "TKNS", 18);
+        tokenS.mint(alice, 1000 * 10 ** 18);
+
+        // Test data with specific settlement name
+        string memory expectedName = "Test Settlement for Name Verification";
+        IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
+        flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenS), from: alice, to: bob, amount: 100 * 10 ** 18 });
+
+        uint256 cutoffDate = block.timestamp + 1 days;
+        bool autoExecute = false;
+
+        // Create settlement with specific name
+        vm.prank(alice);
+        address settlementAddr = factory.create(expectedName, flows, cutoffDate, autoExecute);
+        IATKXvPSettlement settlement = IATKXvPSettlement(settlementAddr);
+
+        // Verify the name is stored correctly
+        string memory actualName = settlement.name();
+        assertEq(actualName, expectedName, "Settlement name should be stored correctly");
     }
 }

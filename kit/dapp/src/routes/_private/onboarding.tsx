@@ -24,8 +24,19 @@ import { Logo } from "@/components/logo/logo";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { seo } from "@/config/metadata";
+<<<<<<< HEAD
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+=======
+import { useSettings } from "@/hooks/use-settings";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { authClient } from "@/lib/auth/auth.client";
+import { queryClient } from "@/lib/query.client";
+import { cn } from "@/lib/utils";
+import type { SystemCreateMessages } from "@/orpc/routes/system/routes/system.create.schema";
+import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
+import { useMutation, useQuery } from "@tanstack/react-query";
+>>>>>>> origin
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -41,6 +52,7 @@ export const Route = createFileRoute("/_private/onboarding")({
   }),
 });
 
+<<<<<<< HEAD
 const STEPS: Step[] = [
   {
     id: "wallet",
@@ -56,6 +68,23 @@ const STEPS: Step[] = [
   },
 ];
 
+=======
+/**
+ * Onboarding Component
+ *
+ * Guides new users through the initial setup process for the SettleMint Asset Tokenization Kit.
+ * This component handles the following onboarding steps:
+ *
+ * 1. Wallet Generation - Creates a new blockchain wallet for the user
+ * 2. MFA Setup (commented out) - Secures the wallet with multi-factor authentication
+ * 3. System Deployment - Deploys the SMART system contracts required for the platform
+ *
+ * The component tracks user progress through the onboarding flow and provides
+ * real-time feedback for blockchain operations using server-sent events.
+ *
+ * @returns The onboarding UI with step-by-step actions for platform setup
+ */
+>>>>>>> origin
 function OnboardingComponent() {
   const { orpc } = Route.useRouteContext();
   const navigate = useNavigate();
@@ -84,6 +113,7 @@ function OnboardingComponent() {
     }
   }, [isError, error, navigate]);
 
+<<<<<<< HEAD
   // Update step statuses based on current state
   useEffect(() => {
     setSteps((prevSteps) =>
@@ -174,6 +204,82 @@ function OnboardingComponent() {
         return null;
     }
   };
+=======
+  const { mutate: generateWallet } = useMutation(
+    orpc.account.create.mutationOptions({
+      onSuccess: async () => {
+        toast.success(t("onboarding:wallet-generated"));
+        await authClient.getSession({
+          query: {
+            disableCookieCache: true,
+          },
+        });
+        void queryClient.invalidateQueries({
+          queryKey: sessionKey,
+        });
+        void queryClient.invalidateQueries({
+          queryKey: orpc.user.me.key(),
+        });
+      },
+      onError: (error) => {
+        // The error message will be the localized message from the server
+        toast.error(error.message);
+      },
+    })
+  );
+
+  const {
+    mutate: createSystem,
+    isPending: isCreatingSystem,
+    isTracking,
+  } = useStreamingMutation({
+    mutationOptions: orpc.system.create.mutationOptions(),
+    onSuccess: (data) => {
+      setSystemAddress(data);
+    },
+    messages: {
+      // Frontend messages for toast notifications
+      initialLoading: t("onboarding:create-system-messages.initial-loading"),
+      noResultError: t("onboarding:create-system-messages.no-result-error"),
+      defaultError: t("onboarding:create-system-messages.default-error"),
+      // Backend messages that will be passed to the mutation
+      mutationMessages: {
+        // System-specific messages
+        systemCreated: t("onboarding:create-system-messages.system-created"),
+        creatingSystem: t("onboarding:create-system-messages.creating-system"),
+        systemCreationFailed: t(
+          "onboarding:create-system-messages.system-creation-failed"
+        ),
+        // Transaction tracking messages
+        streamTimeout: t(
+          "onboarding:create-system-messages.transaction-tracking.stream-timeout"
+        ),
+        waitingForMining: t(
+          "onboarding:create-system-messages.transaction-tracking.waiting-for-mining"
+        ),
+        transactionFailed: t(
+          "onboarding:create-system-messages.transaction-tracking.transaction-failed"
+        ),
+        transactionDropped: t(
+          "onboarding:create-system-messages.transaction-tracking.transaction-dropped"
+        ),
+        waitingForIndexing: t(
+          "onboarding:create-system-messages.transaction-tracking.waiting-for-indexing"
+        ),
+        transactionIndexed: t(
+          "onboarding:create-system-messages.transaction-tracking.transaction-indexed"
+        ),
+        indexingTimeout: t(
+          "onboarding:create-system-messages.transaction-tracking.indexing-timeout"
+        ),
+        // useStreamingMutation messages (these are also passed to backend)
+        initialLoading: t("onboarding:create-system-messages.initial-loading"),
+        noResultError: t("onboarding:create-system-messages.no-result-error"),
+        defaultError: t("onboarding:create-system-messages.default-error"),
+      } satisfies SystemCreateMessages,
+    },
+  });
+>>>>>>> origin
 
   return (
     <OnboardingGuard require="not-onboarded">
@@ -199,6 +305,7 @@ function OnboardingComponent() {
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
+<<<<<<< HEAD
         {/* Centered content area with step wizard */}
         <div className="flex min-h-screen items-center justify-center p-6">
           <div className="w-full max-w-6xl">
@@ -214,6 +321,62 @@ function OnboardingComponent() {
               {renderStepContent()}
             </StepWizard>
           </div>
+=======
+        {/* Centered content area for auth forms */}
+        <div className="flex min-h-screen items-center justify-center">
+          <Card className="w-[90vw] lg:w-[75vw] !max-w-screen overflow-hidden">
+            <CardHeader>
+              <CardTitle>{t("onboarding:card-title")}</CardTitle>
+              <CardDescription>
+                {t("onboarding:card-description")}
+              </CardDescription>
+              <CardContent>
+                <div className="flex flex-col gap-8">
+                  <p>This should be our step wizard</p>
+                  <Button
+                    disabled={!!user?.wallet || !user?.id}
+                    onClick={() => {
+                      if (user?.id) {
+                        generateWallet({
+                          userId: user.id,
+                          messages: {
+                            walletCreated: t("onboarding:wallet-generated"),
+                            walletAlreadyExists: t(
+                              "onboarding:wallet-already-exists"
+                            ),
+                            walletCreationFailed: t(
+                              "onboarding:wallet-creation-failed"
+                            ),
+                          },
+                        });
+                      }
+                    }}
+                  >
+                    Generate a new wallet
+                  </Button>
+                  {/* <Button
+                    disabled={!!user.wallet}
+                    onClick={() => {
+                      // generateWallet({ userId: user.id });
+                    }}
+                  >
+                    Secure your wallet with MFA
+                  </Button> */}
+                  <Button
+                    disabled={!!systemAddress || isCreatingSystem || isTracking}
+                    onClick={() => {
+                      createSystem({});
+                    }}
+                  >
+                    {isCreatingSystem || isTracking
+                      ? "Deploying..."
+                      : "Deploy a new SMART system"}
+                  </Button>
+                </div>
+              </CardContent>
+            </CardHeader>
+          </Card>
+>>>>>>> origin
         </div>
       </div>
     </OnboardingGuard>

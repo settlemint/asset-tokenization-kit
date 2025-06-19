@@ -54,3 +54,7 @@ kit/charts/atk/charts/besu-network/charts/besu-genesis/files/genesis-output.json
 
 # Worktrees
 .worktrees
+
+# Generated files
+**/.generated/
+.generated/

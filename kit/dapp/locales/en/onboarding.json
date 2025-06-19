@@ -1,6 +1,23 @@
 {
   "card-description": "You will need a wallet and an identity on the blockchain to use this platform.",
   "card-title": "Let's get you set up!",
+  "create-system-messages": {
+    "initial-loading": "Preparing to deploy your SMART system...",
+    "no-result-error": "System deployment completed but no address was returned",
+    "default-error": "Failed to deploy your SMART system",
+    "system-created": "SMART system successfully created",
+    "creating-system": "Creating new system...",
+    "system-creation-failed": "Failed to create system. Please try again.",
+    "transaction-tracking": {
+      "stream-timeout": "System deployment tracking timed out after 90 seconds",
+      "waiting-for-mining": "Deploying your SMART system on chain...",
+      "transaction-failed": "System deployment transaction failed",
+      "transaction-dropped": "System deployment transaction was not confirmed on-chain in time",
+      "waiting-for-indexing": "Waiting for system to be indexed...",
+      "transaction-indexed": "System successfully indexed and ready to use",
+      "indexing-timeout": "System indexing timed out, please refresh the page"
+    }
+  },
   "messages": {
     "pending": {
       "mining": "Deploying your SMART system...",
@@ -10,25 +27,7 @@
     "error": "Failed to deploy your SMART system",
     "timeout": "Transaction tracking timeout"
   },
-  "wallet-generated": "Wallet generated",
-  "wallet-step-title": "Generate Your Wallet",
-  "wallet-step-description": "Create a secure blockchain wallet to interact with the platform",
-  "what-is-wallet": "What is a wallet?",
-  "wallet-explanation": "A blockchain wallet is your digital identity that allows you to interact with smart contracts and manage digital assets securely.",
-  "wallet-already-exists": "Wallet already exists",
-  "wallet-ready-next-step": "You're ready to proceed to the next step",
-  "secure-wallet-generation": "Secure wallet generation",
-  "wallet-generation-time": "This process takes a few seconds",
-  "generating-wallet": "Generating wallet...",
-  "generate-new-wallet": "Generate new wallet",
-  "wallet-generated-success": "Wallet generated successfully!",
-  "wallet-generated-error": "Failed to generate wallet",
-  "system-step-title": "Deploy SMART System",
-  "system-step-description": "Deploy your blockchain infrastructure for asset tokenization",
-  "what-is-smart-system": "What is a SMART system?",
-  "smart-system-explanation": "SMART System is SettleMint's comprehensive blockchain system that enables compliant asset tokenization with built-in identity management and regulatory compliance.",
-  "system-deployment-info": "System deployment",
-  "system-deployment-time": "This process may take 2-3 minutes to complete",
-  "deploying-system": "Deploying system...",
-  "deploy-smart-system": "Deploy SMART system"
+  "wallet-generated": "Wallet generated successfully",
+  "wallet-already-exists": "Wallet already exists for this user",
+  "wallet-creation-failed": "Failed to create wallet. Please try again."
 }

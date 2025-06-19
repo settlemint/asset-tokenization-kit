@@ -10,25 +10,24 @@
     "error": "فشل في نشر نظام SMART الخاص بك",
     "timeout": "انتهت مهلة تتبع المعاملة"
   },
-  "wallet-generated": "تم إنشاء المحفظة",
-  "wallet-step-title": "إنشاء محفظتك",
-  "wallet-step-description": "أنشئ محفظة بلوك تشين آمنة للتفاعل مع المنصة",
-  "what-is-wallet": "ما هي المحفظة؟",
-  "wallet-explanation": "محفظة البلوك تشين هي هويتك الرقمية التي تسمح لك بالتفاعل مع العقود الذكية وإدارة الأصول الرقمية بأمان.",
-  "wallet-already-exists": "المحفظة موجودة بالفعل",
-  "wallet-ready-next-step": "أنت جاهز للانتقال إلى الخطوة التالية",
-  "secure-wallet-generation": "إنشاء محفظة آمنة",
-  "wallet-generation-time": "تستغرق هذه العملية بضع ثوانٍ",
-  "generating-wallet": "يتم إنشاء المحفظة...",
-  "generate-new-wallet": "إنشاء محفظة جديدة",
-  "wallet-generated-success": "تم إنشاء المحفظة بنجاح!",
-  "wallet-generated-error": "فشل في إنشاء المحفظة",
-  "system-step-title": "نشر نظام SMART",
-  "system-step-description": "انشر البنية التحتية للبلوك تشين الخاصة بك لرمزة الأصول",
-  "what-is-smart-system": "ما هو نظام SMART؟",
-  "smart-system-explanation": "نظام SMART هو نظام البلوك تشين الشامل من SettleMint الذي يمكّن رمزة الأصول المتوافقة مع إدارة الهوية المدمجة والامتثال التنظيمي.",
-  "system-deployment-info": "نشر النظام",
-  "system-deployment-time": "قد تستغرق هذه العملية 2-3 دقائق لإكمالها",
-  "deploying-system": "يتم نشر النظام...",
-  "deploy-smart-system": "نشر نظام SMART"
+  "create-system-messages": {
+    "initial-loading": "جارٍ التحضير لنشر نظام SMART الخاص بك...",
+    "no-result-error": "اكتمل نشر النظام ولكن لم يتم إرجاع عنوان",
+    "default-error": "فشل نشر نظام SMART الخاص بك",
+    "system-created": "تم إنشاء نظام SMART بنجاح",
+    "creating-system": "جارٍ إنشاء نظام جديد...",
+    "system-creation-failed": "فشل في إنشاء النظام. يرجى المحاولة مرة أخرى.",
+    "transaction-tracking": {
+      "stream-timeout": "انتهت مهلة تتبع نشر النظام بعد 90 ثانية",
+      "waiting-for-mining": "جارٍ نشر نظام SMART الخاص بك على السلسلة...",
+      "transaction-failed": "فشل معاملة نشر النظام",
+      "transaction-dropped": "لم يتم تأكيد معاملة نشر النظام على السلسلة في الوقت المحدد",
+      "waiting-for-indexing": "في انتظار فهرسة النظام...",
+      "transaction-indexed": "تم فهرسة النظام بنجاح وجاهز للاستخدام",
+      "indexing-timeout": "انتهت مهلة فهرسة النظام، يرجى تحديث الصفحة"
+    }
+  },
+  "wallet-generated": "تم إنشاء المحفظة بنجاح",
+  "wallet-already-exists": "توجد محفظة بالفعل لهذا المستخدم",
+  "wallet-creation-failed": "فشل في إنشاء المحفظة. يرجى المحاولة مرة أخرى."
 }

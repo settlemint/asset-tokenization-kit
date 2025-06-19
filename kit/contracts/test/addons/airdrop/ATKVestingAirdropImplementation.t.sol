@@ -123,7 +123,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         // Create vesting airdrop using factory
         vm.startPrank(owner);
         address vestingAirdropAddress = vestingAirdropFactory.create(
-            address(token), merkleRoot, owner, address(vestingStrategy), initializationDeadline
+            "Test Vesting Airdrop", address(token), merkleRoot, owner, address(vestingStrategy), initializationDeadline
         );
         vestingAirdrop = IATKVestingAirdrop(vestingAirdropAddress);
         vm.stopPrank();
@@ -147,14 +147,18 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
     function testFactoryCreateWithInvalidVestingStrategy() public {
         vm.startPrank(owner);
         vm.expectRevert(InvalidVestingStrategyAddress.selector);
-        vestingAirdropFactory.create(address(token), merkleRoot, owner, address(0), initializationDeadline);
+        vestingAirdropFactory.create(
+            "Test Airdrop", address(token), merkleRoot, owner, address(0), initializationDeadline
+        );
         vm.stopPrank();
     }
 
     function testFactoryCreateWithInvalidDeadline() public {
         vm.startPrank(owner);
         vm.expectRevert(InvalidInitializationDeadline.selector);
-        vestingAirdropFactory.create(address(token), merkleRoot, owner, address(vestingStrategy), block.timestamp - 1);
+        vestingAirdropFactory.create(
+            "Test Airdrop", address(token), merkleRoot, owner, address(vestingStrategy), block.timestamp - 1
+        );
         vm.stopPrank();
     }
 
