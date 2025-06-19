@@ -5,7 +5,7 @@ import { InterfaceIds } from "../../../erc165/utils/interfaceids";
 import { setBigNumber } from "../../../utils/bignumber";
 import { getTokenDecimals } from "../../../utils/token-decimals";
 
-export function fetchAirdrop(id: Address): Airdrop {
+export function fetchAirdrop(id: Bytes): Airdrop {
   let entity = Airdrop.load(id);
 
   if (entity == null) {
