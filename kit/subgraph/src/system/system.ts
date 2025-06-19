@@ -1,37 +1,24 @@
-import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
+import { Bytes } from "@graphprotocol/graph-ts";
 
-import {
-  BondFactory as BondFactoryTemplate,
-  FixedYieldScheduleFactory as FixedYieldScheduleFactoryTemplate,
-  FundFactory as FundFactoryTemplate,
-  VaultFactory as VaultFactoryTemplate,
-  XvPSettlementFactory as XvPSettlementFactoryTemplate,
-} from "../../generated/templates";
 import {
   Bootstrapped,
   ComplianceImplementationUpdated,
-  ComplianceModuleRegistered,
   IdentityFactoryImplementationUpdated,
   IdentityImplementationUpdated,
   IdentityRegistryImplementationUpdated,
   IdentityRegistryStorageImplementationUpdated,
-  SystemAddonCreated,
   TokenAccessManagerImplementationUpdated,
-  TokenFactoryCreated,
   TokenIdentityImplementationUpdated,
   TopicSchemeRegistryImplementationUpdated,
   TrustedIssuersRegistryImplementationUpdated,
 } from "../../generated/templates/System/System";
-import { fetchComplianceModule } from "../compliance/fetch/compliance-module";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
 import { fetchIdentityRegistryStorage } from "../identity-registry/fetch/identity-registry-storage";
-import { fetchTokenFactory } from "../token-factory/fetch/token-factory";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
 import { fetchCompliance } from "./fetch/compliance";
 import { fetchSystem } from "./fetch/system";
-import { fetchSystemAddon } from "./fetch/system-addon";
 import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 
 export function handleBootstrapped(event: Bootstrapped): void {
@@ -124,59 +111,6 @@ export function handleTokenAccessManagerImplementationUpdated(
   fetchEvent(event, "TokenAccessManagerImplementationUpdated");
 }
 
-export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
-  fetchEvent(event, "TokenFactoryCreated");
-  const tokenFactory = fetchTokenFactory(event.params.proxyAddress);
-  tokenFactory.name = event.params.name;
-  tokenFactory.typeId = event.params.typeId;
-
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKBondFactory"))
-  ) {
-    BondFactoryTemplate.create(event.params.proxyAddress);
-  }
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKFundFactory"))
-  ) {
-    FundFactoryTemplate.create(event.params.proxyAddress);
-  }
-
-  tokenFactory.system = fetchSystem(event.address).id;
-  tokenFactory.save();
-}
-
-export function handleSystemAddonCreated(event: SystemAddonCreated): void {
-  fetchEvent(event, "SystemAddonCreated");
-  const systemAddon = fetchSystemAddon(event.params.proxyAddress);
-  if (systemAddon.deployedInTransaction.equals(Bytes.empty())) {
-    systemAddon.deployedInTransaction = event.transaction.hash;
-  }
-  systemAddon.name = event.params.name;
-  systemAddon.typeId = event.params.typeId;
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKFixedYieldScheduleFactory"))
-  ) {
-    FixedYieldScheduleFactoryTemplate.create(event.params.proxyAddress);
-  }
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKXvPSettlementFactory"))
-  ) {
-    XvPSettlementFactoryTemplate.create(event.params.proxyAddress);
-  }
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKVaultFactory"))
-  ) {
-    VaultFactoryTemplate.create(event.params.proxyAddress);
-  }
-  systemAddon.system = fetchSystem(event.address).id;
-  systemAddon.save();
-}
-
 export function handleTokenIdentityImplementationUpdated(
   event: TokenIdentityImplementationUpdated
 ): void {
@@ -193,46 +127,6 @@ export function handleTopicSchemeRegistryImplementationUpdated(
   event: TopicSchemeRegistryImplementationUpdated
 ): void {
   fetchEvent(event, "TopicSchemeRegistryImplementationUpdated");
-}
-
-export function handleComplianceModuleRegistered(
-  event: ComplianceModuleRegistered
-): void {
-  fetchEvent(event, "ComplianceModuleRegistered");
-
-  const complianceModule = fetchComplianceModule(event.params.moduleAddress);
-  if (complianceModule.deployedInTransaction.equals(Bytes.empty())) {
-    complianceModule.deployedInTransaction = event.transaction.hash;
-  }
-  complianceModule.name = event.params.name;
-  complianceModule.typeId = event.params.typeId;
-
-  if (
-    event.params.typeId ==
-      crypto.keccak256(
-        ByteArray.fromUTF8("AddressBlockListComplianceModule")
-      ) ||
-    event.params.typeId ==
-      crypto.keccak256(
-        ByteArray.fromUTF8("IdentityAllowListComplianceModule")
-      ) ||
-    event.params.typeId ==
-      crypto.keccak256(ByteArray.fromUTF8("IdentityBlockListComplianceModule"))
-  ) {
-    // TODO
-  }
-  if (
-    event.params.typeId ==
-      crypto.keccak256(
-        ByteArray.fromUTF8("CountryAllowListComplianceModule")
-      ) ||
-    event.params.typeId ==
-      crypto.keccak256(ByteArray.fromUTF8("CountryBlockListComplianceModule"))
-  ) {
-    // TODO
-  }
-
-  complianceModule.save();
 }
 
 export function handleTokenFactoryRegistryImplementationUpdated(

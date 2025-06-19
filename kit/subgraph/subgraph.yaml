@@ -27,104 +27,6 @@ dataSources:
         - event: ATKSystemCreated(indexed address,indexed address)
           handler: handleATKSystemCreated
       file: ./src/system-factory/system-factory.ts
-  - kind: ethereum
-    name: TokenFactoryRegistry
-    network: settlemint
-    source:
-      address: "0x0000000000000000000000000000000000000000"
-      abi: TokenFactoryRegistry
-      startBlock: 0
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - RoleAdminChanged
-        - RoleGranted
-        - RoleRevoked
-        - TokenFactoryImplementationUpdated
-        - TokenFactoryRegistered
-      abis:
-        - name: TokenFactoryRegistry
-          file: ./abis/TokenFactoryRegistry.json
-      eventHandlers:
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event: TokenFactoryImplementationUpdated(indexed address,indexed bytes32,indexed
-            address)
-          handler: handleTokenFactoryImplementationUpdated
-        - event: TokenFactoryRegistered(indexed
-            address,string,bytes32,address,address,uint256)
-          handler: handleTokenFactoryRegistered
-      file: ./src/token-factory-registry.ts
-  - kind: ethereum
-    name: SystemAddonRegistry
-    network: settlemint
-    source:
-      address: "0x0000000000000000000000000000000000000000"
-      abi: SystemAddonRegistry
-      startBlock: 0
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - AddonImplementationUpdated
-        - SystemAddonRegistryRoleAdminChanged
-        - SystemAddonRegistryRoleGranted
-        - SystemAddonRegistryRoleRevoked
-        - SystemAddonRegistered
-      abis:
-        - name: SystemAddonRegistry
-          file: ../contracts/.generated/artifacts/contracts/system/addons/IATKSystemAddonRegistry.sol/IATKSystemAddonRegistry.json
-      eventHandlers:
-        - event: AddonImplementationUpdated(indexed address,indexed bytes32,indexed
-            address)
-          handler: handleAddonImplementationUpdated
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-        - event: SystemAddonRegistered(indexed
-            address,string,bytes32,address,address,bytes,uint256)
-          handler: handleSystemAddonRegistered
-      file: ./src/system-addon-registry.ts
-  - kind: ethereum
-    name: ComplianceModuleRegistry
-    network: settlemint
-    source:
-      address: "0x0000000000000000000000000000000000000000"
-      abi: ComplianceModuleRegistry
-      startBlock: 0
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - ComplianceModuleRegistered
-        - ComplianceModuleRegistryRoleAdminChanged
-        - ComplianceModuleRegistryRoleGranted
-        - ComplianceModuleRegistryRoleRevoked
-      abis:
-        - name: ComplianceModuleRegistry
-          file: ../contracts/.generated/artifacts/contracts/system/compliance/IATKComplianceModuleRegistry.sol/IATKComplianceModuleRegistry.json
-      eventHandlers:
-        - event: ComplianceModuleRegistered(indexed address,string,bytes32,indexed
-            address,uint256)
-          handler: handleComplianceModuleRegistered
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-      file: ./src/compliance-module-registry.ts
 templates:
   - kind: ethereum
     name: AccessControl
@@ -753,3 +655,83 @@ templates:
         - event: XvPSettlementCancelled(indexed address)
           handler: handleXvPSettlementCancelled
       file: ./src/addons/xvp/xvp-settlement.ts
+  - kind: ethereum
+    name: TokenFactoryRegistry
+    network: settlemint
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: TokenFactoryRegistry
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: TokenFactoryRegistry
+          file: ./abis/TokenFactoryRegistry.json
+        - name: BondFactory
+          file: ../contracts/.generated/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
+      eventHandlers:
+        - event: TokenFactoryImplementationUpdated(indexed address,indexed bytes32,indexed
+            address)
+          handler: handleTokenFactoryImplementationUpdated
+        - event: TokenFactoryRegistered(indexed
+            address,string,bytes32,address,address,uint256)
+          handler: handleTokenFactoryRegistered
+      file: ./src/token-factory/token-factory-registry.ts
+  - kind: ethereum
+    name: SystemAddonRegistry
+    network: settlemint
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: SystemAddonRegistry
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: SystemAddonRegistry
+          file: ../contracts/.generated/artifacts/contracts/system/addons/IATKSystemAddonRegistry.sol/IATKSystemAddonRegistry.json
+      eventHandlers:
+        - event: AddonImplementationUpdated(indexed address,indexed bytes32,indexed
+            address)
+          handler: handleAddonImplementationUpdated
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: SystemAddonRegistered(indexed
+            address,string,bytes32,address,address,bytes,uint256)
+          handler: handleSystemAddonRegistered
+      file: ./src/addons/system-addon-registry.ts
+  - kind: ethereum
+    name: ComplianceModuleRegistry
+    network: settlemint
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: ComplianceModuleRegistry
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: ComplianceModuleRegistry
+          file: ../contracts/.generated/artifacts/contracts/system/compliance/IATKComplianceModuleRegistry.sol/IATKComplianceModuleRegistry.json
+      eventHandlers:
+        - event: ComplianceModuleRegistered(indexed address,string,bytes32,indexed
+            address,uint256)
+          handler: handleComplianceModuleRegistered
+      file: ./src/compliance/compliance-module-registry.ts
