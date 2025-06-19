@@ -15,6 +15,7 @@ import {
     InvalidMerkleProof,
     IndexAlreadyClaimed,
     InvalidTokenAddress,
+    InvalidAirdropName,
     InvalidInputArrayLengths,
     InvalidWithdrawalAddress,
     InvalidMerkleRoot,
@@ -65,6 +66,10 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
 
     // --- Storage Variables ---
 
+    /// @notice The human-readable name of this airdrop.
+    /// @dev Set once at initialization and immutable thereafter.
+    string internal _name;
+
     /// @notice The ERC20 token being distributed in this airdrop.
     /// @dev Set once at initialization and immutable thereafter.
     IERC20 internal _token;
@@ -104,12 +109,14 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
     }
 
     /// @notice Initializes the base airdrop contract.
-    /// @dev Sets the token, Merkle root, claim tracker, owner, and trusted forwarder for meta-transactions.
+    /// @dev Sets the name, token, Merkle root, claim tracker, owner, and trusted forwarder for meta-transactions.
+    /// @param name_ The human-readable name for this airdrop.
     /// @param token_ The address of the ERC20 token to be distributed.
     /// @param root_ The Merkle root for verifying claims.
     /// @param owner_ The initial owner of the contract.
     /// @param claimTracker_ The address of the claim tracker contract.
     function __ATKAirdrop_init(
+        string memory name_,
         address token_,
         bytes32 root_,
         address owner_,
@@ -118,6 +125,7 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
         internal
         onlyInitializing
     {
+        if (bytes(name_).length == 0) revert InvalidAirdropName();
         if (token_ == address(0)) revert InvalidTokenAddress();
         if (root_ == bytes32(0)) revert InvalidMerkleRoot();
         if (claimTracker_ == address(0)) revert InvalidClaimTrackerAddress();
@@ -139,12 +147,19 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
 
         __Ownable_init(owner_);
 
+        _name = name_;
         _token = IERC20(token_);
         _merkleRoot = root_;
         _claimTracker = IATKClaimTracker(claimTracker_);
     }
 
     // --- View Functions ---
+
+    /// @notice Returns the name of this airdrop.
+    /// @return The human-readable name of the airdrop.
+    function name() external view returns (string memory) {
+        return _name;
+    }
 
     /// @notice Returns the token being distributed in this airdrop.
     /// @return The ERC20 token being distributed.

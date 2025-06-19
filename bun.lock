@@ -94,6 +94,7 @@
         "@types/pg": "8.15.4",
         "@types/react": "19.1.8",
         "@types/react-dom": "19.1.6",
+        "contracts": "workspace:*",
         "dotenv": "16.5.0",
         "eslint": "9.29.0",
         "eslint-plugin-react": "7.37.5",
@@ -104,9 +105,6 @@
         "vite": "6.3.5",
         "vite-bundle-analyzer": "0.22.3",
         "vite-tsconfig-paths": "5.1.4",
-      },
-      "peerDependencies": {
-        "contracts": "workspace:*",
       },
     },
     "kit/dapp-v1": {
@@ -133,11 +131,9 @@
       },
       "devDependencies": {
         "@settlemint/sdk-thegraph": "2.4.0",
+        "contracts": "workspace:*",
         "matchstick-as": "0.6.0",
         "yaml": "2.8.0",
-      },
-      "peerDependencies": {
-        "contracts": "workspace:*",
       },
     },
   },

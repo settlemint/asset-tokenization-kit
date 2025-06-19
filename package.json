@@ -34,7 +34,7 @@
     "turbo.json"
   ],
   "scripts": {
-    "dependencies": "turbo run dependencies",
+    "dependencies": "turbo run dependencies && git config merge.ours.driver true",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
     "build": "turbo build",
