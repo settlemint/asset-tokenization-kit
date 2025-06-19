@@ -699,16 +699,10 @@ templates:
         - event: AddonImplementationUpdated(indexed address,indexed bytes32,indexed
             address)
           handler: handleAddonImplementationUpdated
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
         - event: SystemAddonRegistered(indexed
             address,string,bytes32,address,address,bytes,uint256)
           handler: handleSystemAddonRegistered
-      file: ./src/addons/system-addon-registry.ts
+      file: ./src/addon-factory/system-addon-registry.ts
   - kind: ethereum
     name: ComplianceModuleRegistry
     network: settlemint

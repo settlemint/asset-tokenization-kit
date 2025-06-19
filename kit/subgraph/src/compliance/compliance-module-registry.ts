@@ -2,6 +2,7 @@ import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
 import { ComplianceModuleRegistered as ComplianceModuleRegisteredEvent } from "../../generated/templates/ComplianceModuleRegistry/ComplianceModuleRegistry";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchComplianceModule } from "./fetch/compliance-module";
+import { fetchComplianceModuleRegistry } from "./fetch/compliance-module-registry";
 
 export function handleComplianceModuleRegistered(
   event: ComplianceModuleRegisteredEvent
@@ -39,6 +40,10 @@ export function handleComplianceModuleRegistered(
   ) {
     // TODO
   }
+
+  complianceModule.complianceModuleRegistry = fetchComplianceModuleRegistry(
+    event.address
+  ).id;
 
   complianceModule.save();
 }
