@@ -124,9 +124,9 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
         return _vestingStrategy;
     }
 
-    /// @notice Returns the claim period end timestamp.
+    /// @notice Returns the initialization deadline timestamp.
     /// @return The timestamp after which no new vesting can be initialized.
-    function claimPeriodEnd() external view returns (uint256) {
+    function initializationDeadline() external view returns (uint256) {
         return _initializationDeadline;
     }
 
