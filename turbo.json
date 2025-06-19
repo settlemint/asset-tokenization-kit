@@ -53,7 +53,7 @@
     "dependencies": {},
     "format": {},
     "lint": {
-      "dependsOn": ["//#setup:dev"]
+      "dependsOn": ["//#setup:dev", "codegen"]
     },
     "dev": {
       "cache": false,
