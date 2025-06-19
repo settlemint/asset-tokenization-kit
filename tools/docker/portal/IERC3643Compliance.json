@@ -1,0 +1,485 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "bindToken",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "canTransfer",
+      "inputs": [
+        {
+          "name": "_from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "created",
+      "inputs": [
+        {
+          "name": "_to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "destroyed",
+      "inputs": [
+        {
+          "name": "_from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "getTokenBound",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isTokenBound",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "transferred",
+      "inputs": [
+        {
+          "name": "_from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "unbindToken",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "bindToken(address)": "3ff5aa02",
+    "canTransfer(address,address,uint256)": "e46638e6",
+    "created(address,uint256)": "5f8dead3",
+    "destroyed(address,uint256)": "8d2ea772",
+    "getTokenBound()": "6a3edf28",
+    "isTokenBound(address)": "993e8b95",
+    "transferred(address,address,uint256)": "8baf29b4",
+    "unbindToken(address)": "40db3b50"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"}],\"name\":\"bindToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"canTransfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"created\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"destroyed\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTokenBound\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"}],\"name\":\"isTokenBound\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"transferred\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"}],\"name\":\"unbindToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"bindToken(address)\":{\"details\":\"binds a token to the compliance contract\",\"params\":{\"_token\":\"address of the token to bind  This function can be called ONLY by the owner of the compliance contract  Emits a TokenBound event\"}},\"canTransfer(address,address,uint256)\":{\"details\":\"checks that the transfer is compliant.  default compliance always returns true  READ ONLY FUNCTION, this function cannot be used to increment  counters, emit events, ...\",\"params\":{\"_amount\":\"The amount of tokens involved in the transfer  This function will call moduleCheck() on every module bound to the compliance  If each of the module checks return TRUE, this function will return TRUE as well  returns FALSE otherwise\",\"_from\":\"The address of the sender\",\"_to\":\"The address of the receiver\"}},\"created(address,uint256)\":{\"details\":\"function called whenever tokens are created on a wallet  this function can update state variables in the modules bound to the compliance  these state variables being used by the module checks to decide if a transfer  is compliant or not depending on the values stored in these state variables and on  the parameters of the modules  This function can be called ONLY by the token contract bound to the compliance\",\"params\":{\"_amount\":\"The amount of tokens involved in the minting  This function calls moduleMintAction() on each module bound to the compliance contract\",\"_to\":\"The address of the receiver\"}},\"destroyed(address,uint256)\":{\"details\":\"function called whenever tokens are destroyed from a wallet  this function can update state variables in the modules bound to the compliance  these state variables being used by the module checks to decide if a transfer  is compliant or not depending on the values stored in these state variables and on  the parameters of the modules  This function can be called ONLY by the token contract bound to the compliance\",\"params\":{\"_amount\":\"The amount of tokens involved in the burn  This function calls moduleBurnAction() on each module bound to the compliance contract\",\"_from\":\"The address on which tokens are burnt\"}},\"getTokenBound()\":{\"details\":\"getter for the address of the token bound  returns the address of the token\"},\"transferred(address,address,uint256)\":{\"details\":\"function called whenever tokens are transferred  from one wallet to another  this function can update state variables in the modules bound to the compliance  these state variables being used by the module checks to decide if a transfer  is compliant or not depending on the values stored in these state variables and on  the parameters of the modules  This function can be called ONLY by the token contract bound to the compliance\",\"params\":{\"_amount\":\"The amount of tokens involved in the transfer  This function calls moduleTransferAction() on each module bound to the compliance contract\",\"_from\":\"The address of the sender\",\"_to\":\"The address of the receiver\"}},\"unbindToken(address)\":{\"details\":\"unbinds a token from the compliance contract\",\"params\":{\"_token\":\"address of the token to unbind  This function can be called ONLY by the owner of the compliance contract  Emits a TokenUnbound event\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"isTokenBound(address)\":{\"notice\":\"check the parameters of the compliance contract\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/smart/interface/ERC-3643/IERC3643Compliance.sol\":\"IERC3643Compliance\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/\",\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/\",\":forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\",\":openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\"],\"viaIR\":true},\"sources\":{\"contracts/smart/interface/ERC-3643/IERC3643Compliance.sol\":{\"keccak256\":\"0x803db557cae3cdd49ad7c7f668fe9c5583ade2575e24b234224dde54115abef0\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://e44d3e6b2ecfe5f719362edd3b1177926ccc748837361fd4ffd3f8c39dfa25d2\",\"dweb:/ipfs/QmTPQzetHvAj8y8CHC6fB69twDFmpLz371A6uFzb2kiH2T\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "bindToken"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "canTransfer",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "created"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "destroyed"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getTokenBound",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isTokenBound",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transferred"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "unbindToken"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "bindToken(address)": {
+            "details": "binds a token to the compliance contract",
+            "params": {
+              "_token": "address of the token to bind  This function can be called ONLY by the owner of the compliance contract  Emits a TokenBound event"
+            }
+          },
+          "canTransfer(address,address,uint256)": {
+            "details": "checks that the transfer is compliant.  default compliance always returns true  READ ONLY FUNCTION, this function cannot be used to increment  counters, emit events, ...",
+            "params": {
+              "_amount": "The amount of tokens involved in the transfer  This function will call moduleCheck() on every module bound to the compliance  If each of the module checks return TRUE, this function will return TRUE as well  returns FALSE otherwise",
+              "_from": "The address of the sender",
+              "_to": "The address of the receiver"
+            }
+          },
+          "created(address,uint256)": {
+            "details": "function called whenever tokens are created on a wallet  this function can update state variables in the modules bound to the compliance  these state variables being used by the module checks to decide if a transfer  is compliant or not depending on the values stored in these state variables and on  the parameters of the modules  This function can be called ONLY by the token contract bound to the compliance",
+            "params": {
+              "_amount": "The amount of tokens involved in the minting  This function calls moduleMintAction() on each module bound to the compliance contract",
+              "_to": "The address of the receiver"
+            }
+          },
+          "destroyed(address,uint256)": {
+            "details": "function called whenever tokens are destroyed from a wallet  this function can update state variables in the modules bound to the compliance  these state variables being used by the module checks to decide if a transfer  is compliant or not depending on the values stored in these state variables and on  the parameters of the modules  This function can be called ONLY by the token contract bound to the compliance",
+            "params": {
+              "_amount": "The amount of tokens involved in the burn  This function calls moduleBurnAction() on each module bound to the compliance contract",
+              "_from": "The address on which tokens are burnt"
+            }
+          },
+          "getTokenBound()": {
+            "details": "getter for the address of the token bound  returns the address of the token"
+          },
+          "transferred(address,address,uint256)": {
+            "details": "function called whenever tokens are transferred  from one wallet to another  this function can update state variables in the modules bound to the compliance  these state variables being used by the module checks to decide if a transfer  is compliant or not depending on the values stored in these state variables and on  the parameters of the modules  This function can be called ONLY by the token contract bound to the compliance",
+            "params": {
+              "_amount": "The amount of tokens involved in the transfer  This function calls moduleTransferAction() on each module bound to the compliance contract",
+              "_from": "The address of the sender",
+              "_to": "The address of the receiver"
+            }
+          },
+          "unbindToken(address)": {
+            "details": "unbinds a token from the compliance contract",
+            "params": {
+              "_token": "address of the token to unbind  This function can be called ONLY by the owner of the compliance contract  Emits a TokenUnbound event"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "isTokenBound(address)": {
+            "notice": "check the parameters of the compliance contract"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/",
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/",
+        "forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/",
+        "openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/smart/interface/ERC-3643/IERC3643Compliance.sol": "IERC3643Compliance"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/smart/interface/ERC-3643/IERC3643Compliance.sol": {
+        "keccak256": "0x803db557cae3cdd49ad7c7f668fe9c5583ade2575e24b234224dde54115abef0",
+        "urls": [
+          "bzz-raw://e44d3e6b2ecfe5f719362edd3b1177926ccc748837361fd4ffd3f8c39dfa25d2",
+          "dweb:/ipfs/QmTPQzetHvAj8y8CHC6fB69twDFmpLz371A6uFzb2kiH2T"
+        ],
+        "license": "CC0-1.0"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "isTokenBound(address)": {
+        "notice": "check the parameters of the compliance contract"
+      }
+    }
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "bindToken(address)": {
+        "details": "binds a token to the compliance contract",
+        "params": {
+          "_token": "address of the token to bind  This function can be called ONLY by the owner of the compliance contract  Emits a TokenBound event"
+        }
+      },
+      "canTransfer(address,address,uint256)": {
+        "details": "checks that the transfer is compliant.  default compliance always returns true  READ ONLY FUNCTION, this function cannot be used to increment  counters, emit events, ...",
+        "params": {
+          "_amount": "The amount of tokens involved in the transfer  This function will call moduleCheck() on every module bound to the compliance  If each of the module checks return TRUE, this function will return TRUE as well  returns FALSE otherwise",
+          "_from": "The address of the sender",
+          "_to": "The address of the receiver"
+        }
+      },
+      "created(address,uint256)": {
+        "details": "function called whenever tokens are created on a wallet  this function can update state variables in the modules bound to the compliance  these state variables being used by the module checks to decide if a transfer  is compliant or not depending on the values stored in these state variables and on  the parameters of the modules  This function can be called ONLY by the token contract bound to the compliance",
+        "params": {
+          "_amount": "The amount of tokens involved in the minting  This function calls moduleMintAction() on each module bound to the compliance contract",
+          "_to": "The address of the receiver"
+        }
+      },
+      "destroyed(address,uint256)": {
+        "details": "function called whenever tokens are destroyed from a wallet  this function can update state variables in the modules bound to the compliance  these state variables being used by the module checks to decide if a transfer  is compliant or not depending on the values stored in these state variables and on  the parameters of the modules  This function can be called ONLY by the token contract bound to the compliance",
+        "params": {
+          "_amount": "The amount of tokens involved in the burn  This function calls moduleBurnAction() on each module bound to the compliance contract",
+          "_from": "The address on which tokens are burnt"
+        }
+      },
+      "getTokenBound()": {
+        "details": "getter for the address of the token bound  returns the address of the token"
+      },
+      "transferred(address,address,uint256)": {
+        "details": "function called whenever tokens are transferred  from one wallet to another  this function can update state variables in the modules bound to the compliance  these state variables being used by the module checks to decide if a transfer  is compliant or not depending on the values stored in these state variables and on  the parameters of the modules  This function can be called ONLY by the token contract bound to the compliance",
+        "params": {
+          "_amount": "The amount of tokens involved in the transfer  This function calls moduleTransferAction() on each module bound to the compliance contract",
+          "_from": "The address of the sender",
+          "_to": "The address of the receiver"
+        }
+      },
+      "unbindToken(address)": {
+        "details": "unbinds a token from the compliance contract",
+        "params": {
+          "_token": "address of the token to unbind  This function can be called ONLY by the owner of the compliance contract  Emits a TokenUnbound event"
+        }
+      }
+    }
+  },
+  "id": 84
+}
