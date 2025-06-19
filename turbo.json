@@ -101,7 +101,7 @@
     },
     "//#dev:up": {
       "cache": false,
-      "dependsOn": ["artifacts"]
+      "dependsOn": ["contracts#artifacts", "dapp#artifacts", "subgraph#artifacts"]
     }
   }
 }
