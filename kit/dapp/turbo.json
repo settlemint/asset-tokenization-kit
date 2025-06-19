@@ -2,7 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "codegen": {
-      "dependsOn": ["codegen:settlemint", "codegen:gql-tada"]
+      "dependsOn": ["codegen:settlemint", "codegen:gql-tada", "translate"]
     },
     "codegen:settlemint": {
       "dependsOn": ["//#dev:connect"],
@@ -17,6 +17,7 @@
     "codegen:gql-tada": {
       "outputs": ["*-cache.d.ts"]
     },
+    "translate": {},
     "build": {
       "outputs": [".output/**"]
     },
