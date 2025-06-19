@@ -31,6 +31,18 @@ const list = baseContract
   .input(ListSchema) // Standard list query parameters (pagination, filters, etc.)
   .output(z.array(SystemSchema)); // Return array of system objects
 
+/**
+ * Contract definition for the system creation endpoint.
+ * 
+ * Defines the type-safe interface for deploying new SMART system contracts:
+ * - HTTP POST method to /systems endpoint
+ * - Input validation for contract address and verification credentials
+ * - Server-sent events output for real-time transaction tracking
+ * - OpenAPI documentation with proper tags and descriptions
+ * 
+ * The endpoint streams events as the blockchain transaction progresses through
+ * confirmation and indexing phases.
+ */
 const create = baseContract
   .route({
     method: "POST",

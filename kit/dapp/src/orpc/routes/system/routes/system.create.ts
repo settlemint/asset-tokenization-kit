@@ -45,6 +45,16 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
   }
 `);
 
+/**
+ * GraphQL query to find system contracts deployed in a specific transaction.
+ * 
+ * Used to retrieve the system contract address after deployment by matching
+ * the deployment transaction hash. This ensures we get the correct contract
+ * instance when multiple systems might be deployed.
+ * 
+ * @param deployedInTransaction - The transaction hash where the system was deployed
+ * @returns Array of system objects containing their IDs (contract addresses)
+ */
 const FIND_SYSTEM_FOR_TRANSACTION_QUERY = theGraphGraphql(`
   query findSystemForTransaction($deployedInTransaction: Bytes) {
     systems(where: {deployedInTransaction: $deployedInTransaction}) {

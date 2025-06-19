@@ -19,6 +19,13 @@ export const AccountCreateMessagesSchema = z.object({
     .default("Failed to create wallet. Please try again."),
 });
 
+/**
+ * Schema for account creation request parameters.
+ * 
+ * Validates the input for creating a new blockchain wallet account:
+ * - userId: The unique identifier of the user who will own the account
+ * - messages: Optional custom status messages for localization
+ */
 export const AccountCreateSchema = z.object({
   userId: z.string().describe("The id of the user to create an account for"),
   /**
@@ -30,4 +37,8 @@ export const AccountCreateSchema = z.object({
 });
 
 // Type exports
+/**
+ * Type definition for account creation messages.
+ * Inferred from AccountCreateMessagesSchema for type-safe message handling.
+ */
 export type AccountCreateMessages = z.infer<typeof AccountCreateMessagesSchema>;

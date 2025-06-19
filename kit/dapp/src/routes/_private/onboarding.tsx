@@ -53,6 +53,21 @@ export const Route = createFileRoute("/_private/onboarding")({
   }),
 });
 
+/**
+ * Onboarding Component
+ * 
+ * Guides new users through the initial setup process for the SettleMint Asset Tokenization Kit.
+ * This component handles the following onboarding steps:
+ * 
+ * 1. Wallet Generation - Creates a new blockchain wallet for the user
+ * 2. MFA Setup (commented out) - Secures the wallet with multi-factor authentication
+ * 3. System Deployment - Deploys the SMART system contracts required for the platform
+ * 
+ * The component tracks user progress through the onboarding flow and provides
+ * real-time feedback for blockchain operations using server-sent events.
+ * 
+ * @returns The onboarding UI with step-by-step actions for platform setup
+ */
 function OnboardingComponent() {
   const { orpc } = Route.useRouteContext();
   const navigate = useNavigate();

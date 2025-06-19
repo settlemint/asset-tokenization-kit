@@ -15,6 +15,14 @@ import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { setTimeout } from "node:timers/promises";
 import { z } from "zod/v4";
 
+/**
+ * Schema for transaction tracking output events.
+ * 
+ * Defines the structure of events emitted during transaction tracking:
+ * - transactionHash: The Ethereum transaction hash being tracked
+ * - message: Human-readable status message
+ * - status: Current tracking status (pending, confirmed, or failed)
+ */
 export const TransactionTrackOutputSchema = z.object({
   transactionHash: ethereumHash,
   message: z.string(),
@@ -85,6 +93,10 @@ export async function* trackTransaction(
   const streamStartTime = Date.now();
 
   // Phase 1: Monitor transaction confirmation on blockchain
+  /**
+   * Type representing the transaction receipt returned by the Portal GraphQL API.
+   * Contains transaction status, revert reasons, and block information.
+   */
   let receipt:
     | NonNullable<
         NonNullable<
