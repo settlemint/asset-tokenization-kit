@@ -191,7 +191,7 @@ jobs:
             | jq -r '.[] | select(.body | startswith("<!-- slack-ts:")) | .body' | head -1)
 
           if [ -n "$COMMENT" ]; then
-            SLACK_TS=$(echo "$COMMENT" | sed -n 's/<!-- slack-ts:\(.*\)-->.*/\1/p')
+            SLACK_TS=$(echo "$COMMENT" | sed -n 's/<!-- slack-ts:\(.*\) *-->.*/\1/p')
             echo "slack_ts=$SLACK_TS" >> $GITHUB_OUTPUT
             echo "message_exists=true" >> $GITHUB_OUTPUT
             echo "Debug: Found existing Slack message with timestamp: $SLACK_TS"
