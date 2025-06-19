@@ -24,12 +24,21 @@ interface MessageConfig {
 }
 
 /**
- * Extended message configuration that includes backend messages
+ * Type helper to check if a type has a messages property
  */
-interface ExtendedMessageConfig<TMutationMessages = Record<string, string>> extends MessageConfig {
-  // Messages that will be passed to the mutation
-  mutationMessages?: TMutationMessages;
-}
+type HasMessagesProperty<T> = T extends { messages: unknown } ? true : false;
+
+/**
+ * Extended message configuration that includes backend messages
+ * Only available when TVariables has a messages property
+ */
+type ExtendedMessageConfig<
+  TVariables,
+  TMutationMessages = Record<string, string>,
+> = MessageConfig &
+  (HasMessagesProperty<TVariables> extends true
+    ? { mutationMessages?: TMutationMessages }
+    : { mutationMessages?: never });
 
 /**
  * Extract the result type from an async iterator of events
@@ -47,14 +56,20 @@ type ExtractResultType<T> =
 /**
  * Streaming mutation options that transform callbacks to work with extracted result
  */
-interface StreamingMutationOptions<TData, TError, TVariables, TContext, TMutationMessages = Record<string, string>> {
+interface StreamingMutationOptions<
+  TData,
+  TError,
+  TVariables,
+  TContext,
+  TMutationMessages = Record<string, string>,
+> {
   mutationOptions: UseMutationOptions<TData, TError, TVariables, TContext>;
   onSuccess?: (
     data: ExtractResultType<TData>,
     variables: TVariables,
     context: TContext
   ) => unknown;
-  messages?: ExtendedMessageConfig<TMutationMessages>;
+  messages?: ExtendedMessageConfig<TVariables, TMutationMessages>;
 }
 
 /**
@@ -90,7 +105,13 @@ export function useStreamingMutation<
   TContext = unknown,
   TMutationMessages = Record<string, string>,
 >(
-  options: StreamingMutationOptions<TData, TError, TVariables, TContext, TMutationMessages>
+  options: StreamingMutationOptions<
+    TData,
+    TError,
+    TVariables,
+    TContext,
+    TMutationMessages
+  >
 ): UseMutationResult<ExtractResultType<TData>, TError, TVariables, TContext> & {
   isTracking: boolean;
   latestMessage: string | null;
@@ -101,9 +122,7 @@ export function useStreamingMutation<
 
   // Process async iterator events
   const processStream = useCallback(
-    async (
-      iterator: TData
-    ): Promise<ExtractResultType<TData>> => {
+    async (iterator: TData): Promise<ExtractResultType<TData>> => {
       setIsTracking(true);
       setLatestMessage(null);
       toastIdRef.current = undefined;
@@ -121,8 +140,7 @@ export function useStreamingMutation<
 
         for await (const event of asyncIterable) {
           // Translate message if mapping provided
-          const message =
-            messages.messageMap?.[event.message] ?? event.message;
+          const message = messages.messageMap?.[event.message] ?? event.message;
 
           setLatestMessage(message);
 
@@ -172,7 +190,7 @@ export function useStreamingMutation<
         const errorMessage =
           error instanceof Error
             ? error.message
-            : messages.defaultError ?? "An error occurred";
+            : (messages.defaultError ?? "An error occurred");
         toast.error(errorMessage, { id: toastIdRef.current });
         throw error;
       } finally {
@@ -198,13 +216,27 @@ export function useStreamingMutation<
         throw new Error("Mutation function not found");
       }
 
-      // Inject mutation messages into variables if configured
+      // Type-safe message injection
       let enhancedVariables = variables;
-      if (options.messages?.mutationMessages) {
+
+      // Only inject messages if TVariables has a messages property
+      if (
+        options.messages?.mutationMessages &&
+        "messages" in (variables as object)
+      ) {
+        // Safe to inject because we've checked the property exists
         enhancedVariables = {
           ...variables,
           messages: options.messages.mutationMessages,
-        } as TVariables;
+        };
+      } else if (options.messages?.mutationMessages) {
+        // Log warning in development if messages were provided but can't be injected
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "mutationMessages were provided but the mutation variables do not have a messages property. " +
+              "Messages will not be passed to the mutation."
+          );
+        }
       }
 
       // Execute the original mutation to get the iterator
