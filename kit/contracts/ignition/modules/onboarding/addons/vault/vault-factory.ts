@@ -25,7 +25,7 @@ const ATKOnboardingVaultFactoryModule = buildModule(
     );
     const vaultFactoryAddress = m.readEventArgument(
       createVaultFactoryAddon,
-      "SystemAddonCreated",
+      "SystemAddonRegistered",
       "proxyAddress",
       { id: "vaultFactoryAddress" }
     );

@@ -29,7 +29,7 @@ const ATKOnboardingPushAirdropFactoryModule = buildModule(
     );
     const pushAirdropFactoryAddress = m.readEventArgument(
       createPushAirdropFactoryAddon,
-      "SystemAddonCreated",
+      "SystemAddonRegistered",
       "proxyAddress",
       { id: "pushAirdropFactoryAddress" }
     );

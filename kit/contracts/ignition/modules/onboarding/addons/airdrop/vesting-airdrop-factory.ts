@@ -29,7 +29,7 @@ const ATKOnboardingVestingAirdropFactoryModule = buildModule(
     );
     const vestingAirdropFactoryAddress = m.readEventArgument(
       createVestingAirdropFactoryAddon,
-      "SystemAddonCreated",
+      "SystemAddonRegistered",
       "proxyAddress",
       { id: "vestingAirdropFactoryAddress" }
     );

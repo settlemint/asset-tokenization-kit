@@ -16,7 +16,7 @@ const ATKOnboardingStableCoinModule = buildModule(
     );
     const stablecoinFactoryAddress = m.readEventArgument(
       createStableCoinFactory,
-      "TokenFactoryCreated",
+      "TokenFactoryRegistered",
       "proxyAddress",
       { id: "stablecoinFactoryAddress" }
     );

@@ -21,7 +21,7 @@ export function handleAddonImplementationUpdated(
 export function handleSystemAddonRegistered(
   event: SystemAddonRegisteredEvent
 ): void {
-  fetchEvent(event, "SystemAddonCreated");
+  fetchEvent(event, "SystemAddonRegistered");
   const systemAddon = fetchSystemAddon(event.params.proxyAddress);
   if (systemAddon.deployedInTransaction.equals(Bytes.empty())) {
     systemAddon.deployedInTransaction = event.transaction.hash;

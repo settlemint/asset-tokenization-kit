@@ -20,7 +20,7 @@ export function handleTokenFactoryImplementationUpdated(
 export function handleTokenFactoryRegistered(
   event: TokenFactoryRegisteredEvent
 ): void {
-  fetchEvent(event, "TokenFactoryCreated");
+  fetchEvent(event, "TokenFactoryRegistered");
   const tokenFactory = fetchTokenFactory(event.params.proxyAddress);
   tokenFactory.name = event.params.name;
   tokenFactory.typeId = event.params.typeId;

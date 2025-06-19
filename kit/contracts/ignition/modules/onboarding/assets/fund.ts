@@ -14,7 +14,7 @@ const ATKOnboardingFundModule = buildModule("ATKOnboardingFundModule", (m) => {
   );
   const fundFactoryAddress = m.readEventArgument(
     createFundFactory,
-    "TokenFactoryCreated",
+    "TokenFactoryRegistered",
     "proxyAddress",
     { id: "fundFactoryAddress" }
   );

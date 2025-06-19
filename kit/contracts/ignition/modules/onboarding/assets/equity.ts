@@ -16,7 +16,7 @@ const ATKOnboardingEquityModule = buildModule(
     );
     const equityFactoryAddress = m.readEventArgument(
       createEquityFactory,
-      "TokenFactoryCreated",
+      "TokenFactoryRegistered",
       "proxyAddress",
       { id: "equityFactoryAddress" }
     );

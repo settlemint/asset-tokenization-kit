@@ -16,7 +16,7 @@ const ATKOnboardingDepositModule = buildModule(
     );
     const depositFactoryAddress = m.readEventArgument(
       createDepositFactory,
-      "TokenFactoryCreated",
+      "TokenFactoryRegistered",
       "proxyAddress",
       { id: "depositFactoryAddress" }
     );

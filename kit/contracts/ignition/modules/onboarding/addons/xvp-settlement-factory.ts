@@ -31,7 +31,7 @@ const ATKOnboardingXvPSettlementFactoryModule = buildModule(
     );
     const xvpSettlementFactoryAddress = m.readEventArgument(
       createXvPSettlementFactoryAddon,
-      "SystemAddonCreated",
+      "SystemAddonRegistered",
       "proxyAddress",
       { id: "xvpSettlementFactoryAddress" }
     );

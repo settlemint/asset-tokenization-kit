@@ -29,7 +29,7 @@ const ATKOnboardingFixedYieldScheduleFactoryModule = buildModule(
     );
     const fixedYieldScheduleFactoryAddress = m.readEventArgument(
       createFixedYieldScheduleFactoryAddon,
-      "SystemAddonCreated",
+      "SystemAddonRegistered",
       "proxyAddress",
       { id: "fixedYieldScheduleFactoryAddress" }
     );
