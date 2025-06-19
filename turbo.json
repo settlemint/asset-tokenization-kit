@@ -77,10 +77,13 @@
       "cache": false
     },
     "//#dev:connect": {
-      "outputs": ["**/.env", "**/.env.local"],
-      "dependsOn": ["//#dev:up"]
+      "outputs": ["**/.env", "**/.env.local"]
     },
     "//#dev:up": {
+      "cache": false,
+      "dependsOn": ["//#dev:start", "//#dev:connect"]
+    },
+    "//#dev:start": {
       "cache": false,
       "dependsOn": [
         "contracts#artifacts",
