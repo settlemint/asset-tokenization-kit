@@ -117,8 +117,10 @@ contract ATKTypedImplementationProxyTest is Test {
 
         vm.expectRevert(ETHTransfersNotAllowed.selector);
         // The call is expected to revert. If it doesn't, vm.expectRevert will fail the test.
-        // No return value check is needed.
-        address(proxy).call{ value: 1 ether }("");
+        // We capture the return value to satisfy the compiler, but we don't use it
+        // because we expect the call to revert.
+        (bool success,) = address(proxy).call{ value: 1 ether }("");
+        assertEq(success, true);
     }
 
     function test_ProxyFunctionCall_Success() public {
