@@ -139,10 +139,6 @@ jobs:
       - name: Install Bun dependencies
         run: bun install
 
-      - name: Launch docker compose
-        run: |
-          bun run dev:up
-
       - name: Install Helm
         uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
 
@@ -154,6 +150,17 @@ jobs:
           THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
           LANGUINE_API_KEY: ${{ secrets.LANGUINE_API_KEY }}
           LANGUINE_PROJECT_ID: ${{ secrets.LANGUINE_PROJECT_ID }}
+
+      - name: Languine Action
+        uses: languine-ai/languine@v1
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          api-key: ${{ secrets.LANGUINE_API_KEY }}
+          project-id: ${{ secrets.LANGUINE_PROJECT_ID }}
+          create-pull-request: true
+          working-directory: kit/dapp
 
       - name: Store predeployed output
         if: github.event_name == 'pull_request' && always()
@@ -167,11 +174,3 @@ jobs:
             kit/subgraph/subgraph-output.txt
             kit/subgraph/.generated/.env.subgraph
             kit/dapp/.generated/database-export.sql
-
-      - name: Auto-commit artifacts
-        if: |
-          github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' && github.event_name == 'pull_request' && always()
-        uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6
-        with:
-          commit_message: "chore: update artifacts"
-          file_pattern: "kit/contracts/.generated/genesis.json kit/contracts/.generated/portal/*.json kit/subgraph/.generated/.env.subgraph kit/dapp/.generated/database-export.sql kit/dapp/locales/**/*.json kit/charts/**/README.md kit/dapp/languine.lock"
