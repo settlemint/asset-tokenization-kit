@@ -4,7 +4,11 @@ import { getPublicClient } from "./public-client";
 export async function waitForSuccess(transactionHash: Hex) {
   const publicClient = getPublicClient();
   const receipt: TransactionReceipt =
-    await publicClient.waitForTransactionReceipt({ hash: transactionHash });
+    await publicClient.waitForTransactionReceipt({
+      hash: transactionHash,
+      pollingInterval: 50,
+      confirmations: 0,
+    });
 
   if (receipt.status === "success") {
     return receipt;
