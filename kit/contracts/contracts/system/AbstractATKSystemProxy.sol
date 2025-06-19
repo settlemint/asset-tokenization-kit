@@ -5,12 +5,10 @@ pragma solidity ^0.8.28;
 import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
-import { IATKSystem } from "./../../IATKSystem.sol";
-import {
-    InvalidSystemAddress, ETHTransfersNotAllowed, InitializationWithZeroAddress
-} from "./../../ATKSystemErrors.sol";
+import { IATKSystem } from "./IATKSystem.sol";
+import { InvalidSystemAddress, ETHTransfersNotAllowed, InitializationWithZeroAddress } from "./ATKSystemErrors.sol";
 
-/// @title Abstract Base Proxy for ATK Identity Components
+/// @title Abstract Base Proxy for ATK System Components
 /// @author SettleMint Tokenization Services
 /// @notice Provides common functionality for proxy contracts that interact with an IATKSystem contract
 ///         to determine their implementation address and handle initialization.
@@ -20,11 +18,11 @@ import {
 ///         and revert with a specific error if not found.
 ///      3. In their own constructor, fetch the implementation address, prepare initialization data,
 ///         and then call `_performInitializationDelegatecall`.
-abstract contract AbstractATKIdentityProxy is Proxy {
+abstract contract AbstractATKSystemProxy is Proxy {
     /// @dev Fixed storage slot for the IATKSystem address.
-    /// Value: keccak256("org.smart.contracts.proxy.AbstractATKIdentityProxy.systemAddress")
+    /// Value: keccak256("org.smart.contracts.proxy.AbstractATKSystemProxy.systemAddress")
     bytes32 private constant _ATK_SYSTEM_ADDRESS_SLOT =
-        0x4f8894a0c08bc289b8244ec07ae743e1ec47b7550ef31bedb738d74a8f77143c;
+        0x6430307501c2cc3d2d4fb0a554183112a402a38cdc96135a87867e0457146f96;
 
     /// @dev Internal function to retrieve the `IATKSystem` contract instance from the stored
     /// address.
@@ -47,7 +45,7 @@ abstract contract AbstractATKIdentityProxy is Proxy {
         virtual
         returns (address implementationAddress);
 
-    /// @notice Constructs the AbstractATKIdentityProxy.
+    /// @notice Constructs the AbstractATKSystemProxy.
     /// @dev Validates and stores the `systemAddress`.
     /// @param systemAddress The address of the IATKSystem contract.
     constructor(address systemAddress) {

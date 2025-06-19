@@ -5,7 +5,7 @@ import { IATKSystem } from "../../IATKSystem.sol";
 import { IdentityImplementationNotSet } from "../../ATKSystemErrors.sol";
 import { ZeroAddressNotAllowed } from "../ATKIdentityErrors.sol";
 import { IATKTokenIdentity } from "./IATKTokenIdentity.sol";
-import { AbstractATKIdentityProxy } from "./AbstractATKIdentityProxy.sol";
+import { AbstractATKSystemProxy } from "../../AbstractATKSystemProxy.sol";
 
 /// @title ATK Token Identity Proxy Contract (for Token-Bound Identities)
 /// @author SettleMint Tokenization Services
@@ -21,7 +21,7 @@ import { AbstractATKIdentityProxy } from "./AbstractATKIdentityProxy.sol";
 /// state.
 ///      This proxy is typically created by the `SMARTIdentityFactoryImplementation` for a specific token.
 ///      Inherits from `SMARTSystemProxy`.
-contract ATKTokenIdentityProxy is AbstractATKIdentityProxy {
+contract ATKTokenIdentityProxy is AbstractATKSystemProxy {
     /// @notice Constructor for the `ATKTokenIdentityProxy`.
     /// @dev This function is called only once when this proxy contract is deployed (typically by the
     /// `ATKIdentityFactory`).
@@ -35,7 +35,7 @@ contract ATKTokenIdentityProxy is AbstractATKIdentityProxy {
     /// `ATKTokenIdentityImplementation` inherits) via `_performInitializationDelegatecall`.
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param accessManager The address of the `ATKTokenAccessManager` contract.
-    constructor(address systemAddress, address accessManager) AbstractATKIdentityProxy(systemAddress) {
+    constructor(address systemAddress, address accessManager) AbstractATKSystemProxy(systemAddress) {
         if (accessManager == address(0)) revert ZeroAddressNotAllowed();
 
         IATKSystem system_ = _getSystem();
@@ -50,7 +50,7 @@ contract ATKTokenIdentityProxy is AbstractATKIdentityProxy {
     /// @dev Reverts with `IdentityImplementationNotSet` if the implementation address is zero.
     /// @param system The `IATKSystem` contract instance.
     /// @return The address of the `ATKTokenIdentityImplementation` contract.
-    /// @inheritdoc AbstractATKIdentityProxy
+    /// @inheritdoc AbstractATKSystemProxy
     function _getSpecificImplementationAddress(IATKSystem system) internal view override returns (address) {
         address implementation = system.tokenIdentityImplementation(); // Uses the token-specific implementation getter
         if (implementation == address(0)) {

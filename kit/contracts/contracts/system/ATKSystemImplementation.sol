@@ -699,6 +699,12 @@ contract ATKSystemImplementation is
         return _implementations[TOKEN_IDENTITY];
     }
 
+    /// @notice Returns the address of the access manager implementation.
+    /// @return The address of the access manager implementation contract.
+    function tokenAccessManagerImplementation() external view returns (address) {
+        return _implementations[TOKEN_ACCESS_MANAGER];
+    }
+
     // --- Proxy Getter Functions ---
     // These public view functions allow anyone to query the stable addresses of the proxy contracts for each module.
     // Interactions with the SMART Protocol modules should always go through these proxy addresses.

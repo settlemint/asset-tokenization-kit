@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.28;
 
-import { AbstractATKIdentityProxy } from "./AbstractATKIdentityProxy.sol";
+import { AbstractATKSystemProxy } from "../../AbstractATKSystemProxy.sol";
 import { IATKSystem } from "../../IATKSystem.sol";
 import { IdentityImplementationNotSet } from "../../ATKSystemErrors.sol";
 import { ZeroAddressNotAllowed } from "../ATKIdentityErrors.sol";
@@ -19,7 +19,7 @@ import { IATKIdentity } from "./IATKIdentity.sol";
 ///      underlying identity logic to be upgraded without changing this proxy's address or losing its state.
 ///      This proxy is typically created by the `ATKIdentityFactoryImplementation`.
 ///      Inherits from `ATKSystemProxy`.
-contract ATKIdentityProxy is AbstractATKIdentityProxy {
+contract ATKIdentityProxy is AbstractATKSystemProxy {
     /// @notice Constructor for the `ATKIdentityProxy`.
     /// @dev This function is called only once when this proxy contract is deployed (typically by the
     /// `ATKIdentityFactory`).
@@ -33,7 +33,7 @@ contract ATKIdentityProxy is AbstractATKIdentityProxy {
     /// `ATKIdentityImplementation` inherits) via `_performInitializationDelegatecall`.
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param initialManagementKey The address to be set as the first management key for this identity.
-    constructor(address systemAddress, address initialManagementKey) AbstractATKIdentityProxy(systemAddress) {
+    constructor(address systemAddress, address initialManagementKey) AbstractATKSystemProxy(systemAddress) {
         if (initialManagementKey == address(0)) revert ZeroAddressNotAllowed();
 
         IATKSystem system_ = _getSystem();
@@ -48,7 +48,7 @@ contract ATKIdentityProxy is AbstractATKIdentityProxy {
     /// @dev Reverts with `IdentityImplementationNotSet` if the implementation address is zero.
     /// @param system The `IATKSystem` contract instance.
     /// @return The address of the `ATKIdentityImplementation` contract.
-    /// @inheritdoc AbstractATKIdentityProxy
+    /// @inheritdoc AbstractATKSystemProxy
     function _getSpecificImplementationAddress(IATKSystem system) internal view override returns (address) {
         address implementation = system.identityImplementation();
         if (implementation == address(0)) {

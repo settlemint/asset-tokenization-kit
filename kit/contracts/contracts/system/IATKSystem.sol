@@ -198,4 +198,8 @@ interface IATKSystem is IERC165 {
     /// @notice Returns the address of the token identity implementation.
     /// @return The address of the token identity implementation contract.
     function tokenIdentityImplementation() external view returns (address);
+
+    /// @notice Returns the address of the access manager implementation.
+    /// @return The address of the access manager implementation contract.
+    function tokenAccessManagerImplementation() external view returns (address);
 }
