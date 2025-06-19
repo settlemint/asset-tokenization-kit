@@ -31,11 +31,19 @@ contract ATKPushAirdropProxy is Proxy {
 
     /// @notice Constructs the ATKPushAirdropProxy.
     /// @param factoryAddress The address of the IATKPushAirdropFactory contract.
+    /// @param name The human-readable name for the airdrop.
     /// @param token The address of the ERC20 token to be distributed.
     /// @param root The Merkle root for verifying distributions.
     /// @param owner The initial owner of the contract (admin who can distribute tokens).
     /// @param distributionCap The maximum tokens that can be distributed (0 for no cap).
-    constructor(address factoryAddress, address token, bytes32 root, address owner, uint256 distributionCap) {
+    constructor(
+        address factoryAddress,
+        string memory name,
+        address token,
+        bytes32 root,
+        address owner,
+        uint256 distributionCap
+    ) {
         if (factoryAddress == address(0)) {
             revert InvalidFactoryAddress();
         }
@@ -49,7 +57,7 @@ contract ATKPushAirdropProxy is Proxy {
         address implementationAddress = _getImplementationAddressFromFactory();
 
         bytes memory initData = abi.encodeWithSelector(
-            ATKPushAirdropImplementation.initialize.selector, token, root, owner, distributionCap
+            ATKPushAirdropImplementation.initialize.selector, name, token, root, owner, distributionCap
         );
 
         _performInitializationDelegatecall(implementationAddress, initData);
