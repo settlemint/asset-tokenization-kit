@@ -23,7 +23,6 @@ import { createRouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getHeaders } from "@tanstack/react-start/server";
-import { getStreamingConfig, isStreamingEndpoint } from "./config/streaming-endpoints";
 import { router } from "./routes/router";
 
 /**
@@ -67,23 +66,15 @@ const getORPCClient = createIsomorphicFn()
             },
           ],
           exclude: ({ path }) => {
-            // Use the centralized configuration to determine if this endpoint
-            // should be excluded from batching
-            return isStreamingEndpoint(path);
+            // Exclude streaming endpoints from batching
+            return path.includes("track") || path.includes("system.create");
           },
         }),
         new ClientRetryPlugin({
           default: {
             retry: ({ path }) => {
-              // Use the centralized configuration for retry behavior
-              const config = getStreamingConfig(path);
-              
-              if (config?.infiniteRetries) {
+              if (path.includes("track")) {
                 return Number.POSITIVE_INFINITY;
-              }
-              
-              if (config?.retryConfig?.maxRetries !== undefined) {
-                return config.retryConfig.maxRetries;
               }
 
               return 0;
