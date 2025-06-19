@@ -409,6 +409,7 @@ type SystemAddonRegistry @entity(immutable: false) {
 
 type XvPSettlement @entity(immutable: false) {
   id: Bytes!
+  name: String!
   cutoffDate: BigInt!
   autoExecute: Boolean!
   executed: Boolean!

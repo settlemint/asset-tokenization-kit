@@ -38,9 +38,8 @@ export type PredeployedContractName = keyof Pick<
   | "identityBlockListModule"
   | "identityAllowListModule"
   | "fixedYieldScheduleFactory"
-  | "tokenFactoryRegistry"
-  | "complianceModuleRegistry"
-  | "systemAddonRegistry"
+  | "vestingAirdropFactory"
+  | "pushAirdropFactory"
 >;
 
 // Helper type for Viem contract instances
@@ -331,22 +330,16 @@ export class ATKDeployer {
     return this.getContract("fixedYieldScheduleFactory", walletClient);
   }
 
-  public getTokenFactoryRegistryContract(
+  public getVestingAirdropFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["tokenFactoryRegistry"] {
-    return this.getContract("tokenFactoryRegistry", walletClient);
+  ): ATKOnboardingContracts["vestingAirdropFactory"] {
+    return this.getContract("vestingAirdropFactory", walletClient);
   }
 
-  public getComplianceModuleRegistryContract(
+  public getPushAirdropFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["complianceModuleRegistry"] {
-    return this.getContract("complianceModuleRegistry", walletClient);
-  }
-
-  public getSystemAddonRegistryContract(
-    walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["systemAddonRegistry"] {
-    return this.getContract("systemAddonRegistry", walletClient);
+  ): ATKOnboardingContracts["pushAirdropFactory"] {
+    return this.getContract("pushAirdropFactory", walletClient);
   }
 }
 

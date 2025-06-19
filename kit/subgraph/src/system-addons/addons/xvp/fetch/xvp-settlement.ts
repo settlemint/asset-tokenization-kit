@@ -81,6 +81,7 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     const cancelled = endpoint.try_cancelled();
     const flows = endpoint.try_flows();
     const createdAt = endpoint.try_createdAt();
+    const name = endpoint.try_name();
 
     xvpSettlement = new XvPSettlement(id);
     xvpSettlement.cutoffDate = cutoffDate.reverted
@@ -94,6 +95,7 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     xvpSettlement.createdAt = createdAt.reverted
       ? BigInt.zero()
       : createdAt.value;
+    xvpSettlement.name = name.reverted ? "" : name.value;
     xvpSettlement.deployedInTransaction = Bytes.empty();
 
     const approvers: Address[] = [];

@@ -112,7 +112,8 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
 
         // Create push airdrop using factory
         vm.startPrank(owner);
-        address pushAirdropAddress = pushAirdropFactory.create(address(token), merkleRoot, owner, DISTRIBUTION_CAP);
+        address pushAirdropAddress =
+            pushAirdropFactory.create("Test Push Airdrop", address(token), merkleRoot, owner, DISTRIBUTION_CAP);
         pushAirdrop = IATKPushAirdrop(pushAirdropAddress);
         vm.stopPrank();
 
@@ -134,6 +135,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
     function testFactoryCreateWithValidParameters() public {
         vm.startPrank(owner);
         address newPushAirdropAddress = pushAirdropFactory.create(
+            "Test Factory Airdrop",
             address(token),
             merkleRoot,
             owner,
@@ -214,6 +216,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         // Create airdrop with very low cap
         vm.startPrank(owner);
         address lowCapAirdropAddress = pushAirdropFactory.create(
+            "Low Cap Airdrop",
             address(token),
             merkleRoot,
             owner,
@@ -311,6 +314,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         // Create airdrop with cap that will be exceeded by batch
         vm.startPrank(owner);
         address lowCapAirdropAddress = pushAirdropFactory.create(
+            "Batch Low Cap Airdrop",
             address(token),
             merkleRoot,
             owner,
@@ -433,7 +437,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
     function testDistributionCapNoCap() public {
         // Create airdrop with no cap (0)
         vm.startPrank(owner);
-        address noCapAirdropAddress = pushAirdropFactory.create(address(token), merkleRoot, owner, 0);
+        address noCapAirdropAddress = pushAirdropFactory.create("No Cap Airdrop", address(token), merkleRoot, owner, 0);
         IATKPushAirdrop noCapAirdrop = IATKPushAirdrop(noCapAirdropAddress);
         vm.stopPrank();
 

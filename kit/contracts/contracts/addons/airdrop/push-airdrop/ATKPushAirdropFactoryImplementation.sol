@@ -87,12 +87,14 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     /// 4. **Proxy Deployment**: Deploys a `ATKPushAirdropProxy` using CREATE2.
     /// 5. **Event Emission**: Emits `ATKPushAirdropCreated`.
     /// 6. **Registry Update**: Adds the new proxy to `allAirdrops`.
+    /// @param name The human-readable name for the airdrop.
     /// @param token The address of the ERC20 token to be distributed.
     /// @param root The Merkle root for verifying distributions.
     /// @param owner The initial owner of the contract (admin who can distribute tokens).
     /// @param distributionCap The maximum tokens that can be distributed (0 for no cap).
     /// @return airdropProxyAddress The address of the newly created `ATKPushAirdropProxy` contract.
     function create(
+        string memory name,
         address token,
         bytes32 root,
         address owner,
@@ -103,8 +105,8 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
         onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
         returns (address airdropProxyAddress)
     {
-        bytes memory saltInputData = abi.encode(address(this), token, root, owner, distributionCap);
-        bytes memory constructorArgs = abi.encode(address(this), token, root, owner, distributionCap);
+        bytes memory saltInputData = abi.encode(address(this), name, token, root, owner, distributionCap);
+        bytes memory constructorArgs = abi.encode(address(this), name, token, root, owner, distributionCap);
         bytes memory proxyBytecode = type(ATKPushAirdropProxy).creationCode;
 
         // Predict the address first for validation
@@ -129,12 +131,14 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     }
 
     /// @notice Predicts the deployment address of a push airdrop proxy.
+    /// @param name The human-readable name for the airdrop.
     /// @param token The address of the ERC20 token to be distributed.
     /// @param root The Merkle root for verifying distributions.
     /// @param owner The initial owner of the contract.
     /// @param distributionCap The maximum tokens that can be distributed.
     /// @return predictedAddress The predicted address of the push airdrop proxy.
     function predictPushAirdropAddress(
+        string memory name,
         address token,
         bytes32 root,
         address owner,
@@ -145,8 +149,8 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
         override(IATKPushAirdropFactory)
         returns (address predictedAddress)
     {
-        bytes memory saltInputData = abi.encode(address(this), token, root, owner, distributionCap);
-        bytes memory constructorArgs = abi.encode(address(this), token, root, owner, distributionCap);
+        bytes memory saltInputData = abi.encode(address(this), name, token, root, owner, distributionCap);
+        bytes memory constructorArgs = abi.encode(address(this), name, token, root, owner, distributionCap);
         bytes memory proxyBytecode = type(ATKPushAirdropProxy).creationCode;
 
         return _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
