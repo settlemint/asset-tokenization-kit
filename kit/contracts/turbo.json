@@ -53,7 +53,7 @@
     "format:prettier": {},
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "codegen"]
+      "dependsOn": ["package", "codegen", "subgraph#codegen:interfaceid"]
     },
     "test": {
       "dependsOn": ["compile:forge"],
