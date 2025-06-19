@@ -11,6 +11,7 @@
  * - Tracks the latest message and final result
  * - Provides a mutate function similar to useMutation
  * - Automatic cleanup and error handling
+ * - Automatically adds streaming context to mutation options
  *
  * @see {@link https://tanstack.com/query/latest} - TanStack Query documentation
  */
@@ -44,6 +45,19 @@ interface StreamingMutationMessages {
 }
 
 /**
+ * ORPC mutation object interface
+ */
+interface ORPCMutation<TResult, TError, TVariables> {
+  mutationOptions: (options?: {
+    context?: Record<string, unknown>;
+  }) => UseMutationOptions<
+    AsyncIteratorObject<StreamingEvent<TResult>, unknown, void>,
+    TError,
+    TVariables
+  >;
+}
+
+/**
  * Configuration options for streaming mutations.
  *
  * @template TResult - The type of the final result
@@ -51,12 +65,8 @@ interface StreamingMutationMessages {
  * @template TVariables - The type of variables passed to the mutation
  */
 interface UseStreamingMutationOptions<TResult, TError, TVariables> {
-  /** Standard TanStack Query mutation options that return an AsyncIterator */
-  mutationOptions: UseMutationOptions<
-    AsyncIteratorObject<StreamingEvent<TResult>, unknown, void>,
-    TError,
-    TVariables
-  >;
+  /** ORPC mutation object - streaming context will be automatically added */
+  mutation: ORPCMutation<TResult, TError, TVariables>;
   /** Configurable messages for different states */
   messages?: StreamingMutationMessages;
 }
@@ -100,6 +110,7 @@ interface UseStreamingMutationResult<TResult, TError, TVariables> {
  *
  * This hook wraps a standard TanStack Query mutation that returns an AsyncIterator,
  * processing each yielded event and showing toast notifications for progress updates.
+ * It automatically adds the streaming context to the mutation options.
  *
  * @template TResult - The type of the final result from the stream
  * @template TError - The type of error that can be thrown
@@ -111,7 +122,7 @@ interface UseStreamingMutationResult<TResult, TError, TVariables> {
  * @example
  * ```typescript
  * const { mutate, result, isTracking } = useStreamingMutation({
- *   mutationOptions: orpc.system.create.mutationOptions(),
+ *   mutation: orpc.system.create,
  *   messages: {
  *     initialLoading: t("system.creating"),
  *     noResultError: t("system.noResult"),
@@ -145,7 +156,8 @@ export function useStreamingMutation<
   // Default messages with English fallbacks
   const messages = {
     initialLoading: options.messages?.initialLoading ?? "Starting operation...",
-    noResultError: options.messages?.noResultError ?? "No result received from operation",
+    noResultError:
+      options.messages?.noResultError ?? "No result received from operation",
     defaultError: options.messages?.defaultError ?? "Operation failed",
   };
 
@@ -164,7 +176,8 @@ export function useStreamingMutation<
         // Process each event from the stream
         for await (const event of asyncIterator) {
           // Translate the message if a translation map is provided
-          const displayMessage = options.messages?.messageMap?.[event.message] ?? event.message;
+          const displayMessage =
+            options.messages?.messageMap?.[event.message] ?? event.message;
           setLatestMessage(displayMessage);
 
           if (event.status === "pending") {
@@ -190,7 +203,8 @@ export function useStreamingMutation<
         }
       } catch (error) {
         // Handle any errors during stream processing
-        const errorMsg = error instanceof Error ? error.message : messages.defaultError;
+        const errorMsg =
+          error instanceof Error ? error.message : messages.defaultError;
         toast.error(errorMsg, { id: toastIdRef.current });
         throw error;
       } finally {
@@ -202,21 +216,24 @@ export function useStreamingMutation<
     [messages]
   );
 
+  // Get mutation options with streaming context automatically applied
+  const mutationOptionsWithContext = options.mutation.mutationOptions();
+
   const mutation = useMutation<
     AsyncIteratorObject<StreamingEvent<TResult>, unknown, void>,
     TError,
     TVariables
   >({
-    ...options.mutationOptions,
+    ...mutationOptionsWithContext,
     onSuccess: async (asyncIterator, variables, context) => {
       await processStream(asyncIterator);
       // Call the original onSuccess if provided
-      options.mutationOptions.onSuccess?.(asyncIterator, variables, context);
+      mutationOptionsWithContext.onSuccess?.(asyncIterator, variables, context);
     },
     onError: (error, variables, context) => {
       const errorMsg = error instanceof Error ? error.message : String(error);
       toast.error(errorMsg, { id: toastIdRef.current });
-      options.mutationOptions.onError?.(error, variables, context);
+      mutationOptionsWithContext.onError?.(error, variables, context);
     },
   });
 

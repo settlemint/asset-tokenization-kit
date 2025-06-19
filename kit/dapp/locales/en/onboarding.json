@@ -8,7 +8,7 @@
     "system-created": "SMART system successfully created",
     "transaction-tracking": {
       "stream-timeout": "System deployment tracking timed out after 90 seconds",
-      "waiting-for-mining": "Waiting for system deployment transaction to be mined...",
+      "waiting-for-mining": "Deploying your SMART system on chain...",
       "transaction-failed": "System deployment transaction failed",
       "transaction-dropped": "System deployment transaction was not confirmed on-chain in time",
       "waiting-for-indexing": "Waiting for system to be indexed...",

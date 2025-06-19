@@ -103,21 +103,35 @@ function OnboardingComponent() {
     isPending: isCreatingSystem,
     isTracking,
   } = useStreamingMutation<`0x${string}`, Error, { contract?: string }>({
-    mutationOptions: orpc.system.create.mutationOptions(),
+    mutation: orpc.system.create,
     messages: {
       initialLoading: t("onboarding:create-system-messages.initial-loading"),
       noResultError: t("onboarding:create-system-messages.no-result-error"),
       defaultError: t("onboarding:create-system-messages.default-error"),
       messageMap: {
-        // Map server-side messages to translations
-        "System created": t("onboarding:create-system-messages.system-created"),
-        "Transaction tracking timed out after 90 seconds": t("onboarding:create-system-messages.transaction-tracking.stream-timeout"),
-        "Waiting for transaction to be mined...": t("onboarding:create-system-messages.transaction-tracking.waiting-for-mining"),
-        "Transaction failed": t("onboarding:create-system-messages.transaction-tracking.transaction-failed"),
-        "Transaction was not confirmed on-chain in time.": t("onboarding:create-system-messages.transaction-tracking.transaction-dropped"),
-        "Waiting for transaction to be indexed...": t("onboarding:create-system-messages.transaction-tracking.waiting-for-indexing"),
-        "Transaction indexed": t("onboarding:create-system-messages.transaction-tracking.transaction-indexed"),
-        "Smart contract indexing timed out, please try again later": t("onboarding:create-system-messages.transaction-tracking.indexing-timeout"),
+        // Map server-side keys to translations
+        "system.created": t("onboarding:create-system-messages.system-created"),
+        "transaction.tracking.stream_timeout": t(
+          "onboarding:create-system-messages.transaction-tracking.stream-timeout"
+        ),
+        "transaction.tracking.waiting_for_mining": t(
+          "onboarding:create-system-messages.transaction-tracking.waiting-for-mining"
+        ),
+        "transaction.tracking.failed": t(
+          "onboarding:create-system-messages.transaction-tracking.transaction-failed"
+        ),
+        "transaction.tracking.dropped": t(
+          "onboarding:create-system-messages.transaction-tracking.transaction-dropped"
+        ),
+        "transaction.tracking.waiting_for_indexing": t(
+          "onboarding:create-system-messages.transaction-tracking.waiting-for-indexing"
+        ),
+        "transaction.tracking.indexed": t(
+          "onboarding:create-system-messages.transaction-tracking.transaction-indexed"
+        ),
+        "transaction.tracking.indexing_timeout": t(
+          "onboarding:create-system-messages.transaction-tracking.indexing-timeout"
+        ),
       },
     },
   });

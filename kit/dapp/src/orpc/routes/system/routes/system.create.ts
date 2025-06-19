@@ -135,7 +135,7 @@ export const create = onboardedRouter.system.create
     yield withEventMeta(
       {
         status: "confirmed",
-        message: "System created",
+        message: "system.created",
         result: system.id,
       },
       { id: transactionHash, retry: 1000 }

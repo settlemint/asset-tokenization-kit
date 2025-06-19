@@ -72,13 +72,13 @@ export interface TransactionTrackingMessages {
 }
 
 const defaultMessages: Required<TransactionTrackingMessages> = {
-  streamTimeout: "Transaction tracking timed out after 90 seconds",
-  waitingForMining: "Waiting for transaction to be mined...",
-  transactionFailed: "Transaction failed",
-  transactionDropped: "Transaction was not confirmed on-chain in time.",
-  waitingForIndexing: "Waiting for transaction to be indexed...",
-  transactionIndexed: "Transaction indexed",
-  indexingTimeout: "Smart contract indexing timed out, please try again later",
+  streamTimeout: "transaction.tracking.stream_timeout",
+  waitingForMining: "transaction.tracking.waiting_for_mining",
+  transactionFailed: "transaction.tracking.failed",
+  transactionDropped: "transaction.tracking.dropped",
+  waitingForIndexing: "transaction.tracking.waiting_for_indexing",
+  transactionIndexed: "transaction.tracking.indexed",
+  indexingTimeout: "transaction.tracking.indexing_timeout",
 };
 
 export async function* trackTransaction(
