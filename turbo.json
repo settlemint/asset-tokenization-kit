@@ -17,7 +17,7 @@
       "dependsOn": ["compile", "codegen", "lint", "test"]
     },
     "ci:gha": {
-      "dependsOn": ["ci:base", "build", "//#dev:up"]
+      "dependsOn": ["ci:base", "build", "//#setup:dev"]
     },
     "ci:gha:main": {
       "dependsOn": ["ci:gha", "publish"]
@@ -76,11 +76,15 @@
     "db:push": {
       "cache": false
     },
-    "//#dev:connect": {
+    "//#setup:connect": {
       "outputs": ["**/.env", "**/.env.local"],
-      "dependsOn": ["//#dev:up"]
+      "dependsOn": ["//#setup:start"]
     },
-    "//#dev:up": {
+    "//#setup:dev": {
+      "cache": false,
+      "dependsOn": ["//#setup:start", "//#setup:connect"]
+    },
+    "//#setup:start": {
       "cache": false,
       "dependsOn": [
         "contracts#artifacts",
