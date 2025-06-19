@@ -104,7 +104,11 @@ function OnboardingComponent() {
     isTracking,
   } = useStreamingMutation<`0x${string}`, Error, { contract?: string }>({
     mutationOptions: orpc.system.create.mutationOptions(),
-    errorMessage: t("onboarding:messages.error"),
+    messages: {
+      initialLoading: t("onboarding:streaming-messages.initial-loading"),
+      noResultError: t("onboarding:streaming-messages.no-result-error"),
+      defaultError: t("onboarding:streaming-messages.default-error"),
+    },
   });
 
   return (

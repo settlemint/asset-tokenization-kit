@@ -1,6 +1,11 @@
 {
   "card-description": "You will need a wallet and an identity on the blockchain to use this platform. ",
   "card-title": "Let's get you set up!",
+  "streaming-messages": {
+    "initial-loading": "Preparing to deploy your SMART system...",
+    "no-result-error": "System deployment completed but no address was returned",
+    "default-error": "Failed to deploy your SMART system"
+  },
   "messages": {
     "pending": {
       "mining": "Deploying your SMART system...",
@@ -10,5 +15,5 @@
     "error": "Failed to deploy your SMART system",
     "timeout": "Transaction tracking timeout"
   },
-  "wallet-generated": "Wallet generated"
+  "wallet-generated": "Wallet generated successfully"
 }

@@ -30,6 +30,18 @@ interface StreamingEvent<TResult = unknown> {
 }
 
 /**
+ * Configurable messages for the streaming mutation hook
+ */
+interface StreamingMutationMessages {
+  /** Message shown when starting the operation */
+  initialLoading?: string;
+  /** Message shown when no result is received from the stream */
+  noResultError?: string;
+  /** Default error message when an error occurs without a specific message */
+  defaultError?: string;
+}
+
+/**
  * Configuration options for streaming mutations.
  *
  * @template TResult - The type of the final result
@@ -43,8 +55,8 @@ interface UseStreamingMutationOptions<TResult, TError, TVariables> {
     TError,
     TVariables
   >;
-  /** Optional custom error message */
-  errorMessage?: string;
+  /** Configurable messages for different states */
+  messages?: StreamingMutationMessages;
 }
 
 /**
@@ -98,7 +110,11 @@ interface UseStreamingMutationResult<TResult, TError, TVariables> {
  * ```typescript
  * const { mutate, result, isTracking } = useStreamingMutation({
  *   mutationOptions: orpc.system.create.mutationOptions(),
- *   errorMessage: "Failed to create system"
+ *   messages: {
+ *     initialLoading: t("system.creating"),
+ *     noResultError: t("system.noResult"),
+ *     defaultError: t("system.error")
+ *   }
  * });
  *
  * // Execute mutation
@@ -124,7 +140,12 @@ export function useStreamingMutation<
     undefined
   );
 
-  const errorMessage = options.errorMessage ?? "Operation failed";
+  // Default messages with English fallbacks
+  const messages: Required<StreamingMutationMessages> = {
+    initialLoading: options.messages?.initialLoading ?? "Starting operation...",
+    noResultError: options.messages?.noResultError ?? "No result received from operation",
+    defaultError: options.messages?.defaultError ?? "Operation failed",
+  };
 
   // Process the async iterator and handle toasts
   const processStream = useCallback(
@@ -136,7 +157,7 @@ export function useStreamingMutation<
 
       try {
         // Create initial toast
-        toastIdRef.current = toast.loading("Starting operation...");
+        toastIdRef.current = toast.loading(messages.initialLoading);
 
         // Process each event from the stream
         for await (const event of asyncIterator) {
@@ -165,7 +186,7 @@ export function useStreamingMutation<
         }
       } catch (error) {
         // Handle any errors during stream processing
-        const errorMsg = error instanceof Error ? error.message : errorMessage;
+        const errorMsg = error instanceof Error ? error.message : messages.defaultError;
         toast.error(errorMsg, { id: toastIdRef.current });
         throw error;
       } finally {
@@ -174,7 +195,7 @@ export function useStreamingMutation<
 
       return finalResult;
     },
-    [errorMessage]
+    [messages]
   );
 
   const mutation = useMutation<
@@ -235,9 +256,9 @@ export function useStreamingMutation<
         return finalResult;
       }
 
-      throw new Error("No result received from stream");
+      throw new Error(messages.noResultError);
     },
-    [baseMutateAsync, processStream]
+    [baseMutateAsync, processStream, messages.noResultError]
   );
 
   const reset = useCallback(() => {
