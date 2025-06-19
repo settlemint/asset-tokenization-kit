@@ -141,9 +141,9 @@ contract ATKComplianceImplementationTest is Test {
 
     function testInitializeCanOnlyBeCalledOnce() public {
         vm.expectRevert();
-        address[] memory initialAdmins = new address[](1);
-        initialAdmins[0] = admin;
-        compliance.initialize(initialAdmins);
+        address[] memory initialBypassListManagers = new address[](1);
+        initialBypassListManagers[0] = admin;
+        compliance.initialize(admin, initialBypassListManagers);
     }
 
     function testSupportsInterface() public view {

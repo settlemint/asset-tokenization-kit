@@ -12,5 +12,5 @@ interface IATKComplianceModuleRegistry is IAccessControl {
 
     function complianceModule(bytes32 moduleTypeHash) external view returns (address);
 
-    function initialize(address initialAdmin) external;
+    function initialize(address[] memory initialAdmins) external;
 }

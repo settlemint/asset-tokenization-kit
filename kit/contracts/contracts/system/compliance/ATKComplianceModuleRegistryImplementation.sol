@@ -32,11 +32,13 @@ contract ATKComplianceModuleRegistryImplementation is
         _disableInitializers();
     }
 
-    function initialize(address initialAdmin) public override initializer {
+    function initialize(address[] memory initialAdmins) public override initializer {
         __AccessControl_init();
         __ReentrancyGuard_init();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+        for (uint256 i = 0; i < initialAdmins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
+        }
     }
 
     function registerComplianceModule(address moduleAddress)

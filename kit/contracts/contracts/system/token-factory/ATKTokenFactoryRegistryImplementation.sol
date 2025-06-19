@@ -79,7 +79,7 @@ contract ATKTokenFactoryRegistryImplementation is
 
         bytes memory tokenFactoryData = abi.encodeWithSelector(
             IATKTokenFactory.initialize.selector,
-            address(this),
+            _system,
             _tokenImplementation,
             _msgSender(),
             _system.identityVerificationModule()

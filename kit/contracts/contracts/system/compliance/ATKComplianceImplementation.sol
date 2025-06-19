@@ -66,13 +66,26 @@ contract ATKComplianceImplementation is
     /// the ERC165 interface detection capability and sets up AccessControl with the deployer as the default admin.
     /// For upgradeable contracts, initializers replace constructors for setup logic.
     /// The `initializer` modifier ensures this function can only be called once.
-    /// @param initialAdmins The addresses of the initial admins.
-    function initialize(address[] memory initialAdmins) public virtual initializer {
+    /// @param initialAdmin The address of the initial admin.
+    /// @param initialBypassListManagerAdmins The addresses of the initial bypass list manager admins.
+    function initialize(
+        address initialAdmin,
+        address[] memory initialBypassListManagerAdmins
+    )
+        public
+        virtual
+        initializer
+    {
         __ERC165_init_unchained(); // Initializes ERC165 announcing which interfaces this contract supports
         __AccessControl_init_unchained(); // Initializes AccessControl with msg.sender as default admin
 
-        for (uint256 i = 0; i < initialAdmins.length; i++) {
-            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
+        _setRoleAdmin(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, ATKSystemRoles.BYPASS_LIST_MANAGER_ADMIN_ROLE);
+
+        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+
+        for (uint256 i = 0; i < initialBypassListManagerAdmins.length; i++) {
+            _grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, initialBypassListManagerAdmins[i]);
+            _grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ADMIN_ROLE, initialBypassListManagerAdmins[i]);
         }
     }
 

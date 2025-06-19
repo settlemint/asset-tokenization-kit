@@ -152,8 +152,21 @@ contract ATKIdentityFactoryImplementation is
     ///                      which identity logic implementation contracts the new identity proxies will point to.
     /// @param initialAdmin The address that will be granted initial administrative and registrar privileges over this
     /// factory.
+    /// @param initialIdentityIssuerAdmins The addresses that will be granted initial administrative and registrar
+    /// privileges over this factory for identity issuers.
+    /// @param initialTokenIdentityIssuerAdmins The addresses that will be granted initial administrative and registrar
+    /// privileges over this factory for token identity issuers.
     /// @dev The `initializer` modifier ensures this function can only be called once.
-    function initialize(address systemAddress, address initialAdmin) public virtual initializer {
+    function initialize(
+        address systemAddress,
+        address initialAdmin,
+        address[] memory initialIdentityIssuerAdmins,
+        address[] memory initialTokenIdentityIssuerAdmins
+    )
+        public
+        virtual
+        initializer
+    {
         if (systemAddress == address(0)) revert InvalidSystemAddress();
 
         __ERC165_init_unchained();
@@ -175,13 +188,20 @@ contract ATKIdentityFactoryImplementation is
             revert InvalidTokenIdentityImplementation();
         }
 
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.IDENTITY_ISSUER_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ADMIN_ROLE, initialAdmin);
-
-        _grantRole(ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ADMIN_ROLE, systemAddress);
+        _setRoleAdmin(ATKSystemRoles.IDENTITY_ISSUER_ROLE, ATKSystemRoles.IDENTITY_ISSUER_ADMIN_ROLE);
         _setRoleAdmin(ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ROLE, ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ADMIN_ROLE);
+
+        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+
+        for (uint256 i = 0; i < initialIdentityIssuerAdmins.length; i++) {
+            _grantRole(ATKSystemRoles.IDENTITY_ISSUER_ROLE, initialIdentityIssuerAdmins[i]);
+            _grantRole(ATKSystemRoles.IDENTITY_ISSUER_ADMIN_ROLE, initialIdentityIssuerAdmins[i]);
+        }
+
+        for (uint256 i = 0; i < initialTokenIdentityIssuerAdmins.length; i++) {
+            _grantRole(ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ROLE, initialTokenIdentityIssuerAdmins[i]);
+            _grantRole(ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ADMIN_ROLE, initialTokenIdentityIssuerAdmins[i]);
+        }
 
         _system = systemAddress;
     }

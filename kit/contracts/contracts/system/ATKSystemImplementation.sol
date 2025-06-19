@@ -401,13 +401,35 @@ contract ATKSystemImplementation is
         // First, we create all new contract instances (interactions) and store their addresses in local variables.
         // This avoids reading from state that is being modified in the same transaction before it's fully updated.
 
+        // Deploy registries
+        address[] memory initialComplianceModuleAdmins = new address[](2);
+        initialComplianceModuleAdmins[0] = initialAdmin;
+        initialComplianceModuleAdmins[1] = address(this); // so we can add the identity verification module
+        bytes memory complianceModuleRegistryData =
+            abi.encodeWithSelector(IATKComplianceModuleRegistry.initialize.selector, initialComplianceModuleAdmins);
+        address localComplianceModuleRegistryProxy = address(
+            new ATKTypedImplementationProxy(address(this), COMPLIANCE_MODULE_REGISTRY, complianceModuleRegistryData)
+        );
+
+        // Deploy the ATKTokenFactoryRegistryProxy, linking it to this ATKSystem and setting an initial admin.
+        bytes memory tokenFactoryRegistryData =
+            abi.encodeWithSelector(IATKTokenFactoryRegistry.initialize.selector, initialAdmin, address(this));
+        address localTokenFactoryRegistryProxy =
+            address(new ATKTypedImplementationProxy(address(this), TOKEN_FACTORY_REGISTRY, tokenFactoryRegistryData));
+
+        // Deploy the ATKSystemAddonRegistryProxy, linking it to this ATKSystem and setting an initial admin.
+        bytes memory addonRegistryData =
+            abi.encodeWithSelector(IATKSystemAddonRegistry.initialize.selector, initialAdmin, address(this));
+        address localAddonRegistryProxy =
+            address(new ATKTypedImplementationProxy(address(this), ADDON_REGISTRY, addonRegistryData));
+
         // Deploy the ATKComplianceProxy, linking it to this ATKSystem contract.
-        address[] memory initialComplianceAdmins = new address[](2);
-        initialComplianceAdmins[0] = initialAdmin;
-        // This is needed to give the token factories the allow list manager role
-        initialComplianceAdmins[1] = address(this);
+        address[] memory initialBypassListManagers = new address[](3);
+        initialBypassListManagers[0] = initialAdmin;
+        initialBypassListManagers[1] = localTokenFactoryRegistryProxy;
+        initialBypassListManagers[2] = localAddonRegistryProxy;
         bytes memory complianceData =
-            abi.encodeWithSelector(IATKCompliance.initialize.selector, initialComplianceAdmins);
+            abi.encodeWithSelector(IATKCompliance.initialize.selector, initialAdmin, initialBypassListManagers);
         address localComplianceProxy =
             address(new ATKTypedImplementationProxy(address(this), COMPLIANCE, complianceData));
 
@@ -448,29 +470,20 @@ contract ATKSystemImplementation is
             address(new ATKTypedImplementationProxy(address(this), IDENTITY_REGISTRY, identityRegistryData));
 
         // Deploy the ATKIdentityFactoryProxy, linking it to this ATKSystem and setting an initial admin.
-        bytes memory identityFactoryData =
-            abi.encodeWithSelector(IATKIdentityFactory.initialize.selector, address(this), initialAdmin);
+        address[] memory initialIdentityIssuerAdmins = new address[](1);
+        initialIdentityIssuerAdmins[0] = initialAdmin;
+        address[] memory initialTokenIdentityIssuerAdmins = new address[](2);
+        initialTokenIdentityIssuerAdmins[0] = initialAdmin;
+        initialTokenIdentityIssuerAdmins[1] = localTokenFactoryRegistryProxy;
+        bytes memory identityFactoryData = abi.encodeWithSelector(
+            IATKIdentityFactory.initialize.selector,
+            address(this),
+            initialAdmin,
+            initialIdentityIssuerAdmins,
+            initialTokenIdentityIssuerAdmins
+        );
         address localIdentityFactoryProxy =
             address(new ATKTypedImplementationProxy(address(this), IDENTITY_FACTORY, identityFactoryData));
-
-        // Deploy registries
-        bytes memory complianceModuleRegistryData =
-            abi.encodeWithSelector(IATKComplianceModuleRegistry.initialize.selector, initialAdmin);
-        address localComplianceModuleRegistryProxy = address(
-            new ATKTypedImplementationProxy(address(this), COMPLIANCE_MODULE_REGISTRY, complianceModuleRegistryData)
-        );
-
-        // Deploy the ATKTokenFactoryRegistryProxy, linking it to this ATKSystem and setting an initial admin.
-        bytes memory tokenFactoryRegistryData =
-            abi.encodeWithSelector(IATKTokenFactoryRegistry.initialize.selector, initialAdmin, address(this));
-        address localTokenFactoryRegistryProxy =
-            address(new ATKTypedImplementationProxy(address(this), TOKEN_FACTORY_REGISTRY, tokenFactoryRegistryData));
-
-        // Deploy the ATKSystemAddonRegistryProxy, linking it to this ATKSystem and setting an initial admin.
-        bytes memory addonRegistryData =
-            abi.encodeWithSelector(IATKSystemAddonRegistry.initialize.selector, initialAdmin, address(this));
-        address localAddonRegistryProxy =
-            address(new ATKTypedImplementationProxy(address(this), ADDON_REGISTRY, addonRegistryData));
 
         // --- Effects (Update state variables for proxy addresses) ---
         // Now that all proxies are created, update the contract's state variables to store their addresses.
