@@ -112,9 +112,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -147,9 +147,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -168,9 +168,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -189,9 +189,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -210,9 +210,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -231,9 +231,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -252,9 +252,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -273,9 +273,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -294,9 +294,9 @@ contract ATKSystemFactoryTest is Test {
             address(0), // Zero token identity implementation
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -315,9 +315,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             address(0), // Zero token access manager implementation
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -336,9 +336,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             address(0), // Zero identity verification module
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -357,9 +357,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             address(0), // complianceModuleRegistryImpl
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -378,9 +378,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             address(0), // addonRegistryImpl
-            tokenFactoryRegistryImpl,
             forwarder
         );
     }
@@ -399,9 +399,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            address(0), // tokenFactoryRegistryImpl
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            address(0), // tokenFactoryRegistryImpl
             forwarder
         );
     }
@@ -531,9 +531,9 @@ contract ATKSystemFactoryTest is Test {
             tokenIdentityImpl,
             tokenAccessManagerImpl,
             identityVerificationModule,
+            tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
-            tokenFactoryRegistryImpl,
             address(0) // Zero forwarder
         );
 
