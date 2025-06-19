@@ -106,18 +106,27 @@ export function StepWizard({
                 index < currentStepIndex || step.status === "completed";
               const isError = step.status === "error";
 
-              // Calculate the highest accessible step based on completion status
-              const highestAccessibleStep = steps.reduce((maxIndex, s, i) => {
-                if (s.status === "completed" || s.status === "active") {
-                  return Math.max(maxIndex, i + 1); // +1 because we want the next step after completed ones
-                }
-                return maxIndex;
-              }, 0);
+              // Calculate which steps should be accessible
+              // Allow access to:
+              // 1. Any completed step
+              // 2. The current active step
+              // 3. The next step after the latest completed step
+              const latestCompletedStepIndex = steps.reduce(
+                (maxIndex, s, i) => {
+                  return s.status === "completed"
+                    ? Math.max(maxIndex, i)
+                    : maxIndex;
+                },
+                -1
+              );
 
-              // Step is disabled if it's beyond the highest accessible step
-              const isDisabled = index >= highestAccessibleStep;
-              // Allow navigation to completed steps, current step, and the next available step
-              const finalDisabled = isDisabled;
+              const isAccessible =
+                step.status === "completed" || // Always allow completed steps
+                step.status === "active" || // Always allow current active step
+                index <= latestCompletedStepIndex + 1; // Allow next step after latest completed
+
+              // Step is disabled if it's not accessible
+              const finalDisabled = !isAccessible;
 
               return (
                 <div key={step.id} className="flex items-stretch mb-0">

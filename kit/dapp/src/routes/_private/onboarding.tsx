@@ -90,6 +90,13 @@ function OnboardingComponent() {
     }
   }, [isError, error, navigate]);
 
+  // Auto-advance to system step if wallet already exists (only on initial load)
+  useEffect(() => {
+    if (user?.wallet && !systemAddress && currentStepId === "wallet") {
+      setCurrentStepId("system");
+    }
+  }, [user?.wallet, systemAddress]); // Removed currentStepId from dependencies
+
   const { mutate: generateWallet } = useMutation(
     orpc.account.create.mutationOptions({
       onSuccess: async () => {
@@ -105,6 +112,8 @@ function OnboardingComponent() {
         void queryClient.invalidateQueries({
           queryKey: orpc.user.me.key(),
         });
+        // Auto-advance to the next step after wallet creation
+        setCurrentStepId("system");
       },
       onError: (error) => {
         // The error message will be the localized message from the server
