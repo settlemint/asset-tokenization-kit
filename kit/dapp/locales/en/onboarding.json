@@ -4,7 +4,17 @@
   "create-system-messages": {
     "initial-loading": "Preparing to deploy your SMART system...",
     "no-result-error": "System deployment completed but no address was returned",
-    "default-error": "Failed to deploy your SMART system"
+    "default-error": "Failed to deploy your SMART system",
+    "system-created": "SMART system successfully created",
+    "transaction-tracking": {
+      "stream-timeout": "System deployment tracking timed out after 90 seconds",
+      "waiting-for-mining": "Waiting for system deployment transaction to be mined...",
+      "transaction-failed": "System deployment transaction failed",
+      "transaction-dropped": "System deployment transaction was not confirmed on-chain in time",
+      "waiting-for-indexing": "Waiting for system to be indexed...",
+      "transaction-indexed": "System successfully indexed and ready to use",
+      "indexing-timeout": "System indexing timed out, please refresh the page"
+    }
   },
   "messages": {
     "pending": {

@@ -39,6 +39,8 @@ interface StreamingMutationMessages {
   noResultError?: string;
   /** Default error message when an error occurs without a specific message */
   defaultError?: string;
+  /** Optional message translations map for server-side messages */
+  messageMap?: Record<string, string>;
 }
 
 /**
@@ -161,22 +163,24 @@ export function useStreamingMutation<
 
         // Process each event from the stream
         for await (const event of asyncIterator) {
-          setLatestMessage(event.message);
+          // Translate the message if a translation map is provided
+          const displayMessage = options.messages?.messageMap?.[event.message] ?? event.message;
+          setLatestMessage(displayMessage);
 
           if (event.status === "pending") {
             // Update the existing toast with the new message
-            toast.loading(event.message, { id: toastIdRef.current });
+            toast.loading(displayMessage, { id: toastIdRef.current });
           } else if (event.status === "confirmed") {
             // Success - show success toast and store result
-            toast.success(event.message, { id: toastIdRef.current });
+            toast.success(displayMessage, { id: toastIdRef.current });
             if (event.result !== undefined) {
               setResult(event.result);
               finalResult = event.result;
             }
           } else {
             // Failed status - show error toast
-            toast.error(event.message, { id: toastIdRef.current });
-            throw new Error(event.message);
+            toast.error(displayMessage, { id: toastIdRef.current });
+            throw new Error(displayMessage);
           }
         }
 

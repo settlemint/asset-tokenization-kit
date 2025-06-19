@@ -61,11 +61,33 @@ const POLLING_INTERVAL_MS = 500; // Interval for indexing status checks
 const INDEXING_TIMEOUT_MS = 60_000; // Total timeout for indexing (3 minutes)
 const STREAM_TIMEOUT_MS = 90_000; // Total timeout for the stream (90 seconds)
 
+export interface TransactionTrackingMessages {
+  streamTimeout?: string;
+  waitingForMining?: string;
+  transactionFailed?: string;
+  transactionDropped?: string;
+  waitingForIndexing?: string;
+  transactionIndexed?: string;
+  indexingTimeout?: string;
+}
+
+const defaultMessages: Required<TransactionTrackingMessages> = {
+  streamTimeout: "Transaction tracking timed out after 90 seconds",
+  waitingForMining: "Waiting for transaction to be mined...",
+  transactionFailed: "Transaction failed",
+  transactionDropped: "Transaction was not confirmed on-chain in time.",
+  waitingForIndexing: "Waiting for transaction to be indexed...",
+  transactionIndexed: "Transaction indexed",
+  indexingTimeout: "Smart contract indexing timed out, please try again later",
+};
+
 export async function* trackTransaction(
   transactionHash: EthereumHash,
   portalClient: typeof portalClientType,
-  theGraphClient: typeof theGraphClientType
+  theGraphClient: typeof theGraphClientType,
+  customMessages?: TransactionTrackingMessages
 ) {
+  const messages = { ...defaultMessages, ...customMessages };
   const streamStartTime = Date.now();
 
   // Phase 1: Monitor transaction confirmation on blockchain
@@ -83,7 +105,7 @@ export async function* trackTransaction(
       yield withEventMeta(
         TransactionTrackOutputSchema.parse({
           status: "failed",
-          message: "Transaction tracking timed out after 90 seconds",
+          message: messages.streamTimeout,
           transactionHash,
         }),
         { id: transactionHash, retry: 1000 }
@@ -104,7 +126,7 @@ export async function* trackTransaction(
       yield withEventMeta(
         TransactionTrackOutputSchema.parse({
           status: "pending",
-          message: "Waiting for transaction to be mined...",
+          message: messages.waitingForMining,
           transactionHash,
         }),
         { id: transactionHash, retry: 1000 }
@@ -121,7 +143,7 @@ export async function* trackTransaction(
           message:
             receipt.revertReasonDecoded ??
             receipt.revertReason ??
-            "Transaction failed",
+            messages.transactionFailed,
           transactionHash,
         }),
         { id: transactionHash, retry: 1000 }
@@ -138,7 +160,7 @@ export async function* trackTransaction(
     yield withEventMeta(
       TransactionTrackOutputSchema.parse({
         status: "failed",
-        message: "Transaction was not confirmed on-chain in time.",
+        message: messages.transactionDropped,
         transactionHash,
       }),
       { id: transactionHash, retry: 1000 }
@@ -150,7 +172,7 @@ export async function* trackTransaction(
   yield withEventMeta(
     TransactionTrackOutputSchema.parse({
       status: "pending",
-      message: "Waiting for transaction to be indexed...",
+      message: messages.waitingForIndexing,
       transactionHash,
     }),
     { id: transactionHash, retry: 1000 }
@@ -164,7 +186,7 @@ export async function* trackTransaction(
       yield withEventMeta(
         TransactionTrackOutputSchema.parse({
           status: "failed",
-          message: "Transaction tracking timed out after 90 seconds",
+          message: messages.streamTimeout,
           transactionHash,
         }),
         { id: transactionHash, retry: 1000 }
@@ -179,7 +201,7 @@ export async function* trackTransaction(
       yield withEventMeta(
         TransactionTrackOutputSchema.parse({
           status: "confirmed",
-          message: "Transaction indexed",
+          message: messages.transactionIndexed,
           transactionHash,
         }),
         { id: transactionHash, retry: 1000 }
@@ -194,7 +216,7 @@ export async function* trackTransaction(
   yield withEventMeta(
     TransactionTrackOutputSchema.parse({
       status: "failed",
-      message: "Smart contract indexing timed out, please try again later",
+      message: messages.indexingTimeout,
       transactionHash,
     }),
     { id: transactionHash, retry: 1000 }
