@@ -1,6 +1,9 @@
-import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
-import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
+import {
+  SystemCreateOutputSchema,
+  SystemCreateSchema,
+} from "@/orpc/routes/system/routes/system.create.schema";
+import { eventIterator } from "@orpc/server";
 import { z } from "zod/v4";
 import { baseContract } from "../../procedures/base.contract";
 import { SystemSchema } from "./routes/system.list.schema";
@@ -37,7 +40,7 @@ const create = baseContract
     tags: ["system"],
   })
   .input(SystemCreateSchema)
-  .output(ethereumHash);
+  .output(eventIterator(SystemCreateOutputSchema));
 
 /**
  * System API contract collection.

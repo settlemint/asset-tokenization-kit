@@ -28,6 +28,7 @@
  */
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { z } from "zod/v4";
 import { CreateSchema } from "../../common/schemas/create.schema";
 
 export const SystemCreateSchema = CreateSchema.extend({
@@ -41,4 +42,10 @@ export const SystemCreateSchema = CreateSchema.extend({
   contract: ethereumAddress
     .describe("The address of the contract to call this function on")
     .default("0x5e771e1417100000000000000000000000020088"),
+});
+
+export const SystemCreateOutputSchema = z.object({
+  result: ethereumAddress.optional(),
+  message: z.string(),
+  status: z.enum(["pending", "confirmed", "failed"]),
 });

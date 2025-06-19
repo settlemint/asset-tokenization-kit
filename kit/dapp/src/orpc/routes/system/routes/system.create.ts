@@ -16,9 +16,12 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { trackTransaction } from "@/orpc/helpers/transactions";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { withEventMeta } from "@orpc/server";
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -37,6 +40,14 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
       from: $from
     ) {
       transactionHash
+    }
+  }
+`);
+
+const FIND_SYSTEM_FOR_TRANSACTION_QUERY = theGraphGraphql(`
+  query findSystemForTransaction($deployedInTransaction: Bytes) {
+    systems(where: {deployedInTransaction: $deployedInTransaction}) {
+      id
     }
   }
 `);
@@ -75,18 +86,77 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
  */
 export const create = onboardedRouter.system.create
   .use(portalMiddleware)
-  .handler(async ({ input, context }) => {
+  .use(theGraphMiddleware)
+  .handler(async function* ({ input, context, errors }) {
     const { contract } = input;
     const sender = context.auth.user;
 
     // TODO: can we improve the error handling here and by default? It will come out as a generic 500 error.
-    const result = await context.portalClient.request(CREATE_SYSTEM_MUTATION, {
-      address: contract,
-      from: sender.wallet,
-      // ...(await handleChallenge(sender, verification)),
-    });
-
-    return getEthereumHash(
-      result.ATKSystemFactoryCreateSystem?.transactionHash
+    const txHashResult = await context.portalClient.request(
+      CREATE_SYSTEM_MUTATION,
+      {
+        address: contract,
+        from: sender.wallet,
+        // ...(await handleChallenge(sender, verification)),
+      }
     );
+    const transactionHash =
+      txHashResult.ATKSystemFactoryCreateSystem?.transactionHash ?? null;
+
+    if (!transactionHash) {
+      throw errors.TRANSACTION_FAILED({
+        data: {
+          details: {
+            message: "Failed to send transaction",
+          },
+        },
+      });
+    }
+
+    for await (const event of trackTransaction(
+      transactionHash,
+      context.portalClient,
+      context.theGraphClient
+    )) {
+      yield event;
+    }
+
+    const { systems } = await context.theGraphClient.request(
+      FIND_SYSTEM_FOR_TRANSACTION_QUERY,
+      {
+        deployedInTransaction: transactionHash,
+      }
+    );
+
+    if (systems.length === 0) {
+      throw errors.TRANSACTION_FAILED({
+        data: {
+          details: {
+            message: "Transaction failed to create system",
+          },
+        },
+      });
+    }
+
+    const system = systems[0];
+
+    if (!system) {
+      throw errors.TRANSACTION_FAILED({
+        data: {
+          details: {
+            message: "Transaction failed to create system",
+          },
+        },
+      });
+    }
+
+    yield withEventMeta(
+      {
+        status: "confirmed",
+        message: "System created",
+        result: system.id,
+      },
+      { id: transactionHash, retry: 1000 }
+    );
+    return;
   });
