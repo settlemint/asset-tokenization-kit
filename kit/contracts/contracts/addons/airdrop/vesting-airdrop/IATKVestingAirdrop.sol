@@ -40,12 +40,6 @@ interface IATKVestingAirdrop is IATKAirdrop {
     /// @notice Error indicating that vesting has already been initialized for the specified index.
     error VestingAlreadyInitialized();
 
-    /// @notice Error indicating that an invalid vesting duration was provided.
-    error InvalidVestingDuration();
-
-    /// @notice Error indicating that the cliff duration exceeds the vesting duration.
-    error CliffExceedsVestingDuration();
-
     /// @notice Error indicating that the vesting airdrop implementation is not set or invalid.
     error VestingAirdropImplementationNotSet();
 
