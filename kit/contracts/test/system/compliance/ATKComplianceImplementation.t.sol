@@ -118,9 +118,10 @@ contract ATKComplianceImplementationTest is Test {
         implementation = new ATKComplianceImplementation(trustedForwarder);
 
         // Deploy as proxy
-        address[] memory initialAdmins = new address[](1);
-        initialAdmins[0] = admin;
-        bytes memory initData = abi.encodeWithSelector(ATKComplianceImplementation.initialize.selector, initialAdmins);
+        address[] memory initialBypassListManagers = new address[](1);
+        initialBypassListManagers[0] = admin;
+        bytes memory initData =
+            abi.encodeWithSelector(ATKComplianceImplementation.initialize.selector, admin, initialBypassListManagers);
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
 
         // Access proxy as SMARTComplianceImplementation
