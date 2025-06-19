@@ -35,3 +35,6 @@ error ZeroClaimAmount();
 
 /// @notice Error indicating that the batch size exceeds the maximum allowed limit.
 error BatchSizeExceedsLimit();
+
+/// @notice Thrown when the airdrop name is empty or invalid.
+error InvalidAirdropName();

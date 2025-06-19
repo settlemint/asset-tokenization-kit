@@ -4,6 +4,8 @@ import { grantRole } from "./actions/grant-role";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
+import { createAirdrops } from "./addons/airdrop";
+import { createDistribution } from "./addons/airdrop/distribution";
 import { grantRoles } from "./assets/actions/core/grant-roles";
 import { mint } from "./assets/actions/core/mint";
 import { recoverErc20Tokens } from "./assets/actions/core/recover-erc20-tokens";
@@ -27,6 +29,7 @@ import {
   investorB,
 } from "./entities/actors/investors";
 import { owner } from "./entities/actors/owner";
+import { AirdropMerkleTree } from "./entities/airdrop/merkle-tree";
 import { atkDeployer } from "./services/deployer";
 import { topicManager } from "./services/topic-manager";
 
@@ -104,6 +107,18 @@ async function main() {
   const equity = await createEquity();
   const fund = await createFund();
   const stableCoin = await createStableCoin();
+
+  // Create the addons
+
+  const distribution = createDistribution({
+    ownerAddress: owner.address,
+    investorAAddress: investorA.address,
+    investorBAddress: investorB.address,
+    frozenInvestorAddress: frozenInvestor.address,
+    claimIssuerAddress: claimIssuer.address,
+  });
+  const merkleTree = new AirdropMerkleTree(distribution);
+  const airdrops = await createAirdrops(stableCoin, merkleTree);
 
   await createPausedAsset();
 
