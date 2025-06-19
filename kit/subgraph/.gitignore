@@ -23,10 +23,6 @@ yarn-error.log*
 .env
 .env.subgraph
 
-# Generated folder
-.generated
-!.generated/.env.subgraph
-
 # Testing
 coverage
 coverage.json
@@ -45,3 +41,4 @@ the-graph-env.d.ts
 the-graph-cache.d.ts
 
 subgraph.json
+.generated/subgraph-hash.txt

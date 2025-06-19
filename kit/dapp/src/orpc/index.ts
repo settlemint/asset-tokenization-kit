@@ -15,8 +15,6 @@
 import type { contract } from "@/orpc/routes/contract";
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
-import type { ClientRetryPluginContext } from "@orpc/client/plugins";
-import { BatchLinkPlugin, ClientRetryPlugin } from "@orpc/client/plugins";
 import type { ContractRouterClient } from "@orpc/contract";
 import type { RouterClient } from "@orpc/server";
 import { createRouterClient } from "@orpc/server";
@@ -47,7 +45,7 @@ const getORPCClient = createIsomorphicFn()
     });
   })
   .client((): RouterClient<typeof router> => {
-    const link = new RPCLink<ClientRetryPluginContext>({
+    const link = new RPCLink({
       url: `${window.location.origin}/api/rpc`,
       fetch(url, options) {
         return globalThis.fetch(url, {
@@ -56,31 +54,6 @@ const getORPCClient = createIsomorphicFn()
           credentials: "include",
         });
       },
-      plugins: [
-        new BatchLinkPlugin({
-          mode: typeof window === "undefined" ? "buffered" : "streaming",
-          groups: [
-            {
-              condition: () => true,
-              context: {},
-            },
-          ],
-          exclude: ({ path }) => {
-            return path.includes("track");
-          },
-        }),
-        new ClientRetryPlugin({
-          default: {
-            retry: ({ path }) => {
-              if (path.includes("track")) {
-                return Number.POSITIVE_INFINITY;
-              }
-
-              return 0;
-            },
-          },
-        }),
-      ],
     });
 
     return createORPCClient(link);
@@ -106,10 +79,7 @@ const getORPCClient = createIsomorphicFn()
  * });
  * ```
  */
-export const client: ContractRouterClient<
-  typeof contract,
-  ClientRetryPluginContext
-> = getORPCClient();
+export const client: ContractRouterClient<typeof contract> = getORPCClient();
 
 /**
  * TanStack Query utilities for the ORPC client.
