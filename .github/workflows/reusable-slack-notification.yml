@@ -191,12 +191,23 @@ jobs:
             | jq -r '.[] | select(.body | startswith("<!-- slack-ts:")) | .body' | head -1)
 
           if [ -n "$COMMENT" ]; then
-            SLACK_TS=$(echo "$COMMENT" | sed -n 's/<!-- slack-ts:\(.*\) -->.*/\1/p')
+            SLACK_TS=$(echo "$COMMENT" | sed -n 's/<!-- slack-ts:\(.*\) *-->.*/\1/p')
             echo "slack_ts=$SLACK_TS" >> $GITHUB_OUTPUT
             echo "message_exists=true" >> $GITHUB_OUTPUT
+            echo "Debug: Found existing Slack message with timestamp: $SLACK_TS"
           else
             echo "message_exists=false" >> $GITHUB_OUTPUT
+            echo "Debug: No existing Slack message found"
           fi
+
+      - name: Debug Slack message action
+        if: |
+          steps.build_status.outputs.skip_notification != 'true' &&
+          steps.build_status.outputs.pr_draft != 'true'
+        run: |
+          echo "Debug: Message exists = ${{ steps.check_message.outputs.message_exists }}"
+          echo "Debug: Slack timestamp = ${{ steps.check_message.outputs.slack_ts }}"
+          echo "Debug: Will use method = ${{ steps.check_message.outputs.message_exists == 'true' && 'chat.update' || 'chat.postMessage' }}"
 
       - name: Send or update Slack message
         id: slack_message
@@ -285,9 +296,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const timestamp = '${{ steps.slack_message.outputs.ts }}';
+            console.log(`Debug: Storing Slack timestamp: ${timestamp}`);
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: ${{ steps.build_status.outputs.pr_number }},
-              body: `<!-- slack-ts:${{ steps.slack_message.outputs.ts }} -->\n🤖 Slack notification sent for this PR`
+              body: `<!-- slack-ts:${timestamp}-->\n🤖 Slack notification sent for this PR`
             });
