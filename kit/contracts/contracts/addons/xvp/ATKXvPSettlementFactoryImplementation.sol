@@ -102,11 +102,13 @@ contract ATKXvPSettlementFactoryImplementation is
 
     /// @notice Creates a new XvPSettlement contract
     /// @dev Uses CREATE2 for deterministic addresses and the system addon pattern for deployment.
+    /// @param name The name of the settlement
     /// @param flows The array of token flows to include in the settlement
     /// @param cutoffDate Timestamp after which the settlement expires
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
     /// @return contractAddress The address of the newly created settlement contract
     function create(
+        string memory name,
         IATKXvPSettlement.Flow[] memory flows,
         uint256 cutoffDate,
         bool autoExecute
@@ -118,8 +120,8 @@ contract ATKXvPSettlementFactoryImplementation is
         if (cutoffDate <= block.timestamp) revert InvalidCutoffDate();
         if (flows.length == 0) revert EmptyFlows();
 
-        bytes memory saltInputData = abi.encode(address(this), flows, cutoffDate, autoExecute, _msgSender());
-        bytes memory constructorArgs = abi.encode(address(this), cutoffDate, autoExecute, flows);
+        bytes memory saltInputData = abi.encode(address(this), name, flows, cutoffDate, autoExecute, _msgSender());
+        bytes memory constructorArgs = abi.encode(address(this), name, cutoffDate, autoExecute, flows);
         bytes memory proxyBytecode = type(ATKXvPSettlementProxy).creationCode;
 
         // Predict the address first for validation
@@ -139,11 +141,13 @@ contract ATKXvPSettlementFactoryImplementation is
     /// @notice Predicts the address where a XvPSettlement contract would be deployed
     /// @dev Calculates the deterministic address using CREATE2 with the same parameters and salt
     /// computation as the create function. This allows users to know the contract's address before deployment.
+    /// @param name The name of the settlement
     /// @param flows The array of token flows that will be used in deployment
     /// @param cutoffDate Timestamp after which the settlement expires
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
     /// @return predicted The address where the settlement contract would be deployed
     function predictAddress(
+        string memory name,
         IATKXvPSettlement.Flow[] memory flows,
         uint256 cutoffDate,
         bool autoExecute
@@ -152,8 +156,8 @@ contract ATKXvPSettlementFactoryImplementation is
         view
         returns (address predicted)
     {
-        bytes memory saltInputData = abi.encode(address(this), flows, cutoffDate, autoExecute, _msgSender());
-        bytes memory constructorArgs = abi.encode(address(this), cutoffDate, autoExecute, flows);
+        bytes memory saltInputData = abi.encode(address(this), name, flows, cutoffDate, autoExecute, _msgSender());
+        bytes memory constructorArgs = abi.encode(address(this), name, cutoffDate, autoExecute, flows);
         bytes memory proxyBytecode = type(ATKXvPSettlementProxy).creationCode;
 
         return _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
