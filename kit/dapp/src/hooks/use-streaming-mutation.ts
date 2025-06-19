@@ -143,7 +143,7 @@ export function useStreamingMutation<
   );
 
   // Default messages with English fallbacks
-  const messages: Required<StreamingMutationMessages> = {
+  const messages = {
     initialLoading: options.messages?.initialLoading ?? "Starting operation...",
     noResultError: options.messages?.noResultError ?? "No result received from operation",
     defaultError: options.messages?.defaultError ?? "Operation failed",
