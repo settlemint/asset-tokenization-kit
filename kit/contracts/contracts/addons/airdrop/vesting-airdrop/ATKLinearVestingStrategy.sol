@@ -12,6 +12,8 @@ import { InvalidVestingDuration, CliffExceedsVestingDuration } from "./ATKVestin
 ///      The vesting parameters (duration, cliff) are set at deployment and cannot be changed.
 ///      It holds no state about users; all user-specific data is passed in during calculations.
 contract ATKLinearVestingStrategy is IATKVestingStrategy {
+    bytes32 public constant override typeId = keccak256("ATKLinearVestingStrategy");
+
     // --- Storage Variables ---
 
     /// @notice The total duration of the vesting period in seconds.

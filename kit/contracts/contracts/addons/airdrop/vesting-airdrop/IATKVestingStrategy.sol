@@ -2,12 +2,14 @@
 
 pragma solidity ^0.8.28;
 
+import { IWithTypeIdentifier } from "../../../system/IWithTypeIdentifier.sol";
+
 /// @title IATKVestingStrategy
 /// @author SettleMint Tokenization Services
 /// @notice Interface for vesting strategy implementations in ATK vesting airdrop contracts.
 /// @dev This interface allows for different vesting calculation strategies (e.g., linear, cliff-based).
 ///      Implementations should be stateless and calculate claimable amounts based on provided parameters.
-interface IATKVestingStrategy {
+interface IATKVestingStrategy is IWithTypeIdentifier {
     // --- External Functions ---
 
     /// @notice Calculates the amount claimable based on the strategy's vesting parameters.
