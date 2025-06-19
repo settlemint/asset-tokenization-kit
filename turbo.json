@@ -17,7 +17,7 @@
       "dependsOn": ["compile", "codegen", "lint", "test"]
     },
     "ci:gha": {
-      "dependsOn": ["ci:base", "build", "artifacts"]
+      "dependsOn": ["ci:base", "build", "//#dev:up"]
     },
     "ci:gha:main": {
       "dependsOn": ["ci:gha", "publish"]
@@ -98,6 +98,10 @@
     "//#dev:connect": {
       "outputs": ["**/.env", "**/.env.local"],
       "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
+    "//#dev:up": {
+      "cache": false,
+      "dependsOn": ["artifacts"]
     }
   }
 }
