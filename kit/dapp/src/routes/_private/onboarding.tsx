@@ -30,8 +30,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { seo } from "@/config/metadata";
-import { useBlockchainMutation } from "@/hooks/use-blockchain-mutation";
 import { useSettings } from "@/hooks/use-settings";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
@@ -102,21 +102,9 @@ function OnboardingComponent() {
     mutate: createSystem,
     isPending: isCreatingSystem,
     isTracking,
-  } = useBlockchainMutation({
-    mutationOptions: orpc.system.create.mutationOptions({
-      onSuccess: (data) => {
-        setSystemAddress(data);
-      },
-    }),
-    messages: {
-      pending: {
-        mining: t("onboarding:messages.pending.mining"),
-        indexing: t("onboarding:messages.pending.indexing"),
-      },
-      success: t("onboarding:messages.success"),
-      error: t("onboarding:messages.error"),
-      timeout: t("onboarding:messages.timeout"),
-    },
+  } = useStreamingMutation<`0x${string}`, Error, { contract?: string }>({
+    mutationOptions: orpc.system.create.mutationOptions(),
+    errorMessage: t("onboarding:messages.error"),
   });
 
   return (
@@ -175,7 +163,14 @@ function OnboardingComponent() {
                   <Button
                     disabled={!!systemAddress || isCreatingSystem || isTracking}
                     onClick={() => {
-                      createSystem({});
+                      createSystem(
+                        {},
+                        {
+                          onSuccess: (address) => {
+                            setSystemAddress(address);
+                          },
+                        }
+                      );
                     }}
                   >
                     {isCreatingSystem || isTracking
