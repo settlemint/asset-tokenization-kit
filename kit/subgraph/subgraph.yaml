@@ -8,7 +8,7 @@ dataSources:
     name: SystemFactory
     network: settlemint
     source:
-      address: "0x1E53bea57Dd5dDa7bFf1a1180a2f64a5c9e222f5"
+      address: "0x82EdA215Fa92B45a3a76837C65Ab862b6C7564a8"
       abi: SystemFactory
       startBlock: 0
     mapping:
@@ -44,8 +44,7 @@ templates:
         - name: AccessControl
           file: ../contracts/.generated/artifacts/@openzeppelin/contracts/access/AccessControl.sol/AccessControl.json
       eventHandlers:
-        - event:
-            RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
@@ -122,12 +121,10 @@ templates:
         - name: Token
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event:
-            TokenAssetCreated(indexed address,indexed address,indexed
+        - event: TokenAssetCreated(indexed address,indexed address,indexed
             address,bytes4[],address)
           handler: handleTokenAssetCreated
-        - event:
-            TokenImplementationUpdated(indexed address,indexed address,indexed
+        - event: TokenImplementationUpdated(indexed address,indexed address,indexed
             address)
           handler: handleTokenImplementationUpdated
       file: ./src/token-factory/token-factory.ts
@@ -163,8 +160,7 @@ templates:
           handler: handleMintCompleted
         - event: ModuleParametersUpdated(indexed address,indexed address,bytes)
           handler: handleModuleParametersUpdated
-        - event:
-            TransferCompleted(indexed address,indexed address,indexed
+        - event: TransferCompleted(indexed address,indexed address,indexed
             address,uint256)
           handler: handleTransferCompleted
         - event: UpdatedTokenInformation(indexed address,uint8,indexed address)
@@ -228,27 +224,20 @@ templates:
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
-        - event:
-            ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimAdded(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimAdded
-        - event:
-            ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimChanged(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimChanged
-        - event:
-            ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
+        - event: ClaimRemoved(indexed bytes32,indexed uint256,uint256,indexed
             address,bytes,bytes,string)
           handler: handleClaimRemoved
         - event: Executed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecuted
-        - event:
-            ExecutionFailed(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionFailed(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionFailed
-        - event:
-            ExecutionRequested(indexed uint256,indexed address,indexed
-            uint256,bytes)
+        - event: ExecutionRequested(indexed uint256,indexed address,indexed uint256,bytes)
           handler: handleExecutionRequested
         - event: KeyAdded(indexed bytes32,indexed uint256,indexed uint256)
           handler: handleKeyAdded
@@ -273,12 +262,9 @@ templates:
         - name: Token
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event:
-            IdentityCreated(indexed address,indexed address,indexed address)
+        - event: IdentityCreated(indexed address,indexed address,indexed address)
           handler: handleIdentityCreated
-        - event:
-            TokenIdentityCreated(indexed address,indexed address,indexed
-            address)
+        - event: TokenIdentityCreated(indexed address,indexed address,indexed address)
           handler: handleTokenIdentityCreated
       file: ./src/identity-factory/identity-factory.ts
   - kind: ethereum
@@ -297,18 +283,13 @@ templates:
         - name: TopicSchemeRegistry
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMARTTopicSchemeRegistry.sol/ISMARTTopicSchemeRegistry.json
       eventHandlers:
-        - event:
-            TopicSchemeRegistered(indexed address,indexed uint256,string,string)
+        - event: TopicSchemeRegistered(indexed address,indexed uint256,string,string)
           handler: handleTopicSchemeRegistered
         - event: TopicSchemeRemoved(indexed address,indexed uint256,string)
           handler: handleTopicSchemeRemoved
-        - event:
-            TopicSchemeUpdated(indexed address,indexed
-            uint256,string,string,string)
+        - event: TopicSchemeUpdated(indexed address,indexed uint256,string,string,string)
           handler: handleTopicSchemeUpdated
-        - event:
-            TopicSchemesBatchRegistered(indexed
-            address,uint256[],string[],string[])
+        - event: TopicSchemesBatchRegistered(indexed address,uint256[],string[],string[])
           handler: handleTopicSchemesBatchRegistered
       file: ./src/topic-scheme-registry/topic-scheme-registry.ts
   - kind: ethereum
@@ -329,17 +310,14 @@ templates:
       eventHandlers:
         - event: CountryUpdated(indexed address,indexed address,indexed uint16)
           handler: handleCountryUpdated
-        - event:
-            IdentityRegistered(indexed address,indexed address,indexed
+        - event: IdentityRegistered(indexed address,indexed address,indexed
             address,uint16)
           handler: handleIdentityRegistered
-        - event:
-            IdentityRemoved(indexed address,indexed address,indexed address)
+        - event: IdentityRemoved(indexed address,indexed address,indexed address)
           handler: handleIdentityRemoved
         - event: IdentityStorageSet(indexed address,indexed address)
           handler: handleIdentityStorageSet
-        - event:
-            IdentityUpdated(indexed address,indexed address,indexed address)
+        - event: IdentityUpdated(indexed address,indexed address,indexed address)
           handler: handleIdentityUpdated
         - event: TopicSchemeRegistrySet(indexed address,indexed address)
           handler: handleTopicSchemeRegistrySet
@@ -364,9 +342,7 @@ templates:
       eventHandlers:
         - event: AddressFrozen(indexed address,indexed address,indexed bool)
           handler: handleAddressFrozen
-        - event:
-            RecoverySuccess(indexed address,indexed address,indexed
-            address,address)
+        - event: RecoverySuccess(indexed address,indexed address,indexed address,address)
           handler: handleRecoverySuccess
         - event: TokensFrozen(indexed address,indexed address,uint256)
           handler: handleTokensFrozen
@@ -407,8 +383,7 @@ templates:
         - name: Yield
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/yield/ISMARTYield.sol/ISMARTYield.json
       eventHandlers:
-        - event:
-            CheckpointUpdated(indexed address,indexed address,uint256,uint256)
+        - event: CheckpointUpdated(indexed address,indexed address,uint256,uint256)
           handler: handleCheckpointUpdated
         - event: YieldScheduleSet(indexed address,indexed address)
           handler: handleYieldScheduleSet
@@ -437,8 +412,7 @@ templates:
           handler: handleUnderlyingAssetTopUp
         - event: UnderlyingAssetWithdrawn(indexed address,uint256)
           handler: handleUnderlyingAssetWithdrawn
-        - event:
-            YieldClaimed(indexed
+        - event: YieldClaimed(indexed
             address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)
           handler: handleYieldClaimed
       file: ./src/token-extensions/fixed-yield-schedule/fixed-yield-schedule.ts
@@ -498,8 +472,7 @@ templates:
         - name: Token
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event:
-            BondCreated(indexed address,indexed
+        - event: BondCreated(indexed address,indexed
             address,string,string,uint8,uint256,uint256,uint256,address)
           handler: handleBondCreated
       file: ./src/token-assets/bond-factory/bond-factory.ts
@@ -536,9 +509,7 @@ templates:
         - name: FundFactory
           file: ../contracts/.generated/artifacts/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json
       eventHandlers:
-        - event:
-            FundCreated(indexed address,indexed
-            address,string,string,uint8,uint24)
+        - event: FundCreated(indexed address,indexed address,string,string,uint8,uint24)
           handler: handleFundCreated
       file: ./src/token-assets/fund-factory/fund-factory.ts
   - kind: ethereum
@@ -601,17 +572,14 @@ templates:
       eventHandlers:
         - event: Deposit(indexed address,uint256,uint256)
           handler: handleDeposit
-        - event:
-            SubmitTransaction(indexed address,indexed uint256,indexed
+        - event: SubmitTransaction(indexed address,indexed uint256,indexed
             address,uint256,bytes,string)
           handler: handleSubmitTransaction
-        - event:
-            SubmitERC20TransferTransaction(indexed address,indexed
-            uint256,indexed address,address,uint256,string)
+        - event: SubmitERC20TransferTransaction(indexed address,indexed uint256,indexed
+            address,address,uint256,string)
           handler: handleSubmitERC20TransferTransaction
-        - event:
-            SubmitContractCallTransaction(indexed address,indexed
-            uint256,indexed address,uint256,bytes4,bytes,string)
+        - event: SubmitContractCallTransaction(indexed address,indexed uint256,indexed
+            address,uint256,bytes4,bytes,string)
           handler: handleSubmitContractCallTransaction
         - event: ConfirmTransaction(indexed address,indexed uint256)
           handler: handleConfirmTransaction
