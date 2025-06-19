@@ -147,6 +147,8 @@ jobs:
         env:
           THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
           THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
+          LANGUINE_API_KEY: ${{ secrets.LANGUINE_API_KEY }}
+          LANGUINE_PROJECT_ID: ${{ secrets.LANGUINE_PROJECT_ID }}
 
       - name: Store predeployed output
         if: github.event_name == 'pull_request' && always()
