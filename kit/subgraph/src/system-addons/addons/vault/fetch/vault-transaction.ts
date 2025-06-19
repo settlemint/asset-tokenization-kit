@@ -1,5 +1,5 @@
 import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { VaultTransaction } from "../../../../generated/schema";
+import { VaultTransaction } from "../../../../../generated/schema";
 
 export function fetchVaultTransaction(
   vaultAddress: Address,

@@ -1,7 +1,7 @@
 import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
-import { Vault as VaultTemplate } from "../../../generated/templates";
-import { ATKVaultCreated } from "../../../generated/templates/VaultFactory/VaultFactory";
-import { fetchEvent } from "../../event/fetch/event";
+import { Vault as VaultTemplate } from "../../../../generated/templates";
+import { ATKVaultCreated } from "../../../../generated/templates/VaultFactory/VaultFactory";
+import { fetchEvent } from "../../../event/fetch/event";
 import { fetchVault } from "./fetch/vault";
 import { fetchVaultFactory } from "./fetch/vault-factory";
 

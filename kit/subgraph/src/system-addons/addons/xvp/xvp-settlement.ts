@@ -3,8 +3,8 @@ import {
   XvPSettlementApproved,
   XvPSettlementCancelled,
   XvPSettlementExecuted,
-} from "../../../generated/templates/XvPSettlement/XvPSettlement";
-import { fetchEvent } from "../../event/fetch/event";
+} from "../../../../generated/templates/XvPSettlement/XvPSettlement";
+import { fetchEvent } from "../../../event/fetch/event";
 import {
   fetchXvPSettlement,
   fetchXvPSettlementApproval,

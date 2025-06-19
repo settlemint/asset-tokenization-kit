@@ -549,7 +549,7 @@ templates:
       eventHandlers:
         - event: ATKVaultCreated(indexed address,indexed address)
           handler: handleATKVaultCreated
-      file: ./src/addons/vault/vault-factory.ts
+      file: ./src/system-addons/addons/vault/vault-factory.ts
   - kind: ethereum
     name: Vault
     network: settlemint
@@ -591,7 +591,7 @@ templates:
           handler: handleRequirementChanged
         - event: TransactionExecutionFailed(indexed uint256,address,bytes)
           handler: handleTransactionExecutionFailed
-      file: ./src/addons/vault/vault.ts
+      file: ./src/system-addons/addons/vault/vault.ts
   - kind: ethereum
     name: GenericERC165
     network: settlemint
@@ -627,7 +627,7 @@ templates:
       eventHandlers:
         - event: ATKXvPSettlementCreated(indexed address,indexed address)
           handler: handleATKXvPSettlementCreated
-      file: ./src/addons/xvp/xvp-settlement-factory.ts
+      file: ./src/system-addons/addons/xvp/xvp-settlement-factory.ts
   - kind: ethereum
     name: XvPSettlement
     network: settlemint
@@ -654,7 +654,7 @@ templates:
           handler: handleXvPSettlementExecuted
         - event: XvPSettlementCancelled(indexed address)
           handler: handleXvPSettlementCancelled
-      file: ./src/addons/xvp/xvp-settlement.ts
+      file: ./src/system-addons/addons/xvp/xvp-settlement.ts
   - kind: ethereum
     name: TokenFactoryRegistry
     network: settlemint
@@ -702,7 +702,7 @@ templates:
         - event: SystemAddonRegistered(indexed
             address,string,bytes32,address,address,bytes,uint256)
           handler: handleSystemAddonRegistered
-      file: ./src/addon-factory/system-addon-registry.ts
+      file: ./src/system-addons/system-addon-registry.ts
   - kind: ethereum
     name: ComplianceModuleRegistry
     network: settlemint

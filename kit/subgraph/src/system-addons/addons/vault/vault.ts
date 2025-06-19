@@ -9,8 +9,8 @@ import {
   SubmitERC20TransferTransaction,
   SubmitTransaction,
   TransactionExecutionFailed,
-} from "../../../generated/templates/Vault/Vault";
-import { fetchEvent } from "../../event/fetch/event";
+} from "../../../../generated/templates/Vault/Vault";
+import { fetchEvent } from "../../../event/fetch/event";
 import { fetchVault } from "./fetch/vault";
 import { fetchVaultTransaction } from "./fetch/vault-transaction";
 

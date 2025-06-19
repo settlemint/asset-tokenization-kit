@@ -10,7 +10,7 @@ import {
 } from "../../generated/templates/SystemAddonRegistry/SystemAddonRegistry";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchSystem } from "../system/fetch/system";
-import { fetchSystemAddon } from "../system/fetch/system-addon";
+import { fetchSystemAddon } from "./fetch/system-addon";
 
 export function handleAddonImplementationUpdated(
   event: AddonImplementationUpdatedEvent
