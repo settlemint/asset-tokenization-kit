@@ -1,7 +1,7 @@
 import {
-  type BatchVestingInitialized,
-  type VestingInitialized,
-  type VestingStrategyUpdated,
+  BatchVestingInitialized,
+  VestingInitialized,
+  VestingStrategyUpdated,
 } from "../../../generated/templates/VestingAirdrop/VestingAirdrop";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchAirdropAllocation } from "./fetch/airdrop-allocation";

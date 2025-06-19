@@ -1,5 +1,5 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { type DistributionCapUpdated } from "../../../generated/templates/PushAirdrop/PushAirdrop";
+import { DistributionCapUpdated } from "../../../generated/templates/PushAirdrop/PushAirdrop";
 import { fetchEvent } from "../../event/fetch/event";
 import { setBigNumber } from "../../utils/bignumber";
 import { getTokenDecimals } from "../../utils/token-decimals";
