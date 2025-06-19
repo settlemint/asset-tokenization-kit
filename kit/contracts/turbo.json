@@ -53,21 +53,12 @@
     "format:prettier": {},
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "codegen"]
+      "dependsOn": ["package", "codegen", "subgraph#codegen:interfaceid"]
     },
     "test": {
       "dependsOn": ["compile:forge"],
       "outputs": [],
       "inputs": ["**/*.sol", "test/**", "!.generated/**"]
-    },
-    "deploy:local": {
-      "cache": false,
-      "dependsOn": ["compile:hardhat", "codegen:types"],
-      "outputs": ["ignition/deployments/asset-tokenization-local/**"]
-    },
-    "deploy:remote": {
-      "cache": false,
-      "dependsOn": ["compile:hardhat", "codegen:types"]
     }
   }
 }

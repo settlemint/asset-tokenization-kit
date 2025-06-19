@@ -18,10 +18,7 @@
     "publish": "bun run clean:deployments && settlemint scs hardhat script local --script scripts/hardhat/main.ts",
     "abi-output": "bash tools/abi-output.sh",
     "test": "settlemint scs foundry test -vvv",
-    "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization",
-    "deploy:local": "settlemint scs hardhat deploy local -m ignition/modules/main.ts --deployment-id asset-tokenization-local --reset",
-    "deploy:local:onboarding": "settlemint scs hardhat deploy local -m ignition/modules/onboarding.ts --deployment-id asset-tokenization-local --reset",
-    "deploy:local:test": "bun compile:hardhat && bun codegen:types && bun run clean:deployments && settlemint scs hardhat script local --script scripts/hardhat/main.ts"
+    "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
   },
   "dependencies": {},
   "devDependencies": {
