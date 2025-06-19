@@ -431,23 +431,27 @@ type AirdropAllocation @entity(immutable: false) {
 # AIRDROP TYPES
 # ==================================================
 
-type VestingStrategy @entity(immutable: false) {
-  id: Bytes!
-  typeId: Bytes!
-  deployedInTransaction: Bytes!
-}
-
-type VestingAirdrop @entity(immutable: false) {
-  id: Bytes!
-  strategy: VestingStrategy!
-  claimPeriodEnd: BigInt!
-  initializationDeadline: BigInt!
-}
-
 type PushAirdrop @entity(immutable: false) {
   id: Bytes!
   distributionCap: BigDecimal
   distributionCapExact: BigInt
+}
+
+type VestingAirdrop @entity(immutable: false) {
+  id: Bytes!
+  initializationDeadline: BigInt!
+  strategyId: Bytes!
+  # Strategy specific
+  linearVestingStrategy: LinearVestingStrategy
+}
+
+# ==================================================
+# VESTING STRATEGIES
+# ==================================================
+type LinearVestingStrategy @entity(immutable: false) {
+  id: Bytes!
+  vestingDuration: BigInt!
+  cliffDuration: BigInt!
 }
 
 # ==================================================

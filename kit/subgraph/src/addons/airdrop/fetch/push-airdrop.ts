@@ -23,6 +23,7 @@ export function fetchPushAirdrop(id: Address): PushAirdrop {
       distributionCap.reverted ? BigInt.zero() : distributionCap.value,
       tokenDecimals
     );
+
     entity.save();
     PushAirdropTemplate.create(id);
   }

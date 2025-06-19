@@ -2,7 +2,7 @@ import { ATKPushAirdropCreated } from "../../../generated/templates/PushAirdropF
 import { InterfaceIds } from "../../erc165/utils/interfaceids";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchAirdrop } from "./fetch/airdrop";
-import { fetchPushAirdrop } from "./fetch/push-airdrop-factory";
+import { fetchPushAirdrop } from "./fetch/push-airdrop";
 
 export function handleATKPushAirdropCreated(
   event: ATKPushAirdropCreated
