@@ -64,8 +64,8 @@ export function SystemDeploymentStep() {
       }}
     >
       {isCreatingSystem || isTracking
-        ? "Deploying..."
-        : "Deploy a new SMART system"}
+        ? t("create-system-messages.button.deploying")
+        : t("create-system-messages.button.deploy")}
     </Button>
   );
 }

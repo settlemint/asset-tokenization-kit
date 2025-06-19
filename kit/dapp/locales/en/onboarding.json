@@ -8,6 +8,10 @@
     "system-created": "SMART system successfully created",
     "creating-system": "Creating new system...",
     "system-creation-failed": "Failed to create system. Please try again.",
+    "button": {
+      "deploy": "Deploy a new SMART system",
+      "deploying": "Deploying..."
+    },
     "transaction-tracking": {
       "stream-timeout": "System deployment tracking timed out after 90 seconds",
       "waiting-for-mining": "Deploying your SMART system on chain...",
