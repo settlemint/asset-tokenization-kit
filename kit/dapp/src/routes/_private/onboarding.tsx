@@ -31,7 +31,10 @@ import {
 } from "@/components/ui/card";
 import { seo } from "@/config/metadata";
 import { useSettings } from "@/hooks/use-settings";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import {
+  createStreamingMessages,
+  useStreamingMutation,
+} from "@/hooks/use-streaming-mutation";
 import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
@@ -104,22 +107,7 @@ function OnboardingComponent() {
     isTracking,
   } = useStreamingMutation<`0x${string}`, Error, { contract?: string }>({
     mutationOptions: orpc.system.create.mutationOptions(),
-    messages: {
-      initialLoading: t("onboarding:create-system-messages.initial-loading"),
-      noResultError: t("onboarding:create-system-messages.no-result-error"),
-      defaultError: t("onboarding:create-system-messages.default-error"),
-      messageMap: {
-        // Map server-side messages to translations
-        "System created": t("onboarding:create-system-messages.system-created"),
-        "Transaction tracking timed out after 90 seconds": t("onboarding:create-system-messages.transaction-tracking.stream-timeout"),
-        "Waiting for transaction to be mined...": t("onboarding:create-system-messages.transaction-tracking.waiting-for-mining"),
-        "Transaction failed": t("onboarding:create-system-messages.transaction-tracking.transaction-failed"),
-        "Transaction was not confirmed on-chain in time.": t("onboarding:create-system-messages.transaction-tracking.transaction-dropped"),
-        "Waiting for transaction to be indexed...": t("onboarding:create-system-messages.transaction-tracking.waiting-for-indexing"),
-        "Transaction indexed": t("onboarding:create-system-messages.transaction-tracking.transaction-indexed"),
-        "Smart contract indexing timed out, please try again later": t("onboarding:create-system-messages.transaction-tracking.indexing-timeout"),
-      },
-    },
+    messages: createStreamingMessages(t, "onboarding:create-system"),
   });
 
   return (

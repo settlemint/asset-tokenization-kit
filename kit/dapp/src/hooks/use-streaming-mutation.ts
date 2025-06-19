@@ -23,10 +23,22 @@ import { toast } from "sonner";
 /**
  * Event structure yielded by streaming mutations
  */
-interface StreamingEvent<TResult = unknown> {
+interface StreamingEvent<
+  TResult = unknown,
+  TMetadata = Record<string, unknown>,
+> {
   status: "pending" | "confirmed" | "failed";
   message: string;
   result?: TResult;
+  /** Optional metadata for the event */
+  metadata?: TMetadata & {
+    /** Translation key for the message */
+    messageKey?: string;
+    /** Additional context for the message */
+    context?: Record<string, unknown>;
+    /** Operation phase/stage */
+    phase?: string;
+  };
 }
 
 /**
@@ -41,6 +53,11 @@ interface StreamingMutationMessages {
   defaultError?: string;
   /** Optional message translations map for server-side messages */
   messageMap?: Record<string, string>;
+  /** Translation function for dynamic message generation */
+  translate?: (
+    key: string,
+    context?: Record<string, unknown>
+  ) => string | undefined;
 }
 
 /**
@@ -110,21 +127,42 @@ interface UseStreamingMutationResult<TResult, TError, TVariables> {
  *
  * @example
  * ```typescript
+ * // Basic usage with message map
  * const { mutate, result, isTracking } = useStreamingMutation({
  *   mutationOptions: orpc.system.create.mutationOptions(),
  *   messages: {
  *     initialLoading: t("system.creating"),
  *     noResultError: t("system.noResult"),
- *     defaultError: t("system.error")
+ *     defaultError: t("system.error"),
+ *     messageMap: {
+ *       "System created": t("system.created"),
+ *       "Transaction failed": t("system.transactionFailed")
+ *     }
  *   }
  * });
  *
- * // Execute mutation
- * mutate({}, {
- *   onSuccess: (systemAddress) => {
- *     console.log("System created:", systemAddress);
+ * // Advanced usage with metadata-aware translation
+ * const { mutate } = useStreamingMutation({
+ *   mutationOptions: orpc.system.create.mutationOptions(),
+ *   messages: {
+ *     initialLoading: t("system.creating"),
+ *     translate: (key, context) => {
+ *       // Use your i18n library's translation function
+ *       return t(key, context);
+ *     }
  *   }
  * });
+ *
+ * // Server should send events with metadata like:
+ * // yield {
+ * //   status: "pending",
+ * //   message: "Waiting for transaction to be mined...",
+ * //   metadata: {
+ * //     messageKey: "transaction.mining",
+ * //     phase: "transaction",
+ * //     context: { txHash: "0x..." }
+ * //   }
+ * // }
  * ```
  */
 export function useStreamingMutation<
@@ -145,8 +183,46 @@ export function useStreamingMutation<
   // Default messages with English fallbacks
   const messages = {
     initialLoading: options.messages?.initialLoading ?? "Starting operation...",
-    noResultError: options.messages?.noResultError ?? "No result received from operation",
+    noResultError:
+      options.messages?.noResultError ?? "No result received from operation",
     defaultError: options.messages?.defaultError ?? "Operation failed",
+  };
+
+  /**
+   * Get the display message for an event using metadata-aware translation
+   */
+  const getDisplayMessage = (
+    event: StreamingEvent<TResult>,
+    messageConfig?: StreamingMutationMessages
+  ): string => {
+    // Priority order:
+    // 1. Check if event has a messageKey in metadata and use translate function
+    if (event.metadata?.messageKey && messageConfig?.translate) {
+      const translated = messageConfig.translate(
+        event.metadata.messageKey,
+        event.metadata.context
+      );
+      if (translated) return translated;
+    }
+
+    // 2. Check messageMap for the raw message
+    const mappedMessage = messageConfig?.messageMap?.[event.message];
+    if (mappedMessage) {
+      return mappedMessage;
+    }
+
+    // 3. If translate function exists, try to generate a key from the message
+    if (messageConfig?.translate && event.metadata?.phase) {
+      const generatedKey = `${event.metadata.phase}.${event.status}`;
+      const translated = messageConfig.translate(
+        generatedKey,
+        event.metadata.context
+      );
+      if (translated) return translated;
+    }
+
+    // 4. Return the raw message as fallback
+    return event.message;
   };
 
   // Process the async iterator and handle toasts
@@ -163,8 +239,8 @@ export function useStreamingMutation<
 
         // Process each event from the stream
         for await (const event of asyncIterator) {
-          // Translate the message if a translation map is provided
-          const displayMessage = options.messages?.messageMap?.[event.message] ?? event.message;
+          // Get display message using metadata-aware translation
+          const displayMessage = getDisplayMessage(event, options.messages);
           setLatestMessage(displayMessage);
 
           if (event.status === "pending") {
@@ -190,7 +266,8 @@ export function useStreamingMutation<
         }
       } catch (error) {
         // Handle any errors during stream processing
-        const errorMsg = error instanceof Error ? error.message : messages.defaultError;
+        const errorMsg =
+          error instanceof Error ? error.message : messages.defaultError;
         toast.error(errorMsg, { id: toastIdRef.current });
         throw error;
       } finally {
@@ -283,5 +360,49 @@ export function useStreamingMutation<
     result,
     error: mutation.error,
     reset,
+  };
+}
+
+/**
+ * Helper function to create streaming mutation messages with i18n support
+ *
+ * @param t - The translation function from react-i18next
+ * @param namespace - The translation namespace for the operation
+ * @returns StreamingMutationMessages configuration
+ *
+ * @example
+ * ```typescript
+ * import { useTranslation } from 'react-i18next';
+ *
+ * const { t } = useTranslation('system');
+ *
+ * const { mutate } = useStreamingMutation({
+ *   mutationOptions: orpc.system.create.mutationOptions(),
+ *   messages: createStreamingMessages(t, 'system.create')
+ * });
+ * ```
+ */
+export function createStreamingMessages<T extends (...args: any[]) => string>(
+  t: T,
+  namespace: string
+): StreamingMutationMessages {
+  return {
+    initialLoading: t(`${namespace}.initialLoading`),
+    noResultError: t(`${namespace}.noResultError`),
+    defaultError: t(`${namespace}.defaultError`),
+    translate: (key: string, context?: Record<string, unknown>) => {
+      // Try namespace-specific key first
+      const namespacedKey = `${namespace}.${key}`;
+      const translated = t(namespacedKey, context as any);
+
+      // If translation exists (not the key itself), return it
+      if (translated !== namespacedKey) {
+        return translated;
+      }
+
+      // Try without namespace
+      const genericTranslated = t(key, context as any);
+      return genericTranslated !== key ? genericTranslated : undefined;
+    },
   };
 }
