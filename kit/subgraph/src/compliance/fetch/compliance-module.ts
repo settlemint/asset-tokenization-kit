@@ -12,7 +12,7 @@ export function fetchComplianceModule(address: Address): ComplianceModule {
     complianceModule.account = fetchAccount(address).id;
     complianceModule.name = "unknown";
     complianceModule.typeId = Bytes.fromHexString("0x00");
-
+    complianceModule.deployedInTransaction = Bytes.empty();
     complianceModule.save();
   }
 
