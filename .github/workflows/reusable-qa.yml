@@ -181,3 +181,4 @@ jobs:
             kit/dapp/locales/**/*.json
             kit/charts/**/README.md
             kit/dapp/languine.lock
+          disable_globbing: true
