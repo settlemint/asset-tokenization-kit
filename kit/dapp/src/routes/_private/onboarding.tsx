@@ -20,8 +20,10 @@
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
+import { AssetSelectionStep } from "@/components/onboarding/steps/asset-selection-step";
+import { SystemDeploymentStep } from "@/components/onboarding/steps/system-deployment-step";
+import { WalletGenerationStep } from "@/components/onboarding/steps/wallet-generation-step";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -30,18 +32,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { seo } from "@/config/metadata";
-import { useSettings } from "@/hooks/use-settings";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
-import { authClient } from "@/lib/auth/auth.client";
-import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
-import type { SystemCreateMessages } from "@/orpc/routes/system/routes/system.create.schema";
-import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useContext, useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/_private/onboarding")({
   component: OnboardingComponent,
@@ -70,105 +63,7 @@ export const Route = createFileRoute("/_private/onboarding")({
  * @returns The onboarding UI with step-by-step actions for platform setup
  */
 function OnboardingComponent() {
-  const { orpc } = Route.useRouteContext();
-  const navigate = useNavigate();
-  const { data: user, isError, error } = useQuery(orpc.user.me.queryOptions());
-  const { data: systemAddress } = useQuery(
-    orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
-  );
-  const { sessionKey } = useContext(AuthQueryContext);
   const { t } = useTranslation(["onboarding", "general"]);
-  const [, setSystemAddress] = useSettings("SYSTEM_ADDRESS");
-
-  // Handle authentication errors
-  useEffect(() => {
-    if (isError) {
-      // For ORPC errors, the error object will have a code property
-      const errorObj = error as { code?: string };
-      if (errorObj.code === "UNAUTHORIZED") {
-        void navigate({
-          to: "/auth/$pathname",
-          params: { pathname: "signin" },
-          replace: true,
-        });
-      }
-    }
-  }, [isError, error, navigate]);
-
-  const { mutate: generateWallet } = useMutation(
-    orpc.account.create.mutationOptions({
-      onSuccess: async () => {
-        toast.success(t("onboarding:wallet-generated"));
-        await authClient.getSession({
-          query: {
-            disableCookieCache: true,
-          },
-        });
-        void queryClient.invalidateQueries({
-          queryKey: sessionKey,
-        });
-        void queryClient.invalidateQueries({
-          queryKey: orpc.user.me.key(),
-        });
-      },
-      onError: (error) => {
-        // The error message will be the localized message from the server
-        toast.error(error.message);
-      },
-    })
-  );
-
-  const {
-    mutate: createSystem,
-    isPending: isCreatingSystem,
-    isTracking,
-  } = useStreamingMutation({
-    mutationOptions: orpc.system.create.mutationOptions(),
-    onSuccess: (data) => {
-      setSystemAddress(data);
-    },
-    messages: {
-      // Frontend messages for toast notifications
-      initialLoading: t("onboarding:create-system-messages.initial-loading"),
-      noResultError: t("onboarding:create-system-messages.no-result-error"),
-      defaultError: t("onboarding:create-system-messages.default-error"),
-      // Backend messages that will be passed to the mutation
-      mutationMessages: {
-        // System-specific messages
-        systemCreated: t("onboarding:create-system-messages.system-created"),
-        creatingSystem: t("onboarding:create-system-messages.creating-system"),
-        systemCreationFailed: t(
-          "onboarding:create-system-messages.system-creation-failed"
-        ),
-        // Transaction tracking messages
-        streamTimeout: t(
-          "onboarding:create-system-messages.transaction-tracking.stream-timeout"
-        ),
-        waitingForMining: t(
-          "onboarding:create-system-messages.transaction-tracking.waiting-for-mining"
-        ),
-        transactionFailed: t(
-          "onboarding:create-system-messages.transaction-tracking.transaction-failed"
-        ),
-        transactionDropped: t(
-          "onboarding:create-system-messages.transaction-tracking.transaction-dropped"
-        ),
-        waitingForIndexing: t(
-          "onboarding:create-system-messages.transaction-tracking.waiting-for-indexing"
-        ),
-        transactionIndexed: t(
-          "onboarding:create-system-messages.transaction-tracking.transaction-indexed"
-        ),
-        indexingTimeout: t(
-          "onboarding:create-system-messages.transaction-tracking.indexing-timeout"
-        ),
-        // useStreamingMutation messages (these are also passed to backend)
-        initialLoading: t("onboarding:create-system-messages.initial-loading"),
-        noResultError: t("onboarding:create-system-messages.no-result-error"),
-        defaultError: t("onboarding:create-system-messages.default-error"),
-      } satisfies SystemCreateMessages,
-    },
-  });
 
   return (
     <OnboardingGuard require="not-onboarded">
@@ -204,46 +99,26 @@ function OnboardingComponent() {
               </CardDescription>
               <CardContent>
                 <div className="flex flex-col gap-8">
-                  <p>This should be our step wizard</p>
-                  <Button
-                    disabled={!!user?.wallet || !user?.id}
-                    onClick={() => {
-                      if (user?.id) {
-                        generateWallet({
-                          userId: user.id,
-                          messages: {
-                            walletCreated: t("onboarding:wallet-generated"),
-                            walletAlreadyExists: t(
-                              "onboarding:wallet-already-exists"
-                            ),
-                            walletCreationFailed: t(
-                              "onboarding:wallet-creation-failed"
-                            ),
-                          },
-                        });
-                      }
-                    }}
-                  >
-                    Generate a new wallet
-                  </Button>
-                  {/* <Button
-                    disabled={!!user.wallet}
-                    onClick={() => {
-                      // generateWallet({ userId: user.id });
-                    }}
-                  >
-                    Secure your wallet with MFA
-                  </Button> */}
-                  <Button
-                    disabled={!!systemAddress || isCreatingSystem || isTracking}
-                    onClick={() => {
-                      createSystem({});
-                    }}
-                  >
-                    {isCreatingSystem || isTracking
-                      ? "Deploying..."
-                      : "Deploy a new SMART system"}
-                  </Button>
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold">
+                      Step 1: Generate Wallet
+                    </h3>
+                    <WalletGenerationStep />
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold">
+                      Step 2: Deploy System
+                    </h3>
+                    <SystemDeploymentStep />
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold">
+                      Step 3: Select Asset Types
+                    </h3>
+                    <AssetSelectionStep />
+                  </div>
                 </div>
               </CardContent>
             </CardHeader>

@@ -29,5 +29,17 @@
   },
   "wallet-generated": "ウォレットが正常に生成されました",
   "wallet-already-exists": "このユーザーのウォレットは既に存在します",
-  "wallet-creation-failed": "ウォレットの作成に失敗しました。もう一度お試しください。"
+  "wallet-creation-failed": "ウォレットの作成に失敗しました。もう一度お試しください。",
+  "assets": {
+    "bond": "債券",
+    "equity": "株式",
+    "fund": "ファンド",
+    "stablecoin": "ステーブルコイン",
+    "deposit": "預金"
+  },
+  "asset-selection": {
+    "title": "資産タイプ",
+    "description": "プラットフォームでサポートしたい資産タイプを選択してください",
+    "continue": "続ける"
+  }
 }
