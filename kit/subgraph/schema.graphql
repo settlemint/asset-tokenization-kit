@@ -442,12 +442,14 @@ type VestingStrategy @entity(immutable: false) {
 }
 
 type VestingAirdrop @entity(immutable: false) {
+  id: Bytes!
   strategy: VestingStrategy!
   claimPeriodEnd: BigInt!
   initializationDeadline: BigInt!
 }
 
 type PushAirdrop @entity(immutable: false) {
+  id: Bytes!
   distributionCap: BigDecimal
   distributionCapExact: BigInt
 }
