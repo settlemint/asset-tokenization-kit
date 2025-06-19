@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "_SMARTPausableAuthorizationHooks",
+  "sourceName": "smart-protocol/contracts/extensions/pausable/internal/_SMARTPausableAuthorizationHooks.sol",
+  "abi": [],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

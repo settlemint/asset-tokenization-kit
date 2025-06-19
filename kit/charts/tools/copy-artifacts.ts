@@ -37,8 +37,8 @@ const CONTRACTS_ROOT = await getKitProjectPath("contracts");
 const CHARTS_ROOT = await getKitProjectPath("charts");
 
 // Source paths
-const PORTAL_DIR = join(CONTRACTS_ROOT, "portal");
-const GENESIS_OUTPUT_FILE = join(CONTRACTS_ROOT, "tools/genesis-output.json");
+const PORTAL_DIR = join(CONTRACTS_ROOT, ".generated/portal");
+const GENESIS_OUTPUT_FILE = join(CONTRACTS_ROOT, ".generated/genesis.json");
 
 // Destination paths
 const CHARTS_PORTAL_DIR = join(CHARTS_ROOT, "atk/charts/portal/abis");
@@ -116,7 +116,7 @@ class ArtifactsCopier {
 
     if (!(await directoryExists(PORTAL_DIR))) {
       logger.warn(`Portal directory not found: ${PORTAL_DIR}`);
-      logger.warn("Run 'bun run codegen-abi' first to generate ABI files");
+      logger.warn("Run 'bun run abi-output' in the contracts workspace first to generate ABI files");
       return;
     }
 
@@ -165,7 +165,7 @@ class ArtifactsCopier {
     const genesisFile = Bun.file(GENESIS_OUTPUT_FILE);
     if (!(await genesisFile.exists())) {
       logger.warn(`Genesis output file not found: ${GENESIS_OUTPUT_FILE}`);
-      logger.warn("Run 'bun run codegen-genesis' first to generate genesis output");
+      logger.warn("Run 'bun run genesis' in the contracts workspace first to generate genesis output");
       return;
     }
 
@@ -246,19 +246,32 @@ class ArtifactsCopier {
     try {
       const content = await Bun.file(CHARTS_GENESIS_FILE).text();
       const parsed = JSON.parse(content);
-      // The genesis output should be an object with addresses as keys
-      if (typeof parsed !== "object" || parsed === null) {
+      
+      // Check if it's a full genesis file format
+      if (parsed.alloc && typeof parsed.alloc === "object") {
+        // Full genesis format with config, alloc, etc.
+        const allocKeys = Object.keys(parsed.alloc);
+        if (allocKeys.length === 0) {
+          throw new Error("Genesis alloc section is empty");
+        }
+        // Verify at least one address in alloc looks valid
+        const firstAllocKey = allocKeys[0];
+        if (!firstAllocKey?.startsWith("0x") || firstAllocKey.length !== 42) {
+          throw new Error("Invalid genesis alloc structure - expected addresses as keys");
+        }
+      } else if (typeof parsed === "object" && parsed !== null) {
+        // Legacy format: flat object with addresses as keys
+        const keys = Object.keys(parsed);
+        if (keys.length === 0) {
+          throw new Error("Genesis output is empty");
+        }
+        // Verify at least one address looks valid
+        const firstKey = keys[0];
+        if (!firstKey?.startsWith("0x") || firstKey.length !== 42) {
+          throw new Error("Invalid genesis output structure - expected addresses as keys");
+        }
+      } else {
         throw new Error("Invalid genesis output structure - expected an object");
-      }
-      // Check if it has at least one address key
-      const keys = Object.keys(parsed);
-      if (keys.length === 0) {
-        throw new Error("Genesis output is empty");
-      }
-      // Verify at least one address looks valid
-      const firstKey = keys[0];
-      if (!firstKey?.startsWith("0x") || firstKey.length !== 42) {
-        throw new Error("Invalid genesis output structure - expected addresses as keys");
       }
     } catch (error) {
       throw new Error(`Failed to verify genesis output: ${error}`);
@@ -295,7 +308,16 @@ class ArtifactsCopier {
       try {
         const content = await Bun.file(CHARTS_GENESIS_FILE).text();
         const parsed = JSON.parse(content);
-        const numAllocations = Object.keys(parsed).length;
+        
+        let numAllocations = 0;
+        if (parsed.alloc && typeof parsed.alloc === "object") {
+          // Full genesis format
+          numAllocations = Object.keys(parsed.alloc).length;
+        } else if (typeof parsed === "object") {
+          // Legacy format
+          numAllocations = Object.keys(parsed).length;
+        }
+        
         logger.info(
           `  - genesis-output.json (${numAllocations} allocations)`
         );

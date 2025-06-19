@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "_SMARTCustodianAuthorizationHooks",
+  "sourceName": "smart-protocol/contracts/extensions/custodian/internal/_SMARTCustodianAuthorizationHooks.sol",
+  "abi": [],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

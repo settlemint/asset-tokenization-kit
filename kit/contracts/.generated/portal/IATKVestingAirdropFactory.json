@@ -1,0 +1,507 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "allAirdropsLength",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "count",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "atkVestingAirdropImplementation",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "create",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "root",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "owner",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "vestingStrategy",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "initializationDeadline",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "airdropProxyAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "predictVestingAirdropAddress",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "root",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "owner",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "vestingStrategy",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "initializationDeadline",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "predictedAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "event",
+      "name": "ATKVestingAirdropCreated",
+      "inputs": [
+        {
+          "name": "airdrop",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "creator",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ImplementationUpdated",
+      "inputs": [
+        {
+          "name": "oldImplementation",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newImplementation",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "InvalidAddress",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidImplementation",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "SameAddress",
+      "inputs": []
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "allAirdropsLength()": "150117bd",
+    "atkVestingAirdropImplementation()": "434b6d0b",
+    "create(address,bytes32,address,address,uint256)": "42ceff9a",
+    "predictVestingAirdropAddress(address,bytes32,address,address,uint256)": "e2e5b27e"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"InvalidAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidImplementation\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"SameAddress\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"airdrop\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"creator\",\"type\":\"address\"}],\"name\":\"ATKVestingAirdropCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldImplementation\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"ImplementationUpdated\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"allAirdropsLength\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"count\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"atkVestingAirdropImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"root\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"vestingStrategy\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"initializationDeadline\",\"type\":\"uint256\"}],\"name\":\"create\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"airdropProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"root\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"vestingStrategy\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"initializationDeadline\",\"type\":\"uint256\"}],\"name\":\"predictVestingAirdropAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"predictedAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"events\":{\"ATKVestingAirdropCreated(address,address)\":{\"params\":{\"airdrop\":\"The address of the newly deployed `ATKVestingAirdropProxy` contract.\",\"creator\":\"The address that initiated the creation of the airdrop proxy.\"}},\"ImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new implementation contract.\",\"oldImplementation\":\"The address of the previous implementation contract.\"}}},\"kind\":\"dev\",\"methods\":{\"atkVestingAirdropImplementation()\":{\"details\":\"This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkVestingAirdropImplementation`.\"},\"create(address,bytes32,address,address,uint256)\":{\"details\":\"This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkVestingAirdropImplementation`.\"},\"predictVestingAirdropAddress(address,bytes32,address,address,uint256)\":{\"params\":{\"initializationDeadline\":\"The timestamp after which no new vesting can be initialized.\",\"owner\":\"The initial owner of the contract.\",\"root\":\"The Merkle root for verifying claims.\",\"token\":\"The address of the ERC20 token to be distributed.\",\"vestingStrategy\":\"The address of the vesting strategy contract for vesting calculations.\"},\"returns\":{\"predictedAddress\":\"The predicted address of the vesting airdrop proxy.\"}}},\"title\":\"Interface for ATK Vesting Airdrop Factory\",\"version\":1},\"userdoc\":{\"errors\":{\"InvalidAddress()\":[{\"notice\":\"Custom error for invalid address parameter.\"}],\"InvalidImplementation()\":[{\"notice\":\"Custom error for invalid implementation address.\"}],\"SameAddress()\":[{\"notice\":\"Custom error when attempting to set the same address.\"}]},\"events\":{\"ATKVestingAirdropCreated(address,address)\":{\"notice\":\"Emitted when a new `ATKVestingAirdrop` proxy contract is successfully created and deployed.\"},\"ImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the `atkVestingAirdropImplementation` is updated.\"}},\"kind\":\"user\",\"methods\":{\"allAirdropsLength()\":{\"notice\":\"Returns the total number of vesting airdrop proxy contracts created by this factory.\"},\"atkVestingAirdropImplementation()\":{\"notice\":\"Returns the address of the current ATKVestingAirdrop logic contract (implementation).\"},\"create(address,bytes32,address,address,uint256)\":{\"notice\":\"Creates a new ATKVestingAirdrop proxy contract.\"},\"predictVestingAirdropAddress(address,bytes32,address,address,uint256)\":{\"notice\":\"Predicts the deployment address of a vesting airdrop proxy.\"}},\"notice\":\"This interface defines the functions for creating and managing ATK vesting airdrop contracts.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol\":\"IATKVestingAirdropFactory\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol\":{\"keccak256\":\"0x0b7ce1302dabf46b51696f292b1cd1b3c972e7d5204f09a4afefd15b56ad7cb5\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://f33b804cf874567766b14c7f7d2023464bd1781260425449fe2cdbf0cec3bd09\",\"dweb:/ipfs/QmNdD9ZCWe8VuRY43TfKyyMdKwn4pkk7tsWNNSYu32iEb3\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidAddress"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidImplementation"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "SameAddress"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "airdrop",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "creator",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "ATKVestingAirdropCreated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "oldImplementation",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newImplementation",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "ImplementationUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "allAirdropsLength",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "count",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "atkVestingAirdropImplementation",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "root",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "vestingStrategy",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "initializationDeadline",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "create",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "airdropProxyAddress",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "root",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "vestingStrategy",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "initializationDeadline",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "predictVestingAirdropAddress",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "predictedAddress",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "atkVestingAirdropImplementation()": {
+            "details": "This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkVestingAirdropImplementation`."
+          },
+          "create(address,bytes32,address,address,uint256)": {
+            "details": "This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkVestingAirdropImplementation`."
+          },
+          "predictVestingAirdropAddress(address,bytes32,address,address,uint256)": {
+            "params": {
+              "initializationDeadline": "The timestamp after which no new vesting can be initialized.",
+              "owner": "The initial owner of the contract.",
+              "root": "The Merkle root for verifying claims.",
+              "token": "The address of the ERC20 token to be distributed.",
+              "vestingStrategy": "The address of the vesting strategy contract for vesting calculations."
+            },
+            "returns": {
+              "predictedAddress": "The predicted address of the vesting airdrop proxy."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "allAirdropsLength()": {
+            "notice": "Returns the total number of vesting airdrop proxy contracts created by this factory."
+          },
+          "atkVestingAirdropImplementation()": {
+            "notice": "Returns the address of the current ATKVestingAirdrop logic contract (implementation)."
+          },
+          "create(address,bytes32,address,address,uint256)": {
+            "notice": "Creates a new ATKVestingAirdrop proxy contract."
+          },
+          "predictVestingAirdropAddress(address,bytes32,address,address,uint256)": {
+            "notice": "Predicts the deployment address of a vesting airdrop proxy."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol": "IATKVestingAirdropFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol": {
+        "keccak256": "0x0b7ce1302dabf46b51696f292b1cd1b3c972e7d5204f09a4afefd15b56ad7cb5",
+        "urls": [
+          "bzz-raw://f33b804cf874567766b14c7f7d2023464bd1781260425449fe2cdbf0cec3bd09",
+          "dweb:/ipfs/QmNdD9ZCWe8VuRY43TfKyyMdKwn4pkk7tsWNNSYu32iEb3"
+        ],
+        "license": "FSL-1.1-MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "allAirdropsLength()": {
+        "notice": "Returns the total number of vesting airdrop proxy contracts created by this factory."
+      },
+      "atkVestingAirdropImplementation()": {
+        "notice": "Returns the address of the current ATKVestingAirdrop logic contract (implementation)."
+      },
+      "create(address,bytes32,address,address,uint256)": {
+        "notice": "Creates a new ATKVestingAirdrop proxy contract."
+      },
+      "predictVestingAirdropAddress(address,bytes32,address,address,uint256)": {
+        "notice": "Predicts the deployment address of a vesting airdrop proxy."
+      }
+    },
+    "events": {
+      "ATKVestingAirdropCreated(address,address)": {
+        "notice": "Emitted when a new `ATKVestingAirdrop` proxy contract is successfully created and deployed."
+      },
+      "ImplementationUpdated(address,address)": {
+        "notice": "Emitted when the `atkVestingAirdropImplementation` is updated."
+      }
+    },
+    "errors": {
+      "InvalidAddress()": [
+        {
+          "notice": "Custom error for invalid address parameter."
+        }
+      ],
+      "InvalidImplementation()": [
+        {
+          "notice": "Custom error for invalid implementation address."
+        }
+      ],
+      "SameAddress()": [
+        {
+          "notice": "Custom error when attempting to set the same address."
+        }
+      ]
+    },
+    "notice": "This interface defines the functions for creating and managing ATK vesting airdrop contracts."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "atkVestingAirdropImplementation()": {
+        "details": "This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkVestingAirdropImplementation`."
+      },
+      "create(address,bytes32,address,address,uint256)": {
+        "details": "This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkVestingAirdropImplementation`."
+      },
+      "predictVestingAirdropAddress(address,bytes32,address,address,uint256)": {
+        "params": {
+          "initializationDeadline": "The timestamp after which no new vesting can be initialized.",
+          "owner": "The initial owner of the contract.",
+          "root": "The Merkle root for verifying claims.",
+          "token": "The address of the ERC20 token to be distributed.",
+          "vestingStrategy": "The address of the vesting strategy contract for vesting calculations."
+        },
+        "returns": {
+          "predictedAddress": "The predicted address of the vesting airdrop proxy."
+        }
+      }
+    },
+    "events": {
+      "ATKVestingAirdropCreated(address,address)": {
+        "params": {
+          "airdrop": "The address of the newly deployed `ATKVestingAirdropProxy` contract.",
+          "creator": "The address that initiated the creation of the airdrop proxy."
+        }
+      },
+      "ImplementationUpdated(address,address)": {
+        "params": {
+          "newImplementation": "The address of the new implementation contract.",
+          "oldImplementation": "The address of the previous implementation contract."
+        }
+      }
+    },
+    "title": "Interface for ATK Vesting Airdrop Factory"
+  },
+  "id": 18
+}

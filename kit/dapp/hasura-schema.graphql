@@ -403,277 +403,6 @@ input account_updates {
 }
 
 """
-columns and relationships of "airdrop_distribution"
-"""
-type airdrop_distribution {
-  airdrop_id: String!
-  amount: String!
-  claimed: timestamptz
-  id: uuid!
-  index: Int!
-  recipient: String!
-}
-
-"""
-aggregated selection of "airdrop_distribution"
-"""
-type airdrop_distribution_aggregate {
-  aggregate: airdrop_distribution_aggregate_fields
-  nodes: [airdrop_distribution!]!
-}
-
-"""
-aggregate fields of "airdrop_distribution"
-"""
-type airdrop_distribution_aggregate_fields {
-  avg: airdrop_distribution_avg_fields
-  count(columns: [airdrop_distribution_select_column!], distinct: Boolean): Int!
-  max: airdrop_distribution_max_fields
-  min: airdrop_distribution_min_fields
-  stddev: airdrop_distribution_stddev_fields
-  stddev_pop: airdrop_distribution_stddev_pop_fields
-  stddev_samp: airdrop_distribution_stddev_samp_fields
-  sum: airdrop_distribution_sum_fields
-  var_pop: airdrop_distribution_var_pop_fields
-  var_samp: airdrop_distribution_var_samp_fields
-  variance: airdrop_distribution_variance_fields
-}
-
-"""aggregate avg on columns"""
-type airdrop_distribution_avg_fields {
-  index: Float
-}
-
-"""
-Boolean expression to filter rows from the table "airdrop_distribution". All fields are combined with a logical 'AND'.
-"""
-input airdrop_distribution_bool_exp {
-  _and: [airdrop_distribution_bool_exp!]
-  _not: airdrop_distribution_bool_exp
-  _or: [airdrop_distribution_bool_exp!]
-  airdrop_id: String_comparison_exp
-  amount: String_comparison_exp
-  claimed: timestamptz_comparison_exp
-  id: uuid_comparison_exp
-  index: Int_comparison_exp
-  recipient: String_comparison_exp
-}
-
-"""
-unique or primary key constraints on table "airdrop_distribution"
-"""
-enum airdrop_distribution_constraint {
-  """
-  unique or primary key constraint on columns "id"
-  """
-  airdrop_distribution_pkey
-
-  """
-  unique or primary key constraint on columns "recipient", "airdrop_id"
-  """
-  airdrop_distribution_unique_constraint
-}
-
-"""
-input type for incrementing numeric columns in table "airdrop_distribution"
-"""
-input airdrop_distribution_inc_input {
-  index: Int
-}
-
-"""
-input type for inserting data into table "airdrop_distribution"
-"""
-input airdrop_distribution_insert_input {
-  airdrop_id: String
-  amount: String
-  claimed: timestamptz
-  id: uuid
-  index: Int
-  recipient: String
-}
-
-"""aggregate max on columns"""
-type airdrop_distribution_max_fields {
-  airdrop_id: String
-  amount: String
-  claimed: timestamptz
-  id: uuid
-  index: Int
-  recipient: String
-}
-
-"""aggregate min on columns"""
-type airdrop_distribution_min_fields {
-  airdrop_id: String
-  amount: String
-  claimed: timestamptz
-  id: uuid
-  index: Int
-  recipient: String
-}
-
-"""
-response of any mutation on the table "airdrop_distribution"
-"""
-type airdrop_distribution_mutation_response {
-  """number of rows affected by the mutation"""
-  affected_rows: Int!
-
-  """data from the rows affected by the mutation"""
-  returning: [airdrop_distribution!]!
-}
-
-"""
-on_conflict condition type for table "airdrop_distribution"
-"""
-input airdrop_distribution_on_conflict {
-  constraint: airdrop_distribution_constraint!
-  update_columns: [airdrop_distribution_update_column!]! = []
-  where: airdrop_distribution_bool_exp
-}
-
-"""Ordering options when selecting data from "airdrop_distribution"."""
-input airdrop_distribution_order_by {
-  airdrop_id: order_by
-  amount: order_by
-  claimed: order_by
-  id: order_by
-  index: order_by
-  recipient: order_by
-}
-
-"""primary key columns input for table: airdrop_distribution"""
-input airdrop_distribution_pk_columns_input {
-  id: uuid!
-}
-
-"""
-select columns of table "airdrop_distribution"
-"""
-enum airdrop_distribution_select_column {
-  """column name"""
-  airdrop_id
-
-  """column name"""
-  amount
-
-  """column name"""
-  claimed
-
-  """column name"""
-  id
-
-  """column name"""
-  index
-
-  """column name"""
-  recipient
-}
-
-"""
-input type for updating data in table "airdrop_distribution"
-"""
-input airdrop_distribution_set_input {
-  airdrop_id: String
-  amount: String
-  claimed: timestamptz
-  id: uuid
-  index: Int
-  recipient: String
-}
-
-"""aggregate stddev on columns"""
-type airdrop_distribution_stddev_fields {
-  index: Float
-}
-
-"""aggregate stddev_pop on columns"""
-type airdrop_distribution_stddev_pop_fields {
-  index: Float
-}
-
-"""aggregate stddev_samp on columns"""
-type airdrop_distribution_stddev_samp_fields {
-  index: Float
-}
-
-"""
-Streaming cursor of the table "airdrop_distribution"
-"""
-input airdrop_distribution_stream_cursor_input {
-  """Stream column input with initial value"""
-  initial_value: airdrop_distribution_stream_cursor_value_input!
-
-  """cursor ordering"""
-  ordering: cursor_ordering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input airdrop_distribution_stream_cursor_value_input {
-  airdrop_id: String
-  amount: String
-  claimed: timestamptz
-  id: uuid
-  index: Int
-  recipient: String
-}
-
-"""aggregate sum on columns"""
-type airdrop_distribution_sum_fields {
-  index: Int
-}
-
-"""
-update columns of table "airdrop_distribution"
-"""
-enum airdrop_distribution_update_column {
-  """column name"""
-  airdrop_id
-
-  """column name"""
-  amount
-
-  """column name"""
-  claimed
-
-  """column name"""
-  id
-
-  """column name"""
-  index
-
-  """column name"""
-  recipient
-}
-
-input airdrop_distribution_updates {
-  """increments the numeric columns with given value of the filtered values"""
-  _inc: airdrop_distribution_inc_input
-
-  """sets the columns of the filtered rows to the given values"""
-  _set: airdrop_distribution_set_input
-
-  """filter the rows which have to be updated"""
-  where: airdrop_distribution_bool_exp!
-}
-
-"""aggregate var_pop on columns"""
-type airdrop_distribution_var_pop_fields {
-  index: Float
-}
-
-"""aggregate var_samp on columns"""
-type airdrop_distribution_var_samp_fields {
-  index: Float
-}
-
-"""aggregate variance on columns"""
-type airdrop_distribution_variance_fields {
-  index: Float
-}
-
-"""
 columns and relationships of "apikey"
 """
 type apikey {
@@ -1190,649 +919,6 @@ type apikey_variance_fields {
   request_count: Float
 }
 
-"""
-columns and relationships of "asset"
-"""
-type asset {
-  id: String!
-  internalid: String
-  isin: String
-}
-
-"""
-aggregated selection of "asset"
-"""
-type asset_aggregate {
-  aggregate: asset_aggregate_fields
-  nodes: [asset!]!
-}
-
-"""
-aggregate fields of "asset"
-"""
-type asset_aggregate_fields {
-  count(columns: [asset_select_column!], distinct: Boolean): Int!
-  max: asset_max_fields
-  min: asset_min_fields
-}
-
-"""
-Boolean expression to filter rows from the table "asset". All fields are combined with a logical 'AND'.
-"""
-input asset_bool_exp {
-  _and: [asset_bool_exp!]
-  _not: asset_bool_exp
-  _or: [asset_bool_exp!]
-  id: String_comparison_exp
-  internalid: String_comparison_exp
-  isin: String_comparison_exp
-}
-
-"""
-unique or primary key constraints on table "asset"
-"""
-enum asset_constraint {
-  """
-  unique or primary key constraint on columns "id"
-  """
-  asset_pkey
-}
-
-"""
-input type for inserting data into table "asset"
-"""
-input asset_insert_input {
-  id: String
-  internalid: String
-  isin: String
-}
-
-"""aggregate max on columns"""
-type asset_max_fields {
-  id: String
-  internalid: String
-  isin: String
-}
-
-"""aggregate min on columns"""
-type asset_min_fields {
-  id: String
-  internalid: String
-  isin: String
-}
-
-"""
-response of any mutation on the table "asset"
-"""
-type asset_mutation_response {
-  """number of rows affected by the mutation"""
-  affected_rows: Int!
-
-  """data from the rows affected by the mutation"""
-  returning: [asset!]!
-}
-
-"""
-on_conflict condition type for table "asset"
-"""
-input asset_on_conflict {
-  constraint: asset_constraint!
-  update_columns: [asset_update_column!]! = []
-  where: asset_bool_exp
-}
-
-"""Ordering options when selecting data from "asset"."""
-input asset_order_by {
-  id: order_by
-  internalid: order_by
-  isin: order_by
-}
-
-"""primary key columns input for table: asset"""
-input asset_pk_columns_input {
-  id: String!
-}
-
-"""
-columns and relationships of "asset_price"
-"""
-type asset_price {
-  amount: numeric
-  asset_id: String!
-  created_at: timestamptz!
-  currency: currency!
-  id: uuid!
-}
-
-"""
-aggregated selection of "asset_price"
-"""
-type asset_price_aggregate {
-  aggregate: asset_price_aggregate_fields
-  nodes: [asset_price!]!
-}
-
-"""
-aggregate fields of "asset_price"
-"""
-type asset_price_aggregate_fields {
-  avg: asset_price_avg_fields
-  count(columns: [asset_price_select_column!], distinct: Boolean): Int!
-  max: asset_price_max_fields
-  min: asset_price_min_fields
-  stddev: asset_price_stddev_fields
-  stddev_pop: asset_price_stddev_pop_fields
-  stddev_samp: asset_price_stddev_samp_fields
-  sum: asset_price_sum_fields
-  var_pop: asset_price_var_pop_fields
-  var_samp: asset_price_var_samp_fields
-  variance: asset_price_variance_fields
-}
-
-"""aggregate avg on columns"""
-type asset_price_avg_fields {
-  amount: Float
-}
-
-"""
-Boolean expression to filter rows from the table "asset_price". All fields are combined with a logical 'AND'.
-"""
-input asset_price_bool_exp {
-  _and: [asset_price_bool_exp!]
-  _not: asset_price_bool_exp
-  _or: [asset_price_bool_exp!]
-  amount: numeric_comparison_exp
-  asset_id: String_comparison_exp
-  created_at: timestamptz_comparison_exp
-  currency: currency_comparison_exp
-  id: uuid_comparison_exp
-}
-
-"""
-unique or primary key constraints on table "asset_price"
-"""
-enum asset_price_constraint {
-  """
-  unique or primary key constraint on columns "id"
-  """
-  asset_price_pkey
-}
-
-"""
-input type for incrementing numeric columns in table "asset_price"
-"""
-input asset_price_inc_input {
-  amount: numeric
-}
-
-"""
-input type for inserting data into table "asset_price"
-"""
-input asset_price_insert_input {
-  amount: numeric
-  asset_id: String
-  created_at: timestamptz
-  currency: currency
-  id: uuid
-}
-
-"""aggregate max on columns"""
-type asset_price_max_fields {
-  amount: numeric
-  asset_id: String
-  created_at: timestamptz
-  currency: currency
-  id: uuid
-}
-
-"""aggregate min on columns"""
-type asset_price_min_fields {
-  amount: numeric
-  asset_id: String
-  created_at: timestamptz
-  currency: currency
-  id: uuid
-}
-
-"""
-response of any mutation on the table "asset_price"
-"""
-type asset_price_mutation_response {
-  """number of rows affected by the mutation"""
-  affected_rows: Int!
-
-  """data from the rows affected by the mutation"""
-  returning: [asset_price!]!
-}
-
-"""
-on_conflict condition type for table "asset_price"
-"""
-input asset_price_on_conflict {
-  constraint: asset_price_constraint!
-  update_columns: [asset_price_update_column!]! = []
-  where: asset_price_bool_exp
-}
-
-"""Ordering options when selecting data from "asset_price"."""
-input asset_price_order_by {
-  amount: order_by
-  asset_id: order_by
-  created_at: order_by
-  currency: order_by
-  id: order_by
-}
-
-"""primary key columns input for table: asset_price"""
-input asset_price_pk_columns_input {
-  id: uuid!
-}
-
-"""
-select columns of table "asset_price"
-"""
-enum asset_price_select_column {
-  """column name"""
-  amount
-
-  """column name"""
-  asset_id
-
-  """column name"""
-  created_at
-
-  """column name"""
-  currency
-
-  """column name"""
-  id
-}
-
-"""
-input type for updating data in table "asset_price"
-"""
-input asset_price_set_input {
-  amount: numeric
-  asset_id: String
-  created_at: timestamptz
-  currency: currency
-  id: uuid
-}
-
-"""aggregate stddev on columns"""
-type asset_price_stddev_fields {
-  amount: Float
-}
-
-"""aggregate stddev_pop on columns"""
-type asset_price_stddev_pop_fields {
-  amount: Float
-}
-
-"""aggregate stddev_samp on columns"""
-type asset_price_stddev_samp_fields {
-  amount: Float
-}
-
-"""
-Streaming cursor of the table "asset_price"
-"""
-input asset_price_stream_cursor_input {
-  """Stream column input with initial value"""
-  initial_value: asset_price_stream_cursor_value_input!
-
-  """cursor ordering"""
-  ordering: cursor_ordering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input asset_price_stream_cursor_value_input {
-  amount: numeric
-  asset_id: String
-  created_at: timestamptz
-  currency: currency
-  id: uuid
-}
-
-"""aggregate sum on columns"""
-type asset_price_sum_fields {
-  amount: numeric
-}
-
-"""
-update columns of table "asset_price"
-"""
-enum asset_price_update_column {
-  """column name"""
-  amount
-
-  """column name"""
-  asset_id
-
-  """column name"""
-  created_at
-
-  """column name"""
-  currency
-
-  """column name"""
-  id
-}
-
-input asset_price_updates {
-  """increments the numeric columns with given value of the filtered values"""
-  _inc: asset_price_inc_input
-
-  """sets the columns of the filtered rows to the given values"""
-  _set: asset_price_set_input
-
-  """filter the rows which have to be updated"""
-  where: asset_price_bool_exp!
-}
-
-"""aggregate var_pop on columns"""
-type asset_price_var_pop_fields {
-  amount: Float
-}
-
-"""aggregate var_samp on columns"""
-type asset_price_var_samp_fields {
-  amount: Float
-}
-
-"""aggregate variance on columns"""
-type asset_price_variance_fields {
-  amount: Float
-}
-
-"""
-select columns of table "asset"
-"""
-enum asset_select_column {
-  """column name"""
-  id
-
-  """column name"""
-  internalid
-
-  """column name"""
-  isin
-}
-
-"""
-input type for updating data in table "asset"
-"""
-input asset_set_input {
-  id: String
-  internalid: String
-  isin: String
-}
-
-"""
-Streaming cursor of the table "asset"
-"""
-input asset_stream_cursor_input {
-  """Stream column input with initial value"""
-  initial_value: asset_stream_cursor_value_input!
-
-  """cursor ordering"""
-  ordering: cursor_ordering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input asset_stream_cursor_value_input {
-  id: String
-  internalid: String
-  isin: String
-}
-
-"""
-update columns of table "asset"
-"""
-enum asset_update_column {
-  """column name"""
-  id
-
-  """column name"""
-  internalid
-
-  """column name"""
-  isin
-}
-
-input asset_updates {
-  """sets the columns of the filtered rows to the given values"""
-  _set: asset_set_input
-
-  """filter the rows which have to be updated"""
-  where: asset_bool_exp!
-}
-
-"""
-columns and relationships of "contact"
-"""
-type contact {
-  created_at: timestamptz!
-  id: String!
-  name: String!
-  updated_at: timestamptz!
-  user_id: String!
-  wallet: String!
-}
-
-"""
-aggregated selection of "contact"
-"""
-type contact_aggregate {
-  aggregate: contact_aggregate_fields
-  nodes: [contact!]!
-}
-
-"""
-aggregate fields of "contact"
-"""
-type contact_aggregate_fields {
-  count(columns: [contact_select_column!], distinct: Boolean): Int!
-  max: contact_max_fields
-  min: contact_min_fields
-}
-
-"""
-Boolean expression to filter rows from the table "contact". All fields are combined with a logical 'AND'.
-"""
-input contact_bool_exp {
-  _and: [contact_bool_exp!]
-  _not: contact_bool_exp
-  _or: [contact_bool_exp!]
-  created_at: timestamptz_comparison_exp
-  id: String_comparison_exp
-  name: String_comparison_exp
-  updated_at: timestamptz_comparison_exp
-  user_id: String_comparison_exp
-  wallet: String_comparison_exp
-}
-
-"""
-unique or primary key constraints on table "contact"
-"""
-enum contact_constraint {
-  """
-  unique or primary key constraint on columns "id"
-  """
-  contact_pkey
-}
-
-"""
-input type for inserting data into table "contact"
-"""
-input contact_insert_input {
-  created_at: timestamptz
-  id: String
-  name: String
-  updated_at: timestamptz
-  user_id: String
-  wallet: String
-}
-
-"""aggregate max on columns"""
-type contact_max_fields {
-  created_at: timestamptz
-  id: String
-  name: String
-  updated_at: timestamptz
-  user_id: String
-  wallet: String
-}
-
-"""aggregate min on columns"""
-type contact_min_fields {
-  created_at: timestamptz
-  id: String
-  name: String
-  updated_at: timestamptz
-  user_id: String
-  wallet: String
-}
-
-"""
-response of any mutation on the table "contact"
-"""
-type contact_mutation_response {
-  """number of rows affected by the mutation"""
-  affected_rows: Int!
-
-  """data from the rows affected by the mutation"""
-  returning: [contact!]!
-}
-
-"""
-on_conflict condition type for table "contact"
-"""
-input contact_on_conflict {
-  constraint: contact_constraint!
-  update_columns: [contact_update_column!]! = []
-  where: contact_bool_exp
-}
-
-"""Ordering options when selecting data from "contact"."""
-input contact_order_by {
-  created_at: order_by
-  id: order_by
-  name: order_by
-  updated_at: order_by
-  user_id: order_by
-  wallet: order_by
-}
-
-"""primary key columns input for table: contact"""
-input contact_pk_columns_input {
-  id: String!
-}
-
-"""
-select columns of table "contact"
-"""
-enum contact_select_column {
-  """column name"""
-  created_at
-
-  """column name"""
-  id
-
-  """column name"""
-  name
-
-  """column name"""
-  updated_at
-
-  """column name"""
-  user_id
-
-  """column name"""
-  wallet
-}
-
-"""
-input type for updating data in table "contact"
-"""
-input contact_set_input {
-  created_at: timestamptz
-  id: String
-  name: String
-  updated_at: timestamptz
-  user_id: String
-  wallet: String
-}
-
-"""
-Streaming cursor of the table "contact"
-"""
-input contact_stream_cursor_input {
-  """Stream column input with initial value"""
-  initial_value: contact_stream_cursor_value_input!
-
-  """cursor ordering"""
-  ordering: cursor_ordering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input contact_stream_cursor_value_input {
-  created_at: timestamptz
-  id: String
-  name: String
-  updated_at: timestamptz
-  user_id: String
-  wallet: String
-}
-
-"""
-update columns of table "contact"
-"""
-enum contact_update_column {
-  """column name"""
-  created_at
-
-  """column name"""
-  id
-
-  """column name"""
-  name
-
-  """column name"""
-  updated_at
-
-  """column name"""
-  user_id
-
-  """column name"""
-  wallet
-}
-
-input contact_updates {
-  """sets the columns of the filtered rows to the given values"""
-  _set: contact_set_input
-
-  """filter the rows which have to be updated"""
-  where: contact_bool_exp!
-}
-
-scalar currency
-
-"""
-Boolean expression to compare columns of type "currency". All fields are combined with logical 'AND'.
-"""
-input currency_comparison_exp {
-  _eq: currency
-  _gt: currency
-  _gte: currency
-  _in: [currency!]
-  _is_null: Boolean
-  _lt: currency
-  _lte: currency
-  _neq: currency
-  _nin: [currency!]
-}
-
 """ordering argument of a cursor"""
 enum cursor_ordering {
   """ascending ordering of the cursor"""
@@ -1840,275 +926,6 @@ enum cursor_ordering {
 
   """descending ordering of the cursor"""
   DESC
-}
-
-scalar date
-
-"""
-Boolean expression to compare columns of type "date". All fields are combined with logical 'AND'.
-"""
-input date_comparison_exp {
-  _eq: date
-  _gt: date
-  _gte: date
-  _in: [date!]
-  _is_null: Boolean
-  _lt: date
-  _lte: date
-  _neq: date
-  _nin: [date!]
-}
-
-"""
-columns and relationships of "exchange_rate"
-"""
-type exchange_rate {
-  base_currency: String!
-  day: date!
-  id: String!
-  quote_currency: String!
-  rate: numeric!
-}
-
-"""
-aggregated selection of "exchange_rate"
-"""
-type exchange_rate_aggregate {
-  aggregate: exchange_rate_aggregate_fields
-  nodes: [exchange_rate!]!
-}
-
-"""
-aggregate fields of "exchange_rate"
-"""
-type exchange_rate_aggregate_fields {
-  avg: exchange_rate_avg_fields
-  count(columns: [exchange_rate_select_column!], distinct: Boolean): Int!
-  max: exchange_rate_max_fields
-  min: exchange_rate_min_fields
-  stddev: exchange_rate_stddev_fields
-  stddev_pop: exchange_rate_stddev_pop_fields
-  stddev_samp: exchange_rate_stddev_samp_fields
-  sum: exchange_rate_sum_fields
-  var_pop: exchange_rate_var_pop_fields
-  var_samp: exchange_rate_var_samp_fields
-  variance: exchange_rate_variance_fields
-}
-
-"""aggregate avg on columns"""
-type exchange_rate_avg_fields {
-  rate: Float
-}
-
-"""
-Boolean expression to filter rows from the table "exchange_rate". All fields are combined with a logical 'AND'.
-"""
-input exchange_rate_bool_exp {
-  _and: [exchange_rate_bool_exp!]
-  _not: exchange_rate_bool_exp
-  _or: [exchange_rate_bool_exp!]
-  base_currency: String_comparison_exp
-  day: date_comparison_exp
-  id: String_comparison_exp
-  quote_currency: String_comparison_exp
-  rate: numeric_comparison_exp
-}
-
-"""
-unique or primary key constraints on table "exchange_rate"
-"""
-enum exchange_rate_constraint {
-  """
-  unique or primary key constraint on columns "id"
-  """
-  exchange_rate_pkey
-}
-
-"""
-input type for incrementing numeric columns in table "exchange_rate"
-"""
-input exchange_rate_inc_input {
-  rate: numeric
-}
-
-"""
-input type for inserting data into table "exchange_rate"
-"""
-input exchange_rate_insert_input {
-  base_currency: String
-  day: date
-  id: String
-  quote_currency: String
-  rate: numeric
-}
-
-"""aggregate max on columns"""
-type exchange_rate_max_fields {
-  base_currency: String
-  day: date
-  id: String
-  quote_currency: String
-  rate: numeric
-}
-
-"""aggregate min on columns"""
-type exchange_rate_min_fields {
-  base_currency: String
-  day: date
-  id: String
-  quote_currency: String
-  rate: numeric
-}
-
-"""
-response of any mutation on the table "exchange_rate"
-"""
-type exchange_rate_mutation_response {
-  """number of rows affected by the mutation"""
-  affected_rows: Int!
-
-  """data from the rows affected by the mutation"""
-  returning: [exchange_rate!]!
-}
-
-"""
-on_conflict condition type for table "exchange_rate"
-"""
-input exchange_rate_on_conflict {
-  constraint: exchange_rate_constraint!
-  update_columns: [exchange_rate_update_column!]! = []
-  where: exchange_rate_bool_exp
-}
-
-"""Ordering options when selecting data from "exchange_rate"."""
-input exchange_rate_order_by {
-  base_currency: order_by
-  day: order_by
-  id: order_by
-  quote_currency: order_by
-  rate: order_by
-}
-
-"""primary key columns input for table: exchange_rate"""
-input exchange_rate_pk_columns_input {
-  id: String!
-}
-
-"""
-select columns of table "exchange_rate"
-"""
-enum exchange_rate_select_column {
-  """column name"""
-  base_currency
-
-  """column name"""
-  day
-
-  """column name"""
-  id
-
-  """column name"""
-  quote_currency
-
-  """column name"""
-  rate
-}
-
-"""
-input type for updating data in table "exchange_rate"
-"""
-input exchange_rate_set_input {
-  base_currency: String
-  day: date
-  id: String
-  quote_currency: String
-  rate: numeric
-}
-
-"""aggregate stddev on columns"""
-type exchange_rate_stddev_fields {
-  rate: Float
-}
-
-"""aggregate stddev_pop on columns"""
-type exchange_rate_stddev_pop_fields {
-  rate: Float
-}
-
-"""aggregate stddev_samp on columns"""
-type exchange_rate_stddev_samp_fields {
-  rate: Float
-}
-
-"""
-Streaming cursor of the table "exchange_rate"
-"""
-input exchange_rate_stream_cursor_input {
-  """Stream column input with initial value"""
-  initial_value: exchange_rate_stream_cursor_value_input!
-
-  """cursor ordering"""
-  ordering: cursor_ordering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input exchange_rate_stream_cursor_value_input {
-  base_currency: String
-  day: date
-  id: String
-  quote_currency: String
-  rate: numeric
-}
-
-"""aggregate sum on columns"""
-type exchange_rate_sum_fields {
-  rate: numeric
-}
-
-"""
-update columns of table "exchange_rate"
-"""
-enum exchange_rate_update_column {
-  """column name"""
-  base_currency
-
-  """column name"""
-  day
-
-  """column name"""
-  id
-
-  """column name"""
-  quote_currency
-
-  """column name"""
-  rate
-}
-
-input exchange_rate_updates {
-  """increments the numeric columns with given value of the filtered values"""
-  _inc: exchange_rate_inc_input
-
-  """sets the columns of the filtered rows to the given values"""
-  _set: exchange_rate_set_input
-
-  """filter the rows which have to be updated"""
-  where: exchange_rate_bool_exp!
-}
-
-"""aggregate var_pop on columns"""
-type exchange_rate_var_pop_fields {
-  rate: Float
-}
-
-"""aggregate var_samp on columns"""
-type exchange_rate_var_samp_fields {
-  rate: Float
-}
-
-"""aggregate variance on columns"""
-type exchange_rate_variance_fields {
-  rate: Float
 }
 
 """mutation root"""
@@ -2127,19 +944,6 @@ type mutation_root {
   delete_account_by_pk(id: String!): account
 
   """
-  delete data from the table: "airdrop_distribution"
-  """
-  delete_airdrop_distribution(
-    """filter the rows which have to be deleted"""
-    where: airdrop_distribution_bool_exp!
-  ): airdrop_distribution_mutation_response
-
-  """
-  delete single row from the table: "airdrop_distribution"
-  """
-  delete_airdrop_distribution_by_pk(id: uuid!): airdrop_distribution
-
-  """
   delete data from the table: "apikey"
   """
   delete_apikey(
@@ -2153,58 +957,6 @@ type mutation_root {
   delete_apikey_by_pk(id: String!): apikey
 
   """
-  delete data from the table: "asset"
-  """
-  delete_asset(
-    """filter the rows which have to be deleted"""
-    where: asset_bool_exp!
-  ): asset_mutation_response
-
-  """
-  delete single row from the table: "asset"
-  """
-  delete_asset_by_pk(id: String!): asset
-
-  """
-  delete data from the table: "asset_price"
-  """
-  delete_asset_price(
-    """filter the rows which have to be deleted"""
-    where: asset_price_bool_exp!
-  ): asset_price_mutation_response
-
-  """
-  delete single row from the table: "asset_price"
-  """
-  delete_asset_price_by_pk(id: uuid!): asset_price
-
-  """
-  delete data from the table: "contact"
-  """
-  delete_contact(
-    """filter the rows which have to be deleted"""
-    where: contact_bool_exp!
-  ): contact_mutation_response
-
-  """
-  delete single row from the table: "contact"
-  """
-  delete_contact_by_pk(id: String!): contact
-
-  """
-  delete data from the table: "exchange_rate"
-  """
-  delete_exchange_rate(
-    """filter the rows which have to be deleted"""
-    where: exchange_rate_bool_exp!
-  ): exchange_rate_mutation_response
-
-  """
-  delete single row from the table: "exchange_rate"
-  """
-  delete_exchange_rate_by_pk(id: String!): exchange_rate
-
-  """
   delete data from the table: "passkey"
   """
   delete_passkey(
@@ -2216,32 +968,6 @@ type mutation_root {
   delete single row from the table: "passkey"
   """
   delete_passkey_by_pk(id: String!): passkey
-
-  """
-  delete data from the table: "redemptions"
-  """
-  delete_redemptions(
-    """filter the rows which have to be deleted"""
-    where: redemptions_bool_exp!
-  ): redemptions_mutation_response
-
-  """
-  delete single row from the table: "redemptions"
-  """
-  delete_redemptions_by_pk(id: String!): redemptions
-
-  """
-  delete data from the table: "regulation_configs"
-  """
-  delete_regulation_configs(
-    """filter the rows which have to be deleted"""
-    where: regulation_configs_bool_exp!
-  ): regulation_configs_mutation_response
-
-  """
-  delete single row from the table: "regulation_configs"
-  """
-  delete_regulation_configs_by_pk(id: String!): regulation_configs
 
   """
   delete data from the table: "session"
@@ -2268,19 +994,6 @@ type mutation_root {
   delete single row from the table: "settings"
   """
   delete_settings_by_pk(key: String!): settings
-
-  """
-  delete data from the table: "two_factor"
-  """
-  delete_two_factor(
-    """filter the rows which have to be deleted"""
-    where: two_factor_bool_exp!
-  ): two_factor_mutation_response
-
-  """
-  delete single row from the table: "two_factor"
-  """
-  delete_two_factor_by_pk(id: String!): two_factor
 
   """
   delete data from the table: "user"
@@ -2331,28 +1044,6 @@ type mutation_root {
   ): account
 
   """
-  insert data into the table: "airdrop_distribution"
-  """
-  insert_airdrop_distribution(
-    """the rows to be inserted"""
-    objects: [airdrop_distribution_insert_input!]!
-
-    """upsert condition"""
-    on_conflict: airdrop_distribution_on_conflict
-  ): airdrop_distribution_mutation_response
-
-  """
-  insert a single row into the table: "airdrop_distribution"
-  """
-  insert_airdrop_distribution_one(
-    """the row to be inserted"""
-    object: airdrop_distribution_insert_input!
-
-    """upsert condition"""
-    on_conflict: airdrop_distribution_on_conflict
-  ): airdrop_distribution
-
-  """
   insert data into the table: "apikey"
   """
   insert_apikey(
@@ -2375,94 +1066,6 @@ type mutation_root {
   ): apikey
 
   """
-  insert data into the table: "asset"
-  """
-  insert_asset(
-    """the rows to be inserted"""
-    objects: [asset_insert_input!]!
-
-    """upsert condition"""
-    on_conflict: asset_on_conflict
-  ): asset_mutation_response
-
-  """
-  insert a single row into the table: "asset"
-  """
-  insert_asset_one(
-    """the row to be inserted"""
-    object: asset_insert_input!
-
-    """upsert condition"""
-    on_conflict: asset_on_conflict
-  ): asset
-
-  """
-  insert data into the table: "asset_price"
-  """
-  insert_asset_price(
-    """the rows to be inserted"""
-    objects: [asset_price_insert_input!]!
-
-    """upsert condition"""
-    on_conflict: asset_price_on_conflict
-  ): asset_price_mutation_response
-
-  """
-  insert a single row into the table: "asset_price"
-  """
-  insert_asset_price_one(
-    """the row to be inserted"""
-    object: asset_price_insert_input!
-
-    """upsert condition"""
-    on_conflict: asset_price_on_conflict
-  ): asset_price
-
-  """
-  insert data into the table: "contact"
-  """
-  insert_contact(
-    """the rows to be inserted"""
-    objects: [contact_insert_input!]!
-
-    """upsert condition"""
-    on_conflict: contact_on_conflict
-  ): contact_mutation_response
-
-  """
-  insert a single row into the table: "contact"
-  """
-  insert_contact_one(
-    """the row to be inserted"""
-    object: contact_insert_input!
-
-    """upsert condition"""
-    on_conflict: contact_on_conflict
-  ): contact
-
-  """
-  insert data into the table: "exchange_rate"
-  """
-  insert_exchange_rate(
-    """the rows to be inserted"""
-    objects: [exchange_rate_insert_input!]!
-
-    """upsert condition"""
-    on_conflict: exchange_rate_on_conflict
-  ): exchange_rate_mutation_response
-
-  """
-  insert a single row into the table: "exchange_rate"
-  """
-  insert_exchange_rate_one(
-    """the row to be inserted"""
-    object: exchange_rate_insert_input!
-
-    """upsert condition"""
-    on_conflict: exchange_rate_on_conflict
-  ): exchange_rate
-
-  """
   insert data into the table: "passkey"
   """
   insert_passkey(
@@ -2483,50 +1086,6 @@ type mutation_root {
     """upsert condition"""
     on_conflict: passkey_on_conflict
   ): passkey
-
-  """
-  insert data into the table: "redemptions"
-  """
-  insert_redemptions(
-    """the rows to be inserted"""
-    objects: [redemptions_insert_input!]!
-
-    """upsert condition"""
-    on_conflict: redemptions_on_conflict
-  ): redemptions_mutation_response
-
-  """
-  insert a single row into the table: "redemptions"
-  """
-  insert_redemptions_one(
-    """the row to be inserted"""
-    object: redemptions_insert_input!
-
-    """upsert condition"""
-    on_conflict: redemptions_on_conflict
-  ): redemptions
-
-  """
-  insert data into the table: "regulation_configs"
-  """
-  insert_regulation_configs(
-    """the rows to be inserted"""
-    objects: [regulation_configs_insert_input!]!
-
-    """upsert condition"""
-    on_conflict: regulation_configs_on_conflict
-  ): regulation_configs_mutation_response
-
-  """
-  insert a single row into the table: "regulation_configs"
-  """
-  insert_regulation_configs_one(
-    """the row to be inserted"""
-    object: regulation_configs_insert_input!
-
-    """upsert condition"""
-    on_conflict: regulation_configs_on_conflict
-  ): regulation_configs
 
   """
   insert data into the table: "session"
@@ -2571,28 +1130,6 @@ type mutation_root {
     """upsert condition"""
     on_conflict: settings_on_conflict
   ): settings
-
-  """
-  insert data into the table: "two_factor"
-  """
-  insert_two_factor(
-    """the rows to be inserted"""
-    objects: [two_factor_insert_input!]!
-
-    """upsert condition"""
-    on_conflict: two_factor_on_conflict
-  ): two_factor_mutation_response
-
-  """
-  insert a single row into the table: "two_factor"
-  """
-  insert_two_factor_one(
-    """the row to be inserted"""
-    object: two_factor_insert_input!
-
-    """upsert condition"""
-    on_conflict: two_factor_on_conflict
-  ): two_factor
 
   """
   insert data into the table: "user"
@@ -2667,40 +1204,6 @@ type mutation_root {
   ): [account_mutation_response]
 
   """
-  update data of the table: "airdrop_distribution"
-  """
-  update_airdrop_distribution(
-    """increments the numeric columns with given value of the filtered values"""
-    _inc: airdrop_distribution_inc_input
-
-    """sets the columns of the filtered rows to the given values"""
-    _set: airdrop_distribution_set_input
-
-    """filter the rows which have to be updated"""
-    where: airdrop_distribution_bool_exp!
-  ): airdrop_distribution_mutation_response
-
-  """
-  update single row of the table: "airdrop_distribution"
-  """
-  update_airdrop_distribution_by_pk(
-    """increments the numeric columns with given value of the filtered values"""
-    _inc: airdrop_distribution_inc_input
-
-    """sets the columns of the filtered rows to the given values"""
-    _set: airdrop_distribution_set_input
-    pk_columns: airdrop_distribution_pk_columns_input!
-  ): airdrop_distribution
-
-  """
-  update multiples rows of table: "airdrop_distribution"
-  """
-  update_airdrop_distribution_many(
-    """updates to execute, in order"""
-    updates: [airdrop_distribution_updates!]!
-  ): [airdrop_distribution_mutation_response]
-
-  """
   update data of the table: "apikey"
   """
   update_apikey(
@@ -2735,130 +1238,6 @@ type mutation_root {
   ): [apikey_mutation_response]
 
   """
-  update data of the table: "asset"
-  """
-  update_asset(
-    """sets the columns of the filtered rows to the given values"""
-    _set: asset_set_input
-
-    """filter the rows which have to be updated"""
-    where: asset_bool_exp!
-  ): asset_mutation_response
-
-  """
-  update single row of the table: "asset"
-  """
-  update_asset_by_pk(
-    """sets the columns of the filtered rows to the given values"""
-    _set: asset_set_input
-    pk_columns: asset_pk_columns_input!
-  ): asset
-
-  """
-  update multiples rows of table: "asset"
-  """
-  update_asset_many(
-    """updates to execute, in order"""
-    updates: [asset_updates!]!
-  ): [asset_mutation_response]
-
-  """
-  update data of the table: "asset_price"
-  """
-  update_asset_price(
-    """increments the numeric columns with given value of the filtered values"""
-    _inc: asset_price_inc_input
-
-    """sets the columns of the filtered rows to the given values"""
-    _set: asset_price_set_input
-
-    """filter the rows which have to be updated"""
-    where: asset_price_bool_exp!
-  ): asset_price_mutation_response
-
-  """
-  update single row of the table: "asset_price"
-  """
-  update_asset_price_by_pk(
-    """increments the numeric columns with given value of the filtered values"""
-    _inc: asset_price_inc_input
-
-    """sets the columns of the filtered rows to the given values"""
-    _set: asset_price_set_input
-    pk_columns: asset_price_pk_columns_input!
-  ): asset_price
-
-  """
-  update multiples rows of table: "asset_price"
-  """
-  update_asset_price_many(
-    """updates to execute, in order"""
-    updates: [asset_price_updates!]!
-  ): [asset_price_mutation_response]
-
-  """
-  update data of the table: "contact"
-  """
-  update_contact(
-    """sets the columns of the filtered rows to the given values"""
-    _set: contact_set_input
-
-    """filter the rows which have to be updated"""
-    where: contact_bool_exp!
-  ): contact_mutation_response
-
-  """
-  update single row of the table: "contact"
-  """
-  update_contact_by_pk(
-    """sets the columns of the filtered rows to the given values"""
-    _set: contact_set_input
-    pk_columns: contact_pk_columns_input!
-  ): contact
-
-  """
-  update multiples rows of table: "contact"
-  """
-  update_contact_many(
-    """updates to execute, in order"""
-    updates: [contact_updates!]!
-  ): [contact_mutation_response]
-
-  """
-  update data of the table: "exchange_rate"
-  """
-  update_exchange_rate(
-    """increments the numeric columns with given value of the filtered values"""
-    _inc: exchange_rate_inc_input
-
-    """sets the columns of the filtered rows to the given values"""
-    _set: exchange_rate_set_input
-
-    """filter the rows which have to be updated"""
-    where: exchange_rate_bool_exp!
-  ): exchange_rate_mutation_response
-
-  """
-  update single row of the table: "exchange_rate"
-  """
-  update_exchange_rate_by_pk(
-    """increments the numeric columns with given value of the filtered values"""
-    _inc: exchange_rate_inc_input
-
-    """sets the columns of the filtered rows to the given values"""
-    _set: exchange_rate_set_input
-    pk_columns: exchange_rate_pk_columns_input!
-  ): exchange_rate
-
-  """
-  update multiples rows of table: "exchange_rate"
-  """
-  update_exchange_rate_many(
-    """updates to execute, in order"""
-    updates: [exchange_rate_updates!]!
-  ): [exchange_rate_mutation_response]
-
-  """
   update data of the table: "passkey"
   """
   update_passkey(
@@ -2891,62 +1270,6 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [passkey_updates!]!
   ): [passkey_mutation_response]
-
-  """
-  update data of the table: "redemptions"
-  """
-  update_redemptions(
-    """sets the columns of the filtered rows to the given values"""
-    _set: redemptions_set_input
-
-    """filter the rows which have to be updated"""
-    where: redemptions_bool_exp!
-  ): redemptions_mutation_response
-
-  """
-  update single row of the table: "redemptions"
-  """
-  update_redemptions_by_pk(
-    """sets the columns of the filtered rows to the given values"""
-    _set: redemptions_set_input
-    pk_columns: redemptions_pk_columns_input!
-  ): redemptions
-
-  """
-  update multiples rows of table: "redemptions"
-  """
-  update_redemptions_many(
-    """updates to execute, in order"""
-    updates: [redemptions_updates!]!
-  ): [redemptions_mutation_response]
-
-  """
-  update data of the table: "regulation_configs"
-  """
-  update_regulation_configs(
-    """sets the columns of the filtered rows to the given values"""
-    _set: regulation_configs_set_input
-
-    """filter the rows which have to be updated"""
-    where: regulation_configs_bool_exp!
-  ): regulation_configs_mutation_response
-
-  """
-  update single row of the table: "regulation_configs"
-  """
-  update_regulation_configs_by_pk(
-    """sets the columns of the filtered rows to the given values"""
-    _set: regulation_configs_set_input
-    pk_columns: regulation_configs_pk_columns_input!
-  ): regulation_configs
-
-  """
-  update multiples rows of table: "regulation_configs"
-  """
-  update_regulation_configs_many(
-    """updates to execute, in order"""
-    updates: [regulation_configs_updates!]!
-  ): [regulation_configs_mutation_response]
 
   """
   update data of the table: "session"
@@ -3005,34 +1328,6 @@ type mutation_root {
   ): [settings_mutation_response]
 
   """
-  update data of the table: "two_factor"
-  """
-  update_two_factor(
-    """sets the columns of the filtered rows to the given values"""
-    _set: two_factor_set_input
-
-    """filter the rows which have to be updated"""
-    where: two_factor_bool_exp!
-  ): two_factor_mutation_response
-
-  """
-  update single row of the table: "two_factor"
-  """
-  update_two_factor_by_pk(
-    """sets the columns of the filtered rows to the given values"""
-    _set: two_factor_set_input
-    pk_columns: two_factor_pk_columns_input!
-  ): two_factor
-
-  """
-  update multiples rows of table: "two_factor"
-  """
-  update_two_factor_many(
-    """updates to execute, in order"""
-    updates: [two_factor_updates!]!
-  ): [two_factor_mutation_response]
-
-  """
   update data of the table: "user"
   """
   update_user(
@@ -3087,23 +1382,6 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [verification_updates!]!
   ): [verification_mutation_response]
-}
-
-scalar numeric
-
-"""
-Boolean expression to compare columns of type "numeric". All fields are combined with logical 'AND'.
-"""
-input numeric_comparison_exp {
-  _eq: numeric
-  _gt: numeric
-  _gte: numeric
-  _in: [numeric!]
-  _is_null: Boolean
-  _lt: numeric
-  _lte: numeric
-  _neq: numeric
-  _nin: [numeric!]
 }
 
 """column ordering options"""
@@ -3506,51 +1784,6 @@ type query_root {
   account_by_pk(id: String!): account
 
   """
-  fetch data from the table: "airdrop_distribution"
-  """
-  airdrop_distribution(
-    """distinct select on columns"""
-    distinct_on: [airdrop_distribution_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [airdrop_distribution_order_by!]
-
-    """filter the rows returned"""
-    where: airdrop_distribution_bool_exp
-  ): [airdrop_distribution!]!
-
-  """
-  fetch aggregated fields from the table: "airdrop_distribution"
-  """
-  airdrop_distribution_aggregate(
-    """distinct select on columns"""
-    distinct_on: [airdrop_distribution_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [airdrop_distribution_order_by!]
-
-    """filter the rows returned"""
-    where: airdrop_distribution_bool_exp
-  ): airdrop_distribution_aggregate!
-
-  """
-  fetch data from the table: "airdrop_distribution" using primary key columns
-  """
-  airdrop_distribution_by_pk(id: uuid!): airdrop_distribution
-
-  """
   fetch data from the table: "apikey"
   """
   apikey(
@@ -3594,178 +1827,6 @@ type query_root {
   apikey_by_pk(id: String!): apikey
 
   """
-  fetch data from the table: "asset"
-  """
-  asset(
-    """distinct select on columns"""
-    distinct_on: [asset_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [asset_order_by!]
-
-    """filter the rows returned"""
-    where: asset_bool_exp
-  ): [asset!]!
-
-  """
-  fetch aggregated fields from the table: "asset"
-  """
-  asset_aggregate(
-    """distinct select on columns"""
-    distinct_on: [asset_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [asset_order_by!]
-
-    """filter the rows returned"""
-    where: asset_bool_exp
-  ): asset_aggregate!
-
-  """fetch data from the table: "asset" using primary key columns"""
-  asset_by_pk(id: String!): asset
-
-  """
-  fetch data from the table: "asset_price"
-  """
-  asset_price(
-    """distinct select on columns"""
-    distinct_on: [asset_price_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [asset_price_order_by!]
-
-    """filter the rows returned"""
-    where: asset_price_bool_exp
-  ): [asset_price!]!
-
-  """
-  fetch aggregated fields from the table: "asset_price"
-  """
-  asset_price_aggregate(
-    """distinct select on columns"""
-    distinct_on: [asset_price_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [asset_price_order_by!]
-
-    """filter the rows returned"""
-    where: asset_price_bool_exp
-  ): asset_price_aggregate!
-
-  """fetch data from the table: "asset_price" using primary key columns"""
-  asset_price_by_pk(id: uuid!): asset_price
-
-  """
-  fetch data from the table: "contact"
-  """
-  contact(
-    """distinct select on columns"""
-    distinct_on: [contact_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [contact_order_by!]
-
-    """filter the rows returned"""
-    where: contact_bool_exp
-  ): [contact!]!
-
-  """
-  fetch aggregated fields from the table: "contact"
-  """
-  contact_aggregate(
-    """distinct select on columns"""
-    distinct_on: [contact_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [contact_order_by!]
-
-    """filter the rows returned"""
-    where: contact_bool_exp
-  ): contact_aggregate!
-
-  """fetch data from the table: "contact" using primary key columns"""
-  contact_by_pk(id: String!): contact
-
-  """
-  fetch data from the table: "exchange_rate"
-  """
-  exchange_rate(
-    """distinct select on columns"""
-    distinct_on: [exchange_rate_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [exchange_rate_order_by!]
-
-    """filter the rows returned"""
-    where: exchange_rate_bool_exp
-  ): [exchange_rate!]!
-
-  """
-  fetch aggregated fields from the table: "exchange_rate"
-  """
-  exchange_rate_aggregate(
-    """distinct select on columns"""
-    distinct_on: [exchange_rate_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [exchange_rate_order_by!]
-
-    """filter the rows returned"""
-    where: exchange_rate_bool_exp
-  ): exchange_rate_aggregate!
-
-  """fetch data from the table: "exchange_rate" using primary key columns"""
-  exchange_rate_by_pk(id: String!): exchange_rate
-
-  """
   fetch data from the table: "passkey"
   """
   passkey(
@@ -3807,94 +1868,6 @@ type query_root {
 
   """fetch data from the table: "passkey" using primary key columns"""
   passkey_by_pk(id: String!): passkey
-
-  """
-  fetch data from the table: "redemptions"
-  """
-  redemptions(
-    """distinct select on columns"""
-    distinct_on: [redemptions_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [redemptions_order_by!]
-
-    """filter the rows returned"""
-    where: redemptions_bool_exp
-  ): [redemptions!]!
-
-  """
-  fetch aggregated fields from the table: "redemptions"
-  """
-  redemptions_aggregate(
-    """distinct select on columns"""
-    distinct_on: [redemptions_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [redemptions_order_by!]
-
-    """filter the rows returned"""
-    where: redemptions_bool_exp
-  ): redemptions_aggregate!
-
-  """fetch data from the table: "redemptions" using primary key columns"""
-  redemptions_by_pk(id: String!): redemptions
-
-  """
-  fetch data from the table: "regulation_configs"
-  """
-  regulation_configs(
-    """distinct select on columns"""
-    distinct_on: [regulation_configs_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [regulation_configs_order_by!]
-
-    """filter the rows returned"""
-    where: regulation_configs_bool_exp
-  ): [regulation_configs!]!
-
-  """
-  fetch aggregated fields from the table: "regulation_configs"
-  """
-  regulation_configs_aggregate(
-    """distinct select on columns"""
-    distinct_on: [regulation_configs_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [regulation_configs_order_by!]
-
-    """filter the rows returned"""
-    where: regulation_configs_bool_exp
-  ): regulation_configs_aggregate!
-
-  """
-  fetch data from the table: "regulation_configs" using primary key columns
-  """
-  regulation_configs_by_pk(id: String!): regulation_configs
 
   """
   fetch data from the table: "session"
@@ -3983,49 +1956,6 @@ type query_root {
   settings_by_pk(key: String!): settings
 
   """
-  fetch data from the table: "two_factor"
-  """
-  two_factor(
-    """distinct select on columns"""
-    distinct_on: [two_factor_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [two_factor_order_by!]
-
-    """filter the rows returned"""
-    where: two_factor_bool_exp
-  ): [two_factor!]!
-
-  """
-  fetch aggregated fields from the table: "two_factor"
-  """
-  two_factor_aggregate(
-    """distinct select on columns"""
-    distinct_on: [two_factor_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [two_factor_order_by!]
-
-    """filter the rows returned"""
-    where: two_factor_bool_exp
-  ): two_factor_aggregate!
-
-  """fetch data from the table: "two_factor" using primary key columns"""
-  two_factor_by_pk(id: String!): two_factor
-
-  """
   fetch data from the table: "user"
   """
   user(
@@ -4110,366 +2040,6 @@ type query_root {
 
   """fetch data from the table: "verification" using primary key columns"""
   verification_by_pk(id: String!): verification
-}
-
-"""
-columns and relationships of "redemptions"
-"""
-type redemptions {
-  id: String!
-  processed_date: timestamptz
-}
-
-"""
-aggregated selection of "redemptions"
-"""
-type redemptions_aggregate {
-  aggregate: redemptions_aggregate_fields
-  nodes: [redemptions!]!
-}
-
-"""
-aggregate fields of "redemptions"
-"""
-type redemptions_aggregate_fields {
-  count(columns: [redemptions_select_column!], distinct: Boolean): Int!
-  max: redemptions_max_fields
-  min: redemptions_min_fields
-}
-
-"""
-Boolean expression to filter rows from the table "redemptions". All fields are combined with a logical 'AND'.
-"""
-input redemptions_bool_exp {
-  _and: [redemptions_bool_exp!]
-  _not: redemptions_bool_exp
-  _or: [redemptions_bool_exp!]
-  id: String_comparison_exp
-  processed_date: timestamptz_comparison_exp
-}
-
-"""
-unique or primary key constraints on table "redemptions"
-"""
-enum redemptions_constraint {
-  """
-  unique or primary key constraint on columns "id"
-  """
-  redemptions_pkey
-}
-
-"""
-input type for inserting data into table "redemptions"
-"""
-input redemptions_insert_input {
-  id: String
-  processed_date: timestamptz
-}
-
-"""aggregate max on columns"""
-type redemptions_max_fields {
-  id: String
-  processed_date: timestamptz
-}
-
-"""aggregate min on columns"""
-type redemptions_min_fields {
-  id: String
-  processed_date: timestamptz
-}
-
-"""
-response of any mutation on the table "redemptions"
-"""
-type redemptions_mutation_response {
-  """number of rows affected by the mutation"""
-  affected_rows: Int!
-
-  """data from the rows affected by the mutation"""
-  returning: [redemptions!]!
-}
-
-"""
-on_conflict condition type for table "redemptions"
-"""
-input redemptions_on_conflict {
-  constraint: redemptions_constraint!
-  update_columns: [redemptions_update_column!]! = []
-  where: redemptions_bool_exp
-}
-
-"""Ordering options when selecting data from "redemptions"."""
-input redemptions_order_by {
-  id: order_by
-  processed_date: order_by
-}
-
-"""primary key columns input for table: redemptions"""
-input redemptions_pk_columns_input {
-  id: String!
-}
-
-"""
-select columns of table "redemptions"
-"""
-enum redemptions_select_column {
-  """column name"""
-  id
-
-  """column name"""
-  processed_date
-}
-
-"""
-input type for updating data in table "redemptions"
-"""
-input redemptions_set_input {
-  id: String
-  processed_date: timestamptz
-}
-
-"""
-Streaming cursor of the table "redemptions"
-"""
-input redemptions_stream_cursor_input {
-  """Stream column input with initial value"""
-  initial_value: redemptions_stream_cursor_value_input!
-
-  """cursor ordering"""
-  ordering: cursor_ordering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input redemptions_stream_cursor_value_input {
-  id: String
-  processed_date: timestamptz
-}
-
-"""
-update columns of table "redemptions"
-"""
-enum redemptions_update_column {
-  """column name"""
-  id
-
-  """column name"""
-  processed_date
-}
-
-input redemptions_updates {
-  """sets the columns of the filtered rows to the given values"""
-  _set: redemptions_set_input
-
-  """filter the rows which have to be updated"""
-  where: redemptions_bool_exp!
-}
-
-"""
-columns and relationships of "regulation_configs"
-"""
-type regulation_configs {
-  asset_id: String!
-  created_at: timestamptz!
-  id: String!
-  regulation_type: String!
-  status: String!
-  updated_at: timestamptz!
-}
-
-"""
-aggregated selection of "regulation_configs"
-"""
-type regulation_configs_aggregate {
-  aggregate: regulation_configs_aggregate_fields
-  nodes: [regulation_configs!]!
-}
-
-"""
-aggregate fields of "regulation_configs"
-"""
-type regulation_configs_aggregate_fields {
-  count(columns: [regulation_configs_select_column!], distinct: Boolean): Int!
-  max: regulation_configs_max_fields
-  min: regulation_configs_min_fields
-}
-
-"""
-Boolean expression to filter rows from the table "regulation_configs". All fields are combined with a logical 'AND'.
-"""
-input regulation_configs_bool_exp {
-  _and: [regulation_configs_bool_exp!]
-  _not: regulation_configs_bool_exp
-  _or: [regulation_configs_bool_exp!]
-  asset_id: String_comparison_exp
-  created_at: timestamptz_comparison_exp
-  id: String_comparison_exp
-  regulation_type: String_comparison_exp
-  status: String_comparison_exp
-  updated_at: timestamptz_comparison_exp
-}
-
-"""
-unique or primary key constraints on table "regulation_configs"
-"""
-enum regulation_configs_constraint {
-  """
-  unique or primary key constraint on columns "id"
-  """
-  regulation_configs_pkey
-}
-
-"""
-input type for inserting data into table "regulation_configs"
-"""
-input regulation_configs_insert_input {
-  asset_id: String
-  created_at: timestamptz
-  id: String
-  regulation_type: String
-  status: String
-  updated_at: timestamptz
-}
-
-"""aggregate max on columns"""
-type regulation_configs_max_fields {
-  asset_id: String
-  created_at: timestamptz
-  id: String
-  regulation_type: String
-  status: String
-  updated_at: timestamptz
-}
-
-"""aggregate min on columns"""
-type regulation_configs_min_fields {
-  asset_id: String
-  created_at: timestamptz
-  id: String
-  regulation_type: String
-  status: String
-  updated_at: timestamptz
-}
-
-"""
-response of any mutation on the table "regulation_configs"
-"""
-type regulation_configs_mutation_response {
-  """number of rows affected by the mutation"""
-  affected_rows: Int!
-
-  """data from the rows affected by the mutation"""
-  returning: [regulation_configs!]!
-}
-
-"""
-on_conflict condition type for table "regulation_configs"
-"""
-input regulation_configs_on_conflict {
-  constraint: regulation_configs_constraint!
-  update_columns: [regulation_configs_update_column!]! = []
-  where: regulation_configs_bool_exp
-}
-
-"""Ordering options when selecting data from "regulation_configs"."""
-input regulation_configs_order_by {
-  asset_id: order_by
-  created_at: order_by
-  id: order_by
-  regulation_type: order_by
-  status: order_by
-  updated_at: order_by
-}
-
-"""primary key columns input for table: regulation_configs"""
-input regulation_configs_pk_columns_input {
-  id: String!
-}
-
-"""
-select columns of table "regulation_configs"
-"""
-enum regulation_configs_select_column {
-  """column name"""
-  asset_id
-
-  """column name"""
-  created_at
-
-  """column name"""
-  id
-
-  """column name"""
-  regulation_type
-
-  """column name"""
-  status
-
-  """column name"""
-  updated_at
-}
-
-"""
-input type for updating data in table "regulation_configs"
-"""
-input regulation_configs_set_input {
-  asset_id: String
-  created_at: timestamptz
-  id: String
-  regulation_type: String
-  status: String
-  updated_at: timestamptz
-}
-
-"""
-Streaming cursor of the table "regulation_configs"
-"""
-input regulation_configs_stream_cursor_input {
-  """Stream column input with initial value"""
-  initial_value: regulation_configs_stream_cursor_value_input!
-
-  """cursor ordering"""
-  ordering: cursor_ordering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input regulation_configs_stream_cursor_value_input {
-  asset_id: String
-  created_at: timestamptz
-  id: String
-  regulation_type: String
-  status: String
-  updated_at: timestamptz
-}
-
-"""
-update columns of table "regulation_configs"
-"""
-enum regulation_configs_update_column {
-  """column name"""
-  asset_id
-
-  """column name"""
-  created_at
-
-  """column name"""
-  id
-
-  """column name"""
-  regulation_type
-
-  """column name"""
-  status
-
-  """column name"""
-  updated_at
-}
-
-input regulation_configs_updates {
-  """sets the columns of the filtered rows to the given values"""
-  _set: regulation_configs_set_input
-
-  """filter the rows which have to be updated"""
-  where: regulation_configs_bool_exp!
 }
 
 """
@@ -4952,65 +2522,6 @@ type subscription_root {
   ): [account!]!
 
   """
-  fetch data from the table: "airdrop_distribution"
-  """
-  airdrop_distribution(
-    """distinct select on columns"""
-    distinct_on: [airdrop_distribution_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [airdrop_distribution_order_by!]
-
-    """filter the rows returned"""
-    where: airdrop_distribution_bool_exp
-  ): [airdrop_distribution!]!
-
-  """
-  fetch aggregated fields from the table: "airdrop_distribution"
-  """
-  airdrop_distribution_aggregate(
-    """distinct select on columns"""
-    distinct_on: [airdrop_distribution_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [airdrop_distribution_order_by!]
-
-    """filter the rows returned"""
-    where: airdrop_distribution_bool_exp
-  ): airdrop_distribution_aggregate!
-
-  """
-  fetch data from the table: "airdrop_distribution" using primary key columns
-  """
-  airdrop_distribution_by_pk(id: uuid!): airdrop_distribution
-
-  """
-  fetch data from the table in a streaming manner: "airdrop_distribution"
-  """
-  airdrop_distribution_stream(
-    """maximum number of rows returned in a single batch"""
-    batch_size: Int!
-
-    """cursor to stream the results returned by the query"""
-    cursor: [airdrop_distribution_stream_cursor_input]!
-
-    """filter the rows returned"""
-    where: airdrop_distribution_bool_exp
-  ): [airdrop_distribution!]!
-
-  """
   fetch data from the table: "apikey"
   """
   apikey(
@@ -5068,234 +2579,6 @@ type subscription_root {
   ): [apikey!]!
 
   """
-  fetch data from the table: "asset"
-  """
-  asset(
-    """distinct select on columns"""
-    distinct_on: [asset_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [asset_order_by!]
-
-    """filter the rows returned"""
-    where: asset_bool_exp
-  ): [asset!]!
-
-  """
-  fetch aggregated fields from the table: "asset"
-  """
-  asset_aggregate(
-    """distinct select on columns"""
-    distinct_on: [asset_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [asset_order_by!]
-
-    """filter the rows returned"""
-    where: asset_bool_exp
-  ): asset_aggregate!
-
-  """fetch data from the table: "asset" using primary key columns"""
-  asset_by_pk(id: String!): asset
-
-  """
-  fetch data from the table: "asset_price"
-  """
-  asset_price(
-    """distinct select on columns"""
-    distinct_on: [asset_price_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [asset_price_order_by!]
-
-    """filter the rows returned"""
-    where: asset_price_bool_exp
-  ): [asset_price!]!
-
-  """
-  fetch aggregated fields from the table: "asset_price"
-  """
-  asset_price_aggregate(
-    """distinct select on columns"""
-    distinct_on: [asset_price_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [asset_price_order_by!]
-
-    """filter the rows returned"""
-    where: asset_price_bool_exp
-  ): asset_price_aggregate!
-
-  """fetch data from the table: "asset_price" using primary key columns"""
-  asset_price_by_pk(id: uuid!): asset_price
-
-  """
-  fetch data from the table in a streaming manner: "asset_price"
-  """
-  asset_price_stream(
-    """maximum number of rows returned in a single batch"""
-    batch_size: Int!
-
-    """cursor to stream the results returned by the query"""
-    cursor: [asset_price_stream_cursor_input]!
-
-    """filter the rows returned"""
-    where: asset_price_bool_exp
-  ): [asset_price!]!
-
-  """
-  fetch data from the table in a streaming manner: "asset"
-  """
-  asset_stream(
-    """maximum number of rows returned in a single batch"""
-    batch_size: Int!
-
-    """cursor to stream the results returned by the query"""
-    cursor: [asset_stream_cursor_input]!
-
-    """filter the rows returned"""
-    where: asset_bool_exp
-  ): [asset!]!
-
-  """
-  fetch data from the table: "contact"
-  """
-  contact(
-    """distinct select on columns"""
-    distinct_on: [contact_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [contact_order_by!]
-
-    """filter the rows returned"""
-    where: contact_bool_exp
-  ): [contact!]!
-
-  """
-  fetch aggregated fields from the table: "contact"
-  """
-  contact_aggregate(
-    """distinct select on columns"""
-    distinct_on: [contact_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [contact_order_by!]
-
-    """filter the rows returned"""
-    where: contact_bool_exp
-  ): contact_aggregate!
-
-  """fetch data from the table: "contact" using primary key columns"""
-  contact_by_pk(id: String!): contact
-
-  """
-  fetch data from the table in a streaming manner: "contact"
-  """
-  contact_stream(
-    """maximum number of rows returned in a single batch"""
-    batch_size: Int!
-
-    """cursor to stream the results returned by the query"""
-    cursor: [contact_stream_cursor_input]!
-
-    """filter the rows returned"""
-    where: contact_bool_exp
-  ): [contact!]!
-
-  """
-  fetch data from the table: "exchange_rate"
-  """
-  exchange_rate(
-    """distinct select on columns"""
-    distinct_on: [exchange_rate_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [exchange_rate_order_by!]
-
-    """filter the rows returned"""
-    where: exchange_rate_bool_exp
-  ): [exchange_rate!]!
-
-  """
-  fetch aggregated fields from the table: "exchange_rate"
-  """
-  exchange_rate_aggregate(
-    """distinct select on columns"""
-    distinct_on: [exchange_rate_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [exchange_rate_order_by!]
-
-    """filter the rows returned"""
-    where: exchange_rate_bool_exp
-  ): exchange_rate_aggregate!
-
-  """fetch data from the table: "exchange_rate" using primary key columns"""
-  exchange_rate_by_pk(id: String!): exchange_rate
-
-  """
-  fetch data from the table in a streaming manner: "exchange_rate"
-  """
-  exchange_rate_stream(
-    """maximum number of rows returned in a single batch"""
-    batch_size: Int!
-
-    """cursor to stream the results returned by the query"""
-    cursor: [exchange_rate_stream_cursor_input]!
-
-    """filter the rows returned"""
-    where: exchange_rate_bool_exp
-  ): [exchange_rate!]!
-
-  """
   fetch data from the table: "passkey"
   """
   passkey(
@@ -5351,122 +2634,6 @@ type subscription_root {
     """filter the rows returned"""
     where: passkey_bool_exp
   ): [passkey!]!
-
-  """
-  fetch data from the table: "redemptions"
-  """
-  redemptions(
-    """distinct select on columns"""
-    distinct_on: [redemptions_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [redemptions_order_by!]
-
-    """filter the rows returned"""
-    where: redemptions_bool_exp
-  ): [redemptions!]!
-
-  """
-  fetch aggregated fields from the table: "redemptions"
-  """
-  redemptions_aggregate(
-    """distinct select on columns"""
-    distinct_on: [redemptions_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [redemptions_order_by!]
-
-    """filter the rows returned"""
-    where: redemptions_bool_exp
-  ): redemptions_aggregate!
-
-  """fetch data from the table: "redemptions" using primary key columns"""
-  redemptions_by_pk(id: String!): redemptions
-
-  """
-  fetch data from the table in a streaming manner: "redemptions"
-  """
-  redemptions_stream(
-    """maximum number of rows returned in a single batch"""
-    batch_size: Int!
-
-    """cursor to stream the results returned by the query"""
-    cursor: [redemptions_stream_cursor_input]!
-
-    """filter the rows returned"""
-    where: redemptions_bool_exp
-  ): [redemptions!]!
-
-  """
-  fetch data from the table: "regulation_configs"
-  """
-  regulation_configs(
-    """distinct select on columns"""
-    distinct_on: [regulation_configs_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [regulation_configs_order_by!]
-
-    """filter the rows returned"""
-    where: regulation_configs_bool_exp
-  ): [regulation_configs!]!
-
-  """
-  fetch aggregated fields from the table: "regulation_configs"
-  """
-  regulation_configs_aggregate(
-    """distinct select on columns"""
-    distinct_on: [regulation_configs_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [regulation_configs_order_by!]
-
-    """filter the rows returned"""
-    where: regulation_configs_bool_exp
-  ): regulation_configs_aggregate!
-
-  """
-  fetch data from the table: "regulation_configs" using primary key columns
-  """
-  regulation_configs_by_pk(id: String!): regulation_configs
-
-  """
-  fetch data from the table in a streaming manner: "regulation_configs"
-  """
-  regulation_configs_stream(
-    """maximum number of rows returned in a single batch"""
-    batch_size: Int!
-
-    """cursor to stream the results returned by the query"""
-    cursor: [regulation_configs_stream_cursor_input]!
-
-    """filter the rows returned"""
-    where: regulation_configs_bool_exp
-  ): [regulation_configs!]!
 
   """
   fetch data from the table: "session"
@@ -5581,63 +2748,6 @@ type subscription_root {
     """filter the rows returned"""
     where: settings_bool_exp
   ): [settings!]!
-
-  """
-  fetch data from the table: "two_factor"
-  """
-  two_factor(
-    """distinct select on columns"""
-    distinct_on: [two_factor_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [two_factor_order_by!]
-
-    """filter the rows returned"""
-    where: two_factor_bool_exp
-  ): [two_factor!]!
-
-  """
-  fetch aggregated fields from the table: "two_factor"
-  """
-  two_factor_aggregate(
-    """distinct select on columns"""
-    distinct_on: [two_factor_select_column!]
-
-    """limit the number of rows returned"""
-    limit: Int
-
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-
-    """sort the rows by one or more columns"""
-    order_by: [two_factor_order_by!]
-
-    """filter the rows returned"""
-    where: two_factor_bool_exp
-  ): two_factor_aggregate!
-
-  """fetch data from the table: "two_factor" using primary key columns"""
-  two_factor_by_pk(id: String!): two_factor
-
-  """
-  fetch data from the table in a streaming manner: "two_factor"
-  """
-  two_factor_stream(
-    """maximum number of rows returned in a single batch"""
-    batch_size: Int!
-
-    """cursor to stream the results returned by the query"""
-    cursor: [two_factor_stream_cursor_input]!
-
-    """filter the rows returned"""
-    where: two_factor_bool_exp
-  ): [two_factor!]!
 
   """
   fetch data from the table: "user"
@@ -5771,203 +2881,6 @@ input timestamp_comparison_exp {
   _nin: [timestamp!]
 }
 
-scalar timestamptz
-
-"""
-Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'.
-"""
-input timestamptz_comparison_exp {
-  _eq: timestamptz
-  _gt: timestamptz
-  _gte: timestamptz
-  _in: [timestamptz!]
-  _is_null: Boolean
-  _lt: timestamptz
-  _lte: timestamptz
-  _neq: timestamptz
-  _nin: [timestamptz!]
-}
-
-"""
-columns and relationships of "two_factor"
-"""
-type two_factor {
-  backup_codes: String!
-  id: String!
-  secret: String!
-  user_id: String!
-}
-
-"""
-aggregated selection of "two_factor"
-"""
-type two_factor_aggregate {
-  aggregate: two_factor_aggregate_fields
-  nodes: [two_factor!]!
-}
-
-"""
-aggregate fields of "two_factor"
-"""
-type two_factor_aggregate_fields {
-  count(columns: [two_factor_select_column!], distinct: Boolean): Int!
-  max: two_factor_max_fields
-  min: two_factor_min_fields
-}
-
-"""
-Boolean expression to filter rows from the table "two_factor". All fields are combined with a logical 'AND'.
-"""
-input two_factor_bool_exp {
-  _and: [two_factor_bool_exp!]
-  _not: two_factor_bool_exp
-  _or: [two_factor_bool_exp!]
-  backup_codes: String_comparison_exp
-  id: String_comparison_exp
-  secret: String_comparison_exp
-  user_id: String_comparison_exp
-}
-
-"""
-unique or primary key constraints on table "two_factor"
-"""
-enum two_factor_constraint {
-  """
-  unique or primary key constraint on columns "id"
-  """
-  two_factor_pkey
-}
-
-"""
-input type for inserting data into table "two_factor"
-"""
-input two_factor_insert_input {
-  backup_codes: String
-  id: String
-  secret: String
-  user_id: String
-}
-
-"""aggregate max on columns"""
-type two_factor_max_fields {
-  backup_codes: String
-  id: String
-  secret: String
-  user_id: String
-}
-
-"""aggregate min on columns"""
-type two_factor_min_fields {
-  backup_codes: String
-  id: String
-  secret: String
-  user_id: String
-}
-
-"""
-response of any mutation on the table "two_factor"
-"""
-type two_factor_mutation_response {
-  """number of rows affected by the mutation"""
-  affected_rows: Int!
-
-  """data from the rows affected by the mutation"""
-  returning: [two_factor!]!
-}
-
-"""
-on_conflict condition type for table "two_factor"
-"""
-input two_factor_on_conflict {
-  constraint: two_factor_constraint!
-  update_columns: [two_factor_update_column!]! = []
-  where: two_factor_bool_exp
-}
-
-"""Ordering options when selecting data from "two_factor"."""
-input two_factor_order_by {
-  backup_codes: order_by
-  id: order_by
-  secret: order_by
-  user_id: order_by
-}
-
-"""primary key columns input for table: two_factor"""
-input two_factor_pk_columns_input {
-  id: String!
-}
-
-"""
-select columns of table "two_factor"
-"""
-enum two_factor_select_column {
-  """column name"""
-  backup_codes
-
-  """column name"""
-  id
-
-  """column name"""
-  secret
-
-  """column name"""
-  user_id
-}
-
-"""
-input type for updating data in table "two_factor"
-"""
-input two_factor_set_input {
-  backup_codes: String
-  id: String
-  secret: String
-  user_id: String
-}
-
-"""
-Streaming cursor of the table "two_factor"
-"""
-input two_factor_stream_cursor_input {
-  """Stream column input with initial value"""
-  initial_value: two_factor_stream_cursor_value_input!
-
-  """cursor ordering"""
-  ordering: cursor_ordering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input two_factor_stream_cursor_value_input {
-  backup_codes: String
-  id: String
-  secret: String
-  user_id: String
-}
-
-"""
-update columns of table "two_factor"
-"""
-enum two_factor_update_column {
-  """column name"""
-  backup_codes
-
-  """column name"""
-  id
-
-  """column name"""
-  secret
-
-  """column name"""
-  user_id
-}
-
-input two_factor_updates {
-  """sets the columns of the filtered rows to the given values"""
-  _set: two_factor_set_input
-
-  """filter the rows which have to be updated"""
-  where: two_factor_bool_exp!
-}
-
 """
 columns and relationships of "user"
 """
@@ -5976,7 +2889,6 @@ type user {
   ban_reason: String
   banned: Boolean
   created_at: timestamp!
-  currency: String
   email: String!
   email_verified: Boolean!
   id: String!
@@ -5987,10 +2899,9 @@ type user {
   pincode_verification_id: String
   role: String
   secret_code_verification_id: String
-  two_factor_enabled: Boolean
   two_factor_verification_id: String
   updated_at: timestamp!
-  wallet_address: String
+  wallet: String
 }
 
 """
@@ -6021,7 +2932,6 @@ input user_bool_exp {
   ban_reason: String_comparison_exp
   banned: Boolean_comparison_exp
   created_at: timestamp_comparison_exp
-  currency: String_comparison_exp
   email: String_comparison_exp
   email_verified: Boolean_comparison_exp
   id: String_comparison_exp
@@ -6032,10 +2942,9 @@ input user_bool_exp {
   pincode_verification_id: String_comparison_exp
   role: String_comparison_exp
   secret_code_verification_id: String_comparison_exp
-  two_factor_enabled: Boolean_comparison_exp
   two_factor_verification_id: String_comparison_exp
   updated_at: timestamp_comparison_exp
-  wallet_address: String_comparison_exp
+  wallet: String_comparison_exp
 }
 
 """
@@ -6068,9 +2977,9 @@ enum user_constraint {
   user_two_factor_verification_id_unique
 
   """
-  unique or primary key constraint on columns "wallet_address"
+  unique or primary key constraint on columns "wallet"
   """
-  user_wallet_address_unique
+  user_wallet_unique
 }
 
 """
@@ -6081,7 +2990,6 @@ input user_insert_input {
   ban_reason: String
   banned: Boolean
   created_at: timestamp
-  currency: String
   email: String
   email_verified: Boolean
   id: String
@@ -6092,10 +3000,9 @@ input user_insert_input {
   pincode_verification_id: String
   role: String
   secret_code_verification_id: String
-  two_factor_enabled: Boolean
   two_factor_verification_id: String
   updated_at: timestamp
-  wallet_address: String
+  wallet: String
 }
 
 """aggregate max on columns"""
@@ -6103,7 +3010,6 @@ type user_max_fields {
   ban_expires: timestamp
   ban_reason: String
   created_at: timestamp
-  currency: String
   email: String
   id: String
   image: String
@@ -6113,7 +3019,7 @@ type user_max_fields {
   secret_code_verification_id: String
   two_factor_verification_id: String
   updated_at: timestamp
-  wallet_address: String
+  wallet: String
 }
 
 """aggregate min on columns"""
@@ -6121,7 +3027,6 @@ type user_min_fields {
   ban_expires: timestamp
   ban_reason: String
   created_at: timestamp
-  currency: String
   email: String
   id: String
   image: String
@@ -6131,7 +3036,7 @@ type user_min_fields {
   secret_code_verification_id: String
   two_factor_verification_id: String
   updated_at: timestamp
-  wallet_address: String
+  wallet: String
 }
 
 """
@@ -6160,7 +3065,6 @@ input user_order_by {
   ban_reason: order_by
   banned: order_by
   created_at: order_by
-  currency: order_by
   email: order_by
   email_verified: order_by
   id: order_by
@@ -6171,10 +3075,9 @@ input user_order_by {
   pincode_verification_id: order_by
   role: order_by
   secret_code_verification_id: order_by
-  two_factor_enabled: order_by
   two_factor_verification_id: order_by
   updated_at: order_by
-  wallet_address: order_by
+  wallet: order_by
 }
 
 """primary key columns input for table: user"""
@@ -6199,9 +3102,6 @@ enum user_select_column {
   created_at
 
   """column name"""
-  currency
-
-  """column name"""
   email
 
   """column name"""
@@ -6232,16 +3132,13 @@ enum user_select_column {
   secret_code_verification_id
 
   """column name"""
-  two_factor_enabled
-
-  """column name"""
   two_factor_verification_id
 
   """column name"""
   updated_at
 
   """column name"""
-  wallet_address
+  wallet
 }
 
 """
@@ -6252,7 +3149,6 @@ input user_set_input {
   ban_reason: String
   banned: Boolean
   created_at: timestamp
-  currency: String
   email: String
   email_verified: Boolean
   id: String
@@ -6263,10 +3159,9 @@ input user_set_input {
   pincode_verification_id: String
   role: String
   secret_code_verification_id: String
-  two_factor_enabled: Boolean
   two_factor_verification_id: String
   updated_at: timestamp
-  wallet_address: String
+  wallet: String
 }
 
 """
@@ -6286,7 +3181,6 @@ input user_stream_cursor_value_input {
   ban_reason: String
   banned: Boolean
   created_at: timestamp
-  currency: String
   email: String
   email_verified: Boolean
   id: String
@@ -6297,10 +3191,9 @@ input user_stream_cursor_value_input {
   pincode_verification_id: String
   role: String
   secret_code_verification_id: String
-  two_factor_enabled: Boolean
   two_factor_verification_id: String
   updated_at: timestamp
-  wallet_address: String
+  wallet: String
 }
 
 """
@@ -6318,9 +3211,6 @@ enum user_update_column {
 
   """column name"""
   created_at
-
-  """column name"""
-  currency
 
   """column name"""
   email
@@ -6353,16 +3243,13 @@ enum user_update_column {
   secret_code_verification_id
 
   """column name"""
-  two_factor_enabled
-
-  """column name"""
   two_factor_verification_id
 
   """column name"""
   updated_at
 
   """column name"""
-  wallet_address
+  wallet
 }
 
 input user_updates {
@@ -6371,23 +3258,6 @@ input user_updates {
 
   """filter the rows which have to be updated"""
   where: user_bool_exp!
-}
-
-scalar uuid
-
-"""
-Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'.
-"""
-input uuid_comparison_exp {
-  _eq: uuid
-  _gt: uuid
-  _gte: uuid
-  _in: [uuid!]
-  _is_null: Boolean
-  _lt: uuid
-  _lte: uuid
-  _neq: uuid
-  _nin: [uuid!]
 }
 
 """

@@ -3,11 +3,6 @@
   "version": "2.0.0",
   "private": false,
   "license": "FSL-1.1-MIT",
-  "author": {
-    "name": "SettleMint",
-    "email": "support@settlemint.com",
-    "url": "https://settlemint.com"
-  },
   "scripts": {
     "compile:typescript": "tsc --noEmit",
     "dependencies": "bun run tools/dependencies.ts",
@@ -19,27 +14,19 @@
     "lint": "solhint --config .solhint.json ./contracts/**/*.sol",
     "format:forge": "settlemint scs foundry format",
     "format:prettier": "prettier -l --write .",
-    "prepublish": "rm -Rf ignition/deployments/atk-local",
-    "publish": "settlemint scs hardhat script local --script scripts/hardhat/main.ts",
+    "clean:deployments": "rm -Rf ignition/deployments/atk-local",
+    "publish": "bun run clean:deployments && settlemint scs hardhat script local --script scripts/hardhat/main.ts",
     "abi-output": "bash tools/abi-output.sh",
     "test": "settlemint scs foundry test -vvv",
-    "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization",
-    "deploy:local": "settlemint scs hardhat deploy local -m ignition/modules/main.ts --deployment-id asset-tokenization-local --reset",
-    "deploy:local:onboarding": "settlemint scs hardhat deploy local -m ignition/modules/onboarding.ts --deployment-id asset-tokenization-local --reset",
-    "predeploy:local:test": "bun compile:hardhat && bun codegen:types && rm -Rf ignition/deployments/atk-local",
-    "deploy:local:test": "settlemint scs hardhat script local --script scripts/hardhat/main.ts"
+    "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "@nomicfoundation/hardhat-foundry": "1.1.4",
     "@nomicfoundation/hardhat-toolbox-viem": "3.0.0",
     "@nomiclabs/hardhat-solhint": "4.0.2",
     "hardhat": "2.24.3",
     "solhint": "5.1.0"
   },
-  "devDependencies": {},
-  "peerDependencies": {},
-  "overrides": {
-    "elliptic": "6.6.1",
-    "ws": "8.18.2"
-  }
+  "peerDependencies": {}
 }

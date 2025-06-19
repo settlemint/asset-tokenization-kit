@@ -2,18 +2,12 @@
   "name": "subgraph",
   "version": "2.0.0",
   "license": "FSL-1.1-MIT",
-  "author": {
-    "name": "SettleMint",
-    "email": "support@settlemint.com",
-    "url": "https://settlemint.com"
-  },
   "scripts": {
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
     "codegen:gql-tada": "gql-tada generate-schema http://localhost:${THE_GRAPH_PORT_LOCAL_QUERY:-8000}/subgraphs/name/smart-protocol && gql-tada turbo && gql-tada generate-output",
     "format": "prettier -l --write .",
-    "compile": "bunx graph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 > subgraph-output.txt",
-    "postcompile": "yq eval '.services.graph-node.environment.SUBGRAPH = \"kit:'$(cat subgraph-output.txt | tr -d '\\n')'\"' -i ../../docker-compose.yml",
+    "compile": "mkdir -p .generated && bunx graph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 | tee .generated/subgraph-hash.txt | xargs -I {} echo 'SUBGRAPH_HASH={}' > .generated/.env.subgraph",
     "publish": "bun run tools/graph-deploy.ts --local",
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
     "test:integration": "bun test --preload ./test/scripts/setup.ts",
@@ -25,9 +19,9 @@
   },
   "devDependencies": {
     "@settlemint/sdk-thegraph": "2.4.0",
-    "contracts": "workspace:*",
     "matchstick-as": "0.6.0",
-    "yaml": "2.8.0"
+    "yaml": "2.8.0",
+    "contracts": "workspace:*"
   },
   "peerDependencies": {}
 }

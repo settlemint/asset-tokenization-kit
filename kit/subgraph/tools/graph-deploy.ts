@@ -25,10 +25,10 @@
  *   bun run graph-deploy.ts --help     # Show help
  */
 
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { join, relative } from "path";
 import { parseArgs } from "util";
 import { parse, stringify } from "yaml";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
 
 // ============================================================================

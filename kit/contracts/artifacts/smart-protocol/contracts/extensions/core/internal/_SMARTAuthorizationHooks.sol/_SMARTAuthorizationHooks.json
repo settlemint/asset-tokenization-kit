@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "_SMARTAuthorizationHooks",
+  "sourceName": "smart-protocol/contracts/extensions/core/internal/_SMARTAuthorizationHooks.sol",
+  "abi": [],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
