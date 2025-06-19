@@ -710,23 +710,23 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Claimed
-        - BatchClaimed
+        - AirdropTokensTransferred
+        - AirdropBatchTokensTransferred
         - OwnershipTransferred
         - TokensWithdrawn
       abis:
         - name: Airdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
       eventHandlers:
-        - event: Claimed(indexed address,uint256,uint256)
-          handler: handleClaimed
-        - event: BatchClaimed(indexed address,uint256,uint256[],uint256[])
-          handler: handleBatchClaimed
+        - event: AirdropTokensTransferred(indexed address,indexed uint256,uint256)
+          handler: handleAirdropTokensTransferred
+        - event: AirdropBatchTokensTransferred(address[],uint256[],uint256[])
+          handler: handleAirdropBatchTokensTransferred
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
         - event: TokensWithdrawn(indexed address,uint256)
           handler: handleTokensWithdrawn
-      file: ./src/addons/airdrop/push-airdrop-factory.ts
+      file: ./src/addons/airdrop/airdrop.ts
   - kind: ethereum
     name: PushAirdropFactory
     network: settlemint
@@ -762,10 +762,6 @@ templates:
         - name: PushAirdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/push-airdrop/ATKPushAirdropImplementation.sol/ATKPushAirdropImplementation.json
       eventHandlers:
-        - event: TokensDistributed(indexed address,uint256,uint256)
-          handler: handleTokensDistributed
-        - event: BatchTokensDistributed(uint256,uint256,uint256[])
-          handler: handleBatchTokensDistributed
         - event: DistributionCapUpdated(uint256,uint256)
           handler: handleDistributionCapUpdated
       file: ./src/addons/airdrop/push-airdrop-factory.ts
@@ -804,8 +800,6 @@ templates:
       abis:
         - name: VestingAirdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol/ATKVestingAirdropImplementation.json
-        - name: VestingStrategy
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/VestingStrategy.sol/VestingStrategy.json
       eventHandlers:
         - event: VestingInitialized(indexed address,uint256,uint256)
           handler: handleVestingInitialized
