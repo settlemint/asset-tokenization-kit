@@ -20,7 +20,9 @@
     "test": "settlemint scs foundry test -vvv",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
   },
-  "dependencies": {},
+  "dependencies": {
+    "merkletreejs": "0.5.2"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-foundry": "1.1.4",
     "@nomicfoundation/hardhat-toolbox-viem": "3.0.0",
