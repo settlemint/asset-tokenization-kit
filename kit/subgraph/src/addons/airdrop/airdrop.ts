@@ -1,6 +1,7 @@
+import { Address } from "@graphprotocol/graph-ts";
 import {
-  type AirdropBatchTokensTransferred,
-  type AirdropTokensTransferred,
+  AirdropBatchTokensTransferred,
+  AirdropTokensTransferred,
 } from "../../../generated/templates/PushAirdrop/PushAirdrop";
 import { fetchEvent } from "../../event/fetch/event";
 import { setBigNumber } from "../../utils/bignumber";
@@ -14,7 +15,8 @@ export function handleAirdropTokensTransferred(
 ): void {
   fetchEvent(event, "AirdropTokensTransferred");
   const airdrop = fetchAirdrop(event.address);
-  const tokenDecimals = getTokenDecimals(airdrop.token);
+  const tokenAddress = Address.fromBytes(airdrop.token);
+  const tokenDecimals = getTokenDecimals(tokenAddress);
   setBigNumber(
     airdrop,
     "amountTransferred",
@@ -54,7 +56,8 @@ export function handleAirdropBatchTokensTransferred(
 ): void {
   fetchEvent(event, "AirdropBatchTokensTransferred");
   const airdrop = fetchAirdrop(event.address);
-  const tokenDecimals = getTokenDecimals(airdrop.token);
+  const tokenAddress = Address.fromBytes(airdrop.token);
+  const tokenDecimals = getTokenDecimals(tokenAddress);
   const indices = event.params.indices;
   for (let i = 0; i < indices.length; i++) {
     const index = indices.at(i);

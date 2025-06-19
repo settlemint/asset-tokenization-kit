@@ -1,3 +1,4 @@
+import { Address } from "@graphprotocol/graph-ts";
 import { type DistributionCapUpdated } from "../../../generated/templates/PushAirdrop/PushAirdrop";
 import { fetchEvent } from "../../event/fetch/event";
 import { setBigNumber } from "../../utils/bignumber";
@@ -12,7 +13,8 @@ export function handleDistributionCapUpdated(
 
   const pushAirdrop = fetchPushAirdrop(event.address);
   const airdrop = fetchAirdrop(event.address);
-  const tokenDecimals = getTokenDecimals(airdrop.token);
+  const tokenAddress = Address.fromBytes(airdrop.token);
+  const tokenDecimals = getTokenDecimals(tokenAddress);
   setBigNumber(
     pushAirdrop,
     "distributionCap",

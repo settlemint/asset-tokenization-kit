@@ -1,4 +1,4 @@
-import { BigInt, type Address } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { PushAirdrop } from "../../../../generated/schema";
 import { PushAirdrop as PushAirdropTemplate } from "../../../../generated/templates";
 import { PushAirdrop as PushAirdropContract } from "../../../../generated/templates/PushAirdrop/PushAirdrop";
@@ -13,7 +13,8 @@ export function fetchPushAirdrop(id: Address): PushAirdrop {
     entity = new PushAirdrop(id);
 
     const airdrop = fetchAirdrop(id);
-    const tokenDecimals = getTokenDecimals(airdrop.token);
+    const tokenAddress = Address.fromBytes(airdrop.token);
+    const tokenDecimals = getTokenDecimals(tokenAddress);
 
     const endpoint = PushAirdropContract.bind(id);
     const distributionCap = endpoint.try_distributionCap();

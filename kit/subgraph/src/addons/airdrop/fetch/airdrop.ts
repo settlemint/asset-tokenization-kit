@@ -22,7 +22,8 @@ export function fetchAirdrop(id: Address): Airdrop {
     entity.deployedInTransaction = Bytes.empty();
     entity.factory = Address.zero();
 
-    const tokenDecimals = getTokenDecimals(entity.token);
+    const tokenAddress = Address.fromBytes(entity.token);
+    const tokenDecimals = getTokenDecimals(tokenAddress);
     setBigNumber(entity, "amountTransferred", BigInt.zero(), tokenDecimals);
 
     entity.save();

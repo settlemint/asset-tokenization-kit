@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { AirdropRecipient } from "../../../../generated/schema";
 import { fetchAccount } from "../../../account/fetch/account";
 import { setBigNumber } from "../../../utils/bignumber";
@@ -6,7 +6,7 @@ import { getTokenDecimals } from "../../../utils/token-decimals";
 import { fetchAirdrop } from "./airdrop";
 
 export function fetchAirdropRecipient(
-  airdrop: Address,
+  airdrop: Bytes,
   recipient: Address
 ): AirdropRecipient {
   const id = airdrop.concat(recipient);
@@ -16,7 +16,8 @@ export function fetchAirdropRecipient(
     entity = new AirdropRecipient(id);
 
     const airdropEntity = fetchAirdrop(airdrop);
-    const tokenDecimals = getTokenDecimals(airdropEntity.token);
+    const tokenAddress = Address.fromBytes(airdropEntity.token);
+    const tokenDecimals = getTokenDecimals(tokenAddress);
 
     entity.airdrop = airdropEntity.id;
     entity.account = fetchAccount(recipient).id;

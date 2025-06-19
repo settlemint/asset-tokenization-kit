@@ -5,10 +5,11 @@ import { getTokenDecimals } from "../../../utils/token-decimals";
 import { fetchAirdrop } from "./airdrop";
 
 export function fetchAirdropAllocation(
-  airdrop: Address,
+  airdrop: Bytes,
   index: BigInt
 ): AirdropAllocation {
-  const id = airdrop.concat(Bytes.fromBigInt(index));
+  const indexBytes = Bytes.fromByteArray(Bytes.fromBigInt(index));
+  const id = airdrop.concat(indexBytes);
   let entity = AirdropAllocation.load(id);
 
   if (entity == null) {
@@ -16,7 +17,8 @@ export function fetchAirdropAllocation(
 
     const airdropEntity = fetchAirdrop(airdrop);
     entity.airdrop = airdropEntity.id;
-    const tokenDecimals = getTokenDecimals(airdropEntity.token);
+    const tokenAddress = Address.fromBytes(airdropEntity.token);
+    const tokenDecimals = getTokenDecimals(tokenAddress);
     setBigNumber(entity, "amountTransferred", BigInt.zero(), tokenDecimals);
     entity.index = index;
     entity.initialized = true;
