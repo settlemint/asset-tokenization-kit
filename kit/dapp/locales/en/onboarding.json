@@ -29,5 +29,17 @@
   },
   "wallet-generated": "Wallet generated successfully",
   "wallet-already-exists": "Wallet already exists for this user",
-  "wallet-creation-failed": "Failed to create wallet. Please try again."
+  "wallet-creation-failed": "Failed to create wallet. Please try again.",
+  "assets": {
+    "bond": "Bonds",
+    "equity": "Equities",
+    "fund": "Funds",
+    "stablecoin": "Stable coins",
+    "deposit": "Deposits"
+  },
+  "asset-selection": {
+    "title": "Asset Types",
+    "description": "Select the asset types you want to support on your platform",
+    "continue": "Continue"
+  }
 }

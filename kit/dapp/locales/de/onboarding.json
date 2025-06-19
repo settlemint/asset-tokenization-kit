@@ -29,5 +29,17 @@
   },
   "wallet-generated": "Wallet erfolgreich erstellt",
   "wallet-already-exists": "Wallet existiert bereits für diesen Benutzer",
-  "wallet-creation-failed": "Die Erstellung der Wallet ist fehlgeschlagen. Bitte versuche es erneut."
+  "wallet-creation-failed": "Die Erstellung der Wallet ist fehlgeschlagen. Bitte versuche es erneut.",
+  "assets": {
+    "bond": "Anleihen",
+    "equity": "Aktien",
+    "fund": "Fonds",
+    "stablecoin": "Stablecoins",
+    "deposit": "Einlagen"
+  },
+  "asset-selection": {
+    "title": "Asset-Typen",
+    "description": "Wählen Sie die Asset-Typen aus, die Sie auf Ihrer Plattform unterstützen möchten",
+    "continue": "Weiter"
+  }
 }

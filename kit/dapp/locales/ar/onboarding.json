@@ -29,5 +29,17 @@
   },
   "wallet-generated": "تم إنشاء المحفظة بنجاح",
   "wallet-already-exists": "توجد محفظة بالفعل لهذا المستخدم",
-  "wallet-creation-failed": "فشل في إنشاء المحفظة. يرجى المحاولة مرة أخرى."
+  "wallet-creation-failed": "فشل في إنشاء المحفظة. يرجى المحاولة مرة أخرى.",
+  "assets": {
+    "bond": "السندات",
+    "equity": "الأسهم",
+    "fund": "الصناديق",
+    "stablecoin": "العملات المستقرة",
+    "deposit": "الودائع"
+  },
+  "asset-selection": {
+    "title": "أنواع الأصول",
+    "description": "اختر أنواع الأصول التي تريد دعمها على منصتك",
+    "continue": "متابعة"
+  }
 }

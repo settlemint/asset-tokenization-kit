@@ -30,7 +30,7 @@ export function OnboardingGuard({ children, require }: OnboardingGuardProps) {
       if (errorObj.code === "UNAUTHORIZED") {
         void navigate({
           to: "/auth/$pathname",
-          params: { pathname: "signin" },
+          params: { pathname: "sign-in" },
           replace: true,
         });
       }
