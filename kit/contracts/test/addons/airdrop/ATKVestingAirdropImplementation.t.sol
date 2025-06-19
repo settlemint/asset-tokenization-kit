@@ -141,7 +141,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         assertEq(address(vestingAirdrop.token()), address(token));
         assertEq(vestingAirdrop.merkleRoot(), merkleRoot);
         assertEq(address(vestingAirdrop.vestingStrategy()), address(vestingStrategy));
-        assertEq(vestingAirdrop.claimPeriodEnd(), initializationDeadline);
+        assertEq(vestingAirdrop.initializationDeadline(), initializationDeadline);
     }
 
     function testFactoryCreateWithInvalidVestingStrategy() public {
