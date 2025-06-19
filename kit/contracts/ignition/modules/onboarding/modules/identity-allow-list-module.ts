@@ -3,10 +3,12 @@ import ATKModule from "../../main";
 import ATKOnboardingSystemModule from "../system";
 
 const IdentityAllowListModule = buildModule("IdentityAllowListModule", (m) => {
-  const { system } = m.useModule(ATKOnboardingSystemModule);
+  const { complianceModuleRegistry } = m.useModule(ATKOnboardingSystemModule);
   const { identityAllowListModule } = m.useModule(ATKModule);
 
-  m.call(system, "registerComplianceModule", [identityAllowListModule]);
+  m.call(complianceModuleRegistry, "registerComplianceModule", [
+    identityAllowListModule,
+  ]);
 
   return { identityAllowListModule };
 });

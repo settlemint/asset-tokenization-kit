@@ -28,6 +28,9 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     trustedIssuersRegistry,
     topicSchemeRegistry,
     identityFactory,
+    tokenFactoryRegistry,
+    complianceModuleRegistry,
+    systemAddonRegistry,
   } = m.useModule(ATKOnboardingSystemModule);
 
   // Setup factories
@@ -70,6 +73,10 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     equityFactory,
     fundFactory,
     stablecoinFactory,
+    // Registries
+    tokenFactoryRegistry,
+    complianceModuleRegistry,
+    systemAddonRegistry,
     // Compliance modules
     countryAllowListModule,
     countryBlockListModule,
