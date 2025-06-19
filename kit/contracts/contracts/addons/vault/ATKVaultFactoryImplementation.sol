@@ -35,6 +35,9 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     /// contracts created by this factory.
     address[] private allVaults;
 
+    /// @notice The trusted forwarder address for meta-transactions
+    address private _trustedForwarder;
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) { }
 
@@ -42,8 +45,17 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     /// @dev Initializes the factory and sets up support for meta-transactions via ERC2771Context.
     /// @param systemAddress_ The address of the `IATKSystem` contract.
     /// @param initialAdmin_ The address of the initial admin.
-    function initialize(address systemAddress_, address initialAdmin_) public initializer {
+    /// @param forwarder_ The address of the trusted forwarder for meta-transactions.
+    function initialize(address systemAddress_, address initialAdmin_, address forwarder_) public initializer {
+        _trustedForwarder = forwarder_;
         _initializeAbstractSystemAddonFactory(systemAddress_, initialAdmin_);
+    }
+
+    /// @notice Returns the address of the trusted forwarder
+    /// @dev Overrides the parent implementation to return the stored forwarder address
+    /// @return The address of the trusted forwarder
+    function trustedForwarder() public view override returns (address) {
+        return _trustedForwarder;
     }
 
     /// @notice Creates and deploys a new `ATKVault` contract for a given configuration.

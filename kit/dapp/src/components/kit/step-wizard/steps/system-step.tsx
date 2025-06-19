@@ -6,8 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useBlockchainMutation } from "@/hooks/use-blockchain-mutation";
 import { useSettings } from "@/hooks/use-settings";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { useTranslation } from "react-i18next";
 
 interface SystemStepProps {
@@ -24,7 +24,7 @@ export function SystemStep({ orpc, onComplete }: SystemStepProps) {
     mutate: createSystem,
     isPending: isCreatingSystem,
     isTracking,
-  } = useBlockchainMutation({
+  } = useStreamingMutation({
     mutationOptions: orpc.system.create.mutationOptions({
       onSuccess: (data: string) => {
         setSystemAddress(data);
@@ -32,13 +32,9 @@ export function SystemStep({ orpc, onComplete }: SystemStepProps) {
       },
     }),
     messages: {
-      pending: {
-        mining: t("onboarding:messages.pending.mining"),
-        indexing: t("onboarding:messages.pending.indexing"),
-      },
-      success: t("onboarding:messages.success"),
-      error: t("onboarding:messages.error"),
-      timeout: t("onboarding:messages.timeout"),
+      initialLoading: t("onboarding:messages.pending.mining"),
+      noResultError: t("onboarding:messages.error"),
+      defaultError: t("onboarding:messages.error"),
     },
   });
 
@@ -130,8 +126,8 @@ export function SystemStep({ orpc, onComplete }: SystemStepProps) {
             className="w-full"
           >
             {isCreatingSystem || isTracking
-              ? t("onboarding:deploying-system", "Deploying system...")
-              : t("onboarding:deploy-smart-system", "Deploy SMART system")}
+              ? "Deploying system..."
+              : "Deploy SMART system"}
           </Button>
         </div>
       </CardContent>

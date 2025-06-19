@@ -26,7 +26,7 @@ contract ATKVaultFactoryProxy {
 
         // Initialize the implementation
         (bool success,) = implementation.delegatecall(
-            abi.encodeWithSelector(IATKVaultFactory.initialize.selector, systemAddress, initialAdmin_)
+            abi.encodeWithSelector(IATKVaultFactory.initialize.selector, systemAddress, initialAdmin_, forwarder_)
         );
         if (!success) revert("Initialization failed");
     }
