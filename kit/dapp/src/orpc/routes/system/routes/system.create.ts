@@ -104,13 +104,7 @@ export const create = onboardedRouter.system.create
       txHashResult.ATKSystemFactoryCreateSystem?.transactionHash ?? null;
 
     if (!transactionHash) {
-      throw errors.TRANSACTION_FAILED({
-        data: {
-          details: {
-            message: "Failed to send transaction",
-          },
-        },
-      });
+      throw errors.INTERNAL_SERVER_ERROR();
     }
 
     for await (const event of trackTransaction(
@@ -129,25 +123,13 @@ export const create = onboardedRouter.system.create
     );
 
     if (systems.length === 0) {
-      throw errors.TRANSACTION_FAILED({
-        data: {
-          details: {
-            message: "Transaction failed to create system",
-          },
-        },
-      });
+      throw errors.INTERNAL_SERVER_ERROR();
     }
 
     const system = systems[0];
 
     if (!system) {
-      throw errors.TRANSACTION_FAILED({
-        data: {
-          details: {
-            message: "Transaction failed to create system",
-          },
-        },
-      });
+      throw errors.INTERNAL_SERVER_ERROR();
     }
 
     yield withEventMeta(

@@ -66,7 +66,8 @@ const getORPCClient = createIsomorphicFn()
             },
           ],
           exclude: ({ path }) => {
-            return path.includes("track");
+            // Exclude streaming endpoints from batching
+            return path.includes("track") || path.includes("system.create");
           },
         }),
         new ClientRetryPlugin({
