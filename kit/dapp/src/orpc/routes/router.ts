@@ -51,18 +51,6 @@ export const router = baseRouter.router({
   system: baseRouter.system.lazy(() => import("./system/system.router")),
 
   /**
-   * Transaction-related API procedures.
-   *
-   * Lazy-loaded module containing transaction-related operations such as
-   * tracking transactions and managing transaction-related resources.
-   *
-   * @see {@link ./transaction/transaction.router} - Transaction router implementation
-   */
-  transaction: baseRouter.transaction.lazy(
-    () => import("./transaction/transaction.router")
-  ),
-
-  /**
    * User-related API procedures.
    *
    * Lazy-loaded module containing user-related operations such as

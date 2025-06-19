@@ -75,3 +75,11 @@ export const ethereumAddress = z
  * using viem's Address type.
  */
 export type EthereumAddress = z.output<typeof ethereumAddress>;
+
+export function isEthereumAddress(value: unknown): value is EthereumAddress {
+  return ethereumAddress.safeParse(value).success;
+}
+
+export function getEthereumAddress(value: unknown): EthereumAddress {
+  return ethereumAddress.parse(value);
+}
