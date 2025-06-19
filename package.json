@@ -41,6 +41,7 @@
     "docs": "turbo run docs",
     "ci:gha": "turbo run ci:gha",
     "ci:gha:main": "turbo run ci:gha:main",
+    "ci:gha:nightly": "turbo run ci:gha:nightly",
     "ci": "turbo run ci",
     "ci:publish": "turbo run ci:publish",
     "version": "bun run tools/version.ts",
