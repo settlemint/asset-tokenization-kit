@@ -27,6 +27,47 @@ dataSources:
         - event: ATKSystemCreated(indexed address,indexed address)
           handler: handleATKSystemCreated
       file: ./src/system-factory/system-factory.ts
+  - kind: ethereum
+    name: VestingAirdrop
+    network: settlemint
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: VestingAirdrop
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - BatchClaimed
+        - BatchVestingInitialized
+        - Claimed
+        - Initialized
+        - OwnershipTransferred
+        - TokensWithdrawn
+        - VestingInitialized
+        - VestingStrategyUpdated
+      abis:
+        - name: VestingAirdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol/ATKVestingAirdropImplementation.json
+      eventHandlers:
+        - event: BatchClaimed(indexed address,uint256,uint256[],uint256[])
+          handler: handleBatchClaimed
+        - event: BatchVestingInitialized(indexed address,uint256[],uint256[])
+          handler: handleBatchVestingInitialized
+        - event: Claimed(indexed address,uint256,uint256)
+          handler: handleClaimed
+        - event: Initialized(uint64)
+          handler: handleInitialized
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: TokensWithdrawn(indexed address,uint256)
+          handler: handleTokensWithdrawn
+        - event: VestingInitialized(indexed address,uint256,uint256)
+          handler: handleVestingInitialized
+        - event: VestingStrategyUpdated(indexed address,indexed address)
+          handler: handleVestingStrategyUpdated
+      file: ./src/vesting-airdrop.ts
 templates:
   - kind: ethereum
     name: AccessControl
