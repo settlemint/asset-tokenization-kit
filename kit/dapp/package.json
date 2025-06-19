@@ -42,11 +42,10 @@
     "typescript-eslint": "8.34.1",
     "vite": "6.3.5",
     "vite-bundle-analyzer": "0.22.3",
-    "vite-tsconfig-paths": "5.1.4"
-  },
-  "peerDependencies": {
+    "vite-tsconfig-paths": "5.1.4",
     "contracts": "workspace:*"
   },
+  "peerDependencies": {},
   "dependencies": {
     "@daveyplate/better-auth-tanstack": "1.3.6",
     "@daveyplate/better-auth-ui": "2.0.8",
