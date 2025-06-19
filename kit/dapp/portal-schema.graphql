@@ -896,7 +896,7 @@ type ATKComplianceImplementation {
 
   """
   Override supportsInterface to support ERC165 interface detection.
-  Announces support for ISMARTCompliance and IATKComplianceBypassList interfaces.
+  Announces support for ISMARTCompliance and IATKCompliance interfaces.
   True if the interface is supported, false otherwise.
   """
   supportsInterface(interfaceId: String!): Boolean
@@ -10649,7 +10649,7 @@ type IATKBondYieldTokenOutput {
   paymentToken: String
 }
 
-type IATKComplianceBypassList {
+type IATKCompliance {
   id: ID
 
   """
@@ -10659,33 +10659,33 @@ type IATKComplianceBypassList {
   isBypassed(account: String!): Boolean
 }
 
-input IATKComplianceBypassListAddMultipleToBypassListInput {
+input IATKComplianceAddMultipleToBypassListInput {
   """Array of addresses to add to the bypass list."""
   accounts: [String!]!
 }
 
-input IATKComplianceBypassListAddToBypassListInput {
+input IATKComplianceAddToBypassListInput {
   """The address to add to the bypass list."""
   account: String!
 }
 
-input IATKComplianceBypassListRemoveFromBypassListInput {
+input IATKComplianceRemoveFromBypassListInput {
   """The address to remove from the bypass list."""
   account: String!
 }
 
-input IATKComplianceBypassListRemoveMultipleFromBypassListInput {
+input IATKComplianceRemoveMultipleFromBypassListInput {
   """Array of addresses to remove from the bypass list."""
   accounts: [String!]!
 }
 
 """Returns the transaction hash"""
-type IATKComplianceBypassListTransactionOutput {
+type IATKComplianceTransactionOutput {
   transactionHash: String
 }
 
 """Returns the transaction receipt"""
-type IATKComplianceBypassListTransactionReceiptOutput {
+type IATKComplianceTransactionReceiptOutput {
   """Blob Gas Price"""
   blobGasPrice: String
 
@@ -32069,8 +32069,8 @@ type Mutation {
     verificationId: String
   ): ContractDeploymentTransactionOutput
 
-  """Deploy a IATKComplianceBypassList contract"""
-  DeployContractIATKComplianceBypassList(
+  """Deploy a IATKCompliance contract"""
+  DeployContractIATKCompliance(
     """
     Challenge response that is used to verify access to the private key of the from address
     """
@@ -35413,7 +35413,7 @@ type Mutation {
   Adds multiple addresses to the compliance bypass list in a single transaction.
   Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function. This is a gas-efficient way to add multiple addresses to the bypass list at once.
   """
-  IATKComplianceBypassListAddMultipleToBypassList(
+  IATKComplianceAddMultipleToBypassList(
     """The address of the contract"""
     address: String!
 
@@ -35430,7 +35430,7 @@ type Mutation {
 
     """Gas price"""
     gasPrice: String
-    input: IATKComplianceBypassListAddMultipleToBypassListInput!
+    input: IATKComplianceAddMultipleToBypassListInput!
 
     """Metadata (store custom metadata from your application)"""
     metadata: JSON
@@ -35445,13 +35445,13 @@ type Mutation {
     Verification ID that is used to verify access to the private key of the from address
     """
     verificationId: String
-  ): IATKComplianceBypassListTransactionOutput
+  ): IATKComplianceTransactionOutput
 
   """
   Adds an address to the compliance bypass list.
   Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function. Addresses on the bypass list can bypass compliance checks in canTransfer function.
   """
-  IATKComplianceBypassListAddToBypassList(
+  IATKComplianceAddToBypassList(
     """The address of the contract"""
     address: String!
 
@@ -35468,7 +35468,7 @@ type Mutation {
 
     """Gas price"""
     gasPrice: String
-    input: IATKComplianceBypassListAddToBypassListInput!
+    input: IATKComplianceAddToBypassListInput!
 
     """Metadata (store custom metadata from your application)"""
     metadata: JSON
@@ -35483,13 +35483,13 @@ type Mutation {
     Verification ID that is used to verify access to the private key of the from address
     """
     verificationId: String
-  ): IATKComplianceBypassListTransactionOutput
+  ): IATKComplianceTransactionOutput
 
   """
   Removes an address from the compliance bypass list.
   Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
   """
-  IATKComplianceBypassListRemoveFromBypassList(
+  IATKComplianceRemoveFromBypassList(
     """The address of the contract"""
     address: String!
 
@@ -35506,7 +35506,7 @@ type Mutation {
 
     """Gas price"""
     gasPrice: String
-    input: IATKComplianceBypassListRemoveFromBypassListInput!
+    input: IATKComplianceRemoveFromBypassListInput!
 
     """Metadata (store custom metadata from your application)"""
     metadata: JSON
@@ -35521,13 +35521,13 @@ type Mutation {
     Verification ID that is used to verify access to the private key of the from address
     """
     verificationId: String
-  ): IATKComplianceBypassListTransactionOutput
+  ): IATKComplianceTransactionOutput
 
   """
   Removes multiple addresses from the compliance bypass list in a single transaction.
   Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
   """
-  IATKComplianceBypassListRemoveMultipleFromBypassList(
+  IATKComplianceRemoveMultipleFromBypassList(
     """The address of the contract"""
     address: String!
 
@@ -35544,7 +35544,7 @@ type Mutation {
 
     """Gas price"""
     gasPrice: String
-    input: IATKComplianceBypassListRemoveMultipleFromBypassListInput!
+    input: IATKComplianceRemoveMultipleFromBypassListInput!
 
     """Metadata (store custom metadata from your application)"""
     metadata: JSON
@@ -35559,7 +35559,7 @@ type Mutation {
     Verification ID that is used to verify access to the private key of the from address
     """
     verificationId: String
-  ): IATKComplianceBypassListTransactionOutput
+  ): IATKComplianceTransactionOutput
 
   """
   Adds a new compliance module contract to this token's compliance framework and sets its initial configuration parameters.
@@ -63385,34 +63385,34 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): IATKBondTransactionReceiptOutput
-  IATKComplianceBypassList(
+  IATKCompliance(
     """The address of the contract"""
     address: String!
-  ): IATKComplianceBypassList
+  ): IATKCompliance
 
   """Fetches the receipt for the given transaction hash"""
-  IATKComplianceBypassListAddMultipleToBypassListReceipt(
+  IATKComplianceAddMultipleToBypassListReceipt(
     """The transaction hash"""
     transactionHash: String!
-  ): IATKComplianceBypassListTransactionReceiptOutput
+  ): IATKComplianceTransactionReceiptOutput
 
   """Fetches the receipt for the given transaction hash"""
-  IATKComplianceBypassListAddToBypassListReceipt(
+  IATKComplianceAddToBypassListReceipt(
     """The transaction hash"""
     transactionHash: String!
-  ): IATKComplianceBypassListTransactionReceiptOutput
+  ): IATKComplianceTransactionReceiptOutput
 
   """Fetches the receipt for the given transaction hash"""
-  IATKComplianceBypassListRemoveFromBypassListReceipt(
+  IATKComplianceRemoveFromBypassListReceipt(
     """The transaction hash"""
     transactionHash: String!
-  ): IATKComplianceBypassListTransactionReceiptOutput
+  ): IATKComplianceTransactionReceiptOutput
 
   """Fetches the receipt for the given transaction hash"""
-  IATKComplianceBypassListRemoveMultipleFromBypassListReceipt(
+  IATKComplianceRemoveMultipleFromBypassListReceipt(
     """The transaction hash"""
     transactionHash: String!
-  ): IATKComplianceBypassListTransactionReceiptOutput
+  ): IATKComplianceTransactionReceiptOutput
   IATKDeposit(
     """The address of the contract"""
     address: String!
@@ -69133,9 +69133,9 @@ type Query {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the IATKComplianceBypassList ABI
+  Get all contracts with their deployment status for the IATKCompliance ABI
   """
-  getContractsDeployStatusIatkComplianceBypassList(
+  getContractsDeployStatusIATKCompliance(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -70166,8 +70166,8 @@ type Query {
     transactionHash: String
   ): ContractsPaginatedOutput
 
-  """Get all contracts for the IATKComplianceBypassList ABI"""
-  getContractsIatkComplianceBypassList(
+  """Get all contracts for the IATKCompliance ABI"""
+  getContractsIATKCompliance(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -79273,9 +79273,9 @@ type Subscription {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the IATKComplianceBypassList ABI
+  Get all contracts with their deployment status for the IATKCompliance ABI
   """
-  getContractsDeployStatusIatkComplianceBypassList(
+  getContractsDeployStatusIATKCompliance(
     """Page number, starts from 0"""
     page: Int = 0
 

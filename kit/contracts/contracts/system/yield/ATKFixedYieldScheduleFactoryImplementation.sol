@@ -15,7 +15,7 @@ import { IATKFixedYieldScheduleFactory } from "./IATKFixedYieldScheduleFactory.s
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 import { IATKSystem } from "../IATKSystem.sol";
-import { IATKComplianceBypassList } from "../compliance/IATKComplianceBypassList.sol";
+import { IATKCompliance } from "../compliance/IATKCompliance.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 
 // Implementations
@@ -146,13 +146,13 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         // Cast the proxy to ISMARTFixedYieldSchedule for storage, as the proxy behaves like one.
         allSchedules.push(ISMARTFixedYieldSchedule(payable(scheduleProxyAddress)));
 
-        address complianceProxy = IATKSystem(systemAddress).complianceProxy();
+        address complianceProxy = IATKSystem(systemAddress).compliance();
         if (
             complianceProxy != address(0)
-                && IERC165(complianceProxy).supportsInterface(type(IATKComplianceBypassList).interfaceId)
+                && IERC165(complianceProxy).supportsInterface(type(IATKCompliance).interfaceId)
         ) {
             // Allow schedule to receive tokens
-            IATKComplianceBypassList(complianceProxy).addToBypassList(scheduleProxyAddress);
+            IATKCompliance(complianceProxy).addToBypassList(scheduleProxyAddress);
         }
 
         return scheduleProxyAddress;

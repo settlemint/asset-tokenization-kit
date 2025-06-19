@@ -12,7 +12,7 @@ import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 
 // Interfaces
 import { IATKSystem } from "./IATKSystem.sol";
-import { IATKComplianceBypassList } from "./compliance/IATKComplianceBypassList.sol";
+import { IATKCompliance } from "./compliance/IATKCompliance.sol";
 import { IWithTypeIdentifier } from "./../smart/interface/IWithTypeIdentifier.sol";
 
 // Constants
@@ -137,13 +137,13 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
     /// @dev Internal helper to handle compliance bypass list registration.
     /// @param systemAddonAddress The address of the system addon contract to add.
     function _addToComplianceBypassList(address systemAddonAddress) internal {
-        address complianceProxy = IATKSystem(_systemAddress).complianceProxy();
+        address complianceProxy = IATKSystem(_systemAddress).compliance();
         if (
             complianceProxy != address(0)
-                && IERC165(complianceProxy).supportsInterface(type(IATKComplianceBypassList).interfaceId)
+                && IERC165(complianceProxy).supportsInterface(type(IATKCompliance).interfaceId)
         ) {
             // Allow system addons to receive tokens
-            IATKComplianceBypassList(complianceProxy).addToBypassList(systemAddonAddress);
+            IATKCompliance(complianceProxy).addToBypassList(systemAddonAddress);
         }
     }
 

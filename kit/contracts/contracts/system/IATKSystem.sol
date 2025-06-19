@@ -190,4 +190,12 @@ interface IATKSystem is IERC165 {
     /// you should use this proxy address. It will forward calls to the current logic implementation.
     /// @return identityVerificationModuleAddress The blockchain address of the identity verification module's proxy.
     function identityVerificationModule() external view returns (address identityVerificationModuleAddress);
+
+    /// @notice Returns the address of the identity implementation.
+    /// @return The address of the identity implementation contract.
+    function identityImplementation() external view returns (address);
+
+    /// @notice Returns the address of the token identity implementation.
+    /// @return The address of the token identity implementation contract.
+    function tokenIdentityImplementation() external view returns (address);
 }

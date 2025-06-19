@@ -355,7 +355,7 @@ contract ATKComplianceImplementation is
     // --- Overrides for ERC2771ContextUpgradeable ---
 
     /// @notice Override supportsInterface to support ERC165 interface detection
-    /// @dev Announces support for ISMARTCompliance and IATKComplianceBypassList interfaces
+    /// @dev Announces support for ISMARTCompliance and IATKCompliance interfaces
     /// @param interfaceId The interface identifier to check
     /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)

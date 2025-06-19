@@ -687,6 +687,18 @@ contract ATKSystemImplementation is
         return _implementations[moduleType];
     }
 
+    /// @notice Returns the address of the identity implementation.
+    /// @return The address of the identity implementation contract.
+    function identityImplementation() external view returns (address) {
+        return _implementations[IDENTITY];
+    }
+
+    /// @notice Returns the address of the token identity implementation.
+    /// @return The address of the token identity implementation contract.
+    function tokenIdentityImplementation() external view returns (address) {
+        return _implementations[TOKEN_IDENTITY];
+    }
+
     // --- Proxy Getter Functions ---
     // These public view functions allow anyone to query the stable addresses of the proxy contracts for each module.
     // Interactions with the SMART Protocol modules should always go through these proxy addresses.
