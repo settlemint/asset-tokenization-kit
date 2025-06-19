@@ -1,0 +1,32 @@
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Airdrop } from "../../../../generated/schema";
+import { Airdrop as AirdropContract } from "../../../../generated/templates/Airdrop/Airdrop";
+import { InterfaceIds } from "../../../erc165/utils/interfaceids";
+import { setBigNumber } from "../../../utils/bignumber";
+import { getTokenDecimals } from "../../../utils/token-decimals";
+
+export function fetchAirdrop(id: Address): Airdrop {
+  let entity = Airdrop.load(id);
+
+  if (entity == null) {
+    entity = new Airdrop(id);
+    const endpoint = AirdropContract.bind(id);
+    const name = endpoint.try_name();
+    const token = endpoint.try_token();
+    const merkleRoot = endpoint.try_merkleRoot();
+
+    entity.name = name.reverted ? "unknown" : name.value;
+    entity.token = token.reverted ? Address.zero() : token.value;
+    entity.merkleRoot = merkleRoot.reverted ? Bytes.empty() : merkleRoot.value;
+    entity.typeId = InterfaceIds.IATKAirdrop;
+    entity.deployedInTransaction = Bytes.empty();
+    entity.factory = Address.zero();
+
+    const tokenDecimals = getTokenDecimals(entity.token);
+    setBigNumber(entity, "amountTransferred", BigInt.zero(), tokenDecimals);
+
+    entity.save();
+  }
+
+  return entity;
+}

@@ -93,6 +93,7 @@ contract ATKVestingAirdropFactoryImplementation is
     /// 4. **Proxy Deployment**: Deploys a `ATKVestingAirdropProxy` using CREATE2.
     /// 5. **Event Emission**: Emits `ATKVestingAirdropCreated`.
     /// 6. **Registry Update**: Adds the new proxy to `allAirdrops`.
+    /// @param name The human-readable name for this airdrop.
     /// @param token The address of the ERC20 token to be distributed.
     /// @param root The Merkle root for verifying claims.
     /// @param owner The initial owner of the contract.
@@ -100,6 +101,7 @@ contract ATKVestingAirdropFactoryImplementation is
     /// @param initializationDeadline The timestamp after which no new vesting can be initialized.
     /// @return airdropProxyAddress The address of the newly created `ATKVestingAirdropProxy` contract.
     function create(
+        string memory name,
         address token,
         bytes32 root,
         address owner,
@@ -107,14 +109,13 @@ contract ATKVestingAirdropFactoryImplementation is
         uint256 initializationDeadline
     )
         external
-        override(IATKVestingAirdropFactory)
         onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
         returns (address airdropProxyAddress)
     {
         bytes memory saltInputData =
-            abi.encode(address(this), token, root, owner, vestingStrategy, initializationDeadline);
+            abi.encode(address(this), name, token, root, owner, vestingStrategy, initializationDeadline);
         bytes memory constructorArgs =
-            abi.encode(address(this), token, root, owner, vestingStrategy, initializationDeadline);
+            abi.encode(address(this), name, token, root, owner, vestingStrategy, initializationDeadline);
         bytes memory proxyBytecode = type(ATKVestingAirdropProxy).creationCode;
 
         // Predict the address first for validation
@@ -124,7 +125,9 @@ contract ATKVestingAirdropFactoryImplementation is
         airdropProxyAddress = _deploySystemAddon(proxyBytecode, constructorArgs, saltInputData, expectedAddress);
 
         // Emit an event to log the creation of the new airdrop proxy.
-        emit ATKVestingAirdropCreated(airdropProxyAddress, _msgSender());
+        emit ATKVestingAirdropCreated(
+            airdropProxyAddress, name, token, root, owner, vestingStrategy, initializationDeadline, _msgSender()
+        );
 
         // Add the new airdrop proxy to the list of all airdrops created by this factory.
         // Cast the proxy to IATKVestingAirdrop for storage, as the proxy behaves like one.
@@ -134,11 +137,12 @@ contract ATKVestingAirdropFactoryImplementation is
     }
 
     /// @notice Returns the total number of vesting airdrop proxy contracts created by this factory.
-    function allAirdropsLength() external view override(IATKVestingAirdropFactory) returns (uint256 count) {
+    function allAirdropsLength() external view returns (uint256 count) {
         return allAirdrops.length;
     }
 
     /// @notice Predicts the deployment address of a vesting airdrop proxy.
+    /// @param name The human-readable name for this airdrop.
     /// @param token The address of the ERC20 token to be distributed.
     /// @param root The Merkle root for verifying claims.
     /// @param owner The initial owner of the contract.
@@ -146,6 +150,7 @@ contract ATKVestingAirdropFactoryImplementation is
     /// @param initializationDeadline The timestamp after which no new vesting can be initialized.
     /// @return predictedAddress The predicted address of the vesting airdrop proxy.
     function predictVestingAirdropAddress(
+        string memory name,
         address token,
         bytes32 root,
         address owner,
@@ -154,13 +159,12 @@ contract ATKVestingAirdropFactoryImplementation is
     )
         external
         view
-        override(IATKVestingAirdropFactory)
         returns (address predictedAddress)
     {
         bytes memory saltInputData =
-            abi.encode(address(this), token, root, owner, vestingStrategy, initializationDeadline);
+            abi.encode(address(this), name, token, root, owner, vestingStrategy, initializationDeadline);
         bytes memory constructorArgs =
-            abi.encode(address(this), token, root, owner, vestingStrategy, initializationDeadline);
+            abi.encode(address(this), name, token, root, owner, vestingStrategy, initializationDeadline);
         bytes memory proxyBytecode = type(ATKVestingAirdropProxy).creationCode;
 
         return _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
