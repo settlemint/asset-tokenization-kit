@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { ComplianceModuleRegistry } from "../../../generated/schema";
 import { ComplianceModuleRegistry as ComplianceModuleRegistryTemplate } from "../../../generated/templates";
 import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
@@ -13,6 +13,7 @@ export function fetchComplianceModuleRegistry(
     complianceModuleRegistry = new ComplianceModuleRegistry(address);
     complianceModuleRegistry.accessControl = fetchAccessControl(address).id;
     complianceModuleRegistry.account = fetchAccount(address).id;
+    complianceModuleRegistry.deployedInTransaction = Bytes.empty();
     complianceModuleRegistry.save();
     ComplianceModuleRegistryTemplate.create(address);
   }

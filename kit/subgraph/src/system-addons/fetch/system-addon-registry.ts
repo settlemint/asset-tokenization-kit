@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, Bytes } from "@graphprotocol/graph-ts";
 import { SystemAddonRegistry } from "../../../generated/schema";
 import { SystemAddonRegistry as SystemAddonRegistryTemplate } from "../../../generated/templates";
 import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
@@ -13,6 +13,7 @@ export function fetchSystemAddonRegistry(
     systemAddonRegistry = new SystemAddonRegistry(address);
     systemAddonRegistry.accessControl = fetchAccessControl(address).id;
     systemAddonRegistry.account = fetchAccount(address).id;
+    systemAddonRegistry.deployedInTransaction = Bytes.empty();
     systemAddonRegistry.save();
     SystemAddonRegistryTemplate.create(address);
   }

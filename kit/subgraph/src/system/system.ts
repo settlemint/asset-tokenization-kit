@@ -15,12 +15,12 @@ import {
   TopicSchemeRegistryImplementationUpdated,
   TrustedIssuersRegistryImplementationUpdated,
 } from "../../generated/templates/System/System";
-import { fetchSystemAddonRegistry } from "../addons/fetch/system-addon-registry";
 import { fetchComplianceModuleRegistry } from "../compliance/fetch/compliance-module-registry";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
 import { fetchIdentityRegistryStorage } from "../identity-registry/fetch/identity-registry-storage";
+import { fetchSystemAddonRegistry } from "../system-addons/fetch/system-addon-registry";
 import { fetchTokenFactoryRegistry } from "../token-factory/fetch/token-factory-registry";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
 import { fetchCompliance } from "./fetch/compliance";
