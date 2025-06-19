@@ -17,6 +17,10 @@
     "system-created": "SMART-System erfolgreich erstellt",
     "creating-system": "Neues System wird erstellt...",
     "system-creation-failed": "Die Erstellung des Systems ist fehlgeschlagen. Bitte versuche es erneut.",
+    "button": {
+      "deploy": "Neues SMART-System bereitstellen",
+      "deploying": "Bereitstellung läuft..."
+    },
     "transaction-tracking": {
       "stream-timeout": "Die Verfolgung der Systembereitstellung hat nach 90 Sekunden abgelaufen",
       "waiting-for-mining": "Bereitstellung deines SMART-Systems auf der Blockchain...",
