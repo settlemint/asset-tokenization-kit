@@ -6,7 +6,8 @@ import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { IATKSystemAddonRegistry } from "./IATKSystemAddonRegistry.sol";
 import { InvalidAddonAddress, AddonTypeAlreadyRegistered, AddonImplementationNotSet } from "../ATKSystemErrors.sol";
@@ -19,7 +20,8 @@ contract ATKSystemAddonRegistryImplementation is
     IATKSystemAddonRegistry,
     IATKTypedImplementationRegistry,
     AccessControlUpgradeable,
-    ReentrancyGuardUpgradeable
+    ReentrancyGuardUpgradeable,
+    ERC2771ContextUpgradeable
 {
     IATKSystem private _system;
 
@@ -27,7 +29,7 @@ contract ATKSystemAddonRegistryImplementation is
     mapping(bytes32 typeHash => address addonProxyAddress) private addonProxiesByType;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
+    constructor(address trustedForwarder) ERC2771ContextUpgradeable(trustedForwarder) {
         _disableInitializers();
     }
 
@@ -112,5 +114,27 @@ contract ATKSystemAddonRegistryImplementation is
     {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKSystemAddonRegistry).interfaceId
             || interfaceId == type(IATKTypedImplementationRegistry).interfaceId;
+    }
+
+    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
+        return super._msgSender();
+    }
+
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
+        return super._msgData();
+    }
+
+    function _contextSuffixLength()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
+        return super._contextSuffixLength();
     }
 }

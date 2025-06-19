@@ -126,11 +126,11 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// (template).
     /// @param identityVerificationModule_ The default address for the identity verification module's
     /// logic contract.
+    /// @param tokenFactoryRegistryImplementation_ The default address for the token factory registry module's logic
+    /// contract.
     /// @param complianceModuleRegistryImplementation_ The default address for the compliance module registry module's
     /// logic contract.
     /// @param addonRegistryImplementation_ The default address for the addon registry module's logic contract.
-    /// @param tokenFactoryRegistryImplementation_ The default address for the token factory registry module's logic
-    /// contract.
     /// @param forwarder_ The address of the trusted forwarder contract to be used for meta-transactions (ERC2771).
     constructor(
         address atkSystemImplementation_,
@@ -144,9 +144,9 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         address tokenIdentityImplementation_,
         address tokenAccessManagerImplementation_,
         address identityVerificationModule_,
+        address tokenFactoryRegistryImplementation_,
         address complianceModuleRegistryImplementation_,
         address addonRegistryImplementation_,
-        address tokenFactoryRegistryImplementation_,
         address forwarder_
     )
         ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
@@ -221,9 +221,9 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
             defaultTokenIdentityImplementation,
             defaultTokenAccessManagerImplementation,
             defaultIdentityVerificationModule,
+            defaultTokenFactoryRegistryImplementation,
             defaultComplianceModuleRegistryImplementation,
-            defaultAddonRegistryImplementation,
-            defaultTokenFactoryRegistryImplementation
+            defaultAddonRegistryImplementation
         );
 
         ERC1967Proxy proxy = new ERC1967Proxy(atkSystemImplementation, callData);

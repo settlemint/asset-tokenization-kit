@@ -9,7 +9,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IATKVestingAirdropFactory } from "./IATKVestingAirdropFactory.sol";
 import { IATKVestingAirdrop } from "./IATKVestingAirdrop.sol";
 import { IATKSystem } from "../../IATKSystem.sol";
-import { IATKComplianceBypassList } from "../../compliance/IATKComplianceBypassList.sol";
+import { IATKCompliance } from "../../compliance/IATKCompliance.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from "../../AbstractATKSystemAddonFactoryImplementation.sol";

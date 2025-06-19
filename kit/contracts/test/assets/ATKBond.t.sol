@@ -81,14 +81,14 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         vm.startPrank(platformAdmin);
         bondFactory = IATKBondFactory(
-            systemUtils.system().createTokenFactory("Bond", address(bondFactoryImpl), address(bondImpl))
+            systemUtils.tokenFactoryRegistry().registerTokenFactory("Bond", address(bondFactoryImpl), address(bondImpl))
         );
 
         // Grant registrar role to owner so that he can create the bond
         IAccessControl(address(bondFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
 
         fixedYieldScheduleFactory = IATKFixedYieldScheduleFactory(
-            systemUtils.system().createSystemAddon(
+            systemUtils.systemAddonRegistry().registerSystemAddon(
                 "fixed-yield-schedule-factory",
                 address(fixedYieldScheduleFactoryImpl),
                 abi.encodeWithSelector(

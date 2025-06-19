@@ -16,7 +16,7 @@ import { AbstractATKSystemAddonFactoryImplementation } from
 import { ATKXvPSettlementProxy } from "./ATKXvPSettlementProxy.sol";
 import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
 import { IATKSystem } from "../../system/IATKSystem.sol";
-import { IATKComplianceBypassList } from "../../system/compliance/IATKComplianceBypassList.sol";
+import { IATKCompliance } from "../../system/compliance/IATKCompliance.sol";
 
 /// @title XvPSettlementFactory - A factory contract for creating XvPSettlement contracts
 /// @notice This contract allows the creation of new XvPSettlement contracts with deterministic addresses using CREATE2.

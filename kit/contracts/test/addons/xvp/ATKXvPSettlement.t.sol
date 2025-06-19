@@ -69,7 +69,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Create system addon for XvP settlement factory
         factory = IATKXvPSettlementFactory(
-            systemUtils.system().createSystemAddon(
+            systemUtils.systemAddonRegistry().registerSystemAddon(
                 "xvp-settlement-factory", address(factoryImpl), encodedInitializationData
             )
         );

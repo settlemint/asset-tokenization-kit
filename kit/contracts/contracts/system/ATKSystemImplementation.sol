@@ -223,6 +223,11 @@ contract ATKSystemImplementation is
     /// be ISMARTTokenAccessManager compliant.
     /// @param identityVerificationModule_ The initial address of the identity verification module
     /// contract's logic.
+    /// @param tokenFactoryRegistryImplementation_ The initial address of the token factory registry module's logic
+    /// contract.
+    /// @param complianceModuleRegistryImplementation_ The initial address of the compliance module registry module's
+    /// logic contract.
+    /// @param addonRegistryImplementation_ The initial address of the addon registry module's logic contract.
     function initialize(
         address initialAdmin_,
         address complianceImplementation_,
@@ -235,9 +240,9 @@ contract ATKSystemImplementation is
         address tokenIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
         address identityVerificationModule_,
+        address tokenFactoryRegistryImplementation_,
         address complianceModuleRegistryImplementation_,
-        address addonRegistryImplementation_,
-        address tokenFactoryRegistryImplementation_
+        address addonRegistryImplementation_
     )
         public
         initializer

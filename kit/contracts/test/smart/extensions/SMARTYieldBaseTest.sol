@@ -30,7 +30,7 @@ abstract contract SMARTYieldBaseTest is AbstractSMARTTest, SMARTYieldHelpers {
             new ATKFixedYieldScheduleFactoryImplementation(address(address(0)));
 
         yieldScheduleFactory = IATKFixedYieldScheduleFactory(
-            systemUtils.system().createSystemAddon(
+            systemUtils.systemAddonRegistry().registerSystemAddon(
                 "fixed-yield-schedule-factory",
                 address(fixedYieldScheduleFactoryImpl),
                 abi.encodeWithSelector(

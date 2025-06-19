@@ -25,6 +25,7 @@ import { IATKTokenFactory } from "../../contracts/system/token-factory/IATKToken
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IATKTypedImplementationRegistry } from "../../contracts/system/IATKTypedImplementationRegistry.sol";
 
 // Import system errors
 import {
@@ -64,6 +65,20 @@ contract MockInvalidContract {
 }
 
 contract ATKSystemTest is Test {
+    // --- Module Type Hashes ---
+    bytes32 internal constant COMPLIANCE = keccak256("COMPLIANCE");
+    bytes32 internal constant IDENTITY_REGISTRY = keccak256("IDENTITY_REGISTRY");
+    bytes32 internal constant IDENTITY_REGISTRY_STORAGE = keccak256("IDENTITY_REGISTRY_STORAGE");
+    bytes32 internal constant TRUSTED_ISSUERS_REGISTRY = keccak256("TRUSTED_ISSUERS_REGISTRY");
+    bytes32 internal constant TOPIC_SCHEME_REGISTRY = keccak256("TOPIC_SCHEME_REGISTRY");
+    bytes32 internal constant IDENTITY_FACTORY = keccak256("IDENTITY_FACTORY");
+    bytes32 internal constant TOKEN_ACCESS_MANAGER = keccak256("TOKEN_ACCESS_MANAGER");
+    bytes32 internal constant IDENTITY = keccak256("IDENTITY");
+    bytes32 internal constant TOKEN_IDENTITY = keccak256("TOKEN_IDENTITY");
+    bytes32 internal constant COMPLIANCE_MODULE_REGISTRY = keccak256("COMPLIANCE_MODULE_REGISTRY");
+    bytes32 internal constant ADDON_REGISTRY = keccak256("ADDON_REGISTRY");
+    bytes32 internal constant TOKEN_FACTORY_REGISTRY = keccak256("TOKEN_FACTORY_REGISTRY");
+
     SystemUtils public systemUtils;
     IATKSystem public atkSystem;
 
@@ -105,23 +120,31 @@ contract ATKSystemTest is Test {
 
     function test_InitialState() public view {
         // Check that implementation addresses are set
-        assertTrue(atkSystem.complianceImplementation() != address(0));
-        assertTrue(atkSystem.identityRegistryImplementation() != address(0));
-        assertTrue(atkSystem.identityRegistryStorageImplementation() != address(0));
-        assertTrue(atkSystem.trustedIssuersRegistryImplementation() != address(0));
-        assertTrue(atkSystem.topicSchemeRegistryImplementation() != address(0));
-        assertTrue(atkSystem.identityFactoryImplementation() != address(0));
-        assertTrue(atkSystem.identityImplementation() != address(0));
-        assertTrue(atkSystem.tokenIdentityImplementation() != address(0));
-        assertTrue(atkSystem.tokenAccessManagerImplementation() != address(0));
+        assertTrue(IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE) != address(0));
+        assertTrue(IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY_REGISTRY) != address(0));
+        assertTrue(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY_REGISTRY_STORAGE) != address(0)
+        );
+        assertTrue(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TRUSTED_ISSUERS_REGISTRY) != address(0)
+        );
+        assertTrue(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOPIC_SCHEME_REGISTRY) != address(0)
+        );
+        assertTrue(IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY_FACTORY) != address(0));
+        assertTrue(IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY) != address(0));
+        assertTrue(IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOKEN_IDENTITY) != address(0));
+        assertTrue(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOKEN_ACCESS_MANAGER) != address(0)
+        );
 
         // Proxy addresses should be set (system is already bootstrapped)
-        assertTrue(atkSystem.complianceProxy() != address(0));
-        assertTrue(atkSystem.identityRegistryProxy() != address(0));
-        assertTrue(atkSystem.identityRegistryStorageProxy() != address(0));
-        assertTrue(atkSystem.trustedIssuersRegistryProxy() != address(0));
-        assertTrue(atkSystem.topicSchemeRegistryProxy() != address(0));
-        assertTrue(atkSystem.identityFactoryProxy() != address(0));
+        assertTrue(atkSystem.compliance() != address(0));
+        assertTrue(atkSystem.identityRegistry() != address(0));
+        assertTrue(atkSystem.identityRegistryStorage() != address(0));
+        assertTrue(atkSystem.trustedIssuersRegistry() != address(0));
+        assertTrue(atkSystem.topicSchemeRegistry() != address(0));
+        assertTrue(atkSystem.identityFactory() != address(0));
 
         // Compliance module should be set
         assertTrue(atkSystem.identityVerificationModule() != address(0));
@@ -180,7 +203,9 @@ contract ATKSystemTest is Test {
         emit IATKSystem.ComplianceImplementationUpdated(admin, address(complianceImpl));
 
         ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(complianceImpl));
-        assertEq(ATKSystemImplementation(address(atkSystem)).complianceImplementation(), address(complianceImpl));
+        assertEq(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE), address(complianceImpl)
+        );
     }
 
     function test_SetComplianceImplementation_OnlyAdmin() public {
@@ -208,7 +233,8 @@ contract ATKSystemTest is Test {
 
         ATKSystemImplementation(address(atkSystem)).setIdentityRegistryImplementation(address(identityRegistryImpl));
         assertEq(
-            ATKSystemImplementation(address(atkSystem)).identityRegistryImplementation(), address(identityRegistryImpl)
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY_REGISTRY),
+            address(identityRegistryImpl)
         );
     }
 
@@ -233,7 +259,7 @@ contract ATKSystemTest is Test {
             address(identityRegistryStorageImpl)
         );
         assertEq(
-            ATKSystemImplementation(address(atkSystem)).identityRegistryStorageImplementation(),
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY_REGISTRY_STORAGE),
             address(identityRegistryStorageImpl)
         );
     }
@@ -247,7 +273,7 @@ contract ATKSystemTest is Test {
             address(trustedIssuersRegistryImpl)
         );
         assertEq(
-            ATKSystemImplementation(address(atkSystem)).trustedIssuersRegistryImplementation(),
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TRUSTED_ISSUERS_REGISTRY),
             address(trustedIssuersRegistryImpl)
         );
     }
@@ -259,7 +285,8 @@ contract ATKSystemTest is Test {
 
         ATKSystemImplementation(address(atkSystem)).setIdentityFactoryImplementation(address(identityFactoryImpl));
         assertEq(
-            ATKSystemImplementation(address(atkSystem)).identityFactoryImplementation(), address(identityFactoryImpl)
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY_FACTORY),
+            address(identityFactoryImpl)
         );
     }
 
@@ -269,7 +296,7 @@ contract ATKSystemTest is Test {
         emit IATKSystem.IdentityImplementationUpdated(admin, address(identityImpl));
 
         ATKSystemImplementation(address(atkSystem)).setIdentityImplementation(address(identityImpl));
-        assertEq(ATKSystemImplementation(address(atkSystem)).identityImplementation(), address(identityImpl));
+        assertEq(IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY), address(identityImpl));
     }
 
     function test_SetTokenIdentityImplementation() public {
@@ -291,24 +318,6 @@ contract ATKSystemTest is Test {
             ATKSystemImplementation(address(atkSystem)).tokenAccessManagerImplementation(),
             address(tokenAccessManagerImpl)
         );
-    }
-
-    function test_CreateTokenFactory_OnlyAdmin() public {
-        vm.prank(user);
-        vm.expectRevert();
-        atkSystem.createTokenFactory("TestFactory", address(0x123), address(identityImpl));
-    }
-
-    function test_CreateTokenFactory_InvalidFactoryAddress() public {
-        vm.prank(admin);
-        vm.expectRevert();
-        atkSystem.createTokenFactory("TestFactory", address(0), address(identityImpl));
-    }
-
-    function test_CreateTokenFactory_InvalidTokenImplementation() public {
-        vm.prank(admin);
-        vm.expectRevert();
-        atkSystem.createTokenFactory("TestFactory", address(0x123), address(0));
     }
 
     function test_SupportsInterface() public view {
@@ -386,14 +395,14 @@ contract ATKSystemTest is Test {
 
     function test_IntegrationWithActualContracts() public view {
         // Test that the system works with actual proxy contracts
-        ISMARTCompliance compliance = ISMARTCompliance(atkSystem.complianceProxy());
-        ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(atkSystem.identityRegistryProxy());
+        ISMARTCompliance compliance = ISMARTCompliance(atkSystem.compliance());
+        ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(atkSystem.identityRegistry());
         ISMARTIdentityRegistryStorage identityStorage =
-            ISMARTIdentityRegistryStorage(atkSystem.identityRegistryStorageProxy());
+            ISMARTIdentityRegistryStorage(atkSystem.identityRegistryStorage());
         IERC3643TrustedIssuersRegistry trustedIssuers =
-            IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistryProxy());
-        ISMARTTopicSchemeRegistry topicSchemeRegistry = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistryProxy());
-        IATKIdentityFactory identityFactory = IATKIdentityFactory(atkSystem.identityFactoryProxy());
+            IERC3643TrustedIssuersRegistry(atkSystem.trustedIssuersRegistry());
+        ISMARTTopicSchemeRegistry topicSchemeRegistry = ISMARTTopicSchemeRegistry(atkSystem.topicSchemeRegistry());
+        IATKIdentityFactory identityFactory = IATKIdentityFactory(atkSystem.identityFactory());
 
         // Verify contracts are properly deployed and functioning
         assertTrue(address(compliance) != address(0));
@@ -414,7 +423,7 @@ contract ATKSystemTest is Test {
 
     function test_UpdateImplementationFlow() public {
         // Test a complete flow of updating an implementation
-        address oldImpl = atkSystem.complianceImplementation();
+        address oldImpl = IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE);
 
         // Deploy new implementation
         ATKComplianceImplementation newImpl = new ATKComplianceImplementation(forwarder);
@@ -422,8 +431,8 @@ contract ATKSystemTest is Test {
         vm.prank(admin);
         ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(newImpl));
 
-        assertEq(atkSystem.complianceImplementation(), address(newImpl));
-        assertTrue(atkSystem.complianceImplementation() != oldImpl);
+        assertEq(IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE), address(newImpl));
+        assertTrue(IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE) != oldImpl);
     }
 
     function test_AllSetterFunctionsWithActualImplementations() public {
@@ -447,15 +456,38 @@ contract ATKSystemTest is Test {
         ATKSystemImplementation(address(atkSystem)).setTokenAccessManagerImplementation(address(tokenAccessManagerImpl));
 
         // Verify all implementations are set correctly
-        assertEq(atkSystem.complianceImplementation(), address(complianceImpl));
-        assertEq(atkSystem.identityRegistryImplementation(), address(identityRegistryImpl));
-        assertEq(atkSystem.identityRegistryStorageImplementation(), address(identityRegistryStorageImpl));
-        assertEq(atkSystem.trustedIssuersRegistryImplementation(), address(trustedIssuersRegistryImpl));
-        assertEq(atkSystem.topicSchemeRegistryImplementation(), address(topicSchemeRegistryImpl));
-        assertEq(atkSystem.identityFactoryImplementation(), address(identityFactoryImpl));
-        assertEq(atkSystem.identityImplementation(), address(identityImpl));
-        assertEq(atkSystem.tokenIdentityImplementation(), address(tokenIdentityImpl));
-        assertEq(atkSystem.tokenAccessManagerImplementation(), address(tokenAccessManagerImpl));
+        assertEq(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE), address(complianceImpl)
+        );
+        assertEq(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY_REGISTRY),
+            address(identityRegistryImpl)
+        );
+        assertEq(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY_REGISTRY_STORAGE),
+            address(identityRegistryStorageImpl)
+        );
+        assertEq(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TRUSTED_ISSUERS_REGISTRY),
+            address(trustedIssuersRegistryImpl)
+        );
+        assertEq(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOPIC_SCHEME_REGISTRY),
+            address(topicSchemeRegistryImpl)
+        );
+        assertEq(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY_FACTORY),
+            address(identityFactoryImpl)
+        );
+        assertEq(IATKTypedImplementationRegistry(address(atkSystem)).implementation(IDENTITY), address(identityImpl));
+        assertEq(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOKEN_IDENTITY),
+            address(tokenIdentityImpl)
+        );
+        assertEq(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOKEN_ACCESS_MANAGER),
+            address(tokenAccessManagerImpl)
+        );
 
         vm.stopPrank();
     }
@@ -468,7 +500,10 @@ contract ATKSystemTest is Test {
         ATKSystemImplementation(address(atkSystem)).setTopicSchemeRegistryImplementation(
             address(topicSchemeRegistryImpl)
         );
-        assertEq(atkSystem.topicSchemeRegistryImplementation(), address(topicSchemeRegistryImpl));
+        assertEq(
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(TOPIC_SCHEME_REGISTRY),
+            address(topicSchemeRegistryImpl)
+        );
     }
 
     function test_SetTopicSchemeRegistryImplementation_OnlyAdmin() public {
@@ -649,15 +684,23 @@ contract ATKSystemTest is Test {
         IATKSystem newSystem = IATKSystem(address(proxy));
 
         // Verify all components are properly set including identity verification module
-        assertTrue(newSystem.complianceImplementation() != address(0));
-        assertTrue(newSystem.identityRegistryImplementation() != address(0));
-        assertTrue(newSystem.identityRegistryStorageImplementation() != address(0));
-        assertTrue(newSystem.trustedIssuersRegistryImplementation() != address(0));
-        assertTrue(newSystem.topicSchemeRegistryImplementation() != address(0));
-        assertTrue(newSystem.identityFactoryImplementation() != address(0));
-        assertTrue(newSystem.identityImplementation() != address(0));
-        assertTrue(newSystem.tokenIdentityImplementation() != address(0));
-        assertTrue(newSystem.tokenAccessManagerImplementation() != address(0));
+        assertTrue(IATKTypedImplementationRegistry(address(newSystem)).implementation(COMPLIANCE) != address(0));
+        assertTrue(IATKTypedImplementationRegistry(address(newSystem)).implementation(IDENTITY_REGISTRY) != address(0));
+        assertTrue(
+            IATKTypedImplementationRegistry(address(newSystem)).implementation(IDENTITY_REGISTRY_STORAGE) != address(0)
+        );
+        assertTrue(
+            IATKTypedImplementationRegistry(address(newSystem)).implementation(TRUSTED_ISSUERS_REGISTRY) != address(0)
+        );
+        assertTrue(
+            IATKTypedImplementationRegistry(address(newSystem)).implementation(TOPIC_SCHEME_REGISTRY) != address(0)
+        );
+        assertTrue(IATKTypedImplementationRegistry(address(newSystem)).implementation(IDENTITY_FACTORY) != address(0));
+        assertTrue(IATKTypedImplementationRegistry(address(newSystem)).implementation(IDENTITY) != address(0));
+        assertTrue(IATKTypedImplementationRegistry(address(newSystem)).implementation(TOKEN_IDENTITY) != address(0));
+        assertTrue(
+            IATKTypedImplementationRegistry(address(newSystem)).implementation(TOKEN_ACCESS_MANAGER) != address(0)
+        );
         assertEq(newSystem.identityVerificationModule(), address(newModule));
     }
 }

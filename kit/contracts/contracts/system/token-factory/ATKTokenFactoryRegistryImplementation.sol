@@ -7,7 +7,7 @@ import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/ac
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { IATKTokenFactoryRegistry } from "./IATKTokenFactoryRegistry.sol";
 import {
@@ -21,13 +21,15 @@ import { IATKTokenFactory } from "../token-factory/IATKTokenFactory.sol";
 import { InvalidImplementationInterface } from "../ATKSystemErrors.sol";
 import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";
 import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
 contract ATKTokenFactoryRegistryImplementation is
     Initializable,
     IATKTokenFactoryRegistry,
     IATKTypedImplementationRegistry,
     AccessControlUpgradeable,
-    ReentrancyGuardUpgradeable
+    ReentrancyGuardUpgradeable,
+    ERC2771ContextUpgradeable
 {
     IATKSystem private _system;
 
@@ -36,7 +38,7 @@ contract ATKTokenFactoryRegistryImplementation is
     bytes4 private constant _IATK_TOKEN_FACTORY_ID = type(IATKTokenFactory).interfaceId;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
+    constructor(address trustedForwarder) ERC2771ContextUpgradeable(trustedForwarder) {
         _disableInitializers();
     }
 
@@ -150,5 +152,27 @@ contract ATKTokenFactoryRegistryImplementation is
     {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKTokenFactoryRegistry).interfaceId
             || interfaceId == type(IATKTypedImplementationRegistry).interfaceId;
+    }
+
+    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
+        return super._msgSender();
+    }
+
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
+        return super._msgData();
+    }
+
+    function _contextSuffixLength()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
+        return super._contextSuffixLength();
     }
 }
