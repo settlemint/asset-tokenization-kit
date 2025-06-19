@@ -164,11 +164,11 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         if (tokenIdentityImplementation_ == address(0)) revert TokenIdentityImplementationNotSet();
         if (tokenAccessManagerImplementation_ == address(0)) revert TokenAccessManagerImplementationNotSet();
         if (identityVerificationModule_ == address(0)) revert IdentityVerificationModuleNotSet();
+        if (tokenFactoryRegistryImplementation_ == address(0)) revert TokenFactoryRegistryImplementationNotSet();
         if (complianceModuleRegistryImplementation_ == address(0)) {
             revert ComplianceModuleRegistryImplementationNotSet();
         }
         if (addonRegistryImplementation_ == address(0)) revert AddonRegistryImplementationNotSet();
-        if (tokenFactoryRegistryImplementation_ == address(0)) revert TokenFactoryRegistryImplementationNotSet();
 
         // Set the immutable state variables with the provided addresses.
         atkSystemImplementation = atkSystemImplementation_;
@@ -182,9 +182,9 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         defaultTokenIdentityImplementation = tokenIdentityImplementation_;
         defaultTokenAccessManagerImplementation = tokenAccessManagerImplementation_;
         defaultIdentityVerificationModule = identityVerificationModule_;
+        defaultTokenFactoryRegistryImplementation = tokenFactoryRegistryImplementation_;
         defaultComplianceModuleRegistryImplementation = complianceModuleRegistryImplementation_;
         defaultAddonRegistryImplementation = addonRegistryImplementation_;
-        defaultTokenFactoryRegistryImplementation = tokenFactoryRegistryImplementation_;
 
         factoryForwarder = forwarder_; // Store the forwarder address for use by this factory and new systems.
     }
