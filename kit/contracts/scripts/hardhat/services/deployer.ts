@@ -38,6 +38,9 @@ export type PredeployedContractName = keyof Pick<
   | "identityBlockListModule"
   | "identityAllowListModule"
   | "fixedYieldScheduleFactory"
+  | "tokenFactoryRegistry"
+  | "complianceModuleRegistry"
+  | "systemAddonRegistry"
 >;
 
 // Helper type for Viem contract instances
@@ -326,6 +329,24 @@ export class ATKDeployer {
     walletClient?: WalletClient<Transport, Chain, Account>
   ): ATKOnboardingContracts["fixedYieldScheduleFactory"] {
     return this.getContract("fixedYieldScheduleFactory", walletClient);
+  }
+
+  public getTokenFactoryRegistryContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): ATKOnboardingContracts["tokenFactoryRegistry"] {
+    return this.getContract("tokenFactoryRegistry", walletClient);
+  }
+
+  public getComplianceModuleRegistryContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): ATKOnboardingContracts["complianceModuleRegistry"] {
+    return this.getContract("complianceModuleRegistry", walletClient);
+  }
+
+  public getSystemAddonRegistryContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): ATKOnboardingContracts["systemAddonRegistry"] {
+    return this.getContract("systemAddonRegistry", walletClient);
   }
 }
 

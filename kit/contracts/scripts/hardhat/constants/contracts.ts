@@ -5,6 +5,7 @@ import {
   bondAbi,
   bondFactoryAbi,
   complianceAbi,
+  complianceModuleRegistryAbi,
   countryAllowListAbi,
   countryBlockListAbi,
   depositAbi,
@@ -31,6 +32,8 @@ import {
   stablecoinAbi,
   stablecoinFactoryAbi,
   systemAbi,
+  systemAddonRegistryAbi,
+  tokenFactoryRegistryAbi,
   tokenIdentityAbi,
   topicSchemeRegistryAbi,
   trustedIssuersRegistryAbi,
@@ -61,6 +64,10 @@ export const ATKContracts = {
   fund: fundAbi,
   stablecoin: stablecoinAbi,
   bond: bondAbi,
+  // registries
+  tokenFactoryRegistry: tokenFactoryRegistryAbi,
+  complianceModuleRegistry: complianceModuleRegistryAbi,
+  systemAddonRegistry: systemAddonRegistryAbi,
   // Open Zeppelin
   accessControl: accessControlAbi,
   // smart
