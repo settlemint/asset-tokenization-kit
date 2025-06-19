@@ -2,8 +2,10 @@
 pragma solidity ^0.8.28;
 
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 
-interface IATKTokenFactoryRegistry is IAccessControl {
+interface IATKTokenFactoryRegistry is IAccessControl, IERC165 {
     event TokenFactoryCreated(
         address indexed sender,
         string name,
