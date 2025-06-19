@@ -1,7 +1,7 @@
 {
   "card-description": "You will need a wallet and an identity on the blockchain to use this platform. ",
   "card-title": "Let's get you set up!",
-  "streaming-messages": {
+  "create-system-messages": {
     "initial-loading": "Preparing to deploy your SMART system...",
     "no-result-error": "System deployment completed but no address was returned",
     "default-error": "Failed to deploy your SMART system"
