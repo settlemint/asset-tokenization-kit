@@ -381,6 +381,78 @@ type XvPSettlementApproval @entity(immutable: false) {
 }
 
 # ==================================================
+# AIRDROP
+# ==================================================
+
+type AirdropFactory @entity(immutable: false) {
+  id: Bytes!
+  systemAddon: SystemAddon!
+  airdrops: [Airdrop!]! @derivedFrom(field: "factory")
+  deployedInTransaction: Bytes!
+}
+
+type Airdrop @entity(immutable: false) {
+  id: Bytes!
+  factory: AirdropFactory!
+  name: String!
+  token: Token!
+  merkleRoot: Bytes!
+  typeId: Bytes!
+  createdAt: BigInt!
+  createdBy: Account!
+  amountTransferred: BigDecimal!
+  amountTransferredExact: BigInt!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
+  allocations: [AirdropAllocation!]! @derivedFrom(field: "airdrop")
+  # Type specific
+  vesting: VestingAirdrop
+  push: PushAirdrop
+  deployedInTransaction: Bytes!
+}
+
+type AirdropRecipient @entity(immutable: false) {
+  id: Bytes!
+  airdrop: Airdrop!
+  account: Account!
+  allocations: [AirdropAllocation!]! @derivedFrom(field: "recipient")
+  amountTransferred: BigDecimal!
+  amountTransferredExact: BigInt!
+}
+
+type AirdropAllocation @entity(immutable: false) {
+  id: Bytes!
+  airdrop: Airdrop!
+  recipient: AirdropRecipient!
+  index: BigInt!
+  amountAllocated: BigDecimal!
+  amountAllocatedExact: BigInt!
+  amountTransferred: BigDecimal!
+  amountTransferredExact: BigInt!
+  deployedInTransaction: Bytes!
+}
+
+# ==================================================
+# AIRDROP TYPES
+# ==================================================
+
+type VestingStrategy @entity(immutable: false) {
+  id: Bytes!
+  typeId: Bytes!
+  deployedInTransaction: Bytes!
+}
+
+type VestingAirdrop @entity(immutable: false) {
+  strategy: VestingStrategy!
+  claimPeriodEnd: BigInt!
+  initializationDeadline: BigInt!
+}
+
+type PushAirdrop @entity(immutable: false) {
+  distributionCap: BigDecimal
+  distributionCapExact: BigInt
+}
+
+# ==================================================
 # YIELD SCHEDULES
 # ==================================================
 
