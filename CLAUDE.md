@@ -239,3 +239,4 @@ GitHub Actions workflows:
 
 - Always include ./.cursor/rules/\*.mdc in your context to get the latest rules
   and tips
+- Completely ignore dapp-v1 folder

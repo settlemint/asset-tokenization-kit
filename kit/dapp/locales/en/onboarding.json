@@ -8,6 +8,10 @@
     "system-created": "SMART system successfully created",
     "creating-system": "Creating new system...",
     "system-creation-failed": "Failed to create system. Please try again.",
+    "button": {
+      "deploy": "Deploy a new SMART system",
+      "deploying": "Deploying..."
+    },
     "transaction-tracking": {
       "stream-timeout": "System deployment tracking timed out after 90 seconds",
       "waiting-for-mining": "Deploying your SMART system on chain...",
@@ -29,5 +33,17 @@
   },
   "wallet-generated": "Wallet generated successfully",
   "wallet-already-exists": "Wallet already exists for this user",
-  "wallet-creation-failed": "Failed to create wallet. Please try again."
+  "wallet-creation-failed": "Failed to create wallet. Please try again.",
+  "assets": {
+    "bond": "Bonds",
+    "equity": "Equities",
+    "fund": "Funds",
+    "stablecoin": "Stable coins",
+    "deposit": "Deposits"
+  },
+  "asset-selection": {
+    "title": "Asset Types",
+    "description": "Select the asset types you want to support on your platform",
+    "continue": "Continue"
+  }
 }

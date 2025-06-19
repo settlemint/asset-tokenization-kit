@@ -6,9 +6,9 @@ import {
   ethereumHash,
   type EthereumHash,
 } from "@/lib/zod/validators/ethereum-hash";
-import { 
+import {
   TransactionTrackingMessagesSchema,
-  type TransactionTrackingMessages 
+  type TransactionTrackingMessages,
 } from "@/orpc/routes/common/schemas/transaction-messages.schema";
 import { withEventMeta } from "@orpc/server";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
@@ -17,7 +17,7 @@ import { z } from "zod/v4";
 
 /**
  * Schema for transaction tracking output events.
- * 
+ *
  * Defines the structure of events emitted during transaction tracking:
  * - transactionHash: The Ethereum transaction hash being tracked
  * - message: Human-readable status message
@@ -75,7 +75,7 @@ const STREAM_TIMEOUT_MS = 90_000; // Total timeout for the stream (90 seconds)
 
 /**
  * Track a blockchain transaction through confirmation and indexing phases.
- * 
+ *
  * @param transactionHash - The transaction hash to track
  * @param portalClient - Portal GraphQL client for blockchain queries
  * @param theGraphClient - TheGraph client for indexing status
@@ -89,7 +89,9 @@ export async function* trackTransaction(
   customMessages?: Partial<TransactionTrackingMessages>
 ) {
   // Parse messages with defaults using Zod schema
-  const messages = TransactionTrackingMessagesSchema.parse(customMessages ?? {});
+  const messages = TransactionTrackingMessagesSchema.parse(
+    customMessages ?? {}
+  );
   const streamStartTime = Date.now();
 
   // Phase 1: Monitor transaction confirmation on blockchain
