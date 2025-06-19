@@ -1,5 +1,9 @@
 import { batchAddToRegistry } from "./actions/add-to-registry";
 import { addTrustedIssuer } from "./actions/add-trusted-issuer";
+import {
+  approveAndExecuteXvpSettlement,
+  createXvpSettlement,
+} from "./actions/create-xvp-settlement";
 import { grantRole } from "./actions/grant-role";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
@@ -128,6 +132,35 @@ async function main() {
 
   await grantRoles(equity, owner, [ATKRoles.emergencyRole]);
   await recoverErc20Tokens(equity, owner, stableCoin, investorANew, 10n);
+
+  // Create and execute XVP settlement
+  console.log("\n=== Creating and executing XVP settlement... ===\n");
+
+  // Create a settlement where investorA offers 5 stablecoin for 2 equity from investorB
+  const settlementAddress = await createXvpSettlement(
+    investorANew, // fromActor
+    investorB, // toActor
+    stableCoin.address, // fromAssetAddress (stablecoin)
+    equity.address, // toAssetAddress (equity)
+    5n * 10n ** 18n, // fromAmount (5 stablecoin)
+    2n * 10n ** 18n, // toAmount (2 equity)
+    false // autoExecute
+  );
+
+  // Both parties approve and execute the settlement
+  await approveAndExecuteXvpSettlement(
+    settlementAddress,
+    investorANew,
+    stableCoin.address,
+    5n * 10n ** 18n
+  );
+
+  await approveAndExecuteXvpSettlement(
+    settlementAddress,
+    investorB,
+    equity.address,
+    2n * 10n ** 18n
+  );
 }
 
 // Execute the script

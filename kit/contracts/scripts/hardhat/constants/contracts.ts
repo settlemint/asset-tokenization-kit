@@ -34,6 +34,8 @@ import {
   tokenIdentityAbi,
   topicSchemeRegistryAbi,
   trustedIssuersRegistryAbi,
+  xvpSettlementAbi,
+  xvpSettlementFactoryAbi,
 } from "../abi";
 
 export const ATKContracts = {
@@ -51,6 +53,7 @@ export const ATKContracts = {
   fundFactory: fundFactoryAbi,
   stablecoinFactory: stablecoinFactoryAbi,
   fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
+  xvpSettlementFactory: xvpSettlementFactoryAbi,
   // token
   accessManager: accessManagerAbi,
   identity: identityAbi,
@@ -61,6 +64,8 @@ export const ATKContracts = {
   fund: fundAbi,
   stablecoin: stablecoinAbi,
   bond: bondAbi,
+  // addons
+  xvpSettlement: xvpSettlementAbi,
   // Open Zeppelin
   accessControl: accessControlAbi,
   // smart
