@@ -659,9 +659,6 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
         flows[0] = IATKXvPSettlement.Flow({ asset: address(tokenO), from: alice, to: bob, amount: 150 * 10 ** 18 });
 
-        uint256 cutoffDate = block.timestamp + 1 days;
-        bool autoExecute = false;
-
         // Deploy a fresh XvPSettlement implementation for direct testing
         vm.prank(admin);
         ATKXvPSettlementImplementation directSettlementImpl = new ATKXvPSettlementImplementation(address(forwarder));

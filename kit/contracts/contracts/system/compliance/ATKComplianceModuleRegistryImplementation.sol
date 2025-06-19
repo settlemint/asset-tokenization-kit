@@ -76,7 +76,7 @@ contract ATKComplianceModuleRegistryImplementation is
     }
 
     function supportsInterface(bytes4 interfaceId) public view override(AccessControlUpgradeable) returns (bool) {
-        return super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKComplianceModuleRegistry).interfaceId || super.supportsInterface(interfaceId);
     }
 
     function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {

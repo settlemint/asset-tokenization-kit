@@ -746,6 +746,7 @@ contract ATKIdentityRegistryImplementation is
         returns (bool)
     {
         // Check for ISMARTIdentityRegistry interface and then delegate to parent contracts.
-        return interfaceId == type(ISMARTIdentityRegistry).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKIdentityRegistry).interfaceId
+            || interfaceId == type(ISMARTIdentityRegistry).interfaceId || super.supportsInterface(interfaceId);
     }
 }

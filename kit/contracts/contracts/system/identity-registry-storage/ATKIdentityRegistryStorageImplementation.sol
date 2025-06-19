@@ -675,6 +675,7 @@ contract ATKIdentityRegistryStorageImplementation is
             // extended.
         returns (bool)
     {
-        return interfaceId == type(ISMARTIdentityRegistryStorage).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKIdentityRegistryStorage).interfaceId
+            || interfaceId == type(ISMARTIdentityRegistryStorage).interfaceId || super.supportsInterface(interfaceId);
     }
 }

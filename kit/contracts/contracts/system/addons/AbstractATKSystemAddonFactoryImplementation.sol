@@ -11,12 +11,12 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 
 // Interfaces
-import { IATKSystem } from "./IATKSystem.sol";
-import { IATKCompliance } from "./compliance/IATKCompliance.sol";
-import { IWithTypeIdentifier } from "./../smart/interface/IWithTypeIdentifier.sol";
+import { IATKSystem } from "../IATKSystem.sol";
+import { IATKCompliance } from "../compliance/IATKCompliance.sol";
+import { IWithTypeIdentifier } from "./../../smart/interface/IWithTypeIdentifier.sol";
 
 // Constants
-import { ATKSystemRoles } from "./ATKSystemRoles.sol";
+import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 /// @title Abstract Factory for Creating ATK System Addon Proxies
 /// @notice This abstract contract provides common functionality for system addon factory implementations.

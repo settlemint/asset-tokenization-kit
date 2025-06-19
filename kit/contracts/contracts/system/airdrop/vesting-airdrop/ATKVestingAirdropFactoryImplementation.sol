@@ -12,7 +12,8 @@ import { IATKSystem } from "../../IATKSystem.sol";
 import { IATKCompliance } from "../../compliance/IATKCompliance.sol";
 
 // Implementations
-import { AbstractATKSystemAddonFactoryImplementation } from "../../AbstractATKSystemAddonFactoryImplementation.sol";
+import { AbstractATKSystemAddonFactoryImplementation } from
+    "../../addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKVestingAirdropImplementation } from "./ATKVestingAirdropImplementation.sol";
 import { ATKVestingAirdropProxy } from "./ATKVestingAirdropProxy.sol";
 

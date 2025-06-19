@@ -96,7 +96,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
 
         // Create system addon for vesting airdrop factory
         vestingAirdropFactory = IATKVestingAirdropFactory(
-            systemUtils.system().createSystemAddon(
+            systemUtils.systemAddonRegistry().registerSystemAddon(
                 "vesting-airdrop-factory", address(vestingAirdropFactoryImpl), encodedInitializationData
             )
         );

@@ -625,6 +625,7 @@ contract ATKTrustedIssuersRegistryImplementation is
             // extended.
         returns (bool)
     {
-        return interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
+            || interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId || super.supportsInterface(interfaceId);
     }
 }
