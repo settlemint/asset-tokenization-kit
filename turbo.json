@@ -77,7 +77,8 @@
       "cache": false
     },
     "//#dev:connect": {
-      "outputs": ["**/.env", "**/.env.local"]
+      "outputs": ["**/.env", "**/.env.local"],
+      "dependsOn": ["//#dev:start"]
     },
     "//#dev:up": {
       "cache": false,
