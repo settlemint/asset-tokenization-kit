@@ -127,7 +127,7 @@ contract ATKTokenFactoryRegistryImplementation is
         return tokenFactoryImplementationsByType[factoryTypeHash];
     }
 
-    function tokenFactoryProxy(bytes32 factoryTypeHash) public view override returns (address) {
+    function tokenFactory(bytes32 factoryTypeHash) public view override returns (address) {
         return tokenFactoryProxiesByType[factoryTypeHash];
     }
 
