@@ -9,5 +9,25 @@
     "success": "Ihr SMART-System ist bereitgestellt!",
     "error": "Bereitstellung Ihres SMART-Systems fehlgeschlagen",
     "timeout": "Zeitüberschreitung bei der Transaktionsverfolgung"
-  }
+  },
+  "create-system-messages": {
+    "initial-loading": "Bereite die Bereitstellung deines SMART-Systems vor...",
+    "no-result-error": "Die Bereitstellung des Systems wurde abgeschlossen, aber es wurde keine Adresse zurückgegeben",
+    "default-error": "Die Bereitstellung deines SMART-Systems ist fehlgeschlagen",
+    "system-created": "SMART-System erfolgreich erstellt",
+    "creating-system": "Neues System wird erstellt...",
+    "system-creation-failed": "Die Erstellung des Systems ist fehlgeschlagen. Bitte versuche es erneut.",
+    "transaction-tracking": {
+      "stream-timeout": "Die Verfolgung der Systembereitstellung hat nach 90 Sekunden abgelaufen",
+      "waiting-for-mining": "Bereitstellung deines SMART-Systems auf der Blockchain...",
+      "transaction-failed": "Die Transaktion zur Bereitstellung des Systems ist fehlgeschlagen",
+      "transaction-dropped": "Die Transaktion zur Bereitstellung des Systems wurde nicht rechtzeitig on-chain bestätigt",
+      "waiting-for-indexing": "Warte darauf, dass das System indiziert wird...",
+      "transaction-indexed": "System erfolgreich indiziert und bereit zur Nutzung",
+      "indexing-timeout": "Die Indizierung des Systems hat abgelaufen, bitte lade die Seite neu"
+    }
+  },
+  "wallet-generated": "Wallet erfolgreich erstellt",
+  "wallet-already-exists": "Wallet existiert bereits für diesen Benutzer",
+  "wallet-creation-failed": "Die Erstellung der Wallet ist fehlgeschlagen. Bitte versuche es erneut."
 }
