@@ -10,7 +10,8 @@ export function fetchAirdrop(id: Bytes): Airdrop {
 
   if (entity == null) {
     entity = new Airdrop(id);
-    const endpoint = AirdropContract.bind(id);
+    const address = Address.fromBytes(id);
+    const endpoint = AirdropContract.bind(address);
     const name = endpoint.try_name();
     const token = endpoint.try_token();
     const merkleRoot = endpoint.try_merkleRoot();
