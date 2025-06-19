@@ -71,10 +71,6 @@ bun compile:forge          # Foundry compilation
 bun compile:hardhat        # Hardhat compilation
 bun run compile            # Compile all
 
-# Deploy contracts
-bun deploy:remote          # Deploy to remote network
-bun deploy:local           # Deploy to local network
-
 # Generate artifacts
 bun genesis                # Generate genesis configuration
 bun abi-output            # Generate ABI files for portal
