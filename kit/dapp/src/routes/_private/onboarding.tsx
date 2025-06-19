@@ -95,6 +95,10 @@ function OnboardingComponent() {
           queryKey: orpc.user.me.key(),
         });
       },
+      onError: (error) => {
+        // The error message will be the localized message from the server
+        toast.error(error.message);
+      },
     })
   );
 
@@ -113,31 +117,6 @@ function OnboardingComponent() {
       initialLoading: t("onboarding:create-system-messages.initial-loading"),
       noResultError: t("onboarding:create-system-messages.no-result-error"),
       defaultError: t("onboarding:create-system-messages.default-error"),
-      messageMap: {
-        // Map server-side keys to translations
-        "system.created": t("onboarding:create-system-messages.system-created"),
-        "transaction.tracking.stream_timeout": t(
-          "onboarding:create-system-messages.transaction-tracking.stream-timeout"
-        ),
-        "transaction.tracking.waiting_for_mining": t(
-          "onboarding:create-system-messages.transaction-tracking.waiting-for-mining"
-        ),
-        "transaction.tracking.failed": t(
-          "onboarding:create-system-messages.transaction-tracking.transaction-failed"
-        ),
-        "transaction.tracking.dropped": t(
-          "onboarding:create-system-messages.transaction-tracking.transaction-dropped"
-        ),
-        "transaction.tracking.waiting_for_indexing": t(
-          "onboarding:create-system-messages.transaction-tracking.waiting-for-indexing"
-        ),
-        "transaction.tracking.indexed": t(
-          "onboarding:create-system-messages.transaction-tracking.transaction-indexed"
-        ),
-        "transaction.tracking.indexing_timeout": t(
-          "onboarding:create-system-messages.transaction-tracking.indexing-timeout"
-        ),
-      },
     }
   );
 
@@ -180,7 +159,18 @@ function OnboardingComponent() {
                     disabled={!!user?.wallet || !user?.id}
                     onClick={() => {
                       if (user?.id) {
-                        generateWallet({ userId: user.id });
+                        generateWallet({
+                          userId: user.id,
+                          messages: {
+                            walletCreated: t("onboarding:wallet-generated"),
+                            walletAlreadyExists: t(
+                              "onboarding:wallet-already-exists"
+                            ),
+                            walletCreationFailed: t(
+                              "onboarding:wallet-creation-failed"
+                            ),
+                          },
+                        });
                       }
                     }}
                   >
@@ -197,7 +187,42 @@ function OnboardingComponent() {
                   <Button
                     disabled={!!systemAddress || isCreatingSystem || isTracking}
                     onClick={() => {
-                      createSystem({});
+                      createSystem({
+                        messages: {
+                          // System-specific messages
+                          systemCreated: t(
+                            "onboarding:create-system-messages.system-created"
+                          ),
+                          creatingSystem: t(
+                            "onboarding:create-system-messages.creating-system"
+                          ),
+                          systemCreationFailed: t(
+                            "onboarding:create-system-messages.system-creation-failed"
+                          ),
+                          // Transaction tracking messages
+                          streamTimeout: t(
+                            "onboarding:create-system-messages.transaction-tracking.stream-timeout"
+                          ),
+                          waitingForMining: t(
+                            "onboarding:create-system-messages.transaction-tracking.waiting-for-mining"
+                          ),
+                          transactionFailed: t(
+                            "onboarding:create-system-messages.transaction-tracking.transaction-failed"
+                          ),
+                          transactionDropped: t(
+                            "onboarding:create-system-messages.transaction-tracking.transaction-dropped"
+                          ),
+                          waitingForIndexing: t(
+                            "onboarding:create-system-messages.transaction-tracking.waiting-for-indexing"
+                          ),
+                          transactionIndexed: t(
+                            "onboarding:create-system-messages.transaction-tracking.transaction-indexed"
+                          ),
+                          indexingTimeout: t(
+                            "onboarding:create-system-messages.transaction-tracking.indexing-timeout"
+                          ),
+                        },
+                      });
                     }}
                   >
                     {isCreatingSystem || isTracking

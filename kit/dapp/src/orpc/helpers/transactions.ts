@@ -6,6 +6,10 @@ import {
   ethereumHash,
   type EthereumHash,
 } from "@/lib/zod/validators/ethereum-hash";
+import { 
+  TransactionTrackingMessagesSchema,
+  type TransactionTrackingMessages 
+} from "@/orpc/routes/common/schemas/transaction-messages.schema";
 import { withEventMeta } from "@orpc/server";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { setTimeout } from "node:timers/promises";
@@ -61,33 +65,23 @@ const POLLING_INTERVAL_MS = 500; // Interval for indexing status checks
 const INDEXING_TIMEOUT_MS = 60_000; // Total timeout for indexing (3 minutes)
 const STREAM_TIMEOUT_MS = 90_000; // Total timeout for the stream (90 seconds)
 
-export interface TransactionTrackingMessages {
-  streamTimeout?: string;
-  waitingForMining?: string;
-  transactionFailed?: string;
-  transactionDropped?: string;
-  waitingForIndexing?: string;
-  transactionIndexed?: string;
-  indexingTimeout?: string;
-}
-
-const defaultMessages: Required<TransactionTrackingMessages> = {
-  streamTimeout: "transaction.tracking.stream_timeout",
-  waitingForMining: "transaction.tracking.waiting_for_mining",
-  transactionFailed: "transaction.tracking.failed",
-  transactionDropped: "transaction.tracking.dropped",
-  waitingForIndexing: "transaction.tracking.waiting_for_indexing",
-  transactionIndexed: "transaction.tracking.indexed",
-  indexingTimeout: "transaction.tracking.indexing_timeout",
-};
-
+/**
+ * Track a blockchain transaction through confirmation and indexing phases.
+ * 
+ * @param transactionHash - The transaction hash to track
+ * @param portalClient - Portal GraphQL client for blockchain queries
+ * @param theGraphClient - TheGraph client for indexing status
+ * @param customMessages - Optional custom messages for status updates
+ * @returns AsyncIterator of transaction status events
+ */
 export async function* trackTransaction(
   transactionHash: EthereumHash,
   portalClient: typeof portalClientType,
   theGraphClient: typeof theGraphClientType,
-  customMessages?: TransactionTrackingMessages
+  customMessages?: Partial<TransactionTrackingMessages>
 ) {
-  const messages = { ...defaultMessages, ...customMessages };
+  // Parse messages with defaults using Zod schema
+  const messages = TransactionTrackingMessagesSchema.parse(customMessages ?? {});
   const streamStartTime = Date.now();
 
   // Phase 1: Monitor transaction confirmation on blockchain

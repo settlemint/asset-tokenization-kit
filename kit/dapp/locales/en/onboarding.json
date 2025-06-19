@@ -6,6 +6,8 @@
     "no-result-error": "System deployment completed but no address was returned",
     "default-error": "Failed to deploy your SMART system",
     "system-created": "SMART system successfully created",
+    "creating-system": "Creating new system...",
+    "system-creation-failed": "Failed to create system. Please try again.",
     "transaction-tracking": {
       "stream-timeout": "System deployment tracking timed out after 90 seconds",
       "waiting-for-mining": "Deploying your SMART system on chain...",
@@ -25,5 +27,7 @@
     "error": "Failed to deploy your SMART system",
     "timeout": "Transaction tracking timeout"
   },
-  "wallet-generated": "Wallet generated successfully"
+  "wallet-generated": "Wallet generated successfully",
+  "wallet-already-exists": "Wallet already exists for this user",
+  "wallet-creation-failed": "Failed to create wallet. Please try again."
 }

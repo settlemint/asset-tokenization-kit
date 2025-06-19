@@ -22,6 +22,7 @@ import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware"
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { withEventMeta } from "@orpc/server";
+import { SystemCreateMessagesSchema } from "./system.create.schema";
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -90,6 +91,9 @@ export const create = onboardedRouter.system.create
   .handler(async function* ({ input, context, errors }) {
     const { contract } = input;
     const sender = context.auth.user;
+    
+    // Parse messages with defaults using Zod schema
+    const messages = SystemCreateMessagesSchema.parse(input.messages ?? {});
 
     // TODO: can we improve the error handling here and by default? It will come out as a generic 500 error.
     const txHashResult = await context.portalClient.request(
@@ -104,13 +108,17 @@ export const create = onboardedRouter.system.create
       txHashResult.ATKSystemFactoryCreateSystem?.transactionHash ?? null;
 
     if (!transactionHash) {
-      throw errors.INTERNAL_SERVER_ERROR();
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.systemCreationFailed,
+      });
     }
 
+    // Track transaction with custom messages
     for await (const event of trackTransaction(
       transactionHash,
       context.portalClient,
-      context.theGraphClient
+      context.theGraphClient,
+      messages // Pass the messages for transaction tracking
     )) {
       yield event;
     }
@@ -123,19 +131,23 @@ export const create = onboardedRouter.system.create
     );
 
     if (systems.length === 0) {
-      throw errors.INTERNAL_SERVER_ERROR();
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.systemCreationFailed,
+      });
     }
 
     const system = systems[0];
 
     if (!system) {
-      throw errors.INTERNAL_SERVER_ERROR();
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.systemCreationFailed,
+      });
     }
 
     yield withEventMeta(
       {
         status: "confirmed",
-        message: "system.created",
+        message: messages.systemCreated,
         result: system.id,
       },
       { id: transactionHash, retry: 1000 }
