@@ -97,11 +97,16 @@
     },
     "//#dev:connect": {
       "outputs": ["**/.env", "**/.env.local"],
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"],
+      "dependsOn": ["//#dev:up"]
     },
     "//#dev:up": {
       "cache": false,
-      "dependsOn": ["contracts#artifacts", "dapp#artifacts", "subgraph#artifacts"]
+      "dependsOn": [
+        "contracts#artifacts",
+        "dapp#artifacts",
+        "subgraph#artifacts"
+      ]
     }
   }
 }
