@@ -378,8 +378,24 @@ files:
   locales/en/onboarding.json:
     card-description: b414fac19a53a8ecd79689e7250eff2c
     card-title: ab044cc207a6a77ad98238506d9db2d7
+    create-system-messages.initial-loading: b8f11a0dde154753cb292e481e6702fc
+    create-system-messages.no-result-error: b2bfac7a8d437c3d07ea07c994d146b5
+    create-system-messages.default-error: f8e02211ac0130a830d587bac87b42eb
+    create-system-messages.system-created: b424630dfc371f075b58f7416ed4a7f8
+    create-system-messages.creating-system: aeed4d0567a9d224be507cd5972a77d4
+    create-system-messages.system-creation-failed: a1397abac72cef5c39fb874344a2aadf
+    create-system-messages.transaction-tracking.stream-timeout: cbe53dbd250dd37bd2f50ceec686a7dd
+    create-system-messages.transaction-tracking.waiting-for-mining: 9ee734a2a25f27dfe1c789586d646665
+    create-system-messages.transaction-tracking.transaction-failed: fdcffec74278d04c83b6002a8a8ba4f8
+    create-system-messages.transaction-tracking.transaction-dropped: 17903938581c1a3ad698803cc17a6fdf
+    create-system-messages.transaction-tracking.waiting-for-indexing: 016439638e3dce772333d9dc01650124
+    create-system-messages.transaction-tracking.transaction-indexed: d4ffa53f2fea564c8161a6099bfaebf0
+    create-system-messages.transaction-tracking.indexing-timeout: 502c451ecefde17869022cc840444933
     messages.pending.mining: 7e81211cc0b69f5a74f512e32fcfb8b4
     messages.pending.indexing: a4b9d0a178b8a0163b964c356e5f7c0e
     messages.success: c41bd99a133497fb78b776aecfb15073
     messages.error: f8e02211ac0130a830d587bac87b42eb
     messages.timeout: 8ec6e1597f24b3b52a3632c90d3a796a
+    wallet-generated: 785a44b11fbba1d1f7ab4f5c7d82f6fb
+    wallet-already-exists: a3b4afce3fb409ea2ffe588dc646dce7
+    wallet-creation-failed: 24cf78b0fbb6043397717b4822b84a3c
