@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 interface IATKSystemAddonRegistry is IAccessControl {
-    event SystemAddonCreated(
+    event SystemAddonRegistered(
         address indexed sender,
         string name,
         bytes32 typeId,

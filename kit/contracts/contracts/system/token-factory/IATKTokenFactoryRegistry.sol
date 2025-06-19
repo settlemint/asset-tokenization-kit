@@ -5,7 +5,7 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 interface IATKTokenFactoryRegistry is IAccessControl, IERC165 {
-    event TokenFactoryCreated(
+    event TokenFactoryRegistered(
         address indexed sender,
         string name,
         bytes32 typeId,

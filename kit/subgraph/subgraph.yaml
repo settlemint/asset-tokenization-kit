@@ -87,12 +87,6 @@ templates:
           handler: handleIdentityRegistryStorageImplementationUpdated
         - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
           handler: handleTokenAccessManagerImplementationUpdated
-        - event: TokenFactoryCreated(indexed
-            address,string,bytes32,address,address,uint256)
-          handler: handleTokenFactoryCreated
-        - event: SystemAddonCreated(indexed
-            address,string,bytes32,address,address,bytes,uint256)
-          handler: handleSystemAddonCreated
         - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
           handler: handleTokenIdentityImplementationUpdated
         - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
@@ -100,9 +94,6 @@ templates:
           handler: handleTrustedIssuersRegistryImplementationUpdated
         - event: TopicSchemeRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleTopicSchemeRegistryImplementationUpdated
-        - event: ComplianceModuleRegistered(indexed address,string,bytes32,indexed
-            address,uint256)
-          handler: handleComplianceModuleRegistered
       file: ./src/system/system.ts
   - kind: ethereum
     name: TokenFactory

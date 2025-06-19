@@ -97,7 +97,7 @@ contract ATKTokenFactoryRegistryImplementation is
             ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
         );
 
-        emit TokenFactoryCreated(
+        emit TokenFactoryRegistered(
             _msgSender(),
             _name,
             IWithTypeIdentifier(_factoryImplementation).typeId(),

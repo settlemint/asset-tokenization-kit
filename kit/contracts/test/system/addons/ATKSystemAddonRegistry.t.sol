@@ -112,7 +112,7 @@ contract ATKSystemAddonRegistryTest is Test {
         assertEq(logs.length, 2);
 
         // Manual check of event
-        bytes32 eventSignature = IATKSystemAddonRegistry.SystemAddonCreated.selector;
+        bytes32 eventSignature = IATKSystemAddonRegistry.SystemAddonRegistered.selector;
         assertEq(logs[1].topics[0], eventSignature);
         assertEq(logs[1].topics.length, 2); // 1 indexed topic
         assertEq(address(uint160(uint256(logs[1].topics[1]))), admin);

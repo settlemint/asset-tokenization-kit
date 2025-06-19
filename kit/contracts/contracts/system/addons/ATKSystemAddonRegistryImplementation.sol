@@ -76,7 +76,7 @@ contract ATKSystemAddonRegistryImplementation is
             typeId = abi.decode(data, (bytes32));
         }
 
-        emit SystemAddonCreated(
+        emit SystemAddonRegistered(
             _msgSender(), name, typeId, _addonProxy, implementation_, initializationData, block.timestamp
         );
 
