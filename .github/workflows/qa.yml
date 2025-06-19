@@ -5,7 +5,15 @@ on:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types:
+      [
+        opened,
+        synchronize,
+        reopened,
+        ready_for_review,
+        closed,
+        review_requested,
+      ]
     branches:
       - main
 
@@ -17,6 +25,10 @@ jobs:
   qa:
     name: QA
     uses: ./.github/workflows/reusable-qa.yml
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' &&
+       (github.event.action == 'synchronize' || github.event.action == 'opened'))
     with:
       use-pat-token: true
       turbo-command: |
@@ -37,6 +49,10 @@ jobs:
 
   secret-scanning:
     name: Secret Scanning
+    if: |
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' &&
+       (github.event.action == 'synchronize' || github.event.action == 'opened'))
     uses: ./.github/workflows/reusable-secret-scanning.yml
     with:
       trivy-config: trivy-secret.yaml
