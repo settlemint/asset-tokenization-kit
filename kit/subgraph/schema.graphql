@@ -425,6 +425,7 @@ type AirdropAllocation @entity(immutable: false) {
   index: BigInt!
   amountTransferred: BigDecimal!
   amountTransferredExact: BigInt!
+  initialized: Boolean!
 }
 
 # ==================================================

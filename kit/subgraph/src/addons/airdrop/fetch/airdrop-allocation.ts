@@ -19,6 +19,7 @@ export function fetchAirdropAllocation(
     const tokenDecimals = getTokenDecimals(airdropEntity.token);
     setBigNumber(entity, "amountTransferred", BigInt.zero(), tokenDecimals);
     entity.index = index;
+    entity.initialized = true;
     entity.recipient = Address.zero();
 
     entity.save();
