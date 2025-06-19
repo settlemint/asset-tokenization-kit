@@ -47,11 +47,11 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
 
 /**
  * GraphQL query to find system contracts deployed in a specific transaction.
- * 
+ *
  * Used to retrieve the system contract address after deployment by matching
  * the deployment transaction hash. This ensures we get the correct contract
  * instance when multiple systems might be deployed.
- * 
+ *
  * @param deployedInTransaction - The transaction hash where the system was deployed
  * @returns Array of system objects containing their IDs (contract addresses)
  */
@@ -101,11 +101,11 @@ export const create = onboardedRouter.system.create
   .handler(async function* ({ input, context, errors }) {
     const { contract } = input;
     const sender = context.auth.user;
-    
+
     // Parse messages with defaults using Zod schema
     const messages = SystemCreateMessagesSchema.parse(input.messages ?? {});
 
-    // TODO: can we improve the error handling here and by default? It will come out as a generic 500 error.
+    // Execute the system creation transaction
     const txHashResult = await context.portalClient.request(
       CREATE_SYSTEM_MUTATION,
       {
@@ -114,25 +114,46 @@ export const create = onboardedRouter.system.create
         // ...(await handleChallenge(sender, verification)),
       }
     );
+
     const transactionHash =
       txHashResult.ATKSystemFactoryCreateSystem?.transactionHash ?? null;
 
+    // Validate transaction hash
     if (!transactionHash) {
       throw errors.INTERNAL_SERVER_ERROR({
         message: messages.systemCreationFailed,
       });
     }
 
-    // Track transaction with custom messages
+    // Track transaction, yielding only pending/failed events
+    // The confirmed event will be yielded at the end with the system ID
     for await (const event of trackTransaction(
       transactionHash,
       context.portalClient,
       context.theGraphClient,
-      messages // Pass the messages for transaction tracking
+      messages
     )) {
-      yield event;
+      // Only yield pending and failed events, skip confirmed
+      if (event.status === "pending" || event.status === "failed") {
+        // Transform the event to match SystemCreateOutputSchema
+        // by removing transactionHash and adding optional result
+        yield withEventMeta(
+          {
+            status: event.status,
+            message: event.message,
+            result: undefined, // No result yet for pending/failed events
+          },
+          { id: transactionHash, retry: 1000 }
+        );
+
+        // If failed, stop processing
+        if (event.status === "failed") {
+          return;
+        }
+      }
     }
 
+    // Query for the deployed system contract
     const { systems } = await context.theGraphClient.request(
       FIND_SYSTEM_FOR_TRANSACTION_QUERY,
       {
@@ -154,6 +175,7 @@ export const create = onboardedRouter.system.create
       });
     }
 
+    // Yield the final confirmed event with the system ID
     yield withEventMeta(
       {
         status: "confirmed",
@@ -162,5 +184,6 @@ export const create = onboardedRouter.system.create
       },
       { id: transactionHash, retry: 1000 }
     );
+
     return;
   });
