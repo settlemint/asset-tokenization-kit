@@ -3,15 +3,15 @@ import ATKModule from "../../main";
 import ATKOnboardingSystemModule from "../system";
 
 const ATKOnboardingBondModule = buildModule("ATKOnboardingBondModule", (m) => {
-  const { system } = m.useModule(ATKOnboardingSystemModule);
+  const { tokenFactoryRegistry } = m.useModule(ATKOnboardingSystemModule);
   const { bondFactoryImplementation, bondImplementation } =
     m.useModule(ATKModule);
 
-  const createBondFactory = m.call(system, "createTokenFactory", [
-    "bond",
-    bondFactoryImplementation,
-    bondImplementation,
-  ]);
+  const createBondFactory = m.call(
+    tokenFactoryRegistry,
+    "registerTokenFactory",
+    ["bond", bondFactoryImplementation, bondImplementation]
+  );
   const bondFactoryAddress = m.readEventArgument(
     createBondFactory,
     "TokenFactoryCreated",

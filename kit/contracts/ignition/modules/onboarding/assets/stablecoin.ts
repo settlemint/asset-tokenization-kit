@@ -5,15 +5,15 @@ import ATKOnboardingSystemModule from "../system";
 const ATKOnboardingStableCoinModule = buildModule(
   "ATKOnboardingStableCoinModule",
   (m) => {
-    const { system } = m.useModule(ATKOnboardingSystemModule);
+    const { tokenFactoryRegistry } = m.useModule(ATKOnboardingSystemModule);
     const { stablecoinFactoryImplementation, stablecoinImplementation } =
       m.useModule(ATKModule);
 
-    const createStableCoinFactory = m.call(system, "createTokenFactory", [
-      "stablecoin",
-      stablecoinFactoryImplementation,
-      stablecoinImplementation,
-    ]);
+    const createStableCoinFactory = m.call(
+      tokenFactoryRegistry,
+      "registerTokenFactory",
+      ["stablecoin", stablecoinFactoryImplementation, stablecoinImplementation]
+    );
     const stablecoinFactoryAddress = m.readEventArgument(
       createStableCoinFactory,
       "TokenFactoryCreated",

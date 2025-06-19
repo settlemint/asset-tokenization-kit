@@ -5,15 +5,15 @@ import ATKOnboardingSystemModule from "../system";
 const ATKOnboardingEquityModule = buildModule(
   "ATKOnboardingEquityModule",
   (m) => {
-    const { system } = m.useModule(ATKOnboardingSystemModule);
+    const { tokenFactoryRegistry } = m.useModule(ATKOnboardingSystemModule);
     const { equityFactoryImplementation, equityImplementation } =
       m.useModule(ATKModule);
 
-    const createEquityFactory = m.call(system, "createTokenFactory", [
-      "equity",
-      equityFactoryImplementation,
-      equityImplementation,
-    ]);
+    const createEquityFactory = m.call(
+      tokenFactoryRegistry,
+      "registerTokenFactory",
+      ["equity", equityFactoryImplementation, equityImplementation]
+    );
     const equityFactoryAddress = m.readEventArgument(
       createEquityFactory,
       "TokenFactoryCreated",

@@ -5,7 +5,9 @@ import ATKOnboardingSystemModule from "../system";
 const ATKOnboardingXvPSettlementFactoryModule = buildModule(
   "ATKOnboardingXvPSettlementFactoryModule",
   (m) => {
-    const { system } = m.useModule(ATKOnboardingSystemModule);
+    const { system, systemAddonRegistry } = m.useModule(
+      ATKOnboardingSystemModule
+    );
     const { xvpSettlementImplementation, xvpSettlementFactoryImplementation } =
       m.useModule(ATKModule);
 
@@ -19,8 +21,8 @@ const ATKOnboardingXvPSettlementFactoryModule = buildModule(
     );
 
     const createXvPSettlementFactoryAddon = m.call(
-      system,
-      "createSystemAddon",
+      systemAddonRegistry,
+      "registerSystemAddon",
       [
         "xvp-settlement-factory",
         xvpSettlementFactoryImplementation,

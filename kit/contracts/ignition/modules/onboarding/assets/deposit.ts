@@ -5,15 +5,15 @@ import ATKOnboardingSystemModule from "../system";
 const ATKOnboardingDepositModule = buildModule(
   "ATKOnboardingDepositModule",
   (m) => {
-    const { system } = m.useModule(ATKOnboardingSystemModule);
+    const { tokenFactoryRegistry } = m.useModule(ATKOnboardingSystemModule);
     const { depositFactoryImplementation, depositImplementation } =
       m.useModule(ATKModule);
 
-    const createDepositFactory = m.call(system, "createTokenFactory", [
-      "deposit",
-      depositFactoryImplementation,
-      depositImplementation,
-    ]);
+    const createDepositFactory = m.call(
+      tokenFactoryRegistry,
+      "registerTokenFactory",
+      ["deposit", depositFactoryImplementation, depositImplementation]
+    );
     const depositFactoryAddress = m.readEventArgument(
       createDepositFactory,
       "TokenFactoryCreated",
