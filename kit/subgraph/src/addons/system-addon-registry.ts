@@ -1,9 +1,14 @@
 import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
-import { fetchEvent } from "../event/fetch/event";
+import {
+  FixedYieldScheduleFactory as FixedYieldScheduleFactoryTemplate,
+  VaultFactory as VaultFactoryTemplate,
+  XvPSettlementFactory as XvPSettlementFactoryTemplate,
+} from "../../generated/templates";
 import {
   AddonImplementationUpdated as AddonImplementationUpdatedEvent,
   SystemAddonRegistered as SystemAddonRegisteredEvent,
-} from "../generated/SystemAddonRegistry/SystemAddonRegistry";
+} from "../../generated/templates/SystemAddonRegistry/SystemAddonRegistry";
+import { fetchEvent } from "../event/fetch/event";
 import { fetchSystem } from "../system/fetch/system";
 import { fetchSystemAddon } from "../system/fetch/system-addon";
 

@@ -3,19 +3,25 @@ import { Bytes } from "@graphprotocol/graph-ts";
 import {
   Bootstrapped,
   ComplianceImplementationUpdated,
+  ComplianceModuleRegistryImplementationUpdated,
   IdentityFactoryImplementationUpdated,
   IdentityImplementationUpdated,
   IdentityRegistryImplementationUpdated,
   IdentityRegistryStorageImplementationUpdated,
+  SystemAddonRegistryImplementationUpdated,
   TokenAccessManagerImplementationUpdated,
+  TokenFactoryRegistryImplementationUpdated,
   TokenIdentityImplementationUpdated,
   TopicSchemeRegistryImplementationUpdated,
   TrustedIssuersRegistryImplementationUpdated,
 } from "../../generated/templates/System/System";
+import { fetchSystemAddonRegistry } from "../addons/fetch/system-addon-registry";
+import { fetchComplianceModuleRegistry } from "../compliance/fetch/compliance-module-registry";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
 import { fetchIdentityRegistryStorage } from "../identity-registry/fetch/identity-registry-storage";
+import { fetchTokenFactoryRegistry } from "../token-factory/fetch/token-factory-registry";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
 import { fetchCompliance } from "./fetch/compliance";
 import { fetchSystem } from "./fetch/system";
@@ -66,12 +72,39 @@ export function handleBootstrapped(event: Bootstrapped): void {
   }
   topicSchemeRegistry.save();
 
+  const tokenFactoryRegistry = fetchTokenFactoryRegistry(
+    event.params.tokenFactoryRegistryProxy
+  );
+  if (tokenFactoryRegistry.deployedInTransaction.equals(Bytes.empty())) {
+    tokenFactoryRegistry.deployedInTransaction = event.transaction.hash;
+  }
+  tokenFactoryRegistry.save();
+
+  const complianceModuleRegistry = fetchComplianceModuleRegistry(
+    event.params.complianceModuleRegistryProxy
+  );
+  if (complianceModuleRegistry.deployedInTransaction.equals(Bytes.empty())) {
+    complianceModuleRegistry.deployedInTransaction = event.transaction.hash;
+  }
+  complianceModuleRegistry.save();
+
+  const systemAddonRegistry = fetchSystemAddonRegistry(
+    event.params.systemAddonRegistryProxy
+  );
+  if (systemAddonRegistry.deployedInTransaction.equals(Bytes.empty())) {
+    systemAddonRegistry.deployedInTransaction = event.transaction.hash;
+  }
+  systemAddonRegistry.save();
+
   system.compliance = fetchCompliance(event.params.complianceProxy).id;
   system.identityRegistry = identityRegistry.id;
   system.identityRegistryStorage = identityRegistryStorage.id;
   system.trustedIssuersRegistry = trustedIssuersRegistry.id;
   system.identityFactory = identityFactory.id;
   system.topicSchemeRegistry = topicSchemeRegistry.id;
+  system.tokenFactoryRegistry = tokenFactoryRegistry.id;
+  system.complianceModuleRegistry = complianceModuleRegistry.id;
+  system.systemAddonRegistry = systemAddonRegistry.id;
   system.save();
 }
 

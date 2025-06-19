@@ -68,7 +68,9 @@ type System @entity(immutable: false) {
   identityRegistry: IdentityRegistry
   trustedIssuersRegistry: TrustedIssuersRegistry
   topicSchemeRegistry: TopicSchemeRegistry
-  tokenFactories: [TokenFactory!]! @derivedFrom(field: "system")
+  tokenFactoryRegistry: TokenFactoryRegistry
+  complianceModuleRegistry: ComplianceModuleRegistry
+  systemAddonRegistry: SystemAddonRegistry
 }
 
 type SystemAddon @entity(immutable: false) {
@@ -244,6 +246,14 @@ type IdentityClaimValue @entity(immutable: false) {
 # Compliance
 # ==================================================
 
+type ComplianceModuleRegistry @entity(immutable: false) {
+  id: Bytes!
+  accessControl: AccessControl!
+  account: Account!
+  deployedInTransaction: Bytes!
+  complianceModules: [ComplianceModule!]! @derivedFrom(field: "complianceModuleRegistry")
+}
+
 type ComplianceModule @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
@@ -251,6 +261,7 @@ type ComplianceModule @entity(immutable: false) {
   typeId: Bytes!
   account: Account!
   deployedInTransaction: Bytes!
+  complianceModuleRegistry: ComplianceModuleRegistry
   addressList: AddressListComplianceModule
   countryList: CountryListComplianceModule
 }
@@ -269,12 +280,20 @@ type CountryListComplianceModule @entity(immutable: false) {
 # TOKEN MANAGEMENT
 # ==================================================
 
+type TokenFactoryRegistry @entity(immutable: false) {
+  id: Bytes!
+  accessControl: AccessControl!
+  account: Account!
+  deployedInTransaction: Bytes!
+  tokenFactories: [TokenFactory!]! @derivedFrom(field: "tokenFactoryRegistry")
+}
+
 type TokenFactory @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
   name: String!
   typeId: Bytes!
-  system: System
+  tokenFactoryRegistry: TokenFactoryRegistry
   account: Account!
   tokens: [Token!]! @derivedFrom(field: "tokenFactory")
 }
@@ -369,6 +388,17 @@ type TokenBond @entity(immutable: false) {
 type TokenFund @entity(immutable: false) {
   id: Bytes!
   managementFeeBps: Int!
+}
+
+# ==================================================
+# System Addons
+# ==================================================
+
+type SystemAddonRegistry @entity(immutable: false) {
+  id: Bytes!
+  accessControl: AccessControl!
+  account: Account!
+  deployedInTransaction: Bytes!
 }
 
 # ==================================================

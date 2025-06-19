@@ -1,11 +1,15 @@
 import { ByteArray, crypto } from "@graphprotocol/graph-ts";
-import { fetchEvent } from "../event/fetch/event";
+import {
+  BondFactory as BondFactoryTemplate,
+  FundFactory as FundFactoryTemplate,
+} from "../../generated/templates";
 import {
   TokenFactoryImplementationUpdated as TokenFactoryImplementationUpdatedEvent,
   TokenFactoryRegistered as TokenFactoryRegisteredEvent,
-} from "../generated/TokenFactoryRegistry/TokenFactoryRegistry";
-import { fetchSystem } from "../system/fetch/system";
+} from "../../generated/templates/TokenFactoryRegistry/TokenFactoryRegistry";
+import { fetchEvent } from "../event/fetch/event";
 import { fetchTokenFactory } from "./fetch/token-factory";
+import { fetchTokenFactoryRegistry } from "./fetch/token-factory-registry";
 
 export function handleTokenFactoryImplementationUpdated(
   event: TokenFactoryImplementationUpdatedEvent
@@ -34,6 +38,8 @@ export function handleTokenFactoryRegistered(
     FundFactoryTemplate.create(event.params.proxyAddress);
   }
 
-  tokenFactory.system = fetchSystem(event.address).id;
+  tokenFactory.tokenFactoryRegistry = fetchTokenFactoryRegistry(
+    event.address
+  ).id;
   tokenFactory.save();
 }

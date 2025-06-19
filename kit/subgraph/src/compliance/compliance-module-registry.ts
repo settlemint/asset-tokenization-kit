@@ -1,6 +1,6 @@
 import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
+import { ComplianceModuleRegistered as ComplianceModuleRegisteredEvent } from "../../generated/templates/ComplianceModuleRegistry/ComplianceModuleRegistry";
 import { fetchEvent } from "../event/fetch/event";
-import { ComplianceModuleRegistered as ComplianceModuleRegisteredEvent } from "../generated/ComplianceModuleRegistry/ComplianceModuleRegistry";
 import { fetchComplianceModule } from "./fetch/compliance-module";
 
 export function handleComplianceModuleRegistered(
