@@ -32,7 +32,7 @@ contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
         return tokenImplementation_ != address(0);
     }
 
-    function tokenImplementation() external view override returns (address) {
+    function tokenImplementation() external pure override returns (address) {
         return address(0);
     }
 
@@ -58,7 +58,7 @@ contract MockInvalidTokenFactory is IATKTokenFactory {
         return false;
     }
 
-    function tokenImplementation() external view override returns (address) {
+    function tokenImplementation() external pure override returns (address) {
         return address(0);
     }
 
@@ -86,7 +86,7 @@ contract ATKTokenFactoryRegistryTest is Test {
         mockTokenImplementation = new MockTokenImplementation();
     }
 
-    function test_Initialize() public {
+    function test_Initialize() public view {
         assertTrue(registry.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
@@ -246,7 +246,7 @@ contract ATKTokenFactoryRegistryTest is Test {
         vm.stopPrank();
     }
 
-    function test_SupportsInterface() public {
+    function test_SupportsInterface() public view {
         assertTrue(registry.supportsInterface(type(IATKTokenFactoryRegistry).interfaceId));
         assertTrue(registry.supportsInterface(type(IAccessControl).interfaceId));
         assertTrue(registry.supportsInterface(type(IERC165).interfaceId));

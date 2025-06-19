@@ -234,3 +234,21 @@ export function handleComplianceModuleRegistered(
 
   complianceModule.save();
 }
+
+export function handleTokenFactoryRegistryImplementationUpdated(
+  event: TokenFactoryRegistryImplementationUpdated
+): void {
+  fetchEvent(event, "TokenFactoryRegistryImplementationUpdated");
+}
+
+export function handleComplianceModuleRegistryImplementationUpdated(
+  event: ComplianceModuleRegistryImplementationUpdated
+): void {
+  fetchEvent(event, "ComplianceModuleRegistryImplementationUpdated");
+}
+
+export function handleSystemAddonRegistryImplementationUpdated(
+  event: SystemAddonRegistryImplementationUpdated
+): void {
+  fetchEvent(event, "SystemAddonRegistryImplementationUpdated");
+}
