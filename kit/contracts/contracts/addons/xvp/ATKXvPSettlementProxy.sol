@@ -32,10 +32,17 @@ contract ATKXvPSettlementProxy is Proxy {
 
     /// @notice Constructs the ATKXvPSettlementProxy.
     /// @param factoryAddress The address of the IATKXvPSettlementFactory contract.
+    /// @param name The name of the settlement
     /// @param cutoffDate Timestamp after which the settlement expires
     /// @param autoExecute Whether to auto-execute after all approvals
     /// @param flows Array of token flows for this settlement
-    constructor(address factoryAddress, uint256 cutoffDate, bool autoExecute, IATKXvPSettlement.Flow[] memory flows) {
+    constructor(
+        address factoryAddress,
+        string memory name,
+        uint256 cutoffDate,
+        bool autoExecute,
+        IATKXvPSettlement.Flow[] memory flows
+    ) {
         if (factoryAddress == address(0)) {
             revert InvalidFactoryAddress();
         }
@@ -48,8 +55,9 @@ contract ATKXvPSettlementProxy is Proxy {
 
         address implementationAddress = _getImplementationAddressFromFactory();
 
-        bytes memory initData =
-            abi.encodeWithSelector(ATKXvPSettlementImplementation.initialize.selector, cutoffDate, autoExecute, flows);
+        bytes memory initData = abi.encodeWithSelector(
+            ATKXvPSettlementImplementation.initialize.selector, name, cutoffDate, autoExecute, flows
+        );
 
         _performInitializationDelegatecall(implementationAddress, initData);
     }
