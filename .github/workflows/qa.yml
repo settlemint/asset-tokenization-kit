@@ -182,6 +182,11 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
 
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: local
+
       - name: Generate artifacts
         if: github.event_name == 'pull_request'
         run: |
