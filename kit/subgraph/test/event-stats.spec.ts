@@ -1,6 +1,22 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "./utils/thegraph-client";
 
+// TypeScript interfaces for EventStats data structures
+interface Account {
+  id: string;
+}
+
+interface EventStat {
+  timestamp: string;
+  account: Account;
+  eventName: string;
+  eventsCount: number;
+}
+
+interface EventStatsResponse {
+  eventStats_collection: EventStat[];
+}
+
 describe("EventStats", () => {
   it("should fetch event stats aggregated by hour", async () => {
     const query = theGraphGraphql(
@@ -83,7 +99,7 @@ describe("EventStats", () => {
     
     expect(response.eventStats_collection).toBeDefined();
     if (response.eventStats_collection.length > 0) {
-      response.eventStats_collection.forEach((stat: any) => {
+      response.eventStats_collection.forEach((stat: EventStat) => {
         expect(stat.eventName).toBe("Transfer");
       });
     }
@@ -129,7 +145,7 @@ describe("EventStats", () => {
       
       expect(response.eventStats_collection).toBeDefined();
       if (response.eventStats_collection.length > 0) {
-        response.eventStats_collection.forEach((stat: any) => {
+        response.eventStats_collection.forEach((stat: EventStat) => {
           expect(stat.account.id).toBe(accountId);
         });
       }
@@ -157,8 +173,8 @@ describe("EventStats", () => {
     const response = await theGraphClient.request(query, {});
     
     // Group by account and eventName to check cumulative counts
-    const groupedStats: { [key: string]: any[] } = {};
-    response.eventStats_collection.forEach((stat: any) => {
+    const groupedStats: { [key: string]: EventStat[] } = {};
+    response.eventStats_collection.forEach((stat: EventStat) => {
       const key = `${stat.account.id}-${stat.eventName}`;
       if (!groupedStats[key]) {
         groupedStats[key] = [];
@@ -198,7 +214,7 @@ describe("EventStats", () => {
     
     // Get unique event names
     const eventNames = new Set(
-      response.eventStats_collection.map((stat: any) => stat.eventName)
+      response.eventStats_collection.map((stat: EventStat) => stat.eventName)
     );
     
     // Should have multiple different event types
