@@ -54,7 +54,7 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
 
         vm.startPrank(platformAdmin);
         stableCoinFactory = IATKStableCoinFactory(
-            systemUtils.system().createTokenFactory(
+            systemUtils.tokenFactoryRegistry().registerTokenFactory(
                 "StableCoin", address(stableCoinFactoryImpl), address(stableCoinImpl)
             )
         );

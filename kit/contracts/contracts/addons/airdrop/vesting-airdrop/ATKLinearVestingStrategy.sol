@@ -3,7 +3,6 @@
 pragma solidity ^0.8.28;
 
 import { IATKVestingStrategy } from "./IATKVestingStrategy.sol";
-import { InvalidVestingDuration, CliffExceedsVestingDuration } from "./ATKVestingAirdropErrors.sol";
 
 /// @title ATK Linear Vesting Strategy
 /// @author SettleMint Tokenization Services

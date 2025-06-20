@@ -51,7 +51,7 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
         super.initialize(systemAddress, tokenImplementation_, initialAdmin, identityVerificationModule_);
 
         ISMARTTopicSchemeRegistry topicSchemeRegistry =
-            ISMARTTopicSchemeRegistry(IATKSystem(_systemAddress).topicSchemeRegistryProxy());
+            ISMARTTopicSchemeRegistry(IATKSystem(_systemAddress).topicSchemeRegistry());
 
         _collateralClaimTopicId = topicSchemeRegistry.getTopicId(ATKTopics.TOPIC_COLLATERAL);
     }

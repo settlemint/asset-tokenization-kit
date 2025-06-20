@@ -15,6 +15,7 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
 import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
 
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
@@ -47,7 +48,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
-    IERC3643TrustedIssuersRegistry
+    IATKTrustedIssuersRegistry
 {
     // --- Storage Variables ---
     /// @notice Defines a structure to hold the details for a trusted claim issuer.
@@ -624,6 +625,7 @@ contract ATKTrustedIssuersRegistryImplementation is
             // extended.
         returns (bool)
     {
-        return interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
+            || interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId || super.supportsInterface(interfaceId);
     }
 }

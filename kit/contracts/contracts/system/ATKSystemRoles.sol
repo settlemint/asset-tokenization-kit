@@ -21,6 +21,10 @@ library ATKSystemRoles {
     /// @dev Assigned to entities responsible for handling identity issuers
     bytes32 public constant IDENTITY_ISSUER_ROLE = keccak256("IDENTITY_ISSUER_ROLE");
 
+    /// @notice Role for managing identity issuers
+    /// @dev Assigned to entities responsible for handling identity issuers
+    bytes32 public constant IDENTITY_ISSUER_ADMIN_ROLE = keccak256("IDENTITY_ISSUER_ADMIN_ROLE");
+
     /// @notice Role for token identity issuers
     /// @dev Assigned to entities responsible for issuing new token identities
     bytes32 public constant TOKEN_IDENTITY_ISSUER_ROLE = keccak256("TOKEN_IDENTITY_ISSUER_ROLE");
@@ -59,4 +63,8 @@ library ATKSystemRoles {
     /// @notice Role identifier for addresses that can manage the compliance bypass list
     /// @dev This role allows adding/removing addresses from the bypass list that can bypass compliance checks
     bytes32 public constant BYPASS_LIST_MANAGER_ROLE = keccak256("BYPASS_LIST_MANAGER_ROLE");
+
+    /// @notice Role identifier for addresses that can manage the compliance bypass list
+    /// @dev This role allows adding/removing addresses from the bypass list that can bypass compliance checks
+    bytes32 public constant BYPASS_LIST_MANAGER_ADMIN_ROLE = keccak256("BYPASS_LIST_MANAGER_ADMIN_ROLE");
 }

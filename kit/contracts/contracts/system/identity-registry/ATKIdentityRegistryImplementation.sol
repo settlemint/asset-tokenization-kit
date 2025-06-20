@@ -21,6 +21,7 @@ import { ISMART } from "../../smart/interface/ISMART.sol";
 import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { IERC3643TrustedIssuersRegistry } from "./../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
+import { IATKIdentityRegistry } from "./IATKIdentityRegistry.sol";
 
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
@@ -40,7 +41,7 @@ contract ATKIdentityRegistryImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
-    ISMARTIdentityRegistry
+    IATKIdentityRegistry
 {
     // --- Storage References ---
     /// @notice Stores the contract address of the `ISMARTIdentityRegistryStorage` instance.
@@ -745,6 +746,7 @@ contract ATKIdentityRegistryImplementation is
         returns (bool)
     {
         // Check for ISMARTIdentityRegistry interface and then delegate to parent contracts.
-        return interfaceId == type(ISMARTIdentityRegistry).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKIdentityRegistry).interfaceId
+            || interfaceId == type(ISMARTIdentityRegistry).interfaceId || super.supportsInterface(interfaceId);
     }
 }
