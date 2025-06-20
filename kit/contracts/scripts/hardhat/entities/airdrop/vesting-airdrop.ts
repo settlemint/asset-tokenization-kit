@@ -1,7 +1,7 @@
 import hre from "hardhat";
 import { Address, type Hex } from "viem";
 import ATKLinearVestingStrategy from "../../../../ignition/modules/atk/addons/airdrop/linear-vesting-strategy";
-import { ATKOnboardingContracts } from "../../services/deployer";
+import { atkDeployer, ATKOnboardingContracts } from "../../services/deployer";
 import { waitForEvent } from "../../utils/wait-for-event";
 import { Asset } from "../asset";
 
@@ -65,9 +65,10 @@ export class VestingAirdrop {
     vestingDuration: number;
     cliffDuration: number;
   }) {
-    const { atkLinearVestingStrategy } = await hre.ignition.deploy(
+    const { atkLinearVestingStrategy } = (await hre.ignition.deploy(
       ATKLinearVestingStrategy,
       {
+        deploymentId: atkDeployer.getDeploymentId(),
         parameters: {
           ATKLinearVestingStrategy: {
             vestingDuration,
@@ -75,7 +76,7 @@ export class VestingAirdrop {
           },
         },
       }
-    );
+    )) as { atkLinearVestingStrategy: { address: Address } };
 
     return atkLinearVestingStrategy.address;
   }
