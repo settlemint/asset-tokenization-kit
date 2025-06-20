@@ -3,6 +3,8 @@ import { ComplianceModuleRegistered as ComplianceModuleRegisteredEvent } from ".
 import { fetchEvent } from "../event/fetch/event";
 import { fetchComplianceModule } from "./fetch/compliance-module";
 import { fetchComplianceModuleRegistry } from "./fetch/compliance-module-registry";
+import { fetchAddressListComplianceModule } from "./modules/fetch/address-list-compliance-module";
+import { fetchCountryListComplianceModule } from "./modules/fetch/country-list-compliance-module";
 
 export function handleComplianceModuleRegistered(
   event: ComplianceModuleRegisteredEvent
@@ -28,7 +30,10 @@ export function handleComplianceModuleRegistered(
     event.params.typeId ==
       crypto.keccak256(ByteArray.fromUTF8("IdentityBlockListComplianceModule"))
   ) {
-    // TODO
+    const addressListComplianceModule = fetchAddressListComplianceModule(
+      event.params.moduleAddress
+    );
+    complianceModule.addressList = addressListComplianceModule.id;
   }
   if (
     event.params.typeId ==
@@ -38,7 +43,10 @@ export function handleComplianceModuleRegistered(
     event.params.typeId ==
       crypto.keccak256(ByteArray.fromUTF8("CountryBlockListComplianceModule"))
   ) {
-    // TODO
+    const countryListComplianceModule = fetchCountryListComplianceModule(
+      event.params.moduleAddress
+    );
+    complianceModule.countryList = countryListComplianceModule.id;
   }
 
   complianceModule.complianceModuleRegistry = fetchComplianceModuleRegistry(
