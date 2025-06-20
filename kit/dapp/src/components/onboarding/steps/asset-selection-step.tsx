@@ -10,7 +10,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { assetTypeArray } from "@/lib/zod/validators/asset-types";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { orpc } from "@/orpc";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -22,8 +25,17 @@ const assetSelectionSchema = z.object({
 
 type AssetSelectionFormData = z.infer<typeof assetSelectionSchema>;
 
-export function AssetSelectionStep() {
+interface AssetSelectionStepProps {
+  onSuccess?: () => void;
+}
+
+export function AssetSelectionStep({ onSuccess }: AssetSelectionStepProps) {
   const { t } = useTranslation("onboarding");
+  
+  // Fetch system address from settings
+  const { data: systemAddress } = useQuery(
+    orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
+  );
 
   const assetOptions = [
     { value: "bond", label: t("assets.bond") },
@@ -40,10 +52,33 @@ export function AssetSelectionStep() {
     },
   });
 
+  const selectedAssets = form.watch("selectedAssets");
+
+  const { mutate: createFactories, isPending } = useStreamingMutation({
+    mutationOptions: orpc.tokens.factoryCreate.mutationOptions(),
+    onSuccess: () => {
+      form.reset();
+      onSuccess?.();
+    },
+  });
+
   const onSubmit = (data: AssetSelectionFormData) => {
-    // Dummy submit handler
-    console.log("Selected assets:", data.selectedAssets);
-    toast.success(`Selected ${data.selectedAssets.length} asset types`);
+    if (!systemAddress?.value) {
+      toast.error("System address not found. Please ensure a system is deployed first.");
+      return;
+    }
+
+    // Convert selected assets to factory creation format
+    const factories = data.selectedAssets.map(type => ({
+      type: type,
+      name: `${type.charAt(0).toUpperCase() + type.slice(1)} Token Factory`
+    }));
+
+    createFactories({
+      contract: systemAddress.value,
+      factories,
+      // TODO: Add translations for factory creation messages
+    });
   };
 
   return (
@@ -103,7 +138,12 @@ export function AssetSelectionStep() {
             </FormItem>
           )}
         />
-        <Button type="submit">{t("asset-selection.continue")}</Button>
+        <Button 
+          type="submit" 
+          disabled={isPending || selectedAssets.length === 0 || !systemAddress?.value}
+        >
+          {t("asset-selection.continue")}
+        </Button>
       </form>
     </Form>
   );

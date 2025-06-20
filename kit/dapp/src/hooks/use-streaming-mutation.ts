@@ -120,6 +120,17 @@ export function useStreamingMutation<
               });
               break;
 
+            case "completed":
+              // Handle batch completion status
+              if (event.result !== undefined) {
+                finalResult = event.result;
+              }
+              toast.success(message || "Completed", {
+                id: toastIdRef.current,
+                duration: meta?.retry ?? 5000,
+              });
+              break;
+
             case "failed":
               toast.error(message || "Failed", {
                 id: toastIdRef.current,
