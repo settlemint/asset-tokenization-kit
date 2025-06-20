@@ -23,7 +23,12 @@
     "db:export": "bun run ./tools/export-database.ts",
     "db:track": "settlemint hasura track -a",
     "db:studio": "drizzle-kit studio",
-    "db:auth:generate": "bunx --bun @better-auth/cli generate -y --config=src/lib/auth/index.ts --output=src/lib/db/schemas/auth.ts"
+    "db:auth:generate": "bunx --bun @better-auth/cli generate -y --config=src/lib/auth/index.ts --output=src/lib/db/schemas/auth.ts",
+    "compile": "bun run typecheck",
+    "codegen": "bun run codegen:settlemint && bun run codegen:gql-tada",
+    "test": "echo 'No unit tests for dapp'",
+    "ci:base": "echo 'CI base tasks handled by turbo'",
+    "ci": "echo 'CI tasks handled by turbo'"
   },
   "devDependencies": {
     "@eslint/js": "9.29.0",

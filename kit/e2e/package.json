@@ -17,6 +17,14 @@
     "deps:install": "echo 'Dependencies installed via bun'",
     "test:e2e": "NODE_NO_WARNINGS=1 playwright test",
     "test:e2e:ui": "NODE_NO_WARNINGS=1 playwright test --ui",
-    "test:e2e:ui:local": "SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT=http://localhost:3000 NODE_NO_WARNINGS=1 playwright test --ui"
+    "test:e2e:ui:local": "SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT=http://localhost:3000 NODE_NO_WARNINGS=1 playwright test --ui",
+    "compile": "echo 'No compilation for e2e'",
+    "codegen": "echo 'No codegen for e2e'",
+    "lint": "echo 'No linting for e2e'",
+    "format": "echo 'No formatting for e2e'",
+    "test": "echo 'E2E tests run via test:e2e'",
+    "test:integration": "bun run test:e2e",
+    "ci:base": "echo 'CI base tasks handled by turbo'",
+    "ci": "echo 'CI tasks handled by turbo'"
   }
 }
