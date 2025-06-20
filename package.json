@@ -34,7 +34,7 @@
     "turbo.json"
   ],
   "scripts": {
-    "dependencies": "turbo run dependencies && git config merge.ours.driver true && git config merge.ours.name \"Keep ours for generated files\"",
+    "postinstall": "turbo run dependencies && git config merge.ours.driver true && git config merge.ours.name \"Keep ours for generated files\"",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
     "build": "turbo build",
@@ -56,10 +56,11 @@
     "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
     "test:e2e:api:debug": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests --ui",
     "helm": "turbo run helm",
-    "dev:up": "turbo run contracts#artifacts:genesis contracts#artifacts:abi dapp#db:export subgraph#compile && docker compose -p atk up -d",
-    "dev:connect": "settlemint connect --instance local && settlemint hasura track -a",
+    "dev:up": "docker compose -p atk up -d",
+    "postdev:up": "settlemint connect --instance local && settlemint hasura track -a",
     "dev:reset": "(docker compose -p atk down || true) && (docker volume ls -q --filter name=^atk | xargs -r docker volume rm || true)",
-    "dev:start": "bun run dev:up && bun run dev:connect",
+    "postdev:reset": "bun run dev:up",
+    "artifacts": "turbo run artifacts",
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },

@@ -9,18 +9,16 @@
       "dependsOn": ["compile:forge", "compile:hardhat"]
     },
     "compile:forge": {
-      "dependsOn": ["dependencies"],
-      "outputs": [".generated/out/**", ".generated/cache_forge/**"],
-      "inputs": ["**/*.sol", "!.generated/**"]
+      "outputs": ["out/**", "cache_forge/**"],
+      "inputs": ["**/*.sol"]
     },
     "compile:hardhat": {
-      "dependsOn": ["dependencies"],
-      "outputs": [".generated/artifacts/**", ".generated/cache/**"],
-      "inputs": ["**/*.sol", "!.generated/**"]
+      "outputs": ["artifacts/**", "cache/**"],
+      "inputs": ["**/*.sol"]
     },
     "compile:typescript": {
       "outputs": [".tsbuildinfo"],
-      "inputs": ["**/*.ts", "!.generated/**"]
+      "inputs": ["**/*.ts"]
     },
     "codegen": {
       "dependsOn": ["codegen:types"]
@@ -34,16 +32,12 @@
       "dependsOn": ["artifacts:genesis", "artifacts:abi"]
     },
     "artifacts:genesis": {
-      "dependsOn": ["compile:forge"],
-      "outputs": [
-        ".generated/genesis-allocations.json",
-        ".generated/genesis.json"
-      ],
+      "outputs": ["tools/genesis-output.json"],
       "inputs": ["contracts/**"]
     },
     "artifacts:abi": {
       "dependsOn": ["compile"],
-      "outputs": [".generated/portal/**"],
+      "outputs": ["portal/**"],
       "inputs": ["contracts/**"]
     },
     "format": {
@@ -53,12 +47,7 @@
     "format:prettier": {},
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "codegen", "subgraph#codegen:interfaceid"]
-    },
-    "test": {
-      "dependsOn": ["compile:forge"],
-      "outputs": [],
-      "inputs": ["**/*.sol", "test/**", "!.generated/**"]
+      "dependsOn": ["package", "codegen"]
     }
   }
 }

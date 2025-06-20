@@ -17,10 +17,10 @@
       "dependsOn": ["compile", "codegen", "lint", "test"]
     },
     "ci:gha": {
-      "dependsOn": ["ci:base", "build", "artifacts", "test:integration"]
+      "dependsOn": ["ci:base", "test:integration", "build"]
     },
     "ci:gha:main": {
-      "dependsOn": ["ci:gha", "publish"]
+      "dependsOn": ["publish", "ci:gha"]
     },
     "//#version": {
       "cache": false,
@@ -31,16 +31,13 @@
       ]
     },
     "build": {
-      "dependsOn": ["codegen"],
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+      "dependsOn": ["codegen"]
     },
     "codegen": {
-      "dependsOn": ["dependencies", "docs"],
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+      "dependsOn": ["dependencies", "docs"]
     },
     "compile": {
-      "dependsOn": ["dependencies", "codegen", "^compile"],
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+      "dependsOn": ["dependencies", "codegen", "^compile"]
     },
     "package": {
       "cache": false,
@@ -50,15 +47,9 @@
       "cache": false,
       "dependsOn": ["package"]
     },
-    "dependencies": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
-    },
-    "format": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
-    },
-    "lint": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
-    },
+    "dependencies": {},
+    "format": {},
+    "lint": {},
     "dev": {
       "cache": false,
       "persistent": true
@@ -70,31 +61,13 @@
     "helm": {
       "cache": false
     },
-    "docs": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
-    },
-    "test": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
-    },
-    "artifacts": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
-    },
-    "test:integration": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
-    },
+    "docs": {},
+    "test": {},
+    "artifacts": {},
+    "test:integration": {},
     "db:studio": {
       "cache": false,
       "persistent": true
-    },
-    "db:export": {
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
-    },
-    "db:push": {
-      "cache": false
-    },
-    "//#dev:connect": {
-      "outputs": ["**/.env", "**/.env.local"],
-      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
     }
   }
 }
