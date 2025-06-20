@@ -44,6 +44,10 @@ import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persist
 import { QueryClient, QueryCache, MutationCache } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import superjson from "superjson";
+import {
+  checkAndClearStaleCache,
+  setupDevCacheManagement,
+} from "./utils/clear-cache";
 
 /**
  * Query cache configuration constants.
@@ -103,7 +107,10 @@ const handleUnauthorizedError = (error: unknown) => {
   const queryError = error as QueryError;
   if (queryError.code === "UNAUTHORIZED" || queryError.status === 401) {
     // Only redirect if we're in the browser and not already on the auth page
-    if (typeof window !== "undefined" && !window.location.pathname.startsWith("/auth/")) {
+    if (
+      typeof window !== "undefined" &&
+      !window.location.pathname.startsWith("/auth/")
+    ) {
       window.location.href = "/auth/sign-in";
     }
   }
@@ -205,7 +212,10 @@ export const queryClient = new QueryClient({
       retry: (failureCount, error) => {
         const mutationError = error as QueryError;
         // Don't retry on UNAUTHORIZED errors
-        if (mutationError.code === "UNAUTHORIZED" || mutationError.status === 401) {
+        if (
+          mutationError.code === "UNAUTHORIZED" ||
+          mutationError.status === 401
+        ) {
           return false;
         }
         // Don't retry on 4xx errors
@@ -243,11 +253,18 @@ const persister = createSyncStoragePersister({
  * Persist queries for offline support
  */
 if (typeof window !== "undefined") {
+  // Check and clear stale cache based on build ID
+  const buildId = process.env.BUILD_ID ?? "dev";
+  checkAndClearStaleCache(buildId);
+
+  // Set up development cache management utilities
+  setupDevCacheManagement();
+
   void persistQueryClient({
     queryClient,
     persister,
     maxAge: QUERY_CACHE_TIME,
-    buster: process.env.BUILD_ID ?? "",
+    buster: buildId,
     dehydrateOptions: {
       shouldDehydrateQuery: (query) => {
         // Only persist successful queries
