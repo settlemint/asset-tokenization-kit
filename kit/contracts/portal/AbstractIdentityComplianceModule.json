@@ -1,0 +1,1422 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "DEFAULT_ADMIN_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "GLOBAL_LIST_MANAGER_ROLE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "canTransfer",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "_params",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "created",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "_params",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "destroyed",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "_params",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "getRoleAdmin",
+      "inputs": [
+        {
+          "name": "role",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "grantRole",
+      "inputs": [
+        {
+          "name": "role",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "hasRole",
+      "inputs": [
+        {
+          "name": "role",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isTrustedForwarder",
+      "inputs": [
+        {
+          "name": "forwarder",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "name",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "renounceRole",
+      "inputs": [
+        {
+          "name": "role",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "callerConfirmation",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "revokeRole",
+      "inputs": [
+        {
+          "name": "role",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "supportsInterface",
+      "inputs": [
+        {
+          "name": "interfaceId",
+          "type": "bytes4",
+          "internalType": "bytes4"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "transferred",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "_params",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "trustedForwarder",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "validateParameters",
+      "inputs": [
+        {
+          "name": "_params",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "view"
+    },
+    {
+      "type": "event",
+      "name": "RoleAdminChanged",
+      "inputs": [
+        {
+          "name": "role",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "previousAdminRole",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "newAdminRole",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "RoleGranted",
+      "inputs": [
+        {
+          "name": "role",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "account",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "RoleRevoked",
+      "inputs": [
+        {
+          "name": "role",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "account",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "AccessControlBadConfirmation",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "AccessControlUnauthorizedAccount",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "neededRole",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ComplianceCheckFailed",
+      "inputs": [
+        {
+          "name": "reason",
+          "type": "string",
+          "internalType": "string"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "InvalidParameters",
+      "inputs": [
+        {
+          "name": "reason",
+          "type": "string",
+          "internalType": "string"
+        }
+      ]
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "DEFAULT_ADMIN_ROLE()": "a217fddf",
+    "GLOBAL_LIST_MANAGER_ROLE()": "771d2f5e",
+    "canTransfer(address,address,address,uint256,bytes)": "ddfcf377",
+    "created(address,address,uint256,bytes)": "c4c104b9",
+    "destroyed(address,address,uint256,bytes)": "10efe2a5",
+    "getRoleAdmin(bytes32)": "248a9ca3",
+    "grantRole(bytes32,address)": "2f2ff15d",
+    "hasRole(bytes32,address)": "91d14854",
+    "isTrustedForwarder(address)": "572b6c05",
+    "name()": "06fdde03",
+    "renounceRole(bytes32,address)": "36568abe",
+    "revokeRole(bytes32,address)": "d547741f",
+    "supportsInterface(bytes4)": "01ffc9a7",
+    "transferred(address,address,address,uint256,bytes)": "ea6b97a5",
+    "trustedForwarder()": "7da0a877",
+    "validateParameters(bytes)": "6974f58e"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"AccessControlBadConfirmation\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"reason\",\"type\":\"string\"}],\"name\":\"ComplianceCheckFailed\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"reason\",\"type\":\"string\"}],\"name\":\"InvalidParameters\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"GLOBAL_LIST_MANAGER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"_params\",\"type\":\"bytes\"}],\"name\":\"canTransfer\",\"outputs\":[],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"_params\",\"type\":\"bytes\"}],\"name\":\"created\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"_params\",\"type\":\"bytes\"}],\"name\":\"destroyed\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"forwarder\",\"type\":\"address\"}],\"name\":\"isTrustedForwarder\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"callerConfirmation\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"_params\",\"type\":\"bytes\"}],\"name\":\"transferred\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"trustedForwarder\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"_params\",\"type\":\"bytes\"}],\"name\":\"validateParameters\",\"outputs\":[],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"errors\":{\"AccessControlBadConfirmation()\":[{\"details\":\"The caller of a function is not the expected one. NOTE: Don't confuse with {AccessControlUnauthorizedAccount}.\"}],\"AccessControlUnauthorizedAccount(address,bytes32)\":[{\"details\":\"The `account` is missing a role.\"}],\"ComplianceCheckFailed(string)\":[{\"details\":\"This error indicates that a proposed token transfer, mint, or burn operation violates      the rules enforced by this specific compliance module.\",\"params\":{\"reason\":\"A descriptive string explaining why the compliance check failed (e.g., \\\"Sender not allow listed\\\", \\\"Transfer exceeds daily limit\\\").\"}}],\"InvalidParameters(string)\":[{\"details\":\"This error signals that the data supplied to configure or update the module is malformed, out of expected range,      or otherwise unsuitable for the module's intended operation.\",\"params\":{\"reason\":\"A descriptive string explaining why the parameters are considered invalid (e.g., \\\"Invalid country code format\\\", \\\"Limit parameter cannot be zero\\\").\"}}]},\"events\":{\"RoleAdminChanged(bytes32,bytes32,bytes32)\":{\"details\":\"Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole` `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite {RoleAdminChanged} not being emitted to signal this.\"},\"RoleGranted(bytes32,address,address)\":{\"details\":\"Emitted when `account` is granted `role`. `sender` is the account that originated the contract call. This account bears the admin role (for the granted role). Expected in cases where the role was granted using the internal {AccessControl-_grantRole}.\"},\"RoleRevoked(bytes32,address,address)\":{\"details\":\"Emitted when `account` is revoked `role`. `sender` is the account that originated the contract call:   - if using `revokeRole`, it is the admin role bearer   - if using `renounceRole`, it is the role bearer (i.e. `account`)\"}},\"kind\":\"dev\",\"methods\":{\"canTransfer(address,address,address,uint256,bytes)\":{\"details\":\"It is called by the `SMARTComplianceImplementation` contract *before* a token transfer is attempted. The inheriting module's implementation of this function should contain the core logic to decide if a transfer is allowed or not based on its specific rules. - If the transfer IS allowed according to the module's rules, this function should simply return (do nothing). - If the transfer IS NOT allowed, this function MUST `revert` (e.g., `revert ComplianceCheckFailed(\\\"Reason\\\");`). This function is a `view` function, meaning it should not modify state.\",\"params\":{\"_from\":\"The address from which tokens would be transferred.\",\"_params\":\"The ABI-encoded parameters that were configured for this specific module when it was added to the `_token`.                The module should decode and use these parameters as part of its compliance logic.\",\"_to\":\"The address to which tokens would be transferred.\",\"_token\":\"The address of the `ISMART` token contract related to the proposed transfer.\",\"_value\":\"The amount of tokens proposed to be transferred.\"}},\"created(address,address,uint256,bytes)\":{\"details\":\"This is an empty `virtual` implementation. Inheriting contracts can `override` this function if they need to perform actions or update state based on successful token creation. If a module doesn't need to react to token creation, it doesn't need to override this.\",\"params\":{\"_params\":\"The parameters that were configured for this module when it was added to the `_token`.\",\"_to\":\"The address that received the newly created tokens.\",\"_token\":\"The address of the `ISMART` token contract where tokens were created.\",\"_value\":\"The amount of tokens created.\"}},\"destroyed(address,address,uint256,bytes)\":{\"details\":\"This is an empty `virtual` implementation. Inheriting contracts can `override` this function if they need to perform actions or update state based on successful token destruction. If a module doesn't need to react to token destruction, it doesn't need to override this.\",\"params\":{\"_from\":\"The address whose tokens were destroyed.\",\"_params\":\"The parameters that were configured for this module when it was added to the `_token`.\",\"_token\":\"The address of the `ISMART` token contract from which tokens were destroyed.\",\"_value\":\"The amount of tokens destroyed.\"}},\"getRoleAdmin(bytes32)\":{\"details\":\"Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.\"},\"grantRole(bytes32,address)\":{\"details\":\"Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleGranted} event.\"},\"hasRole(bytes32,address)\":{\"details\":\"Returns `true` if `account` has been granted `role`.\"},\"isTrustedForwarder(address)\":{\"details\":\"Indicates whether any particular address is the trusted forwarder.\"},\"name()\":{\"details\":\"This function is used to identify the type or purpose of the compliance module. For example, \\\"Country Allow List Module\\\". It should be a `pure` function as the name is typically hardcoded and doesn't depend on state.\",\"returns\":{\"_0\":\"A string representing the name of the compliance module.\"}},\"renounceRole(bytes32,address)\":{\"details\":\"Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `callerConfirmation`. May emit a {RoleRevoked} event.\"},\"revokeRole(bytes32,address)\":{\"details\":\"Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleRevoked} event.\"},\"supportsInterface(bytes4)\":{\"details\":\"This function is part of the ERC165 standard, allowing other contracts to discover what interfaces this contract implements. It explicitly states that this module (and any inheriting contract) supports the `ISMARTComplianceModule` interface. It also calls `super.supportsInterface(interfaceId)` to include support for interfaces from parent contracts (like `AccessControl` which also implements `IERC165`).\",\"params\":{\"interfaceId\":\"The interface identifier (bytes4) to check.\"},\"returns\":{\"_0\":\"`true` if the contract supports the `interfaceId`, `false` otherwise.\"}},\"transferred(address,address,address,uint256,bytes)\":{\"details\":\"This is an empty `virtual` implementation. Inheriting contracts can `override` this function if they need to perform actions or update state based on a successful transfer. For example, a module might log transfer details or update internal counters. If a module doesn't need to react to transfers, it doesn't need to override this.\",\"params\":{\"_from\":\"The address from which tokens were transferred.\",\"_params\":\"The parameters that were configured for this module when it was added to the `_token`.\",\"_to\":\"The address to which tokens were transferred.\",\"_token\":\"The address of the `ISMART` token contract that performed the transfer.\",\"_value\":\"The amount of tokens transferred.\"}},\"trustedForwarder()\":{\"details\":\"Returns the address of the trusted forwarder.\"},\"validateParameters(bytes)\":{\"details\":\"This function is called by the `SMARTComplianceImplementation` (via `_validateModuleAndParams`) when a module is being registered with a token or when checking if a module is valid. The implementation in the inheriting module should: 1. Attempt to decode `_params` according to the expected format for that module. 2. Validate the decoded parameters (e.g., check for valid ranges, correct array lengths, non-zero addresses etc.). - If the parameters ARE valid, this function should simply return. - If the parameters ARE NOT valid, this function MUST `revert` (e.g., `revert InvalidParameters(\\\"Reason\\\");`). This function is a `view` function.\",\"params\":{\"_params\":\"The ABI-encoded parameters that need to be validated. The format is specific to each concrete module.\"}}},\"title\":\"Abstract Base for Identity-Specific Compliance Modules\",\"version\":1},\"userdoc\":{\"errors\":{\"ComplianceCheckFailed(string)\":[{\"notice\":\"Emitted when a compliance check performed by the `canTransfer` function fails.\"}],\"InvalidParameters(string)\":[{\"notice\":\"Emitted by the `validateParameters` function if the provided configuration parameters are invalid for this module.\"}]},\"kind\":\"user\",\"methods\":{\"canTransfer(address,address,address,uint256,bytes)\":{\"notice\":\"This is the primary compliance check function that concrete modules MUST implement.\"},\"created(address,address,uint256,bytes)\":{\"notice\":\"This function is a hook called by the main `SMARTComplianceImplementation` contract *after* new tokens have been created (minted).\"},\"destroyed(address,address,uint256,bytes)\":{\"notice\":\"This function is a hook called by the main `SMARTComplianceImplementation` contract *after* tokens have been destroyed (burned).\"},\"name()\":{\"notice\":\"Concrete compliance modules MUST implement this function to return a human-readable name for the module.\"},\"supportsInterface(bytes4)\":{\"notice\":\"Checks if the contract supports a given interface ID.\"},\"transferred(address,address,address,uint256,bytes)\":{\"notice\":\"This function is a hook called by the main `ATKComplianceImplementation` contract *after* a token transfer has occurred.\"},\"validateParameters(bytes)\":{\"notice\":\"Concrete compliance modules MUST implement this function to validate their specific parameters.\"}},\"notice\":\"This abstract contract extends `AbstractAddressListComplianceModule` to provide common functionalities for compliance modules that base their rules on investor identity contracts.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/smart/modules/AbstractIdentityComplianceModule.sol\":\"AbstractIdentityComplianceModule\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/\",\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/\",\":forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\",\":openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\"],\"viaIR\":true},\"sources\":{\"contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol\":{\"keccak256\":\"0x3a8a72df8da5bf4d988bbfb00151b933ff17cdc8d4be47dc121cd9e2083ba86f\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://369250658bf8d3ebb583946820afa494271ce6bfde607d15c7060cdf7a303cf3\",\"dweb:/ipfs/QmSJjaK6vyv8K9RX1k3rwxsoKfVNyMoHEszxyxdTQfDKQG\"]},\"contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol\":{\"keccak256\":\"0x15b72940814cd959b57bf75623f16c51fc6c50eab51fd2420a8b653519ebd76c\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://479f5e24a1b608776d9d5d7da9c76dd3c9b1dd300d8b4eee7a15dcfba4817bee\",\"dweb:/ipfs/QmPhMBfQAqt5NeRcSu3jDTwhoQXnB7nXNEcmoJ7KoWVt7V\"]},\"contracts/smart/interface/ISMART.sol\":{\"keccak256\":\"0xfce323160dd5cd8c9db34de0ea872bec41fd2ea8d8496e1e3c17865d374994da\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://1a1fafbdec0c59e078798438d2a3cd05bd70b864d7dfa67faf135d5634c5ae51\",\"dweb:/ipfs/QmehZwexgZN2BZKA6eFrG3DHUMRUZnzYTen6j5Ry5Znbf2\"]},\"contracts/smart/interface/ISMARTCompliance.sol\":{\"keccak256\":\"0x948341e4ad374e1dded6d1b30c395ad0f01e6ea2099fb6b96c5476e8b28c1d77\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://d261e9a0c8682f11ac86048f13e367caee6d5f512d51b8752186b8c01b6ba618\",\"dweb:/ipfs/Qmdp14emh3NFSAphyuAgsTE7qZt1g1UYcNLS3tNNM8T6Hv\"]},\"contracts/smart/interface/ISMARTComplianceModule.sol\":{\"keccak256\":\"0x0506b3696a61f59ebb32ffb0fcb1c955c3c76e1ab9f85440cf5562a800490c6e\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://2aef21997c167cf1dc9430b232e0dcddd6316f945f44e2ebe943241c2c257896\",\"dweb:/ipfs/Qmbp5MEoHkBMTTreXYoxjKohVVbEPBtcwX1QPfLHv71FxQ\"]},\"contracts/smart/interface/ISMARTIdentityRegistry.sol\":{\"keccak256\":\"0x62a95a9db2ac97ceaf59f7585d7bbaf3acb65ed9b5e57597b9d1fe1b4d7c4eda\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://bd870710359396db48e70ef7e40449125ff744c6c8ce15ad7e1894df430c87ea\",\"dweb:/ipfs/QmZ6khf5Vm6hBkkUgYC1b161jSQaZeegJVRY6ndjRW1EcG\"]},\"contracts/smart/interface/ISMARTIdentityRegistryStorage.sol\":{\"keccak256\":\"0x219b3d03958859e2f082aac5cbf3b40acf243e326ee6e74e6bb03be7724c2985\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://8cf8d30ec47cb2aed5b51d373837584fb6f08deab1d35142510271e733404f52\",\"dweb:/ipfs/Qmc9NnABx9ouhhCR8qgJC3RtU5oAyycSjZkY6nGtuWFwuz\"]},\"contracts/smart/interface/ISMARTTopicSchemeRegistry.sol\":{\"keccak256\":\"0xec5e42dcf7d929f8a0db42c9c8a0fa81d089a9f7177b7da10df029f94334ca8a\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://e346e3241e3110b3f17d2b244a49d68a1d79c6928bef7d372ea3458c1029cea0\",\"dweb:/ipfs/QmeSyCYN9qYXRjn799fRFP7X9apf7bubVhnFEUGQatx3xd\"]},\"contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol\":{\"keccak256\":\"0x489a55538b554a0c935bee7efc28f7e821e161638c5726c9d367a644a0b7c62a\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://04bb06aed3ee3c5c6f3df9a59721c08ddd57b5521da1c9c6fd96b7c8b57db813\",\"dweb:/ipfs/QmRuzqKDr2sBHNuQhCzWGa8euNiMyvP7LTjSFjvAj5uFqh\"]},\"contracts/smart/modules/AbstractAddressListComplianceModule.sol\":{\"keccak256\":\"0x65afae4c3aa7500f7249d64cb0884f72628be35cfd916890b6cff20d01c022f2\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://2f0846a068f7a382465246d55ebe4d8ac80fdcd92c546e57944bd0f154c489fa\",\"dweb:/ipfs/QmbLYxB3rEfTDf6PEpgoEZp2oe8dJtP6LWv95Ai4QJN4xg\"]},\"contracts/smart/modules/AbstractComplianceModule.sol\":{\"keccak256\":\"0xee7491e92413a69bcdcae4917721421a12b4cb52d2b7af1d8ba95d88247d8469\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://8b276067f4ddf3066a06b705834b7afc4f316d9f0b5a47b5148e54e6fbc03ec1\",\"dweb:/ipfs/QmYvj9WBMUDUkTdZ2Ltj7wHAG1MPTABvehBnZNpYdZCoHQ\"]},\"contracts/smart/modules/AbstractIdentityComplianceModule.sol\":{\"keccak256\":\"0x9f22166fef1cd7862ab1a7a82ba2e8bccfe84c6a0544411ca8045de3b9ec648c\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://4233a323881585031d1748bdb3c26d1e08af3f4f398d3f9d9fe47296644401af\",\"dweb:/ipfs/QmSvLksSkDgWBPv8c3tDdawdd8PoYXN18m5XUNAJSZeTZk\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IClaimIssuer.sol\":{\"keccak256\":\"0xae785f63b3cb3a94bcb454ef4ad6376aa4848fa29cff1cc8db3bef4a2994a779\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://d8223d2710c51ee39cdfd2cb2f1858b3d64a3222c78ea8ed5eb3e11a93e1222e\",\"dweb:/ipfs/QmYRXPCww7BorScTC6QNMbrRm2zprUmSYFpWomwarJH7Df\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IERC734.sol\":{\"keccak256\":\"0x35a14a0d1a3ed51689f1a2cb12e26d30601afbcc1cc9b9b288a03cd11e6d049e\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://156aac402e73e6bd2fa8c0ccd85b2add8d1bb505d8a652218173dbc8e7b9a3cb\",\"dweb:/ipfs/QmPzPyc3kKxoNCGqKAooUju6YvMkDN4MCUH198TEXnA82o\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IERC735.sol\":{\"keccak256\":\"0xeac82c37b16c1c1c83df3e88be987332b1230ed13e1d017f9d2929f978ac0122\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://695a66b789ac417b7b2b78c578981779db374704382921ff499351cccab0323e\",\"dweb:/ipfs/QmeZoogvsEWf688Z849zZ2dLPDnor6YnnNQLMgedY9Tc9D\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IIdentity.sol\":{\"keccak256\":\"0x5ed42ab81b9b734c79e61d1f7e0734baab5479a356ab6bb469414d3c66269862\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://a0863999b1ed334179a43e699e6057815eea011a78ed51e61b6110fc392e26f8\",\"dweb:/ipfs/Qme6hdHZCAy1V4sLgAZ5NxdrEjEf5mYMabf5UDmUDjkuzW\"]},\"dependencies/@openzeppelin-contracts-5.3.0/access/AccessControl.sol\":{\"keccak256\":\"0xc1bebdee8943bd5e9ef1e0f2e63296aa1dd4171a66b9e74d0286220e891e1458\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://928cf2f0042c606f3dcb21bd8a272573f462a215cd65285d2d6b407f31e9bd67\",\"dweb:/ipfs/QmWGxjckno6sfjHPX5naPnsfsyisgy4PJDf46eLw9umfpx\"]},\"dependencies/@openzeppelin-contracts-5.3.0/access/IAccessControl.sol\":{\"keccak256\":\"0x4d9a2b261b56a1e4a37bb038151dec98b952fed16de2bdfdda27e38e2b12b530\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f724110f7aeb6151af800ab8c12e6060b29bda9e013f0ccb331eb754d6a7cbf0\",\"dweb:/ipfs/QmUcjzCZpxtUPdEThtAzE1f9LvuJiUGZxTdH9N6bHrb5Cf\"]},\"dependencies/@openzeppelin-contracts-5.3.0/metatx/ERC2771Context.sol\":{\"keccak256\":\"0x0b030a33274bde015419d99e54c9164f876a7d10eb590317b79b1d5e4ab23d99\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://68e5f96988198e8efd25ddef0d89750b4daebb7fd1204fa7f5eaccdfcb3398c8\",\"dweb:/ipfs/QmaM6nNkf9UmEtQraopuZamEWCdTWp7GvuN3pjMQrNCHxm\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db\",\"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x70f2f713b13b7ce4610bcd0ac9fec0f3cc43693b043abcb8dc40a42a726eb330\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c13d13304ac79a83ab1c30168967d19e2203342ebbd6a9bbce4db7550522dcbf\",\"dweb:/ipfs/QmeN5jKMN2vw5bhacr6tkg78afbTTZUeaacNHqjWt4Ew1r\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/Context.sol\":{\"keccak256\":\"0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12\",\"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/ERC165.sol\":{\"keccak256\":\"0xddce8e17e3d3f9ed818b4f4c4478a8262aab8b11ed322f1bf5ed705bb4bd97fa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8084aa71a4cc7d2980972412a88fe4f114869faea3fefa5436431644eb5c0287\",\"dweb:/ipfs/Qmbqfs5dRdPvHVKY8kTaeyc65NdqXRQwRK7h9s5UJEhD1p\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "AccessControlBadConfirmation"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "neededRole",
+              "type": "bytes32"
+            }
+          ],
+          "type": "error",
+          "name": "AccessControlUnauthorizedAccount"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "reason",
+              "type": "string"
+            }
+          ],
+          "type": "error",
+          "name": "ComplianceCheckFailed"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "reason",
+              "type": "string"
+            }
+          ],
+          "type": "error",
+          "name": "InvalidParameters"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "bytes32",
+              "name": "previousAdminRole",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "bytes32",
+              "name": "newAdminRole",
+              "type": "bytes32",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "RoleAdminChanged",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "RoleGranted",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "RoleRevoked",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "DEFAULT_ADMIN_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "GLOBAL_LIST_MANAGER_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_params",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "canTransfer"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_params",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "created"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_params",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "destroyed"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getRoleAdmin",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "grantRole"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "hasRole",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "forwarder",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isTrustedForwarder",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "name",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "callerConfirmation",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "renounceRole"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "revokeRole"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_params",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transferred"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "trustedForwarder",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes",
+              "name": "_params",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "validateParameters"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "canTransfer(address,address,address,uint256,bytes)": {
+            "details": "It is called by the `SMARTComplianceImplementation` contract *before* a token transfer is attempted. The inheriting module's implementation of this function should contain the core logic to decide if a transfer is allowed or not based on its specific rules. - If the transfer IS allowed according to the module's rules, this function should simply return (do nothing). - If the transfer IS NOT allowed, this function MUST `revert` (e.g., `revert ComplianceCheckFailed(\"Reason\");`). This function is a `view` function, meaning it should not modify state.",
+            "params": {
+              "_from": "The address from which tokens would be transferred.",
+              "_params": "The ABI-encoded parameters that were configured for this specific module when it was added to the `_token`.                The module should decode and use these parameters as part of its compliance logic.",
+              "_to": "The address to which tokens would be transferred.",
+              "_token": "The address of the `ISMART` token contract related to the proposed transfer.",
+              "_value": "The amount of tokens proposed to be transferred."
+            }
+          },
+          "created(address,address,uint256,bytes)": {
+            "details": "This is an empty `virtual` implementation. Inheriting contracts can `override` this function if they need to perform actions or update state based on successful token creation. If a module doesn't need to react to token creation, it doesn't need to override this.",
+            "params": {
+              "_params": "The parameters that were configured for this module when it was added to the `_token`.",
+              "_to": "The address that received the newly created tokens.",
+              "_token": "The address of the `ISMART` token contract where tokens were created.",
+              "_value": "The amount of tokens created."
+            }
+          },
+          "destroyed(address,address,uint256,bytes)": {
+            "details": "This is an empty `virtual` implementation. Inheriting contracts can `override` this function if they need to perform actions or update state based on successful token destruction. If a module doesn't need to react to token destruction, it doesn't need to override this.",
+            "params": {
+              "_from": "The address whose tokens were destroyed.",
+              "_params": "The parameters that were configured for this module when it was added to the `_token`.",
+              "_token": "The address of the `ISMART` token contract from which tokens were destroyed.",
+              "_value": "The amount of tokens destroyed."
+            }
+          },
+          "getRoleAdmin(bytes32)": {
+            "details": "Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}."
+          },
+          "grantRole(bytes32,address)": {
+            "details": "Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleGranted} event."
+          },
+          "hasRole(bytes32,address)": {
+            "details": "Returns `true` if `account` has been granted `role`."
+          },
+          "isTrustedForwarder(address)": {
+            "details": "Indicates whether any particular address is the trusted forwarder."
+          },
+          "name()": {
+            "details": "This function is used to identify the type or purpose of the compliance module. For example, \"Country Allow List Module\". It should be a `pure` function as the name is typically hardcoded and doesn't depend on state.",
+            "returns": {
+              "_0": "A string representing the name of the compliance module."
+            }
+          },
+          "renounceRole(bytes32,address)": {
+            "details": "Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `callerConfirmation`. May emit a {RoleRevoked} event."
+          },
+          "revokeRole(bytes32,address)": {
+            "details": "Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleRevoked} event."
+          },
+          "supportsInterface(bytes4)": {
+            "details": "This function is part of the ERC165 standard, allowing other contracts to discover what interfaces this contract implements. It explicitly states that this module (and any inheriting contract) supports the `ISMARTComplianceModule` interface. It also calls `super.supportsInterface(interfaceId)` to include support for interfaces from parent contracts (like `AccessControl` which also implements `IERC165`).",
+            "params": {
+              "interfaceId": "The interface identifier (bytes4) to check."
+            },
+            "returns": {
+              "_0": "`true` if the contract supports the `interfaceId`, `false` otherwise."
+            }
+          },
+          "transferred(address,address,address,uint256,bytes)": {
+            "details": "This is an empty `virtual` implementation. Inheriting contracts can `override` this function if they need to perform actions or update state based on a successful transfer. For example, a module might log transfer details or update internal counters. If a module doesn't need to react to transfers, it doesn't need to override this.",
+            "params": {
+              "_from": "The address from which tokens were transferred.",
+              "_params": "The parameters that were configured for this module when it was added to the `_token`.",
+              "_to": "The address to which tokens were transferred.",
+              "_token": "The address of the `ISMART` token contract that performed the transfer.",
+              "_value": "The amount of tokens transferred."
+            }
+          },
+          "trustedForwarder()": {
+            "details": "Returns the address of the trusted forwarder."
+          },
+          "validateParameters(bytes)": {
+            "details": "This function is called by the `SMARTComplianceImplementation` (via `_validateModuleAndParams`) when a module is being registered with a token or when checking if a module is valid. The implementation in the inheriting module should: 1. Attempt to decode `_params` according to the expected format for that module. 2. Validate the decoded parameters (e.g., check for valid ranges, correct array lengths, non-zero addresses etc.). - If the parameters ARE valid, this function should simply return. - If the parameters ARE NOT valid, this function MUST `revert` (e.g., `revert InvalidParameters(\"Reason\");`). This function is a `view` function.",
+            "params": {
+              "_params": "The ABI-encoded parameters that need to be validated. The format is specific to each concrete module."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "canTransfer(address,address,address,uint256,bytes)": {
+            "notice": "This is the primary compliance check function that concrete modules MUST implement."
+          },
+          "created(address,address,uint256,bytes)": {
+            "notice": "This function is a hook called by the main `SMARTComplianceImplementation` contract *after* new tokens have been created (minted)."
+          },
+          "destroyed(address,address,uint256,bytes)": {
+            "notice": "This function is a hook called by the main `SMARTComplianceImplementation` contract *after* tokens have been destroyed (burned)."
+          },
+          "name()": {
+            "notice": "Concrete compliance modules MUST implement this function to return a human-readable name for the module."
+          },
+          "supportsInterface(bytes4)": {
+            "notice": "Checks if the contract supports a given interface ID."
+          },
+          "transferred(address,address,address,uint256,bytes)": {
+            "notice": "This function is a hook called by the main `ATKComplianceImplementation` contract *after* a token transfer has occurred."
+          },
+          "validateParameters(bytes)": {
+            "notice": "Concrete compliance modules MUST implement this function to validate their specific parameters."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/",
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/",
+        "forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/",
+        "openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/smart/modules/AbstractIdentityComplianceModule.sol": "AbstractIdentityComplianceModule"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol": {
+        "keccak256": "0x3a8a72df8da5bf4d988bbfb00151b933ff17cdc8d4be47dc121cd9e2083ba86f",
+        "urls": [
+          "bzz-raw://369250658bf8d3ebb583946820afa494271ce6bfde607d15c7060cdf7a303cf3",
+          "dweb:/ipfs/QmSJjaK6vyv8K9RX1k3rwxsoKfVNyMoHEszxyxdTQfDKQG"
+        ],
+        "license": "CC0-1.0"
+      },
+      "contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol": {
+        "keccak256": "0x15b72940814cd959b57bf75623f16c51fc6c50eab51fd2420a8b653519ebd76c",
+        "urls": [
+          "bzz-raw://479f5e24a1b608776d9d5d7da9c76dd3c9b1dd300d8b4eee7a15dcfba4817bee",
+          "dweb:/ipfs/QmPhMBfQAqt5NeRcSu3jDTwhoQXnB7nXNEcmoJ7KoWVt7V"
+        ],
+        "license": "CC0-1.0"
+      },
+      "contracts/smart/interface/ISMART.sol": {
+        "keccak256": "0xfce323160dd5cd8c9db34de0ea872bec41fd2ea8d8496e1e3c17865d374994da",
+        "urls": [
+          "bzz-raw://1a1fafbdec0c59e078798438d2a3cd05bd70b864d7dfa67faf135d5634c5ae51",
+          "dweb:/ipfs/QmehZwexgZN2BZKA6eFrG3DHUMRUZnzYTen6j5Ry5Znbf2"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTCompliance.sol": {
+        "keccak256": "0x948341e4ad374e1dded6d1b30c395ad0f01e6ea2099fb6b96c5476e8b28c1d77",
+        "urls": [
+          "bzz-raw://d261e9a0c8682f11ac86048f13e367caee6d5f512d51b8752186b8c01b6ba618",
+          "dweb:/ipfs/Qmdp14emh3NFSAphyuAgsTE7qZt1g1UYcNLS3tNNM8T6Hv"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTComplianceModule.sol": {
+        "keccak256": "0x0506b3696a61f59ebb32ffb0fcb1c955c3c76e1ab9f85440cf5562a800490c6e",
+        "urls": [
+          "bzz-raw://2aef21997c167cf1dc9430b232e0dcddd6316f945f44e2ebe943241c2c257896",
+          "dweb:/ipfs/Qmbp5MEoHkBMTTreXYoxjKohVVbEPBtcwX1QPfLHv71FxQ"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTIdentityRegistry.sol": {
+        "keccak256": "0x62a95a9db2ac97ceaf59f7585d7bbaf3acb65ed9b5e57597b9d1fe1b4d7c4eda",
+        "urls": [
+          "bzz-raw://bd870710359396db48e70ef7e40449125ff744c6c8ce15ad7e1894df430c87ea",
+          "dweb:/ipfs/QmZ6khf5Vm6hBkkUgYC1b161jSQaZeegJVRY6ndjRW1EcG"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTIdentityRegistryStorage.sol": {
+        "keccak256": "0x219b3d03958859e2f082aac5cbf3b40acf243e326ee6e74e6bb03be7724c2985",
+        "urls": [
+          "bzz-raw://8cf8d30ec47cb2aed5b51d373837584fb6f08deab1d35142510271e733404f52",
+          "dweb:/ipfs/Qmc9NnABx9ouhhCR8qgJC3RtU5oAyycSjZkY6nGtuWFwuz"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTTopicSchemeRegistry.sol": {
+        "keccak256": "0xec5e42dcf7d929f8a0db42c9c8a0fa81d089a9f7177b7da10df029f94334ca8a",
+        "urls": [
+          "bzz-raw://e346e3241e3110b3f17d2b244a49d68a1d79c6928bef7d372ea3458c1029cea0",
+          "dweb:/ipfs/QmeSyCYN9qYXRjn799fRFP7X9apf7bubVhnFEUGQatx3xd"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol": {
+        "keccak256": "0x489a55538b554a0c935bee7efc28f7e821e161638c5726c9d367a644a0b7c62a",
+        "urls": [
+          "bzz-raw://04bb06aed3ee3c5c6f3df9a59721c08ddd57b5521da1c9c6fd96b7c8b57db813",
+          "dweb:/ipfs/QmRuzqKDr2sBHNuQhCzWGa8euNiMyvP7LTjSFjvAj5uFqh"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/modules/AbstractAddressListComplianceModule.sol": {
+        "keccak256": "0x65afae4c3aa7500f7249d64cb0884f72628be35cfd916890b6cff20d01c022f2",
+        "urls": [
+          "bzz-raw://2f0846a068f7a382465246d55ebe4d8ac80fdcd92c546e57944bd0f154c489fa",
+          "dweb:/ipfs/QmbLYxB3rEfTDf6PEpgoEZp2oe8dJtP6LWv95Ai4QJN4xg"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/modules/AbstractComplianceModule.sol": {
+        "keccak256": "0xee7491e92413a69bcdcae4917721421a12b4cb52d2b7af1d8ba95d88247d8469",
+        "urls": [
+          "bzz-raw://8b276067f4ddf3066a06b705834b7afc4f316d9f0b5a47b5148e54e6fbc03ec1",
+          "dweb:/ipfs/QmYvj9WBMUDUkTdZ2Ltj7wHAG1MPTABvehBnZNpYdZCoHQ"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/modules/AbstractIdentityComplianceModule.sol": {
+        "keccak256": "0x9f22166fef1cd7862ab1a7a82ba2e8bccfe84c6a0544411ca8045de3b9ec648c",
+        "urls": [
+          "bzz-raw://4233a323881585031d1748bdb3c26d1e08af3f4f398d3f9d9fe47296644401af",
+          "dweb:/ipfs/QmSvLksSkDgWBPv8c3tDdawdd8PoYXN18m5XUNAJSZeTZk"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IClaimIssuer.sol": {
+        "keccak256": "0xae785f63b3cb3a94bcb454ef4ad6376aa4848fa29cff1cc8db3bef4a2994a779",
+        "urls": [
+          "bzz-raw://d8223d2710c51ee39cdfd2cb2f1858b3d64a3222c78ea8ed5eb3e11a93e1222e",
+          "dweb:/ipfs/QmYRXPCww7BorScTC6QNMbrRm2zprUmSYFpWomwarJH7Df"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IERC734.sol": {
+        "keccak256": "0x35a14a0d1a3ed51689f1a2cb12e26d30601afbcc1cc9b9b288a03cd11e6d049e",
+        "urls": [
+          "bzz-raw://156aac402e73e6bd2fa8c0ccd85b2add8d1bb505d8a652218173dbc8e7b9a3cb",
+          "dweb:/ipfs/QmPzPyc3kKxoNCGqKAooUju6YvMkDN4MCUH198TEXnA82o"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IERC735.sol": {
+        "keccak256": "0xeac82c37b16c1c1c83df3e88be987332b1230ed13e1d017f9d2929f978ac0122",
+        "urls": [
+          "bzz-raw://695a66b789ac417b7b2b78c578981779db374704382921ff499351cccab0323e",
+          "dweb:/ipfs/QmeZoogvsEWf688Z849zZ2dLPDnor6YnnNQLMgedY9Tc9D"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IIdentity.sol": {
+        "keccak256": "0x5ed42ab81b9b734c79e61d1f7e0734baab5479a356ab6bb469414d3c66269862",
+        "urls": [
+          "bzz-raw://a0863999b1ed334179a43e699e6057815eea011a78ed51e61b6110fc392e26f8",
+          "dweb:/ipfs/Qme6hdHZCAy1V4sLgAZ5NxdrEjEf5mYMabf5UDmUDjkuzW"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/access/AccessControl.sol": {
+        "keccak256": "0xc1bebdee8943bd5e9ef1e0f2e63296aa1dd4171a66b9e74d0286220e891e1458",
+        "urls": [
+          "bzz-raw://928cf2f0042c606f3dcb21bd8a272573f462a215cd65285d2d6b407f31e9bd67",
+          "dweb:/ipfs/QmWGxjckno6sfjHPX5naPnsfsyisgy4PJDf46eLw9umfpx"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/access/IAccessControl.sol": {
+        "keccak256": "0x4d9a2b261b56a1e4a37bb038151dec98b952fed16de2bdfdda27e38e2b12b530",
+        "urls": [
+          "bzz-raw://f724110f7aeb6151af800ab8c12e6060b29bda9e013f0ccb331eb754d6a7cbf0",
+          "dweb:/ipfs/QmUcjzCZpxtUPdEThtAzE1f9LvuJiUGZxTdH9N6bHrb5Cf"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/metatx/ERC2771Context.sol": {
+        "keccak256": "0x0b030a33274bde015419d99e54c9164f876a7d10eb590317b79b1d5e4ab23d99",
+        "urls": [
+          "bzz-raw://68e5f96988198e8efd25ddef0d89750b4daebb7fd1204fa7f5eaccdfcb3398c8",
+          "dweb:/ipfs/QmaM6nNkf9UmEtQraopuZamEWCdTWp7GvuN3pjMQrNCHxm"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol": {
+        "keccak256": "0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7",
+        "urls": [
+          "bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db",
+          "dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/extensions/IERC20Metadata.sol": {
+        "keccak256": "0x70f2f713b13b7ce4610bcd0ac9fec0f3cc43693b043abcb8dc40a42a726eb330",
+        "urls": [
+          "bzz-raw://c13d13304ac79a83ab1c30168967d19e2203342ebbd6a9bbce4db7550522dcbf",
+          "dweb:/ipfs/QmeN5jKMN2vw5bhacr6tkg78afbTTZUeaacNHqjWt4Ew1r"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/Context.sol": {
+        "keccak256": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+        "urls": [
+          "bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12",
+          "dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/ERC165.sol": {
+        "keccak256": "0xddce8e17e3d3f9ed818b4f4c4478a8262aab8b11ed322f1bf5ed705bb4bd97fa",
+        "urls": [
+          "bzz-raw://8084aa71a4cc7d2980972412a88fe4f114869faea3fefa5436431644eb5c0287",
+          "dweb:/ipfs/Qmbqfs5dRdPvHVKY8kTaeyc65NdqXRQwRK7h9s5UJEhD1p"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "canTransfer(address,address,address,uint256,bytes)": {
+        "notice": "This is the primary compliance check function that concrete modules MUST implement."
+      },
+      "created(address,address,uint256,bytes)": {
+        "notice": "This function is a hook called by the main `SMARTComplianceImplementation` contract *after* new tokens have been created (minted)."
+      },
+      "destroyed(address,address,uint256,bytes)": {
+        "notice": "This function is a hook called by the main `SMARTComplianceImplementation` contract *after* tokens have been destroyed (burned)."
+      },
+      "name()": {
+        "notice": "Concrete compliance modules MUST implement this function to return a human-readable name for the module."
+      },
+      "supportsInterface(bytes4)": {
+        "notice": "Checks if the contract supports a given interface ID."
+      },
+      "transferred(address,address,address,uint256,bytes)": {
+        "notice": "This function is a hook called by the main `ATKComplianceImplementation` contract *after* a token transfer has occurred."
+      },
+      "validateParameters(bytes)": {
+        "notice": "Concrete compliance modules MUST implement this function to validate their specific parameters."
+      }
+    },
+    "errors": {
+      "ComplianceCheckFailed(string)": [
+        {
+          "notice": "Emitted when a compliance check performed by the `canTransfer` function fails."
+        }
+      ],
+      "InvalidParameters(string)": [
+        {
+          "notice": "Emitted by the `validateParameters` function if the provided configuration parameters are invalid for this module."
+        }
+      ]
+    },
+    "notice": "This abstract contract extends `AbstractAddressListComplianceModule` to provide common functionalities for compliance modules that base their rules on investor identity contracts."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "author": "SettleMint Tokenization Services",
+    "methods": {
+      "canTransfer(address,address,address,uint256,bytes)": {
+        "details": "It is called by the `SMARTComplianceImplementation` contract *before* a token transfer is attempted. The inheriting module's implementation of this function should contain the core logic to decide if a transfer is allowed or not based on its specific rules. - If the transfer IS allowed according to the module's rules, this function should simply return (do nothing). - If the transfer IS NOT allowed, this function MUST `revert` (e.g., `revert ComplianceCheckFailed(\"Reason\");`). This function is a `view` function, meaning it should not modify state.",
+        "params": {
+          "_from": "The address from which tokens would be transferred.",
+          "_params": "The ABI-encoded parameters that were configured for this specific module when it was added to the `_token`.                The module should decode and use these parameters as part of its compliance logic.",
+          "_to": "The address to which tokens would be transferred.",
+          "_token": "The address of the `ISMART` token contract related to the proposed transfer.",
+          "_value": "The amount of tokens proposed to be transferred."
+        }
+      },
+      "created(address,address,uint256,bytes)": {
+        "details": "This is an empty `virtual` implementation. Inheriting contracts can `override` this function if they need to perform actions or update state based on successful token creation. If a module doesn't need to react to token creation, it doesn't need to override this.",
+        "params": {
+          "_params": "The parameters that were configured for this module when it was added to the `_token`.",
+          "_to": "The address that received the newly created tokens.",
+          "_token": "The address of the `ISMART` token contract where tokens were created.",
+          "_value": "The amount of tokens created."
+        }
+      },
+      "destroyed(address,address,uint256,bytes)": {
+        "details": "This is an empty `virtual` implementation. Inheriting contracts can `override` this function if they need to perform actions or update state based on successful token destruction. If a module doesn't need to react to token destruction, it doesn't need to override this.",
+        "params": {
+          "_from": "The address whose tokens were destroyed.",
+          "_params": "The parameters that were configured for this module when it was added to the `_token`.",
+          "_token": "The address of the `ISMART` token contract from which tokens were destroyed.",
+          "_value": "The amount of tokens destroyed."
+        }
+      },
+      "getRoleAdmin(bytes32)": {
+        "details": "Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}."
+      },
+      "grantRole(bytes32,address)": {
+        "details": "Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleGranted} event."
+      },
+      "hasRole(bytes32,address)": {
+        "details": "Returns `true` if `account` has been granted `role`."
+      },
+      "isTrustedForwarder(address)": {
+        "details": "Indicates whether any particular address is the trusted forwarder."
+      },
+      "name()": {
+        "details": "This function is used to identify the type or purpose of the compliance module. For example, \"Country Allow List Module\". It should be a `pure` function as the name is typically hardcoded and doesn't depend on state.",
+        "returns": {
+          "_0": "A string representing the name of the compliance module."
+        }
+      },
+      "renounceRole(bytes32,address)": {
+        "details": "Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `callerConfirmation`. May emit a {RoleRevoked} event."
+      },
+      "revokeRole(bytes32,address)": {
+        "details": "Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleRevoked} event."
+      },
+      "supportsInterface(bytes4)": {
+        "details": "This function is part of the ERC165 standard, allowing other contracts to discover what interfaces this contract implements. It explicitly states that this module (and any inheriting contract) supports the `ISMARTComplianceModule` interface. It also calls `super.supportsInterface(interfaceId)` to include support for interfaces from parent contracts (like `AccessControl` which also implements `IERC165`).",
+        "params": {
+          "interfaceId": "The interface identifier (bytes4) to check."
+        },
+        "returns": {
+          "_0": "`true` if the contract supports the `interfaceId`, `false` otherwise."
+        }
+      },
+      "transferred(address,address,address,uint256,bytes)": {
+        "details": "This is an empty `virtual` implementation. Inheriting contracts can `override` this function if they need to perform actions or update state based on a successful transfer. For example, a module might log transfer details or update internal counters. If a module doesn't need to react to transfers, it doesn't need to override this.",
+        "params": {
+          "_from": "The address from which tokens were transferred.",
+          "_params": "The parameters that were configured for this module when it was added to the `_token`.",
+          "_to": "The address to which tokens were transferred.",
+          "_token": "The address of the `ISMART` token contract that performed the transfer.",
+          "_value": "The amount of tokens transferred."
+        }
+      },
+      "trustedForwarder()": {
+        "details": "Returns the address of the trusted forwarder."
+      },
+      "validateParameters(bytes)": {
+        "details": "This function is called by the `SMARTComplianceImplementation` (via `_validateModuleAndParams`) when a module is being registered with a token or when checking if a module is valid. The implementation in the inheriting module should: 1. Attempt to decode `_params` according to the expected format for that module. 2. Validate the decoded parameters (e.g., check for valid ranges, correct array lengths, non-zero addresses etc.). - If the parameters ARE valid, this function should simply return. - If the parameters ARE NOT valid, this function MUST `revert` (e.g., `revert InvalidParameters(\"Reason\");`). This function is a `view` function.",
+        "params": {
+          "_params": "The ABI-encoded parameters that need to be validated. The format is specific to each concrete module."
+        }
+      }
+    },
+    "events": {
+      "RoleAdminChanged(bytes32,bytes32,bytes32)": {
+        "details": "Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole` `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite {RoleAdminChanged} not being emitted to signal this."
+      },
+      "RoleGranted(bytes32,address,address)": {
+        "details": "Emitted when `account` is granted `role`. `sender` is the account that originated the contract call. This account bears the admin role (for the granted role). Expected in cases where the role was granted using the internal {AccessControl-_grantRole}."
+      },
+      "RoleRevoked(bytes32,address,address)": {
+        "details": "Emitted when `account` is revoked `role`. `sender` is the account that originated the contract call:   - if using `revokeRole`, it is the admin role bearer   - if using `renounceRole`, it is the role bearer (i.e. `account`)"
+      }
+    },
+    "errors": {
+      "AccessControlBadConfirmation()": [
+        {
+          "details": "The caller of a function is not the expected one. NOTE: Don't confuse with {AccessControlUnauthorizedAccount}."
+        }
+      ],
+      "AccessControlUnauthorizedAccount(address,bytes32)": [
+        {
+          "details": "The `account` is missing a role."
+        }
+      ],
+      "ComplianceCheckFailed(string)": [
+        {
+          "details": "This error indicates that a proposed token transfer, mint, or burn operation violates      the rules enforced by this specific compliance module.",
+          "params": {
+            "reason": "A descriptive string explaining why the compliance check failed (e.g., \"Sender not allow listed\", \"Transfer exceeds daily limit\")."
+          }
+        }
+      ],
+      "InvalidParameters(string)": [
+        {
+          "details": "This error signals that the data supplied to configure or update the module is malformed, out of expected range,      or otherwise unsuitable for the module's intended operation.",
+          "params": {
+            "reason": "A descriptive string explaining why the parameters are considered invalid (e.g., \"Invalid country code format\", \"Limit parameter cannot be zero\")."
+          }
+        }
+      ]
+    },
+    "title": "Abstract Base for Identity-Specific Compliance Modules"
+  },
+  "id": 93
+}

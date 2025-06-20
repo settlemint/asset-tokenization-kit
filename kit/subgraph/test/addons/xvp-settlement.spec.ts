@@ -12,7 +12,6 @@ describe("XVP Settlements", () => {
           executed
           cancelled
           createdAt
-          participants
           flows {
             id
             asset {
@@ -49,12 +48,20 @@ describe("XVP Settlements", () => {
 
     // Verify settlement structure
     expect(settlement.id).toBeDefined();
-    expect(settlement.executed).toBe(true); // Should be executed by the script
+    expect(settlement.executed).toBe(false); // Should not be executed by default
     expect(settlement.cancelled).toBe(false);
     expect(settlement.autoExecute).toBe(false); // Script sets this to false
-    expect(settlement.participants.length).toBe(2); // Two participants in the swap
+
+    // Derive participants from flows (unique from/to addresses)
+    const participantAddresses = new Set();
+    settlement.flows.forEach((flow: any) => {
+      participantAddresses.add(flow.from.id);
+      participantAddresses.add(flow.to.id);
+    });
+    expect(participantAddresses.size).toBe(2); // Two participants in the swap
+
     expect(settlement.flows.length).toBe(2); // Two flows (bidirectional)
-    expect(settlement.approvals.length).toBe(2); // Both participants should have approved
+    expect(settlement.approvals.length).toBe(2); // Approvals should be created for both participants
 
     // Verify flows structure
     settlement.flows.forEach((flow: any) => {
@@ -66,25 +73,20 @@ describe("XVP Settlements", () => {
       expect(flow.amountExact).toBeDefined();
     });
 
-    // Verify approvals structure
+    // Verify approvals structure - should be created but not approved initially
     settlement.approvals.forEach((approval: any) => {
       expect(approval.account.id).toBeDefined();
-      expect(approval.approved).toBe(true); // All approvals should be true
-      expect(approval.timestamp).toBeDefined();
+      expect(approval.approved).toBe(false); // Not approved initially
+      expect(approval.timestamp).toBeNull(); // No timestamp until approved
     });
   });
 
-  it("should fetch XVP settlement events", async () => {
+  it("should fetch XVP settlement creation events", async () => {
     const query = theGraphGraphql(
       `query {
         events(
           where: {
-            eventName_in: [
-              "XvPSettlementApproved",
-              "XvPSettlementExecuted",
-              "XvPSettlementCancelled",
-              "XvPSettlementApprovalRevoked"
-            ]
+            eventName: "XvPSettlementCreated"
           },
           orderBy: blockTimestamp,
           orderDirection: desc
@@ -108,26 +110,15 @@ describe("XVP Settlements", () => {
     );
     const response = await theGraphClient.request(query);
 
-    // Should have at least 3 events: 2 approvals + 1 execution
-    expect((response as any).events.length).toBeGreaterThanOrEqual(3);
+    // Should have at least 1 creation event
+    expect((response as any).events.length).toBeGreaterThanOrEqual(1);
 
     const events = (response as any).events;
-
-    // Verify we have the expected event types
-    const approvalEvents = events.filter(
-      (e: any) => e.eventName === "XvPSettlementApproved"
-    );
-    const executionEvents = events.filter(
-      (e: any) => e.eventName === "XvPSettlementExecuted"
-    );
-
-    expect(approvalEvents.length).toBeGreaterThanOrEqual(2); // At least 2 approvals
-    expect(executionEvents.length).toBeGreaterThanOrEqual(1); // At least 1 execution
 
     // Verify event structure
     events.forEach((event: any) => {
       expect(event.id).toBeDefined();
-      expect(event.eventName).toBeDefined();
+      expect(event.eventName).toBe("XvPSettlementCreated");
       expect(event.blockNumber).toBeDefined();
       expect(event.blockTimestamp).toBeDefined();
       expect(event.transactionHash).toBeDefined();
@@ -183,7 +174,7 @@ describe("XVP Settlements", () => {
       expect(flow.amount).toBeDefined();
       expect(flow.amountExact).toBeDefined();
       expect(flow.xvpSettlement.id).toBeDefined();
-      expect(flow.xvpSettlement.executed).toBe(true);
+      expect(flow.xvpSettlement.executed).toBe(false); // Not executed initially
     });
 
     // The flows should represent our expected asset types from the script

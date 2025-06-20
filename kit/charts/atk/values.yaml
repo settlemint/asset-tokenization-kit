@@ -304,7 +304,7 @@ portal:
       - image-pull-secret-harbor
   initContainers:
     - name: wait-for-postgres
-      image: ghcr.io/settlemint/btp-waitforit:v7.7.5
+      image: harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.5
       command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
   podLabels:
     app.kubernetes.io/component: portal

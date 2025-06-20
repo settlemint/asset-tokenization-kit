@@ -1,6 +1,8 @@
-import { formatEther, type Address } from "viem";
+import { formatEther, type Abi, type Address } from "viem";
 import type { AbstractActor } from "../entities/actors/abstract-actor";
 import { atkDeployer } from "../services/deployer";
+import { getPublicClient } from "../utils/public-client";
+import { waitForEvent } from "../utils/wait-for-event";
 
 // Define the Flow struct type for XVP settlements
 type FlowStruct = {
@@ -65,26 +67,47 @@ export async function createXvpSettlement(
       },
     ];
 
-    // Set cutoff date to 1 hour from now
-    const cutoffDate = Math.floor(Date.now() / 1000) + 3600; // 1 hour
+    // Set cutoff date to 1 week from current blockchain time
+    const publicClient = getPublicClient();
+    const currentBlock = await publicClient.getBlock();
+    const cutoffDate = Number(currentBlock.timestamp) + 7 * 24 * 3600; // 1 week from blockchain time
 
+    const settlementName = `XVP ${fromActor.name} to ${toActor.name} - ${Date.now()}`;
     console.log(
-      `Creating settlement with cutoff date: ${new Date(cutoffDate * 1000).toISOString()}`
+      `Creating settlement with name: ${settlementName} and cutoff date: ${new Date(cutoffDate * 1000).toISOString()}`
     );
 
     // Create the settlement
-    const settlementAddress = await xvpFactory.write.create([
+    const txHash = await xvpFactory.write.create([
+      settlementName,
       flows,
       BigInt(cutoffDate),
       autoExecute,
     ]);
+
+    console.log(`⏳ Settlement creation transaction sent: ${txHash}`);
+
+    // Wait for the ATKXvPSettlementCreated event to get the settlement address
+    const eventArgs = await waitForEvent({
+      transactionHash: txHash,
+      contract: xvpFactory,
+      eventName: "ATKXvPSettlementCreated",
+    });
+
+    if (!eventArgs || !eventArgs.settlement) {
+      throw new Error(
+        "Failed to extract settlement address from ATKXvPSettlementCreated event"
+      );
+    }
+
+    const settlementAddress = eventArgs.settlement as Address;
 
     console.log(`✅ XVP Settlement created at: ${settlementAddress}`);
     console.log(
       `⏰ Settlement expires at: ${new Date(cutoffDate * 1000).toISOString()}`
     );
 
-    return settlementAddress as Address;
+    return settlementAddress;
   } catch (error) {
     console.error("❌ Failed to create XVP settlement:", error);
     throw error;
@@ -127,7 +150,7 @@ export async function approveAndExecuteXvpSettlement(
     const { xvpSettlementAbi } = await import("../abi/xvpSettlement");
     const settlementContract = actor.getContractInstance({
       address: settlementAddress,
-      abi: xvpSettlementAbi,
+      abi: xvpSettlementAbi as Abi,
     });
 
     console.log(`Approving settlement...`);

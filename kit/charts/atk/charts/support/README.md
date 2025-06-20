@@ -99,8 +99,8 @@ A Helm chart for the supporting components
 | ingress-nginx.controller.metrics.service.annotations."prometheus.io/scrape" | string | `"true"` |  |
 | ingress-nginx.controller.metrics.service.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | ingress-nginx.controller.opentelemetry.enabled | bool | `true` |  |
-| ingress-nginx.controller.opentelemetry.image.registry | string | `"registry.k8s.io"` |  |
-| ingress-nginx.controller.patch.image.registry | string | `"registry.k8s.io"` |  |
+| ingress-nginx.controller.opentelemetry.image.registry | string | `"harbor.settlemint.com/registry.k8s.io"` |  |
+| ingress-nginx.controller.patch.image.registry | string | `"harbor.settlemint.com/registry.k8s.io"` |  |
 | ingress-nginx.controller.podAnnotations."prometheus.io/port" | string | `"10254"` |  |
 | ingress-nginx.controller.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | ingress-nginx.controller.podLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
@@ -124,7 +124,7 @@ A Helm chart for the supporting components
 | ingress-nginx.defaultBackend.enabled | bool | `false` |  |
 | ingress-nginx.enabled | bool | `true` |  |
 | ingress-nginx.fullnameOverride | string | `"ingress-nginx"` |  |
-| ingress-nginx.global.image.registry | string | `"registry.k8s.io"` |  |
+| ingress-nginx.global.image.registry | string | `"harbor.settlemint.com/registry.k8s.io"` |  |
 | ingress-nginx.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | ingress-nginx.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | ingress-nginx.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
@@ -149,7 +149,7 @@ A Helm chart for the supporting components
 | postgresql-ha.pgpool.adminUsername | string | `"pgpool"` |  |
 | postgresql-ha.pgpool.customUsers.passwords | string | `"atk,atk,atk,atk,atk"` |  |
 | postgresql-ha.pgpool.customUsers.usernames | string | `"blockscout,hasura,thegraph,portal,txsigner"` |  |
-| postgresql-ha.pgpool.image.registry | string | `"docker.io"` |  |
+| postgresql-ha.pgpool.image.registry | string | `"harbor.settlemint.com/docker.io"` |  |
 | postgresql-ha.pgpool.logConnections | bool | `true` |  |
 | postgresql-ha.pgpool.maxPool | int | `500` |  |
 | postgresql-ha.pgpool.numInitChildren | int | `500` |  |
@@ -157,7 +157,7 @@ A Helm chart for the supporting components
 | postgresql-ha.pgpool.replicaCount | int | `1` |  |
 | postgresql-ha.pgpool.resourcesPreset | string | `"none"` |  |
 | postgresql-ha.postgresql.dbUserConnectionLimit | int | `1000` |  |
-| postgresql-ha.postgresql.image.registry | string | `"docker.io"` |  |
+| postgresql-ha.postgresql.image.registry | string | `"harbor.settlemint.com/docker.io"` |  |
 | postgresql-ha.postgresql.initdbScripts."create_db.sql" | string | `"CREATE DATABASE blockscout;\nCREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;\n\\c blockscout;\nGRANT ALL ON SCHEMA public TO blockscout;\nCREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;\nCREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;\n\\c thegraph;\nGRANT ALL ON SCHEMA public TO thegraph;\nCREATE DATABASE hasura;\nCREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;\n\\c hasura;\nGRANT ALL ON SCHEMA public TO hasura;\nCREATE DATABASE portal;\nCREATE USER portal WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE portal TO portal;\n\\c portal;\nGRANT ALL ON SCHEMA public TO portal;\nCREATE DATABASE txsigner;\nCREATE USER txsigner WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;\n\\c txsigner;\nGRANT ALL ON SCHEMA public TO txsigner;\n"` |  |
 | postgresql-ha.postgresql.maxConnections | int | `1000` |  |
 | postgresql-ha.postgresql.password | string | `"atk"` |  |
@@ -184,7 +184,7 @@ A Helm chart for the supporting components
 | redis.global.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | redis.global.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
 | redis.global.security.allowInsecureImages | bool | `true` |  |
-| redis.image.registry | string | `"docker.io"` |  |
+| redis.image.registry | string | `"harbor.settlemint.com/docker.io"` |  |
 | redis.master.resourcesPreset | string | `"none"` |  |
 | redis.replica.replicaCount | int | `1` |  |
 | redis.replica.resourcesPreset | string | `"none"` |  |
@@ -194,7 +194,7 @@ A Helm chart for the supporting components
 | reloader.global.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
 | reloader.global.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | reloader.image.name | string | `"stakater/reloader"` |  |
-| reloader.image.repository | string | `"ghcr.io/stakater/reloader"` |  |
+| reloader.image.repository | string | `"harbor.settlemint.com/ghcr.io/stakater/reloader"` |  |
 | reloader.reloader.autoReloadAll | bool | `true` |  |
 | reloader.reloader.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | reloader.reloader.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |

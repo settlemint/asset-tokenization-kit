@@ -62,7 +62,7 @@ node:
     logging: INFO
     customLabels: {}
     image:
-      repository: docker.io/hyperledger/besu
+      repository: harbor.settlemint.com/docker.io/hyperledger/besu
       tag: 25.6.0
       pullPolicy: IfNotPresent
     account:
@@ -185,7 +185,7 @@ node:
   tessera:
     resources: {}
     image:
-      repository: docker.io/quorumengineering/tessera
+      repository: harbor.settlemint.com/docker.io/quorumengineering/tessera
       tag: 24.4
       pullPolicy: IfNotPresent
     tmkey: ""
@@ -200,20 +200,20 @@ node:
 
 hooks:
   image:
-    repository: ghcr.io/settlemint/quorum-genesis-tool
+    repository: harbor.settlemint.com/ghcr.io/settlemint/quorum-genesis-tool
     tag: sha-49c40f5
     pullPolicy: IfNotPresent
 
 initContainers:
   busybox:
     image:
-      registry: docker.io
+      registry: harbor.settlemint.com/docker.io
       repository: busybox
       tag: 1.37
       pullPolicy: IfNotPresent
   curl:
     image:
-      registry: docker.io
+      registry: harbor.settlemint.com/docker.io
       repository: curlimages/curl
       tag: 8.14.1
       pullPolicy: IfNotPresent

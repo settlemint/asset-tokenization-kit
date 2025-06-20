@@ -1,7 +1,7 @@
 # -- Global Docker image registry
 global:
   # -- Global Docker image registry
-  imageRegistry: ""
+  imageRegistry: harbor.settlemint.com/""
   # -- Global Docker registry secret names as an array
   imagePullSecrets: []
   # -- Global StorageClass for Persistent Volume(s)
@@ -19,7 +19,7 @@ commonAnnotations: {}
 # -- TxSigner image
 image:
   # -- TxSigner image registry
-  registry: "ghcr.io"
+  registry: harbor.settlemint.com/"ghcr.io"
   # -- TxSigner image repository
   repository: settlemint/btp-signer
   # -- TxSigner image tag (immutable tags are recommended)
@@ -379,7 +379,7 @@ tests:
   # -- Image for test pods
   image:
     # -- Test image registry
-    registry: docker.io
+    registry: harbor.settlemint.com/docker.io
     # -- Test image repository
     repository: busybox
     # -- Test image tag
@@ -490,5 +490,5 @@ postgresql: "postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=d
 # -- Init containers configuration
 initContainers:
   - name: wait-for-postgres
-    image: ghcr.io/settlemint/btp-waitforit:v7.7.5
+    image: harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.5
     command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]

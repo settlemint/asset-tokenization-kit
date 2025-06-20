@@ -1,7 +1,7 @@
 # -- Global Docker image registry
 global:
   # -- Global Docker image registry
-  imageRegistry: ""
+  imageRegistry: harbor.settlemint.com/""
   # -- Global Docker registry secret names as an array
   imagePullSecrets: []
   # -- Global StorageClass for Persistent Volume(s)
@@ -20,7 +20,7 @@ commonAnnotations: {}
 # -- eRPC image
 image:
   # -- eRPC image registry
-  registry: ghcr.io
+  registry: harbor.settlemint.com/ghcr.io
   # -- eRPC image repository
   repository: erpc/erpc
   # -- eRPC image tag (immutable tags are recommended)
@@ -373,7 +373,7 @@ tests:
   # -- Image for test pods
   image:
     # -- Test image registry
-    registry: docker.io
+    registry: harbor.settlemint.com/docker.io
     # -- Test image repository
     repository: busybox
     # -- Test image tag

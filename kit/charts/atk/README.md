@@ -238,7 +238,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | portal.initContainers[0].command[1] | string | `"postgresql-pgpool:5432"` |  |
 | portal.initContainers[0].command[2] | string | `"-t"` |  |
 | portal.initContainers[0].command[3] | string | `"0"` |  |
-| portal.initContainers[0].image | string | `"ghcr.io/settlemint/btp-waitforit:v7.7.5"` |  |
+| portal.initContainers[0].image | string | `"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.5"` |  |
 | portal.initContainers[0].name | string | `"wait-for-postgres"` |  |
 | portal.podAnnotations."prometheus.io/path" | string | `"/portal-metrics"` |  |
 | portal.podAnnotations."prometheus.io/port" | string | `"3000"` |  |

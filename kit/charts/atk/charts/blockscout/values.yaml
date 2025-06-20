@@ -22,7 +22,7 @@ blockscout-stack:
       prometheus.io/port: "4000"
       prometheus.io/path: "/metrics"
     image:
-      repository: ghcr.io/blockscout/blockscout
+      repository: harbor.settlemint.com/ghcr.io/blockscout/blockscout
       tag: "8.1.1"
     ingress:
       enabled: true
@@ -69,7 +69,7 @@ blockscout-stack:
       SECRET_KEY_BASE: atk
   frontend:
     image:
-      repository: ghcr.io/blockscout/frontend
+      repository: harbor.settlemint.com/ghcr.io/blockscout/frontend
       tag: "v2.1.1"
     replicaCount: 1
     env:

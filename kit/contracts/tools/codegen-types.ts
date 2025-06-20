@@ -93,6 +93,7 @@ const ABI_PATHS = {
   fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json`,
   vestingAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol/IATKVestingAirdropFactory.json`,
   pushAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol/IATKPushAirdropFactory.json`,
+  xvpSettlementFactory: `${ARTIFACTS_DIR}/contracts/addons/xvp/IATKXvPSettlementFactory.sol/IATKXvPSettlementFactory.json`,
 } as const;
 
 const AVAILABLE_ABIS = {
@@ -135,6 +136,7 @@ const AVAILABLE_ABIS = {
     "fixedYieldScheduleFactory",
     "vestingAirdropFactory",
     "pushAirdropFactory",
+    "xvpSettlementFactory",
   ],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 
@@ -212,7 +214,7 @@ AVAILABLE ABI NAMES:
     Asset Tokens:
       ${AVAILABLE_ABIS.assetTokens.join(", ")}
 
-    Core SMART:
+    Core ATK:
       ${AVAILABLE_ABIS.coreSmart.join(", ")}
 
     Open Zeppelin:

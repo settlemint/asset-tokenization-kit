@@ -1,0 +1,567 @@
+{
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        {
+          "name": "tokenFactoryAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "name_",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "symbol_",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "decimals_",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "onchainID_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "managementFeeBps_",
+          "type": "uint16",
+          "internalType": "uint16"
+        },
+        {
+          "name": "initialModulePairs_",
+          "type": "tuple[]",
+          "internalType": "struct SMARTComplianceModuleParamPair[]",
+          "components": [
+            {
+              "name": "module",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "params",
+              "type": "bytes",
+              "internalType": "bytes"
+            }
+          ]
+        },
+        {
+          "name": "identityRegistry_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "compliance_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "accessManager_",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "payable"
+    },
+    {
+      "type": "fallback",
+      "stateMutability": "payable"
+    },
+    {
+      "type": "receive",
+      "stateMutability": "payable"
+    },
+    {
+      "type": "error",
+      "name": "ETHTransfersNotAllowed",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InitializationWithZeroAddress",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidTokenFactoryAddress",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "TokenImplementationNotSet",
+      "inputs": []
+    }
+  ],
+  "bytecode": {
+    "object": "0x60806040526107c58038038091610015826100ff565b6080396101408160800191126100e75761002d610168565b60a0516001600160401b0381116100e7578261004b916080016101e3565b60c0516001600160401b0381116100e75783610069916080016101e3565b61007360e0610200565b61007e61010061017e565b61008961012061020e565b610140519091906001600160401b0381116100e7576100d8976100ae9160800161021d565b926100ba61016061017e565b946100c661018061017e565b966100d26101a061017e565b98610412565b604051610149908161065c8239f35b5f80fd5b634e487b7160e01b5f52604160045260245ffd5b6080601f91909101601f19168101906001600160401b0382119082101761012557604052565b6100eb565b604081019081106001600160401b0382111761012557604052565b601f909101601f19168101906001600160401b0382119082101761012557604052565b608051906001600160a01b03821682036100e757565b51906001600160a01b03821682036100e757565b6001600160401b03811161012557601f01601f191660200190565b9291926101b982610192565b916101c76040519384610145565b8294818452818301116100e7578281602093845f96015e010152565b9080601f830112156100e75781516101fd926020016101ad565b90565b519060ff821682036100e757565b519061ffff821682036100e757565b9080601f830112156100e7578151916001600160401b038311610125578260051b91604051936102506020850186610145565b8452602080850193830101918183116100e75760208101935b83851061027857505050505090565b84516001600160401b0381116100e7578201906040828503601f1901126100e757604051916102a68361012a565b6102b26020820161017e565b835260408101516001600160401b0381116100e75760209101019084601f830112156100e7576020926102eb86848680965191016101ad565b83820152815201940193610269565b805180835260209291819084018484015e5f828201840152601f01601f1916010190565b9699989795949161035260ff9161034461ffff9697946101208c526101208c01906102fa565b908a820360208c01526102fa565b941660408801526001600160a01b0316606087015216608085015283810360a085015281518082526020600582901b83018101938101925f918101905b8383106103cd57505050506001600160a01b0396871660c085015250941660e08201526103cb9190610100906001600160a01b03909216910152565b565b9091929394602080610403600193601f198682030187526040838b51878060a01b038151168452015191818582015201906102fa565b9701930193019193929061038f565b939598929690949897919760018060a01b03851680159081156104bd575b506104ae576103cb996104a99761047661049b9760018060a01b031660018060a01b03195f5160206107a55f395f51905f525416175f5160206107a55f395f51905f5255565b61047e610552565b996040519b8c9963224b383d60e21b60208c015260248b0161031e565b03601f198101845283610145565b6105ee565b63fd360a1d60e01b5f5260045ffd5b6040516301ffc9a760e01b8152634ea2ccdd60e01b60048201529150602090829060249082905afa90811561052a575f916104fb575b50155f610430565b61051d915060203d602011610523575b6105158183610145565b81019061052f565b5f6104f3565b503d61050b565b610547565b908160209103126100e7575180151581036100e75790565b6040513d5f823e3d90fd5b5f5160206107a55f395f51905f5254604051632f3a3d5d60e01b815290602090829060049082906001600160a01b03165afa90811561052a575f916105b4575b506001600160a01b038116156105a55790565b63daa2f31f60e01b5f5260045ffd5b90506020813d6020116105e6575b816105cf60209383610145565b810103126100e7576105e09061017e565b5f610592565b3d91506105c2565b6001600160a01b0381161561064c57815f929160208493519201905af43d15610644573d9061061c82610192565b9161062a6040519384610145565b82523d5f602084013e5b1561063c5750565b602081519101fd5b606090610634565b63ee0a129760e01b5f5260045ffdfe608060405236156100a8577f1515746737424785433e0dda020fe774d11e0fab6d980530d355fada133c3c705460209060809060049082906001600160a01b0316632f3a3d5d60e01b82525afa80156100a3575f90610076575b6001600160a01b03811661011f5763daa2f31f60e01b5f5260045ffd5b5060203d60201161009c575b8061008f610097926100b7565b6080016100ee565b610059565b503d610082565b610114565b635d82995b60e01b5f5260045ffd5b601f80199101166080016080811067ffffffffffffffff8211176100da57604052565b634e487b7160e01b5f52604160045260245ffd5b602090607f190112610110576080516001600160a01b03811681036101105790565b5f80fd5b6040513d5f823e3d90fd5b5f8091368280378136915af43d5f803e15610138573d5ff35b3d5ffdfea164736f6c634300081c000a1515746737424785433e0dda020fe774d11e0fab6d980530d355fada133c3c70",
+    "sourceMap": "706:1816:19:-:0;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;;;;706:1816:19;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;;;;706:1816:19;;;;;;;;;;:::i;:::-;;;;:::i;:::-;;;;:::i;:::-;;;;:::i;:::-;;;;;;-1:-1:-1;;;;;706:1816:19;;;;;;;;;;;:::i;:::-;;;;;:::i;:::-;;;;;:::i;:::-;;;;;:::i;:::-;;;:::i;:::-;;;;;;;;;;;-1:-1:-1;706:1816:19;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;706:1816:19;;;;-1:-1:-1;;;;;706:1816:19;;;;;;;;;;:::o;:::-;;:::i;:::-;;;;;;;-1:-1:-1;;;;;706:1816:19;;;;;;;:::o;:::-;;;;;-1:-1:-1;;706:1816:19;;;;-1:-1:-1;;;;;706:1816:19;;;;;;;;;;:::o;:::-;;;;-1:-1:-1;;;;;706:1816:19;;;;;;:::o;:::-;;;-1:-1:-1;;;;;706:1816:19;;;;;;:::o;:::-;-1:-1:-1;;;;;706:1816:19;;;;;;-1:-1:-1;;706:1816:19;;;;:::o;:::-;;;;;;;:::i;:::-;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;-1:-1:-1;706:1816:19;;;;;;:::o;:::-;;;;;;;;;;;;;;;;;:::i;:::-;;:::o;:::-;;;;;;;;;;:::o;:::-;;;;;;;;;;:::o;:::-;;;;;;;;;;;;;-1:-1:-1;;;;;706:1816:19;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;-1:-1:-1;;;;;706:1816:19;;;;;;;;;;;-1:-1:-1;;706:1816:19;;;;;;;;;;:::i;:::-;;;;;;:::i;:::-;;;;;;;-1:-1:-1;;;;;706:1816:19;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;706:1816:19;;;;;;;;-1:-1:-1;;706:1816:19;;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;:::i;:::-;;;;;;;-1:-1:-1;;;;;706:1816:19;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;706:1816:19;;;;;;;;;-1:-1:-1;;;;;;;;;706:1816:19;;;;;;;-1:-1:-1;706:1816:19;;;;;;;;;;;-1:-1:-1;;;;;706:1816:19;;;;;;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;1624:896;;;;;;;;;;;;706:1816;;;;;;;1897:34:0;;:138;;;;;1624:896:19;1880:226:0;;;2508:4:19;2171:88:0;2137:309:19;2171:88:0;;2137:309:19;2171:88:0;706:1816:19;;;;;;;;;;;1565:66:0;-1:-1:-1;;;;;;;;;;;1565:66:0;;;-1:-1:-1;;;;;;;;;;;1565:66:0;;2171:88;2089:17:19;;:::i;:::-;706:1816;;;2173:28;;;;;;2137:309;;;;;;;;:::i;:::-;;706:1816;;2137:309;;;;;;:::i;:::-;2508:4;:::i;1880:226:0:-;2067:28;;;1929:1;2067:28;;1929:1;2067:28;1897:138;706:1816:19;;-1:-1:-1;;;1952:83:0;;-1:-1:-1;;;1952:83:0;;;706:1816:19;;-1:-1:-1;1952:83:0;;706:1816:19;;;;;;1952:83:0;;;;;;;1929:1;1952:83;;;1897:138;1951:84;;1897:138;;;1952:83;;;;;;;;;;;;;;;:::i;:::-;;;;;:::i;:::-;;;;;;;;;;;:::i;706:1816:19:-;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;;;;4599:360:0;-1:-1:-1;;;;;;;;;;;706:1816:19;;;-1:-1:-1;;;4770:35:0;;706:1816:19;4770:35:0;;706:1816:19;;4770:35:0;;706:1816:19;;-1:-1:-1;;;;;706:1816:19;4770:35:0;;;;;;;-1:-1:-1;4770:35:0;;;4599:360;-1:-1:-1;;;;;;706:1816:19;;4819:35:0;4815:100;;4599:360;:::o;4815:100::-;4877:27;;;-1:-1:-1;4877:27:0;4770:35;-1:-1:-1;4877:27:0;4770:35;;;;;;;;;;;;;706:1816:19;4770:35:0;;;:::i;:::-;;;706:1816:19;;;;;;;:::i;:::-;4770:35:0;;;;;;-1:-1:-1;4770:35:0;;3456:655;-1:-1:-1;;;;;706:1816:19;;3583:35:0;3579:169;;3918:50;3616:1;3918:50;;;;;;;;;;;706:1816:19;;;;;;;;;:::i;:::-;;;;;;;;:::i;:::-;;;;3616:1:0;3918:50;706:1816:19;;;;3982:8:0;3978:127;;3456:655;:::o;3978:127::-;3918:50;4006:89;;;;;706:1816:19;;;;;3579:169:0;3641:31;;;3616:1;3641:31;;3616:1;3641:31",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405236156100a8577f1515746737424785433e0dda020fe774d11e0fab6d980530d355fada133c3c705460209060809060049082906001600160a01b0316632f3a3d5d60e01b82525afa80156100a3575f90610076575b6001600160a01b03811661011f5763daa2f31f60e01b5f5260045ffd5b5060203d60201161009c575b8061008f610097926100b7565b6080016100ee565b610059565b503d610082565b610114565b635d82995b60e01b5f5260045ffd5b601f80199101166080016080811067ffffffffffffffff8211176100da57604052565b634e487b7160e01b5f52604160045260245ffd5b602090607f190112610110576080516001600160a01b03811681036101105790565b5f80fd5b6040513d5f823e3d90fd5b5f8091368280378136915af43d5f803e15610138573d5ff35b3d5ffdfea164736f6c634300081c000a",
+    "sourceMap": "706:1816:19:-:0;;;;;;;1565:66:0;;4770:35;;706:1816:19;;4770:35:0;;706:1816:19;;-1:-1:-1;;;;;706:1816:19;-1:-1:-1;;;4770:35:0;;;;;;;;-1:-1:-1;4770:35:0;;;-1:-1:-1;;;;;;706:1816:19;;2381:17:181;4815:100:0;4877:27;;;-1:-1:-1;4877:27:0;4770:35;-1:-1:-1;4877:27:0;4770:35;;;;;;;;;;;;;;:::i;:::-;706:1816:19;4770:35:0;;:::i;:::-;;;;-1:-1:-1;4770:35:0;;;;;:::i;706:1816:19:-;5112:24:0;;;;;;;;706:1816:19;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;-1:-1:-1;706:1816:19;;;;;-1:-1:-1;706:1816:19;;;;;;;;;;;;-1:-1:-1;;;;;706:1816:19;;;;;;;:::o;:::-;-1:-1:-1;706:1816:19;;;;;;;;;;;;949:895:181;1019:819;949:895;;1019:819;;;;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenFactoryAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name_\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"symbol_\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"decimals_\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"onchainID_\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"managementFeeBps_\",\"type\":\"uint16\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"module\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"params\",\"type\":\"bytes\"}],\"internalType\":\"struct SMARTComplianceModuleParamPair[]\",\"name\":\"initialModulePairs_\",\"type\":\"tuple[]\"},{\"internalType\":\"address\",\"name\":\"identityRegistry_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"compliance_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"accessManager_\",\"type\":\"address\"}],\"stateMutability\":\"payable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"ETHTransfersNotAllowed\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InitializationWithZeroAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidTokenFactoryAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TokenImplementationNotSet\",\"type\":\"error\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"errors\":{\"ETHTransfersNotAllowed()\":[{\"details\":\"Many contracts are not designed to receive or hold Ether directly, and will revert such transactions to prevent loss of funds or unexpected behavior.\"}],\"InitializationWithZeroAddress()\":[{\"details\":\"This typically occurs in proxy constructors if the logic contract address fetched from the system is address(0).\"}]},\"kind\":\"dev\",\"methods\":{\"constructor\":{\"details\":\"Initializes the proxy by delegating a call to the `initialize` function of the implementation provided by the token factory.\",\"params\":{\"accessManager_\":\"The access manager of the fund.\",\"compliance_\":\"The compliance of the fund.\",\"decimals_\":\"The number of decimals of the fund.\",\"identityRegistry_\":\"The identity registry of the fund.\",\"initialModulePairs_\":\"The initial module pairs of the fund.\",\"managementFeeBps_\":\"The management fee of the fund.\",\"name_\":\"The name of the fund.\",\"onchainID_\":\"Optional address of an existing onchain identity contract. Pass address(0) to create a new one.\",\"symbol_\":\"The symbol of the fund.\",\"tokenFactoryAddress\":\"The address of the token factory contract.\"}}},\"title\":\"Proxy contract for ATK Funds, using ATKAssetProxy.\",\"version\":1},\"userdoc\":{\"errors\":{\"ETHTransfersNotAllowed()\":[{\"notice\":\"Error indicating that an attempt was made to send Ether to a contract that does not allow or expect it.\"}],\"InitializationWithZeroAddress()\":[{\"notice\":\"Error indicating that an attempt was made to initialize a component with a zero address for its implementation.\"}],\"InvalidTokenFactoryAddress()\":[{\"notice\":\"Error indicating that an invalid token factory address was provided.\"}],\"TokenImplementationNotSet()\":[{\"notice\":\"Error indicating that the token implementation address has not been set.\"}]},\"kind\":\"user\",\"methods\":{\"constructor\":{\"notice\":\"Constructs the ATKFundProxy.\"}},\"notice\":\"This contract serves as a proxy, allowing for upgradeability of the underlying fund logic. It retrieves the implementation address from the IATKTokenFactory contract via ATKAssetProxy.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/assets/fund/ATKFundProxy.sol\":\"ATKFundProxy\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/\",\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/\",\":forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\",\":openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\"],\"viaIR\":true},\"sources\":{\"contracts/assets/ATKAssetProxy.sol\":{\"keccak256\":\"0xe46056a5b2d425ae23fe614f86203da0a9125b65824a07278c855bb6105d9a12\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://3ed58f0b36e52fdcc553c724db2b56e7ca5ddd44d3e3716bf32daf35b84b14f3\",\"dweb:/ipfs/QmZ3sMxtQUtoaR75Y4ZRGzQFcK3b9taAX3y7FnX8ECrRpb\"]},\"contracts/assets/fund/ATKFundProxy.sol\":{\"keccak256\":\"0x3f130110273ce9584392e3ec8751b4c7071a3d81aded853612fdb39b15053e97\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://b689b5bd12a4d589fbcbc87ac64a76666152d657c499f8e0737f8c7171775985\",\"dweb:/ipfs/QmRYH92sZswJewYAokDCXX6d4ve9jcBLVHYhqMy5MFbT9h\"]},\"contracts/assets/fund/IATKFund.sol\":{\"keccak256\":\"0x5df98ce1a4ce96dce7d695309bd836261c482a77cfd4683b2bbffab41a6ac35d\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://d43c4c787320ff86f2d9a80baa581cd32a8d7d999686effc373fda5d10f60a28\",\"dweb:/ipfs/QmdqgP3ZQwQEdeogP9x68pmsT3D9Cu2CRuHK8Z7NLEq2xV\"]},\"contracts/smart/extensions/access-managed/ISMARTTokenAccessManaged.sol\":{\"keccak256\":\"0xb05c08191398db750d9fd974e8df1bace09434c27fd81a9db7d36ff429affd97\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://5155ee4da616fb8e3365c933952b07b93d603c6a4eb6542433b08c651a0e0c25\",\"dweb:/ipfs/QmW4C4YbYuDLX32oEFrp11t9TK44B5otKCXQemXs1jMgCD\"]},\"contracts/smart/extensions/burnable/ISMARTBurnable.sol\":{\"keccak256\":\"0x4b3408d79782202ec6b6f01f615b13ca00ad9c5974208acfa3d2ae8be3d28f1d\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://df0fe9c4bb881f299c985f917761f16b7a2118d840cf36060f99e54fcc9f7f68\",\"dweb:/ipfs/QmPQrXG8UPPzK2Wt1aYNgPC2F17Yq5Bs2TW4Bt9fDjXo42\"]},\"contracts/smart/extensions/custodian/ISMARTCustodian.sol\":{\"keccak256\":\"0xf7f74718eeb2d259be46ff82c7232c11b125127feb844d8140f3cff47c0c1663\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://97465ae7ef179d5abeedcf57c7fb7cd3f933268da501ae2694a82731f046f119\",\"dweb:/ipfs/QmQivprpP7h75X57xioAnrNtGkGjZaqkSndwY3CUcAXb5V\"]},\"contracts/smart/extensions/pausable/ISMARTPausable.sol\":{\"keccak256\":\"0xab4d6f4bae5e7e8166d3c6206ea8ecd9742c02fb3a82f1420266b4a5872a0497\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://a437838b9641a1c59910296decade4a5c397e12127160983eadafb6ab8514582\",\"dweb:/ipfs/QmNMndn4dMgkjGABjuYHdaHEaL6XwdsJwmsaT2WQugrxR1\"]},\"contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol\":{\"keccak256\":\"0x3a8a72df8da5bf4d988bbfb00151b933ff17cdc8d4be47dc121cd9e2083ba86f\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://369250658bf8d3ebb583946820afa494271ce6bfde607d15c7060cdf7a303cf3\",\"dweb:/ipfs/QmSJjaK6vyv8K9RX1k3rwxsoKfVNyMoHEszxyxdTQfDKQG\"]},\"contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol\":{\"keccak256\":\"0x15b72940814cd959b57bf75623f16c51fc6c50eab51fd2420a8b653519ebd76c\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://479f5e24a1b608776d9d5d7da9c76dd3c9b1dd300d8b4eee7a15dcfba4817bee\",\"dweb:/ipfs/QmPhMBfQAqt5NeRcSu3jDTwhoQXnB7nXNEcmoJ7KoWVt7V\"]},\"contracts/smart/interface/ISMART.sol\":{\"keccak256\":\"0xfce323160dd5cd8c9db34de0ea872bec41fd2ea8d8496e1e3c17865d374994da\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://1a1fafbdec0c59e078798438d2a3cd05bd70b864d7dfa67faf135d5634c5ae51\",\"dweb:/ipfs/QmehZwexgZN2BZKA6eFrG3DHUMRUZnzYTen6j5Ry5Znbf2\"]},\"contracts/smart/interface/ISMARTCompliance.sol\":{\"keccak256\":\"0x948341e4ad374e1dded6d1b30c395ad0f01e6ea2099fb6b96c5476e8b28c1d77\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://d261e9a0c8682f11ac86048f13e367caee6d5f512d51b8752186b8c01b6ba618\",\"dweb:/ipfs/Qmdp14emh3NFSAphyuAgsTE7qZt1g1UYcNLS3tNNM8T6Hv\"]},\"contracts/smart/interface/ISMARTIdentityRegistry.sol\":{\"keccak256\":\"0x62a95a9db2ac97ceaf59f7585d7bbaf3acb65ed9b5e57597b9d1fe1b4d7c4eda\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://bd870710359396db48e70ef7e40449125ff744c6c8ce15ad7e1894df430c87ea\",\"dweb:/ipfs/QmZ6khf5Vm6hBkkUgYC1b161jSQaZeegJVRY6ndjRW1EcG\"]},\"contracts/smart/interface/ISMARTIdentityRegistryStorage.sol\":{\"keccak256\":\"0x219b3d03958859e2f082aac5cbf3b40acf243e326ee6e74e6bb03be7724c2985\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://8cf8d30ec47cb2aed5b51d373837584fb6f08deab1d35142510271e733404f52\",\"dweb:/ipfs/Qmc9NnABx9ouhhCR8qgJC3RtU5oAyycSjZkY6nGtuWFwuz\"]},\"contracts/smart/interface/ISMARTTopicSchemeRegistry.sol\":{\"keccak256\":\"0xec5e42dcf7d929f8a0db42c9c8a0fa81d089a9f7177b7da10df029f94334ca8a\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://e346e3241e3110b3f17d2b244a49d68a1d79c6928bef7d372ea3458c1029cea0\",\"dweb:/ipfs/QmeSyCYN9qYXRjn799fRFP7X9apf7bubVhnFEUGQatx3xd\"]},\"contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol\":{\"keccak256\":\"0x489a55538b554a0c935bee7efc28f7e821e161638c5726c9d367a644a0b7c62a\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://04bb06aed3ee3c5c6f3df9a59721c08ddd57b5521da1c9c6fd96b7c8b57db813\",\"dweb:/ipfs/QmRuzqKDr2sBHNuQhCzWGa8euNiMyvP7LTjSFjvAj5uFqh\"]},\"contracts/system/ATKSystemErrors.sol\":{\"keccak256\":\"0x85d02e1d6fb4ee127073c8cfc6effadb23579771aa5ebb0a09abc736b30a2cf2\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://95d385cbab46aecdd99df43c550212fa82e36e45fa32b4d5dde79ba46e142503\",\"dweb:/ipfs/QmT8vANsK8VjU14ZLzEvvGfXePeYThqP9wosD58APn5vCD\"]},\"contracts/system/token-factory/IATKTokenFactory.sol\":{\"keccak256\":\"0xdbb6b89048b12218b8c10fc0ae96e92d1aa246ced85f01f8eaf59be3bcbb98c8\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://8b46c67fdddd870efbad064413e6d707e60d8b920d27bcccdce91fc00969a7b0\",\"dweb:/ipfs/QmchmsPth5NwDC4mL88tf3CLwTKErxb8dpWehrZCJy2uWa\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IClaimIssuer.sol\":{\"keccak256\":\"0xae785f63b3cb3a94bcb454ef4ad6376aa4848fa29cff1cc8db3bef4a2994a779\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://d8223d2710c51ee39cdfd2cb2f1858b3d64a3222c78ea8ed5eb3e11a93e1222e\",\"dweb:/ipfs/QmYRXPCww7BorScTC6QNMbrRm2zprUmSYFpWomwarJH7Df\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IERC734.sol\":{\"keccak256\":\"0x35a14a0d1a3ed51689f1a2cb12e26d30601afbcc1cc9b9b288a03cd11e6d049e\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://156aac402e73e6bd2fa8c0ccd85b2add8d1bb505d8a652218173dbc8e7b9a3cb\",\"dweb:/ipfs/QmPzPyc3kKxoNCGqKAooUju6YvMkDN4MCUH198TEXnA82o\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IERC735.sol\":{\"keccak256\":\"0xeac82c37b16c1c1c83df3e88be987332b1230ed13e1d017f9d2929f978ac0122\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://695a66b789ac417b7b2b78c578981779db374704382921ff499351cccab0323e\",\"dweb:/ipfs/QmeZoogvsEWf688Z849zZ2dLPDnor6YnnNQLMgedY9Tc9D\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IIdentity.sol\":{\"keccak256\":\"0x5ed42ab81b9b734c79e61d1f7e0734baab5479a356ab6bb469414d3c66269862\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://a0863999b1ed334179a43e699e6057815eea011a78ed51e61b6110fc392e26f8\",\"dweb:/ipfs/Qme6hdHZCAy1V4sLgAZ5NxdrEjEf5mYMabf5UDmUDjkuzW\"]},\"dependencies/@openzeppelin-contracts-5.3.0/governance/utils/IVotes.sol\":{\"keccak256\":\"0x5e2b397ae88fd5c68e4f6762eb9f65f65c36702eb57796495f471d024ce70947\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://348fc8e291d54314bb22437b532f443d5dbfb80c8cc9591567c1af6554ccf856\",\"dweb:/ipfs/QmP8ZTyitZinxcpwAHeYHhwj7u21zPpKXSiww38V74sXC2\"]},\"dependencies/@openzeppelin-contracts-5.3.0/proxy/Proxy.sol\":{\"keccak256\":\"0xc3f2ec76a3de8ed7a7007c46166f5550c72c7709e3fc7e8bb3111a7191cdedbd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e73efb4c2ca655882dc237c6b4f234a9bd36d97159d8fcaa837eb01171f726ac\",\"dweb:/ipfs/QmTNnnv7Gu5fs5G1ZMh7Fexp8N4XUs3XrNAngjcxgiss3e\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db\",\"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x70f2f713b13b7ce4610bcd0ac9fec0f3cc43693b043abcb8dc40a42a726eb330\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c13d13304ac79a83ab1c30168967d19e2203342ebbd6a9bbce4db7550522dcbf\",\"dweb:/ipfs/QmeN5jKMN2vw5bhacr6tkg78afbTTZUeaacNHqjWt4Ew1r\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/StorageSlot.sol\":{\"keccak256\":\"0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9f660b1f351b757dfe01438e59888f31f33ded3afcf5cb5b0d9bf9aa6f320a8b\",\"dweb:/ipfs/QmarDJ5hZEgBtCmmrVzEZWjub9769eD686jmzb2XpSU1cM\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "tokenFactoryAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "name_",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol_",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "decimals_",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "onchainID_",
+              "type": "address"
+            },
+            {
+              "internalType": "uint16",
+              "name": "managementFeeBps_",
+              "type": "uint16"
+            },
+            {
+              "internalType": "struct SMARTComplianceModuleParamPair[]",
+              "name": "initialModulePairs_",
+              "type": "tuple[]",
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "module",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "params",
+                  "type": "bytes"
+                }
+              ]
+            },
+            {
+              "internalType": "address",
+              "name": "identityRegistry_",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "compliance_",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "accessManager_",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ETHTransfersNotAllowed"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InitializationWithZeroAddress"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidTokenFactoryAddress"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "TokenImplementationNotSet"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "fallback"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "receive"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "constructor": {
+            "details": "Initializes the proxy by delegating a call to the `initialize` function of the implementation provided by the token factory.",
+            "params": {
+              "accessManager_": "The access manager of the fund.",
+              "compliance_": "The compliance of the fund.",
+              "decimals_": "The number of decimals of the fund.",
+              "identityRegistry_": "The identity registry of the fund.",
+              "initialModulePairs_": "The initial module pairs of the fund.",
+              "managementFeeBps_": "The management fee of the fund.",
+              "name_": "The name of the fund.",
+              "onchainID_": "Optional address of an existing onchain identity contract. Pass address(0) to create a new one.",
+              "symbol_": "The symbol of the fund.",
+              "tokenFactoryAddress": "The address of the token factory contract."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "constructor": {
+            "notice": "Constructs the ATKFundProxy."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/",
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/",
+        "forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/",
+        "openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/assets/fund/ATKFundProxy.sol": "ATKFundProxy"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/assets/ATKAssetProxy.sol": {
+        "keccak256": "0xe46056a5b2d425ae23fe614f86203da0a9125b65824a07278c855bb6105d9a12",
+        "urls": [
+          "bzz-raw://3ed58f0b36e52fdcc553c724db2b56e7ca5ddd44d3e3716bf32daf35b84b14f3",
+          "dweb:/ipfs/QmZ3sMxtQUtoaR75Y4ZRGzQFcK3b9taAX3y7FnX8ECrRpb"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/assets/fund/ATKFundProxy.sol": {
+        "keccak256": "0x3f130110273ce9584392e3ec8751b4c7071a3d81aded853612fdb39b15053e97",
+        "urls": [
+          "bzz-raw://b689b5bd12a4d589fbcbc87ac64a76666152d657c499f8e0737f8c7171775985",
+          "dweb:/ipfs/QmRYH92sZswJewYAokDCXX6d4ve9jcBLVHYhqMy5MFbT9h"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/assets/fund/IATKFund.sol": {
+        "keccak256": "0x5df98ce1a4ce96dce7d695309bd836261c482a77cfd4683b2bbffab41a6ac35d",
+        "urls": [
+          "bzz-raw://d43c4c787320ff86f2d9a80baa581cd32a8d7d999686effc373fda5d10f60a28",
+          "dweb:/ipfs/QmdqgP3ZQwQEdeogP9x68pmsT3D9Cu2CRuHK8Z7NLEq2xV"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/access-managed/ISMARTTokenAccessManaged.sol": {
+        "keccak256": "0xb05c08191398db750d9fd974e8df1bace09434c27fd81a9db7d36ff429affd97",
+        "urls": [
+          "bzz-raw://5155ee4da616fb8e3365c933952b07b93d603c6a4eb6542433b08c651a0e0c25",
+          "dweb:/ipfs/QmW4C4YbYuDLX32oEFrp11t9TK44B5otKCXQemXs1jMgCD"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/burnable/ISMARTBurnable.sol": {
+        "keccak256": "0x4b3408d79782202ec6b6f01f615b13ca00ad9c5974208acfa3d2ae8be3d28f1d",
+        "urls": [
+          "bzz-raw://df0fe9c4bb881f299c985f917761f16b7a2118d840cf36060f99e54fcc9f7f68",
+          "dweb:/ipfs/QmPQrXG8UPPzK2Wt1aYNgPC2F17Yq5Bs2TW4Bt9fDjXo42"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/custodian/ISMARTCustodian.sol": {
+        "keccak256": "0xf7f74718eeb2d259be46ff82c7232c11b125127feb844d8140f3cff47c0c1663",
+        "urls": [
+          "bzz-raw://97465ae7ef179d5abeedcf57c7fb7cd3f933268da501ae2694a82731f046f119",
+          "dweb:/ipfs/QmQivprpP7h75X57xioAnrNtGkGjZaqkSndwY3CUcAXb5V"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/pausable/ISMARTPausable.sol": {
+        "keccak256": "0xab4d6f4bae5e7e8166d3c6206ea8ecd9742c02fb3a82f1420266b4a5872a0497",
+        "urls": [
+          "bzz-raw://a437838b9641a1c59910296decade4a5c397e12127160983eadafb6ab8514582",
+          "dweb:/ipfs/QmNMndn4dMgkjGABjuYHdaHEaL6XwdsJwmsaT2WQugrxR1"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol": {
+        "keccak256": "0x3a8a72df8da5bf4d988bbfb00151b933ff17cdc8d4be47dc121cd9e2083ba86f",
+        "urls": [
+          "bzz-raw://369250658bf8d3ebb583946820afa494271ce6bfde607d15c7060cdf7a303cf3",
+          "dweb:/ipfs/QmSJjaK6vyv8K9RX1k3rwxsoKfVNyMoHEszxyxdTQfDKQG"
+        ],
+        "license": "CC0-1.0"
+      },
+      "contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol": {
+        "keccak256": "0x15b72940814cd959b57bf75623f16c51fc6c50eab51fd2420a8b653519ebd76c",
+        "urls": [
+          "bzz-raw://479f5e24a1b608776d9d5d7da9c76dd3c9b1dd300d8b4eee7a15dcfba4817bee",
+          "dweb:/ipfs/QmPhMBfQAqt5NeRcSu3jDTwhoQXnB7nXNEcmoJ7KoWVt7V"
+        ],
+        "license": "CC0-1.0"
+      },
+      "contracts/smart/interface/ISMART.sol": {
+        "keccak256": "0xfce323160dd5cd8c9db34de0ea872bec41fd2ea8d8496e1e3c17865d374994da",
+        "urls": [
+          "bzz-raw://1a1fafbdec0c59e078798438d2a3cd05bd70b864d7dfa67faf135d5634c5ae51",
+          "dweb:/ipfs/QmehZwexgZN2BZKA6eFrG3DHUMRUZnzYTen6j5Ry5Znbf2"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTCompliance.sol": {
+        "keccak256": "0x948341e4ad374e1dded6d1b30c395ad0f01e6ea2099fb6b96c5476e8b28c1d77",
+        "urls": [
+          "bzz-raw://d261e9a0c8682f11ac86048f13e367caee6d5f512d51b8752186b8c01b6ba618",
+          "dweb:/ipfs/Qmdp14emh3NFSAphyuAgsTE7qZt1g1UYcNLS3tNNM8T6Hv"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTIdentityRegistry.sol": {
+        "keccak256": "0x62a95a9db2ac97ceaf59f7585d7bbaf3acb65ed9b5e57597b9d1fe1b4d7c4eda",
+        "urls": [
+          "bzz-raw://bd870710359396db48e70ef7e40449125ff744c6c8ce15ad7e1894df430c87ea",
+          "dweb:/ipfs/QmZ6khf5Vm6hBkkUgYC1b161jSQaZeegJVRY6ndjRW1EcG"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTIdentityRegistryStorage.sol": {
+        "keccak256": "0x219b3d03958859e2f082aac5cbf3b40acf243e326ee6e74e6bb03be7724c2985",
+        "urls": [
+          "bzz-raw://8cf8d30ec47cb2aed5b51d373837584fb6f08deab1d35142510271e733404f52",
+          "dweb:/ipfs/Qmc9NnABx9ouhhCR8qgJC3RtU5oAyycSjZkY6nGtuWFwuz"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTTopicSchemeRegistry.sol": {
+        "keccak256": "0xec5e42dcf7d929f8a0db42c9c8a0fa81d089a9f7177b7da10df029f94334ca8a",
+        "urls": [
+          "bzz-raw://e346e3241e3110b3f17d2b244a49d68a1d79c6928bef7d372ea3458c1029cea0",
+          "dweb:/ipfs/QmeSyCYN9qYXRjn799fRFP7X9apf7bubVhnFEUGQatx3xd"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol": {
+        "keccak256": "0x489a55538b554a0c935bee7efc28f7e821e161638c5726c9d367a644a0b7c62a",
+        "urls": [
+          "bzz-raw://04bb06aed3ee3c5c6f3df9a59721c08ddd57b5521da1c9c6fd96b7c8b57db813",
+          "dweb:/ipfs/QmRuzqKDr2sBHNuQhCzWGa8euNiMyvP7LTjSFjvAj5uFqh"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/system/ATKSystemErrors.sol": {
+        "keccak256": "0x85d02e1d6fb4ee127073c8cfc6effadb23579771aa5ebb0a09abc736b30a2cf2",
+        "urls": [
+          "bzz-raw://95d385cbab46aecdd99df43c550212fa82e36e45fa32b4d5dde79ba46e142503",
+          "dweb:/ipfs/QmT8vANsK8VjU14ZLzEvvGfXePeYThqP9wosD58APn5vCD"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/system/token-factory/IATKTokenFactory.sol": {
+        "keccak256": "0xdbb6b89048b12218b8c10fc0ae96e92d1aa246ced85f01f8eaf59be3bcbb98c8",
+        "urls": [
+          "bzz-raw://8b46c67fdddd870efbad064413e6d707e60d8b920d27bcccdce91fc00969a7b0",
+          "dweb:/ipfs/QmchmsPth5NwDC4mL88tf3CLwTKErxb8dpWehrZCJy2uWa"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IClaimIssuer.sol": {
+        "keccak256": "0xae785f63b3cb3a94bcb454ef4ad6376aa4848fa29cff1cc8db3bef4a2994a779",
+        "urls": [
+          "bzz-raw://d8223d2710c51ee39cdfd2cb2f1858b3d64a3222c78ea8ed5eb3e11a93e1222e",
+          "dweb:/ipfs/QmYRXPCww7BorScTC6QNMbrRm2zprUmSYFpWomwarJH7Df"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IERC734.sol": {
+        "keccak256": "0x35a14a0d1a3ed51689f1a2cb12e26d30601afbcc1cc9b9b288a03cd11e6d049e",
+        "urls": [
+          "bzz-raw://156aac402e73e6bd2fa8c0ccd85b2add8d1bb505d8a652218173dbc8e7b9a3cb",
+          "dweb:/ipfs/QmPzPyc3kKxoNCGqKAooUju6YvMkDN4MCUH198TEXnA82o"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IERC735.sol": {
+        "keccak256": "0xeac82c37b16c1c1c83df3e88be987332b1230ed13e1d017f9d2929f978ac0122",
+        "urls": [
+          "bzz-raw://695a66b789ac417b7b2b78c578981779db374704382921ff499351cccab0323e",
+          "dweb:/ipfs/QmeZoogvsEWf688Z849zZ2dLPDnor6YnnNQLMgedY9Tc9D"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IIdentity.sol": {
+        "keccak256": "0x5ed42ab81b9b734c79e61d1f7e0734baab5479a356ab6bb469414d3c66269862",
+        "urls": [
+          "bzz-raw://a0863999b1ed334179a43e699e6057815eea011a78ed51e61b6110fc392e26f8",
+          "dweb:/ipfs/Qme6hdHZCAy1V4sLgAZ5NxdrEjEf5mYMabf5UDmUDjkuzW"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/governance/utils/IVotes.sol": {
+        "keccak256": "0x5e2b397ae88fd5c68e4f6762eb9f65f65c36702eb57796495f471d024ce70947",
+        "urls": [
+          "bzz-raw://348fc8e291d54314bb22437b532f443d5dbfb80c8cc9591567c1af6554ccf856",
+          "dweb:/ipfs/QmP8ZTyitZinxcpwAHeYHhwj7u21zPpKXSiww38V74sXC2"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/proxy/Proxy.sol": {
+        "keccak256": "0xc3f2ec76a3de8ed7a7007c46166f5550c72c7709e3fc7e8bb3111a7191cdedbd",
+        "urls": [
+          "bzz-raw://e73efb4c2ca655882dc237c6b4f234a9bd36d97159d8fcaa837eb01171f726ac",
+          "dweb:/ipfs/QmTNnnv7Gu5fs5G1ZMh7Fexp8N4XUs3XrNAngjcxgiss3e"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol": {
+        "keccak256": "0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7",
+        "urls": [
+          "bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db",
+          "dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/extensions/IERC20Metadata.sol": {
+        "keccak256": "0x70f2f713b13b7ce4610bcd0ac9fec0f3cc43693b043abcb8dc40a42a726eb330",
+        "urls": [
+          "bzz-raw://c13d13304ac79a83ab1c30168967d19e2203342ebbd6a9bbce4db7550522dcbf",
+          "dweb:/ipfs/QmeN5jKMN2vw5bhacr6tkg78afbTTZUeaacNHqjWt4Ew1r"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/StorageSlot.sol": {
+        "keccak256": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+        "urls": [
+          "bzz-raw://9f660b1f351b757dfe01438e59888f31f33ded3afcf5cb5b0d9bf9aa6f320a8b",
+          "dweb:/ipfs/QmarDJ5hZEgBtCmmrVzEZWjub9769eD686jmzb2XpSU1cM"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "constructor": {
+        "notice": "Constructs the ATKFundProxy."
+      }
+    },
+    "errors": {
+      "ETHTransfersNotAllowed()": [
+        {
+          "notice": "Error indicating that an attempt was made to send Ether to a contract that does not allow or expect it."
+        }
+      ],
+      "InitializationWithZeroAddress()": [
+        {
+          "notice": "Error indicating that an attempt was made to initialize a component with a zero address for its implementation."
+        }
+      ],
+      "InvalidTokenFactoryAddress()": [
+        {
+          "notice": "Error indicating that an invalid token factory address was provided."
+        }
+      ],
+      "TokenImplementationNotSet()": [
+        {
+          "notice": "Error indicating that the token implementation address has not been set."
+        }
+      ]
+    },
+    "notice": "This contract serves as a proxy, allowing for upgradeability of the underlying fund logic. It retrieves the implementation address from the IATKTokenFactory contract via ATKAssetProxy."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "constructor": {
+        "details": "Initializes the proxy by delegating a call to the `initialize` function of the implementation provided by the token factory.",
+        "params": {
+          "accessManager_": "The access manager of the fund.",
+          "compliance_": "The compliance of the fund.",
+          "decimals_": "The number of decimals of the fund.",
+          "identityRegistry_": "The identity registry of the fund.",
+          "initialModulePairs_": "The initial module pairs of the fund.",
+          "managementFeeBps_": "The management fee of the fund.",
+          "name_": "The name of the fund.",
+          "onchainID_": "Optional address of an existing onchain identity contract. Pass address(0) to create a new one.",
+          "symbol_": "The symbol of the fund.",
+          "tokenFactoryAddress": "The address of the token factory contract."
+        }
+      }
+    },
+    "errors": {
+      "ETHTransfersNotAllowed()": [
+        {
+          "details": "Many contracts are not designed to receive or hold Ether directly, and will revert such transactions to prevent loss of funds or unexpected behavior."
+        }
+      ],
+      "InitializationWithZeroAddress()": [
+        {
+          "details": "This typically occurs in proxy constructors if the logic contract address fetched from the system is address(0)."
+        }
+      ]
+    },
+    "title": "Proxy contract for ATK Funds, using ATKAssetProxy."
+  },
+  "id": 19
+}

@@ -1,0 +1,31 @@
+{
+  "id": "f5c15e5304da774e",
+  "source_id_to_path": {
+    "0": "contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol",
+    "1": "contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol",
+    "2": "contracts/smart/interface/ISMART.sol",
+    "3": "contracts/smart/interface/ISMARTCompliance.sol",
+    "4": "contracts/smart/interface/ISMARTComplianceModule.sol",
+    "5": "contracts/smart/interface/ISMARTIdentityRegistry.sol",
+    "6": "contracts/smart/interface/ISMARTIdentityRegistryStorage.sol",
+    "7": "contracts/smart/interface/ISMARTTopicSchemeRegistry.sol",
+    "8": "contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol",
+    "9": "contracts/smart/modules/AbstractAddressListComplianceModule.sol",
+    "10": "contracts/smart/modules/AbstractComplianceModule.sol",
+    "11": "contracts/smart/modules/AbstractIdentityComplianceModule.sol",
+    "12": "contracts/smart/modules/IdentityAllowListComplianceModule.sol",
+    "13": "dependencies/@onchainid-v2.2.1/contracts/interface/IClaimIssuer.sol",
+    "14": "dependencies/@onchainid-v2.2.1/contracts/interface/IERC734.sol",
+    "15": "dependencies/@onchainid-v2.2.1/contracts/interface/IERC735.sol",
+    "16": "dependencies/@onchainid-v2.2.1/contracts/interface/IIdentity.sol",
+    "17": "dependencies/@openzeppelin-contracts-5.3.0/access/AccessControl.sol",
+    "18": "dependencies/@openzeppelin-contracts-5.3.0/access/IAccessControl.sol",
+    "19": "dependencies/@openzeppelin-contracts-5.3.0/metatx/ERC2771Context.sol",
+    "20": "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol",
+    "21": "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/extensions/IERC20Metadata.sol",
+    "22": "dependencies/@openzeppelin-contracts-5.3.0/utils/Context.sol",
+    "23": "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/ERC165.sol",
+    "24": "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol"
+  },
+  "language": "Solidity"
+}

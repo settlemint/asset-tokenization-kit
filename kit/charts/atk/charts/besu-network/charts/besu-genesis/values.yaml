@@ -69,13 +69,13 @@ rawGenesisConfig:
     accountPassword: "password"
 
 image:
-  repository: ghcr.io/settlemint/quorum-genesis-tool
+  repository: harbor.settlemint.com/ghcr.io/settlemint/quorum-genesis-tool
   tag: sha-49c40f5
   pullPolicy: IfNotPresent
 
 genesisServer:
   image:
-    registry: docker.io
+    registry: harbor.settlemint.com/docker.io
     repository: nginx
     tag: 1.28.0-alpine
     pullPolicy: IfNotPresent

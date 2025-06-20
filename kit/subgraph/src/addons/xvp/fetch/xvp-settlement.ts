@@ -99,7 +99,6 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     xvpSettlement.deployedInTransaction = Bytes.empty();
 
     const approvers: Address[] = [];
-    const participants: Bytes[] = [];
 
     if (!flows.reverted) {
       for (let i = 0; i < flows.value.length; i++) {
@@ -126,32 +125,9 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
         if (!fromExists) {
           approvers.push(flow.from);
         }
-
-        // Collect unique participants (both from and to)
-        const fromBytes = Bytes.fromHexString(flow.from.toHexString());
-        const toBytes = Bytes.fromHexString(flow.to.toHexString());
-
-        let fromParticipantExists = false;
-        let toParticipantExists = false;
-        for (let j = 0; j < participants.length; j++) {
-          if (participants[j].equals(fromBytes)) {
-            fromParticipantExists = true;
-          }
-          if (participants[j].equals(toBytes)) {
-            toParticipantExists = true;
-          }
-        }
-
-        if (!fromParticipantExists) {
-          participants.push(fromBytes);
-        }
-        if (!toParticipantExists) {
-          participants.push(toBytes);
-        }
       }
     }
 
-    xvpSettlement.participants = participants;
     xvpSettlement.save();
 
     // Create template for dynamic tracking

@@ -33,16 +33,16 @@ Besu nodes for a POA network
 | cluster.reclaimPolicy | string | `"Delete"` |  |
 | fullnameOverride | string | `""` |  |
 | hooks.image.pullPolicy | string | `"IfNotPresent"` |  |
-| hooks.image.repository | string | `"ghcr.io/settlemint/quorum-genesis-tool"` |  |
+| hooks.image.repository | string | `"harbor.settlemint.com/ghcr.io/settlemint/quorum-genesis-tool"` |  |
 | hooks.image.tag | string | `"sha-49c40f5"` |  |
 | imagePullPolicy | string | `"IfNotPresent"` |  |
 | imagePullSecrets | list | `[]` |  |
 | initContainers.busybox.image.pullPolicy | string | `"IfNotPresent"` |  |
-| initContainers.busybox.image.registry | string | `"docker.io"` |  |
+| initContainers.busybox.image.registry | string | `"harbor.settlemint.com/docker.io"` |  |
 | initContainers.busybox.image.repository | string | `"busybox"` |  |
 | initContainers.busybox.image.tag | float | `1.37` |  |
 | initContainers.curl.image.pullPolicy | string | `"IfNotPresent"` |  |
-| initContainers.curl.image.registry | string | `"docker.io"` |  |
+| initContainers.curl.image.registry | string | `"harbor.settlemint.com/docker.io"` |  |
 | initContainers.curl.image.repository | string | `"curlimages/curl"` |  |
 | initContainers.curl.image.tag | string | `"8.14.1"` |  |
 | nameOverride | string | `""` |  |
@@ -88,7 +88,7 @@ Besu nodes for a POA network
 | node.besu.graphql.port | int | `8547` |  |
 | node.besu.http.allowlist[0] | string | `"*"` |  |
 | node.besu.image.pullPolicy | string | `"IfNotPresent"` |  |
-| node.besu.image.repository | string | `"docker.io/hyperledger/besu"` |  |
+| node.besu.image.repository | string | `"harbor.settlemint.com/docker.io/hyperledger/besu"` |  |
 | node.besu.image.tag | string | `"25.6.0"` |  |
 | node.besu.keysPath | string | `"/keys"` |  |
 | node.besu.logging | string | `"INFO"` |  |
@@ -171,7 +171,7 @@ Besu nodes for a POA network
 | node.besu.ws.port | int | `8546` |  |
 | node.tessera.dataPath | string | `"/data/tessera"` |  |
 | node.tessera.image.pullPolicy | string | `"IfNotPresent"` |  |
-| node.tessera.image.repository | string | `"docker.io/quorumengineering/tessera"` |  |
+| node.tessera.image.repository | string | `"harbor.settlemint.com/docker.io/quorumengineering/tessera"` |  |
 | node.tessera.image.tag | float | `24.4` |  |
 | node.tessera.keysPath | string | `"/keys"` |  |
 | node.tessera.password | string | `"password"` |  |

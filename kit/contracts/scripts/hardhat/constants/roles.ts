@@ -14,6 +14,7 @@ const tokenIdentityIssuerAdminRole = keccak256(
   toBytes("TOKEN_IDENTITY_ISSUER_ADMIN_ROLE")
 );
 const tokenDeployerRole = keccak256(toBytes("TOKEN_DEPLOYER_ROLE"));
+const deployerRole = keccak256(toBytes("DEPLOYER_ROLE"));
 const storageModifierRole = keccak256(toBytes("STORAGE_MODIFIER_ROLE"));
 const manageRegistriesRole = keccak256(toBytes("MANAGE_REGISTRIES_ROLE"));
 const bypassListManagerRole = keccak256(toBytes("BYPASS_LIST_MANAGER_ROLE"));
@@ -33,6 +34,7 @@ export const ATKRoles = {
   tokenIdentityIssuerRole,
   tokenIdentityIssuerAdminRole,
   tokenDeployerRole,
+  deployerRole,
   storageModifierRole,
   manageRegistriesRole,
   bypassListManagerRole,

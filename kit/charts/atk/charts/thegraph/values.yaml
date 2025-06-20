@@ -15,7 +15,7 @@ graph-node:
     imagePullSecrets: []
     extraInitContainers:
       - name: wait-for-postgresql
-        image: ghcr.io/settlemint/btp-waitforit:v7.7.5
+        image: harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.5
         command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
     affinityPresets:
       # -- Create anti-affinity rule to deter scheduling replicas on the same host
@@ -141,7 +141,7 @@ job:
   securityContext: {}
   # Image configuration
   image:
-    repository: docker.io/node
+    repository: harbor.settlemint.com/docker.io/node
     tag: "23.11.1-slim"
     pullPolicy: IfNotPresent
   # Pod annotations
@@ -154,7 +154,7 @@ job:
   initContainer:
     graphNodeCheck:
       image:
-        registry: docker.io
+        registry: harbor.settlemint.com/docker.io
         repository: busybox
         tag: 1.37.0 # Use specific stable tag
         pullPolicy: IfNotPresent
@@ -166,7 +166,7 @@ job:
   #   enabled: false # Set to true to enable the random delay
   #   maxSeconds: 31 # Max random sleep duration (exclusive, e.g., 31 means 0-30 seconds)
   #   image:
-  #     repository: docker.io/busybox
+  #     repository: harbor.settlemint.com/docker.io/busybox
   #     tag: latest
   #     pullPolicy: IfNotPresent
 

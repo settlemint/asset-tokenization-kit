@@ -56,7 +56,7 @@ A Helm chart for the blockscout components
 | blockscout-stack.blockscout.envFromSecret.ETHEREUM_JSONRPC_HTTP_URL | string | `"http://erpc:4000"` |  |
 | blockscout-stack.blockscout.envFromSecret.ETHEREUM_JSONRPC_TRACE_URL | string | `"http://erpc:4000"` |  |
 | blockscout-stack.blockscout.envFromSecret.SECRET_KEY_BASE | string | `"atk"` |  |
-| blockscout-stack.blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` |  |
+| blockscout-stack.blockscout.image.repository | string | `"harbor.settlemint.com/ghcr.io/blockscout/blockscout"` |  |
 | blockscout-stack.blockscout.image.tag | string | `"8.1.1"` |  |
 | blockscout-stack.blockscout.ingress.className | string | `"settlemint-nginx"` |  |
 | blockscout-stack.blockscout.ingress.enabled | bool | `true` |  |
@@ -88,7 +88,7 @@ A Helm chart for the blockscout components
 | blockscout-stack.frontend.env.NEXT_PUBLIC_PROMOTE_BLOCKSCOUT_IN_TITLE | string | `"false"` |  |
 | blockscout-stack.frontend.env.NEXT_PUBLIC_SEO_ENHANCED_DATA_ENABLED | string | `"true"` |  |
 | blockscout-stack.frontend.env.NEXT_PUBLIC_TRANSACTION_INTERPRETATION_PROVIDER | string | `"blockscout"` |  |
-| blockscout-stack.frontend.image.repository | string | `"ghcr.io/blockscout/frontend"` |  |
+| blockscout-stack.frontend.image.repository | string | `"harbor.settlemint.com/ghcr.io/blockscout/frontend"` |  |
 | blockscout-stack.frontend.image.tag | string | `"v2.1.1"` |  |
 | blockscout-stack.frontend.ingress.className | string | `"settlemint-nginx"` |  |
 | blockscout-stack.frontend.ingress.enabled | bool | `true` |  |
