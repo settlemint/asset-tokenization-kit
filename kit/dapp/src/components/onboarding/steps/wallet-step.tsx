@@ -68,22 +68,22 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
   // Don't auto-advance - removed the auto success callback
 
   return (
-    <div className="flex h-full items-center justify-center">
-      {/* Content */}
-      <div className="w-full max-w-2xl p-8">
-        <div className="space-y-6">
-          {/* Header */}
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-              {hasWallet ? "Your Wallet" : "Generate Your Wallet"}
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              {hasWallet
-                ? "Your blockchain identity is ready"
-                : "Create a secure blockchain wallet to interact with the platform"}
-            </p>
-          </div>
-
+    <div className="h-full flex flex-col">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold">
+          {hasWallet ? "Your Wallet" : "Generate Your Wallet"}
+        </h2>
+        <p className="text-sm text-muted-foreground pt-2">
+          {hasWallet
+            ? "Your blockchain identity is ready"
+            : "Create a secure blockchain wallet to interact with the platform"}
+        </p>
+      </div>
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{ minHeight: "450px", maxHeight: "550px" }}
+      >
+        <div className="max-w-3xl space-y-6 pr-2">
           {/* Wallet display or generation */}
           {hasWallet ? (
             <div className="space-y-4">

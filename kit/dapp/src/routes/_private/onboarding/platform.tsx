@@ -102,8 +102,8 @@ function PlatformOnboarding() {
   };
 
   const handleAssetsSuccess = () => {
-    // Platform onboarding complete, redirect to dashboard
-    void navigate({ to: "/" });
+    // Don't navigate away immediately - let the user see the success state
+    // They can click "Complete" to finish
   };
 
   // Navigation handlers
@@ -112,6 +112,7 @@ function PlatformOnboarding() {
   // Store references to step action functions
   const walletActionRef = useRef<(() => void) | null>(null);
   const systemActionRef = useRef<(() => void) | null>(null);
+  const assetsActionRef = useRef<(() => void) | null>(null);
 
   const handleNext = () => {
     // Check if current step needs special action
@@ -133,6 +134,15 @@ function PlatformOnboarding() {
       return;
     }
 
+    if (
+      currentStepId === "assets" &&
+      (systemDetails?.tokenFactories.length ?? 0) === 0 &&
+      assetsActionRef.current
+    ) {
+      assetsActionRef.current();
+      return;
+    }
+
     // Normal navigation - move to next step
     if (currentStepIndex < steps.length - 1) {
       const nextStep = steps[currentStepIndex + 1];
@@ -141,7 +151,10 @@ function PlatformOnboarding() {
       }
     } else if (currentStepIndex === steps.length - 1) {
       // Last step - complete onboarding
-      handleAssetsSuccess();
+      if ((systemDetails?.tokenFactories.length ?? 0) > 0) {
+        // All done - navigate to dashboard
+        void navigate({ to: "/" });
+      }
     }
   };
 
@@ -166,20 +179,34 @@ function PlatformOnboarding() {
       return false; // Enable the "Deploy System" button
     }
 
+    // For assets step, enable button if no assets deployed
+    if (
+      currentStepId === "assets" &&
+      (systemDetails?.tokenFactories.length ?? 0) === 0
+    ) {
+      return false; // Enable the "Deploy Asset Factories" button
+    }
+
     const currentStep = steps[currentStepIndex];
     return currentStep?.status !== "completed";
   };
 
   // Determine button labels
   const getNextLabel = () => {
-    if (currentStepIndex === steps.length - 1) {
-      return t("onboarding:complete", "Complete");
-    }
     if (currentStepId === "wallet" && !user?.wallet) {
       return "Generate Wallet";
     }
     if (currentStepId === "system" && !systemAddress?.value) {
       return "Deploy System";
+    }
+    if (
+      currentStepId === "assets" &&
+      (systemDetails?.tokenFactories.length ?? 0) === 0
+    ) {
+      return "Deploy Asset Factories";
+    }
+    if (currentStepIndex === steps.length - 1) {
+      return t("onboarding:complete", "Complete");
     }
     return t("onboarding:next", "Next");
   };
@@ -243,7 +270,12 @@ function PlatformOnboarding() {
                 />
               )}
               {currentStepId === "assets" && (
-                <AssetSelectionStep onSuccess={handleAssetsSuccess} />
+                <AssetSelectionStep
+                  onSuccess={handleAssetsSuccess}
+                  onRegisterAction={(action) => {
+                    assetsActionRef.current = action;
+                  }}
+                />
               )}
             </StepWizard>
           </div>

@@ -83,28 +83,29 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
   Circle.displayName = "Circle";
 
   return (
-    <div className="flex h-full items-center justify-center">
-      <div className="w-full max-w-2xl p-8">
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-              {hasSystem ? "System Deployed" : "Deploy SMART System"}
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              {hasSystem
-                ? "Your blockchain infrastructure is ready"
-                : "Deploy your blockchain infrastructure for asset tokenization"}
-            </p>
-          </div>
-
+    <div className="h-full flex flex-col">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold">
+          {hasSystem ? "System Deployed" : "Deploy SMART System"}
+        </h2>
+        <p className="text-sm text-muted-foreground pt-2">
+          {hasSystem
+            ? "Your blockchain infrastructure is ready"
+            : "Deploy your blockchain infrastructure for asset tokenization"}
+        </p>
+      </div>
+      <div
+        className="flex-1 overflow-y-auto"
+        style={{ minHeight: "450px", maxHeight: "550px" }}
+      >
+        <div className="max-w-3xl space-y-6 pr-2">
           {/* Animated deployment visualization - show during deployment and after completion */}
           {(isDeploying || hasSystem) && (
             <div
-              className="relative flex h-[300px] w-full items-center justify-center overflow-hidden p-10"
+              className="relative flex h-[280px] w-full items-center justify-center overflow-hidden"
               ref={containerRef}
             >
-              <div className="flex size-full max-h-[200px] max-w-lg flex-col items-stretch justify-between gap-10">
+              <div className="flex size-full max-h-[200px] max-w-md flex-col items-stretch justify-between gap-10">
                 <div className="flex flex-row items-center justify-between">
                   <Circle ref={div1Ref}>
                     {hasSystem ? (
