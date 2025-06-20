@@ -9,7 +9,7 @@
       "dependsOn": ["compile:forge", "compile:hardhat"]
     },
     "compile:forge": {
-      "outputs": ["out/**", "cache_forge/**"],
+      "outputs": [".generated/out/**", ".generated/cache_forge/**"],
       "inputs": ["**/*.sol"]
     },
     "compile:hardhat": {
@@ -32,12 +32,12 @@
       "dependsOn": ["artifacts:genesis", "artifacts:abi"]
     },
     "artifacts:genesis": {
-      "outputs": ["tools/genesis-output.json"],
+      "outputs": [".generated/genesis.json", ".generated/genesis-allocations.json"],
       "inputs": ["contracts/**"]
     },
     "artifacts:abi": {
       "dependsOn": ["compile"],
-      "outputs": ["portal/**"],
+      "outputs": [".generated/portal/**"],
       "inputs": ["contracts/**"]
     },
     "format": {
