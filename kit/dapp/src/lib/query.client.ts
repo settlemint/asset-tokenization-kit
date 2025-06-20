@@ -15,6 +15,8 @@
  * - Offline support with request queuing
  * - Window focus refetching
  * - Network status monitoring
+ * - Cross-tab synchronization via Broadcast Channel API
+ * - Global UNAUTHORIZED error handling
  *
  * The configuration is optimized for blockchain applications where:
  * - Data freshness is important but not real-time critical
@@ -43,6 +45,7 @@
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient, QueryCache, MutationCache } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
+import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimental";
 import superjson from "superjson";
 import {
   checkAndClearStaleCache,
@@ -250,7 +253,7 @@ const persister = createSyncStoragePersister({
 });
 
 /**
- * Persist queries for offline support
+ * Persist queries for offline support and sync across tabs
  */
 if (typeof window !== "undefined") {
   // Check and clear stale cache based on build ID
@@ -260,6 +263,7 @@ if (typeof window !== "undefined") {
   // Set up development cache management utilities
   setupDevCacheManagement();
 
+  // Enable query persistence for offline support
   void persistQueryClient({
     queryClient,
     persister,
@@ -271,5 +275,26 @@ if (typeof window !== "undefined") {
         return query.state.status === "success";
       },
     },
+  });
+
+  /**
+   * Set up broadcast channel for cross-tab synchronization.
+   *
+   * This enables real-time synchronization of query cache across
+   * multiple browser tabs/windows, ensuring consistent data state
+   * and preventing duplicate API calls when switching between tabs.
+   *
+   * Features:
+   * - Automatic cache updates across all tabs
+   * - Optimistic updates propagation
+   * - Query invalidation synchronization
+   * - Mutation state sharing
+   *
+   * Note: Uses the experimental broadcast client plugin which
+   * leverages the Broadcast Channel API for cross-tab communication.
+   */
+  broadcastQueryClient({
+    queryClient,
+    broadcastChannel: "atk-query-sync",
   });
 }

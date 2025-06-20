@@ -73,6 +73,7 @@
     "@settlemint/sdk-utils": "2.4.0",
     "@t3-oss/env-core": "0.13.8",
     "@tailwindcss/postcss": "4.1.10",
+    "@tanstack/query-broadcast-client-experimental": "5.80.10",
     "@tanstack/query-sync-storage-persister": "5.80.10",
     "@tanstack/react-query": "5.80.10",
     "@tanstack/react-query-devtools": "5.80.10",

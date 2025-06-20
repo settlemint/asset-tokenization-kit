@@ -13,6 +13,7 @@
  * - TanStack Query cache in localStorage
  * - Any other localStorage items prefixed with 'atk-'
  * - Session storage if needed
+ * - Broadcasts cache clear event to other tabs
  *
  * @example
  * ```typescript
@@ -45,6 +46,17 @@ export function clearAllCaches() {
 
   // Also clear sessionStorage if needed
   sessionStorage.clear();
+
+  // Broadcast cache clear event to other tabs
+  // This ensures all tabs clear their in-memory caches too
+  try {
+    const bc = new BroadcastChannel("atk-cache-clear");
+    bc.postMessage({ type: "clear-all-caches" });
+    bc.close();
+  } catch {
+    // BroadcastChannel might not be supported in all browsers
+    console.warn("[Cache] BroadcastChannel not supported");
+  }
 
   console.log("[Cache] All caches cleared");
 }
@@ -105,6 +117,23 @@ export function setupDevCacheManagement() {
 
     console.log("[Dev] Cache utilities available:");
     console.log("- clearCache() - Clear all caches and reload");
+
+    // Listen for cache clear events from other tabs
+    try {
+      const bc = new BroadcastChannel("atk-cache-clear");
+      bc.onmessage = (event) => {
+        if (event.data?.type === "clear-all-caches") {
+          console.log("[Cache] Received cache clear event from another tab");
+          // Clear in-memory query cache
+          void import("../query.client").then(({ queryClient }) => {
+            queryClient.clear();
+            console.log("[Cache] In-memory query cache cleared");
+          });
+        }
+      };
+    } catch {
+      // BroadcastChannel might not be supported
+    }
   }
 
   // Clear cache on Vite HMR if needed
