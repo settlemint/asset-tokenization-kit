@@ -258,7 +258,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
                 if (repoValue.startsWith(pattern)) {
                   const cleanedValue = repoValue.replace(pattern, '');
                   line = line.replace(repoValue, cleanedValue);
-                  return line; // Return early after cleanup
+                  break; // Break after cleanup instead of returning early
                 }
               }
             }
