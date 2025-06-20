@@ -19,6 +19,8 @@ jobs:
         bun run ci:gha:nightly --concurrency=100% --continue=dependencies-successful
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      LANGUINE_API_KEY: ${{ secrets.LANGUINE_API_KEY }}
+      LANGUINE_PROJECT_ID: ${{ secrets.LANGUINE_PROJECT_ID }}
 
   secret-scanning:
     name: Secret Scanning

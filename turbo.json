@@ -17,7 +17,7 @@
       "dependsOn": ["compile", "codegen", "lint", "test"]
     },
     "ci:gha": {
-      "dependsOn": ["ci:base", "build", "//#dev:up"]
+      "dependsOn": ["ci:base", "build", "//#setup:dev"]
     },
     "ci:gha:main": {
       "dependsOn": ["ci:gha", "publish"]
@@ -37,7 +37,7 @@
       "dependsOn": ["codegen"]
     },
     "codegen": {
-      "dependsOn": ["dependencies", "docs"]
+      "dependsOn": ["dependencies", "docs", "//#setup:dev"]
     },
     "compile": {
       "dependsOn": ["dependencies", "codegen", "^compile"]
@@ -52,10 +52,13 @@
     },
     "dependencies": {},
     "format": {},
-    "lint": {},
+    "lint": {
+      "dependsOn": ["//#setup:dev", "codegen"]
+    },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["compile"]
     },
     "watch": {
       "cache": false,
@@ -76,11 +79,15 @@
     "db:push": {
       "cache": false
     },
-    "//#dev:connect": {
-      "outputs": ["**/.env", "**/.env.local"],
-      "dependsOn": ["//#dev:up"]
+    "//#setup:connect": {
+      "cache": false,
+      "dependsOn": ["//#setup:start"]
     },
-    "//#dev:up": {
+    "//#setup:dev": {
+      "cache": false,
+      "dependsOn": ["//#setup:start", "//#setup:connect"]
+    },
+    "//#setup:start": {
       "cache": false,
       "dependsOn": [
         "contracts#artifacts",
