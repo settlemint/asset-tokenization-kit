@@ -41,6 +41,9 @@ the-graph-cache.d.ts
 
 subgraph.json
 
+# Generated interface IDs
+src/erc165/utils/interfaceids.ts
+
 # Generated files - ignore everything except what's needed for docker-compose
 .generated/*
 !.generated/subgraph-env
