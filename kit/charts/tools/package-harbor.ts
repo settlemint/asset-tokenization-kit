@@ -232,6 +232,38 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
         if (repoMatch && repoMatch[2]) {
           const repoValue = repoMatch[2];
 
+          // FIRST: Clean up double-harbor entries when there's a nearby registry field
+          if (repoValue.startsWith(HARBOR_PROXY)) {
+            // Check if there's a registry field nearby (within 5 lines before this one)
+            const currentLineIndex = lines.indexOf(line);
+            let hasNearbyRegistry = false;
+
+            for (let i = Math.max(0, currentLineIndex - 5); i < currentLineIndex; i++) {
+              if (lines[i]?.includes('registry:') && lines[i]?.includes(HARBOR_PROXY) && !lines[i]?.trim().startsWith('#')) {
+                // Check if it's at similar indentation (same image block)
+                const currentIndent = line.match(/^\s*/)?.[0]?.length ?? 0;
+                const registryIndent = lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
+                if (Math.abs(currentIndent - registryIndent) <= 2) {
+                  hasNearbyRegistry = true;
+                  break;
+                }
+              }
+            }
+
+            // If there's a nearby registry field, remove harbor prefix from repository
+            if (hasNearbyRegistry) {
+              const registries = ["registry.k8s.io", "quay.io", "ghcr.io", "docker.io"];
+              for (const registry of registries) {
+                const pattern = `${HARBOR_PROXY}/${registry}/`;
+                if (repoValue.startsWith(pattern)) {
+                  const cleanedValue = repoValue.replace(pattern, '');
+                  line = line.replace(repoValue, cleanedValue);
+                  return line; // Return early after cleanup
+                }
+              }
+            }
+          }
+
           const registries = [
             "registry.k8s.io",
             "quay.io",
@@ -239,6 +271,9 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             "docker.io"
           ];
 
+          let processed = false;
+
+          // First, try to match explicit registries
           for (const registry of registries) {
             if (
               repoValue.includes(registry) &&
@@ -249,7 +284,43 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
                 `${HARBOR_PROXY}/${registry}`
               );
               line = line.replace(repoValue, newValue);
+              processed = true;
               break;
+            }
+          }
+
+          // If not processed and not already harbored, handle implicit Docker Hub images
+          // BUT ONLY if there's no nearby registry field
+          if (!processed && !repoValue.includes(HARBOR_PROXY)) {
+            // Check if there's a registry field nearby (within 5 lines before this one)
+            const currentLineIndex = lines.indexOf(line);
+            let hasNearbyRegistry = false;
+
+            for (let i = Math.max(0, currentLineIndex - 5); i < currentLineIndex; i++) {
+              if (lines[i]?.includes('registry:') && !lines[i]?.trim().startsWith('#')) {
+                // Check if it's at similar indentation (same image block)
+                const currentIndent = line.match(/^\s*/)?.[0]?.length ?? 0;
+                const registryIndent = lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
+                if (Math.abs(currentIndent - registryIndent) <= 2) {
+                  hasNearbyRegistry = true;
+                  break;
+                }
+              }
+            }
+
+            // Only apply harbor prefix if there's no nearby registry field
+            if (!hasNearbyRegistry) {
+              // Check if it's an implicit Docker Hub image (contains / but no explicit registry)
+              if (repoValue.includes('/') && !repoValue.includes('.')) {
+                // This is likely an implicit Docker Hub image (e.g., "graphprotocol/graph-node", "bitnami/postgresql")
+                const newValue = `${HARBOR_PROXY}/docker.io/${repoValue}`;
+                line = line.replace(repoValue, newValue);
+              }
+              // Handle simple image names without / (e.g., "postgres", "nginx")
+              else if (!repoValue.includes('/') && !repoValue.includes('.')) {
+                const newValue = `${HARBOR_PROXY}/docker.io/${repoValue}`;
+                line = line.replace(repoValue, newValue);
+              }
             }
           }
         }
@@ -268,6 +339,9 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             "docker.io"
           ];
 
+          let processed = false;
+
+          // First, try to match explicit registries
           for (const registry of registries) {
             if (
               imageValue.includes(registry) &&
@@ -278,7 +352,23 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
                 `${HARBOR_PROXY}/${registry}`
               );
               line = line.replace(imageValue, newValue);
+              processed = true;
               break;
+            }
+          }
+
+          // If not processed and not already harbored, handle implicit Docker Hub images
+          if (!processed && !imageValue.includes(HARBOR_PROXY)) {
+            // Check if it's an implicit Docker Hub image (contains / but no explicit registry)
+            if (imageValue.includes('/') && !imageValue.includes('.')) {
+              // This is likely an implicit Docker Hub image (e.g., "graphprotocol/graph-node", "bitnami/postgresql")
+              const newValue = `${HARBOR_PROXY}/docker.io/${imageValue}`;
+              line = line.replace(imageValue, newValue);
+            }
+            // Handle simple image names without / (e.g., "postgres", "nginx")
+            else if (!imageValue.includes('/') && !imageValue.includes('.')) {
+              const newValue = `${HARBOR_PROXY}/docker.io/${imageValue}`;
+              line = line.replace(imageValue, newValue);
             }
           }
         }
