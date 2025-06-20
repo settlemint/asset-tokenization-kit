@@ -56,7 +56,7 @@ contract ATKFundTest is AbstractATKAssetTest {
 
         vm.startPrank(platformAdmin);
         fundFactory = IATKFundFactory(
-            systemUtils.system().createTokenFactory("Fund", address(fundFactoryImpl), address(fundImpl))
+            systemUtils.tokenFactoryRegistry().registerTokenFactory("Fund", address(fundFactoryImpl), address(fundImpl))
         );
 
         // Grant registrar role to owner so that he can create the fund

@@ -1,3 +1,4 @@
+import { store } from "@graphprotocol/graph-ts";
 import {
   Approval,
   ComplianceAdded,
@@ -9,6 +10,15 @@ import {
   TransferCompleted,
   UpdatedTokenInformation,
 } from "../../generated/templates/Token/Token";
+import { fetchComplianceModule } from "../compliance/fetch/compliance-module";
+import {
+  decodeAddressListParams,
+  isAddressListComplianceModule,
+} from "../compliance/modules/address-list-compliance-module";
+import {
+  decodeCountryListParams,
+  isCountryListComplianceModule,
+} from "../compliance/modules/country-list-compliance-module";
 import { fetchEvent } from "../event/fetch/event";
 import {
   decreaseTokenBalanceValue,
@@ -16,6 +26,7 @@ import {
 } from "../token-balance/utils/token-balance-utils";
 import { updateYield } from "../token-extensions/fixed-yield-schedule/utils/fixed-yield-schedule-utils";
 import { fetchToken } from "./fetch/token";
+import { fetchTokenComplianceModule } from "./fetch/token-compliance-module";
 import { increaseTokenSupply } from "./utils/token-utils";
 
 export function handleApproval(event: Approval): void {
@@ -30,12 +41,40 @@ export function handleComplianceModuleAdded(
   event: ComplianceModuleAdded
 ): void {
   fetchEvent(event, "ComplianceModuleAdded");
+
+  const tokenComplianceModule = fetchTokenComplianceModule(
+    event.address,
+    event.params._module
+  );
+
+  const complianceModule = fetchComplianceModule(event.params._module);
+  tokenComplianceModule.encodedParams = event.params._params;
+
+  if (isAddressListComplianceModule(complianceModule.typeId)) {
+    tokenComplianceModule.addresses = decodeAddressListParams(
+      event.params._params
+    );
+  }
+  if (isCountryListComplianceModule(complianceModule.typeId)) {
+    tokenComplianceModule.countries = decodeCountryListParams(
+      event.params._params
+    );
+  }
+
+  tokenComplianceModule.save();
 }
 
 export function handleComplianceModuleRemoved(
   event: ComplianceModuleRemoved
 ): void {
   fetchEvent(event, "ComplianceModuleRemoved");
+
+  const tokenComplianceModule = fetchTokenComplianceModule(
+    event.address,
+    event.params._module
+  );
+
+  store.remove("TokenComplianceModule", tokenComplianceModule.id.toHexString());
 }
 
 export function handleIdentityRegistryAdded(
@@ -60,6 +99,27 @@ export function handleModuleParametersUpdated(
   event: ModuleParametersUpdated
 ): void {
   fetchEvent(event, "ModuleParametersUpdated");
+
+  const tokenComplianceModule = fetchTokenComplianceModule(
+    event.address,
+    event.params._module
+  );
+
+  const complianceModule = fetchComplianceModule(event.params._module);
+  tokenComplianceModule.encodedParams = event.params._params;
+
+  if (isAddressListComplianceModule(complianceModule.typeId)) {
+    tokenComplianceModule.addresses = decodeAddressListParams(
+      event.params._params
+    );
+  }
+  if (isCountryListComplianceModule(complianceModule.typeId)) {
+    tokenComplianceModule.countries = decodeCountryListParams(
+      event.params._params
+    );
+  }
+
+  tokenComplianceModule.save();
 }
 
 export function handleTransferCompleted(event: TransferCompleted): void {

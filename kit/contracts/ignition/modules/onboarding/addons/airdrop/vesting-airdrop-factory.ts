@@ -5,7 +5,9 @@ import ATKOnboardingSystemModule from "../../system";
 const ATKOnboardingVestingAirdropFactoryModule = buildModule(
   "ATKOnboardingVestingAirdropFactoryModule",
   (m) => {
-    const { system } = m.useModule(ATKOnboardingSystemModule);
+    const { system, systemAddonRegistry } = m.useModule(
+      ATKOnboardingSystemModule
+    );
     const { vestingAirdropFactoryImplementation } = m.useModule(ATKModule);
 
     const platformAdmin = m.getAccount(0);
@@ -17,8 +19,8 @@ const ATKOnboardingVestingAirdropFactoryModule = buildModule(
     );
 
     const createVestingAirdropFactoryAddon = m.call(
-      system,
-      "createSystemAddon",
+      systemAddonRegistry,
+      "registerSystemAddon",
       [
         "vesting-airdrop-factory",
         vestingAirdropFactoryImplementation,
@@ -27,7 +29,7 @@ const ATKOnboardingVestingAirdropFactoryModule = buildModule(
     );
     const vestingAirdropFactoryAddress = m.readEventArgument(
       createVestingAirdropFactoryAddon,
-      "SystemAddonCreated",
+      "SystemAddonRegistered",
       "proxyAddress",
       { id: "vestingAirdropFactoryAddress" }
     );

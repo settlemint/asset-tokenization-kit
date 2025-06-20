@@ -17,7 +17,7 @@ import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { TestConstants } from "../../Constants.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
-import { IATKComplianceBypassList } from "../../../contracts/system/compliance/IATKComplianceBypassList.sol";
+import { IATKCompliance } from "../../../contracts/system/compliance/IATKCompliance.sol";
 
 abstract contract AbstractComplianceModuleTest is Test {
     SystemUtils internal systemUtils;
@@ -103,7 +103,7 @@ abstract contract AbstractComplianceModuleTest is Test {
         IAccessControl(address(systemUtils.compliance())).grantRole(
             ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, platformAdmin
         );
-        IATKComplianceBypassList(address(systemUtils.compliance())).addToBypassList(tokenIssuer);
+        IATKCompliance(address(systemUtils.compliance())).addToBypassList(tokenIssuer);
         vm.stopPrank();
 
         // Create token
