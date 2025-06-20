@@ -11,11 +11,7 @@
     "publish": "bun run tools/graph-deploy.ts --local",
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
     "test:integration": "bun test --preload ./test/scripts/setup.ts",
-    "test:integration:local": "bun codegen:interfaceid && THE_GRAPH_PORT_LOCAL_DEPLOY=8120 bun run publish && THE_GRAPH_PORT_LOCAL_QUERY=8100 bun run codegen:gql-tada && bun run test:integration",
-    "lint": "echo 'No linting for subgraph'",
-    "test": "echo 'No unit tests for subgraph'",
-    "ci:base": "echo 'CI base tasks handled by turbo'",
-    "ci": "echo 'CI tasks handled by turbo'"
+    "test:integration:local": "bun codegen:interfaceid && THE_GRAPH_PORT_LOCAL_DEPLOY=8120 bun run publish && THE_GRAPH_PORT_LOCAL_QUERY=8100 bun run codegen:gql-tada && bun run test:integration"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",
