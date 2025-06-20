@@ -46,6 +46,25 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
 `);
 
 /**
+ * GraphQL mutation for bootstrapping a system contract.
+ *
+ * @param address - The system contract address to bootstrap
+ * @param from - The wallet address initiating the transaction
+ *
+ * @returns transactionHash - The blockchain transaction hash for tracking
+ */
+const BOOTSTRAP_SYSTEM_MUTATION = portalGraphql(`
+  mutation BootstrapSystemMutation($address: String!, $from: String!) {
+    IATKSystemBootstrap(
+      address: $address
+      from: $from
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+/**
  * GraphQL query to find system contracts deployed in a specific transaction.
  *
  * Used to retrieve the system contract address after deployment by matching
@@ -173,6 +192,63 @@ export const create = onboardedRouter.system.create
       throw errors.INTERNAL_SERVER_ERROR({
         message: messages.systemCreationFailed,
       });
+    }
+
+    // Now bootstrap the system
+    yield withEventMeta(
+      {
+        status: "pending",
+        message: messages.bootstrappingSystem,
+        result: undefined,
+      },
+      { id: `${transactionHash}-bootstrap`, retry: 1000 }
+    );
+
+    // Execute the bootstrap transaction
+    const bootstrapTxHashResult = await context.portalClient.request(
+      BOOTSTRAP_SYSTEM_MUTATION,
+      {
+        address: system.id,
+        from: sender.wallet,
+      }
+    );
+
+    const bootstrapTransactionHash =
+      bootstrapTxHashResult.IATKSystemBootstrap?.transactionHash ?? null;
+
+    // Validate bootstrap transaction hash
+    if (!bootstrapTransactionHash) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.bootstrapFailed,
+      });
+    }
+
+    // Track bootstrap transaction
+    for await (const event of trackTransaction(
+      bootstrapTransactionHash,
+      context.portalClient,
+      context.theGraphClient,
+      {
+        ...messages,
+        waitingForMining: messages.bootstrappingSystem,
+      }
+    )) {
+      // Only yield pending and failed events for bootstrap
+      if (event.status === "pending" || event.status === "failed") {
+        yield withEventMeta(
+          {
+            status: event.status,
+            message: event.message,
+            result: undefined,
+          },
+          { id: `${bootstrapTransactionHash}-bootstrap`, retry: 1000 }
+        );
+
+        // If bootstrap failed, stop processing
+        if (event.status === "failed") {
+          return;
+        }
+      }
     }
 
     // Yield the final confirmed event with the system ID

@@ -155,9 +155,15 @@ async function* processSingleFactory(
         };
         return;
       } else if (event.status === "failed") {
+        // Check for SystemNotBootstrapped in the transaction error
+        let failureMessage = event.message;
+        if (event.message.includes("SystemNotBootstrapped")) {
+          failureMessage = messages.systemNotBootstrapped;
+        }
+        
         yield {
           status: "failed",
-          message: event.message,
+          message: failureMessage,
           currentFactory: {
             type,
             name,
@@ -182,13 +188,25 @@ async function* processSingleFactory(
       }
     }
   } catch (error) {
+    // Check for specific error types
+    let errorMessage = messages.defaultError;
+    let errorDetail = messages.defaultError;
+    
+    if (error instanceof Error) {
+      errorDetail = error.message;
+      // Check for SystemNotBootstrapped error
+      if (error.message.includes("SystemNotBootstrapped")) {
+        errorMessage = messages.systemNotBootstrapped;
+      }
+    }
+    
     yield {
       status: "failed",
-      message: messages.defaultError,
+      message: errorMessage,
       currentFactory: {
         type,
         name,
-        error: error instanceof Error ? error.message : messages.defaultError,
+        error: errorDetail,
       },
       progress,
     };
