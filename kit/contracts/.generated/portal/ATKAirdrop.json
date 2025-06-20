@@ -1,0 +1,1284 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "MAX_BATCH_SIZE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "batchClaim",
+      "inputs": [
+        {
+          "name": "indices",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        },
+        {
+          "name": "totalAmounts",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        },
+        {
+          "name": "merkleProofs",
+          "type": "bytes32[][]",
+          "internalType": "bytes32[][]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "claim",
+      "inputs": [
+        {
+          "name": "index",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "totalAmount",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "merkleProof",
+          "type": "bytes32[]",
+          "internalType": "bytes32[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "claimTracker",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract IATKClaimTracker"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getClaimedAmount",
+      "inputs": [
+        {
+          "name": "index",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isClaimed",
+      "inputs": [
+        {
+          "name": "index",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "totalAmount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isTrustedForwarder",
+      "inputs": [
+        {
+          "name": "forwarder",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "merkleRoot",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "name",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "owner",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "renounceOwnership",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "token",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract IERC20"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "transferOwnership",
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "trustedForwarder",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "withdrawTokens",
+      "inputs": [
+        {
+          "name": "to",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "BatchClaimed",
+      "inputs": [
+        {
+          "name": "claimant",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "totalAmount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "indices",
+          "type": "uint256[]",
+          "indexed": false,
+          "internalType": "uint256[]"
+        },
+        {
+          "name": "amounts",
+          "type": "uint256[]",
+          "indexed": false,
+          "internalType": "uint256[]"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Claimed",
+      "inputs": [
+        {
+          "name": "claimant",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "index",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Initialized",
+      "inputs": [
+        {
+          "name": "version",
+          "type": "uint64",
+          "indexed": false,
+          "internalType": "uint64"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "OwnershipTransferred",
+      "inputs": [
+        {
+          "name": "previousOwner",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newOwner",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "TokensWithdrawn",
+      "inputs": [
+        {
+          "name": "to",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "InvalidInitialization",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidWithdrawalAddress",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "NotInitializing",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "OwnableInvalidOwner",
+      "inputs": [
+        {
+          "name": "owner",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "OwnableUnauthorizedAccount",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "SafeERC20FailedOperation",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "MAX_BATCH_SIZE()": "cfdbf254",
+    "batchClaim(uint256[],uint256[],bytes32[][])": "4be7adee",
+    "claim(uint256,uint256,bytes32[])": "ae0b51df",
+    "claimTracker()": "222abc11",
+    "getClaimedAmount(uint256)": "429c6e5b",
+    "isClaimed(uint256,uint256)": "f364c90c",
+    "isTrustedForwarder(address)": "572b6c05",
+    "merkleRoot()": "2eb4a7ab",
+    "name()": "06fdde03",
+    "owner()": "8da5cb5b",
+    "renounceOwnership()": "715018a6",
+    "token()": "fc0c546a",
+    "transferOwnership(address)": "f2fde38b",
+    "trustedForwarder()": "7da0a877",
+    "withdrawTokens(address)": "49df728c"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"InvalidInitialization\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidWithdrawalAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotInitializing\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"OwnableInvalidOwner\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"OwnableUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"SafeERC20FailedOperation\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"claimant\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256[]\",\"name\":\"indices\",\"type\":\"uint256[]\"},{\"indexed\":false,\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"}],\"name\":\"BatchClaimed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"claimant\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"Claimed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"version\",\"type\":\"uint64\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"TokensWithdrawn\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"MAX_BATCH_SIZE\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"indices\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"totalAmounts\",\"type\":\"uint256[]\"},{\"internalType\":\"bytes32[][]\",\"name\":\"merkleProofs\",\"type\":\"bytes32[][]\"}],\"name\":\"batchClaim\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"bytes32[]\",\"name\":\"merkleProof\",\"type\":\"bytes32[]\"}],\"name\":\"claim\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"claimTracker\",\"outputs\":[{\"internalType\":\"contract IATKClaimTracker\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getClaimedAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"}],\"name\":\"isClaimed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"forwarder\",\"type\":\"address\"}],\"name\":\"isTrustedForwarder\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"merkleRoot\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"trustedForwarder\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"withdrawTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"details\":\"This contract provides enhanced core logic for Merkle proof-based airdrop claims, including:  - Flexible claim tracking using the IATKClaimTracker interface  - Support for partial claims and progressive distributions  - Meta-transaction support via ERC2771 (trusted forwarder)  - Withdrawals of unclaimed tokens by the owner  - Abstract claim and batchClaim functions for extension by concrete airdrop implementations The contract is intended to be inherited by specific airdrop implementations (e.g., standard, vesting, push). It is not meant to be deployed directly.\",\"errors\":{\"InvalidInitialization()\":[{\"details\":\"The contract is already initialized.\"}],\"NotInitializing()\":[{\"details\":\"The contract is not initializing.\"}],\"OwnableInvalidOwner(address)\":[{\"details\":\"The owner is not a valid owner account. (eg. `address(0)`)\"}],\"OwnableUnauthorizedAccount(address)\":[{\"details\":\"The caller account is not authorized to perform an operation.\"}],\"SafeERC20FailedOperation(address)\":[{\"details\":\"An operation with an ERC-20 token failed.\"}]},\"events\":{\"BatchClaimed(address,uint256,uint256[],uint256[])\":{\"params\":{\"amounts\":\"The amounts claimed for each index.\",\"claimant\":\"The address that claimed the tokens.\",\"indices\":\"The indices of the claims in the Merkle tree.\",\"totalAmount\":\"The total amount of tokens claimed in the batch.\"}},\"Claimed(address,uint256,uint256)\":{\"params\":{\"amount\":\"The amount of tokens claimed.\",\"claimant\":\"The address that claimed the tokens.\",\"index\":\"The index of the claim in the Merkle tree.\"}},\"Initialized(uint64)\":{\"details\":\"Triggered when the contract has been initialized or reinitialized.\"},\"TokensWithdrawn(address,uint256)\":{\"params\":{\"amount\":\"The amount of tokens withdrawn.\",\"to\":\"The address receiving the withdrawn tokens.\"}}},\"kind\":\"dev\",\"methods\":{\"batchClaim(uint256[],uint256[],bytes32[][])\":{\"details\":\"Must be implemented by derived contracts. Implementations must use `_msgSender()` instead of `msg.sender` and pass it to `_processBatchClaim`.\",\"params\":{\"indices\":\"The indices of the claims in the Merkle tree.\",\"merkleProofs\":\"The Merkle proofs for each index.\",\"totalAmounts\":\"The total amounts allocated for each index.\"}},\"claim(uint256,uint256,bytes32[])\":{\"details\":\"Must be implemented by derived contracts. Implementations must use `_msgSender()` instead of `msg.sender` and pass it to `_processClaim`.\",\"params\":{\"index\":\"The index of the claim in the Merkle tree.\",\"merkleProof\":\"The Merkle proof array.\",\"totalAmount\":\"The total amount allocated for this index.\"}},\"claimTracker()\":{\"returns\":{\"_0\":\"The claim tracker contract.\"}},\"constructor\":{\"custom:oz-upgrades-unsafe-allow\":\"constructor\",\"params\":{\"forwarder_\":\"The address of the forwarder contract.\"}},\"getClaimedAmount(uint256)\":{\"params\":{\"index\":\"The index to check.\"},\"returns\":{\"_0\":\"claimedAmount The amount already claimed for this index.\"}},\"isClaimed(uint256,uint256)\":{\"params\":{\"index\":\"The index to check in the Merkle tree.\",\"totalAmount\":\"The total amount allocated for this index.\"},\"returns\":{\"_0\":\"claimed True if the index has been fully claimed, false otherwise.\"}},\"isTrustedForwarder(address)\":{\"details\":\"Indicates whether any particular address is the trusted forwarder.\"},\"merkleRoot()\":{\"returns\":{\"_0\":\"The Merkle root for verifying airdrop claims.\"}},\"name()\":{\"returns\":{\"_0\":\"The human-readable name of the airdrop.\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.\"},\"token()\":{\"returns\":{\"_0\":\"The ERC20 token being distributed.\"}},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"},\"trustedForwarder()\":{\"details\":\"Returns the address of the trusted forwarder.\"},\"withdrawTokens(address)\":{\"params\":{\"to\":\"The address to send the withdrawn tokens to.\"}}},\"stateVariables\":{\"MAX_BATCH_SIZE\":{\"details\":\"Set to 100 to balance usability with gas efficiency.\"},\"_claimTracker\":{\"details\":\"Set once at initialization and immutable thereafter. Handles claim tracking logic.\"},\"_merkleRoot\":{\"details\":\"Set once at initialization and immutable thereafter. Used for Merkle proof verification.\"},\"_name\":{\"details\":\"Set once at initialization and immutable thereafter.\"},\"_token\":{\"details\":\"Set once at initialization and immutable thereafter.\"}},\"title\":\"ATK Airdrop (Abstract)\",\"version\":1},\"userdoc\":{\"errors\":{\"InvalidWithdrawalAddress()\":[{\"notice\":\"Error indicating that an invalid withdrawal address was provided.\"}]},\"events\":{\"BatchClaimed(address,uint256,uint256[],uint256[])\":{\"notice\":\"Emitted when a user claims multiple allocations in a single transaction.\"},\"Claimed(address,uint256,uint256)\":{\"notice\":\"Emitted when a user successfully claims their airdrop allocation.\"},\"TokensWithdrawn(address,uint256)\":{\"notice\":\"Emitted when the contract owner withdraws unclaimed tokens.\"}},\"kind\":\"user\",\"methods\":{\"MAX_BATCH_SIZE()\":{\"notice\":\"Maximum number of items allowed in batch operations to prevent OOM and gas limit issues.\"},\"batchClaim(uint256[],uint256[],bytes32[][])\":{\"notice\":\"Claims multiple airdrop allocations for the caller in a single transaction.\"},\"claim(uint256,uint256,bytes32[])\":{\"notice\":\"Claims an airdrop allocation for the caller.\"},\"claimTracker()\":{\"notice\":\"Returns the claim tracker contract.\"},\"getClaimedAmount(uint256)\":{\"notice\":\"Gets the amount already claimed for a specific index.\"},\"isClaimed(uint256,uint256)\":{\"notice\":\"Checks if a claim has been fully claimed for a specific index.\"},\"merkleRoot()\":{\"notice\":\"Returns the Merkle root for verifying airdrop claims.\"},\"name()\":{\"notice\":\"Returns the name of this airdrop.\"},\"token()\":{\"notice\":\"Returns the token being distributed in this airdrop.\"},\"withdrawTokens(address)\":{\"notice\":\"Allows the owner to withdraw any tokens remaining in the contract.\"}},\"notice\":\"Abstract base contract for reusable Merkle-based airdrop distributions in the ATK Protocol.         This contract provides the core logic for Merkle proof-based airdrop claims, including:         - Flexible claim tracking using pluggable strategies         - Support for partial and full claims         - Meta-transaction support via ERC2771 (trusted forwarder)         - Withdrawals of unclaimed tokens by the owner         - Abstract claim and batchClaim functions for extension by concrete airdrop implementations\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/airdrop/ATKAirdrop.sol\":\"ATKAirdrop\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/airdrop/ATKAirdrop.sol\":{\"keccak256\":\"0xe38f2fbfe2c20bb38691181c91b1d61ae5049df58be7d118d45ee19e419406b8\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://23c96dcd63f23429890d5d7ca9243a5e7a0f479c16a764f37ece22b149d70c7f\",\"dweb:/ipfs/QmPDpZ65CHjuJUM2TEW4AcLWbK24M17kYqz1roD67Tqv1e\"]},\"contracts/addons/airdrop/ATKAirdropErrors.sol\":{\"keccak256\":\"0xce9f93552d1244b7a52bd97e887ff15fac1063bc9785f3697c6b47d368462fad\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://bae1c61355103bc43c257cd9ac37407b0c3f6f3badbca7cdb928f0c6c4c2c478\",\"dweb:/ipfs/QmaSiPbSpNvX4uDG1pJsQmhXwbEDZLBzkcSA8ZzqSRqRby\"]},\"contracts/addons/airdrop/IATKAirdrop.sol\":{\"keccak256\":\"0x5556406001ca17a94dfeb60a9db57417b262020690af11bf58dc5893085b7297\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://f426858498d7594fdc8ec019332bb69689c5d6db8f6b5ee4c51b81d5fd3c2d13\",\"dweb:/ipfs/QmbA7Bc5JRPXn47hAHq9nWQo9LR5EDk18savmyxr5nqiSh\"]},\"contracts/addons/airdrop/claim-tracker/IATKClaimTracker.sol\":{\"keccak256\":\"0x9e3a319030370650afc13f8c1fc8c3fb3570072849200787b68c19546b6c68be\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://85ba8ece757f0f2bce8a517ac93e7a967cd5fc60eb5b4af65004396453fe792f\",\"dweb:/ipfs/QmQ9Wvi78aWmEvT3LmisnM1QGKRPBLJUhKeRKM6g8yUzne\"]},\"dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC1363.sol\":{\"keccak256\":\"0x9b6b3e7803bc5f2f8cd7ad57db8ac1def61a9930a5a3107df4882e028a9605d7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://da62d6be1f5c6edf577f0cb45666a8aa9c2086a4bac87d95d65f02e2f4c36a4b\",\"dweb:/ipfs/QmNkpvBpoCMvX8JwAFNSc5XxJ2q5BXJpL5L1txb4QkqVFF\"]},\"dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC165.sol\":{\"keccak256\":\"0xde7e9fd9aee8d4f40772f96bb3b58836cbc6dfc0227014a061947f8821ea9724\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11fea9f8bc98949ac6709f0c1699db7430d2948137aa94d5a9e95a91f61a710a\",\"dweb:/ipfs/QmQdfRXxQjwP6yn3DVo1GHPpriKNcFghSPi94Z1oKEFUNS\"]},\"dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC20.sol\":{\"keccak256\":\"0xce41876e78d1badc0512229b4d14e4daf83bc1003d7f83978d18e0e56f965b9c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a2608291cb038b388d80b79a06b6118a42f7894ff67b7da10ec0dbbf5b2973ba\",\"dweb:/ipfs/QmWohqcBLbcxmA4eGPhZDXe5RYMMEEpFq22nfkaUMvTfw1\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db\",\"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/utils/SafeERC20.sol\":{\"keccak256\":\"0x982c5cb790ab941d1e04f807120a71709d4c313ba0bfc16006447ffbd27fbbd5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8150ceb4ac947e8a442b2a9c017e01e880b2be2dd958f1fa9bc405f4c5a86508\",\"dweb:/ipfs/QmbcBmFX66AY6Kbhnd5gx7zpkgqnUafo43XnmayAM7zVdB\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/cryptography/Hashes.sol\":{\"keccak256\":\"0x8cbd338f083224b4b6f0ff42cbda641a0a6c31ffcdca197452b97fe4d0918269\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f517dec5ba0c6491395acbf7f1d621f4e89e8f218bf5303c867b1c5ad70c6b11\",\"dweb:/ipfs/QmWmXHRLEw8W6ckth7NyYTU88YfvuS7xSsfae5ksL8qNUe\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/cryptography/MerkleProof.sol\":{\"keccak256\":\"0x36a0c409c437a753cac9b92b75f93b0fbe92803bf2c8ff1517e54b247f166134\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0f91ba472de411aa557cdbf6560c40750d87bd11c9060bc04d2ba7119af9d5a6\",\"dweb:/ipfs/QmQjtYo2i7dDvzCEzZ67bDoNSG4RrwMoxPWuqFmX5Xzpuw\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]},\"dependencies/@openzeppelin-contracts-upgradeable-5.3.0/access/OwnableUpgradeable.sol\":{\"keccak256\":\"0xc163fcf9bb10138631a9ba5564df1fa25db9adff73bd9ee868a8ae1858fe093a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9706d43a0124053d9880f6e31a59f31bc0a6a3dc1acd66ce0a16e1111658c5f6\",\"dweb:/ipfs/QmUFmfowzkRwGtDu36cXV9SPTBHJ3n7dG9xQiK5B28jTf2\"]},\"dependencies/@openzeppelin-contracts-upgradeable-5.3.0/metatx/ERC2771ContextUpgradeable.sol\":{\"keccak256\":\"0x290ba719fd784ff406a8de038c10dc2d0914794c8b016781712fcbb36ca7bffb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8b5764ef1dab80c115c14e307c5cbd5845320a653a2d8a3658d20dfba6bc7758\",\"dweb:/ipfs/QmSPSasRTVtYyAEnEVCBPZwoQzgKU7gu7q8NeT9AMMpmmx\"]},\"dependencies/@openzeppelin-contracts-upgradeable-5.3.0/proxy/utils/Initializable.sol\":{\"keccak256\":\"0xdb4d24ee2c087c391d587cd17adfe5b3f9d93b3110b1388c2ab6c7c0ad1dcd05\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ab7b6d5b9e2b88176312967fe0f0e78f3d9a1422fa5e4b64e2440c35869b5d08\",\"dweb:/ipfs/QmXKYWWyzcLg1B2k7Sb1qkEXgLCYfXecR9wYW5obRzWP1Q\"]},\"dependencies/@openzeppelin-contracts-upgradeable-5.3.0/utils/ContextUpgradeable.sol\":{\"keccak256\":\"0xdbef5f0c787055227243a7318ef74c8a5a1108ca3a07f2b3a00ef67769e1e397\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://08e39f23d5b4692f9a40803e53a8156b72b4c1f9902a88cd65ba964db103dab9\",\"dweb:/ipfs/QmPKn6EYDgpga7KtpkA8wV2yJCYGMtc9K4LkJfhKX2RVSV\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidInitialization"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidWithdrawalAddress"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "NotInitializing"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "OwnableInvalidOwner"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "OwnableUnauthorizedAccount"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "SafeERC20FailedOperation"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "claimant",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalAmount",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "indices",
+              "type": "uint256[]",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "amounts",
+              "type": "uint256[]",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "BatchClaimed",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "claimant",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "Claimed",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint64",
+              "name": "version",
+              "type": "uint64",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "Initialized",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "OwnershipTransferred",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "TokensWithdrawn",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "MAX_BATCH_SIZE",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256[]",
+              "name": "indices",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "totalAmounts",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "bytes32[][]",
+              "name": "merkleProofs",
+              "type": "bytes32[][]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "batchClaim"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32[]",
+              "name": "merkleProof",
+              "type": "bytes32[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "claim"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "claimTracker",
+          "outputs": [
+            {
+              "internalType": "contract IATKClaimTracker",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getClaimedAmount",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalAmount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isClaimed",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "forwarder",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isTrustedForwarder",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "merkleRoot",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "name",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "owner",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "renounceOwnership"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "token",
+          "outputs": [
+            {
+              "internalType": "contract IERC20",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transferOwnership"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "trustedForwarder",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "withdrawTokens"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "batchClaim(uint256[],uint256[],bytes32[][])": {
+            "details": "Must be implemented by derived contracts. Implementations must use `_msgSender()` instead of `msg.sender` and pass it to `_processBatchClaim`.",
+            "params": {
+              "indices": "The indices of the claims in the Merkle tree.",
+              "merkleProofs": "The Merkle proofs for each index.",
+              "totalAmounts": "The total amounts allocated for each index."
+            }
+          },
+          "claim(uint256,uint256,bytes32[])": {
+            "details": "Must be implemented by derived contracts. Implementations must use `_msgSender()` instead of `msg.sender` and pass it to `_processClaim`.",
+            "params": {
+              "index": "The index of the claim in the Merkle tree.",
+              "merkleProof": "The Merkle proof array.",
+              "totalAmount": "The total amount allocated for this index."
+            }
+          },
+          "claimTracker()": {
+            "returns": {
+              "_0": "The claim tracker contract."
+            }
+          },
+          "constructor": {
+            "custom:oz-upgrades-unsafe-allow": "constructor",
+            "params": {
+              "forwarder_": "The address of the forwarder contract."
+            }
+          },
+          "getClaimedAmount(uint256)": {
+            "params": {
+              "index": "The index to check."
+            },
+            "returns": {
+              "_0": "claimedAmount The amount already claimed for this index."
+            }
+          },
+          "isClaimed(uint256,uint256)": {
+            "params": {
+              "index": "The index to check in the Merkle tree.",
+              "totalAmount": "The total amount allocated for this index."
+            },
+            "returns": {
+              "_0": "claimed True if the index has been fully claimed, false otherwise."
+            }
+          },
+          "isTrustedForwarder(address)": {
+            "details": "Indicates whether any particular address is the trusted forwarder."
+          },
+          "merkleRoot()": {
+            "returns": {
+              "_0": "The Merkle root for verifying airdrop claims."
+            }
+          },
+          "name()": {
+            "returns": {
+              "_0": "The human-readable name of the airdrop."
+            }
+          },
+          "owner()": {
+            "details": "Returns the address of the current owner."
+          },
+          "renounceOwnership()": {
+            "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+          },
+          "token()": {
+            "returns": {
+              "_0": "The ERC20 token being distributed."
+            }
+          },
+          "transferOwnership(address)": {
+            "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+          },
+          "trustedForwarder()": {
+            "details": "Returns the address of the trusted forwarder."
+          },
+          "withdrawTokens(address)": {
+            "params": {
+              "to": "The address to send the withdrawn tokens to."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "MAX_BATCH_SIZE()": {
+            "notice": "Maximum number of items allowed in batch operations to prevent OOM and gas limit issues."
+          },
+          "batchClaim(uint256[],uint256[],bytes32[][])": {
+            "notice": "Claims multiple airdrop allocations for the caller in a single transaction."
+          },
+          "claim(uint256,uint256,bytes32[])": {
+            "notice": "Claims an airdrop allocation for the caller."
+          },
+          "claimTracker()": {
+            "notice": "Returns the claim tracker contract."
+          },
+          "getClaimedAmount(uint256)": {
+            "notice": "Gets the amount already claimed for a specific index."
+          },
+          "isClaimed(uint256,uint256)": {
+            "notice": "Checks if a claim has been fully claimed for a specific index."
+          },
+          "merkleRoot()": {
+            "notice": "Returns the Merkle root for verifying airdrop claims."
+          },
+          "name()": {
+            "notice": "Returns the name of this airdrop."
+          },
+          "token()": {
+            "notice": "Returns the token being distributed in this airdrop."
+          },
+          "withdrawTokens(address)": {
+            "notice": "Allows the owner to withdraw any tokens remaining in the contract."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/addons/airdrop/ATKAirdrop.sol": "ATKAirdrop"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/addons/airdrop/ATKAirdrop.sol": {
+        "keccak256": "0xe38f2fbfe2c20bb38691181c91b1d61ae5049df58be7d118d45ee19e419406b8",
+        "urls": [
+          "bzz-raw://23c96dcd63f23429890d5d7ca9243a5e7a0f479c16a764f37ece22b149d70c7f",
+          "dweb:/ipfs/QmPDpZ65CHjuJUM2TEW4AcLWbK24M17kYqz1roD67Tqv1e"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/addons/airdrop/ATKAirdropErrors.sol": {
+        "keccak256": "0xce9f93552d1244b7a52bd97e887ff15fac1063bc9785f3697c6b47d368462fad",
+        "urls": [
+          "bzz-raw://bae1c61355103bc43c257cd9ac37407b0c3f6f3badbca7cdb928f0c6c4c2c478",
+          "dweb:/ipfs/QmaSiPbSpNvX4uDG1pJsQmhXwbEDZLBzkcSA8ZzqSRqRby"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/addons/airdrop/IATKAirdrop.sol": {
+        "keccak256": "0x5556406001ca17a94dfeb60a9db57417b262020690af11bf58dc5893085b7297",
+        "urls": [
+          "bzz-raw://f426858498d7594fdc8ec019332bb69689c5d6db8f6b5ee4c51b81d5fd3c2d13",
+          "dweb:/ipfs/QmbA7Bc5JRPXn47hAHq9nWQo9LR5EDk18savmyxr5nqiSh"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/addons/airdrop/claim-tracker/IATKClaimTracker.sol": {
+        "keccak256": "0x9e3a319030370650afc13f8c1fc8c3fb3570072849200787b68c19546b6c68be",
+        "urls": [
+          "bzz-raw://85ba8ece757f0f2bce8a517ac93e7a967cd5fc60eb5b4af65004396453fe792f",
+          "dweb:/ipfs/QmQ9Wvi78aWmEvT3LmisnM1QGKRPBLJUhKeRKM6g8yUzne"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC1363.sol": {
+        "keccak256": "0x9b6b3e7803bc5f2f8cd7ad57db8ac1def61a9930a5a3107df4882e028a9605d7",
+        "urls": [
+          "bzz-raw://da62d6be1f5c6edf577f0cb45666a8aa9c2086a4bac87d95d65f02e2f4c36a4b",
+          "dweb:/ipfs/QmNkpvBpoCMvX8JwAFNSc5XxJ2q5BXJpL5L1txb4QkqVFF"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC165.sol": {
+        "keccak256": "0xde7e9fd9aee8d4f40772f96bb3b58836cbc6dfc0227014a061947f8821ea9724",
+        "urls": [
+          "bzz-raw://11fea9f8bc98949ac6709f0c1699db7430d2948137aa94d5a9e95a91f61a710a",
+          "dweb:/ipfs/QmQdfRXxQjwP6yn3DVo1GHPpriKNcFghSPi94Z1oKEFUNS"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC20.sol": {
+        "keccak256": "0xce41876e78d1badc0512229b4d14e4daf83bc1003d7f83978d18e0e56f965b9c",
+        "urls": [
+          "bzz-raw://a2608291cb038b388d80b79a06b6118a42f7894ff67b7da10ec0dbbf5b2973ba",
+          "dweb:/ipfs/QmWohqcBLbcxmA4eGPhZDXe5RYMMEEpFq22nfkaUMvTfw1"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol": {
+        "keccak256": "0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7",
+        "urls": [
+          "bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db",
+          "dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/utils/SafeERC20.sol": {
+        "keccak256": "0x982c5cb790ab941d1e04f807120a71709d4c313ba0bfc16006447ffbd27fbbd5",
+        "urls": [
+          "bzz-raw://8150ceb4ac947e8a442b2a9c017e01e880b2be2dd958f1fa9bc405f4c5a86508",
+          "dweb:/ipfs/QmbcBmFX66AY6Kbhnd5gx7zpkgqnUafo43XnmayAM7zVdB"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/cryptography/Hashes.sol": {
+        "keccak256": "0x8cbd338f083224b4b6f0ff42cbda641a0a6c31ffcdca197452b97fe4d0918269",
+        "urls": [
+          "bzz-raw://f517dec5ba0c6491395acbf7f1d621f4e89e8f218bf5303c867b1c5ad70c6b11",
+          "dweb:/ipfs/QmWmXHRLEw8W6ckth7NyYTU88YfvuS7xSsfae5ksL8qNUe"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/cryptography/MerkleProof.sol": {
+        "keccak256": "0x36a0c409c437a753cac9b92b75f93b0fbe92803bf2c8ff1517e54b247f166134",
+        "urls": [
+          "bzz-raw://0f91ba472de411aa557cdbf6560c40750d87bd11c9060bc04d2ba7119af9d5a6",
+          "dweb:/ipfs/QmQjtYo2i7dDvzCEzZ67bDoNSG4RrwMoxPWuqFmX5Xzpuw"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-upgradeable-5.3.0/access/OwnableUpgradeable.sol": {
+        "keccak256": "0xc163fcf9bb10138631a9ba5564df1fa25db9adff73bd9ee868a8ae1858fe093a",
+        "urls": [
+          "bzz-raw://9706d43a0124053d9880f6e31a59f31bc0a6a3dc1acd66ce0a16e1111658c5f6",
+          "dweb:/ipfs/QmUFmfowzkRwGtDu36cXV9SPTBHJ3n7dG9xQiK5B28jTf2"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-upgradeable-5.3.0/metatx/ERC2771ContextUpgradeable.sol": {
+        "keccak256": "0x290ba719fd784ff406a8de038c10dc2d0914794c8b016781712fcbb36ca7bffb",
+        "urls": [
+          "bzz-raw://8b5764ef1dab80c115c14e307c5cbd5845320a653a2d8a3658d20dfba6bc7758",
+          "dweb:/ipfs/QmSPSasRTVtYyAEnEVCBPZwoQzgKU7gu7q8NeT9AMMpmmx"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-upgradeable-5.3.0/proxy/utils/Initializable.sol": {
+        "keccak256": "0xdb4d24ee2c087c391d587cd17adfe5b3f9d93b3110b1388c2ab6c7c0ad1dcd05",
+        "urls": [
+          "bzz-raw://ab7b6d5b9e2b88176312967fe0f0e78f3d9a1422fa5e4b64e2440c35869b5d08",
+          "dweb:/ipfs/QmXKYWWyzcLg1B2k7Sb1qkEXgLCYfXecR9wYW5obRzWP1Q"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-upgradeable-5.3.0/utils/ContextUpgradeable.sol": {
+        "keccak256": "0xdbef5f0c787055227243a7318ef74c8a5a1108ca3a07f2b3a00ef67769e1e397",
+        "urls": [
+          "bzz-raw://08e39f23d5b4692f9a40803e53a8156b72b4c1f9902a88cd65ba964db103dab9",
+          "dweb:/ipfs/QmPKn6EYDgpga7KtpkA8wV2yJCYGMtc9K4LkJfhKX2RVSV"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "MAX_BATCH_SIZE()": {
+        "notice": "Maximum number of items allowed in batch operations to prevent OOM and gas limit issues."
+      },
+      "batchClaim(uint256[],uint256[],bytes32[][])": {
+        "notice": "Claims multiple airdrop allocations for the caller in a single transaction."
+      },
+      "claim(uint256,uint256,bytes32[])": {
+        "notice": "Claims an airdrop allocation for the caller."
+      },
+      "claimTracker()": {
+        "notice": "Returns the claim tracker contract."
+      },
+      "getClaimedAmount(uint256)": {
+        "notice": "Gets the amount already claimed for a specific index."
+      },
+      "isClaimed(uint256,uint256)": {
+        "notice": "Checks if a claim has been fully claimed for a specific index."
+      },
+      "merkleRoot()": {
+        "notice": "Returns the Merkle root for verifying airdrop claims."
+      },
+      "name()": {
+        "notice": "Returns the name of this airdrop."
+      },
+      "token()": {
+        "notice": "Returns the token being distributed in this airdrop."
+      },
+      "withdrawTokens(address)": {
+        "notice": "Allows the owner to withdraw any tokens remaining in the contract."
+      }
+    },
+    "events": {
+      "BatchClaimed(address,uint256,uint256[],uint256[])": {
+        "notice": "Emitted when a user claims multiple allocations in a single transaction."
+      },
+      "Claimed(address,uint256,uint256)": {
+        "notice": "Emitted when a user successfully claims their airdrop allocation."
+      },
+      "TokensWithdrawn(address,uint256)": {
+        "notice": "Emitted when the contract owner withdraws unclaimed tokens."
+      }
+    },
+    "errors": {
+      "InvalidWithdrawalAddress()": [
+        {
+          "notice": "Error indicating that an invalid withdrawal address was provided."
+        }
+      ]
+    },
+    "notice": "Abstract base contract for reusable Merkle-based airdrop distributions in the ATK Protocol.         This contract provides the core logic for Merkle proof-based airdrop claims, including:         - Flexible claim tracking using pluggable strategies         - Support for partial and full claims         - Meta-transaction support via ERC2771 (trusted forwarder)         - Withdrawals of unclaimed tokens by the owner         - Abstract claim and batchClaim functions for extension by concrete airdrop implementations"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "author": "SettleMint Tokenization Services",
+    "details": "This contract provides enhanced core logic for Merkle proof-based airdrop claims, including:  - Flexible claim tracking using the IATKClaimTracker interface  - Support for partial claims and progressive distributions  - Meta-transaction support via ERC2771 (trusted forwarder)  - Withdrawals of unclaimed tokens by the owner  - Abstract claim and batchClaim functions for extension by concrete airdrop implementations The contract is intended to be inherited by specific airdrop implementations (e.g., standard, vesting, push). It is not meant to be deployed directly.",
+    "methods": {
+      "batchClaim(uint256[],uint256[],bytes32[][])": {
+        "details": "Must be implemented by derived contracts. Implementations must use `_msgSender()` instead of `msg.sender` and pass it to `_processBatchClaim`.",
+        "params": {
+          "indices": "The indices of the claims in the Merkle tree.",
+          "merkleProofs": "The Merkle proofs for each index.",
+          "totalAmounts": "The total amounts allocated for each index."
+        }
+      },
+      "claim(uint256,uint256,bytes32[])": {
+        "details": "Must be implemented by derived contracts. Implementations must use `_msgSender()` instead of `msg.sender` and pass it to `_processClaim`.",
+        "params": {
+          "index": "The index of the claim in the Merkle tree.",
+          "merkleProof": "The Merkle proof array.",
+          "totalAmount": "The total amount allocated for this index."
+        }
+      },
+      "claimTracker()": {
+        "returns": {
+          "_0": "The claim tracker contract."
+        }
+      },
+      "constructor": {
+        "params": {
+          "forwarder_": "The address of the forwarder contract."
+        }
+      },
+      "getClaimedAmount(uint256)": {
+        "params": {
+          "index": "The index to check."
+        },
+        "returns": {
+          "_0": "claimedAmount The amount already claimed for this index."
+        }
+      },
+      "isClaimed(uint256,uint256)": {
+        "params": {
+          "index": "The index to check in the Merkle tree.",
+          "totalAmount": "The total amount allocated for this index."
+        },
+        "returns": {
+          "_0": "claimed True if the index has been fully claimed, false otherwise."
+        }
+      },
+      "isTrustedForwarder(address)": {
+        "details": "Indicates whether any particular address is the trusted forwarder."
+      },
+      "merkleRoot()": {
+        "returns": {
+          "_0": "The Merkle root for verifying airdrop claims."
+        }
+      },
+      "name()": {
+        "returns": {
+          "_0": "The human-readable name of the airdrop."
+        }
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+      },
+      "token()": {
+        "returns": {
+          "_0": "The ERC20 token being distributed."
+        }
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      },
+      "trustedForwarder()": {
+        "details": "Returns the address of the trusted forwarder."
+      },
+      "withdrawTokens(address)": {
+        "params": {
+          "to": "The address to send the withdrawn tokens to."
+        }
+      }
+    },
+    "events": {
+      "BatchClaimed(address,uint256,uint256[],uint256[])": {
+        "params": {
+          "amounts": "The amounts claimed for each index.",
+          "claimant": "The address that claimed the tokens.",
+          "indices": "The indices of the claims in the Merkle tree.",
+          "totalAmount": "The total amount of tokens claimed in the batch."
+        }
+      },
+      "Claimed(address,uint256,uint256)": {
+        "params": {
+          "amount": "The amount of tokens claimed.",
+          "claimant": "The address that claimed the tokens.",
+          "index": "The index of the claim in the Merkle tree."
+        }
+      },
+      "Initialized(uint64)": {
+        "details": "Triggered when the contract has been initialized or reinitialized."
+      },
+      "TokensWithdrawn(address,uint256)": {
+        "params": {
+          "amount": "The amount of tokens withdrawn.",
+          "to": "The address receiving the withdrawn tokens."
+        }
+      }
+    },
+    "errors": {
+      "InvalidInitialization()": [
+        {
+          "details": "The contract is already initialized."
+        }
+      ],
+      "NotInitializing()": [
+        {
+          "details": "The contract is not initializing."
+        }
+      ],
+      "OwnableInvalidOwner(address)": [
+        {
+          "details": "The owner is not a valid owner account. (eg. `address(0)`)"
+        }
+      ],
+      "OwnableUnauthorizedAccount(address)": [
+        {
+          "details": "The caller account is not authorized to perform an operation."
+        }
+      ],
+      "SafeERC20FailedOperation(address)": [
+        {
+          "details": "An operation with an ERC-20 token failed."
+        }
+      ]
+    },
+    "title": "ATK Airdrop (Abstract)"
+  },
+  "id": 0
+}

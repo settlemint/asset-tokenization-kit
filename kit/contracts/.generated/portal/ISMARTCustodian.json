@@ -1,0 +1,1219 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "batchForcedTransfer",
+      "inputs": [
+        {
+          "name": "fromList",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "toList",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "amounts",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "batchFreezePartialTokens",
+      "inputs": [
+        {
+          "name": "userAddresses",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "amounts",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "batchSetAddressFrozen",
+      "inputs": [
+        {
+          "name": "userAddresses",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "freeze",
+          "type": "bool[]",
+          "internalType": "bool[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "batchUnfreezePartialTokens",
+      "inputs": [
+        {
+          "name": "userAddresses",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "amounts",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "forcedRecoverTokens",
+      "inputs": [
+        {
+          "name": "lostWallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "newWallet",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "forcedTransfer",
+      "inputs": [
+        {
+          "name": "from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "freezePartialTokens",
+      "inputs": [
+        {
+          "name": "userAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "getFrozenTokens",
+      "inputs": [
+        {
+          "name": "userAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isFrozen",
+      "inputs": [
+        {
+          "name": "userAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "setAddressFrozen",
+      "inputs": [
+        {
+          "name": "userAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "freeze",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "unfreezePartialTokens",
+      "inputs": [
+        {
+          "name": "userAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "AddressFrozen",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "userAddress",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "isFrozen",
+          "type": "bool",
+          "indexed": true,
+          "internalType": "bool"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ForcedTransfer",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "from",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "to",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "RecoverySuccess",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "lostWallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newWallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "investorOnchainID",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "TokensFrozen",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "user",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "TokensUnfrozen",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "user",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "FreezeAmountExceedsAvailableBalance",
+      "inputs": [
+        {
+          "name": "available",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "requested",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "InsufficientFrozenTokens",
+      "inputs": [
+        {
+          "name": "frozenBalance",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "requested",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "RecipientAddressFrozen",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "SenderAddressFrozen",
+      "inputs": []
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "batchForcedTransfer(address[],address[],uint256[])": "42a47abc",
+    "batchFreezePartialTokens(address[],uint256[])": "fc7e5fa8",
+    "batchSetAddressFrozen(address[],bool[])": "1a7af379",
+    "batchUnfreezePartialTokens(address[],uint256[])": "4710362d",
+    "forcedRecoverTokens(address,address)": "62b9333e",
+    "forcedTransfer(address,address,uint256)": "9fc1d0e7",
+    "freezePartialTokens(address,uint256)": "125c4a33",
+    "getFrozenTokens(address)": "158b1a57",
+    "isFrozen(address)": "e5839836",
+    "setAddressFrozen(address,bool)": "c69c09cf",
+    "unfreezePartialTokens(address,uint256)": "1fe56f7d"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"available\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"requested\",\"type\":\"uint256\"}],\"name\":\"FreezeAmountExceedsAvailableBalance\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"frozenBalance\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"requested\",\"type\":\"uint256\"}],\"name\":\"InsufficientFrozenTokens\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"RecipientAddressFrozen\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"SenderAddressFrozen\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"userAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bool\",\"name\":\"isFrozen\",\"type\":\"bool\"}],\"name\":\"AddressFrozen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"ForcedTransfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"lostWallet\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newWallet\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"investorOnchainID\",\"type\":\"address\"}],\"name\":\"RecoverySuccess\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"TokensFrozen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"TokensUnfrozen\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"fromList\",\"type\":\"address[]\"},{\"internalType\":\"address[]\",\"name\":\"toList\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"}],\"name\":\"batchForcedTransfer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"userAddresses\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"}],\"name\":\"batchFreezePartialTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"userAddresses\",\"type\":\"address[]\"},{\"internalType\":\"bool[]\",\"name\":\"freeze\",\"type\":\"bool[]\"}],\"name\":\"batchSetAddressFrozen\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"userAddresses\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"}],\"name\":\"batchUnfreezePartialTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lostWallet\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"newWallet\",\"type\":\"address\"}],\"name\":\"forcedRecoverTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"forcedTransfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"userAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"freezePartialTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"userAddress\",\"type\":\"address\"}],\"name\":\"getFrozenTokens\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"userAddress\",\"type\":\"address\"}],\"name\":\"isFrozen\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"userAddress\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"freeze\",\"type\":\"bool\"}],\"name\":\"setAddressFrozen\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"userAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"unfreezePartialTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This interface outlines the capabilities for managing token custody, including freezing assets,      performing forced transfers, and recovering assets from lost wallets. Implementations of this      interface are expected to handle necessary authorization checks for these sensitive operations.      A Solidity 'interface' is like a contract blueprint that only declares functions without implementing      them. Other contracts can then be written to implement this interface, guaranteeing they provide      these functions. This promotes interoperability and standardized interactions.\",\"errors\":{\"FreezeAmountExceedsAvailableBalance(uint256,uint256)\":[{\"params\":{\"available\":\"The available, unfrozen balance of the user.\",\"requested\":\"The amount of tokens requested to be frozen.\"}}],\"InsufficientFrozenTokens(uint256,uint256)\":[{\"params\":{\"frozenBalance\":\"The current amount of tokens specifically frozen for the address.\",\"requested\":\"The amount requested to be unfrozen or used from the frozen portion.\"}}]},\"events\":{\"AddressFrozen(address,address,bool)\":{\"params\":{\"isFrozen\":\"The new frozen status: `true` if the address is now frozen, `false` if unfrozen.                 `indexed` to quickly find all freeze or unfreeze events.\",\"sender\":\"The address (e.g., custodian, admin) that initiated the freeze/unfreeze operation.               `indexed` for easier filtering of operations by a specific admin.\",\"userAddress\":\"The address whose frozen status was changed. `indexed` for tracking a specific user.\"}},\"ForcedTransfer(address,address,address,uint256)\":{\"params\":{\"amount\":\"The amount of tokens transferred.\",\"from\":\"The source address of the tokens. `indexed`.\",\"sender\":\"The address of the custodian who initiated the forced transfer. `indexed`.\",\"to\":\"The destination address of the tokens. `indexed`.\"}},\"RecoverySuccess(address,address,address,address)\":{\"params\":{\"investorOnchainID\":\"The on-chain ID contract address that links the `lostWallet` and `newWallet`,                          confirming they belong to the same beneficial owner.                          Not typically indexed as it might be a shared contract for many users.\",\"lostWallet\":\"The address from which assets were recovered. `indexed`.\",\"newWallet\":\"The address to which assets were transferred and identity re-associated. `indexed`.\",\"sender\":\"The address (e.g., custodian) that initiated the recovery operation. `indexed`.\"}},\"TokensFrozen(address,address,uint256)\":{\"details\":\"This refers to freezing a portion of an address's tokens, distinct from freezing the entire address.\",\"params\":{\"amount\":\"The quantity of tokens that were specifically frozen.\",\"sender\":\"The address that initiated the partial freeze operation. `indexed`.\",\"user\":\"The address for which a specific amount of tokens was frozen. `indexed`.\"}},\"TokensUnfrozen(address,address,uint256)\":{\"params\":{\"amount\":\"The quantity of tokens that were unfrozen from the partial freeze.\",\"sender\":\"The address that initiated the partial unfreeze operation. `indexed`.\",\"user\":\"The address for which a specific amount of tokens was unfrozen. `indexed`.\"}}},\"kind\":\"dev\",\"methods\":{\"batchForcedTransfer(address[],address[],uint256[])\":{\"details\":\"A gas-efficient version of `forcedTransfer` for multiple operations.      Requires strong authorization for the entire batch.      Arrays `fromList`, `toList`, and `amounts` must be of the same length.\",\"params\":{\"amounts\":\"A list of corresponding token amounts to transfer.\",\"fromList\":\"A list of sender addresses.\",\"toList\":\"A list of recipient addresses.\"}},\"batchFreezePartialTokens(address[],uint256[])\":{\"details\":\"Allows freezing different amounts for different users simultaneously.      Requires authorization for each partial freeze operation.      Arrays must be of the same length.\",\"params\":{\"amounts\":\"A list of corresponding token amounts to freeze.\",\"userAddresses\":\"A list of target addresses.\"}},\"batchSetAddressFrozen(address[],bool[])\":{\"details\":\"A gas-efficient way to update the frozen status for several addresses at once.      Requires authorization for each underlying freeze/unfreeze operation.      The `userAddresses` and `freeze` arrays must be of the same length.\",\"params\":{\"freeze\":\"A list of corresponding boolean freeze statuses (`true` for freeze, `false` for unfreeze).\",\"userAddresses\":\"A list of target addresses.\"}},\"batchUnfreezePartialTokens(address[],uint256[])\":{\"details\":\"Allows unfreezing different amounts for different users simultaneously.      Requires authorization for each partial unfreeze operation.      Arrays must be of the same length.\",\"params\":{\"amounts\":\"A list of corresponding token amounts to unfreeze.\",\"userAddresses\":\"A list of target addresses.\"}},\"forcedRecoverTokens(address,address)\":{\"details\":\"This is a powerful administrative function. It can recover tokens even if addresses are frozen or      if other transfer conditions (like compliance checks) would normally fail.      Requires strong authorization (e.g., a FORCED_TRANSFER_ROLE).\",\"params\":{\"lostWallet\":\"The address from which tokens will be recovered.\",\"newWallet\":\"The address to which tokens will be recovered.\"}},\"forcedTransfer(address,address,uint256)\":{\"details\":\"This is a powerful administrative function. It can move tokens even if addresses are frozen or      if other transfer conditions (like compliance checks) would normally fail.      If the `from` address has partially frozen tokens, this function may automatically unfreeze      the necessary amount to cover the transfer.      The implementation typically uses an internal flag (like `__isForcedUpdate`) to bypass standard hooks      (e.g., `_beforeTransfer`) during the actual token movement.      Requires strong authorization (e.g., a FORCED_TRANSFER_ROLE).\",\"params\":{\"amount\":\"The quantity of tokens to transfer.\",\"from\":\"The address from which tokens will be transferred.\",\"to\":\"The address to which tokens will be transferred.\"},\"returns\":{\"_0\":\"bool Returns `true` upon successful execution (should revert on failure).\"}},\"freezePartialTokens(address,uint256)\":{\"details\":\"This prevents the specified `amount` of tokens from being used in standard operations by `userAddress`.      The user can still transact with their unfrozen balance.      Reverts if the `amount` to freeze exceeds the user's available (currently unfrozen) balance.      Requires authorization.\",\"params\":{\"amount\":\"The quantity of tokens to freeze.\",\"userAddress\":\"The address for which to freeze tokens.\"}},\"getFrozenTokens(address)\":{\"details\":\"This does not include tokens that are implicitly frozen because the entire address is frozen.\",\"params\":{\"userAddress\":\"The address to check.\"},\"returns\":{\"_0\":\"uint256 The amount of tokens partially frozen for the address.\"}},\"isFrozen(address)\":{\"details\":\"A `view` function does not modify blockchain state and does not cost gas when called externally.\",\"params\":{\"userAddress\":\"The address to check.\"},\"returns\":{\"_0\":\"bool `true` if the address is frozen, `false` otherwise.\"}},\"setAddressFrozen(address,bool)\":{\"details\":\"When an address is frozen, typically all standard transfers, mints (to it), and burns (from it)      are blocked. Unfreezing reverses this.      Implementations should ensure this function requires proper authorization (e.g., a FREEZER_ROLE).\",\"params\":{\"freeze\":\"`true` to freeze the address, `false` to unfreeze it.\",\"userAddress\":\"The target address whose frozen status is to be changed.\"}},\"unfreezePartialTokens(address,uint256)\":{\"details\":\"Reduces the partially frozen amount for `userAddress` by the specified `amount`.      Reverts if `amount` exceeds the currently frozen token amount for that address.      Requires authorization.\",\"params\":{\"amount\":\"The quantity of tokens to unfreeze.\",\"userAddress\":\"The address for which to unfreeze tokens.\"}}},\"title\":\"Interface for SMART Custodian Extension\",\"version\":1},\"userdoc\":{\"errors\":{\"FreezeAmountExceedsAvailableBalance(uint256,uint256)\":[{\"notice\":\"Error indicating that the amount requested to be frozen exceeds the user's available (unfrozen) balance.\"}],\"InsufficientFrozenTokens(uint256,uint256)\":[{\"notice\":\"Error indicating that an attempt to unfreeze or use frozen tokens failed because the         amount requested exceeds the currently frozen token balance for the address.\"}],\"RecipientAddressFrozen()\":[{\"notice\":\"Error indicating that an operation (e.g., mint, transfer) cannot proceed because the recipient address is frozen.\"}],\"SenderAddressFrozen()\":[{\"notice\":\"Error indicating that an operation (e.g., transfer, burn, redeem) cannot proceed because the sender address is frozen.\"}]},\"events\":{\"AddressFrozen(address,address,bool)\":{\"notice\":\"Emitted when an address's full frozen status (i.e., the entire address is frozen or unfrozen)         is changed by an authorized custodian.\"},\"ForcedTransfer(address,address,address,uint256)\":{\"notice\":\"Emitted when a forced transfer of tokens is executed by a custodian.\"},\"RecoverySuccess(address,address,address,address)\":{\"notice\":\"Emitted when assets are successfully recovered from a lost or compromised wallet to a new wallet         belonging to the same verified identity.\"},\"TokensFrozen(address,address,uint256)\":{\"notice\":\"Emitted when a specific amount of tokens is partially frozen for an address.\"},\"TokensUnfrozen(address,address,uint256)\":{\"notice\":\"Emitted when a specific amount of previously partially frozen tokens is unfrozen for an address.\"}},\"kind\":\"user\",\"methods\":{\"batchForcedTransfer(address[],address[],uint256[])\":{\"notice\":\"Forcefully transfers tokens for multiple address pairs in a batch.\"},\"batchFreezePartialTokens(address[],uint256[])\":{\"notice\":\"Freezes specific amounts of tokens for multiple addresses in a batch.\"},\"batchSetAddressFrozen(address[],bool[])\":{\"notice\":\"Freezes or unfreezes multiple addresses in a batch operation.\"},\"batchUnfreezePartialTokens(address[],uint256[])\":{\"notice\":\"Unfreezes specific amounts of tokens for multiple addresses in a batch.\"},\"forcedRecoverTokens(address,address)\":{\"notice\":\"Forcefully recovers tokens from a lost or compromised wallet to a new wallet belonging to the same         verified identity.\"},\"forcedTransfer(address,address,uint256)\":{\"notice\":\"Forcefully transfers tokens from one address to another, bypassing standard transfer restrictions.\"},\"freezePartialTokens(address,uint256)\":{\"notice\":\"Freezes a specific amount of tokens for a given address.\"},\"getFrozenTokens(address)\":{\"notice\":\"Gets the amount of tokens that are specifically (partially) frozen for an address.\"},\"isFrozen(address)\":{\"notice\":\"Checks if an address is currently fully frozen.\"},\"setAddressFrozen(address,bool)\":{\"notice\":\"Freezes or unfreezes an entire address, preventing or allowing standard token operations.\"},\"unfreezePartialTokens(address,uint256)\":{\"notice\":\"Unfreezes a specific amount of previously partially frozen tokens for an address.\"}},\"notice\":\"Defines the external functions exposed by a SMART Custodian extension.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/smart/extensions/custodian/ISMARTCustodian.sol\":\"ISMARTCustodian\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/smart/extensions/custodian/ISMARTCustodian.sol\":{\"keccak256\":\"0xf7f74718eeb2d259be46ff82c7232c11b125127feb844d8140f3cff47c0c1663\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://97465ae7ef179d5abeedcf57c7fb7cd3f933268da501ae2694a82731f046f119\",\"dweb:/ipfs/QmQivprpP7h75X57xioAnrNtGkGjZaqkSndwY3CUcAXb5V\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "available",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "requested",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "FreezeAmountExceedsAvailableBalance"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "frozenBalance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "requested",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "InsufficientFrozenTokens"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "RecipientAddressFrozen"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "SenderAddressFrozen"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "userAddress",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "bool",
+              "name": "isFrozen",
+              "type": "bool",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "AddressFrozen",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "ForcedTransfer",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "lostWallet",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newWallet",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "investorOnchainID",
+              "type": "address",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "RecoverySuccess",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "TokensFrozen",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "TokensUnfrozen",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "fromList",
+              "type": "address[]"
+            },
+            {
+              "internalType": "address[]",
+              "name": "toList",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "amounts",
+              "type": "uint256[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "batchForcedTransfer"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "userAddresses",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "amounts",
+              "type": "uint256[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "batchFreezePartialTokens"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "userAddresses",
+              "type": "address[]"
+            },
+            {
+              "internalType": "bool[]",
+              "name": "freeze",
+              "type": "bool[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "batchSetAddressFrozen"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "userAddresses",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "amounts",
+              "type": "uint256[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "batchUnfreezePartialTokens"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "lostWallet",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "newWallet",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "forcedRecoverTokens"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "forcedTransfer",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "userAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "freezePartialTokens"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "userAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getFrozenTokens",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "userAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isFrozen",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "userAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "bool",
+              "name": "freeze",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setAddressFrozen"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "userAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "unfreezePartialTokens"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "batchForcedTransfer(address[],address[],uint256[])": {
+            "details": "A gas-efficient version of `forcedTransfer` for multiple operations.      Requires strong authorization for the entire batch.      Arrays `fromList`, `toList`, and `amounts` must be of the same length.",
+            "params": {
+              "amounts": "A list of corresponding token amounts to transfer.",
+              "fromList": "A list of sender addresses.",
+              "toList": "A list of recipient addresses."
+            }
+          },
+          "batchFreezePartialTokens(address[],uint256[])": {
+            "details": "Allows freezing different amounts for different users simultaneously.      Requires authorization for each partial freeze operation.      Arrays must be of the same length.",
+            "params": {
+              "amounts": "A list of corresponding token amounts to freeze.",
+              "userAddresses": "A list of target addresses."
+            }
+          },
+          "batchSetAddressFrozen(address[],bool[])": {
+            "details": "A gas-efficient way to update the frozen status for several addresses at once.      Requires authorization for each underlying freeze/unfreeze operation.      The `userAddresses` and `freeze` arrays must be of the same length.",
+            "params": {
+              "freeze": "A list of corresponding boolean freeze statuses (`true` for freeze, `false` for unfreeze).",
+              "userAddresses": "A list of target addresses."
+            }
+          },
+          "batchUnfreezePartialTokens(address[],uint256[])": {
+            "details": "Allows unfreezing different amounts for different users simultaneously.      Requires authorization for each partial unfreeze operation.      Arrays must be of the same length.",
+            "params": {
+              "amounts": "A list of corresponding token amounts to unfreeze.",
+              "userAddresses": "A list of target addresses."
+            }
+          },
+          "forcedRecoverTokens(address,address)": {
+            "details": "This is a powerful administrative function. It can recover tokens even if addresses are frozen or      if other transfer conditions (like compliance checks) would normally fail.      Requires strong authorization (e.g., a FORCED_TRANSFER_ROLE).",
+            "params": {
+              "lostWallet": "The address from which tokens will be recovered.",
+              "newWallet": "The address to which tokens will be recovered."
+            }
+          },
+          "forcedTransfer(address,address,uint256)": {
+            "details": "This is a powerful administrative function. It can move tokens even if addresses are frozen or      if other transfer conditions (like compliance checks) would normally fail.      If the `from` address has partially frozen tokens, this function may automatically unfreeze      the necessary amount to cover the transfer.      The implementation typically uses an internal flag (like `__isForcedUpdate`) to bypass standard hooks      (e.g., `_beforeTransfer`) during the actual token movement.      Requires strong authorization (e.g., a FORCED_TRANSFER_ROLE).",
+            "params": {
+              "amount": "The quantity of tokens to transfer.",
+              "from": "The address from which tokens will be transferred.",
+              "to": "The address to which tokens will be transferred."
+            },
+            "returns": {
+              "_0": "bool Returns `true` upon successful execution (should revert on failure)."
+            }
+          },
+          "freezePartialTokens(address,uint256)": {
+            "details": "This prevents the specified `amount` of tokens from being used in standard operations by `userAddress`.      The user can still transact with their unfrozen balance.      Reverts if the `amount` to freeze exceeds the user's available (currently unfrozen) balance.      Requires authorization.",
+            "params": {
+              "amount": "The quantity of tokens to freeze.",
+              "userAddress": "The address for which to freeze tokens."
+            }
+          },
+          "getFrozenTokens(address)": {
+            "details": "This does not include tokens that are implicitly frozen because the entire address is frozen.",
+            "params": {
+              "userAddress": "The address to check."
+            },
+            "returns": {
+              "_0": "uint256 The amount of tokens partially frozen for the address."
+            }
+          },
+          "isFrozen(address)": {
+            "details": "A `view` function does not modify blockchain state and does not cost gas when called externally.",
+            "params": {
+              "userAddress": "The address to check."
+            },
+            "returns": {
+              "_0": "bool `true` if the address is frozen, `false` otherwise."
+            }
+          },
+          "setAddressFrozen(address,bool)": {
+            "details": "When an address is frozen, typically all standard transfers, mints (to it), and burns (from it)      are blocked. Unfreezing reverses this.      Implementations should ensure this function requires proper authorization (e.g., a FREEZER_ROLE).",
+            "params": {
+              "freeze": "`true` to freeze the address, `false` to unfreeze it.",
+              "userAddress": "The target address whose frozen status is to be changed."
+            }
+          },
+          "unfreezePartialTokens(address,uint256)": {
+            "details": "Reduces the partially frozen amount for `userAddress` by the specified `amount`.      Reverts if `amount` exceeds the currently frozen token amount for that address.      Requires authorization.",
+            "params": {
+              "amount": "The quantity of tokens to unfreeze.",
+              "userAddress": "The address for which to unfreeze tokens."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "batchForcedTransfer(address[],address[],uint256[])": {
+            "notice": "Forcefully transfers tokens for multiple address pairs in a batch."
+          },
+          "batchFreezePartialTokens(address[],uint256[])": {
+            "notice": "Freezes specific amounts of tokens for multiple addresses in a batch."
+          },
+          "batchSetAddressFrozen(address[],bool[])": {
+            "notice": "Freezes or unfreezes multiple addresses in a batch operation."
+          },
+          "batchUnfreezePartialTokens(address[],uint256[])": {
+            "notice": "Unfreezes specific amounts of tokens for multiple addresses in a batch."
+          },
+          "forcedRecoverTokens(address,address)": {
+            "notice": "Forcefully recovers tokens from a lost or compromised wallet to a new wallet belonging to the same         verified identity."
+          },
+          "forcedTransfer(address,address,uint256)": {
+            "notice": "Forcefully transfers tokens from one address to another, bypassing standard transfer restrictions."
+          },
+          "freezePartialTokens(address,uint256)": {
+            "notice": "Freezes a specific amount of tokens for a given address."
+          },
+          "getFrozenTokens(address)": {
+            "notice": "Gets the amount of tokens that are specifically (partially) frozen for an address."
+          },
+          "isFrozen(address)": {
+            "notice": "Checks if an address is currently fully frozen."
+          },
+          "setAddressFrozen(address,bool)": {
+            "notice": "Freezes or unfreezes an entire address, preventing or allowing standard token operations."
+          },
+          "unfreezePartialTokens(address,uint256)": {
+            "notice": "Unfreezes a specific amount of previously partially frozen tokens for an address."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/smart/extensions/custodian/ISMARTCustodian.sol": "ISMARTCustodian"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/smart/extensions/custodian/ISMARTCustodian.sol": {
+        "keccak256": "0xf7f74718eeb2d259be46ff82c7232c11b125127feb844d8140f3cff47c0c1663",
+        "urls": [
+          "bzz-raw://97465ae7ef179d5abeedcf57c7fb7cd3f933268da501ae2694a82731f046f119",
+          "dweb:/ipfs/QmQivprpP7h75X57xioAnrNtGkGjZaqkSndwY3CUcAXb5V"
+        ],
+        "license": "FSL-1.1-MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "batchForcedTransfer(address[],address[],uint256[])": {
+        "notice": "Forcefully transfers tokens for multiple address pairs in a batch."
+      },
+      "batchFreezePartialTokens(address[],uint256[])": {
+        "notice": "Freezes specific amounts of tokens for multiple addresses in a batch."
+      },
+      "batchSetAddressFrozen(address[],bool[])": {
+        "notice": "Freezes or unfreezes multiple addresses in a batch operation."
+      },
+      "batchUnfreezePartialTokens(address[],uint256[])": {
+        "notice": "Unfreezes specific amounts of tokens for multiple addresses in a batch."
+      },
+      "forcedRecoverTokens(address,address)": {
+        "notice": "Forcefully recovers tokens from a lost or compromised wallet to a new wallet belonging to the same         verified identity."
+      },
+      "forcedTransfer(address,address,uint256)": {
+        "notice": "Forcefully transfers tokens from one address to another, bypassing standard transfer restrictions."
+      },
+      "freezePartialTokens(address,uint256)": {
+        "notice": "Freezes a specific amount of tokens for a given address."
+      },
+      "getFrozenTokens(address)": {
+        "notice": "Gets the amount of tokens that are specifically (partially) frozen for an address."
+      },
+      "isFrozen(address)": {
+        "notice": "Checks if an address is currently fully frozen."
+      },
+      "setAddressFrozen(address,bool)": {
+        "notice": "Freezes or unfreezes an entire address, preventing or allowing standard token operations."
+      },
+      "unfreezePartialTokens(address,uint256)": {
+        "notice": "Unfreezes a specific amount of previously partially frozen tokens for an address."
+      }
+    },
+    "events": {
+      "AddressFrozen(address,address,bool)": {
+        "notice": "Emitted when an address's full frozen status (i.e., the entire address is frozen or unfrozen)         is changed by an authorized custodian."
+      },
+      "ForcedTransfer(address,address,address,uint256)": {
+        "notice": "Emitted when a forced transfer of tokens is executed by a custodian."
+      },
+      "RecoverySuccess(address,address,address,address)": {
+        "notice": "Emitted when assets are successfully recovered from a lost or compromised wallet to a new wallet         belonging to the same verified identity."
+      },
+      "TokensFrozen(address,address,uint256)": {
+        "notice": "Emitted when a specific amount of tokens is partially frozen for an address."
+      },
+      "TokensUnfrozen(address,address,uint256)": {
+        "notice": "Emitted when a specific amount of previously partially frozen tokens is unfrozen for an address."
+      }
+    },
+    "errors": {
+      "FreezeAmountExceedsAvailableBalance(uint256,uint256)": [
+        {
+          "notice": "Error indicating that the amount requested to be frozen exceeds the user's available (unfrozen) balance."
+        }
+      ],
+      "InsufficientFrozenTokens(uint256,uint256)": [
+        {
+          "notice": "Error indicating that an attempt to unfreeze or use frozen tokens failed because the         amount requested exceeds the currently frozen token balance for the address."
+        }
+      ],
+      "RecipientAddressFrozen()": [
+        {
+          "notice": "Error indicating that an operation (e.g., mint, transfer) cannot proceed because the recipient address is frozen."
+        }
+      ],
+      "SenderAddressFrozen()": [
+        {
+          "notice": "Error indicating that an operation (e.g., transfer, burn, redeem) cannot proceed because the sender address is frozen."
+        }
+      ]
+    },
+    "notice": "Defines the external functions exposed by a SMART Custodian extension."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "details": "This interface outlines the capabilities for managing token custody, including freezing assets,      performing forced transfers, and recovering assets from lost wallets. Implementations of this      interface are expected to handle necessary authorization checks for these sensitive operations.      A Solidity 'interface' is like a contract blueprint that only declares functions without implementing      them. Other contracts can then be written to implement this interface, guaranteeing they provide      these functions. This promotes interoperability and standardized interactions.",
+    "methods": {
+      "batchForcedTransfer(address[],address[],uint256[])": {
+        "details": "A gas-efficient version of `forcedTransfer` for multiple operations.      Requires strong authorization for the entire batch.      Arrays `fromList`, `toList`, and `amounts` must be of the same length.",
+        "params": {
+          "amounts": "A list of corresponding token amounts to transfer.",
+          "fromList": "A list of sender addresses.",
+          "toList": "A list of recipient addresses."
+        }
+      },
+      "batchFreezePartialTokens(address[],uint256[])": {
+        "details": "Allows freezing different amounts for different users simultaneously.      Requires authorization for each partial freeze operation.      Arrays must be of the same length.",
+        "params": {
+          "amounts": "A list of corresponding token amounts to freeze.",
+          "userAddresses": "A list of target addresses."
+        }
+      },
+      "batchSetAddressFrozen(address[],bool[])": {
+        "details": "A gas-efficient way to update the frozen status for several addresses at once.      Requires authorization for each underlying freeze/unfreeze operation.      The `userAddresses` and `freeze` arrays must be of the same length.",
+        "params": {
+          "freeze": "A list of corresponding boolean freeze statuses (`true` for freeze, `false` for unfreeze).",
+          "userAddresses": "A list of target addresses."
+        }
+      },
+      "batchUnfreezePartialTokens(address[],uint256[])": {
+        "details": "Allows unfreezing different amounts for different users simultaneously.      Requires authorization for each partial unfreeze operation.      Arrays must be of the same length.",
+        "params": {
+          "amounts": "A list of corresponding token amounts to unfreeze.",
+          "userAddresses": "A list of target addresses."
+        }
+      },
+      "forcedRecoverTokens(address,address)": {
+        "details": "This is a powerful administrative function. It can recover tokens even if addresses are frozen or      if other transfer conditions (like compliance checks) would normally fail.      Requires strong authorization (e.g., a FORCED_TRANSFER_ROLE).",
+        "params": {
+          "lostWallet": "The address from which tokens will be recovered.",
+          "newWallet": "The address to which tokens will be recovered."
+        }
+      },
+      "forcedTransfer(address,address,uint256)": {
+        "details": "This is a powerful administrative function. It can move tokens even if addresses are frozen or      if other transfer conditions (like compliance checks) would normally fail.      If the `from` address has partially frozen tokens, this function may automatically unfreeze      the necessary amount to cover the transfer.      The implementation typically uses an internal flag (like `__isForcedUpdate`) to bypass standard hooks      (e.g., `_beforeTransfer`) during the actual token movement.      Requires strong authorization (e.g., a FORCED_TRANSFER_ROLE).",
+        "params": {
+          "amount": "The quantity of tokens to transfer.",
+          "from": "The address from which tokens will be transferred.",
+          "to": "The address to which tokens will be transferred."
+        },
+        "returns": {
+          "_0": "bool Returns `true` upon successful execution (should revert on failure)."
+        }
+      },
+      "freezePartialTokens(address,uint256)": {
+        "details": "This prevents the specified `amount` of tokens from being used in standard operations by `userAddress`.      The user can still transact with their unfrozen balance.      Reverts if the `amount` to freeze exceeds the user's available (currently unfrozen) balance.      Requires authorization.",
+        "params": {
+          "amount": "The quantity of tokens to freeze.",
+          "userAddress": "The address for which to freeze tokens."
+        }
+      },
+      "getFrozenTokens(address)": {
+        "details": "This does not include tokens that are implicitly frozen because the entire address is frozen.",
+        "params": {
+          "userAddress": "The address to check."
+        },
+        "returns": {
+          "_0": "uint256 The amount of tokens partially frozen for the address."
+        }
+      },
+      "isFrozen(address)": {
+        "details": "A `view` function does not modify blockchain state and does not cost gas when called externally.",
+        "params": {
+          "userAddress": "The address to check."
+        },
+        "returns": {
+          "_0": "bool `true` if the address is frozen, `false` otherwise."
+        }
+      },
+      "setAddressFrozen(address,bool)": {
+        "details": "When an address is frozen, typically all standard transfers, mints (to it), and burns (from it)      are blocked. Unfreezing reverses this.      Implementations should ensure this function requires proper authorization (e.g., a FREEZER_ROLE).",
+        "params": {
+          "freeze": "`true` to freeze the address, `false` to unfreeze it.",
+          "userAddress": "The target address whose frozen status is to be changed."
+        }
+      },
+      "unfreezePartialTokens(address,uint256)": {
+        "details": "Reduces the partially frozen amount for `userAddress` by the specified `amount`.      Reverts if `amount` exceeds the currently frozen token amount for that address.      Requires authorization.",
+        "params": {
+          "amount": "The quantity of tokens to unfreeze.",
+          "userAddress": "The address for which to unfreeze tokens."
+        }
+      }
+    },
+    "events": {
+      "AddressFrozen(address,address,bool)": {
+        "params": {
+          "isFrozen": "The new frozen status: `true` if the address is now frozen, `false` if unfrozen.                 `indexed` to quickly find all freeze or unfreeze events.",
+          "sender": "The address (e.g., custodian, admin) that initiated the freeze/unfreeze operation.               `indexed` for easier filtering of operations by a specific admin.",
+          "userAddress": "The address whose frozen status was changed. `indexed` for tracking a specific user."
+        }
+      },
+      "ForcedTransfer(address,address,address,uint256)": {
+        "params": {
+          "amount": "The amount of tokens transferred.",
+          "from": "The source address of the tokens. `indexed`.",
+          "sender": "The address of the custodian who initiated the forced transfer. `indexed`.",
+          "to": "The destination address of the tokens. `indexed`."
+        }
+      },
+      "RecoverySuccess(address,address,address,address)": {
+        "params": {
+          "investorOnchainID": "The on-chain ID contract address that links the `lostWallet` and `newWallet`,                          confirming they belong to the same beneficial owner.                          Not typically indexed as it might be a shared contract for many users.",
+          "lostWallet": "The address from which assets were recovered. `indexed`.",
+          "newWallet": "The address to which assets were transferred and identity re-associated. `indexed`.",
+          "sender": "The address (e.g., custodian) that initiated the recovery operation. `indexed`."
+        }
+      },
+      "TokensFrozen(address,address,uint256)": {
+        "details": "This refers to freezing a portion of an address's tokens, distinct from freezing the entire address.",
+        "params": {
+          "amount": "The quantity of tokens that were specifically frozen.",
+          "sender": "The address that initiated the partial freeze operation. `indexed`.",
+          "user": "The address for which a specific amount of tokens was frozen. `indexed`."
+        }
+      },
+      "TokensUnfrozen(address,address,uint256)": {
+        "params": {
+          "amount": "The quantity of tokens that were unfrozen from the partial freeze.",
+          "sender": "The address that initiated the partial unfreeze operation. `indexed`.",
+          "user": "The address for which a specific amount of tokens was unfrozen. `indexed`."
+        }
+      }
+    },
+    "errors": {
+      "FreezeAmountExceedsAvailableBalance(uint256,uint256)": [
+        {
+          "params": {
+            "available": "The available, unfrozen balance of the user.",
+            "requested": "The amount of tokens requested to be frozen."
+          }
+        }
+      ],
+      "InsufficientFrozenTokens(uint256,uint256)": [
+        {
+          "params": {
+            "frozenBalance": "The current amount of tokens specifically frozen for the address.",
+            "requested": "The amount requested to be unfrozen or used from the frozen portion."
+          }
+        }
+      ]
+    },
+    "title": "Interface for SMART Custodian Extension"
+  },
+  "id": 94
+}

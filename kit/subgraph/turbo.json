@@ -23,7 +23,7 @@
       "outputs": [
         "build/**",
         ".generated/subgraph-hash.txt",
-        ".generated/.env.subgraph"
+        ".generated/subgraph-env"
       ],
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },

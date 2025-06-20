@@ -1,1 +1,4 @@
 **/.generated/**/* merge=ours
+**/*-cache.d.ts merge=ours
+**/*-env.d.ts merge=ours
+**/*-schema.graphql merge=ours
