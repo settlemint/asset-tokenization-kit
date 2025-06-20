@@ -1,0 +1,342 @@
+name: Slack Notification (Reusable)
+
+# This is a reusable workflow for sending Slack notifications about PR builds.
+# It can be used both within this repository and by external repositories.
+#
+# Usage in this repository:
+# ```yaml
+# jobs:
+#   notify-slack:
+#     uses: ./.github/workflows/reusable-slack-notification.yml
+#     with:
+#       workflow_conclusion: 'success'  # or 'failure', 'cancelled', 'skipped', 'running'
+#       runs-on: 'namespace-profile-atk'  # optional, defaults to 'ubuntu-latest'
+#     secrets:
+#       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+# ```
+#
+# Usage in external repositories:
+# ```yaml
+# jobs:
+#   notify-slack:
+#     uses: settlemint/asset-tokenization-kit/.github/workflows/reusable-slack-notification.yml@main
+#     with:
+#       workflow_conclusion: 'success'
+#       runs-on: 'ubuntu-latest'  # use a standard runner for external repos
+#     secrets:
+#       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+# ```
+#
+# Note: External repositories must have access to the same 1Password service account
+# and Slack bot configuration for this to work properly.
+
+on:
+  workflow_call:
+    inputs:
+      workflow_conclusion:
+        description:
+          "The conclusion of the workflow run (success, failure, cancelled,
+          skipped)"
+        required: false
+        type: string
+        default: "running"
+      runs-on:
+        description: "Runner to use for the job"
+        required: false
+        type: string
+        default: "ubuntu-latest"
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  slack-notification:
+    name: Send Slack Notification
+    runs-on: ${{ inputs.runs-on }}
+    timeout-minutes: 5
+    if: |
+      github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' &&
+      github.event_name == 'pull_request'
+    steps:
+      - name: Configure 1Password
+        uses: 1password/load-secrets-action/configure@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load secrets
+        uses: 1password/load-secrets-action@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        env:
+          SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
+          SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
+
+      - name: Get PR info and build status
+        id: build_status
+        env:
+          # Pull request context
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_USER: ${{ github.event.pull_request.user.login }}
+          PR_HTML_URL: ${{ github.event.pull_request.html_url }}
+          PR_STATE: ${{ github.event.pull_request.state }}
+          PR_MERGED: ${{ github.event.pull_request.merged }}
+          PR_UPDATED_AT: ${{ github.event.pull_request.updated_at }}
+          PR_DRAFT: ${{ github.event.pull_request.draft }}
+          PR_REVIEWERS:
+            ${{ join(github.event.pull_request.requested_reviewers.*.login, ',
+            ') }}
+          BUILD_CONCLUSION: ${{ inputs.workflow_conclusion }}
+        run: |
+          echo "Debug: Processing pull_request event with build conclusion: $BUILD_CONCLUSION"
+          echo "Debug: Event name: ${{ github.event_name }}"
+          echo "Debug: PR data available: ${{ github.event.pull_request != null }}"
+
+          # Map conclusion to build result
+          if [[ "$BUILD_CONCLUSION" == "success" ]]; then
+            BUILD_RESULT="success"
+          elif [[ "$BUILD_CONCLUSION" == "failure" ]]; then
+            BUILD_RESULT="failure"
+          elif [[ "$BUILD_CONCLUSION" == "cancelled" ]]; then
+            BUILD_RESULT="cancelled"
+          elif [[ "$BUILD_CONCLUSION" == "skipped" ]]; then
+            BUILD_RESULT="skipped"
+          else
+            BUILD_RESULT="running"
+          fi
+
+          echo "build_result=$BUILD_RESULT" >> $GITHUB_OUTPUT
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+
+          # Debug: Show raw PR title
+          echo "Debug: Raw PR title: $PR_TITLE"
+
+          # If PR title is empty, try to get it from the API
+          if [[ -z "$PR_TITLE" && -n "$PR_NUMBER" ]]; then
+            echo "Debug: PR title is empty, fetching from API..."
+            PR_DATA=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER")
+            PR_TITLE=$(echo "$PR_DATA" | jq -r '.title // empty')
+            echo "Debug: Fetched PR title from API: $PR_TITLE"
+          fi
+
+          # For Slack, we need to preserve markdown but escape only problematic characters
+          # Escape only what's necessary for JSON while preserving Slack markdown
+          ESCAPED_TITLE=$(echo "$PR_TITLE" | sed 's/"/\\"/g' | sed "s/'/\\\\'/g" | tr -d '\n\r')
+
+          echo "Debug: Escaped PR title: $ESCAPED_TITLE"
+          echo "pr_title=$ESCAPED_TITLE" >> $GITHUB_OUTPUT
+          echo "pr_user=$PR_USER" >> $GITHUB_OUTPUT
+          echo "pr_html_url=$PR_HTML_URL" >> $GITHUB_OUTPUT
+          echo "pr_state=$PR_STATE" >> $GITHUB_OUTPUT
+          echo "pr_merged=$PR_MERGED" >> $GITHUB_OUTPUT
+          echo "pr_updated_at=$PR_UPDATED_AT" >> $GITHUB_OUTPUT
+          echo "pr_draft=$PR_DRAFT" >> $GITHUB_OUTPUT
+          echo "pr_reviewers=$PR_REVIEWERS" >> $GITHUB_OUTPUT
+          echo "skip_notification=false" >> $GITHUB_OUTPUT
+
+          # Get review status
+          if [[ -n "$PR_NUMBER" ]]; then
+            echo "Debug: Fetching review status for PR #$PR_NUMBER"
+            REVIEWS=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews")
+
+                        # Check if reviews exist and get their states
+            if [[ "$REVIEWS" != "null" && "$REVIEWS" != "[]" ]]; then
+              APPROVED_COUNT=$(echo "$REVIEWS" | jq -r '[.[] | select(.state == "APPROVED")] | length')
+              CHANGES_REQUESTED_COUNT=$(echo "$REVIEWS" | jq -r '[.[] | select(.state == "CHANGES_REQUESTED")] | length')
+              TOTAL_REVIEWS=$(echo "$REVIEWS" | jq -r 'length')
+
+              echo "Debug: Total reviews: $TOTAL_REVIEWS, Approved: $APPROVED_COUNT, Changes requested: $CHANGES_REQUESTED_COUNT"
+
+              if [[ "$APPROVED_COUNT" -gt 0 ]]; then
+                if [[ "$CHANGES_REQUESTED_COUNT" -gt 0 ]]; then
+                  REVIEW_STATUS=":warning: Mixed reviews (approved + changes requested)"
+                else
+                  REVIEW_STATUS=":white_check_mark: Approved ($APPROVED_COUNT)"
+                fi
+              elif [[ "$CHANGES_REQUESTED_COUNT" -gt 0 ]]; then
+                REVIEW_STATUS=":x: Changes requested ($CHANGES_REQUESTED_COUNT)"
+              else
+                REVIEW_STATUS=":eyes: Under review"
+              fi
+            else
+              # No reviews yet
+              if [[ -n "$PR_REVIEWERS" && "$PR_REVIEWERS" != "" ]]; then
+                REVIEW_STATUS=":hourglass_flowing_sand: Waiting for review"
+              else
+                REVIEW_STATUS=":question: No reviewers assigned"
+              fi
+            fi
+          else
+            REVIEW_STATUS=":question: Unknown"
+          fi
+
+          echo "Debug: Review status: $REVIEW_STATUS"
+          echo "review_status=$REVIEW_STATUS" >> $GITHUB_OUTPUT
+
+      - name: Check for existing Slack message
+        id: check_message
+        if: |
+          steps.build_status.outputs.skip_notification != 'true' &&
+          steps.build_status.outputs.pr_draft != 'true'
+        run: |
+          # Check if there's an existing comment with Slack message timestamp
+          # Improved logic to handle multiple comments and race conditions
+          COMMENTS=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.build_status.outputs.pr_number }}/comments")
+
+          # Find the most recent comment that contains a slack timestamp
+          SLACK_TS=$(echo "$COMMENTS" | jq -r '.[] | select(.body | contains("<!-- slack-ts:")) | .body' | \
+            grep -o '<!-- slack-ts:[^-]*-->' | \
+            sed 's/<!-- slack-ts:\(.*\)-->/\1/' | \
+            tail -1)
+
+          if [ -n "$SLACK_TS" ] && [ "$SLACK_TS" != "" ]; then
+            echo "slack_ts=$SLACK_TS" >> $GITHUB_OUTPUT
+            echo "message_exists=true" >> $GITHUB_OUTPUT
+            echo "Debug: Found existing Slack message with timestamp: $SLACK_TS"
+          else
+            echo "message_exists=false" >> $GITHUB_OUTPUT
+            echo "Debug: No existing Slack message found"
+          fi
+
+          # Additional check: if we're updating, verify the timestamp is valid
+          if [ "$SLACK_TS" != "" ]; then
+            # Simple validation that the timestamp looks like a Slack timestamp (numeric with optional decimal)
+            if [[ "$SLACK_TS" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+              echo "Debug: Slack timestamp format is valid"
+            else
+              echo "Debug: Invalid Slack timestamp format, treating as new message"
+              echo "message_exists=false" >> $GITHUB_OUTPUT
+              echo "slack_ts=" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Debug Slack message action
+        if: |
+          steps.build_status.outputs.skip_notification != 'true' &&
+          steps.build_status.outputs.pr_draft != 'true'
+        run: |
+          echo "Debug: Message exists = ${{ steps.check_message.outputs.message_exists }}"
+          echo "Debug: Slack timestamp = ${{ steps.check_message.outputs.slack_ts }}"
+          echo "Debug: Will use method = ${{ steps.check_message.outputs.message_exists == 'true' && 'chat.update' || 'chat.postMessage' }}"
+
+      - name: Send or update Slack message
+        id: slack_message
+        if: |
+          steps.build_status.outputs.skip_notification != 'true' &&
+          steps.build_status.outputs.pr_draft != 'true'
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          method: |
+            ${{ steps.check_message.outputs.message_exists == 'true' &&
+            'chat.update' || 'chat.postMessage' }}
+          token: ${{ env.SLACK_BOT_TOKEN }}
+          payload: |
+            {
+              "channel": "${{ env.SLACK_CHANNEL_ID }}",
+              ${{ steps.check_message.outputs.message_exists == 'true' && format('"ts": "{0}",', steps.check_message.outputs.slack_ts) || '' }}
+              "text": "PR: ${{ steps.build_status.outputs.pr_title }} - ${{ steps.build_status.outputs.pr_state }} - Build ${{ steps.build_status.outputs.build_result }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*${{ steps.build_status.outputs.pr_title }}*"
+                  },
+                  "accessory": {
+                    "type": "button",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "View PR",
+                      "emoji": true
+                    },
+                    "url": "${{ steps.build_status.outputs.pr_html_url || format('https://github.com/{0}/pull/{1}', github.repository, steps.build_status.outputs.pr_number) }}",
+                    "action_id": "view_pr",
+                    "style": "primary"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Author:*\n<https://github.com/${{ steps.build_status.outputs.pr_user }}|${{ steps.build_status.outputs.pr_user }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Repository:*\n<https://github.com/${{ github.repository }}|${{ github.repository }}>"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*PR Status:*\n${{ steps.build_status.outputs.pr_draft == 'true' && ':memo: Draft' || steps.build_status.outputs.pr_state == 'open' && ':large_green_circle: Open' || (steps.build_status.outputs.pr_merged == 'true' && ':tada: Merged') || ':red_circle: Closed' }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                                        "text": "*Build Status:*\n${{ steps.build_status.outputs.build_result == 'success' && ':white_check_mark: Passed' || steps.build_status.outputs.build_result == 'failure' && ':x: Failed' || steps.build_status.outputs.build_result == 'cancelled' && ':no_entry_sign: Cancelled' || steps.build_status.outputs.build_result == 'skipped' && ':fast_forward: Skipped' || ':hourglass_flowing_sand: Running' }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Reviewers:*\n${{ steps.build_status.outputs.pr_reviewers || 'None assigned' }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Review Status:*\n${{ steps.build_status.outputs.review_status || ':hourglass_flowing_sand: Waiting for review' }}"
+                    }
+                  ]
+                }
+              ]
+            }
+
+      - name: Store Slack message timestamp
+        if: |
+          steps.build_status.outputs.skip_notification != 'true' &&
+          steps.build_status.outputs.pr_draft != 'true' &&
+          steps.slack_message.outcome == 'success' &&
+          steps.check_message.outputs.message_exists == 'false' &&
+          steps.slack_message.outputs.ts != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const timestamp = '${{ steps.slack_message.outputs.ts }}';
+            const runId = '${{ github.run_id }}';
+            const workflowName = '${{ github.workflow }}';
+            console.log(`Debug: Storing Slack timestamp: ${timestamp}`);
+            
+            // Check if a comment with this timestamp already exists to prevent duplicates
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.build_status.outputs.pr_number }}
+            });
+            
+            const existingComment = comments.find(comment => 
+              comment.body.includes(`<!-- slack-ts:${timestamp}`)
+            );
+            
+            if (existingComment) {
+              console.log(`Debug: Comment with timestamp ${timestamp} already exists, skipping creation`);
+              return;
+            }
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.build_status.outputs.pr_number }},
+              body: `<!-- slack-ts:${timestamp}-->\n🤖 Slack notification sent for this PR (${workflowName} - Run #${runId})`
+            });
