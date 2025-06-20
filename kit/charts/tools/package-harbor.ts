@@ -168,7 +168,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
         // Clean up corrupted values like harbor.settlemint.com/""
         if (line.includes(`${HARBOR_PROXY}/""`)) {
           line = line.replace(`${HARBOR_PROXY}/""`, '""');
-        } else if (line.includes(`${HARBOR_PROXY}/"''"`)) {
+        } else if (line.includes(`${HARBOR_PROXY}/''`)) {
           line = line.replace(`${HARBOR_PROXY}/''`, "''");
         }
         // Process normal values (but not if already has harbor proxy)
@@ -196,8 +196,10 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
         // Clean up corrupted values like harbor.settlemint.com/""
         if (line.includes(`${HARBOR_PROXY}/""`)) {
           line = line.replace(`${HARBOR_PROXY}/""`, '""');
-        } else if (line.includes(`${HARBOR_PROXY}/"''"`)) {
+        } else if (line.includes(`${HARBOR_PROXY}/''`)) {
           line = line.replace(`${HARBOR_PROXY}/''`, "''");
+        } else if (line.includes(`${HARBOR_PROXY}/"''"`)) {
+          line = line.replace(`${HARBOR_PROXY}/"''"`, '""');
         }
         // Process normal values (but not if already has harbor proxy)
         else if (!line.includes(`${HARBOR_PROXY}/`)) {
