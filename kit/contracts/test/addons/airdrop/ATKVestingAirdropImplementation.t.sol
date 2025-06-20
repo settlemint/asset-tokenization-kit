@@ -16,6 +16,7 @@ import { IATKVestingStrategy } from "../../../contracts/addons/airdrop/vesting-a
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { AirdropUtils } from "../../utils/AirdropUtils.sol";
 
 import {
     InvalidMerkleProof,

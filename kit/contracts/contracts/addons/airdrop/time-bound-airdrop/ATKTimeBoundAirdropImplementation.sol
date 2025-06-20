@@ -9,13 +9,7 @@ import { ATKAirdrop } from "../ATKAirdrop.sol";
 import { ATKAmountClaimTracker } from "../claim-tracker/ATKAmountClaimTracker.sol";
 import { IATKTimeBoundAirdrop } from "./IATKTimeBoundAirdrop.sol";
 import { IATKAirdrop } from "../IATKAirdrop.sol";
-import {
-    AirdropNotStarted,
-    AirdropEnded,
-    InvalidStartTime,
-    InvalidEndTime,
-    InvalidTimeWindow
-} from "./ATKTimeBoundAirdropErrors.sol";
+
 import {
     InvalidInputArrayLengths,
     InvalidMerkleProof,
