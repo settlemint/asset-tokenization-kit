@@ -3,11 +3,14 @@ import { baseContract } from "@/orpc/procedures/base.contract";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { BondTokenCreateSchema } from "@/orpc/routes/token/routes/bond/bond.create.schema";
 import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
+import { TokenMintSchema } from "@/orpc/routes/token/routes/token.mint.schema";
+import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
+import z from "zod/v4";
 
 const create = baseContract
   .route({
     method: "POST",
-    path: "/tokens/bond",
+    path: "/token/bond",
     description: "Create a new bond token",
     successDescription: "Bond token created",
     tags: ["token", "bond"],
@@ -18,7 +21,7 @@ const create = baseContract
 const list = baseContract
   .route({
     method: "GET",
-    path: "/tokens",
+    path: "/token",
     description: "Get the list of tokens",
     successDescription: "List of tokens",
     tags: ["token"],
@@ -26,7 +29,31 @@ const list = baseContract
   .input(ListSchema)
   .output(TokenListSchema);
 
+const read = baseContract
+  .route({
+    method: "GET",
+    path: "/token/{id}",
+    description: "Get a token by id",
+    successDescription: "Token",
+    tags: ["token"],
+  })
+  .input(z.object({ id: z.string() }))
+  .output(TokenSchema);
+
+const mint = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{id}/mint",
+    description: "Mint tokens",
+    successDescription: "Tokens minted",
+    tags: ["token"],
+  })
+  .input(TokenMintSchema)
+  .output(ethereumHash);
+
 export const tokenContract = {
   create,
   list,
+  read,
+  mint,
 };

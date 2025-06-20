@@ -5,6 +5,7 @@ import type { client as minioClient } from "@/lib/settlemint/minio";
 import type { portalClient } from "@/lib/settlemint/portal";
 import type { theGraphClient } from "@/lib/settlemint/the-graph";
 import type { TokenFactory } from "@/orpc/middlewares/system/system.middleware";
+import type { Token } from "@/orpc/middlewares/system/token.middleware";
 import type { getHeaders } from "@tanstack/react-start/server";
 import type { Address } from "viem";
 
@@ -116,4 +117,12 @@ export interface Context {
    * @see {@link @/orpc/middlewares/system/token-factory.middleware} - Token factory middleware configuration
    */
   tokenFactory?: TokenFactory;
+
+  /**
+   * Token information.
+   * Injected by tokenMiddleware for procedures that need to interact with a specific token.
+   * @optional
+   * @see {@link @/orpc/middlewares/system/token.middleware} - Token middleware configuration
+   */
+  token?: Token;
 }

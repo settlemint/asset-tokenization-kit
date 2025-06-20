@@ -1,7 +1,8 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
-import { tokenFactoryMiddleware } from "@/orpc/middlewares/auth/token-factory.middleware";
+import { tokenFactoryPermissionMiddleware } from "@/orpc/middlewares/auth/token-factory-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { tokenFactoryMiddleware } from "@/orpc/middlewares/system/token-factory.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 
 const CREATE_BOND_MUTATION = portalGraphql(`
@@ -18,7 +19,8 @@ const CREATE_BOND_MUTATION = portalGraphql(`
 
 export const create = onboardedRouter.token.create
   .use(portalMiddleware)
-  .use(tokenFactoryMiddleware("bond", ["deployer"]))
+  .use(tokenFactoryMiddleware("bond"))
+  .use(tokenFactoryPermissionMiddleware(["deployer"]))
   .handler(async ({ input, context }) => {
     const sender = context.auth.user;
 

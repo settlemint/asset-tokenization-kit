@@ -1,26 +1,18 @@
-import type { AssetType } from "@/lib/zod/validators/asset-types";
 import type { SystemAccessControl } from "@/orpc/middlewares/system/system.middleware";
 import { baseRouter } from "@/orpc/procedures/base.router";
 
 /**
- * Middleware to check if the user has the required roles to interact with the token factory.
+ * Middleware to check if the user has the required permission to interact with the token factory.
  * @param type - The type of the token factory.
- * @param requiredRoles - The roles required to interact with the token factory.
+ * @param requiredPermission - The permission required to interact with the token factory.
  * @returns The middleware function.
  */
-export const tokenFactoryMiddleware = (
-  type: AssetType,
+export const tokenFactoryPermissionMiddleware = (
   requiredRoles: (keyof SystemAccessControl)[]
 ) =>
   baseRouter.middleware(async ({ context, next, errors }) => {
-    const { auth, system } = context;
-    if (!system) {
-      throw errors.SYSTEM_NOT_CREATED();
-    }
+    const { auth, tokenFactory } = context;
 
-    const tokenFactory = system.tokenFactories.find(
-      (tokenFactory) => tokenFactory.type === type
-    );
     if (!tokenFactory) {
       throw errors.SYSTEM_NOT_CREATED();
     }

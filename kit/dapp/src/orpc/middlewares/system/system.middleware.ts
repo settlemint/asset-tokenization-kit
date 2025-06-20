@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { settings } from "@/lib/db/schema";
+import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { assetTypes } from "@/lib/zod/validators/asset-types";
 import { baseRouter } from "@/orpc/procedures/base.router";
@@ -9,31 +10,20 @@ import { getAddress, type Address } from "viem";
 
 const SYSTEM_ADDRESS_KEY = "SYSTEM_ADDRESS";
 
-const TOKEN_FACTORIES_QUERY = theGraphGraphql(`
+const TOKEN_FACTORIES_QUERY = theGraphGraphql(
+  `
   query GetTokenFactories($systemAddress: String!) {
     tokenFactories(where: { system: $systemAddress }) {
       id
       name
       accessControl {
-        admin { id }
-        registrar { id }
-        claimManager { id }
-        identityIssuer { id }
-        tokenIdentityIssuer { id }
-        tokenIdentityIssuerAdmin { id }
-        deployer { id }
-        storageModifier { id }
-        manageRegistries { id }
-        tokenGovernance { id }
-        supplyManagement { id }
-        custodian { id }
-        emergency { id }
-        implementationManager { id }
-        bypassListManager { id }
+        ...AccessControlFragment
       }
     }
   }
-`);
+`,
+  [AccessControlFragment]
+);
 
 /**
  * Interface for the access control of a token factory.
