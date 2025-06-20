@@ -17,6 +17,46 @@ const logger = createLogger({
 });
 
 /**
+ * Check if a repository/image value is an implicit Docker Hub image
+ * This function properly handles local registries and other registry URLs
+ */
+function isImplicitDockerHubImage(value: string): boolean {
+  // Skip empty or already processed values
+  if (!value || value.includes(HARBOR_PROXY)) {
+    return false;
+  }
+
+  // If it starts with localhost, it's a local registry
+  if (value.startsWith('localhost')) {
+    return false;
+  }
+
+  // If it contains a colon followed by digits, it's likely a registry with port (e.g., localhost:5000, registry.example.com:443)
+  if (/:\d+/.test(value)) {
+    return false;
+  }
+
+  // If it contains a domain-like pattern (dot followed by known TLD patterns), it's likely a registry
+  if (/\.[a-z]{2,}(\/|$)/i.test(value)) {
+    return false;
+  }
+
+  // Now check for implicit Docker Hub patterns:
+  // 1. Simple image names without / (e.g., "postgres", "nginx")
+  if (!value.includes('/')) {
+    return true;
+  }
+
+  // 2. Org/repo patterns without explicit registry (e.g., "graphprotocol/graph-node", "bitnami/postgresql")
+  // This should only match if it doesn't contain dots that would indicate a registry
+  if (value.includes('/') && !value.includes('.')) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Find the charts directory using intelligent root detection
  */
 async function findChartsDirectory(): Promise<string> {
@@ -126,7 +166,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
     let inCodeStudio = false;
     let featuresSectionIndent = "";
 
-    const modifiedLines = lines.map((line) => {
+    const modifiedLines = lines.map((line, index) => {
       // Track if we're entering or leaving the features section
       if (line.trim() === "features:") {
         inFeaturesSection = true;
@@ -232,6 +272,38 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
         if (repoMatch && repoMatch[2]) {
           const repoValue = repoMatch[2];
 
+          // FIRST: Clean up double-harbor entries when there's a nearby registry field
+          if (repoValue.startsWith(HARBOR_PROXY)) {
+            // Check if there's a registry field nearby (within 5 lines before this one)
+            const currentLineIndex = index;
+            let hasNearbyRegistry = false;
+
+            for (let i = Math.max(0, currentLineIndex - 5); i < currentLineIndex; i++) {
+              if (lines[i]?.includes('registry:') && lines[i]?.includes(HARBOR_PROXY) && !lines[i]?.trim().startsWith('#')) {
+                // Check if it's at similar indentation (same image block)
+                const currentIndent = line.match(/^\s*/)?.[0]?.length ?? 0;
+                const registryIndent = lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
+                if (Math.abs(currentIndent - registryIndent) <= 2) {
+                  hasNearbyRegistry = true;
+                  break;
+                }
+              }
+            }
+
+            // If there's a nearby registry field, remove harbor prefix from repository
+            if (hasNearbyRegistry) {
+              const registries = ["registry.k8s.io", "quay.io", "ghcr.io", "docker.io"];
+              for (const registry of registries) {
+                const pattern = `${HARBOR_PROXY}/${registry}/`;
+                if (repoValue.startsWith(pattern)) {
+                  const cleanedValue = repoValue.replace(pattern, '');
+                  line = line.replace(repoValue, cleanedValue);
+                  break; // Break after cleanup instead of returning early
+                }
+              }
+            }
+          }
+
           const registries = [
             "registry.k8s.io",
             "quay.io",
@@ -239,6 +311,9 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             "docker.io"
           ];
 
+          let processed = false;
+
+          // First, try to match explicit registries
           for (const registry of registries) {
             if (
               repoValue.includes(registry) &&
@@ -249,7 +324,37 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
                 `${HARBOR_PROXY}/${registry}`
               );
               line = line.replace(repoValue, newValue);
+              processed = true;
               break;
+            }
+          }
+
+          // If not processed and not already harbored, handle implicit Docker Hub images
+          // BUT ONLY if there's no nearby registry field
+          if (!processed && !repoValue.includes(HARBOR_PROXY)) {
+            // Check if there's a registry field nearby (within 5 lines before this one)
+            const currentLineIndex = index;
+            let hasNearbyRegistry = false;
+
+            for (let i = Math.max(0, currentLineIndex - 5); i < currentLineIndex; i++) {
+              if (lines[i]?.includes('registry:') && !lines[i]?.trim().startsWith('#')) {
+                // Check if it's at similar indentation (same image block)
+                const currentIndent = line.match(/^\s*/)?.[0]?.length ?? 0;
+                const registryIndent = lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
+                if (Math.abs(currentIndent - registryIndent) <= 2) {
+                  hasNearbyRegistry = true;
+                  break;
+                }
+              }
+            }
+
+            // Only apply harbor prefix if there's no nearby registry field
+            if (!hasNearbyRegistry) {
+              // Check if it's an implicit Docker Hub image
+              if (isImplicitDockerHubImage(repoValue)) {
+                const newValue = `${HARBOR_PROXY}/docker.io/${repoValue}`;
+                line = line.replace(repoValue, newValue);
+              }
             }
           }
         }
@@ -268,6 +373,9 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             "docker.io"
           ];
 
+          let processed = false;
+
+          // First, try to match explicit registries
           for (const registry of registries) {
             if (
               imageValue.includes(registry) &&
@@ -278,7 +386,17 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
                 `${HARBOR_PROXY}/${registry}`
               );
               line = line.replace(imageValue, newValue);
+              processed = true;
               break;
+            }
+          }
+
+          // If not processed and not already harbored, handle implicit Docker Hub images
+          if (!processed && !imageValue.includes(HARBOR_PROXY)) {
+            // Check if it's an implicit Docker Hub image
+            if (isImplicitDockerHubImage(imageValue)) {
+              const newValue = `${HARBOR_PROXY}/docker.io/${imageValue}`;
+              line = line.replace(imageValue, newValue);
             }
           }
         }
