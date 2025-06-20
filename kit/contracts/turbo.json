@@ -3,7 +3,7 @@
   "tasks": {
     "dependencies": {
       "outputs": ["dependencies/**"],
-      "inputs": ["soldeer.lock"]
+      "inputs": ["foundry.toml"]
     },
     "compile": {
       "dependsOn": ["compile:forge", "compile:hardhat"]
@@ -11,16 +11,12 @@
     "compile:forge": {
       "dependsOn": ["dependencies"],
       "outputs": [".generated/out/**", ".generated/cache_forge/**"],
-      "inputs": ["**/*.sol", "!.generated/**"]
+      "inputs": ["contracts/**/*.sol"]
     },
     "compile:hardhat": {
       "dependsOn": ["dependencies"],
       "outputs": [".generated/artifacts/**", ".generated/cache/**"],
-      "inputs": ["**/*.sol", "!.generated/**"]
-    },
-    "compile:typescript": {
-      "outputs": [".tsbuildinfo"],
-      "inputs": ["**/*.ts", "!.generated/**"]
+      "inputs": ["contracts/**/*.sol"]
     },
     "codegen": {
       "dependsOn": ["codegen:types"]
@@ -39,12 +35,12 @@
         ".generated/genesis-allocations.json",
         ".generated/genesis.json"
       ],
-      "inputs": ["contracts/**"]
+      "inputs": ["contracts/**/*.sol"]
     },
     "artifacts:abi": {
       "dependsOn": ["compile"],
-      "outputs": [".generated/portal/**"],
-      "inputs": ["contracts/**"]
+      "outputs": [".generated/portal/*.json"],
+      "inputs": ["contracts/**/*.sol"]
     },
     "format": {
       "dependsOn": ["format:forge", "format:prettier"]
