@@ -64,7 +64,7 @@ export function AssetSelectionStep({ onSuccess }: AssetSelectionStepProps) {
 
   const onSubmit = (data: AssetSelectionFormData) => {
     if (!systemAddress?.value) {
-      toast.error("System address not found. Please ensure a system is deployed first.");
+      toast.error(t("create-factory-messages.system-not-found"));
       return;
     }
 
@@ -77,7 +77,24 @@ export function AssetSelectionStep({ onSuccess }: AssetSelectionStepProps) {
     createFactories({
       contract: systemAddress.value,
       factories,
-      // TODO: Add translations for factory creation messages
+      messages: {
+        initialLoading: t("create-factory-messages.initial-loading"),
+        noResultError: t("create-factory-messages.no-result-error"),
+        defaultError: t("create-factory-messages.default-error"),
+        factoryCreated: t("create-factory-messages.factory-created"),
+        creatingFactory: t("create-factory-messages.creating-factory"),
+        factoryCreationFailed: t("create-factory-messages.factory-creation-failed"),
+        systemNotBootstrapped: t("create-factory-messages.system-not-bootstrapped"),
+        batchProgress: t("create-factory-messages.multiple-factories.deploying"),
+        batchCompleted: t("create-factory-messages.multiple-factories.all-completed"),
+        streamTimeout: t("create-factory-messages.transaction-tracking.stream-timeout"),
+        waitingForMining: t("create-factory-messages.transaction-tracking.waiting-for-mining"),
+        transactionFailed: t("create-factory-messages.transaction-tracking.transaction-failed"),
+        transactionDropped: t("create-factory-messages.transaction-tracking.transaction-dropped"),
+        waitingForIndexing: t("create-factory-messages.transaction-tracking.waiting-for-indexing"),
+        transactionIndexed: t("create-factory-messages.transaction-tracking.transaction-indexed"),
+        indexingTimeout: t("create-factory-messages.transaction-tracking.indexing-timeout"),
+      },
     });
   };
 
@@ -142,7 +159,7 @@ export function AssetSelectionStep({ onSuccess }: AssetSelectionStepProps) {
           type="submit" 
           disabled={isPending || selectedAssets.length === 0 || !systemAddress?.value}
         >
-          {t("asset-selection.continue")}
+          {isPending ? t("create-factory-messages.button.deploying") : t("create-factory-messages.button.deploy")}
         </Button>
       </form>
     </Form>

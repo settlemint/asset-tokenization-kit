@@ -41,5 +41,34 @@
     "title": "أنواع الأصول",
     "description": "اختر أنواع الأصول التي تريد دعمها على منصتك",
     "continue": "متابعة"
+  },
+  "create-factory-messages": {
+    "initial-loading": "جارٍ التحضير لنشر مصانع الرموز...",
+    "no-result-error": "اكتمل نشر المصنع ولكن لم يتم إرجاع عنوان",
+    "default-error": "فشل نشر مصنع الرموز",
+    "factory-created": "تم إنشاء مصنع الرموز بنجاح",
+    "creating-factory": "جارٍ إنشاء مصنع الرموز...",
+    "factory-creation-failed": "فشل في إنشاء مصنع الرموز. يرجى المحاولة مرة أخرى.",
+    "system-not-found": "لم يتم العثور على عنوان النظام. يرجى التأكد من نشر النظام أولاً.",
+    "system-not-bootstrapped": "يحتاج النظام إلى التهيئة أولاً. يرجى الانتظار حتى اكتمال تهيئة النظام.",
+    "deploying-button": "جارٍ النشر...",
+    "button": {
+      "deploy": "نشر مصانع الرموز",
+      "deploying": "جارٍ نشر المصانع..."
+    },
+    "transaction-tracking": {
+      "stream-timeout": "انتهت مهلة تتبع نشر المصنع بعد 90 ثانية",
+      "waiting-for-mining": "جارٍ نشر مصانع الرموز على السلسلة...",
+      "transaction-failed": "فشل معاملة نشر المصنع",
+      "transaction-dropped": "لم يتم تأكيد معاملة نشر المصنع على السلسلة في الوقت المحدد",
+      "waiting-for-indexing": "في انتظار فهرسة المصانع...",
+      "transaction-indexed": "تم فهرسة المصانع بنجاح وجاهزة للاستخدام",
+      "indexing-timeout": "انتهت مهلة فهرسة المصانع، يرجى تحديث الصفحة"
+    },
+    "multiple-factories": {
+      "deploying": "جارٍ نشر {{current}} من {{total}} مصنع...",
+      "completed": "تم نشر {{completed}} من {{total}} مصنع",
+      "all-completed": "تم نشر جميع مصانع الرموز بنجاح"
+    }
   }
 }

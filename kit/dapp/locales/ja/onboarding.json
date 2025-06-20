@@ -41,5 +41,34 @@
     "title": "資産タイプ",
     "description": "プラットフォームでサポートしたい資産タイプを選択してください",
     "continue": "続ける"
+  },
+  "create-factory-messages": {
+    "initial-loading": "トークンファクトリーのデプロイを準備中...",
+    "no-result-error": "ファクトリーのデプロイが完了しましたが、アドレスが返されませんでした",
+    "default-error": "トークンファクトリーのデプロイに失敗しました",
+    "factory-created": "トークンファクトリーが正常に作成されました",
+    "creating-factory": "トークンファクトリーを作成中...",
+    "factory-creation-failed": "トークンファクトリーの作成に失敗しました。もう一度お試しください。",
+    "system-not-found": "システムアドレスが見つかりません。最初にシステムがデプロイされていることを確認してください。",
+    "system-not-bootstrapped": "システムは最初に初期化される必要があります。システムの初期化が完了するまでお待ちください。",
+    "deploying-button": "デプロイ中...",
+    "button": {
+      "deploy": "トークンファクトリーをデプロイ",
+      "deploying": "ファクトリーをデプロイ中..."
+    },
+    "transaction-tracking": {
+      "stream-timeout": "ファクトリーデプロイの追跡が90秒後にタイムアウトしました",
+      "waiting-for-mining": "チェーン上でトークンファクトリーをデプロイ中...",
+      "transaction-failed": "ファクトリーデプロイのトランザクションが失敗しました",
+      "transaction-dropped": "ファクトリーデプロイのトランザクションが時間内にオンチェーンで確認されませんでした",
+      "waiting-for-indexing": "ファクトリーがインデックスされるのを待っています...",
+      "transaction-indexed": "ファクトリーが正常にインデックスされ、使用準備が整いました",
+      "indexing-timeout": "ファクトリーのインデックス作成がタイムアウトしました。ページを更新してください"
+    },
+    "multiple-factories": {
+      "deploying": "{{total}}個中{{current}}個目のファクトリーをデプロイ中...",
+      "completed": "{{total}}個中{{completed}}個のファクトリーをデプロイ済み",
+      "all-completed": "すべてのトークンファクトリーが正常にデプロイされました"
+    }
   }
 }

@@ -45,5 +45,34 @@
     "title": "Asset-Typen",
     "description": "Wählen Sie die Asset-Typen aus, die Sie auf Ihrer Plattform unterstützen möchten",
     "continue": "Weiter"
+  },
+  "create-factory-messages": {
+    "initial-loading": "Bereite die Bereitstellung von Token-Fabriken vor...",
+    "no-result-error": "Die Bereitstellung der Fabrik wurde abgeschlossen, aber es wurde keine Adresse zurückgegeben",
+    "default-error": "Die Bereitstellung der Token-Fabrik ist fehlgeschlagen",
+    "factory-created": "Token-Fabrik erfolgreich erstellt",
+    "creating-factory": "Token-Fabrik wird erstellt...",
+    "factory-creation-failed": "Die Erstellung der Token-Fabrik ist fehlgeschlagen. Bitte versuche es erneut.",
+    "system-not-found": "Systemadresse nicht gefunden. Bitte stellen Sie sicher, dass zuerst ein System bereitgestellt wurde.",
+    "system-not-bootstrapped": "Das System muss zuerst initialisiert werden. Bitte warten Sie auf den Abschluss der Systeminitialisierung.",
+    "deploying-button": "Wird bereitgestellt...",
+    "button": {
+      "deploy": "Token-Fabriken bereitstellen",
+      "deploying": "Fabriken werden bereitgestellt..."
+    },
+    "transaction-tracking": {
+      "stream-timeout": "Die Verfolgung der Fabrik-Bereitstellung hat nach 90 Sekunden abgelaufen",
+      "waiting-for-mining": "Bereitstellung von Token-Fabriken auf der Blockchain...",
+      "transaction-failed": "Die Transaktion zur Bereitstellung der Fabrik ist fehlgeschlagen",
+      "transaction-dropped": "Die Transaktion zur Bereitstellung der Fabrik wurde nicht rechtzeitig on-chain bestätigt",
+      "waiting-for-indexing": "Warte darauf, dass die Fabriken indiziert werden...",
+      "transaction-indexed": "Fabriken erfolgreich indiziert und bereit zur Nutzung",
+      "indexing-timeout": "Die Indizierung der Fabriken hat abgelaufen, bitte lade die Seite neu"
+    },
+    "multiple-factories": {
+      "deploying": "Bereitstellung {{current}} von {{total}} Fabriken...",
+      "completed": "{{completed}} von {{total}} Fabriken bereitgestellt",
+      "all-completed": "Alle Token-Fabriken erfolgreich bereitgestellt"
+    }
   }
 }

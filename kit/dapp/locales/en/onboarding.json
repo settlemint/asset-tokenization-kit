@@ -45,5 +45,34 @@
     "title": "Asset Types",
     "description": "Select the asset types you want to support on your platform",
     "continue": "Continue"
+  },
+  "create-factory-messages": {
+    "initial-loading": "Preparing to deploy token factories...",
+    "no-result-error": "Factory deployment completed but no address was returned",
+    "default-error": "Failed to deploy token factory",
+    "factory-created": "Token factory successfully created",
+    "creating-factory": "Creating token factory...",
+    "factory-creation-failed": "Failed to create token factory. Please try again.",
+    "system-not-found": "System address not found. Please ensure a system is deployed first.",
+    "system-not-bootstrapped": "System needs to be bootstrapped first. Please wait for system initialization to complete.",
+    "deploying-button": "Deploying...",
+    "button": {
+      "deploy": "Deploy token factories",
+      "deploying": "Deploying factories..."
+    },
+    "transaction-tracking": {
+      "stream-timeout": "Factory deployment tracking timed out after 90 seconds",
+      "waiting-for-mining": "Deploying token factories on chain...",
+      "transaction-failed": "Factory deployment transaction failed",
+      "transaction-dropped": "Factory deployment transaction was not confirmed on-chain in time",
+      "waiting-for-indexing": "Waiting for factories to be indexed...",
+      "transaction-indexed": "Factories successfully indexed and ready to use",
+      "indexing-timeout": "Factory indexing timed out, please refresh the page"
+    },
+    "multiple-factories": {
+      "deploying": "Deploying {{current}} of {{total}} factories...",
+      "completed": "{{completed}} of {{total}} factories deployed",
+      "all-completed": "All token factories deployed successfully"
+    }
   }
 }
