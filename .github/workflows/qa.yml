@@ -192,6 +192,10 @@ jobs:
         run: |
           bunx turbo run artifacts --concurrency=100%
 
+      - name: Run the backend services
+        run: |
+          bun dev:up
+
       - name: CI tests
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
