@@ -60,19 +60,22 @@ export function handleGlobalCountryListChange(
   fetchEvent(event, "GlobalCountryListChange");
 
   const complianceModule = fetchComplianceModule(event.address);
-  complianceModule.countries = complianceModule.countries || [];
+  let countries = complianceModule.countries;
+  if (!countries) {
+    countries = [];
+  }
 
   if (event.params.inList) {
-    complianceModule.countries.push(event.params.country);
+    countries.push(event.params.country);
   } else {
     const newCountries: i32[] = [];
-    const currentCountries = complianceModule.countries;
-    for (let i = 0; i < currentCountries.length; i++) {
-      if (currentCountries[i] != event.params.country) {
-        newCountries.push(currentCountries[i]);
+    for (let i = 0; i < countries.length; i++) {
+      if (countries[i] != event.params.country) {
+        newCountries.push(countries[i]);
       }
     }
-    complianceModule.countries = newCountries;
+    countries = newCountries;
   }
+  complianceModule.countries = countries;
   complianceModule.save();
 }
