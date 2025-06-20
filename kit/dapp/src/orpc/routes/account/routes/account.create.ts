@@ -5,14 +5,15 @@ import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm";
+import { getAddress } from "viem";
 import { AccountCreateMessagesSchema } from "./account.create.schema";
 
 /**
  * GraphQL mutation to create a new wallet in the SettleMint Portal.
- * 
+ *
  * Creates a new HD wallet derived from the specified key vault,
  * with the userId as the wallet name for identification.
- * 
+ *
  * @param keyVaultId - The HD key vault ID to derive the wallet from
  * @param userId - The user ID to associate with the wallet
  * @returns The newly created wallet address
@@ -27,12 +28,12 @@ const CREATE_ACCOUNT_MUTATION = portalGraphql(`
 
 /**
  * Creates a new blockchain wallet account for an authenticated user.
- * 
+ *
  * This handler performs the following operations:
  * 1. Verifies the user doesn't already have a wallet
  * 2. Creates a new wallet in the SettleMint Portal
  * 3. Updates the user record with the new wallet address
- * 
+ *
  * @throws RESOURCE_ALREADY_EXISTS if the user already has a wallet
  * @throws PORTAL_ERROR if wallet creation fails
  * @returns The Ethereum address of the newly created wallet
@@ -42,7 +43,7 @@ export const create = authRouter.account.create
   .use(portalMiddleware)
   .handler(async ({ input, context, errors }) => {
     const sender = context.auth.user;
-    
+
     // Parse messages with defaults using Zod schema
     const messages = AccountCreateMessagesSchema.parse(input.messages ?? {});
 
@@ -75,7 +76,7 @@ export const create = authRouter.account.create
     await context.db
       .update(user)
       .set({
-        wallet: createWallet.address,
+        wallet: getAddress(createWallet.address),
       })
       .where(eq(user.id, sender.id));
 

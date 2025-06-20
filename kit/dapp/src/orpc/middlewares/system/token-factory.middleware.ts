@@ -1,6 +1,6 @@
 import type { AssetType } from "@/lib/zod/validators/asset-types";
 import type { SystemAccessControl } from "@/orpc/middlewares/system/system.middleware";
-import { baseRouter } from "../../procedures/base.router";
+import { baseRouter } from "@/orpc/procedures/base.router";
 
 /**
  * Middleware to check if the user has the required roles to interact with the token factory.

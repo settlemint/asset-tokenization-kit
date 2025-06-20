@@ -38,6 +38,15 @@ export const router = baseRouter.router({
   ),
 
   /**
+   * Token-related API procedures.
+   *
+   * Lazy-loaded module containing token management operations.
+   *
+   * @see {@link ./token/token.router} - Token router implementation
+   */
+  token: baseRouter.token.lazy(() => import("./token/token.router")),
+
+  /**
    * System-related API procedures.
    *
    * Lazy-loaded module containing SMART system management operations.

@@ -7,7 +7,7 @@
  *
  * @module EthereumHashValidation
  */
-import { isHash } from "viem";
+import { isHash, type Hex } from "viem";
 import { z } from "zod/v4";
 
 /**
@@ -62,7 +62,7 @@ export const ethereumHash = z
  * This type represents a validated Ethereum hash
  * as a string.
  */
-export type EthereumHash = z.output<typeof ethereumHash>;
+export type EthereumHash = Hex;
 
 /**
  * Type guard function to check if a value is a valid Ethereum hash
@@ -113,5 +113,5 @@ export function isEthereumHash(value: unknown): value is EthereumHash {
  * ```
  */
 export function getEthereumHash(value: unknown): EthereumHash {
-  return ethereumHash.parse(value);
+  return ethereumHash.parse(value) as EthereumHash;
 }

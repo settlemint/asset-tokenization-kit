@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
 
 const LIST_TOKEN_QUERY = theGraphGraphql(`
   query ListTokenQuery($skip: Int!, $orderDirection: OrderDirection = asc, $first: Int = 20) {
@@ -17,7 +18,7 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
     }
   `);
 
-export const list = authRouter.system.list
+export const list = authRouter.token.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     const { offset, limit, orderDirection } = input ?? {
@@ -32,5 +33,5 @@ export const list = authRouter.system.list
       first: limit,
     });
 
-    return tokens;
+    return TokenListSchema.parse(tokens);
   });

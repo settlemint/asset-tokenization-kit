@@ -7,10 +7,10 @@ import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
 const create = baseContract
   .route({
     method: "POST",
-    path: "/token/bond/create",
+    path: "/tokens/bond",
     description: "Create a new bond token",
     successDescription: "Bond token created",
-    tags: ["token"],
+    tags: ["token", "bond"],
   })
   .input(BondTokenCreateSchema)
   .output(ethereumHash);
@@ -18,7 +18,7 @@ const create = baseContract
 const list = baseContract
   .route({
     method: "GET",
-    path: "/token/list",
+    path: "/tokens",
     description: "Get the list of tokens",
     successDescription: "List of tokens",
     tags: ["token"],
