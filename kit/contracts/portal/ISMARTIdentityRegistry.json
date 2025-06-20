@@ -1,0 +1,1790 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "batchRegisterIdentity",
+      "inputs": [
+        {
+          "name": "_userAddresses",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "_identities",
+          "type": "address[]",
+          "internalType": "contract IIdentity[]"
+        },
+        {
+          "name": "_countries",
+          "type": "uint16[]",
+          "internalType": "uint16[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "contains",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "deleteIdentity",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "getRecoveredWallet",
+      "inputs": [
+        {
+          "name": "lostWallet",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "identity",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract IIdentity"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "identityStorage",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract ISMARTIdentityRegistryStorage"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "investorCountry",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint16",
+          "internalType": "uint16"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isVerified",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "requiredClaimTopics",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isWalletLost",
+      "inputs": [
+        {
+          "name": "userWallet",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "issuersRegistry",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract IERC3643TrustedIssuersRegistry"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "recoverIdentity",
+      "inputs": [
+        {
+          "name": "lostWallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "newWallet",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "newOnchainId",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "registerIdentity",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_identity",
+          "type": "address",
+          "internalType": "contract IIdentity"
+        },
+        {
+          "name": "_country",
+          "type": "uint16",
+          "internalType": "uint16"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setIdentityRegistryStorage",
+      "inputs": [
+        {
+          "name": "_identityRegistryStorage",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setTopicSchemeRegistry",
+      "inputs": [
+        {
+          "name": "_topicSchemeRegistry",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setTrustedIssuersRegistry",
+      "inputs": [
+        {
+          "name": "_trustedIssuersRegistry",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "supportsInterface",
+      "inputs": [
+        {
+          "name": "interfaceId",
+          "type": "bytes4",
+          "internalType": "bytes4"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "topicSchemeRegistry",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract ISMARTTopicSchemeRegistry"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "updateCountry",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_country",
+          "type": "uint16",
+          "internalType": "uint16"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "updateIdentity",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_identity",
+          "type": "address",
+          "internalType": "contract IIdentity"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "CountryUpdated",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_investorAddress",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_country",
+          "type": "uint16",
+          "indexed": true,
+          "internalType": "uint16"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "IdentityRecovered",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "lostWallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newWallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newIdentityContract",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        },
+        {
+          "name": "oldIdentityContract",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "IdentityRegistered",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_investorAddress",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_identity",
+          "type": "address",
+          "indexed": true,
+          "internalType": "contract IIdentity"
+        },
+        {
+          "name": "_country",
+          "type": "uint16",
+          "indexed": false,
+          "internalType": "uint16"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "IdentityRemoved",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_investorAddress",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_identity",
+          "type": "address",
+          "indexed": true,
+          "internalType": "contract IIdentity"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "IdentityStorageSet",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_identityStorage",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "IdentityUpdated",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_oldIdentity",
+          "type": "address",
+          "indexed": true,
+          "internalType": "contract IIdentity"
+        },
+        {
+          "name": "_newIdentity",
+          "type": "address",
+          "indexed": true,
+          "internalType": "contract IIdentity"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "TopicSchemeRegistrySet",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_topicSchemeRegistry",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "TrustedIssuersRegistrySet",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_trustedIssuersRegistry",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "WalletRecoveryLinked",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "lostWallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newWallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "batchRegisterIdentity(address[],address[],uint16[])": "653dc9f1",
+    "contains(address)": "5dbe47e8",
+    "deleteIdentity(address)": "a8d29d1d",
+    "getRecoveredWallet(address)": "84bb0330",
+    "identity(address)": "f0eb5e54",
+    "identityStorage()": "f11abfd8",
+    "investorCountry(address)": "7e42683b",
+    "isVerified(address,uint256[])": "7a76ac78",
+    "isWalletLost(address)": "3f8ed173",
+    "issuersRegistry()": "b4f3fcb7",
+    "recoverIdentity(address,address,address)": "2406dfc6",
+    "registerIdentity(address,address,uint16)": "454a03e0",
+    "setIdentityRegistryStorage(address)": "26d941ae",
+    "setTopicSchemeRegistry(address)": "0f8fccd7",
+    "setTrustedIssuersRegistry(address)": "e744d789",
+    "supportsInterface(bytes4)": "01ffc9a7",
+    "topicSchemeRegistry()": "84c9f8a1",
+    "updateCountry(address,uint16)": "3b239a7f",
+    "updateIdentity(address,address)": "8e098ca1"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_investorAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint16\",\"name\":\"_country\",\"type\":\"uint16\"}],\"name\":\"CountryUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"lostWallet\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newWallet\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newIdentityContract\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"oldIdentityContract\",\"type\":\"address\"}],\"name\":\"IdentityRecovered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_investorAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"contract IIdentity\",\"name\":\"_identity\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint16\",\"name\":\"_country\",\"type\":\"uint16\"}],\"name\":\"IdentityRegistered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_investorAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"contract IIdentity\",\"name\":\"_identity\",\"type\":\"address\"}],\"name\":\"IdentityRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_identityStorage\",\"type\":\"address\"}],\"name\":\"IdentityStorageSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"contract IIdentity\",\"name\":\"_oldIdentity\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"contract IIdentity\",\"name\":\"_newIdentity\",\"type\":\"address\"}],\"name\":\"IdentityUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_topicSchemeRegistry\",\"type\":\"address\"}],\"name\":\"TopicSchemeRegistrySet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_trustedIssuersRegistry\",\"type\":\"address\"}],\"name\":\"TrustedIssuersRegistrySet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"lostWallet\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newWallet\",\"type\":\"address\"}],\"name\":\"WalletRecoveryLinked\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_userAddresses\",\"type\":\"address[]\"},{\"internalType\":\"contract IIdentity[]\",\"name\":\"_identities\",\"type\":\"address[]\"},{\"internalType\":\"uint16[]\",\"name\":\"_countries\",\"type\":\"uint16[]\"}],\"name\":\"batchRegisterIdentity\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"}],\"name\":\"contains\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"}],\"name\":\"deleteIdentity\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lostWallet\",\"type\":\"address\"}],\"name\":\"getRecoveredWallet\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"}],\"name\":\"identity\",\"outputs\":[{\"internalType\":\"contract IIdentity\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityStorage\",\"outputs\":[{\"internalType\":\"contract ISMARTIdentityRegistryStorage\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"}],\"name\":\"investorCountry\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"},{\"internalType\":\"uint256[]\",\"name\":\"requiredClaimTopics\",\"type\":\"uint256[]\"}],\"name\":\"isVerified\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"userWallet\",\"type\":\"address\"}],\"name\":\"isWalletLost\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"issuersRegistry\",\"outputs\":[{\"internalType\":\"contract IERC3643TrustedIssuersRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lostWallet\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"newWallet\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"newOnchainId\",\"type\":\"address\"}],\"name\":\"recoverIdentity\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"},{\"internalType\":\"contract IIdentity\",\"name\":\"_identity\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"_country\",\"type\":\"uint16\"}],\"name\":\"registerIdentity\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_identityRegistryStorage\",\"type\":\"address\"}],\"name\":\"setIdentityRegistryStorage\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_topicSchemeRegistry\",\"type\":\"address\"}],\"name\":\"setTopicSchemeRegistry\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_trustedIssuersRegistry\",\"type\":\"address\"}],\"name\":\"setTrustedIssuersRegistry\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"topicSchemeRegistry\",\"outputs\":[{\"internalType\":\"contract ISMARTTopicSchemeRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"_country\",\"type\":\"uint16\"}],\"name\":\"updateCountry\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"},{\"internalType\":\"contract IIdentity\",\"name\":\"_identity\",\"type\":\"address\"}],\"name\":\"updateIdentity\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint\",\"details\":\"This registry acts as a central point of truth for associating wallet addresses with digital identities.      It relies on two other key components:      1. `ISMARTIdentityRegistryStorage`: A separate contract responsible for storing the actual mappings         between investor addresses, identity contracts, and country codes. This separation of concerns allows         for upgradability and different storage strategies.      2. `IERC3643TrustedIssuersRegistry`: A contract that maintains a list of trusted entities (claim issuers)         whose attestations (claims) about an identity are considered valid.      Operations like registering a new identity or checking if an identity is verified are performed through this interface. This interface extends IERC165 for interface detection support.\",\"events\":{\"CountryUpdated(address,address,uint16)\":{\"details\":\"This event is important for compliance processes that may depend on the investor's jurisdiction.\",\"params\":{\"_country\":\"The new numeric country code (conforming to ISO 3166-1 alpha-2 standard, e.g., 840 for USA).\",\"_investorAddress\":\"The wallet address of the investor whose country information was updated.\",\"sender\":\"The address of the account (e.g., a registrar agent) that performed the update.\"}},\"IdentityRecovered(address,address,address,address,address)\":{\"params\":{\"lostWallet\":\"The previous wallet address that has now been marked as lost. (Indexed)\",\"newIdentityContract\":\"The new IIdentity contract for the new wallet. (Indexed)\",\"newWallet\":\"The new active wallet address for the identity. (Indexed)\",\"oldIdentityContract\":\"The old IIdentity contract that was associated with the lost wallet.\",\"sender\":\"The address of the account (e.g., a registrar agent) that performed the recovery.\"}},\"IdentityRegistered(address,address,address,uint16)\":{\"details\":\"This event marks the creation of an association between a wallet and an on-chain identity contract.\",\"params\":{\"_country\":\"The numeric country code (ISO 3166-1 alpha-2 standard) representing the investor's jurisdiction.\",\"_identity\":\"The address of the investor's `IIdentity` smart contract, which holds their claims and attestations.\",\"_investorAddress\":\"The wallet address of the investor being registered.\",\"sender\":\"The address of the account (e.g., a registrar agent) that performed the registration.\"}},\"IdentityRemoved(address,address,address)\":{\"details\":\"This event indicates that the link between a wallet address and its associated `IIdentity` contract has been severed.\",\"params\":{\"_identity\":\"The address of the `IIdentity` smart contract that was previously associated with the investor address.\",\"_investorAddress\":\"The wallet address of the investor whose registration was removed.\",\"sender\":\"The address of the account (e.g., a registrar agent) that performed the removal.\"}},\"IdentityStorageSet(address,address)\":{\"details\":\"This event is crucial for transparency, allowing external observers to track changes in the underlying      storage mechanism used by the Identity Registry.\",\"params\":{\"_identityStorage\":\"The new address of the contract implementing `ISMARTIdentityRegistryStorage`.\",\"sender\":\"The address of the account (typically the owner or an admin) that initiated this change.\"}},\"IdentityUpdated(address,address,address)\":{\"details\":\"This typically occurs during identity recovery processes or when an investor chooses to link a new identity contract.\",\"params\":{\"_newIdentity\":\"The address of the newly associated `IIdentity` contract.\",\"_oldIdentity\":\"The address of the previously associated `IIdentity` contract.\",\"sender\":\"The address of the account (e.g., a registrar agent) that performed the update.\"}},\"TopicSchemeRegistrySet(address,address)\":{\"details\":\"This event signals a change in the topic scheme registry that defines valid claim topics.\",\"params\":{\"_topicSchemeRegistry\":\"The new address of the contract implementing `ISMARTTopicSchemeRegistry`.\",\"sender\":\"The address of the account (typically the owner or an admin) that initiated this change.\"}},\"TrustedIssuersRegistrySet(address,address)\":{\"details\":\"This event signals a change in the list of authorities whose claims are recognized by this Identity Registry.      It's important for users and relying parties to be aware of which issuers are trusted.\",\"params\":{\"_trustedIssuersRegistry\":\"The new address of the contract implementing `IERC3643TrustedIssuersRegistry`.\",\"sender\":\"The address of the account (typically the owner or an admin) that initiated this change.\"}},\"WalletRecoveryLinked(address,address,address)\":{\"details\":\"This event helps track the recovery chain for token reclaim purposes.\",\"params\":{\"lostWallet\":\"The lost wallet address.\",\"newWallet\":\"The new replacement wallet address.\",\"sender\":\"The address that performed the recovery operation.\"}}},\"kind\":\"dev\",\"methods\":{\"batchRegisterIdentity(address[],address[],uint16[])\":{\"custom:emit\":\"Multiple `IdentityRegistered` events, one for each successful registration.\",\"details\":\"This function is typically callable only by authorized agents or registrars.      It is a gas-saving measure for registering many users at once.      The function will usually revert if any of the `_userAddresses` are already registered or if the input arrays have mismatched lengths.      Care should be taken with the number of entries due to block gas limits.\",\"params\":{\"_countries\":\"An array of corresponding numeric country codes (ISO 3166-1 alpha-2) for each investor.\",\"_identities\":\"An array of corresponding `IIdentity` contract addresses for each investor.\",\"_userAddresses\":\"An array of investor wallet addresses to be registered.\"}},\"contains(address)\":{\"details\":\"This is a view function and does not consume gas beyond the read operation cost.\",\"params\":{\"_userAddress\":\"The wallet address to query.\"},\"returns\":{\"_0\":\"`true` if the address is registered, `false` otherwise.\"}},\"deleteIdentity(address)\":{\"custom:emit\":\"IdentityRemoved\",\"details\":\"This function is typically callable only by authorized agents or registrars.      It will usually revert if the `_userAddress` is not currently registered.      This action effectively unlinks the wallet address from its associated `IIdentity` contract in this registry.\",\"params\":{\"_userAddress\":\"The investor's wallet address whose registration is to be removed.\"}},\"getRecoveredWallet(address)\":{\"details\":\"This is the key function for token recovery validation.\",\"params\":{\"lostWallet\":\"The lost wallet address.\"},\"returns\":{\"_0\":\"The new wallet address that replaced the lost wallet, or address(0) if not found.\"}},\"identity(address)\":{\"details\":\"This is a view function. It will typically revert if the `_userAddress` is not registered.\",\"params\":{\"_userAddress\":\"The investor's wallet address.\"},\"returns\":{\"_0\":\"The address of the `IIdentity` contract linked to the given wallet address.\"}},\"identityStorage()\":{\"details\":\"This allows external parties to inspect which storage contract is active.\",\"returns\":{\"_0\":\"The address of the contract implementing `ISMARTIdentityRegistryStorage`.\"}},\"investorCountry(address)\":{\"details\":\"This is a view function. It will typically revert if the `_userAddress` is not registered.\",\"params\":{\"_userAddress\":\"The investor's wallet address.\"},\"returns\":{\"_0\":\"The numeric country code (ISO 3166-1 alpha-2) for the investor's jurisdiction.\"}},\"isVerified(address,uint256[])\":{\"details\":\"Verification is determined by checking the claims held in the investor's associated `IIdentity` contract.      Specifically, it checks if the `IIdentity` contract has valid claims for ALL topics listed in `requiredClaimTopics`.      A claim is considered valid if it is issued by an issuer listed in the `TrustedIssuersRegistry` and has not expired or been revoked.      This function typically interacts with both the `IIdentity` contract and the `TrustedIssuersRegistry`.\",\"params\":{\"_userAddress\":\"The investor's wallet address to verify.\",\"requiredClaimTopics\":\"An array of claim topic IDs (e.g., KYC, accreditation) that the identity must possess.\"},\"returns\":{\"_0\":\"`true` if the investor's identity holds all required valid claims, `false` otherwise.\"}},\"isWalletLost(address)\":{\"params\":{\"userWallet\":\"The wallet address to check.\"},\"returns\":{\"_0\":\"True if the wallet is marked as lost, false otherwise.\"}},\"issuersRegistry()\":{\"details\":\"This allows external parties to inspect which trusted issuers list is active for verification purposes.\",\"returns\":{\"_0\":\"The address of the contract implementing `IERC3643TrustedIssuersRegistry`.\"}},\"recoverIdentity(address,address,address)\":{\"details\":\"This function handles the practical reality that losing wallet access often means losing      access to the identity contract as well. It creates a fresh start while maintaining      regulatory compliance data and recovery links for token reclaim.      The function is typically restricted to registrar roles.\",\"params\":{\"lostWallet\":\"The current wallet address to be marked as lost.\",\"newOnchainId\":\"The new IIdentity contract address for the new wallet.\",\"newWallet\":\"The new wallet address to be registered.\"}},\"registerIdentity(address,address,uint16)\":{\"custom:emit\":\"IdentityRegistered\",\"details\":\"This function is typically callable only by authorized agents or registrars.      It will usually revert if the provided `_userAddress` is already registered to prevent duplicate entries.      The country code is important for jurisdictional compliance.\",\"params\":{\"_country\":\"The numeric country code (ISO 3166-1 alpha-2 standard) representing the investor's jurisdiction.\",\"_identity\":\"The address of the investor's deployed `IIdentity` contract, which manages their claims.\",\"_userAddress\":\"The investor's primary wallet address (externally owned account or smart contract wallet).\"}},\"setIdentityRegistryStorage(address)\":{\"custom:emit\":\"IdentityStorageSet\",\"details\":\"This function is usually restricted to an administrative role (e.g., contract owner).      It allows the Identity Registry to delegate the actual storage of identity data to a separate, potentially upgradable, contract.      Changing this address can have significant implications, so it must be handled with care.\",\"params\":{\"_identityRegistryStorage\":\"The address of the new contract that implements the `ISMARTIdentityRegistryStorage` interface.\"}},\"setTopicSchemeRegistry(address)\":{\"custom:emit\":\"TopicSchemeRegistrySet\",\"details\":\"This function is usually restricted to an administrative role (e.g., contract owner).      The `TopicSchemeRegistry` is responsible for maintaining valid claim topic schemes.      Updating this address changes which claim topics are considered valid for verification.\",\"params\":{\"_topicSchemeRegistry\":\"The address of the new contract that implements the `ISMARTTopicSchemeRegistry` interface.\"}},\"setTrustedIssuersRegistry(address)\":{\"custom:emit\":\"TrustedIssuersRegistrySet\",\"details\":\"This function is usually restricted to an administrative role (e.g., contract owner).      The `TrustedIssuersRegistry` is responsible for maintaining a list of claim issuers whose attestations are considered valid.      Updating this address changes the set of authorities recognized for identity verification.\",\"params\":{\"_trustedIssuersRegistry\":\"The address of the new contract that implements the `IERC3643TrustedIssuersRegistry` interface.\"}},\"supportsInterface(bytes4)\":{\"details\":\"Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas.\"},\"topicSchemeRegistry()\":{\"details\":\"This allows external parties to inspect which topic scheme registry is active for validation.\",\"returns\":{\"_0\":\"The address of the contract implementing `ISMARTTopicSchemeRegistry`.\"}},\"updateCountry(address,uint16)\":{\"custom:emit\":\"CountryUpdated\",\"details\":\"This function is typically callable only by authorized agents or registrars.      It will usually revert if the `_userAddress` is not registered.      This is used to reflect changes in an investor's country of residence for compliance purposes.\",\"params\":{\"_country\":\"The new numeric country code (ISO 3166-1 alpha-2 standard).\",\"_userAddress\":\"The investor's wallet address whose country information needs updating.\"}},\"updateIdentity(address,address)\":{\"custom:emit\":\"IdentityUpdated\",\"details\":\"This function is typically callable only by authorized agents or registrars.      It will usually revert if the `_userAddress` is not registered.      This is useful for scenarios like identity recovery, or if an investor upgrades or changes their `IIdentity` contract.\",\"params\":{\"_identity\":\"The address of the investor's new `IIdentity` contract.\",\"_userAddress\":\"The investor's wallet address whose associated `IIdentity` contract needs updating.\"}}},\"title\":\"ISMARTIdentityRegistry Interface\",\"version\":1},\"userdoc\":{\"events\":{\"CountryUpdated(address,address,uint16)\":{\"notice\":\"Emitted when the country code associated with a registered investor's wallet address is updated.\"},\"IdentityRecovered(address,address,address,address,address)\":{\"notice\":\"Emitted when an identity is successfully recovered, associating a new wallet with a new identity         and marking the old wallet as lost.\"},\"IdentityRegistered(address,address,address,uint16)\":{\"notice\":\"Emitted when a new identity is successfully registered for an investor's wallet address.\"},\"IdentityRemoved(address,address,address)\":{\"notice\":\"Emitted when an existing identity registration is successfully removed for an investor's wallet address.\"},\"IdentityStorageSet(address,address)\":{\"notice\":\"Emitted when the address of the `IdentityRegistryStorage` contract is successfully set or updated.\"},\"IdentityUpdated(address,address,address)\":{\"notice\":\"Emitted when the `IIdentity` contract associated with a registered investor's wallet address is updated.\"},\"TopicSchemeRegistrySet(address,address)\":{\"notice\":\"Emitted when the address of the `TopicSchemeRegistry` contract is successfully set or updated.\"},\"TrustedIssuersRegistrySet(address,address)\":{\"notice\":\"Emitted when the address of the `TrustedIssuersRegistry` contract is successfully set or updated.\"},\"WalletRecoveryLinked(address,address,address)\":{\"notice\":\"Emitted when a wallet recovery link is established between a lost wallet and its replacement.\"}},\"kind\":\"user\",\"methods\":{\"batchRegisterIdentity(address[],address[],uint16[])\":{\"notice\":\"Registers multiple identities in a single batch transaction.\"},\"contains(address)\":{\"notice\":\"Checks if a given investor wallet address is currently registered in this Identity Registry.\"},\"deleteIdentity(address)\":{\"notice\":\"Removes an existing identity registration for an investor's wallet address.\"},\"getRecoveredWallet(address)\":{\"notice\":\"Gets the new wallet address that replaced a lost wallet during recovery.\"},\"identity(address)\":{\"notice\":\"Retrieves the `IIdentity` contract address associated with a registered investor's wallet address.\"},\"identityStorage()\":{\"notice\":\"Returns the address of the `IdentityRegistryStorage` contract currently being used by this Identity Registry.\"},\"investorCountry(address)\":{\"notice\":\"Retrieves the numeric country code associated with a registered investor's wallet address.\"},\"isVerified(address,uint256[])\":{\"notice\":\"Checks if a registered investor's wallet address is considered 'verified'.\"},\"isWalletLost(address)\":{\"notice\":\"Checks if a wallet address has been marked as lost.\"},\"issuersRegistry()\":{\"notice\":\"Returns the address of the `TrustedIssuersRegistry` contract currently being used by this Identity Registry.\"},\"recoverIdentity(address,address,address)\":{\"notice\":\"Recovers an identity by creating a new wallet registration with a new identity contract,         marking the old wallet as lost, and preserving the country code.\"},\"registerIdentity(address,address,uint16)\":{\"notice\":\"Registers an investor's wallet address, linking it to their on-chain `IIdentity` contract and their country of residence.\"},\"setIdentityRegistryStorage(address)\":{\"notice\":\"Sets or updates the address of the `IdentityRegistryStorage` contract.\"},\"setTopicSchemeRegistry(address)\":{\"notice\":\"Sets or updates the address of the `TopicSchemeRegistry` contract.\"},\"setTrustedIssuersRegistry(address)\":{\"notice\":\"Sets or updates the address of the `TrustedIssuersRegistry` contract.\"},\"topicSchemeRegistry()\":{\"notice\":\"Returns the address of the `TopicSchemeRegistry` contract currently being used by this Identity Registry.\"},\"updateCountry(address,uint16)\":{\"notice\":\"Updates the country code associated with a previously registered investor's wallet address.\"},\"updateIdentity(address,address)\":{\"notice\":\"Updates the on-chain `IIdentity` contract associated with a previously registered investor's wallet address.\"}},\"notice\":\"This interface defines the standard functions for an Identity Registry contract within the SMART protocol.         It is designed to be compatible with ERC-3643 (Tokenized Asset Standard) and OnchainID.         The primary role of this registry is to manage the crucial link between an investor's wallet address,         their decentralized on-chain Identity contract (implementing `IIdentity`), and their verification status         based on claims issued by trusted entities.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/smart/interface/ISMARTIdentityRegistry.sol\":\"ISMARTIdentityRegistry\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/\",\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/\",\":forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\",\":openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\"],\"viaIR\":true},\"sources\":{\"contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol\":{\"keccak256\":\"0x3a8a72df8da5bf4d988bbfb00151b933ff17cdc8d4be47dc121cd9e2083ba86f\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://369250658bf8d3ebb583946820afa494271ce6bfde607d15c7060cdf7a303cf3\",\"dweb:/ipfs/QmSJjaK6vyv8K9RX1k3rwxsoKfVNyMoHEszxyxdTQfDKQG\"]},\"contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol\":{\"keccak256\":\"0x15b72940814cd959b57bf75623f16c51fc6c50eab51fd2420a8b653519ebd76c\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://479f5e24a1b608776d9d5d7da9c76dd3c9b1dd300d8b4eee7a15dcfba4817bee\",\"dweb:/ipfs/QmPhMBfQAqt5NeRcSu3jDTwhoQXnB7nXNEcmoJ7KoWVt7V\"]},\"contracts/smart/interface/ISMARTIdentityRegistry.sol\":{\"keccak256\":\"0x62a95a9db2ac97ceaf59f7585d7bbaf3acb65ed9b5e57597b9d1fe1b4d7c4eda\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://bd870710359396db48e70ef7e40449125ff744c6c8ce15ad7e1894df430c87ea\",\"dweb:/ipfs/QmZ6khf5Vm6hBkkUgYC1b161jSQaZeegJVRY6ndjRW1EcG\"]},\"contracts/smart/interface/ISMARTIdentityRegistryStorage.sol\":{\"keccak256\":\"0x219b3d03958859e2f082aac5cbf3b40acf243e326ee6e74e6bb03be7724c2985\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://8cf8d30ec47cb2aed5b51d373837584fb6f08deab1d35142510271e733404f52\",\"dweb:/ipfs/Qmc9NnABx9ouhhCR8qgJC3RtU5oAyycSjZkY6nGtuWFwuz\"]},\"contracts/smart/interface/ISMARTTopicSchemeRegistry.sol\":{\"keccak256\":\"0xec5e42dcf7d929f8a0db42c9c8a0fa81d089a9f7177b7da10df029f94334ca8a\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://e346e3241e3110b3f17d2b244a49d68a1d79c6928bef7d372ea3458c1029cea0\",\"dweb:/ipfs/QmeSyCYN9qYXRjn799fRFP7X9apf7bubVhnFEUGQatx3xd\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IClaimIssuer.sol\":{\"keccak256\":\"0xae785f63b3cb3a94bcb454ef4ad6376aa4848fa29cff1cc8db3bef4a2994a779\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://d8223d2710c51ee39cdfd2cb2f1858b3d64a3222c78ea8ed5eb3e11a93e1222e\",\"dweb:/ipfs/QmYRXPCww7BorScTC6QNMbrRm2zprUmSYFpWomwarJH7Df\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IERC734.sol\":{\"keccak256\":\"0x35a14a0d1a3ed51689f1a2cb12e26d30601afbcc1cc9b9b288a03cd11e6d049e\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://156aac402e73e6bd2fa8c0ccd85b2add8d1bb505d8a652218173dbc8e7b9a3cb\",\"dweb:/ipfs/QmPzPyc3kKxoNCGqKAooUju6YvMkDN4MCUH198TEXnA82o\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IERC735.sol\":{\"keccak256\":\"0xeac82c37b16c1c1c83df3e88be987332b1230ed13e1d017f9d2929f978ac0122\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://695a66b789ac417b7b2b78c578981779db374704382921ff499351cccab0323e\",\"dweb:/ipfs/QmeZoogvsEWf688Z849zZ2dLPDnor6YnnNQLMgedY9Tc9D\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IIdentity.sol\":{\"keccak256\":\"0x5ed42ab81b9b734c79e61d1f7e0734baab5479a356ab6bb469414d3c66269862\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://a0863999b1ed334179a43e699e6057815eea011a78ed51e61b6110fc392e26f8\",\"dweb:/ipfs/Qme6hdHZCAy1V4sLgAZ5NxdrEjEf5mYMabf5UDmUDjkuzW\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "_investorAddress",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint16",
+              "name": "_country",
+              "type": "uint16",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "CountryUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "lostWallet",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newWallet",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newIdentityContract",
+              "type": "address",
+              "indexed": false
+            },
+            {
+              "internalType": "address",
+              "name": "oldIdentityContract",
+              "type": "address",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "IdentityRecovered",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "_investorAddress",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "contract IIdentity",
+              "name": "_identity",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint16",
+              "name": "_country",
+              "type": "uint16",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "IdentityRegistered",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "_investorAddress",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "contract IIdentity",
+              "name": "_identity",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "IdentityRemoved",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "_identityStorage",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "IdentityStorageSet",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "contract IIdentity",
+              "name": "_oldIdentity",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "contract IIdentity",
+              "name": "_newIdentity",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "IdentityUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "_topicSchemeRegistry",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "TopicSchemeRegistrySet",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "_trustedIssuersRegistry",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "TrustedIssuersRegistrySet",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "lostWallet",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newWallet",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "WalletRecoveryLinked",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "_userAddresses",
+              "type": "address[]"
+            },
+            {
+              "internalType": "contract IIdentity[]",
+              "name": "_identities",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint16[]",
+              "name": "_countries",
+              "type": "uint16[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "batchRegisterIdentity"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "contains",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "deleteIdentity"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "lostWallet",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getRecoveredWallet",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "identity",
+          "outputs": [
+            {
+              "internalType": "contract IIdentity",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "identityStorage",
+          "outputs": [
+            {
+              "internalType": "contract ISMARTIdentityRegistryStorage",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "investorCountry",
+          "outputs": [
+            {
+              "internalType": "uint16",
+              "name": "",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "requiredClaimTopics",
+              "type": "uint256[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isVerified",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "userWallet",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isWalletLost",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "issuersRegistry",
+          "outputs": [
+            {
+              "internalType": "contract IERC3643TrustedIssuersRegistry",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "lostWallet",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "newWallet",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "newOnchainId",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "recoverIdentity"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IIdentity",
+              "name": "_identity",
+              "type": "address"
+            },
+            {
+              "internalType": "uint16",
+              "name": "_country",
+              "type": "uint16"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "registerIdentity"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_identityRegistryStorage",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setIdentityRegistryStorage"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_topicSchemeRegistry",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setTopicSchemeRegistry"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_trustedIssuersRegistry",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setTrustedIssuersRegistry"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "topicSchemeRegistry",
+          "outputs": [
+            {
+              "internalType": "contract ISMARTTopicSchemeRegistry",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint16",
+              "name": "_country",
+              "type": "uint16"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "updateCountry"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IIdentity",
+              "name": "_identity",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "updateIdentity"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "batchRegisterIdentity(address[],address[],uint16[])": {
+            "custom:emit": "Multiple `IdentityRegistered` events, one for each successful registration.",
+            "details": "This function is typically callable only by authorized agents or registrars.      It is a gas-saving measure for registering many users at once.      The function will usually revert if any of the `_userAddresses` are already registered or if the input arrays have mismatched lengths.      Care should be taken with the number of entries due to block gas limits.",
+            "params": {
+              "_countries": "An array of corresponding numeric country codes (ISO 3166-1 alpha-2) for each investor.",
+              "_identities": "An array of corresponding `IIdentity` contract addresses for each investor.",
+              "_userAddresses": "An array of investor wallet addresses to be registered."
+            }
+          },
+          "contains(address)": {
+            "details": "This is a view function and does not consume gas beyond the read operation cost.",
+            "params": {
+              "_userAddress": "The wallet address to query."
+            },
+            "returns": {
+              "_0": "`true` if the address is registered, `false` otherwise."
+            }
+          },
+          "deleteIdentity(address)": {
+            "custom:emit": "IdentityRemoved",
+            "details": "This function is typically callable only by authorized agents or registrars.      It will usually revert if the `_userAddress` is not currently registered.      This action effectively unlinks the wallet address from its associated `IIdentity` contract in this registry.",
+            "params": {
+              "_userAddress": "The investor's wallet address whose registration is to be removed."
+            }
+          },
+          "getRecoveredWallet(address)": {
+            "details": "This is the key function for token recovery validation.",
+            "params": {
+              "lostWallet": "The lost wallet address."
+            },
+            "returns": {
+              "_0": "The new wallet address that replaced the lost wallet, or address(0) if not found."
+            }
+          },
+          "identity(address)": {
+            "details": "This is a view function. It will typically revert if the `_userAddress` is not registered.",
+            "params": {
+              "_userAddress": "The investor's wallet address."
+            },
+            "returns": {
+              "_0": "The address of the `IIdentity` contract linked to the given wallet address."
+            }
+          },
+          "identityStorage()": {
+            "details": "This allows external parties to inspect which storage contract is active.",
+            "returns": {
+              "_0": "The address of the contract implementing `ISMARTIdentityRegistryStorage`."
+            }
+          },
+          "investorCountry(address)": {
+            "details": "This is a view function. It will typically revert if the `_userAddress` is not registered.",
+            "params": {
+              "_userAddress": "The investor's wallet address."
+            },
+            "returns": {
+              "_0": "The numeric country code (ISO 3166-1 alpha-2) for the investor's jurisdiction."
+            }
+          },
+          "isVerified(address,uint256[])": {
+            "details": "Verification is determined by checking the claims held in the investor's associated `IIdentity` contract.      Specifically, it checks if the `IIdentity` contract has valid claims for ALL topics listed in `requiredClaimTopics`.      A claim is considered valid if it is issued by an issuer listed in the `TrustedIssuersRegistry` and has not expired or been revoked.      This function typically interacts with both the `IIdentity` contract and the `TrustedIssuersRegistry`.",
+            "params": {
+              "_userAddress": "The investor's wallet address to verify.",
+              "requiredClaimTopics": "An array of claim topic IDs (e.g., KYC, accreditation) that the identity must possess."
+            },
+            "returns": {
+              "_0": "`true` if the investor's identity holds all required valid claims, `false` otherwise."
+            }
+          },
+          "isWalletLost(address)": {
+            "params": {
+              "userWallet": "The wallet address to check."
+            },
+            "returns": {
+              "_0": "True if the wallet is marked as lost, false otherwise."
+            }
+          },
+          "issuersRegistry()": {
+            "details": "This allows external parties to inspect which trusted issuers list is active for verification purposes.",
+            "returns": {
+              "_0": "The address of the contract implementing `IERC3643TrustedIssuersRegistry`."
+            }
+          },
+          "recoverIdentity(address,address,address)": {
+            "details": "This function handles the practical reality that losing wallet access often means losing      access to the identity contract as well. It creates a fresh start while maintaining      regulatory compliance data and recovery links for token reclaim.      The function is typically restricted to registrar roles.",
+            "params": {
+              "lostWallet": "The current wallet address to be marked as lost.",
+              "newOnchainId": "The new IIdentity contract address for the new wallet.",
+              "newWallet": "The new wallet address to be registered."
+            }
+          },
+          "registerIdentity(address,address,uint16)": {
+            "custom:emit": "IdentityRegistered",
+            "details": "This function is typically callable only by authorized agents or registrars.      It will usually revert if the provided `_userAddress` is already registered to prevent duplicate entries.      The country code is important for jurisdictional compliance.",
+            "params": {
+              "_country": "The numeric country code (ISO 3166-1 alpha-2 standard) representing the investor's jurisdiction.",
+              "_identity": "The address of the investor's deployed `IIdentity` contract, which manages their claims.",
+              "_userAddress": "The investor's primary wallet address (externally owned account or smart contract wallet)."
+            }
+          },
+          "setIdentityRegistryStorage(address)": {
+            "custom:emit": "IdentityStorageSet",
+            "details": "This function is usually restricted to an administrative role (e.g., contract owner).      It allows the Identity Registry to delegate the actual storage of identity data to a separate, potentially upgradable, contract.      Changing this address can have significant implications, so it must be handled with care.",
+            "params": {
+              "_identityRegistryStorage": "The address of the new contract that implements the `ISMARTIdentityRegistryStorage` interface."
+            }
+          },
+          "setTopicSchemeRegistry(address)": {
+            "custom:emit": "TopicSchemeRegistrySet",
+            "details": "This function is usually restricted to an administrative role (e.g., contract owner).      The `TopicSchemeRegistry` is responsible for maintaining valid claim topic schemes.      Updating this address changes which claim topics are considered valid for verification.",
+            "params": {
+              "_topicSchemeRegistry": "The address of the new contract that implements the `ISMARTTopicSchemeRegistry` interface."
+            }
+          },
+          "setTrustedIssuersRegistry(address)": {
+            "custom:emit": "TrustedIssuersRegistrySet",
+            "details": "This function is usually restricted to an administrative role (e.g., contract owner).      The `TrustedIssuersRegistry` is responsible for maintaining a list of claim issuers whose attestations are considered valid.      Updating this address changes the set of authorities recognized for identity verification.",
+            "params": {
+              "_trustedIssuersRegistry": "The address of the new contract that implements the `IERC3643TrustedIssuersRegistry` interface."
+            }
+          },
+          "supportsInterface(bytes4)": {
+            "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+          },
+          "topicSchemeRegistry()": {
+            "details": "This allows external parties to inspect which topic scheme registry is active for validation.",
+            "returns": {
+              "_0": "The address of the contract implementing `ISMARTTopicSchemeRegistry`."
+            }
+          },
+          "updateCountry(address,uint16)": {
+            "custom:emit": "CountryUpdated",
+            "details": "This function is typically callable only by authorized agents or registrars.      It will usually revert if the `_userAddress` is not registered.      This is used to reflect changes in an investor's country of residence for compliance purposes.",
+            "params": {
+              "_country": "The new numeric country code (ISO 3166-1 alpha-2 standard).",
+              "_userAddress": "The investor's wallet address whose country information needs updating."
+            }
+          },
+          "updateIdentity(address,address)": {
+            "custom:emit": "IdentityUpdated",
+            "details": "This function is typically callable only by authorized agents or registrars.      It will usually revert if the `_userAddress` is not registered.      This is useful for scenarios like identity recovery, or if an investor upgrades or changes their `IIdentity` contract.",
+            "params": {
+              "_identity": "The address of the investor's new `IIdentity` contract.",
+              "_userAddress": "The investor's wallet address whose associated `IIdentity` contract needs updating."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "batchRegisterIdentity(address[],address[],uint16[])": {
+            "notice": "Registers multiple identities in a single batch transaction."
+          },
+          "contains(address)": {
+            "notice": "Checks if a given investor wallet address is currently registered in this Identity Registry."
+          },
+          "deleteIdentity(address)": {
+            "notice": "Removes an existing identity registration for an investor's wallet address."
+          },
+          "getRecoveredWallet(address)": {
+            "notice": "Gets the new wallet address that replaced a lost wallet during recovery."
+          },
+          "identity(address)": {
+            "notice": "Retrieves the `IIdentity` contract address associated with a registered investor's wallet address."
+          },
+          "identityStorage()": {
+            "notice": "Returns the address of the `IdentityRegistryStorage` contract currently being used by this Identity Registry."
+          },
+          "investorCountry(address)": {
+            "notice": "Retrieves the numeric country code associated with a registered investor's wallet address."
+          },
+          "isVerified(address,uint256[])": {
+            "notice": "Checks if a registered investor's wallet address is considered 'verified'."
+          },
+          "isWalletLost(address)": {
+            "notice": "Checks if a wallet address has been marked as lost."
+          },
+          "issuersRegistry()": {
+            "notice": "Returns the address of the `TrustedIssuersRegistry` contract currently being used by this Identity Registry."
+          },
+          "recoverIdentity(address,address,address)": {
+            "notice": "Recovers an identity by creating a new wallet registration with a new identity contract,         marking the old wallet as lost, and preserving the country code."
+          },
+          "registerIdentity(address,address,uint16)": {
+            "notice": "Registers an investor's wallet address, linking it to their on-chain `IIdentity` contract and their country of residence."
+          },
+          "setIdentityRegistryStorage(address)": {
+            "notice": "Sets or updates the address of the `IdentityRegistryStorage` contract."
+          },
+          "setTopicSchemeRegistry(address)": {
+            "notice": "Sets or updates the address of the `TopicSchemeRegistry` contract."
+          },
+          "setTrustedIssuersRegistry(address)": {
+            "notice": "Sets or updates the address of the `TrustedIssuersRegistry` contract."
+          },
+          "topicSchemeRegistry()": {
+            "notice": "Returns the address of the `TopicSchemeRegistry` contract currently being used by this Identity Registry."
+          },
+          "updateCountry(address,uint16)": {
+            "notice": "Updates the country code associated with a previously registered investor's wallet address."
+          },
+          "updateIdentity(address,address)": {
+            "notice": "Updates the on-chain `IIdentity` contract associated with a previously registered investor's wallet address."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/",
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/",
+        "forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/",
+        "openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/smart/interface/ISMARTIdentityRegistry.sol": "ISMARTIdentityRegistry"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol": {
+        "keccak256": "0x3a8a72df8da5bf4d988bbfb00151b933ff17cdc8d4be47dc121cd9e2083ba86f",
+        "urls": [
+          "bzz-raw://369250658bf8d3ebb583946820afa494271ce6bfde607d15c7060cdf7a303cf3",
+          "dweb:/ipfs/QmSJjaK6vyv8K9RX1k3rwxsoKfVNyMoHEszxyxdTQfDKQG"
+        ],
+        "license": "CC0-1.0"
+      },
+      "contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol": {
+        "keccak256": "0x15b72940814cd959b57bf75623f16c51fc6c50eab51fd2420a8b653519ebd76c",
+        "urls": [
+          "bzz-raw://479f5e24a1b608776d9d5d7da9c76dd3c9b1dd300d8b4eee7a15dcfba4817bee",
+          "dweb:/ipfs/QmPhMBfQAqt5NeRcSu3jDTwhoQXnB7nXNEcmoJ7KoWVt7V"
+        ],
+        "license": "CC0-1.0"
+      },
+      "contracts/smart/interface/ISMARTIdentityRegistry.sol": {
+        "keccak256": "0x62a95a9db2ac97ceaf59f7585d7bbaf3acb65ed9b5e57597b9d1fe1b4d7c4eda",
+        "urls": [
+          "bzz-raw://bd870710359396db48e70ef7e40449125ff744c6c8ce15ad7e1894df430c87ea",
+          "dweb:/ipfs/QmZ6khf5Vm6hBkkUgYC1b161jSQaZeegJVRY6ndjRW1EcG"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTIdentityRegistryStorage.sol": {
+        "keccak256": "0x219b3d03958859e2f082aac5cbf3b40acf243e326ee6e74e6bb03be7724c2985",
+        "urls": [
+          "bzz-raw://8cf8d30ec47cb2aed5b51d373837584fb6f08deab1d35142510271e733404f52",
+          "dweb:/ipfs/Qmc9NnABx9ouhhCR8qgJC3RtU5oAyycSjZkY6nGtuWFwuz"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTTopicSchemeRegistry.sol": {
+        "keccak256": "0xec5e42dcf7d929f8a0db42c9c8a0fa81d089a9f7177b7da10df029f94334ca8a",
+        "urls": [
+          "bzz-raw://e346e3241e3110b3f17d2b244a49d68a1d79c6928bef7d372ea3458c1029cea0",
+          "dweb:/ipfs/QmeSyCYN9qYXRjn799fRFP7X9apf7bubVhnFEUGQatx3xd"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IClaimIssuer.sol": {
+        "keccak256": "0xae785f63b3cb3a94bcb454ef4ad6376aa4848fa29cff1cc8db3bef4a2994a779",
+        "urls": [
+          "bzz-raw://d8223d2710c51ee39cdfd2cb2f1858b3d64a3222c78ea8ed5eb3e11a93e1222e",
+          "dweb:/ipfs/QmYRXPCww7BorScTC6QNMbrRm2zprUmSYFpWomwarJH7Df"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IERC734.sol": {
+        "keccak256": "0x35a14a0d1a3ed51689f1a2cb12e26d30601afbcc1cc9b9b288a03cd11e6d049e",
+        "urls": [
+          "bzz-raw://156aac402e73e6bd2fa8c0ccd85b2add8d1bb505d8a652218173dbc8e7b9a3cb",
+          "dweb:/ipfs/QmPzPyc3kKxoNCGqKAooUju6YvMkDN4MCUH198TEXnA82o"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IERC735.sol": {
+        "keccak256": "0xeac82c37b16c1c1c83df3e88be987332b1230ed13e1d017f9d2929f978ac0122",
+        "urls": [
+          "bzz-raw://695a66b789ac417b7b2b78c578981779db374704382921ff499351cccab0323e",
+          "dweb:/ipfs/QmeZoogvsEWf688Z849zZ2dLPDnor6YnnNQLMgedY9Tc9D"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IIdentity.sol": {
+        "keccak256": "0x5ed42ab81b9b734c79e61d1f7e0734baab5479a356ab6bb469414d3c66269862",
+        "urls": [
+          "bzz-raw://a0863999b1ed334179a43e699e6057815eea011a78ed51e61b6110fc392e26f8",
+          "dweb:/ipfs/Qme6hdHZCAy1V4sLgAZ5NxdrEjEf5mYMabf5UDmUDjkuzW"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "batchRegisterIdentity(address[],address[],uint16[])": {
+        "notice": "Registers multiple identities in a single batch transaction."
+      },
+      "contains(address)": {
+        "notice": "Checks if a given investor wallet address is currently registered in this Identity Registry."
+      },
+      "deleteIdentity(address)": {
+        "notice": "Removes an existing identity registration for an investor's wallet address."
+      },
+      "getRecoveredWallet(address)": {
+        "notice": "Gets the new wallet address that replaced a lost wallet during recovery."
+      },
+      "identity(address)": {
+        "notice": "Retrieves the `IIdentity` contract address associated with a registered investor's wallet address."
+      },
+      "identityStorage()": {
+        "notice": "Returns the address of the `IdentityRegistryStorage` contract currently being used by this Identity Registry."
+      },
+      "investorCountry(address)": {
+        "notice": "Retrieves the numeric country code associated with a registered investor's wallet address."
+      },
+      "isVerified(address,uint256[])": {
+        "notice": "Checks if a registered investor's wallet address is considered 'verified'."
+      },
+      "isWalletLost(address)": {
+        "notice": "Checks if a wallet address has been marked as lost."
+      },
+      "issuersRegistry()": {
+        "notice": "Returns the address of the `TrustedIssuersRegistry` contract currently being used by this Identity Registry."
+      },
+      "recoverIdentity(address,address,address)": {
+        "notice": "Recovers an identity by creating a new wallet registration with a new identity contract,         marking the old wallet as lost, and preserving the country code."
+      },
+      "registerIdentity(address,address,uint16)": {
+        "notice": "Registers an investor's wallet address, linking it to their on-chain `IIdentity` contract and their country of residence."
+      },
+      "setIdentityRegistryStorage(address)": {
+        "notice": "Sets or updates the address of the `IdentityRegistryStorage` contract."
+      },
+      "setTopicSchemeRegistry(address)": {
+        "notice": "Sets or updates the address of the `TopicSchemeRegistry` contract."
+      },
+      "setTrustedIssuersRegistry(address)": {
+        "notice": "Sets or updates the address of the `TrustedIssuersRegistry` contract."
+      },
+      "topicSchemeRegistry()": {
+        "notice": "Returns the address of the `TopicSchemeRegistry` contract currently being used by this Identity Registry."
+      },
+      "updateCountry(address,uint16)": {
+        "notice": "Updates the country code associated with a previously registered investor's wallet address."
+      },
+      "updateIdentity(address,address)": {
+        "notice": "Updates the on-chain `IIdentity` contract associated with a previously registered investor's wallet address."
+      }
+    },
+    "events": {
+      "CountryUpdated(address,address,uint16)": {
+        "notice": "Emitted when the country code associated with a registered investor's wallet address is updated."
+      },
+      "IdentityRecovered(address,address,address,address,address)": {
+        "notice": "Emitted when an identity is successfully recovered, associating a new wallet with a new identity         and marking the old wallet as lost."
+      },
+      "IdentityRegistered(address,address,address,uint16)": {
+        "notice": "Emitted when a new identity is successfully registered for an investor's wallet address."
+      },
+      "IdentityRemoved(address,address,address)": {
+        "notice": "Emitted when an existing identity registration is successfully removed for an investor's wallet address."
+      },
+      "IdentityStorageSet(address,address)": {
+        "notice": "Emitted when the address of the `IdentityRegistryStorage` contract is successfully set or updated."
+      },
+      "IdentityUpdated(address,address,address)": {
+        "notice": "Emitted when the `IIdentity` contract associated with a registered investor's wallet address is updated."
+      },
+      "TopicSchemeRegistrySet(address,address)": {
+        "notice": "Emitted when the address of the `TopicSchemeRegistry` contract is successfully set or updated."
+      },
+      "TrustedIssuersRegistrySet(address,address)": {
+        "notice": "Emitted when the address of the `TrustedIssuersRegistry` contract is successfully set or updated."
+      },
+      "WalletRecoveryLinked(address,address,address)": {
+        "notice": "Emitted when a wallet recovery link is established between a lost wallet and its replacement."
+      }
+    },
+    "notice": "This interface defines the standard functions for an Identity Registry contract within the SMART protocol.         It is designed to be compatible with ERC-3643 (Tokenized Asset Standard) and OnchainID.         The primary role of this registry is to manage the crucial link between an investor's wallet address,         their decentralized on-chain Identity contract (implementing `IIdentity`), and their verification status         based on claims issued by trusted entities."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "author": "SettleMint",
+    "details": "This registry acts as a central point of truth for associating wallet addresses with digital identities.      It relies on two other key components:      1. `ISMARTIdentityRegistryStorage`: A separate contract responsible for storing the actual mappings         between investor addresses, identity contracts, and country codes. This separation of concerns allows         for upgradability and different storage strategies.      2. `IERC3643TrustedIssuersRegistry`: A contract that maintains a list of trusted entities (claim issuers)         whose attestations (claims) about an identity are considered valid.      Operations like registering a new identity or checking if an identity is verified are performed through this interface. This interface extends IERC165 for interface detection support.",
+    "methods": {
+      "batchRegisterIdentity(address[],address[],uint16[])": {
+        "details": "This function is typically callable only by authorized agents or registrars.      It is a gas-saving measure for registering many users at once.      The function will usually revert if any of the `_userAddresses` are already registered or if the input arrays have mismatched lengths.      Care should be taken with the number of entries due to block gas limits.",
+        "params": {
+          "_countries": "An array of corresponding numeric country codes (ISO 3166-1 alpha-2) for each investor.",
+          "_identities": "An array of corresponding `IIdentity` contract addresses for each investor.",
+          "_userAddresses": "An array of investor wallet addresses to be registered."
+        }
+      },
+      "contains(address)": {
+        "details": "This is a view function and does not consume gas beyond the read operation cost.",
+        "params": {
+          "_userAddress": "The wallet address to query."
+        },
+        "returns": {
+          "_0": "`true` if the address is registered, `false` otherwise."
+        }
+      },
+      "deleteIdentity(address)": {
+        "details": "This function is typically callable only by authorized agents or registrars.      It will usually revert if the `_userAddress` is not currently registered.      This action effectively unlinks the wallet address from its associated `IIdentity` contract in this registry.",
+        "params": {
+          "_userAddress": "The investor's wallet address whose registration is to be removed."
+        }
+      },
+      "getRecoveredWallet(address)": {
+        "details": "This is the key function for token recovery validation.",
+        "params": {
+          "lostWallet": "The lost wallet address."
+        },
+        "returns": {
+          "_0": "The new wallet address that replaced the lost wallet, or address(0) if not found."
+        }
+      },
+      "identity(address)": {
+        "details": "This is a view function. It will typically revert if the `_userAddress` is not registered.",
+        "params": {
+          "_userAddress": "The investor's wallet address."
+        },
+        "returns": {
+          "_0": "The address of the `IIdentity` contract linked to the given wallet address."
+        }
+      },
+      "identityStorage()": {
+        "details": "This allows external parties to inspect which storage contract is active.",
+        "returns": {
+          "_0": "The address of the contract implementing `ISMARTIdentityRegistryStorage`."
+        }
+      },
+      "investorCountry(address)": {
+        "details": "This is a view function. It will typically revert if the `_userAddress` is not registered.",
+        "params": {
+          "_userAddress": "The investor's wallet address."
+        },
+        "returns": {
+          "_0": "The numeric country code (ISO 3166-1 alpha-2) for the investor's jurisdiction."
+        }
+      },
+      "isVerified(address,uint256[])": {
+        "details": "Verification is determined by checking the claims held in the investor's associated `IIdentity` contract.      Specifically, it checks if the `IIdentity` contract has valid claims for ALL topics listed in `requiredClaimTopics`.      A claim is considered valid if it is issued by an issuer listed in the `TrustedIssuersRegistry` and has not expired or been revoked.      This function typically interacts with both the `IIdentity` contract and the `TrustedIssuersRegistry`.",
+        "params": {
+          "_userAddress": "The investor's wallet address to verify.",
+          "requiredClaimTopics": "An array of claim topic IDs (e.g., KYC, accreditation) that the identity must possess."
+        },
+        "returns": {
+          "_0": "`true` if the investor's identity holds all required valid claims, `false` otherwise."
+        }
+      },
+      "isWalletLost(address)": {
+        "params": {
+          "userWallet": "The wallet address to check."
+        },
+        "returns": {
+          "_0": "True if the wallet is marked as lost, false otherwise."
+        }
+      },
+      "issuersRegistry()": {
+        "details": "This allows external parties to inspect which trusted issuers list is active for verification purposes.",
+        "returns": {
+          "_0": "The address of the contract implementing `IERC3643TrustedIssuersRegistry`."
+        }
+      },
+      "recoverIdentity(address,address,address)": {
+        "details": "This function handles the practical reality that losing wallet access often means losing      access to the identity contract as well. It creates a fresh start while maintaining      regulatory compliance data and recovery links for token reclaim.      The function is typically restricted to registrar roles.",
+        "params": {
+          "lostWallet": "The current wallet address to be marked as lost.",
+          "newOnchainId": "The new IIdentity contract address for the new wallet.",
+          "newWallet": "The new wallet address to be registered."
+        }
+      },
+      "registerIdentity(address,address,uint16)": {
+        "details": "This function is typically callable only by authorized agents or registrars.      It will usually revert if the provided `_userAddress` is already registered to prevent duplicate entries.      The country code is important for jurisdictional compliance.",
+        "params": {
+          "_country": "The numeric country code (ISO 3166-1 alpha-2 standard) representing the investor's jurisdiction.",
+          "_identity": "The address of the investor's deployed `IIdentity` contract, which manages their claims.",
+          "_userAddress": "The investor's primary wallet address (externally owned account or smart contract wallet)."
+        }
+      },
+      "setIdentityRegistryStorage(address)": {
+        "details": "This function is usually restricted to an administrative role (e.g., contract owner).      It allows the Identity Registry to delegate the actual storage of identity data to a separate, potentially upgradable, contract.      Changing this address can have significant implications, so it must be handled with care.",
+        "params": {
+          "_identityRegistryStorage": "The address of the new contract that implements the `ISMARTIdentityRegistryStorage` interface."
+        }
+      },
+      "setTopicSchemeRegistry(address)": {
+        "details": "This function is usually restricted to an administrative role (e.g., contract owner).      The `TopicSchemeRegistry` is responsible for maintaining valid claim topic schemes.      Updating this address changes which claim topics are considered valid for verification.",
+        "params": {
+          "_topicSchemeRegistry": "The address of the new contract that implements the `ISMARTTopicSchemeRegistry` interface."
+        }
+      },
+      "setTrustedIssuersRegistry(address)": {
+        "details": "This function is usually restricted to an administrative role (e.g., contract owner).      The `TrustedIssuersRegistry` is responsible for maintaining a list of claim issuers whose attestations are considered valid.      Updating this address changes the set of authorities recognized for identity verification.",
+        "params": {
+          "_trustedIssuersRegistry": "The address of the new contract that implements the `IERC3643TrustedIssuersRegistry` interface."
+        }
+      },
+      "supportsInterface(bytes4)": {
+        "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+      },
+      "topicSchemeRegistry()": {
+        "details": "This allows external parties to inspect which topic scheme registry is active for validation.",
+        "returns": {
+          "_0": "The address of the contract implementing `ISMARTTopicSchemeRegistry`."
+        }
+      },
+      "updateCountry(address,uint16)": {
+        "details": "This function is typically callable only by authorized agents or registrars.      It will usually revert if the `_userAddress` is not registered.      This is used to reflect changes in an investor's country of residence for compliance purposes.",
+        "params": {
+          "_country": "The new numeric country code (ISO 3166-1 alpha-2 standard).",
+          "_userAddress": "The investor's wallet address whose country information needs updating."
+        }
+      },
+      "updateIdentity(address,address)": {
+        "details": "This function is typically callable only by authorized agents or registrars.      It will usually revert if the `_userAddress` is not registered.      This is useful for scenarios like identity recovery, or if an investor upgrades or changes their `IIdentity` contract.",
+        "params": {
+          "_identity": "The address of the investor's new `IIdentity` contract.",
+          "_userAddress": "The investor's wallet address whose associated `IIdentity` contract needs updating."
+        }
+      }
+    },
+    "events": {
+      "CountryUpdated(address,address,uint16)": {
+        "details": "This event is important for compliance processes that may depend on the investor's jurisdiction.",
+        "params": {
+          "_country": "The new numeric country code (conforming to ISO 3166-1 alpha-2 standard, e.g., 840 for USA).",
+          "_investorAddress": "The wallet address of the investor whose country information was updated.",
+          "sender": "The address of the account (e.g., a registrar agent) that performed the update."
+        }
+      },
+      "IdentityRecovered(address,address,address,address,address)": {
+        "params": {
+          "lostWallet": "The previous wallet address that has now been marked as lost. (Indexed)",
+          "newIdentityContract": "The new IIdentity contract for the new wallet. (Indexed)",
+          "newWallet": "The new active wallet address for the identity. (Indexed)",
+          "oldIdentityContract": "The old IIdentity contract that was associated with the lost wallet.",
+          "sender": "The address of the account (e.g., a registrar agent) that performed the recovery."
+        }
+      },
+      "IdentityRegistered(address,address,address,uint16)": {
+        "details": "This event marks the creation of an association between a wallet and an on-chain identity contract.",
+        "params": {
+          "_country": "The numeric country code (ISO 3166-1 alpha-2 standard) representing the investor's jurisdiction.",
+          "_identity": "The address of the investor's `IIdentity` smart contract, which holds their claims and attestations.",
+          "_investorAddress": "The wallet address of the investor being registered.",
+          "sender": "The address of the account (e.g., a registrar agent) that performed the registration."
+        }
+      },
+      "IdentityRemoved(address,address,address)": {
+        "details": "This event indicates that the link between a wallet address and its associated `IIdentity` contract has been severed.",
+        "params": {
+          "_identity": "The address of the `IIdentity` smart contract that was previously associated with the investor address.",
+          "_investorAddress": "The wallet address of the investor whose registration was removed.",
+          "sender": "The address of the account (e.g., a registrar agent) that performed the removal."
+        }
+      },
+      "IdentityStorageSet(address,address)": {
+        "details": "This event is crucial for transparency, allowing external observers to track changes in the underlying      storage mechanism used by the Identity Registry.",
+        "params": {
+          "_identityStorage": "The new address of the contract implementing `ISMARTIdentityRegistryStorage`.",
+          "sender": "The address of the account (typically the owner or an admin) that initiated this change."
+        }
+      },
+      "IdentityUpdated(address,address,address)": {
+        "details": "This typically occurs during identity recovery processes or when an investor chooses to link a new identity contract.",
+        "params": {
+          "_newIdentity": "The address of the newly associated `IIdentity` contract.",
+          "_oldIdentity": "The address of the previously associated `IIdentity` contract.",
+          "sender": "The address of the account (e.g., a registrar agent) that performed the update."
+        }
+      },
+      "TopicSchemeRegistrySet(address,address)": {
+        "details": "This event signals a change in the topic scheme registry that defines valid claim topics.",
+        "params": {
+          "_topicSchemeRegistry": "The new address of the contract implementing `ISMARTTopicSchemeRegistry`.",
+          "sender": "The address of the account (typically the owner or an admin) that initiated this change."
+        }
+      },
+      "TrustedIssuersRegistrySet(address,address)": {
+        "details": "This event signals a change in the list of authorities whose claims are recognized by this Identity Registry.      It's important for users and relying parties to be aware of which issuers are trusted.",
+        "params": {
+          "_trustedIssuersRegistry": "The new address of the contract implementing `IERC3643TrustedIssuersRegistry`.",
+          "sender": "The address of the account (typically the owner or an admin) that initiated this change."
+        }
+      },
+      "WalletRecoveryLinked(address,address,address)": {
+        "details": "This event helps track the recovery chain for token reclaim purposes.",
+        "params": {
+          "lostWallet": "The lost wallet address.",
+          "newWallet": "The new replacement wallet address.",
+          "sender": "The address that performed the recovery operation."
+        }
+      }
+    },
+    "title": "ISMARTIdentityRegistry Interface"
+  },
+  "id": 91
+}

@@ -42,7 +42,7 @@ A Helm chart for the blockscout components
 | graph-node.graphNodeDefaults.extraInitContainers[0].command[1] | string | `"postgresql-pgpool:5432"` |  |
 | graph-node.graphNodeDefaults.extraInitContainers[0].command[2] | string | `"-t"` |  |
 | graph-node.graphNodeDefaults.extraInitContainers[0].command[3] | string | `"0"` |  |
-| graph-node.graphNodeDefaults.extraInitContainers[0].image | string | `"ghcr.io/settlemint/btp-waitforit:v7.7.5"` |  |
+| graph-node.graphNodeDefaults.extraInitContainers[0].image | string | `"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.5"` |  |
 | graph-node.graphNodeDefaults.extraInitContainers[0].name | string | `"wait-for-postgresql"` |  |
 | graph-node.graphNodeDefaults.imagePullSecrets | list | `[]` |  |
 | graph-node.graphNodeDefaults.secretEnv.PRIMARY_SUBGRAPH_DATA_PGPASSWORD.key | string | `"PGPASSWORD"` | Name of the data key in the secret that contains your PG password |
@@ -84,13 +84,13 @@ A Helm chart for the blockscout components
 | job.enabled | bool | `true` |  |
 | job.fullnameOverride | string | `"graph"` |  |
 | job.image.pullPolicy | string | `"IfNotPresent"` |  |
-| job.image.repository | string | `"docker.io/node"` |  |
+| job.image.repository | string | `"harbor.settlemint.com/docker.io/node"` |  |
 | job.image.tag | string | `"23.11.1-slim"` |  |
 | job.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | job.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | job.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
 | job.initContainer.graphNodeCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
-| job.initContainer.graphNodeCheck.image.registry | string | `"docker.io"` |  |
+| job.initContainer.graphNodeCheck.image.registry | string | `"harbor.settlemint.com/docker.io"` |  |
 | job.initContainer.graphNodeCheck.image.repository | string | `"busybox"` |  |
 | job.initContainer.graphNodeCheck.image.tag | string | `"1.37.0"` |  |
 | job.podAnnotations | object | `{}` |  |

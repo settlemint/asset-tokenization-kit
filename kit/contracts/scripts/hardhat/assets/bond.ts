@@ -28,6 +28,7 @@ import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
 import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
 import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
 import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
+import { encodeAddressParams } from "./utils/encode-address-params";
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
@@ -42,6 +43,14 @@ export const createBond = async (depositToken: Asset<any>) => {
     bondFactory
   );
 
+  // Setup allowed identities for bond token
+  const bondAllowedIdentities = await Promise.all([
+    owner.getIdentity(),
+    investorA.getIdentity(),
+    investorB.getIdentity(),
+    frozenInvestor.getIdentity(),
+  ]);
+
   const anvilTimeSeconds = await getAnvilTimeSeconds(owner);
   const faceValue = toBaseUnits(0.000123, depositToken.decimals);
   const cap = toBaseUnits(1_000_000, bond.decimals);
@@ -54,7 +63,13 @@ export const createBond = async (depositToken: Asset<any>) => {
     faceValue,
     depositToken.address!,
     [topicManager.getTopicId(ATKTopic.kyc)],
-    getDefaultComplianceModules(),
+    [
+      ...getDefaultComplianceModules(),
+      {
+        module: atkDeployer.getContractAddress("identityAllowListModule"),
+        params: encodeAddressParams(bondAllowedIdentities),
+      },
+    ],
   ]);
 
   await bond.waitUntilDeployed(transactionHash);

@@ -21,11 +21,11 @@ A Helm chart for the hasura components
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | busybox.pullPolicy | string | `"IfNotPresent"` |  |
-| busybox.registry | string | `"docker.io"` |  |
+| busybox.registry | string | `"harbor.settlemint.com/docker.io"` |  |
 | busybox.repository | string | `"busybox"` |  |
 | busybox.tag | float | `1.37` |  |
 | git.image.pullPolicy | string | `"IfNotPresent"` |  |
-| git.image.registry | string | `"docker.io"` |  |
+| git.image.registry | string | `"harbor.settlemint.com/docker.io"` |  |
 | git.image.repository | string | `"alpine/git"` |  |
 | git.image.tag | string | `"2.49.0"` |  |
 | graphql-engine.config.devMode | bool | `true` |  |
@@ -46,7 +46,7 @@ A Helm chart for the hasura components
 | graphql-engine.initContainers[0].command[1] | string | `"postgresql-pgpool:5432"` |  |
 | graphql-engine.initContainers[0].command[2] | string | `"-t"` |  |
 | graphql-engine.initContainers[0].command[3] | string | `"0"` |  |
-| graphql-engine.initContainers[0].image | string | `"ghcr.io/settlemint/btp-waitforit:v7.7.5"` |  |
+| graphql-engine.initContainers[0].image | string | `"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.5"` |  |
 | graphql-engine.initContainers[0].name | string | `"wait-for-postgresql"` |  |
 | graphql-engine.labels."app.kubernetes.io/component" | string | `"hasura"` |  |
 | graphql-engine.labels."app.kubernetes.io/instance" | string | `"atk"` |  |

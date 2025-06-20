@@ -41,18 +41,18 @@ graphql-engine:
     enabled: false
   initContainers:
     - name: wait-for-postgresql
-      image: ghcr.io/settlemint/btp-waitforit:v7.7.5
+      image: harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.5
       command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
 
 busybox:
-  registry: docker.io
+  registry: harbor.settlemint.com/docker.io
   repository: busybox
   tag: 1.37
   pullPolicy: IfNotPresent
 
 git:
   image:
-    registry: docker.io
+    registry: harbor.settlemint.com/docker.io
     repository: alpine/git
     tag: 2.49.0
     pullPolicy: IfNotPresent

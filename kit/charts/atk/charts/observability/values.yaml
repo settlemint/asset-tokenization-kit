@@ -3,7 +3,7 @@ metrics-server:
   enabled: true
   imagePullSecrets: []
   image:
-    repository: registry.k8s.io/metrics-server/metrics-server
+    repository: harbor.settlemint.com/registry.k8s.io/metrics-server/metrics-server
   fullnameOverride: metrics-server
   service:
     labels:
@@ -19,7 +19,7 @@ kube-state-metrics:
   enabled: true
   imagePullSecrets: []
   image:
-    registry: registry.k8s.io
+    registry: harbor.settlemint.com/registry.k8s.io
   fullnameOverride: kube-state-metrics
   customLabels:
     kots.io/app-slug: settlemint-atk
@@ -34,7 +34,7 @@ victoria-metrics-single:
   enabled: true
   global:
     image:
-      registry: docker.io
+      registry: harbor.settlemint.com/docker.io
     imagePullSecrets: []
   server:
     extraArgs:
@@ -82,13 +82,13 @@ loki:
   fullnameOverride: logs
   global:
     image:
-      registry: docker.io
+      registry: harbor.settlemint.com/docker.io
   memcached:
     image:
-      repository: docker.io/library/memcached
+      repository: harbor.settlemint.com/docker.io/library/memcached
   memcachedExporter:
     image:
-      repository: docker.io/prom/memcached-exporter
+      repository: harbor.settlemint.com/docker.io/prom/memcached-exporter
   resultsCache:
     enabled: false
   loki:
@@ -223,10 +223,10 @@ loki:
 alloy:
   enabled: true
   image:
-    registry: docker.io
+    registry: harbor.settlemint.com/docker.io
   configReloader:
     image:
-      registry: ghcr.io
+      registry: harbor.settlemint.com/ghcr.io
   clustername: ''
   global:
     image:
@@ -621,7 +621,7 @@ grafana:
   adminUser: settlemint
   adminPassword: atk
   global:
-    imageRegistry: docker.io
+    imageRegistry: harbor.settlemint.com/docker.io
     imagePullSecrets: []
   ingress:
     enabled: true
@@ -700,16 +700,16 @@ grafana:
 prometheus-node-exporter:
   enabled: true
   image:
-    registry: quay.io
+    registry: harbor.settlemint.com/quay.io
   imagePullSecrets:
     - image-pull-secret-docker
     - image-pull-secret-ghcr
     - image-pull-secret-harbor
   kubeRBACProxy:
     image:
-      registry: quay.io
+      registry: harbor.settlemint.com/quay.io
   global:
-    imageRegistry: quay.io
+    imageRegistry: harbor.settlemint.com/quay.io
   fullnameOverride: node-exporter
   nameOverride: node-exporter
   podAnnotations:
@@ -724,7 +724,7 @@ tempo:
   enabled: true
   fullnameOverride: tempo
   tempo:
-    repository: docker.io/grafana/tempo
+    repository: harbor.settlemint.com/docker.io/grafana/tempo
     pullSecrets:
       - image-pull-secret-docker
       - image-pull-secret-ghcr
@@ -742,7 +742,7 @@ tempo:
         global:
           max_bytes_per_trace: 20000000
   tempoQuery:
-    repository: docker.io/grafana/tempo-query
+    repository: harbor.settlemint.com/docker.io/grafana/tempo-query
     pullSecrets:
       - image-pull-secret-docker
       - image-pull-secret-ghcr

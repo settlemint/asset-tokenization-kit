@@ -38,6 +38,7 @@ export type PredeployedContractName = keyof Pick<
   | "identityBlockListModule"
   | "identityAllowListModule"
   | "fixedYieldScheduleFactory"
+  | "xvpSettlementFactory"
   | "vestingAirdropFactory"
   | "pushAirdropFactory"
 >;
@@ -328,6 +329,12 @@ export class ATKDeployer {
     walletClient?: WalletClient<Transport, Chain, Account>
   ): ATKOnboardingContracts["fixedYieldScheduleFactory"] {
     return this.getContract("fixedYieldScheduleFactory", walletClient);
+  }
+
+  public getXvpSettlementFactoryContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): ATKOnboardingContracts["xvpSettlementFactory"] {
+    return this.getContract("xvpSettlementFactory", walletClient);
   }
 
   public getVestingAirdropFactoryContract(

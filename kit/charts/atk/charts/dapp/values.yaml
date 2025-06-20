@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/settlemint/asset-tokenization-kit
+  repository: harbor.settlemint.com/ghcr.io/settlemint/asset-tokenization-kit
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1.1.1"
@@ -219,7 +219,7 @@ initContainer:
   tcpCheck:
     enabled: true
     image:
-      repository: ghcr.io/settlemint/btp-waitforit
+      repository: harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit
       tag: v7.7.5
       pullPolicy: IfNotPresent
     timeout: 5 # Timeout in seconds for each dependency check
@@ -241,7 +241,7 @@ initContainer:
     enabled: true
     name: wait-for-graph-subgraph-kit # Name for the init container
     image:
-      registry: docker.io
+      registry: harbor.settlemint.com/docker.io
       repository: curlimages/curl
       tag: 8.14.1 # Or pin to a specific version like 8.7.1
       pullPolicy: IfNotPresent
@@ -264,21 +264,21 @@ job:
 
   # Image configuration
   image:
-    repository: docker.io/node
+    repository: harbor.settlemint.com/docker.io/node
     tag: "23.11.1-slim"
     pullPolicy: IfNotPresent
 
   initContainer:
     hasuraCheck:
       image:
-        repository: ghcr.io/settlemint/btp-waitforit
+        repository: harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit
         tag: v7.7.5
         pullPolicy: IfNotPresent
       timeout: 5 # Timeout in seconds for each dependency check
       endpoint: hasura.atk.svc.cluster.local:8080
     cloneRepo:
       image:
-        registry: docker.io
+        registry: harbor.settlemint.com/docker.io
         repository: alpine/git
         tag: 2.49.0 # Or pin to a specific version
         pullPolicy: IfNotPresent

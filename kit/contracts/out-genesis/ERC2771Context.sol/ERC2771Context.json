@@ -1,0 +1,118 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "isTrustedForwarder",
+      "inputs": [
+        { "name": "forwarder", "type": "address", "internalType": "address" }
+      ],
+      "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "trustedForwarder",
+      "inputs": [],
+      "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+      "stateMutability": "view"
+    }
+  ],
+  "bytecode": { "object": "0x", "sourceMap": "", "linkReferences": {} },
+  "deployedBytecode": { "object": "0x", "sourceMap": "", "linkReferences": {} },
+  "methodIdentifiers": {
+    "isTrustedForwarder(address)": "572b6c05",
+    "trustedForwarder()": "7da0a877"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"forwarder\",\"type\":\"address\"}],\"name\":\"isTrustedForwarder\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"trustedForwarder\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Context variant with ERC-2771 support. WARNING: Avoid using this pattern in contracts that rely in a specific calldata length as they'll be affected by any forwarder whose `msg.data` is suffixed with the `from` address according to the ERC-2771 specification adding the address size in bytes (20) to the calldata size. An example of an unexpected behavior could be an unintended fallback (or another function) invocation while trying to invoke the `receive` function only accessible if `msg.data.length == 0`. WARNING: The usage of `delegatecall` in this contract is dangerous and may result in context corruption. Any forwarded request to this contract triggering a `delegatecall` to itself will result in an invalid {_msgSender} recovery.\",\"kind\":\"dev\",\"methods\":{\"constructor\":{\"custom:oz-upgrades-unsafe-allow\":\"constructor\"},\"isTrustedForwarder(address)\":{\"details\":\"Indicates whether any particular address is the trusted forwarder.\"},\"trustedForwarder()\":{\"details\":\"Returns the address of the trusted forwarder.\"}},\"stateVariables\":{\"_trustedForwarder\":{\"custom:oz-upgrades-unsafe-allow\":\"state-variable-immutable\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"dependencies/@openzeppelin-contracts-5.3.0/metatx/ERC2771Context.sol\":\"ERC2771Context\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/\",\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/\",\":forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\",\":openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\"],\"viaIR\":true},\"sources\":{\"dependencies/@openzeppelin-contracts-5.3.0/metatx/ERC2771Context.sol\":{\"keccak256\":\"0x0b030a33274bde015419d99e54c9164f876a7d10eb590317b79b1d5e4ab23d99\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://68e5f96988198e8efd25ddef0d89750b4daebb7fd1204fa7f5eaccdfcb3398c8\",\"dweb:/ipfs/QmaM6nNkf9UmEtQraopuZamEWCdTWp7GvuN3pjMQrNCHxm\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/Context.sol\":{\"keccak256\":\"0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12\",\"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": { "version": "0.8.28+commit.7893614a" },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "forwarder",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isTrustedForwarder",
+          "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "trustedForwarder",
+          "outputs": [
+            { "internalType": "address", "name": "", "type": "address" }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "constructor": { "custom:oz-upgrades-unsafe-allow": "constructor" },
+          "isTrustedForwarder(address)": {
+            "details": "Indicates whether any particular address is the trusted forwarder."
+          },
+          "trustedForwarder()": {
+            "details": "Returns the address of the trusted forwarder."
+          }
+        },
+        "version": 1
+      },
+      "userdoc": { "kind": "user", "methods": {}, "version": 1 }
+    },
+    "settings": {
+      "remappings": [
+        "@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/",
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/",
+        "forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/",
+        "openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/"
+      ],
+      "optimizer": { "enabled": true, "runs": 200 },
+      "metadata": { "bytecodeHash": "none" },
+      "compilationTarget": {
+        "dependencies/@openzeppelin-contracts-5.3.0/metatx/ERC2771Context.sol": "ERC2771Context"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "dependencies/@openzeppelin-contracts-5.3.0/metatx/ERC2771Context.sol": {
+        "keccak256": "0x0b030a33274bde015419d99e54c9164f876a7d10eb590317b79b1d5e4ab23d99",
+        "urls": [
+          "bzz-raw://68e5f96988198e8efd25ddef0d89750b4daebb7fd1204fa7f5eaccdfcb3398c8",
+          "dweb:/ipfs/QmaM6nNkf9UmEtQraopuZamEWCdTWp7GvuN3pjMQrNCHxm"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/Context.sol": {
+        "keccak256": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+        "urls": [
+          "bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12",
+          "dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": { "storage": [], "types": {} },
+  "id": 19
+}

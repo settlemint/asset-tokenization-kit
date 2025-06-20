@@ -14,7 +14,7 @@ postgresql-ha:
     app.kubernetes.io/managed-by: helm
   postgresql:
     image:
-      registry: docker.io
+      registry: harbor.settlemint.com/docker.io
     username: "postgres"
     password: "atk"
     repmgrUsername: repmgr
@@ -53,7 +53,7 @@ postgresql-ha:
         GRANT ALL ON SCHEMA public TO txsigner;
   pgpool:
     image:
-      registry: docker.io
+      registry: harbor.settlemint.com/docker.io
     replicaCount: 1
     adminUsername: "pgpool"
     adminPassword: "atk"
@@ -92,7 +92,7 @@ redis:
       - image-pull-secret-ghcr
       - image-pull-secret-harbor
   image:
-    registry: docker.io
+    registry: harbor.settlemint.com/docker.io
   fullnameOverride: redis
   commonLabels:
     kots.io/app-slug: settlemint-atk
@@ -111,7 +111,7 @@ ingress-nginx:
   enabled: true
   global:
     image:
-      registry: registry.k8s.io
+      registry: harbor.settlemint.com/registry.k8s.io
   fullnameOverride: 'ingress-nginx'
   imagePullSecrets:
     - image-pull-secret-docker
@@ -261,10 +261,10 @@ ingress-nginx:
     opentelemetry:
       enabled: true
       image:
-        registry: registry.k8s.io
+        registry: harbor.settlemint.com/registry.k8s.io
     patch:
       image:
-        registry: registry.k8s.io
+        registry: harbor.settlemint.com/registry.k8s.io
     metrics:
       enabled: true
       service:
@@ -285,7 +285,7 @@ reloader:
       - name: image-pull-secret-harbor
   image:
     name: stakater/reloader
-    repository: ghcr.io/stakater/reloader
+    repository: harbor.settlemint.com/ghcr.io/stakater/reloader
   reloader:
     autoReloadAll: true
     watchGlobally: false

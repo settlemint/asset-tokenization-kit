@@ -1,0 +1,34 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ATKAssetProxy",
+  "sourceName": "contracts/assets/ATKAssetProxy.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "ETHTransfersNotAllowed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidTokenFactoryAddress",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TokenImplementationNotSet",
+      "type": "error"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

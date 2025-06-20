@@ -1,0 +1,393 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "atkFixedYieldScheduleImplementation",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "create",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "contract ISMARTYield"
+        },
+        {
+          "name": "startTime",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "endTime",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "rate",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "interval",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "scheduleProxyAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "ATKFixedYieldScheduleCreated",
+      "inputs": [
+        {
+          "name": "schedule",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "creator",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ImplementationUpdated",
+      "inputs": [
+        {
+          "name": "oldImplementation",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newImplementation",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "InvalidAddress",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidImplementation",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "SameAddress",
+      "inputs": []
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "atkFixedYieldScheduleImplementation()": "766c6572",
+    "create(address,uint256,uint256,uint256,uint256)": "f9b6b0c4"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"InvalidAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidImplementation\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"SameAddress\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"schedule\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"creator\",\"type\":\"address\"}],\"name\":\"ATKFixedYieldScheduleCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldImplementation\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"ImplementationUpdated\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"atkFixedYieldScheduleImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract ISMARTYield\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"startTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"rate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interval\",\"type\":\"uint256\"}],\"name\":\"create\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"scheduleProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"events\":{\"ATKFixedYieldScheduleCreated(address,address)\":{\"params\":{\"creator\":\"The address that initiated the creation of the yield schedule proxy.\",\"schedule\":\"The address of the newly deployed `ATKFixedYieldProxy` contract.\"}},\"ImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new implementation contract.\",\"oldImplementation\":\"The address of the previous implementation contract.\"}}},\"kind\":\"dev\",\"methods\":{\"atkFixedYieldScheduleImplementation()\":{\"details\":\"This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkFixedYieldScheduleImplementation`.\"},\"create(address,uint256,uint256,uint256,uint256)\":{\"details\":\"This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkFixedYieldScheduleImplementation`.\"}},\"version\":1},\"userdoc\":{\"errors\":{\"InvalidAddress()\":[{\"notice\":\"Custom error for invalid address parameter.\"}],\"InvalidImplementation()\":[{\"notice\":\"Custom error for invalid implementation address.\"}],\"SameAddress()\":[{\"notice\":\"Custom error when attempting to set the same address.\"}]},\"events\":{\"ATKFixedYieldScheduleCreated(address,address)\":{\"notice\":\"Emitted when a new `ATKFixedYieldSchedule` proxy contract is successfully created and deployed.\"},\"ImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the `atkFixedYieldScheduleImplementation` is updated.\"}},\"kind\":\"user\",\"methods\":{\"atkFixedYieldScheduleImplementation()\":{\"notice\":\"Returns the address of the current ATKFixedYieldSchedule logic contract (implementation).\"},\"create(address,uint256,uint256,uint256,uint256)\":{\"notice\":\"Creates a new ATKFixedYieldSchedule proxy contract.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/yield/IATKFixedYieldScheduleFactory.sol\":\"IATKFixedYieldScheduleFactory\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/\",\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/\",\":forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\",\":openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/yield/IATKFixedYieldScheduleFactory.sol\":{\"keccak256\":\"0x028721b9a49c8ecf2ddf87561bca453cdb169b2dfda66aa6b820150452f71c7c\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://32d8e812faa7840df3d96ec2fa87a5f9c15f760bb5525a6ff7f486286980369a\",\"dweb:/ipfs/QmWHa5trnNweU9n3QJWXw8gd9JqRR2rtzg8U8euzgK3tAw\"]},\"contracts/smart/extensions/historical-balances/ISMARTHistoricalBalances.sol\":{\"keccak256\":\"0x748c28628df829a95a42783247fd2e2f082bf644370f54463dd8c060a1a4fdb8\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://ca138ff3a56bdcdbfc7dd9ff17f56c0e15643d7f63172fe03dd47da35b47515f\",\"dweb:/ipfs/Qme1CeWEWgbr2YPJ9dRK98VCZ94naen9BhrrKb2wFhs6iC\"]},\"contracts/smart/extensions/yield/ISMARTYield.sol\":{\"keccak256\":\"0xabc3a75854b3b1b2fade84c3ea2fe058dbbbe88fa07e256e62d92359863e33b4\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://fe6b2e9add6b6abe4c715f6750a8c55c14b4a88edcc2b93f98777fa71303297b\",\"dweb:/ipfs/QmdRmeFStp5yqqZgmeRBpZxvwvEat5qb7szgC6Chom7nGG\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db\",\"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidAddress"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidImplementation"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "SameAddress"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "schedule",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "creator",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "ATKFixedYieldScheduleCreated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "oldImplementation",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newImplementation",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "ImplementationUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "atkFixedYieldScheduleImplementation",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "contract ISMARTYield",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "startTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "endTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "rate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "interval",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "create",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "scheduleProxyAddress",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "atkFixedYieldScheduleImplementation()": {
+            "details": "This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkFixedYieldScheduleImplementation`."
+          },
+          "create(address,uint256,uint256,uint256,uint256)": {
+            "details": "This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkFixedYieldScheduleImplementation`."
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "atkFixedYieldScheduleImplementation()": {
+            "notice": "Returns the address of the current ATKFixedYieldSchedule logic contract (implementation)."
+          },
+          "create(address,uint256,uint256,uint256,uint256)": {
+            "notice": "Creates a new ATKFixedYieldSchedule proxy contract."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/",
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/",
+        "forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/",
+        "openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/addons/yield/IATKFixedYieldScheduleFactory.sol": "IATKFixedYieldScheduleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/addons/yield/IATKFixedYieldScheduleFactory.sol": {
+        "keccak256": "0x028721b9a49c8ecf2ddf87561bca453cdb169b2dfda66aa6b820150452f71c7c",
+        "urls": [
+          "bzz-raw://32d8e812faa7840df3d96ec2fa87a5f9c15f760bb5525a6ff7f486286980369a",
+          "dweb:/ipfs/QmWHa5trnNweU9n3QJWXw8gd9JqRR2rtzg8U8euzgK3tAw"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/historical-balances/ISMARTHistoricalBalances.sol": {
+        "keccak256": "0x748c28628df829a95a42783247fd2e2f082bf644370f54463dd8c060a1a4fdb8",
+        "urls": [
+          "bzz-raw://ca138ff3a56bdcdbfc7dd9ff17f56c0e15643d7f63172fe03dd47da35b47515f",
+          "dweb:/ipfs/Qme1CeWEWgbr2YPJ9dRK98VCZ94naen9BhrrKb2wFhs6iC"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/yield/ISMARTYield.sol": {
+        "keccak256": "0xabc3a75854b3b1b2fade84c3ea2fe058dbbbe88fa07e256e62d92359863e33b4",
+        "urls": [
+          "bzz-raw://fe6b2e9add6b6abe4c715f6750a8c55c14b4a88edcc2b93f98777fa71303297b",
+          "dweb:/ipfs/QmdRmeFStp5yqqZgmeRBpZxvwvEat5qb7szgC6Chom7nGG"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol": {
+        "keccak256": "0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7",
+        "urls": [
+          "bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db",
+          "dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "atkFixedYieldScheduleImplementation()": {
+        "notice": "Returns the address of the current ATKFixedYieldSchedule logic contract (implementation)."
+      },
+      "create(address,uint256,uint256,uint256,uint256)": {
+        "notice": "Creates a new ATKFixedYieldSchedule proxy contract."
+      }
+    },
+    "events": {
+      "ATKFixedYieldScheduleCreated(address,address)": {
+        "notice": "Emitted when a new `ATKFixedYieldSchedule` proxy contract is successfully created and deployed."
+      },
+      "ImplementationUpdated(address,address)": {
+        "notice": "Emitted when the `atkFixedYieldScheduleImplementation` is updated."
+      }
+    },
+    "errors": {
+      "InvalidAddress()": [
+        {
+          "notice": "Custom error for invalid address parameter."
+        }
+      ],
+      "InvalidImplementation()": [
+        {
+          "notice": "Custom error for invalid implementation address."
+        }
+      ],
+      "SameAddress()": [
+        {
+          "notice": "Custom error when attempting to set the same address."
+        }
+      ]
+    }
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "atkFixedYieldScheduleImplementation()": {
+        "details": "This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkFixedYieldScheduleImplementation`."
+      },
+      "create(address,uint256,uint256,uint256,uint256)": {
+        "details": "This function is expected to be available on the factory contract. It's typically created automatically if the factory has a public state variable named `atkFixedYieldScheduleImplementation`."
+      }
+    },
+    "events": {
+      "ATKFixedYieldScheduleCreated(address,address)": {
+        "params": {
+          "creator": "The address that initiated the creation of the yield schedule proxy.",
+          "schedule": "The address of the newly deployed `ATKFixedYieldProxy` contract."
+        }
+      },
+      "ImplementationUpdated(address,address)": {
+        "params": {
+          "newImplementation": "The address of the new implementation contract.",
+          "oldImplementation": "The address of the previous implementation contract."
+        }
+      }
+    }
+  },
+  "id": 15
+}

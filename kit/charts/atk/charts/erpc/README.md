@@ -110,15 +110,15 @@ The command removes all the Kubernetes components associated with the chart and 
 | extraVolumeMounts | list | `[]` | Optionally specify extra list of additional volumeMounts for the eRPC container(s) |
 | extraVolumes | list | `[]` | Optionally specify extra list of additional volumes for the eRPC pod(s) |
 | fullnameOverride | string | `"erpc"` | String to fully override common.names.fullname |
-| global | object | `{"imagePullSecrets":[],"imageRegistry":"","storageClass":""}` | Global Docker image registry |
+| global | object | `{"imagePullSecrets":[],"imageRegistry":"harbor.settlemint.com/\"\"","storageClass":""}` | Global Docker image registry |
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
-| global.imageRegistry | string | `""` | Global Docker image registry |
+| global.imageRegistry | string | `"harbor.settlemint.com/\"\""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
-| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"erpc/erpc","tag":"0.0.50"}` | eRPC image |
+| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"harbor.settlemint.com/ghcr.io","repository":"erpc/erpc","tag":"0.0.50"}` | eRPC image |
 | image.digest | string | `""` | eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag |
 | image.pullPolicy | string | `"IfNotPresent"` | eRPC image pull policy |
 | image.pullSecrets | list | `[]` | eRPC image pull secrets |
-| image.registry | string | `"ghcr.io"` | eRPC image registry |
+| image.registry | string | `"harbor.settlemint.com/ghcr.io"` | eRPC image registry |
 | image.repository | string | `"erpc/erpc"` | eRPC image repository |
 | image.tag | string | `"0.0.50"` | eRPC image tag (immutable tags are recommended) |
 | ingress | object | `{"annotations":{},"apiVersion":"","enabled":true,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"besu.k8s.orb.local","ingressClassName":"settlemint-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
@@ -220,10 +220,10 @@ The command removes all the Kubernetes components associated with the chart and 
 | startupProbe.periodSeconds | int | `10` | Period seconds for startupProbe |
 | startupProbe.successThreshold | int | `1` | Success threshold for startupProbe |
 | startupProbe.timeoutSeconds | int | `5` | Timeout seconds for startupProbe |
-| tests | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"busybox","tag":"1.37.0"}}` | Test parameters |
-| tests.image | object | `{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"busybox","tag":"1.37.0"}` | Image for test pods |
+| tests | object | `{"image":{"pullPolicy":"IfNotPresent","registry":"harbor.settlemint.com/docker.io","repository":"busybox","tag":"1.37.0"}}` | Test parameters |
+| tests.image | object | `{"pullPolicy":"IfNotPresent","registry":"harbor.settlemint.com/docker.io","repository":"busybox","tag":"1.37.0"}` | Image for test pods |
 | tests.image.pullPolicy | string | `"IfNotPresent"` | Test image pull policy |
-| tests.image.registry | string | `"docker.io"` | Test image registry |
+| tests.image.registry | string | `"harbor.settlemint.com/docker.io"` | Test image registry |
 | tests.image.repository | string | `"busybox"` | Test image repository |
 | tests.image.tag | string | `"1.37.0"` | Test image tag |
 | tolerations | list | `[]` | Tolerations for pod assignment |

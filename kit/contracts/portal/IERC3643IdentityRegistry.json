@@ -1,0 +1,846 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "batchRegisterIdentity",
+      "inputs": [
+        {
+          "name": "_userAddresses",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "_identities",
+          "type": "address[]",
+          "internalType": "contract IIdentity[]"
+        },
+        {
+          "name": "_countries",
+          "type": "uint16[]",
+          "internalType": "uint16[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "contains",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "deleteIdentity",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "identity",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract IIdentity"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "identityStorage",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract IERC3643IdentityRegistryStorage"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "investorCountry",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint16",
+          "internalType": "uint16"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isVerified",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "issuersRegistry",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract IERC3643TrustedIssuersRegistry"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "registerIdentity",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_identity",
+          "type": "address",
+          "internalType": "contract IIdentity"
+        },
+        {
+          "name": "_country",
+          "type": "uint16",
+          "internalType": "uint16"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setClaimTopicsRegistry",
+      "inputs": [
+        {
+          "name": "_claimTopicsRegistry",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setIdentityRegistryStorage",
+      "inputs": [
+        {
+          "name": "_identityRegistryStorage",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setTrustedIssuersRegistry",
+      "inputs": [
+        {
+          "name": "_trustedIssuersRegistry",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "topicsRegistry",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "contract IERC3643ClaimTopicsRegistry"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "updateCountry",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_country",
+          "type": "uint16",
+          "internalType": "uint16"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "updateIdentity",
+      "inputs": [
+        {
+          "name": "_userAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_identity",
+          "type": "address",
+          "internalType": "contract IIdentity"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "batchRegisterIdentity(address[],address[],uint16[])": "653dc9f1",
+    "contains(address)": "5dbe47e8",
+    "deleteIdentity(address)": "a8d29d1d",
+    "identity(address)": "f0eb5e54",
+    "identityStorage()": "f11abfd8",
+    "investorCountry(address)": "7e42683b",
+    "isVerified(address)": "b9209e33",
+    "issuersRegistry()": "b4f3fcb7",
+    "registerIdentity(address,address,uint16)": "454a03e0",
+    "setClaimTopicsRegistry(address)": "670af6a9",
+    "setIdentityRegistryStorage(address)": "26d941ae",
+    "setTrustedIssuersRegistry(address)": "e744d789",
+    "topicsRegistry()": "3b3e12f4",
+    "updateCountry(address,uint16)": "3b239a7f",
+    "updateIdentity(address,address)": "8e098ca1"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_userAddresses\",\"type\":\"address[]\"},{\"internalType\":\"contract IIdentity[]\",\"name\":\"_identities\",\"type\":\"address[]\"},{\"internalType\":\"uint16[]\",\"name\":\"_countries\",\"type\":\"uint16[]\"}],\"name\":\"batchRegisterIdentity\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"}],\"name\":\"contains\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"}],\"name\":\"deleteIdentity\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"}],\"name\":\"identity\",\"outputs\":[{\"internalType\":\"contract IIdentity\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityStorage\",\"outputs\":[{\"internalType\":\"contract IERC3643IdentityRegistryStorage\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"}],\"name\":\"investorCountry\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"}],\"name\":\"isVerified\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"issuersRegistry\",\"outputs\":[{\"internalType\":\"contract IERC3643TrustedIssuersRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"},{\"internalType\":\"contract IIdentity\",\"name\":\"_identity\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"_country\",\"type\":\"uint16\"}],\"name\":\"registerIdentity\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_claimTopicsRegistry\",\"type\":\"address\"}],\"name\":\"setClaimTopicsRegistry\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_identityRegistryStorage\",\"type\":\"address\"}],\"name\":\"setIdentityRegistryStorage\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_trustedIssuersRegistry\",\"type\":\"address\"}],\"name\":\"setTrustedIssuersRegistry\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"topicsRegistry\",\"outputs\":[{\"internalType\":\"contract IERC3643ClaimTopicsRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"},{\"internalType\":\"uint16\",\"name\":\"_country\",\"type\":\"uint16\"}],\"name\":\"updateCountry\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_userAddress\",\"type\":\"address\"},{\"internalType\":\"contract IIdentity\",\"name\":\"_identity\",\"type\":\"address\"}],\"name\":\"updateIdentity\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"batchRegisterIdentity(address[],address[],uint16[])\":{\"details\":\"function allowing to register identities in batch  This function can only be called by a wallet set as agent of the smart contract  Requires that none of the users has an identity contract already registered.  IMPORTANT : THIS TRANSACTION COULD EXCEED GAS LIMIT IF `_userAddresses.length` IS TOO HIGH,  USE WITH CARE OR YOU COULD LOSE TX FEES WITH AN \\\"OUT OF GAS\\\" TRANSACTION\",\"params\":{\"_countries\":\"The countries of the corresponding investors  emits _userAddresses.length `IdentityRegistered` events\",\"_identities\":\"The addresses of the corresponding identity contracts\",\"_userAddresses\":\"The addresses of the users\"}},\"contains(address)\":{\"details\":\"This functions checks whether a wallet has its Identity registered or not  in the Identity Registry.\",\"params\":{\"_userAddress\":\"The address of the user to be checked.\"},\"returns\":{\"_0\":\"'True' if the address is contained in the Identity Registry, 'false' if not.\"}},\"deleteIdentity(address)\":{\"details\":\"Removes an user from the identity registry.  Requires that the user have an identity contract already deployed that will be deleted.  This function can only be called by a wallet set as agent of the smart contract\",\"params\":{\"_userAddress\":\"The address of the user to be removed  emits `IdentityRemoved` event\"}},\"identity(address)\":{\"details\":\"Returns the onchainID of an investor.\",\"params\":{\"_userAddress\":\"The wallet of the investor\"}},\"identityStorage()\":{\"details\":\"Returns the IdentityRegistryStorage linked to the current IdentityRegistry.\"},\"investorCountry(address)\":{\"details\":\"Returns the country code of an investor.\",\"params\":{\"_userAddress\":\"The wallet of the investor\"}},\"isVerified(address)\":{\"details\":\"This functions checks whether an identity contract  corresponding to the provided user address has the required claims or not based  on the data fetched from trusted issuers registry and from the claim topics registry\",\"params\":{\"_userAddress\":\"The address of the user to be verified.\"},\"returns\":{\"_0\":\"'True' if the address is verified, 'false' if not.\"}},\"issuersRegistry()\":{\"details\":\"Returns the TrustedIssuersRegistry linked to the current IdentityRegistry.\"},\"registerIdentity(address,address,uint16)\":{\"details\":\"Register an identity contract corresponding to a user address.  Requires that the user doesn't have an identity contract already registered.  This function can only be called by a wallet set as agent of the smart contract\",\"params\":{\"_country\":\"The country of the investor  emits `IdentityRegistered` event\",\"_identity\":\"The address of the user's identity contract\",\"_userAddress\":\"The address of the user\"}},\"setClaimTopicsRegistry(address)\":{\"details\":\"Replace the actual claimTopicsRegistry contract with a new one.  This function can only be called by the wallet set as owner of the smart contract\",\"params\":{\"_claimTopicsRegistry\":\"The address of the new claim Topics Registry  emits `ClaimTopicsRegistrySet` event\"}},\"setIdentityRegistryStorage(address)\":{\"details\":\"Replace the actual identityRegistryStorage contract with a new one.  This function can only be called by the wallet set as owner of the smart contract\",\"params\":{\"_identityRegistryStorage\":\"The address of the new Identity Registry Storage  emits `IdentityStorageSet` event\"}},\"setTrustedIssuersRegistry(address)\":{\"details\":\"Replace the actual trustedIssuersRegistry contract with a new one.  This function can only be called by the wallet set as owner of the smart contract\",\"params\":{\"_trustedIssuersRegistry\":\"The address of the new Trusted Issuers Registry  emits `TrustedIssuersRegistrySet` event\"}},\"topicsRegistry()\":{\"details\":\"Returns the ClaimTopicsRegistry linked to the current IdentityRegistry.\"},\"updateCountry(address,uint16)\":{\"details\":\"Updates the country corresponding to a user address.  Requires that the user should have an identity contract already deployed that will be replaced.  This function can only be called by a wallet set as agent of the smart contract\",\"params\":{\"_country\":\"The new country of the user  emits `CountryUpdated` event\",\"_userAddress\":\"The address of the user\"}},\"updateIdentity(address,address)\":{\"details\":\"Updates an identity contract corresponding to a user address.  Requires that the user address should be the owner of the identity contract.  Requires that the user should have an identity contract already deployed that will be replaced.  This function can only be called by a wallet set as agent of the smart contract\",\"params\":{\"_identity\":\"The address of the user's new identity contract  emits `IdentityUpdated` event\",\"_userAddress\":\"The address of the user\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/smart/interface/ERC-3643/IERC3643IdentityRegistry.sol\":\"IERC3643IdentityRegistry\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/\",\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/\",\":forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\",\":openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/\"],\"viaIR\":true},\"sources\":{\"contracts/smart/interface/ERC-3643/IERC3643ClaimTopicsRegistry.sol\":{\"keccak256\":\"0xb085bf139ab9b7e15dd09374bc112774e068f92601842626e50f36dbd95951fa\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://61eb64cf3dacd25cfc5ccdc62a09ccc6a327691a9e3023007ebf0987803e3d55\",\"dweb:/ipfs/QmTV5trbDvpVrpkU2eGj9r5wxJnnRK26GfGUoRnm4m91De\"]},\"contracts/smart/interface/ERC-3643/IERC3643IdentityRegistry.sol\":{\"keccak256\":\"0x5c0cf01862935ea3ce46409b73e362334344acb128af2d53d3ae66dd1d5ebb82\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://c1520768602149d894d6ffb05989cc9a4474d13e996b26c98a80f44a7e440370\",\"dweb:/ipfs/QmZGHa5natSu5LLnyKSi2dkQjafWzX5E5KZYXD4LtqUsFR\"]},\"contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol\":{\"keccak256\":\"0x3a8a72df8da5bf4d988bbfb00151b933ff17cdc8d4be47dc121cd9e2083ba86f\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://369250658bf8d3ebb583946820afa494271ce6bfde607d15c7060cdf7a303cf3\",\"dweb:/ipfs/QmSJjaK6vyv8K9RX1k3rwxsoKfVNyMoHEszxyxdTQfDKQG\"]},\"contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol\":{\"keccak256\":\"0x15b72940814cd959b57bf75623f16c51fc6c50eab51fd2420a8b653519ebd76c\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://479f5e24a1b608776d9d5d7da9c76dd3c9b1dd300d8b4eee7a15dcfba4817bee\",\"dweb:/ipfs/QmPhMBfQAqt5NeRcSu3jDTwhoQXnB7nXNEcmoJ7KoWVt7V\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IClaimIssuer.sol\":{\"keccak256\":\"0xae785f63b3cb3a94bcb454ef4ad6376aa4848fa29cff1cc8db3bef4a2994a779\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://d8223d2710c51ee39cdfd2cb2f1858b3d64a3222c78ea8ed5eb3e11a93e1222e\",\"dweb:/ipfs/QmYRXPCww7BorScTC6QNMbrRm2zprUmSYFpWomwarJH7Df\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IERC734.sol\":{\"keccak256\":\"0x35a14a0d1a3ed51689f1a2cb12e26d30601afbcc1cc9b9b288a03cd11e6d049e\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://156aac402e73e6bd2fa8c0ccd85b2add8d1bb505d8a652218173dbc8e7b9a3cb\",\"dweb:/ipfs/QmPzPyc3kKxoNCGqKAooUju6YvMkDN4MCUH198TEXnA82o\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IERC735.sol\":{\"keccak256\":\"0xeac82c37b16c1c1c83df3e88be987332b1230ed13e1d017f9d2929f978ac0122\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://695a66b789ac417b7b2b78c578981779db374704382921ff499351cccab0323e\",\"dweb:/ipfs/QmeZoogvsEWf688Z849zZ2dLPDnor6YnnNQLMgedY9Tc9D\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IIdentity.sol\":{\"keccak256\":\"0x5ed42ab81b9b734c79e61d1f7e0734baab5479a356ab6bb469414d3c66269862\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://a0863999b1ed334179a43e699e6057815eea011a78ed51e61b6110fc392e26f8\",\"dweb:/ipfs/Qme6hdHZCAy1V4sLgAZ5NxdrEjEf5mYMabf5UDmUDjkuzW\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "_userAddresses",
+              "type": "address[]"
+            },
+            {
+              "internalType": "contract IIdentity[]",
+              "name": "_identities",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint16[]",
+              "name": "_countries",
+              "type": "uint16[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "batchRegisterIdentity"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "contains",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "deleteIdentity"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "identity",
+          "outputs": [
+            {
+              "internalType": "contract IIdentity",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "identityStorage",
+          "outputs": [
+            {
+              "internalType": "contract IERC3643IdentityRegistryStorage",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "investorCountry",
+          "outputs": [
+            {
+              "internalType": "uint16",
+              "name": "",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isVerified",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "issuersRegistry",
+          "outputs": [
+            {
+              "internalType": "contract IERC3643TrustedIssuersRegistry",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IIdentity",
+              "name": "_identity",
+              "type": "address"
+            },
+            {
+              "internalType": "uint16",
+              "name": "_country",
+              "type": "uint16"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "registerIdentity"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_claimTopicsRegistry",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setClaimTopicsRegistry"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_identityRegistryStorage",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setIdentityRegistryStorage"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_trustedIssuersRegistry",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setTrustedIssuersRegistry"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "topicsRegistry",
+          "outputs": [
+            {
+              "internalType": "contract IERC3643ClaimTopicsRegistry",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint16",
+              "name": "_country",
+              "type": "uint16"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "updateCountry"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_userAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IIdentity",
+              "name": "_identity",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "updateIdentity"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "batchRegisterIdentity(address[],address[],uint16[])": {
+            "details": "function allowing to register identities in batch  This function can only be called by a wallet set as agent of the smart contract  Requires that none of the users has an identity contract already registered.  IMPORTANT : THIS TRANSACTION COULD EXCEED GAS LIMIT IF `_userAddresses.length` IS TOO HIGH,  USE WITH CARE OR YOU COULD LOSE TX FEES WITH AN \"OUT OF GAS\" TRANSACTION",
+            "params": {
+              "_countries": "The countries of the corresponding investors  emits _userAddresses.length `IdentityRegistered` events",
+              "_identities": "The addresses of the corresponding identity contracts",
+              "_userAddresses": "The addresses of the users"
+            }
+          },
+          "contains(address)": {
+            "details": "This functions checks whether a wallet has its Identity registered or not  in the Identity Registry.",
+            "params": {
+              "_userAddress": "The address of the user to be checked."
+            },
+            "returns": {
+              "_0": "'True' if the address is contained in the Identity Registry, 'false' if not."
+            }
+          },
+          "deleteIdentity(address)": {
+            "details": "Removes an user from the identity registry.  Requires that the user have an identity contract already deployed that will be deleted.  This function can only be called by a wallet set as agent of the smart contract",
+            "params": {
+              "_userAddress": "The address of the user to be removed  emits `IdentityRemoved` event"
+            }
+          },
+          "identity(address)": {
+            "details": "Returns the onchainID of an investor.",
+            "params": {
+              "_userAddress": "The wallet of the investor"
+            }
+          },
+          "identityStorage()": {
+            "details": "Returns the IdentityRegistryStorage linked to the current IdentityRegistry."
+          },
+          "investorCountry(address)": {
+            "details": "Returns the country code of an investor.",
+            "params": {
+              "_userAddress": "The wallet of the investor"
+            }
+          },
+          "isVerified(address)": {
+            "details": "This functions checks whether an identity contract  corresponding to the provided user address has the required claims or not based  on the data fetched from trusted issuers registry and from the claim topics registry",
+            "params": {
+              "_userAddress": "The address of the user to be verified."
+            },
+            "returns": {
+              "_0": "'True' if the address is verified, 'false' if not."
+            }
+          },
+          "issuersRegistry()": {
+            "details": "Returns the TrustedIssuersRegistry linked to the current IdentityRegistry."
+          },
+          "registerIdentity(address,address,uint16)": {
+            "details": "Register an identity contract corresponding to a user address.  Requires that the user doesn't have an identity contract already registered.  This function can only be called by a wallet set as agent of the smart contract",
+            "params": {
+              "_country": "The country of the investor  emits `IdentityRegistered` event",
+              "_identity": "The address of the user's identity contract",
+              "_userAddress": "The address of the user"
+            }
+          },
+          "setClaimTopicsRegistry(address)": {
+            "details": "Replace the actual claimTopicsRegistry contract with a new one.  This function can only be called by the wallet set as owner of the smart contract",
+            "params": {
+              "_claimTopicsRegistry": "The address of the new claim Topics Registry  emits `ClaimTopicsRegistrySet` event"
+            }
+          },
+          "setIdentityRegistryStorage(address)": {
+            "details": "Replace the actual identityRegistryStorage contract with a new one.  This function can only be called by the wallet set as owner of the smart contract",
+            "params": {
+              "_identityRegistryStorage": "The address of the new Identity Registry Storage  emits `IdentityStorageSet` event"
+            }
+          },
+          "setTrustedIssuersRegistry(address)": {
+            "details": "Replace the actual trustedIssuersRegistry contract with a new one.  This function can only be called by the wallet set as owner of the smart contract",
+            "params": {
+              "_trustedIssuersRegistry": "The address of the new Trusted Issuers Registry  emits `TrustedIssuersRegistrySet` event"
+            }
+          },
+          "topicsRegistry()": {
+            "details": "Returns the ClaimTopicsRegistry linked to the current IdentityRegistry."
+          },
+          "updateCountry(address,uint16)": {
+            "details": "Updates the country corresponding to a user address.  Requires that the user should have an identity contract already deployed that will be replaced.  This function can only be called by a wallet set as agent of the smart contract",
+            "params": {
+              "_country": "The new country of the user  emits `CountryUpdated` event",
+              "_userAddress": "The address of the user"
+            }
+          },
+          "updateIdentity(address,address)": {
+            "details": "Updates an identity contract corresponding to a user address.  Requires that the user address should be the owner of the identity contract.  Requires that the user should have an identity contract already deployed that will be replaced.  This function can only be called by a wallet set as agent of the smart contract",
+            "params": {
+              "_identity": "The address of the user's new identity contract  emits `IdentityUpdated` event",
+              "_userAddress": "The address of the user"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@axelar-network/axelar-gmp-sdk-solidity/=dependencies/openzeppelin-community-contracts-0.0.1/node_modules/@axelar-network/axelar-gmp-sdk-solidity/",
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.2.0/=dependencies/@openzeppelin-contracts-5.2.0/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/community-contracts/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "eas-contracts-1.4.0/=dependencies/eas-contracts-1.4.0/contracts/",
+        "forge-std-1.9.5/=dependencies/forge-std-1.9.5/src/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/",
+        "openzeppelin-community-contracts-0.0.1/=dependencies/openzeppelin-community-contracts-0.0.1/contracts/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/smart/interface/ERC-3643/IERC3643IdentityRegistry.sol": "IERC3643IdentityRegistry"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/smart/interface/ERC-3643/IERC3643ClaimTopicsRegistry.sol": {
+        "keccak256": "0xb085bf139ab9b7e15dd09374bc112774e068f92601842626e50f36dbd95951fa",
+        "urls": [
+          "bzz-raw://61eb64cf3dacd25cfc5ccdc62a09ccc6a327691a9e3023007ebf0987803e3d55",
+          "dweb:/ipfs/QmTV5trbDvpVrpkU2eGj9r5wxJnnRK26GfGUoRnm4m91De"
+        ],
+        "license": "CC0-1.0"
+      },
+      "contracts/smart/interface/ERC-3643/IERC3643IdentityRegistry.sol": {
+        "keccak256": "0x5c0cf01862935ea3ce46409b73e362334344acb128af2d53d3ae66dd1d5ebb82",
+        "urls": [
+          "bzz-raw://c1520768602149d894d6ffb05989cc9a4474d13e996b26c98a80f44a7e440370",
+          "dweb:/ipfs/QmZGHa5natSu5LLnyKSi2dkQjafWzX5E5KZYXD4LtqUsFR"
+        ],
+        "license": "CC0-1.0"
+      },
+      "contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol": {
+        "keccak256": "0x3a8a72df8da5bf4d988bbfb00151b933ff17cdc8d4be47dc121cd9e2083ba86f",
+        "urls": [
+          "bzz-raw://369250658bf8d3ebb583946820afa494271ce6bfde607d15c7060cdf7a303cf3",
+          "dweb:/ipfs/QmSJjaK6vyv8K9RX1k3rwxsoKfVNyMoHEszxyxdTQfDKQG"
+        ],
+        "license": "CC0-1.0"
+      },
+      "contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol": {
+        "keccak256": "0x15b72940814cd959b57bf75623f16c51fc6c50eab51fd2420a8b653519ebd76c",
+        "urls": [
+          "bzz-raw://479f5e24a1b608776d9d5d7da9c76dd3c9b1dd300d8b4eee7a15dcfba4817bee",
+          "dweb:/ipfs/QmPhMBfQAqt5NeRcSu3jDTwhoQXnB7nXNEcmoJ7KoWVt7V"
+        ],
+        "license": "CC0-1.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IClaimIssuer.sol": {
+        "keccak256": "0xae785f63b3cb3a94bcb454ef4ad6376aa4848fa29cff1cc8db3bef4a2994a779",
+        "urls": [
+          "bzz-raw://d8223d2710c51ee39cdfd2cb2f1858b3d64a3222c78ea8ed5eb3e11a93e1222e",
+          "dweb:/ipfs/QmYRXPCww7BorScTC6QNMbrRm2zprUmSYFpWomwarJH7Df"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IERC734.sol": {
+        "keccak256": "0x35a14a0d1a3ed51689f1a2cb12e26d30601afbcc1cc9b9b288a03cd11e6d049e",
+        "urls": [
+          "bzz-raw://156aac402e73e6bd2fa8c0ccd85b2add8d1bb505d8a652218173dbc8e7b9a3cb",
+          "dweb:/ipfs/QmPzPyc3kKxoNCGqKAooUju6YvMkDN4MCUH198TEXnA82o"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IERC735.sol": {
+        "keccak256": "0xeac82c37b16c1c1c83df3e88be987332b1230ed13e1d017f9d2929f978ac0122",
+        "urls": [
+          "bzz-raw://695a66b789ac417b7b2b78c578981779db374704382921ff499351cccab0323e",
+          "dweb:/ipfs/QmeZoogvsEWf688Z849zZ2dLPDnor6YnnNQLMgedY9Tc9D"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IIdentity.sol": {
+        "keccak256": "0x5ed42ab81b9b734c79e61d1f7e0734baab5479a356ab6bb469414d3c66269862",
+        "urls": [
+          "bzz-raw://a0863999b1ed334179a43e699e6057815eea011a78ed51e61b6110fc392e26f8",
+          "dweb:/ipfs/Qme6hdHZCAy1V4sLgAZ5NxdrEjEf5mYMabf5UDmUDjkuzW"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "methods": {
+      "batchRegisterIdentity(address[],address[],uint16[])": {
+        "details": "function allowing to register identities in batch  This function can only be called by a wallet set as agent of the smart contract  Requires that none of the users has an identity contract already registered.  IMPORTANT : THIS TRANSACTION COULD EXCEED GAS LIMIT IF `_userAddresses.length` IS TOO HIGH,  USE WITH CARE OR YOU COULD LOSE TX FEES WITH AN \"OUT OF GAS\" TRANSACTION",
+        "params": {
+          "_countries": "The countries of the corresponding investors  emits _userAddresses.length `IdentityRegistered` events",
+          "_identities": "The addresses of the corresponding identity contracts",
+          "_userAddresses": "The addresses of the users"
+        }
+      },
+      "contains(address)": {
+        "details": "This functions checks whether a wallet has its Identity registered or not  in the Identity Registry.",
+        "params": {
+          "_userAddress": "The address of the user to be checked."
+        },
+        "returns": {
+          "_0": "'True' if the address is contained in the Identity Registry, 'false' if not."
+        }
+      },
+      "deleteIdentity(address)": {
+        "details": "Removes an user from the identity registry.  Requires that the user have an identity contract already deployed that will be deleted.  This function can only be called by a wallet set as agent of the smart contract",
+        "params": {
+          "_userAddress": "The address of the user to be removed  emits `IdentityRemoved` event"
+        }
+      },
+      "identity(address)": {
+        "details": "Returns the onchainID of an investor.",
+        "params": {
+          "_userAddress": "The wallet of the investor"
+        }
+      },
+      "identityStorage()": {
+        "details": "Returns the IdentityRegistryStorage linked to the current IdentityRegistry."
+      },
+      "investorCountry(address)": {
+        "details": "Returns the country code of an investor.",
+        "params": {
+          "_userAddress": "The wallet of the investor"
+        }
+      },
+      "isVerified(address)": {
+        "details": "This functions checks whether an identity contract  corresponding to the provided user address has the required claims or not based  on the data fetched from trusted issuers registry and from the claim topics registry",
+        "params": {
+          "_userAddress": "The address of the user to be verified."
+        },
+        "returns": {
+          "_0": "'True' if the address is verified, 'false' if not."
+        }
+      },
+      "issuersRegistry()": {
+        "details": "Returns the TrustedIssuersRegistry linked to the current IdentityRegistry."
+      },
+      "registerIdentity(address,address,uint16)": {
+        "details": "Register an identity contract corresponding to a user address.  Requires that the user doesn't have an identity contract already registered.  This function can only be called by a wallet set as agent of the smart contract",
+        "params": {
+          "_country": "The country of the investor  emits `IdentityRegistered` event",
+          "_identity": "The address of the user's identity contract",
+          "_userAddress": "The address of the user"
+        }
+      },
+      "setClaimTopicsRegistry(address)": {
+        "details": "Replace the actual claimTopicsRegistry contract with a new one.  This function can only be called by the wallet set as owner of the smart contract",
+        "params": {
+          "_claimTopicsRegistry": "The address of the new claim Topics Registry  emits `ClaimTopicsRegistrySet` event"
+        }
+      },
+      "setIdentityRegistryStorage(address)": {
+        "details": "Replace the actual identityRegistryStorage contract with a new one.  This function can only be called by the wallet set as owner of the smart contract",
+        "params": {
+          "_identityRegistryStorage": "The address of the new Identity Registry Storage  emits `IdentityStorageSet` event"
+        }
+      },
+      "setTrustedIssuersRegistry(address)": {
+        "details": "Replace the actual trustedIssuersRegistry contract with a new one.  This function can only be called by the wallet set as owner of the smart contract",
+        "params": {
+          "_trustedIssuersRegistry": "The address of the new Trusted Issuers Registry  emits `TrustedIssuersRegistrySet` event"
+        }
+      },
+      "topicsRegistry()": {
+        "details": "Returns the ClaimTopicsRegistry linked to the current IdentityRegistry."
+      },
+      "updateCountry(address,uint16)": {
+        "details": "Updates the country corresponding to a user address.  Requires that the user should have an identity contract already deployed that will be replaced.  This function can only be called by a wallet set as agent of the smart contract",
+        "params": {
+          "_country": "The new country of the user  emits `CountryUpdated` event",
+          "_userAddress": "The address of the user"
+        }
+      },
+      "updateIdentity(address,address)": {
+        "details": "Updates an identity contract corresponding to a user address.  Requires that the user address should be the owner of the identity contract.  Requires that the user should have an identity contract already deployed that will be replaced.  This function can only be called by a wallet set as agent of the smart contract",
+        "params": {
+          "_identity": "The address of the user's new identity contract  emits `IdentityUpdated` event",
+          "_userAddress": "The address of the user"
+        }
+      }
+    }
+  },
+  "id": 85
+}
