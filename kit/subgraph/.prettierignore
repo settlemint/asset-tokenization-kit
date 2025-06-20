@@ -5,3 +5,7 @@ node_modules/
 .env
 .env.local
 subgraph-output.txt
+src/erc165/utils/interfaceids.ts
+the-graph-env.d.ts
+the-graph-cache.d.ts
+.generated/**

@@ -1,0 +1,3016 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "accessManager",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "addComplianceModule",
+      "inputs": [
+        {
+          "name": "_module",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_params",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "allowance",
+      "inputs": [
+        {
+          "name": "owner",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "spender",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "approve",
+      "inputs": [
+        {
+          "name": "spender",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "balanceOf",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "batchMint",
+      "inputs": [
+        {
+          "name": "_toList",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "_amounts",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "batchTransfer",
+      "inputs": [
+        {
+          "name": "_toList",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "_amounts",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "compliance",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "complianceContract",
+          "type": "address",
+          "internalType": "contract ISMARTCompliance"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "complianceModules",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "modulesList",
+          "type": "tuple[]",
+          "internalType": "struct SMARTComplianceModuleParamPair[]",
+          "components": [
+            {
+              "name": "module",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "params",
+              "type": "bytes",
+              "internalType": "bytes"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "decimals",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "hasRole",
+      "inputs": [
+        {
+          "name": "role",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "identityRegistry",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "registryContract",
+          "type": "address",
+          "internalType": "contract ISMARTIdentityRegistry"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "mint",
+      "inputs": [
+        {
+          "name": "_to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "name",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "onchainID",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "idAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "recoverERC20",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "recoverTokens",
+      "inputs": [
+        {
+          "name": "_lostWallet",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "registeredInterfaces",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes4[]",
+          "internalType": "bytes4[]"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "removeComplianceModule",
+      "inputs": [
+        {
+          "name": "_module",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setCompliance",
+      "inputs": [
+        {
+          "name": "_compliance",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setIdentityRegistry",
+      "inputs": [
+        {
+          "name": "_identityRegistry",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setOnchainID",
+      "inputs": [
+        {
+          "name": "_onchainID",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "setParametersForComplianceModule",
+      "inputs": [
+        {
+          "name": "_module",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_params",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "supportsInterface",
+      "inputs": [
+        {
+          "name": "interfaceId",
+          "type": "bytes4",
+          "internalType": "bytes4"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "symbol",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "totalSupply",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "transfer",
+      "inputs": [
+        {
+          "name": "to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "transferFrom",
+      "inputs": [
+        {
+          "name": "from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "AccessManagerSet",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "manager",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Approval",
+      "inputs": [
+        {
+          "name": "owner",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "spender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ComplianceAdded",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_compliance",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ComplianceModuleAdded",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_module",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_params",
+          "type": "bytes",
+          "indexed": false,
+          "internalType": "bytes"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ComplianceModuleRemoved",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_module",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ERC20TokenRecovered",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "token",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "to",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "IdentityRegistryAdded",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_identityRegistry",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "MintCompleted",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "to",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ModuleParametersUpdated",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_module",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_params",
+          "type": "bytes",
+          "indexed": false,
+          "internalType": "bytes"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "TokensRecovered",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "lostWallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newWallet",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "Transfer",
+      "inputs": [
+        {
+          "name": "from",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "to",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "value",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "TransferCompleted",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "from",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "to",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "UpdatedTokenInformation",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "_newDecimals",
+          "type": "uint8",
+          "indexed": false,
+          "internalType": "uint8"
+        },
+        {
+          "name": "_newOnchainID",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "AccessControlUnauthorizedAccount",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "neededRole",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "CannotRecoverSelf",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "DuplicateModule",
+      "inputs": [
+        {
+          "name": "module",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ERC20InsufficientAllowance",
+      "inputs": [
+        {
+          "name": "spender",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "allowance",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "needed",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ERC20InsufficientBalance",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "balance",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "needed",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ERC20InvalidApprover",
+      "inputs": [
+        {
+          "name": "approver",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ERC20InvalidReceiver",
+      "inputs": [
+        {
+          "name": "receiver",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ERC20InvalidSender",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ERC20InvalidSpender",
+      "inputs": [
+        {
+          "name": "spender",
+          "type": "address",
+          "internalType": "address"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "InsufficientTokenBalance",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidDecimals",
+      "inputs": [
+        {
+          "name": "decimals",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "InvalidLostWallet",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "LengthMismatch",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "MintNotCompliant",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ModuleAlreadyAdded",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ModuleNotFound",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "NoTokensToRecover",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "TransferNotCompliant",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ZeroAddressNotAllowed",
+      "inputs": []
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "accessManager()": "fdcb6068",
+    "addComplianceModule(address,bytes)": "77d2f8d9",
+    "allowance(address,address)": "dd62ed3e",
+    "approve(address,uint256)": "095ea7b3",
+    "balanceOf(address)": "70a08231",
+    "batchMint(address[],uint256[])": "68573107",
+    "batchTransfer(address[],uint256[])": "88d695b2",
+    "compliance()": "6290865d",
+    "complianceModules()": "a98ac17a",
+    "decimals()": "313ce567",
+    "hasRole(bytes32,address)": "91d14854",
+    "identityRegistry()": "134e18f4",
+    "mint(address,uint256)": "40c10f19",
+    "name()": "06fdde03",
+    "onchainID()": "aba63705",
+    "recoverERC20(address,address,uint256)": "1171bda9",
+    "recoverTokens(address)": "16114acd",
+    "registeredInterfaces()": "1fd522a8",
+    "removeComplianceModule(address)": "c76f3d9b",
+    "setCompliance(address)": "f8981789",
+    "setIdentityRegistry(address)": "cbf3f861",
+    "setOnchainID(address)": "3d1ddc5b",
+    "setParametersForComplianceModule(address,bytes)": "1ef5205f",
+    "supportsInterface(bytes4)": "01ffc9a7",
+    "symbol()": "95d89b41",
+    "totalSupply()": "18160ddd",
+    "transfer(address,uint256)": "a9059cbb",
+    "transferFrom(address,address,uint256)": "23b872dd"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CannotRecoverSelf\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"module\",\"type\":\"address\"}],\"name\":\"DuplicateModule\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"allowance\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"needed\",\"type\":\"uint256\"}],\"name\":\"ERC20InsufficientAllowance\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"needed\",\"type\":\"uint256\"}],\"name\":\"ERC20InsufficientBalance\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"approver\",\"type\":\"address\"}],\"name\":\"ERC20InvalidApprover\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"}],\"name\":\"ERC20InvalidReceiver\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"ERC20InvalidSender\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"}],\"name\":\"ERC20InvalidSpender\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InsufficientTokenBalance\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"decimals\",\"type\":\"uint8\"}],\"name\":\"InvalidDecimals\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidLostWallet\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"LengthMismatch\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"MintNotCompliant\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ModuleAlreadyAdded\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ModuleNotFound\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NoTokensToRecover\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TransferNotCompliant\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressNotAllowed\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"}],\"name\":\"AccessManagerSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_compliance\",\"type\":\"address\"}],\"name\":\"ComplianceAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_module\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"_params\",\"type\":\"bytes\"}],\"name\":\"ComplianceModuleAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_module\",\"type\":\"address\"}],\"name\":\"ComplianceModuleRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"ERC20TokenRecovered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_identityRegistry\",\"type\":\"address\"}],\"name\":\"IdentityRegistryAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"MintCompleted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_module\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"_params\",\"type\":\"bytes\"}],\"name\":\"ModuleParametersUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"lostWallet\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newWallet\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"TokensRecovered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"TransferCompleted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"_newDecimals\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_newOnchainID\",\"type\":\"address\"}],\"name\":\"UpdatedTokenInformation\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"accessManager\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_module\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"_params\",\"type\":\"bytes\"}],\"name\":\"addComplianceModule\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_toList\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"_amounts\",\"type\":\"uint256[]\"}],\"name\":\"batchMint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_toList\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"_amounts\",\"type\":\"uint256[]\"}],\"name\":\"batchTransfer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"compliance\",\"outputs\":[{\"internalType\":\"contract ISMARTCompliance\",\"name\":\"complianceContract\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"complianceModules\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"module\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"params\",\"type\":\"bytes\"}],\"internalType\":\"struct SMARTComplianceModuleParamPair[]\",\"name\":\"modulesList\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"decimals\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityRegistry\",\"outputs\":[{\"internalType\":\"contract ISMARTIdentityRegistry\",\"name\":\"registryContract\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"onchainID\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"idAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"recoverERC20\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_lostWallet\",\"type\":\"address\"}],\"name\":\"recoverTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"registeredInterfaces\",\"outputs\":[{\"internalType\":\"bytes4[]\",\"name\":\"\",\"type\":\"bytes4[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_module\",\"type\":\"address\"}],\"name\":\"removeComplianceModule\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_compliance\",\"type\":\"address\"}],\"name\":\"setCompliance\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_identityRegistry\",\"type\":\"address\"}],\"name\":\"setIdentityRegistry\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_onchainID\",\"type\":\"address\"}],\"name\":\"setOnchainID\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_module\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"_params\",\"type\":\"bytes\"}],\"name\":\"setParametersForComplianceModule\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This is the non-upgradeable version. Inheriting contracts should invoke the      constructor, passing the address of the `SMARTTokenAccessManager`.      They are also responsible for implementing any necessary authorization hooks      by delegating calls to the designated manager contract.      Delegation means that this contract will forward certain checks or calls      to the `SMARTTokenAccessManager` to decide if an action is allowed.\",\"errors\":{\"AccessControlUnauthorizedAccount(address,bytes32)\":[{\"details\":\"Error: Account Lacks Required Role.      This error is emitted when an action is attempted by an account (`account`)      that does not possess the necessary authorization role (`neededRole`).      For example, if an account tries to mint new tokens but doesn't have the 'MINTER_ROLE'.\",\"params\":{\"account\":\"The address of the account that attempted the unauthorized action.\",\"neededRole\":\"The `bytes32` identifier of the role that the `account` was missing.\"}}],\"CannotRecoverSelf()\":[{\"details\":\"The `recoverERC20` function is designed to recover other ERC20 tokens mistakenly sent to this contract,      not the token this contract itself represents.\"}],\"DuplicateModule(address)\":[{\"params\":{\"module\":\"The address of the duplicate compliance module.\"}}],\"ERC20InsufficientAllowance(address,uint256,uint256)\":[{\"details\":\"Indicates a failure with the `spender`\\u2019s `allowance`. Used in transfers.\",\"params\":{\"allowance\":\"Amount of tokens a `spender` is allowed to operate with.\",\"needed\":\"Minimum amount required to perform a transfer.\",\"spender\":\"Address that may be allowed to operate on tokens without being their owner.\"}}],\"ERC20InsufficientBalance(address,uint256,uint256)\":[{\"details\":\"Indicates an error related to the current `balance` of a `sender`. Used in transfers.\",\"params\":{\"balance\":\"Current balance for the interacting account.\",\"needed\":\"Minimum amount required to perform a transfer.\",\"sender\":\"Address whose tokens are being transferred.\"}}],\"ERC20InvalidApprover(address)\":[{\"details\":\"Indicates a failure with the `approver` of a token to be approved. Used in approvals.\",\"params\":{\"approver\":\"Address initiating an approval operation.\"}}],\"ERC20InvalidReceiver(address)\":[{\"details\":\"Indicates a failure with the token `receiver`. Used in transfers.\",\"params\":{\"receiver\":\"Address to which tokens are being transferred.\"}}],\"ERC20InvalidSender(address)\":[{\"details\":\"Indicates a failure with the token `sender`. Used in transfers.\",\"params\":{\"sender\":\"Address whose tokens are being transferred.\"}}],\"ERC20InvalidSpender(address)\":[{\"details\":\"Indicates a failure with the `spender` to be approved. Used in approvals.\",\"params\":{\"spender\":\"Address that may be allowed to operate on tokens without being their owner.\"}}],\"InsufficientTokenBalance()\":[{\"details\":\"This typically occurs during token recovery if the contract holds less of the target token than the amount requested for recovery.\"}],\"InvalidDecimals(uint8)\":[{\"details\":\"This error is typically reverted if `decimals` is greater than 18, which is a common upper limit.\",\"params\":{\"decimals\":\"The invalid decimals value that was provided.\"}}],\"InvalidLostWallet()\":[{\"details\":\"This can occur if the wallet is not associated with any lost identity.\"}],\"LengthMismatch()\":[{\"details\":\"This error is typically triggered in functions that process multiple items in batches,      such as `batchBurn` or `batchTransfer`, when the input arrays (e.g., an array of addresses      and an array of corresponding amounts) do not have the same number of elements.      For example, if 3 addresses are provided but only 2 amounts, this error would be raised      because it's unclear how to map the amounts to the addresses.\"}],\"MintNotCompliant()\":[{\"details\":\"This means the conditions required by the active compliance modules for minting were not met.\"}],\"ModuleNotFound()\":[{\"details\":\"This can occur when trying to remove or update parameters for a non-existent module.\"}],\"NoTokensToRecover()\":[{\"details\":\"This can occur if the contract holds no tokens to recover.\"}],\"TransferNotCompliant()\":[{\"details\":\"This means the conditions required by the active compliance modules for transferring tokens were not met.\"}],\"ZeroAddressNotAllowed()\":[{\"details\":\"This error is used to indicate that an operation or initialization was attempted with the      zero address (`address(0)`), which is often an invalid or disallowed address in many contexts.      For example, setting a critical administrative role to the zero address, or transferring tokens      to the zero address (which can effectively burn them, but should be explicit if intended).\"}]},\"events\":{\"AccessManagerSet(address,address)\":{\"details\":\"This event is crucial for transparency and monitoring. It allows external observers      to know when the authority managing roles and permissions for a token has been updated.      The `indexed` keyword for `sender` and `manager` allows these addresses to be efficiently      searched for in event logs.\",\"params\":{\"manager\":\"The new address of the `SMARTTokenAccessManager` contract that will now                oversee access control for the token.\",\"sender\":\"The address of the account that initiated the change of the access manager.               This is typically an administrator or an account with special privileges.\"}},\"Approval(address,address,uint256)\":{\"details\":\"Emitted when the allowance of a `spender` for an `owner` is set by a call to {approve}. `value` is the new allowance.\"},\"ComplianceAdded(address,address)\":{\"details\":\"This event indicates a change in the primary contract responsible for enforcing compliance rules on token transfers.\",\"params\":{\"_compliance\":\"The address of the newly configured `ISMARTCompliance` contract.\",\"sender\":\"The address of the account (e.g., admin) that initiated this configuration change.\"}},\"ComplianceModuleAdded(address,address,bytes)\":{\"details\":\"Compliance modules implement specific rules (e.g., geographic restrictions, holding limits).\",\"params\":{\"_module\":\"The address of the newly added compliance module contract (which should implement `ISMARTComplianceModule`).\",\"_params\":\"The ABI-encoded configuration parameters initially set for this module instance on this token.\",\"sender\":\"The address of the account (e.g., admin) that added the module.\"}},\"ComplianceModuleRemoved(address,address)\":{\"details\":\"Removing a module means its rules will no longer be applied to token operations.\",\"params\":{\"_module\":\"The address of the compliance module contract that was removed.\",\"sender\":\"The address of the account (e.g., admin) that removed the module.\"}},\"ERC20TokenRecovered(address,address,address,uint256)\":{\"params\":{\"amount\":\"The amount of tokens recovered.\",\"sender\":\"The address that initiated the recovery operation.\",\"to\":\"The address to which the tokens were recovered.\",\"token\":\"The address of the ERC20 token recovered.\"}},\"IdentityRegistryAdded(address,address)\":{\"details\":\"This event signals a change in the system component responsible for managing and verifying user identities.\",\"params\":{\"_identityRegistry\":\"The address of the newly configured `ISMARTIdentityRegistry` contract.\",\"sender\":\"The address of the account (e.g., admin) that initiated this configuration change.\"}},\"MintCompleted(address,address,uint256)\":{\"params\":{\"amount\":\"The quantity of tokens minted.\",\"sender\":\"The address of the account (e.g., minter role) that initiated the minting.\",\"to\":\"The address that received the newly minted tokens.\"}},\"ModuleParametersUpdated(address,address,bytes)\":{\"details\":\"This allows tweaking the behavior of a module without removing and re-adding it.\",\"params\":{\"_module\":\"The address of the compliance module whose parameters were updated.\",\"_params\":\"The new ABI-encoded configuration parameters for the module.\",\"sender\":\"The address of the account (e.g., admin) that updated the parameters.\"}},\"TokensRecovered(address,address,address,uint256)\":{\"params\":{\"amount\":\"The amount of tokens recovered.\",\"lostWallet\":\"The address of the lost wallet containing tokens to recover.\",\"newWallet\":\"The address to which the tokens were recovered.\",\"sender\":\"The address that initiated the recovery operation.\"}},\"Transfer(address,address,uint256)\":{\"details\":\"Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.\"},\"TransferCompleted(address,address,address,uint256)\":{\"params\":{\"amount\":\"The quantity of tokens transferred.\",\"from\":\"The address from which tokens were sent.\",\"sender\":\"The address that initiated the transfer action (could be the `from` address or an operator).\",\"to\":\"The address to which tokens were received.\"}},\"UpdatedTokenInformation(address,uint8,address)\":{\"details\":\"Note: While `name` and `symbol` are part of `IERC20Metadata`, their update mechanism isn't explicitly defined here,      but if updatable, would likely also trigger such an event. This event specifically calls out decimals and onchainID.\",\"params\":{\"_newDecimals\":\"The new number of decimal places the token uses. (Note: Changing decimals post-deployment is highly unusual and complex for ERC20 tokens).\",\"_newOnchainID\":\"The address of the new on-chain Identity contract representing the token itself (if applicable).\",\"sender\":\"The address of the account (e.g., admin) that initiated the update.\"}}},\"kind\":\"dev\",\"methods\":{\"accessManager()\":{\"details\":\"This is an external view function, meaning it can be called from outside the      contract without consuming gas (if called via a node's RPC) and it does not      modify the contract's state.\",\"returns\":{\"_0\":\"The address of the `_accessManager`.\"}},\"addComplianceModule(address,bytes)\":{\"details\":\"Before adding, the implementation (or the main `ISMARTCompliance` contract) MUST validate:      1. That `_module` is a valid contract address.      2. That `_module` correctly implements the `ISMARTComplianceModule` interface (e.g., via ERC165 `supportsInterface`).      3. That the provided `_params` are valid for the `_module` (by calling `_module.validateParameters(_params)`).      Typically restricted to an administrative role. Emits `ComplianceModuleAdded`.\",\"params\":{\"_module\":\"The address of the compliance module contract to add.\",\"_params\":\"The initial ABI-encoded configuration parameters for this module specific to this token.\"}},\"allowance(address,address)\":{\"details\":\"See {IERC20-allowance}.\"},\"approve(address,uint256)\":{\"details\":\"See {IERC20-approve}. NOTE: If `value` is the maximum `uint256`, the allowance is not updated on `transferFrom`. This is semantically equivalent to an infinite approval. Requirements: - `spender` cannot be the zero address.\"},\"balanceOf(address)\":{\"details\":\"See {IERC20-balanceOf}.\"},\"batchMint(address[],uint256[])\":{\"details\":\"This is an efficiency function to reduce transaction costs when minting to many users.      Typically restricted to accounts with a specific minter role.      Implementations MUST perform identity verification and compliance checks for *each* recipient in `_toList`.      If any recipient fails checks, the entire batch operation should revert to maintain atomicity.      Emits multiple `MintCompleted` and ERC20 `Transfer` events.\",\"params\":{\"_amounts\":\"An array of corresponding token quantities to mint for each address in `_toList`. The lengths of `_toList` and `_amounts` MUST be equal.\",\"_toList\":\"An array of addresses to receive the newly minted tokens.\"}},\"batchTransfer(address[],uint256[])\":{\"details\":\"This is an efficiency function, useful for distributions or airdrops (if compliant).      The caller (`msg.sender`) must have a sufficient balance to cover the sum of all `_amounts`.      Implementations MUST perform identity verification and compliance checks for *each* recipient in `_toList`      and also check the sender (`msg.sender`) if sender-side compliance rules apply.      If any part of the batch fails checks, the entire operation should revert.      Emits multiple `TransferCompleted` and ERC20 `Transfer` events.\",\"params\":{\"_amounts\":\"An array of corresponding token quantities to transfer. The lengths of `_toList` and `_amounts` MUST be equal.\",\"_toList\":\"An array of addresses to receive the tokens.\"}},\"compliance()\":{\"details\":\"The Compliance contract is responsible for orchestrating compliance checks for token operations.\",\"returns\":{\"complianceContract\":\"The `ISMARTCompliance` contract instance currently in use.\"}},\"complianceModules()\":{\"details\":\"Each element in the returned array is a `SMARTComplianceModuleParamPair` struct, containing the module's address      and its current ABI-encoded parameters specific to this token.\",\"returns\":{\"modulesList\":\"An array of `SMARTComplianceModuleParamPair` structs.\"}},\"constructor\":{\"details\":\"This constructor is called when a contract inheriting from `SMARTTokenAccessManaged`      is deployed. It ensures that the link to the `SMARTTokenAccessManager` is established      from the very beginning.      The `Initializable` contract is not used here because this is the non-upgradeable version.      Constructors in Solidity are special functions that run only once when the contract      is deployed.\",\"params\":{\"accessManager_\":\"The address of the `SMARTTokenAccessManager` contract that will                       manage roles and permissions for this token contract.\"}},\"decimals()\":{\"details\":\"Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5.05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the default value returned by this function, unless it's overridden. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.\"},\"hasRole(bytes32,address)\":{\"details\":\"This function implements the `ISMARTTokenAccessManaged` interface.      It delegates the actual role check to the `hasRole` function of the `_accessManager` contract.      The `virtual` keyword means that this function can be overridden by inheriting contracts.\",\"params\":{\"account\":\"The address of the account whose roles are being checked.\",\"role\":\"The `bytes32` identifier of the role to check.\"},\"returns\":{\"_0\":\"`true` if the account has the role, `false` otherwise.\"}},\"identityRegistry()\":{\"details\":\"The Identity Registry is used for verifying token holders against required claims and linking wallets to identities.\",\"returns\":{\"registryContract\":\"The `ISMARTIdentityRegistry` contract instance currently in use.\"}},\"mint(address,uint256)\":{\"details\":\"This function is typically restricted to accounts with a specific minter role.      Implementations MUST perform identity verification and compliance checks on the `_to` address before minting.      Failure to meet these checks should result in a revert (e.g., with `RecipientNotVerified` or a compliance error).      Emits `MintCompleted` and the standard ERC20 `Transfer` event (from `address(0)` to `_to`).\",\"params\":{\"_amount\":\"The quantity of tokens to mint.\",\"_to\":\"The address that will receive the newly minted tokens.\"}},\"name()\":{\"details\":\"Returns the name of the token.\"},\"onchainID()\":{\"details\":\"This can represent the token issuer or the token entity.\",\"returns\":{\"idAddress\":\"The address of the on-chain ID contract, or `address(0)` if no on-chain ID is set for the token.\"}},\"recoverERC20(address,address,uint256)\":{\"details\":\"This function is crucial for retrieving assets that are not the SMART token itself but are held by the contract.      Access to this function MUST be strictly controlled (e.g., via an `_authorizeRecoverERC20` internal hook or role).      It is critical that this function CANNOT be used to recover the SMART token itself, as that could drain the contract or interfere with its logic.      It should use a safe transfer mechanism (like OpenZeppelin's `SafeERC20.safeTransfer`) to prevent issues with non-standard ERC20 tokens.\",\"params\":{\"amount\":\"The quantity of the `token` to recover and send to `to`.\",\"to\":\"The address where the recovered tokens will be sent.\",\"token\":\"The contract address of the ERC20 token to be recovered. This MUST NOT be `address(this)`.\"}},\"recoverTokens(address)\":{\"details\":\"This will make it possible to recover SMART tokens from the lostWallet to msgSender, if it was correctly marked as lost in the identity registry.\",\"params\":{\"_lostWallet\":\"The address of the lost wallet containing tokens to recover.\"}},\"registeredInterfaces()\":{\"details\":\"This function allows external contracts and users to discover all interfaces      that this contract claims to support. This is useful for introspection and      automated interface detection.\",\"returns\":{\"_0\":\"An array of `bytes4` interface identifiers that have been registered.\"}},\"removeComplianceModule(address)\":{\"details\":\"Once removed, the rules enforced by this `_module` will no longer apply to token operations.      Typically restricted to an administrative role. Emits `ComplianceModuleRemoved`.\",\"params\":{\"_module\":\"The address of the compliance module contract to remove.\"}},\"setCompliance(address)\":{\"details\":\"The Compliance contract orchestrates checks across various compliance modules to determine transfer legality.      Typically restricted to an administrative role. Emits `ComplianceAdded`.\",\"params\":{\"_compliance\":\"The address of the new `ISMARTCompliance` contract. Must not be `address(0)`.\"}},\"setIdentityRegistry(address)\":{\"details\":\"The Identity Registry is responsible for managing associations between investor wallet addresses and their on-chain Identity contracts,      and for verifying identities against required claims.      Typically restricted to an administrative role. Emits `IdentityRegistryAdded`.\",\"params\":{\"_identityRegistry\":\"The address of the new `ISMARTIdentityRegistry` contract. Must not be `address(0)`.\"}},\"setOnchainID(address)\":{\"details\":\"This can be used to represent the token issuer or the token itself as an on-chain entity.      Typically, this function is restricted to an administrative role.\",\"params\":{\"_onchainID\":\"The address of the on-chain ID contract. Pass `address(0)` to remove an existing ID.\"}},\"setParametersForComplianceModule(address,bytes)\":{\"details\":\"This allows an administrator to change how a particular compliance rule behaves for this token.      The implementing contract (or the `ISMARTCompliance` contract) MUST validate these `_params` by calling      the module's `validateParameters(_params)` function before applying them.      Typically restricted to an administrative role. Emits `ModuleParametersUpdated`.\",\"params\":{\"_module\":\"The address of the compliance module (must be an active module for this token).\",\"_params\":\"The new ABI-encoded configuration parameters for the module.\"}},\"supportsInterface(bytes4)\":{\"details\":\"Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas.\"},\"symbol()\":{\"details\":\"Returns the symbol of the token, usually a shorter version of the name.\"},\"totalSupply()\":{\"details\":\"See {IERC20-totalSupply}.\"},\"transfer(address,uint256)\":{\"details\":\"See {IERC20-transfer}. Requirements: - `to` cannot be the zero address. - the caller must have a balance of at least `value`.\"},\"transferFrom(address,address,uint256)\":{\"details\":\"See {IERC20-transferFrom}. Skips emitting an {Approval} event indicating an allowance update. This is not required by the ERC. See {xref-ERC20-_approve-address-address-uint256-bool-}[_approve]. NOTE: Does not update the allowance if the current allowance is the maximum `uint256`. Requirements: - `from` and `to` cannot be the zero address. - `from` must have a balance of at least `value`. - the caller must have allowance for ``from``'s tokens of at least `value`.\"}},\"title\":\"Abstract Contract for Access-Managed SMART Tokens (Non-Upgradeable)\",\"version\":1},\"userdoc\":{\"errors\":{\"AccessControlUnauthorizedAccount(address,bytes32)\":[{\"notice\":\"This error is functionally identical to `AccessControlUnauthorizedAccount`         defined in OpenZeppelin's `access/AccessControl.sol` contract.         Re-defining it here ensures consistency within the SMART framework and can         help in scenarios where specific error catching is needed for this module.\"}],\"CannotRecoverSelf()\":[{\"notice\":\"Error indicating an attempt to recover the token contract's own tokens.\"}],\"DuplicateModule(address)\":[{\"notice\":\"Error indicating that a compliance module is being added but already exists.\"}],\"InsufficientTokenBalance()\":[{\"notice\":\"Error indicating that the token balance is insufficient for an operation.\"}],\"InvalidDecimals(uint8)\":[{\"notice\":\"Error indicating that the provided decimals value is invalid.\"}],\"InvalidLostWallet()\":[{\"notice\":\"Error indicating that the provided lost wallet is not marked as lost.\"}],\"LengthMismatch()\":[{\"notice\":\"Error: Array Length Mismatch in Batch Operation.\"}],\"MintNotCompliant()\":[{\"notice\":\"Error indicating that a mint operation failed compliance checks.\"}],\"ModuleAlreadyAdded()\":[{\"notice\":\"Error indicating that an attempt was made to add a compliance module that is already registered.\"}],\"ModuleNotFound()\":[{\"notice\":\"Error indicating that a specified compliance module was not found.\"}],\"NoTokensToRecover()\":[{\"notice\":\"Error indicating that there are no tokens to recover.\"}],\"TransferNotCompliant()\":[{\"notice\":\"Error indicating that a transfer operation failed compliance checks.\"}],\"ZeroAddressNotAllowed()\":[{\"notice\":\"Error: Zero Address Not Allowed.\"}]},\"events\":{\"AccessManagerSet(address,address)\":{\"notice\":\"Emitted when the address of the access manager contract is successfully changed or set.\"},\"ComplianceAdded(address,address)\":{\"notice\":\"Emitted when the address of the main `ISMARTCompliance` contract, used by this token, is successfully updated.\"},\"ComplianceModuleAdded(address,address,bytes)\":{\"notice\":\"Emitted when a new compliance module is successfully added to the token's compliance framework.\"},\"ComplianceModuleRemoved(address,address)\":{\"notice\":\"Emitted when an existing compliance module is successfully removed from the token's compliance framework.\"},\"ERC20TokenRecovered(address,address,address,uint256)\":{\"notice\":\"Emitted when mistakenly sent ERC20 tokens are recovered from the contract.\"},\"IdentityRegistryAdded(address,address)\":{\"notice\":\"Emitted when the address of the `ISMARTIdentityRegistry` contract, used by this token, is successfully updated.\"},\"MintCompleted(address,address,uint256)\":{\"notice\":\"Emitted after a token minting operation has successfully completed, passing all relevant checks.\"},\"ModuleParametersUpdated(address,address,bytes)\":{\"notice\":\"Emitted when the configuration parameters for an existing, active compliance module are successfully updated.\"},\"TokensRecovered(address,address,address,uint256)\":{\"notice\":\"Emitted when tokens are recovered from a lost wallet to the caller's address.\"},\"TransferCompleted(address,address,address,uint256)\":{\"notice\":\"Emitted after a token transfer operation (e.g., via `transfer` or `transferFrom`) has successfully completed,         passing all identity and compliance checks.\"},\"UpdatedTokenInformation(address,uint8,address)\":{\"notice\":\"Emitted when fundamental information about the token, such as its decimals or on-chain ID, is updated.\"}},\"kind\":\"user\",\"methods\":{\"accessManager()\":{\"notice\":\"Returns the address of the current `SMARTTokenAccessManager`.\"},\"addComplianceModule(address,bytes)\":{\"notice\":\"Adds a new compliance module contract to this token's compliance framework and sets its initial configuration parameters.\"},\"batchMint(address[],uint256[])\":{\"notice\":\"Mints tokens to multiple recipient addresses in a single batch transaction.\"},\"batchTransfer(address[],uint256[])\":{\"notice\":\"Transfers tokens from the caller to multiple recipient addresses in a single batch transaction.\"},\"compliance()\":{\"notice\":\"Retrieves the address of the main `ISMARTCompliance` contract currently configured for this token.\"},\"complianceModules()\":{\"notice\":\"Retrieves a list of all currently active compliance modules for this token, along with their configuration parameters.\"},\"constructor\":{\"notice\":\"Initializes the access managed extension by setting the access manager address.\"},\"hasRole(bytes32,address)\":{\"notice\":\"Checks if a given account has a specific role, as defined by the `_accessManager`.\"},\"identityRegistry()\":{\"notice\":\"Retrieves the address of the `ISMARTIdentityRegistry` contract currently configured for this token.\"},\"mint(address,uint256)\":{\"notice\":\"Creates (mints) a specified `_amount` of new tokens and assigns them to the `_to` address.\"},\"onchainID()\":{\"notice\":\"Retrieves the optional on-chain identifier (e.g., an `IIdentity` contract) associated with the token contract itself.\"},\"recoverERC20(address,address,uint256)\":{\"notice\":\"Allows an authorized account to recover ERC20 tokens that were mistakenly sent to this SMART token contract's address.\"},\"recoverTokens(address)\":{\"notice\":\"Recovers SMART tokens from a lost wallet to the caller's address.\"},\"registeredInterfaces()\":{\"notice\":\"Returns an array of all registered interface IDs.\"},\"removeComplianceModule(address)\":{\"notice\":\"Removes an active compliance module from this token's compliance framework.\"},\"setCompliance(address)\":{\"notice\":\"Sets or updates the address of the main `ISMARTCompliance` contract used by this token.\"},\"setIdentityRegistry(address)\":{\"notice\":\"Sets or updates the address of the `ISMARTIdentityRegistry` contract used by this token.\"},\"setOnchainID(address)\":{\"notice\":\"Sets or updates the optional on-chain identifier (e.g., an `IIdentity` contract) associated with the token contract itself.\"},\"setParametersForComplianceModule(address,bytes)\":{\"notice\":\"Sets or updates the configuration parameters for a specific, already added compliance module.\"}},\"notice\":\"This contract serves as a base for SMART token contracts that need to integrate         with a centralized `SMARTTokenAccessManager`. It provides the foundational         functionality to link a token to its access manager.         An 'abstract contract' in Solidity is like a template for other contracts.         It can define some functions and state variables, but it might leave others         unimplemented for inheriting contracts to fill in. You cannot deploy an         abstract contract directly; it must be inherited by another contract.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/smart/extensions/access-managed/SMARTTokenAccessManaged.sol\":\"SMARTTokenAccessManaged\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/smart/extensions/access-managed/ISMARTTokenAccessManaged.sol\":{\"keccak256\":\"0xb05c08191398db750d9fd974e8df1bace09434c27fd81a9db7d36ff429affd97\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://5155ee4da616fb8e3365c933952b07b93d603c6a4eb6542433b08c651a0e0c25\",\"dweb:/ipfs/QmW4C4YbYuDLX32oEFrp11t9TK44B5otKCXQemXs1jMgCD\"]},\"contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol\":{\"keccak256\":\"0xd8fb2176229e603ed535b0ade30c09c41c416a90997edf8eab72af01cdcd51f3\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://90d07eb638bcd5a00efd0e4752c414e8ea25a3be93efcdc765d147b6c49c004a\",\"dweb:/ipfs/QmRLK1p8b6jZqQ9EMxoMQQMtSgeEqz2P12xbHozaXztdBw\"]},\"contracts/smart/extensions/access-managed/SMARTTokenAccessManaged.sol\":{\"keccak256\":\"0x6229fc28e374866ef37bd9d59e0b01565de48ed59a22c896297ba1db3ee7ec90\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://1ae64900f24d4f3734c02fcfac13c98458c841ec94dfc243e8e85d528c1e7fd9\",\"dweb:/ipfs/Qme8qxq4NGFf8RwBvAzYPvMoqLoRU7RQXPXREz95CJW43L\"]},\"contracts/smart/extensions/access-managed/internal/_SMARTTokenAccessManagedLogic.sol\":{\"keccak256\":\"0x5cfabd6d2c1570df5cec93db1f01142792f0774ea9d823826e232a57ab3e8afa\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://e1b4b68a6f9c2ebefe87b1919dd71777f28b540fd0a9b304dd37b942509a5b55\",\"dweb:/ipfs/QmeBSSkr1ZpyCdq7tLPF6Wt2wLaBKi1sYKHUiAGXJtF5mv\"]},\"contracts/smart/extensions/common/SMARTContext.sol\":{\"keccak256\":\"0x93de881d605f705729ccdc60c72a2e33cc90220f652d999c165ffa44e19745a4\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://7bff2fd34d370970b57aa1b4fcbf84921a184e9eacc3f4846fba66da0e03e7f2\",\"dweb:/ipfs/QmfAQ6aHrSzh3KhLbN6jxWHAUmkHRR7geC6YNgVrmawtFr\"]},\"contracts/smart/extensions/common/SMARTExtension.sol\":{\"keccak256\":\"0x7f4b2e38a8adde62be39b59b8314e292e425347a1813e8be3582c4a02102643a\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://4700956c64db8cf08e9a65ff849c6844f49975719165f1ce07a567e3f8c21282\",\"dweb:/ipfs/QmRMkLWDzrXZij65okXxJcjdYtW9a7FkuCUuCAmeEVVS7R\"]},\"contracts/smart/extensions/common/SMARTHooks.sol\":{\"keccak256\":\"0x241082e06589edc00accef716c9c745fcc7caa87ad1e50f1edaccdd65d061880\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://6e2a1619cdec07a50661eb676a24a8688d5dc5dbe5b5c60ea5056cdf5b40ce5e\",\"dweb:/ipfs/QmYbJKQSPt7rk5UECsoQxtRSM4wk28kyCSrMBqfZFbFo4d\"]},\"contracts/smart/extensions/common/_SMARTExtension.sol\":{\"keccak256\":\"0xe14f34fa858f2c5689fad9f44dfbc50437208a36c3cee6d23f9cf6116e4cdc19\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://78d3a08bdc8d8aa68ea503002cf8dd486053bbfe6e8fdd73063a38c23b717e78\",\"dweb:/ipfs/QmSBzyyejfMpa1H2oEVF4j9jcajDBhjCQ7rWFD4NUKf7Cd\"]},\"contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol\":{\"keccak256\":\"0x3a8a72df8da5bf4d988bbfb00151b933ff17cdc8d4be47dc121cd9e2083ba86f\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://369250658bf8d3ebb583946820afa494271ce6bfde607d15c7060cdf7a303cf3\",\"dweb:/ipfs/QmSJjaK6vyv8K9RX1k3rwxsoKfVNyMoHEszxyxdTQfDKQG\"]},\"contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol\":{\"keccak256\":\"0x15b72940814cd959b57bf75623f16c51fc6c50eab51fd2420a8b653519ebd76c\",\"license\":\"CC0-1.0\",\"urls\":[\"bzz-raw://479f5e24a1b608776d9d5d7da9c76dd3c9b1dd300d8b4eee7a15dcfba4817bee\",\"dweb:/ipfs/QmPhMBfQAqt5NeRcSu3jDTwhoQXnB7nXNEcmoJ7KoWVt7V\"]},\"contracts/smart/interface/ISMART.sol\":{\"keccak256\":\"0xfce323160dd5cd8c9db34de0ea872bec41fd2ea8d8496e1e3c17865d374994da\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://1a1fafbdec0c59e078798438d2a3cd05bd70b864d7dfa67faf135d5634c5ae51\",\"dweb:/ipfs/QmehZwexgZN2BZKA6eFrG3DHUMRUZnzYTen6j5Ry5Znbf2\"]},\"contracts/smart/interface/ISMARTCompliance.sol\":{\"keccak256\":\"0x948341e4ad374e1dded6d1b30c395ad0f01e6ea2099fb6b96c5476e8b28c1d77\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://d261e9a0c8682f11ac86048f13e367caee6d5f512d51b8752186b8c01b6ba618\",\"dweb:/ipfs/Qmdp14emh3NFSAphyuAgsTE7qZt1g1UYcNLS3tNNM8T6Hv\"]},\"contracts/smart/interface/ISMARTIdentityRegistry.sol\":{\"keccak256\":\"0x62a95a9db2ac97ceaf59f7585d7bbaf3acb65ed9b5e57597b9d1fe1b4d7c4eda\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://bd870710359396db48e70ef7e40449125ff744c6c8ce15ad7e1894df430c87ea\",\"dweb:/ipfs/QmZ6khf5Vm6hBkkUgYC1b161jSQaZeegJVRY6ndjRW1EcG\"]},\"contracts/smart/interface/ISMARTIdentityRegistryStorage.sol\":{\"keccak256\":\"0x219b3d03958859e2f082aac5cbf3b40acf243e326ee6e74e6bb03be7724c2985\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://8cf8d30ec47cb2aed5b51d373837584fb6f08deab1d35142510271e733404f52\",\"dweb:/ipfs/Qmc9NnABx9ouhhCR8qgJC3RtU5oAyycSjZkY6nGtuWFwuz\"]},\"contracts/smart/interface/ISMARTTopicSchemeRegistry.sol\":{\"keccak256\":\"0xec5e42dcf7d929f8a0db42c9c8a0fa81d089a9f7177b7da10df029f94334ca8a\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://e346e3241e3110b3f17d2b244a49d68a1d79c6928bef7d372ea3458c1029cea0\",\"dweb:/ipfs/QmeSyCYN9qYXRjn799fRFP7X9apf7bubVhnFEUGQatx3xd\"]},\"contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol\":{\"keccak256\":\"0x489a55538b554a0c935bee7efc28f7e821e161638c5726c9d367a644a0b7c62a\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://04bb06aed3ee3c5c6f3df9a59721c08ddd57b5521da1c9c6fd96b7c8b57db813\",\"dweb:/ipfs/QmRuzqKDr2sBHNuQhCzWGa8euNiMyvP7LTjSFjvAj5uFqh\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IClaimIssuer.sol\":{\"keccak256\":\"0xae785f63b3cb3a94bcb454ef4ad6376aa4848fa29cff1cc8db3bef4a2994a779\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://d8223d2710c51ee39cdfd2cb2f1858b3d64a3222c78ea8ed5eb3e11a93e1222e\",\"dweb:/ipfs/QmYRXPCww7BorScTC6QNMbrRm2zprUmSYFpWomwarJH7Df\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IERC734.sol\":{\"keccak256\":\"0x35a14a0d1a3ed51689f1a2cb12e26d30601afbcc1cc9b9b288a03cd11e6d049e\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://156aac402e73e6bd2fa8c0ccd85b2add8d1bb505d8a652218173dbc8e7b9a3cb\",\"dweb:/ipfs/QmPzPyc3kKxoNCGqKAooUju6YvMkDN4MCUH198TEXnA82o\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IERC735.sol\":{\"keccak256\":\"0xeac82c37b16c1c1c83df3e88be987332b1230ed13e1d017f9d2929f978ac0122\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://695a66b789ac417b7b2b78c578981779db374704382921ff499351cccab0323e\",\"dweb:/ipfs/QmeZoogvsEWf688Z849zZ2dLPDnor6YnnNQLMgedY9Tc9D\"]},\"dependencies/@onchainid-v2.2.1/contracts/interface/IIdentity.sol\":{\"keccak256\":\"0x5ed42ab81b9b734c79e61d1f7e0734baab5479a356ab6bb469414d3c66269862\",\"license\":\"GPL-3.0\",\"urls\":[\"bzz-raw://a0863999b1ed334179a43e699e6057815eea011a78ed51e61b6110fc392e26f8\",\"dweb:/ipfs/Qme6hdHZCAy1V4sLgAZ5NxdrEjEf5mYMabf5UDmUDjkuzW\"]},\"dependencies/@openzeppelin-contracts-5.3.0/access/IAccessControl.sol\":{\"keccak256\":\"0x4d9a2b261b56a1e4a37bb038151dec98b952fed16de2bdfdda27e38e2b12b530\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f724110f7aeb6151af800ab8c12e6060b29bda9e013f0ccb331eb754d6a7cbf0\",\"dweb:/ipfs/QmUcjzCZpxtUPdEThtAzE1f9LvuJiUGZxTdH9N6bHrb5Cf\"]},\"dependencies/@openzeppelin-contracts-5.3.0/interfaces/draft-IERC6093.sol\":{\"keccak256\":\"0x880da465c203cec76b10d72dbd87c80f387df4102274f23eea1f9c9b0918792b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://399594cd8bb0143bc9e55e0f1d071d0d8c850a394fb7a319d50edd55d9ed822b\",\"dweb:/ipfs/QmbPZzgtT6LEm9CMqWfagQFwETbV1ztpECBB1DtQHrKiRz\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x41f6b3b9e030561e7896dbef372b499cc8d418a80c3884a4d65a68f2fdc7493a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://80b0992a11b2fd1f75ced2971696d07bbd1d19ce6761dd50d8b6d48aa435f42a\",\"dweb:/ipfs/QmZDe5xd2gXHjVEjv9t8C1KQ68K5T8qFwdinwQgmP3rF3x\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db\",\"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/extensions/IERC20Metadata.sol\":{\"keccak256\":\"0x70f2f713b13b7ce4610bcd0ac9fec0f3cc43693b043abcb8dc40a42a726eb330\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c13d13304ac79a83ab1c30168967d19e2203342ebbd6a9bbce4db7550522dcbf\",\"dweb:/ipfs/QmeN5jKMN2vw5bhacr6tkg78afbTTZUeaacNHqjWt4Ew1r\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/Context.sol\":{\"keccak256\":\"0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12\",\"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]},\"dependencies/@openzeppelin-contracts-upgradeable-5.3.0/proxy/utils/Initializable.sol\":{\"keccak256\":\"0xdb4d24ee2c087c391d587cd17adfe5b3f9d93b3110b1388c2ab6c7c0ad1dcd05\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ab7b6d5b9e2b88176312967fe0f0e78f3d9a1422fa5e4b64e2440c35869b5d08\",\"dweb:/ipfs/QmXKYWWyzcLg1B2k7Sb1qkEXgLCYfXecR9wYW5obRzWP1Q\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "neededRole",
+              "type": "bytes32"
+            }
+          ],
+          "type": "error",
+          "name": "AccessControlUnauthorizedAccount"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "CannotRecoverSelf"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "module",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "DuplicateModule"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "allowance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "needed",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "ERC20InsufficientAllowance"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "balance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "needed",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "ERC20InsufficientBalance"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "approver",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "ERC20InvalidApprover"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "receiver",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "ERC20InvalidReceiver"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "ERC20InvalidSender"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "spender",
+              "type": "address"
+            }
+          ],
+          "type": "error",
+          "name": "ERC20InvalidSpender"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InsufficientTokenBalance"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint8",
+              "name": "decimals",
+              "type": "uint8"
+            }
+          ],
+          "type": "error",
+          "name": "InvalidDecimals"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidLostWallet"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "LengthMismatch"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "MintNotCompliant"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ModuleAlreadyAdded"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ModuleNotFound"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "NoTokensToRecover"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "TransferNotCompliant"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ZeroAddressNotAllowed"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "manager",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "AccessManagerSet",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "spender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "Approval",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "_compliance",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "ComplianceAdded",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "_module",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "bytes",
+              "name": "_params",
+              "type": "bytes",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "ComplianceModuleAdded",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "_module",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "ComplianceModuleRemoved",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "ERC20TokenRecovered",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "_identityRegistry",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "IdentityRegistryAdded",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "MintCompleted",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "_module",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "bytes",
+              "name": "_params",
+              "type": "bytes",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "ModuleParametersUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "lostWallet",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newWallet",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "TokensRecovered",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "Transfer",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "TransferCompleted",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint8",
+              "name": "_newDecimals",
+              "type": "uint8",
+              "indexed": false
+            },
+            {
+              "internalType": "address",
+              "name": "_newOnchainID",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "UpdatedTokenInformation",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "accessManager",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_module",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_params",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "addComplianceModule"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "spender",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "allowance",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "approve",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "balanceOf",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "_toList",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "_amounts",
+              "type": "uint256[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "batchMint"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "_toList",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "_amounts",
+              "type": "uint256[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "batchTransfer"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "compliance",
+          "outputs": [
+            {
+              "internalType": "contract ISMARTCompliance",
+              "name": "complianceContract",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "complianceModules",
+          "outputs": [
+            {
+              "internalType": "struct SMARTComplianceModuleParamPair[]",
+              "name": "modulesList",
+              "type": "tuple[]",
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "module",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "params",
+                  "type": "bytes"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "decimals",
+          "outputs": [
+            {
+              "internalType": "uint8",
+              "name": "",
+              "type": "uint8"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "hasRole",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "identityRegistry",
+          "outputs": [
+            {
+              "internalType": "contract ISMARTIdentityRegistry",
+              "name": "registryContract",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "mint"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "name",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "onchainID",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "idAddress",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "recoverERC20"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_lostWallet",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "recoverTokens"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "registeredInterfaces",
+          "outputs": [
+            {
+              "internalType": "bytes4[]",
+              "name": "",
+              "type": "bytes4[]"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_module",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "removeComplianceModule"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_compliance",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setCompliance"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_identityRegistry",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setIdentityRegistry"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_onchainID",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setOnchainID"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_module",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_params",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setParametersForComplianceModule"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "symbol",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "totalSupply",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transfer",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transferFrom",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "accessManager()": {
+            "details": "This is an external view function, meaning it can be called from outside the      contract without consuming gas (if called via a node's RPC) and it does not      modify the contract's state.",
+            "returns": {
+              "_0": "The address of the `_accessManager`."
+            }
+          },
+          "addComplianceModule(address,bytes)": {
+            "details": "Before adding, the implementation (or the main `ISMARTCompliance` contract) MUST validate:      1. That `_module` is a valid contract address.      2. That `_module` correctly implements the `ISMARTComplianceModule` interface (e.g., via ERC165 `supportsInterface`).      3. That the provided `_params` are valid for the `_module` (by calling `_module.validateParameters(_params)`).      Typically restricted to an administrative role. Emits `ComplianceModuleAdded`.",
+            "params": {
+              "_module": "The address of the compliance module contract to add.",
+              "_params": "The initial ABI-encoded configuration parameters for this module specific to this token."
+            }
+          },
+          "allowance(address,address)": {
+            "details": "See {IERC20-allowance}."
+          },
+          "approve(address,uint256)": {
+            "details": "See {IERC20-approve}. NOTE: If `value` is the maximum `uint256`, the allowance is not updated on `transferFrom`. This is semantically equivalent to an infinite approval. Requirements: - `spender` cannot be the zero address."
+          },
+          "balanceOf(address)": {
+            "details": "See {IERC20-balanceOf}."
+          },
+          "batchMint(address[],uint256[])": {
+            "details": "This is an efficiency function to reduce transaction costs when minting to many users.      Typically restricted to accounts with a specific minter role.      Implementations MUST perform identity verification and compliance checks for *each* recipient in `_toList`.      If any recipient fails checks, the entire batch operation should revert to maintain atomicity.      Emits multiple `MintCompleted` and ERC20 `Transfer` events.",
+            "params": {
+              "_amounts": "An array of corresponding token quantities to mint for each address in `_toList`. The lengths of `_toList` and `_amounts` MUST be equal.",
+              "_toList": "An array of addresses to receive the newly minted tokens."
+            }
+          },
+          "batchTransfer(address[],uint256[])": {
+            "details": "This is an efficiency function, useful for distributions or airdrops (if compliant).      The caller (`msg.sender`) must have a sufficient balance to cover the sum of all `_amounts`.      Implementations MUST perform identity verification and compliance checks for *each* recipient in `_toList`      and also check the sender (`msg.sender`) if sender-side compliance rules apply.      If any part of the batch fails checks, the entire operation should revert.      Emits multiple `TransferCompleted` and ERC20 `Transfer` events.",
+            "params": {
+              "_amounts": "An array of corresponding token quantities to transfer. The lengths of `_toList` and `_amounts` MUST be equal.",
+              "_toList": "An array of addresses to receive the tokens."
+            }
+          },
+          "compliance()": {
+            "details": "The Compliance contract is responsible for orchestrating compliance checks for token operations.",
+            "returns": {
+              "complianceContract": "The `ISMARTCompliance` contract instance currently in use."
+            }
+          },
+          "complianceModules()": {
+            "details": "Each element in the returned array is a `SMARTComplianceModuleParamPair` struct, containing the module's address      and its current ABI-encoded parameters specific to this token.",
+            "returns": {
+              "modulesList": "An array of `SMARTComplianceModuleParamPair` structs."
+            }
+          },
+          "constructor": {
+            "details": "This constructor is called when a contract inheriting from `SMARTTokenAccessManaged`      is deployed. It ensures that the link to the `SMARTTokenAccessManager` is established      from the very beginning.      The `Initializable` contract is not used here because this is the non-upgradeable version.      Constructors in Solidity are special functions that run only once when the contract      is deployed.",
+            "params": {
+              "accessManager_": "The address of the `SMARTTokenAccessManager` contract that will                       manage roles and permissions for this token contract."
+            }
+          },
+          "decimals()": {
+            "details": "Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5.05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the default value returned by this function, unless it's overridden. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}."
+          },
+          "hasRole(bytes32,address)": {
+            "details": "This function implements the `ISMARTTokenAccessManaged` interface.      It delegates the actual role check to the `hasRole` function of the `_accessManager` contract.      The `virtual` keyword means that this function can be overridden by inheriting contracts.",
+            "params": {
+              "account": "The address of the account whose roles are being checked.",
+              "role": "The `bytes32` identifier of the role to check."
+            },
+            "returns": {
+              "_0": "`true` if the account has the role, `false` otherwise."
+            }
+          },
+          "identityRegistry()": {
+            "details": "The Identity Registry is used for verifying token holders against required claims and linking wallets to identities.",
+            "returns": {
+              "registryContract": "The `ISMARTIdentityRegistry` contract instance currently in use."
+            }
+          },
+          "mint(address,uint256)": {
+            "details": "This function is typically restricted to accounts with a specific minter role.      Implementations MUST perform identity verification and compliance checks on the `_to` address before minting.      Failure to meet these checks should result in a revert (e.g., with `RecipientNotVerified` or a compliance error).      Emits `MintCompleted` and the standard ERC20 `Transfer` event (from `address(0)` to `_to`).",
+            "params": {
+              "_amount": "The quantity of tokens to mint.",
+              "_to": "The address that will receive the newly minted tokens."
+            }
+          },
+          "name()": {
+            "details": "Returns the name of the token."
+          },
+          "onchainID()": {
+            "details": "This can represent the token issuer or the token entity.",
+            "returns": {
+              "idAddress": "The address of the on-chain ID contract, or `address(0)` if no on-chain ID is set for the token."
+            }
+          },
+          "recoverERC20(address,address,uint256)": {
+            "details": "This function is crucial for retrieving assets that are not the SMART token itself but are held by the contract.      Access to this function MUST be strictly controlled (e.g., via an `_authorizeRecoverERC20` internal hook or role).      It is critical that this function CANNOT be used to recover the SMART token itself, as that could drain the contract or interfere with its logic.      It should use a safe transfer mechanism (like OpenZeppelin's `SafeERC20.safeTransfer`) to prevent issues with non-standard ERC20 tokens.",
+            "params": {
+              "amount": "The quantity of the `token` to recover and send to `to`.",
+              "to": "The address where the recovered tokens will be sent.",
+              "token": "The contract address of the ERC20 token to be recovered. This MUST NOT be `address(this)`."
+            }
+          },
+          "recoverTokens(address)": {
+            "details": "This will make it possible to recover SMART tokens from the lostWallet to msgSender, if it was correctly marked as lost in the identity registry.",
+            "params": {
+              "_lostWallet": "The address of the lost wallet containing tokens to recover."
+            }
+          },
+          "registeredInterfaces()": {
+            "details": "This function allows external contracts and users to discover all interfaces      that this contract claims to support. This is useful for introspection and      automated interface detection.",
+            "returns": {
+              "_0": "An array of `bytes4` interface identifiers that have been registered."
+            }
+          },
+          "removeComplianceModule(address)": {
+            "details": "Once removed, the rules enforced by this `_module` will no longer apply to token operations.      Typically restricted to an administrative role. Emits `ComplianceModuleRemoved`.",
+            "params": {
+              "_module": "The address of the compliance module contract to remove."
+            }
+          },
+          "setCompliance(address)": {
+            "details": "The Compliance contract orchestrates checks across various compliance modules to determine transfer legality.      Typically restricted to an administrative role. Emits `ComplianceAdded`.",
+            "params": {
+              "_compliance": "The address of the new `ISMARTCompliance` contract. Must not be `address(0)`."
+            }
+          },
+          "setIdentityRegistry(address)": {
+            "details": "The Identity Registry is responsible for managing associations between investor wallet addresses and their on-chain Identity contracts,      and for verifying identities against required claims.      Typically restricted to an administrative role. Emits `IdentityRegistryAdded`.",
+            "params": {
+              "_identityRegistry": "The address of the new `ISMARTIdentityRegistry` contract. Must not be `address(0)`."
+            }
+          },
+          "setOnchainID(address)": {
+            "details": "This can be used to represent the token issuer or the token itself as an on-chain entity.      Typically, this function is restricted to an administrative role.",
+            "params": {
+              "_onchainID": "The address of the on-chain ID contract. Pass `address(0)` to remove an existing ID."
+            }
+          },
+          "setParametersForComplianceModule(address,bytes)": {
+            "details": "This allows an administrator to change how a particular compliance rule behaves for this token.      The implementing contract (or the `ISMARTCompliance` contract) MUST validate these `_params` by calling      the module's `validateParameters(_params)` function before applying them.      Typically restricted to an administrative role. Emits `ModuleParametersUpdated`.",
+            "params": {
+              "_module": "The address of the compliance module (must be an active module for this token).",
+              "_params": "The new ABI-encoded configuration parameters for the module."
+            }
+          },
+          "supportsInterface(bytes4)": {
+            "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+          },
+          "symbol()": {
+            "details": "Returns the symbol of the token, usually a shorter version of the name."
+          },
+          "totalSupply()": {
+            "details": "See {IERC20-totalSupply}."
+          },
+          "transfer(address,uint256)": {
+            "details": "See {IERC20-transfer}. Requirements: - `to` cannot be the zero address. - the caller must have a balance of at least `value`."
+          },
+          "transferFrom(address,address,uint256)": {
+            "details": "See {IERC20-transferFrom}. Skips emitting an {Approval} event indicating an allowance update. This is not required by the ERC. See {xref-ERC20-_approve-address-address-uint256-bool-}[_approve]. NOTE: Does not update the allowance if the current allowance is the maximum `uint256`. Requirements: - `from` and `to` cannot be the zero address. - `from` must have a balance of at least `value`. - the caller must have allowance for ``from``'s tokens of at least `value`."
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "accessManager()": {
+            "notice": "Returns the address of the current `SMARTTokenAccessManager`."
+          },
+          "addComplianceModule(address,bytes)": {
+            "notice": "Adds a new compliance module contract to this token's compliance framework and sets its initial configuration parameters."
+          },
+          "batchMint(address[],uint256[])": {
+            "notice": "Mints tokens to multiple recipient addresses in a single batch transaction."
+          },
+          "batchTransfer(address[],uint256[])": {
+            "notice": "Transfers tokens from the caller to multiple recipient addresses in a single batch transaction."
+          },
+          "compliance()": {
+            "notice": "Retrieves the address of the main `ISMARTCompliance` contract currently configured for this token."
+          },
+          "complianceModules()": {
+            "notice": "Retrieves a list of all currently active compliance modules for this token, along with their configuration parameters."
+          },
+          "constructor": {
+            "notice": "Initializes the access managed extension by setting the access manager address."
+          },
+          "hasRole(bytes32,address)": {
+            "notice": "Checks if a given account has a specific role, as defined by the `_accessManager`."
+          },
+          "identityRegistry()": {
+            "notice": "Retrieves the address of the `ISMARTIdentityRegistry` contract currently configured for this token."
+          },
+          "mint(address,uint256)": {
+            "notice": "Creates (mints) a specified `_amount` of new tokens and assigns them to the `_to` address."
+          },
+          "onchainID()": {
+            "notice": "Retrieves the optional on-chain identifier (e.g., an `IIdentity` contract) associated with the token contract itself."
+          },
+          "recoverERC20(address,address,uint256)": {
+            "notice": "Allows an authorized account to recover ERC20 tokens that were mistakenly sent to this SMART token contract's address."
+          },
+          "recoverTokens(address)": {
+            "notice": "Recovers SMART tokens from a lost wallet to the caller's address."
+          },
+          "registeredInterfaces()": {
+            "notice": "Returns an array of all registered interface IDs."
+          },
+          "removeComplianceModule(address)": {
+            "notice": "Removes an active compliance module from this token's compliance framework."
+          },
+          "setCompliance(address)": {
+            "notice": "Sets or updates the address of the main `ISMARTCompliance` contract used by this token."
+          },
+          "setIdentityRegistry(address)": {
+            "notice": "Sets or updates the address of the `ISMARTIdentityRegistry` contract used by this token."
+          },
+          "setOnchainID(address)": {
+            "notice": "Sets or updates the optional on-chain identifier (e.g., an `IIdentity` contract) associated with the token contract itself."
+          },
+          "setParametersForComplianceModule(address,bytes)": {
+            "notice": "Sets or updates the configuration parameters for a specific, already added compliance module."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/smart/extensions/access-managed/SMARTTokenAccessManaged.sol": "SMARTTokenAccessManaged"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/smart/extensions/access-managed/ISMARTTokenAccessManaged.sol": {
+        "keccak256": "0xb05c08191398db750d9fd974e8df1bace09434c27fd81a9db7d36ff429affd97",
+        "urls": [
+          "bzz-raw://5155ee4da616fb8e3365c933952b07b93d603c6a4eb6542433b08c651a0e0c25",
+          "dweb:/ipfs/QmW4C4YbYuDLX32oEFrp11t9TK44B5otKCXQemXs1jMgCD"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol": {
+        "keccak256": "0xd8fb2176229e603ed535b0ade30c09c41c416a90997edf8eab72af01cdcd51f3",
+        "urls": [
+          "bzz-raw://90d07eb638bcd5a00efd0e4752c414e8ea25a3be93efcdc765d147b6c49c004a",
+          "dweb:/ipfs/QmRLK1p8b6jZqQ9EMxoMQQMtSgeEqz2P12xbHozaXztdBw"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/access-managed/SMARTTokenAccessManaged.sol": {
+        "keccak256": "0x6229fc28e374866ef37bd9d59e0b01565de48ed59a22c896297ba1db3ee7ec90",
+        "urls": [
+          "bzz-raw://1ae64900f24d4f3734c02fcfac13c98458c841ec94dfc243e8e85d528c1e7fd9",
+          "dweb:/ipfs/Qme8qxq4NGFf8RwBvAzYPvMoqLoRU7RQXPXREz95CJW43L"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/access-managed/internal/_SMARTTokenAccessManagedLogic.sol": {
+        "keccak256": "0x5cfabd6d2c1570df5cec93db1f01142792f0774ea9d823826e232a57ab3e8afa",
+        "urls": [
+          "bzz-raw://e1b4b68a6f9c2ebefe87b1919dd71777f28b540fd0a9b304dd37b942509a5b55",
+          "dweb:/ipfs/QmeBSSkr1ZpyCdq7tLPF6Wt2wLaBKi1sYKHUiAGXJtF5mv"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/common/SMARTContext.sol": {
+        "keccak256": "0x93de881d605f705729ccdc60c72a2e33cc90220f652d999c165ffa44e19745a4",
+        "urls": [
+          "bzz-raw://7bff2fd34d370970b57aa1b4fcbf84921a184e9eacc3f4846fba66da0e03e7f2",
+          "dweb:/ipfs/QmfAQ6aHrSzh3KhLbN6jxWHAUmkHRR7geC6YNgVrmawtFr"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/common/SMARTExtension.sol": {
+        "keccak256": "0x7f4b2e38a8adde62be39b59b8314e292e425347a1813e8be3582c4a02102643a",
+        "urls": [
+          "bzz-raw://4700956c64db8cf08e9a65ff849c6844f49975719165f1ce07a567e3f8c21282",
+          "dweb:/ipfs/QmRMkLWDzrXZij65okXxJcjdYtW9a7FkuCUuCAmeEVVS7R"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/common/SMARTHooks.sol": {
+        "keccak256": "0x241082e06589edc00accef716c9c745fcc7caa87ad1e50f1edaccdd65d061880",
+        "urls": [
+          "bzz-raw://6e2a1619cdec07a50661eb676a24a8688d5dc5dbe5b5c60ea5056cdf5b40ce5e",
+          "dweb:/ipfs/QmYbJKQSPt7rk5UECsoQxtRSM4wk28kyCSrMBqfZFbFo4d"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/common/_SMARTExtension.sol": {
+        "keccak256": "0xe14f34fa858f2c5689fad9f44dfbc50437208a36c3cee6d23f9cf6116e4cdc19",
+        "urls": [
+          "bzz-raw://78d3a08bdc8d8aa68ea503002cf8dd486053bbfe6e8fdd73063a38c23b717e78",
+          "dweb:/ipfs/QmSBzyyejfMpa1H2oEVF4j9jcajDBhjCQ7rWFD4NUKf7Cd"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol": {
+        "keccak256": "0x3a8a72df8da5bf4d988bbfb00151b933ff17cdc8d4be47dc121cd9e2083ba86f",
+        "urls": [
+          "bzz-raw://369250658bf8d3ebb583946820afa494271ce6bfde607d15c7060cdf7a303cf3",
+          "dweb:/ipfs/QmSJjaK6vyv8K9RX1k3rwxsoKfVNyMoHEszxyxdTQfDKQG"
+        ],
+        "license": "CC0-1.0"
+      },
+      "contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol": {
+        "keccak256": "0x15b72940814cd959b57bf75623f16c51fc6c50eab51fd2420a8b653519ebd76c",
+        "urls": [
+          "bzz-raw://479f5e24a1b608776d9d5d7da9c76dd3c9b1dd300d8b4eee7a15dcfba4817bee",
+          "dweb:/ipfs/QmPhMBfQAqt5NeRcSu3jDTwhoQXnB7nXNEcmoJ7KoWVt7V"
+        ],
+        "license": "CC0-1.0"
+      },
+      "contracts/smart/interface/ISMART.sol": {
+        "keccak256": "0xfce323160dd5cd8c9db34de0ea872bec41fd2ea8d8496e1e3c17865d374994da",
+        "urls": [
+          "bzz-raw://1a1fafbdec0c59e078798438d2a3cd05bd70b864d7dfa67faf135d5634c5ae51",
+          "dweb:/ipfs/QmehZwexgZN2BZKA6eFrG3DHUMRUZnzYTen6j5Ry5Znbf2"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTCompliance.sol": {
+        "keccak256": "0x948341e4ad374e1dded6d1b30c395ad0f01e6ea2099fb6b96c5476e8b28c1d77",
+        "urls": [
+          "bzz-raw://d261e9a0c8682f11ac86048f13e367caee6d5f512d51b8752186b8c01b6ba618",
+          "dweb:/ipfs/Qmdp14emh3NFSAphyuAgsTE7qZt1g1UYcNLS3tNNM8T6Hv"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTIdentityRegistry.sol": {
+        "keccak256": "0x62a95a9db2ac97ceaf59f7585d7bbaf3acb65ed9b5e57597b9d1fe1b4d7c4eda",
+        "urls": [
+          "bzz-raw://bd870710359396db48e70ef7e40449125ff744c6c8ce15ad7e1894df430c87ea",
+          "dweb:/ipfs/QmZ6khf5Vm6hBkkUgYC1b161jSQaZeegJVRY6ndjRW1EcG"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTIdentityRegistryStorage.sol": {
+        "keccak256": "0x219b3d03958859e2f082aac5cbf3b40acf243e326ee6e74e6bb03be7724c2985",
+        "urls": [
+          "bzz-raw://8cf8d30ec47cb2aed5b51d373837584fb6f08deab1d35142510271e733404f52",
+          "dweb:/ipfs/Qmc9NnABx9ouhhCR8qgJC3RtU5oAyycSjZkY6nGtuWFwuz"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/ISMARTTopicSchemeRegistry.sol": {
+        "keccak256": "0xec5e42dcf7d929f8a0db42c9c8a0fa81d089a9f7177b7da10df029f94334ca8a",
+        "urls": [
+          "bzz-raw://e346e3241e3110b3f17d2b244a49d68a1d79c6928bef7d372ea3458c1029cea0",
+          "dweb:/ipfs/QmeSyCYN9qYXRjn799fRFP7X9apf7bubVhnFEUGQatx3xd"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol": {
+        "keccak256": "0x489a55538b554a0c935bee7efc28f7e821e161638c5726c9d367a644a0b7c62a",
+        "urls": [
+          "bzz-raw://04bb06aed3ee3c5c6f3df9a59721c08ddd57b5521da1c9c6fd96b7c8b57db813",
+          "dweb:/ipfs/QmRuzqKDr2sBHNuQhCzWGa8euNiMyvP7LTjSFjvAj5uFqh"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IClaimIssuer.sol": {
+        "keccak256": "0xae785f63b3cb3a94bcb454ef4ad6376aa4848fa29cff1cc8db3bef4a2994a779",
+        "urls": [
+          "bzz-raw://d8223d2710c51ee39cdfd2cb2f1858b3d64a3222c78ea8ed5eb3e11a93e1222e",
+          "dweb:/ipfs/QmYRXPCww7BorScTC6QNMbrRm2zprUmSYFpWomwarJH7Df"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IERC734.sol": {
+        "keccak256": "0x35a14a0d1a3ed51689f1a2cb12e26d30601afbcc1cc9b9b288a03cd11e6d049e",
+        "urls": [
+          "bzz-raw://156aac402e73e6bd2fa8c0ccd85b2add8d1bb505d8a652218173dbc8e7b9a3cb",
+          "dweb:/ipfs/QmPzPyc3kKxoNCGqKAooUju6YvMkDN4MCUH198TEXnA82o"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IERC735.sol": {
+        "keccak256": "0xeac82c37b16c1c1c83df3e88be987332b1230ed13e1d017f9d2929f978ac0122",
+        "urls": [
+          "bzz-raw://695a66b789ac417b7b2b78c578981779db374704382921ff499351cccab0323e",
+          "dweb:/ipfs/QmeZoogvsEWf688Z849zZ2dLPDnor6YnnNQLMgedY9Tc9D"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@onchainid-v2.2.1/contracts/interface/IIdentity.sol": {
+        "keccak256": "0x5ed42ab81b9b734c79e61d1f7e0734baab5479a356ab6bb469414d3c66269862",
+        "urls": [
+          "bzz-raw://a0863999b1ed334179a43e699e6057815eea011a78ed51e61b6110fc392e26f8",
+          "dweb:/ipfs/Qme6hdHZCAy1V4sLgAZ5NxdrEjEf5mYMabf5UDmUDjkuzW"
+        ],
+        "license": "GPL-3.0"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/access/IAccessControl.sol": {
+        "keccak256": "0x4d9a2b261b56a1e4a37bb038151dec98b952fed16de2bdfdda27e38e2b12b530",
+        "urls": [
+          "bzz-raw://f724110f7aeb6151af800ab8c12e6060b29bda9e013f0ccb331eb754d6a7cbf0",
+          "dweb:/ipfs/QmUcjzCZpxtUPdEThtAzE1f9LvuJiUGZxTdH9N6bHrb5Cf"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/interfaces/draft-IERC6093.sol": {
+        "keccak256": "0x880da465c203cec76b10d72dbd87c80f387df4102274f23eea1f9c9b0918792b",
+        "urls": [
+          "bzz-raw://399594cd8bb0143bc9e55e0f1d071d0d8c850a394fb7a319d50edd55d9ed822b",
+          "dweb:/ipfs/QmbPZzgtT6LEm9CMqWfagQFwETbV1ztpECBB1DtQHrKiRz"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/ERC20.sol": {
+        "keccak256": "0x41f6b3b9e030561e7896dbef372b499cc8d418a80c3884a4d65a68f2fdc7493a",
+        "urls": [
+          "bzz-raw://80b0992a11b2fd1f75ced2971696d07bbd1d19ce6761dd50d8b6d48aa435f42a",
+          "dweb:/ipfs/QmZDe5xd2gXHjVEjv9t8C1KQ68K5T8qFwdinwQgmP3rF3x"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol": {
+        "keccak256": "0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7",
+        "urls": [
+          "bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db",
+          "dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/extensions/IERC20Metadata.sol": {
+        "keccak256": "0x70f2f713b13b7ce4610bcd0ac9fec0f3cc43693b043abcb8dc40a42a726eb330",
+        "urls": [
+          "bzz-raw://c13d13304ac79a83ab1c30168967d19e2203342ebbd6a9bbce4db7550522dcbf",
+          "dweb:/ipfs/QmeN5jKMN2vw5bhacr6tkg78afbTTZUeaacNHqjWt4Ew1r"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/Context.sol": {
+        "keccak256": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+        "urls": [
+          "bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12",
+          "dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-upgradeable-5.3.0/proxy/utils/Initializable.sol": {
+        "keccak256": "0xdb4d24ee2c087c391d587cd17adfe5b3f9d93b3110b1388c2ab6c7c0ad1dcd05",
+        "urls": [
+          "bzz-raw://ab7b6d5b9e2b88176312967fe0f0e78f3d9a1422fa5e4b64e2440c35869b5d08",
+          "dweb:/ipfs/QmXKYWWyzcLg1B2k7Sb1qkEXgLCYfXecR9wYW5obRzWP1Q"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "accessManager()": {
+        "notice": "Returns the address of the current `SMARTTokenAccessManager`."
+      },
+      "addComplianceModule(address,bytes)": {
+        "notice": "Adds a new compliance module contract to this token's compliance framework and sets its initial configuration parameters."
+      },
+      "batchMint(address[],uint256[])": {
+        "notice": "Mints tokens to multiple recipient addresses in a single batch transaction."
+      },
+      "batchTransfer(address[],uint256[])": {
+        "notice": "Transfers tokens from the caller to multiple recipient addresses in a single batch transaction."
+      },
+      "compliance()": {
+        "notice": "Retrieves the address of the main `ISMARTCompliance` contract currently configured for this token."
+      },
+      "complianceModules()": {
+        "notice": "Retrieves a list of all currently active compliance modules for this token, along with their configuration parameters."
+      },
+      "constructor": {
+        "notice": "Initializes the access managed extension by setting the access manager address."
+      },
+      "hasRole(bytes32,address)": {
+        "notice": "Checks if a given account has a specific role, as defined by the `_accessManager`."
+      },
+      "identityRegistry()": {
+        "notice": "Retrieves the address of the `ISMARTIdentityRegistry` contract currently configured for this token."
+      },
+      "mint(address,uint256)": {
+        "notice": "Creates (mints) a specified `_amount` of new tokens and assigns them to the `_to` address."
+      },
+      "onchainID()": {
+        "notice": "Retrieves the optional on-chain identifier (e.g., an `IIdentity` contract) associated with the token contract itself."
+      },
+      "recoverERC20(address,address,uint256)": {
+        "notice": "Allows an authorized account to recover ERC20 tokens that were mistakenly sent to this SMART token contract's address."
+      },
+      "recoverTokens(address)": {
+        "notice": "Recovers SMART tokens from a lost wallet to the caller's address."
+      },
+      "registeredInterfaces()": {
+        "notice": "Returns an array of all registered interface IDs."
+      },
+      "removeComplianceModule(address)": {
+        "notice": "Removes an active compliance module from this token's compliance framework."
+      },
+      "setCompliance(address)": {
+        "notice": "Sets or updates the address of the main `ISMARTCompliance` contract used by this token."
+      },
+      "setIdentityRegistry(address)": {
+        "notice": "Sets or updates the address of the `ISMARTIdentityRegistry` contract used by this token."
+      },
+      "setOnchainID(address)": {
+        "notice": "Sets or updates the optional on-chain identifier (e.g., an `IIdentity` contract) associated with the token contract itself."
+      },
+      "setParametersForComplianceModule(address,bytes)": {
+        "notice": "Sets or updates the configuration parameters for a specific, already added compliance module."
+      }
+    },
+    "events": {
+      "AccessManagerSet(address,address)": {
+        "notice": "Emitted when the address of the access manager contract is successfully changed or set."
+      },
+      "ComplianceAdded(address,address)": {
+        "notice": "Emitted when the address of the main `ISMARTCompliance` contract, used by this token, is successfully updated."
+      },
+      "ComplianceModuleAdded(address,address,bytes)": {
+        "notice": "Emitted when a new compliance module is successfully added to the token's compliance framework."
+      },
+      "ComplianceModuleRemoved(address,address)": {
+        "notice": "Emitted when an existing compliance module is successfully removed from the token's compliance framework."
+      },
+      "ERC20TokenRecovered(address,address,address,uint256)": {
+        "notice": "Emitted when mistakenly sent ERC20 tokens are recovered from the contract."
+      },
+      "IdentityRegistryAdded(address,address)": {
+        "notice": "Emitted when the address of the `ISMARTIdentityRegistry` contract, used by this token, is successfully updated."
+      },
+      "MintCompleted(address,address,uint256)": {
+        "notice": "Emitted after a token minting operation has successfully completed, passing all relevant checks."
+      },
+      "ModuleParametersUpdated(address,address,bytes)": {
+        "notice": "Emitted when the configuration parameters for an existing, active compliance module are successfully updated."
+      },
+      "TokensRecovered(address,address,address,uint256)": {
+        "notice": "Emitted when tokens are recovered from a lost wallet to the caller's address."
+      },
+      "TransferCompleted(address,address,address,uint256)": {
+        "notice": "Emitted after a token transfer operation (e.g., via `transfer` or `transferFrom`) has successfully completed,         passing all identity and compliance checks."
+      },
+      "UpdatedTokenInformation(address,uint8,address)": {
+        "notice": "Emitted when fundamental information about the token, such as its decimals or on-chain ID, is updated."
+      }
+    },
+    "errors": {
+      "AccessControlUnauthorizedAccount(address,bytes32)": [
+        {
+          "notice": "This error is functionally identical to `AccessControlUnauthorizedAccount`         defined in OpenZeppelin's `access/AccessControl.sol` contract.         Re-defining it here ensures consistency within the SMART framework and can         help in scenarios where specific error catching is needed for this module."
+        }
+      ],
+      "CannotRecoverSelf()": [
+        {
+          "notice": "Error indicating an attempt to recover the token contract's own tokens."
+        }
+      ],
+      "DuplicateModule(address)": [
+        {
+          "notice": "Error indicating that a compliance module is being added but already exists."
+        }
+      ],
+      "InsufficientTokenBalance()": [
+        {
+          "notice": "Error indicating that the token balance is insufficient for an operation."
+        }
+      ],
+      "InvalidDecimals(uint8)": [
+        {
+          "notice": "Error indicating that the provided decimals value is invalid."
+        }
+      ],
+      "InvalidLostWallet()": [
+        {
+          "notice": "Error indicating that the provided lost wallet is not marked as lost."
+        }
+      ],
+      "LengthMismatch()": [
+        {
+          "notice": "Error: Array Length Mismatch in Batch Operation."
+        }
+      ],
+      "MintNotCompliant()": [
+        {
+          "notice": "Error indicating that a mint operation failed compliance checks."
+        }
+      ],
+      "ModuleAlreadyAdded()": [
+        {
+          "notice": "Error indicating that an attempt was made to add a compliance module that is already registered."
+        }
+      ],
+      "ModuleNotFound()": [
+        {
+          "notice": "Error indicating that a specified compliance module was not found."
+        }
+      ],
+      "NoTokensToRecover()": [
+        {
+          "notice": "Error indicating that there are no tokens to recover."
+        }
+      ],
+      "TransferNotCompliant()": [
+        {
+          "notice": "Error indicating that a transfer operation failed compliance checks."
+        }
+      ],
+      "ZeroAddressNotAllowed()": [
+        {
+          "notice": "Error: Zero Address Not Allowed."
+        }
+      ]
+    },
+    "notice": "This contract serves as a base for SMART token contracts that need to integrate         with a centralized `SMARTTokenAccessManager`. It provides the foundational         functionality to link a token to its access manager.         An 'abstract contract' in Solidity is like a template for other contracts.         It can define some functions and state variables, but it might leave others         unimplemented for inheriting contracts to fill in. You cannot deploy an         abstract contract directly; it must be inherited by another contract."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "details": "This is the non-upgradeable version. Inheriting contracts should invoke the      constructor, passing the address of the `SMARTTokenAccessManager`.      They are also responsible for implementing any necessary authorization hooks      by delegating calls to the designated manager contract.      Delegation means that this contract will forward certain checks or calls      to the `SMARTTokenAccessManager` to decide if an action is allowed.",
+    "methods": {
+      "accessManager()": {
+        "details": "This is an external view function, meaning it can be called from outside the      contract without consuming gas (if called via a node's RPC) and it does not      modify the contract's state.",
+        "returns": {
+          "_0": "The address of the `_accessManager`."
+        }
+      },
+      "addComplianceModule(address,bytes)": {
+        "details": "Before adding, the implementation (or the main `ISMARTCompliance` contract) MUST validate:      1. That `_module` is a valid contract address.      2. That `_module` correctly implements the `ISMARTComplianceModule` interface (e.g., via ERC165 `supportsInterface`).      3. That the provided `_params` are valid for the `_module` (by calling `_module.validateParameters(_params)`).      Typically restricted to an administrative role. Emits `ComplianceModuleAdded`.",
+        "params": {
+          "_module": "The address of the compliance module contract to add.",
+          "_params": "The initial ABI-encoded configuration parameters for this module specific to this token."
+        }
+      },
+      "allowance(address,address)": {
+        "details": "See {IERC20-allowance}."
+      },
+      "approve(address,uint256)": {
+        "details": "See {IERC20-approve}. NOTE: If `value` is the maximum `uint256`, the allowance is not updated on `transferFrom`. This is semantically equivalent to an infinite approval. Requirements: - `spender` cannot be the zero address."
+      },
+      "balanceOf(address)": {
+        "details": "See {IERC20-balanceOf}."
+      },
+      "batchMint(address[],uint256[])": {
+        "details": "This is an efficiency function to reduce transaction costs when minting to many users.      Typically restricted to accounts with a specific minter role.      Implementations MUST perform identity verification and compliance checks for *each* recipient in `_toList`.      If any recipient fails checks, the entire batch operation should revert to maintain atomicity.      Emits multiple `MintCompleted` and ERC20 `Transfer` events.",
+        "params": {
+          "_amounts": "An array of corresponding token quantities to mint for each address in `_toList`. The lengths of `_toList` and `_amounts` MUST be equal.",
+          "_toList": "An array of addresses to receive the newly minted tokens."
+        }
+      },
+      "batchTransfer(address[],uint256[])": {
+        "details": "This is an efficiency function, useful for distributions or airdrops (if compliant).      The caller (`msg.sender`) must have a sufficient balance to cover the sum of all `_amounts`.      Implementations MUST perform identity verification and compliance checks for *each* recipient in `_toList`      and also check the sender (`msg.sender`) if sender-side compliance rules apply.      If any part of the batch fails checks, the entire operation should revert.      Emits multiple `TransferCompleted` and ERC20 `Transfer` events.",
+        "params": {
+          "_amounts": "An array of corresponding token quantities to transfer. The lengths of `_toList` and `_amounts` MUST be equal.",
+          "_toList": "An array of addresses to receive the tokens."
+        }
+      },
+      "compliance()": {
+        "details": "The Compliance contract is responsible for orchestrating compliance checks for token operations.",
+        "returns": {
+          "complianceContract": "The `ISMARTCompliance` contract instance currently in use."
+        }
+      },
+      "complianceModules()": {
+        "details": "Each element in the returned array is a `SMARTComplianceModuleParamPair` struct, containing the module's address      and its current ABI-encoded parameters specific to this token.",
+        "returns": {
+          "modulesList": "An array of `SMARTComplianceModuleParamPair` structs."
+        }
+      },
+      "constructor": {
+        "details": "This constructor is called when a contract inheriting from `SMARTTokenAccessManaged`      is deployed. It ensures that the link to the `SMARTTokenAccessManager` is established      from the very beginning.      The `Initializable` contract is not used here because this is the non-upgradeable version.      Constructors in Solidity are special functions that run only once when the contract      is deployed.",
+        "params": {
+          "accessManager_": "The address of the `SMARTTokenAccessManager` contract that will                       manage roles and permissions for this token contract."
+        }
+      },
+      "decimals()": {
+        "details": "Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5.05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the default value returned by this function, unless it's overridden. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}."
+      },
+      "hasRole(bytes32,address)": {
+        "details": "This function implements the `ISMARTTokenAccessManaged` interface.      It delegates the actual role check to the `hasRole` function of the `_accessManager` contract.      The `virtual` keyword means that this function can be overridden by inheriting contracts.",
+        "params": {
+          "account": "The address of the account whose roles are being checked.",
+          "role": "The `bytes32` identifier of the role to check."
+        },
+        "returns": {
+          "_0": "`true` if the account has the role, `false` otherwise."
+        }
+      },
+      "identityRegistry()": {
+        "details": "The Identity Registry is used for verifying token holders against required claims and linking wallets to identities.",
+        "returns": {
+          "registryContract": "The `ISMARTIdentityRegistry` contract instance currently in use."
+        }
+      },
+      "mint(address,uint256)": {
+        "details": "This function is typically restricted to accounts with a specific minter role.      Implementations MUST perform identity verification and compliance checks on the `_to` address before minting.      Failure to meet these checks should result in a revert (e.g., with `RecipientNotVerified` or a compliance error).      Emits `MintCompleted` and the standard ERC20 `Transfer` event (from `address(0)` to `_to`).",
+        "params": {
+          "_amount": "The quantity of tokens to mint.",
+          "_to": "The address that will receive the newly minted tokens."
+        }
+      },
+      "name()": {
+        "details": "Returns the name of the token."
+      },
+      "onchainID()": {
+        "details": "This can represent the token issuer or the token entity.",
+        "returns": {
+          "idAddress": "The address of the on-chain ID contract, or `address(0)` if no on-chain ID is set for the token."
+        }
+      },
+      "recoverERC20(address,address,uint256)": {
+        "details": "This function is crucial for retrieving assets that are not the SMART token itself but are held by the contract.      Access to this function MUST be strictly controlled (e.g., via an `_authorizeRecoverERC20` internal hook or role).      It is critical that this function CANNOT be used to recover the SMART token itself, as that could drain the contract or interfere with its logic.      It should use a safe transfer mechanism (like OpenZeppelin's `SafeERC20.safeTransfer`) to prevent issues with non-standard ERC20 tokens.",
+        "params": {
+          "amount": "The quantity of the `token` to recover and send to `to`.",
+          "to": "The address where the recovered tokens will be sent.",
+          "token": "The contract address of the ERC20 token to be recovered. This MUST NOT be `address(this)`."
+        }
+      },
+      "recoverTokens(address)": {
+        "details": "This will make it possible to recover SMART tokens from the lostWallet to msgSender, if it was correctly marked as lost in the identity registry.",
+        "params": {
+          "_lostWallet": "The address of the lost wallet containing tokens to recover."
+        }
+      },
+      "registeredInterfaces()": {
+        "details": "This function allows external contracts and users to discover all interfaces      that this contract claims to support. This is useful for introspection and      automated interface detection.",
+        "returns": {
+          "_0": "An array of `bytes4` interface identifiers that have been registered."
+        }
+      },
+      "removeComplianceModule(address)": {
+        "details": "Once removed, the rules enforced by this `_module` will no longer apply to token operations.      Typically restricted to an administrative role. Emits `ComplianceModuleRemoved`.",
+        "params": {
+          "_module": "The address of the compliance module contract to remove."
+        }
+      },
+      "setCompliance(address)": {
+        "details": "The Compliance contract orchestrates checks across various compliance modules to determine transfer legality.      Typically restricted to an administrative role. Emits `ComplianceAdded`.",
+        "params": {
+          "_compliance": "The address of the new `ISMARTCompliance` contract. Must not be `address(0)`."
+        }
+      },
+      "setIdentityRegistry(address)": {
+        "details": "The Identity Registry is responsible for managing associations between investor wallet addresses and their on-chain Identity contracts,      and for verifying identities against required claims.      Typically restricted to an administrative role. Emits `IdentityRegistryAdded`.",
+        "params": {
+          "_identityRegistry": "The address of the new `ISMARTIdentityRegistry` contract. Must not be `address(0)`."
+        }
+      },
+      "setOnchainID(address)": {
+        "details": "This can be used to represent the token issuer or the token itself as an on-chain entity.      Typically, this function is restricted to an administrative role.",
+        "params": {
+          "_onchainID": "The address of the on-chain ID contract. Pass `address(0)` to remove an existing ID."
+        }
+      },
+      "setParametersForComplianceModule(address,bytes)": {
+        "details": "This allows an administrator to change how a particular compliance rule behaves for this token.      The implementing contract (or the `ISMARTCompliance` contract) MUST validate these `_params` by calling      the module's `validateParameters(_params)` function before applying them.      Typically restricted to an administrative role. Emits `ModuleParametersUpdated`.",
+        "params": {
+          "_module": "The address of the compliance module (must be an active module for this token).",
+          "_params": "The new ABI-encoded configuration parameters for the module."
+        }
+      },
+      "supportsInterface(bytes4)": {
+        "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+      },
+      "symbol()": {
+        "details": "Returns the symbol of the token, usually a shorter version of the name."
+      },
+      "totalSupply()": {
+        "details": "See {IERC20-totalSupply}."
+      },
+      "transfer(address,uint256)": {
+        "details": "See {IERC20-transfer}. Requirements: - `to` cannot be the zero address. - the caller must have a balance of at least `value`."
+      },
+      "transferFrom(address,address,uint256)": {
+        "details": "See {IERC20-transferFrom}. Skips emitting an {Approval} event indicating an allowance update. This is not required by the ERC. See {xref-ERC20-_approve-address-address-uint256-bool-}[_approve]. NOTE: Does not update the allowance if the current allowance is the maximum `uint256`. Requirements: - `from` and `to` cannot be the zero address. - `from` must have a balance of at least `value`. - the caller must have allowance for ``from``'s tokens of at least `value`."
+      }
+    },
+    "events": {
+      "AccessManagerSet(address,address)": {
+        "details": "This event is crucial for transparency and monitoring. It allows external observers      to know when the authority managing roles and permissions for a token has been updated.      The `indexed` keyword for `sender` and `manager` allows these addresses to be efficiently      searched for in event logs.",
+        "params": {
+          "manager": "The new address of the `SMARTTokenAccessManager` contract that will now                oversee access control for the token.",
+          "sender": "The address of the account that initiated the change of the access manager.               This is typically an administrator or an account with special privileges."
+        }
+      },
+      "Approval(address,address,uint256)": {
+        "details": "Emitted when the allowance of a `spender` for an `owner` is set by a call to {approve}. `value` is the new allowance."
+      },
+      "ComplianceAdded(address,address)": {
+        "details": "This event indicates a change in the primary contract responsible for enforcing compliance rules on token transfers.",
+        "params": {
+          "_compliance": "The address of the newly configured `ISMARTCompliance` contract.",
+          "sender": "The address of the account (e.g., admin) that initiated this configuration change."
+        }
+      },
+      "ComplianceModuleAdded(address,address,bytes)": {
+        "details": "Compliance modules implement specific rules (e.g., geographic restrictions, holding limits).",
+        "params": {
+          "_module": "The address of the newly added compliance module contract (which should implement `ISMARTComplianceModule`).",
+          "_params": "The ABI-encoded configuration parameters initially set for this module instance on this token.",
+          "sender": "The address of the account (e.g., admin) that added the module."
+        }
+      },
+      "ComplianceModuleRemoved(address,address)": {
+        "details": "Removing a module means its rules will no longer be applied to token operations.",
+        "params": {
+          "_module": "The address of the compliance module contract that was removed.",
+          "sender": "The address of the account (e.g., admin) that removed the module."
+        }
+      },
+      "ERC20TokenRecovered(address,address,address,uint256)": {
+        "params": {
+          "amount": "The amount of tokens recovered.",
+          "sender": "The address that initiated the recovery operation.",
+          "to": "The address to which the tokens were recovered.",
+          "token": "The address of the ERC20 token recovered."
+        }
+      },
+      "IdentityRegistryAdded(address,address)": {
+        "details": "This event signals a change in the system component responsible for managing and verifying user identities.",
+        "params": {
+          "_identityRegistry": "The address of the newly configured `ISMARTIdentityRegistry` contract.",
+          "sender": "The address of the account (e.g., admin) that initiated this configuration change."
+        }
+      },
+      "MintCompleted(address,address,uint256)": {
+        "params": {
+          "amount": "The quantity of tokens minted.",
+          "sender": "The address of the account (e.g., minter role) that initiated the minting.",
+          "to": "The address that received the newly minted tokens."
+        }
+      },
+      "ModuleParametersUpdated(address,address,bytes)": {
+        "details": "This allows tweaking the behavior of a module without removing and re-adding it.",
+        "params": {
+          "_module": "The address of the compliance module whose parameters were updated.",
+          "_params": "The new ABI-encoded configuration parameters for the module.",
+          "sender": "The address of the account (e.g., admin) that updated the parameters."
+        }
+      },
+      "TokensRecovered(address,address,address,uint256)": {
+        "params": {
+          "amount": "The amount of tokens recovered.",
+          "lostWallet": "The address of the lost wallet containing tokens to recover.",
+          "newWallet": "The address to which the tokens were recovered.",
+          "sender": "The address that initiated the recovery operation."
+        }
+      },
+      "Transfer(address,address,uint256)": {
+        "details": "Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero."
+      },
+      "TransferCompleted(address,address,address,uint256)": {
+        "params": {
+          "amount": "The quantity of tokens transferred.",
+          "from": "The address from which tokens were sent.",
+          "sender": "The address that initiated the transfer action (could be the `from` address or an operator).",
+          "to": "The address to which tokens were received."
+        }
+      },
+      "UpdatedTokenInformation(address,uint8,address)": {
+        "details": "Note: While `name` and `symbol` are part of `IERC20Metadata`, their update mechanism isn't explicitly defined here,      but if updatable, would likely also trigger such an event. This event specifically calls out decimals and onchainID.",
+        "params": {
+          "_newDecimals": "The new number of decimal places the token uses. (Note: Changing decimals post-deployment is highly unusual and complex for ERC20 tokens).",
+          "_newOnchainID": "The address of the new on-chain Identity contract representing the token itself (if applicable).",
+          "sender": "The address of the account (e.g., admin) that initiated the update."
+        }
+      }
+    },
+    "errors": {
+      "AccessControlUnauthorizedAccount(address,bytes32)": [
+        {
+          "details": "Error: Account Lacks Required Role.      This error is emitted when an action is attempted by an account (`account`)      that does not possess the necessary authorization role (`neededRole`).      For example, if an account tries to mint new tokens but doesn't have the 'MINTER_ROLE'.",
+          "params": {
+            "account": "The address of the account that attempted the unauthorized action.",
+            "neededRole": "The `bytes32` identifier of the role that the `account` was missing."
+          }
+        }
+      ],
+      "CannotRecoverSelf()": [
+        {
+          "details": "The `recoverERC20` function is designed to recover other ERC20 tokens mistakenly sent to this contract,      not the token this contract itself represents."
+        }
+      ],
+      "DuplicateModule(address)": [
+        {
+          "params": {
+            "module": "The address of the duplicate compliance module."
+          }
+        }
+      ],
+      "ERC20InsufficientAllowance(address,uint256,uint256)": [
+        {
+          "details": "Indicates a failure with the `spender`’s `allowance`. Used in transfers.",
+          "params": {
+            "allowance": "Amount of tokens a `spender` is allowed to operate with.",
+            "needed": "Minimum amount required to perform a transfer.",
+            "spender": "Address that may be allowed to operate on tokens without being their owner."
+          }
+        }
+      ],
+      "ERC20InsufficientBalance(address,uint256,uint256)": [
+        {
+          "details": "Indicates an error related to the current `balance` of a `sender`. Used in transfers.",
+          "params": {
+            "balance": "Current balance for the interacting account.",
+            "needed": "Minimum amount required to perform a transfer.",
+            "sender": "Address whose tokens are being transferred."
+          }
+        }
+      ],
+      "ERC20InvalidApprover(address)": [
+        {
+          "details": "Indicates a failure with the `approver` of a token to be approved. Used in approvals.",
+          "params": {
+            "approver": "Address initiating an approval operation."
+          }
+        }
+      ],
+      "ERC20InvalidReceiver(address)": [
+        {
+          "details": "Indicates a failure with the token `receiver`. Used in transfers.",
+          "params": {
+            "receiver": "Address to which tokens are being transferred."
+          }
+        }
+      ],
+      "ERC20InvalidSender(address)": [
+        {
+          "details": "Indicates a failure with the token `sender`. Used in transfers.",
+          "params": {
+            "sender": "Address whose tokens are being transferred."
+          }
+        }
+      ],
+      "ERC20InvalidSpender(address)": [
+        {
+          "details": "Indicates a failure with the `spender` to be approved. Used in approvals.",
+          "params": {
+            "spender": "Address that may be allowed to operate on tokens without being their owner."
+          }
+        }
+      ],
+      "InsufficientTokenBalance()": [
+        {
+          "details": "This typically occurs during token recovery if the contract holds less of the target token than the amount requested for recovery."
+        }
+      ],
+      "InvalidDecimals(uint8)": [
+        {
+          "details": "This error is typically reverted if `decimals` is greater than 18, which is a common upper limit.",
+          "params": {
+            "decimals": "The invalid decimals value that was provided."
+          }
+        }
+      ],
+      "InvalidLostWallet()": [
+        {
+          "details": "This can occur if the wallet is not associated with any lost identity."
+        }
+      ],
+      "LengthMismatch()": [
+        {
+          "details": "This error is typically triggered in functions that process multiple items in batches,      such as `batchBurn` or `batchTransfer`, when the input arrays (e.g., an array of addresses      and an array of corresponding amounts) do not have the same number of elements.      For example, if 3 addresses are provided but only 2 amounts, this error would be raised      because it's unclear how to map the amounts to the addresses."
+        }
+      ],
+      "MintNotCompliant()": [
+        {
+          "details": "This means the conditions required by the active compliance modules for minting were not met."
+        }
+      ],
+      "ModuleNotFound()": [
+        {
+          "details": "This can occur when trying to remove or update parameters for a non-existent module."
+        }
+      ],
+      "NoTokensToRecover()": [
+        {
+          "details": "This can occur if the contract holds no tokens to recover."
+        }
+      ],
+      "TransferNotCompliant()": [
+        {
+          "details": "This means the conditions required by the active compliance modules for transferring tokens were not met."
+        }
+      ],
+      "ZeroAddressNotAllowed()": [
+        {
+          "details": "This error is used to indicate that an operation or initialization was attempted with the      zero address (`address(0)`), which is often an invalid or disallowed address in many contexts.      For example, setting a critical administrative role to the zero address, or transferring tokens      to the zero address (which can effectively burn them, but should be explicit if intended)."
+        }
+      ]
+    },
+    "title": "Abstract Contract for Access-Managed SMART Tokens (Non-Upgradeable)"
+  },
+  "id": 71
+}

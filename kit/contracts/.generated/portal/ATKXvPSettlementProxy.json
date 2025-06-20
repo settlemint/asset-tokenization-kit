@@ -1,0 +1,444 @@
+{
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        {
+          "name": "factoryAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "cutoffDate",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "autoExecute",
+          "type": "bool",
+          "internalType": "bool"
+        },
+        {
+          "name": "flows",
+          "type": "tuple[]",
+          "internalType": "struct IATKXvPSettlement.Flow[]",
+          "components": [
+            {
+              "name": "asset",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "from",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "to",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "fallback",
+      "stateMutability": "payable"
+    },
+    {
+      "type": "receive",
+      "stateMutability": "payable"
+    },
+    {
+      "type": "error",
+      "name": "ETHTransfersNotAllowed",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ImplementationNotSetInFactory",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InitializationWithZeroAddress",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidFactoryAddress",
+      "inputs": []
+    }
+  ],
+  "bytecode": {
+    "object": "0x6080604052346100d0576106a1803803809161001a826100e8565b60803960a08160800191126100d057610031610151565b60a0516001600160401b0381116100d05782609f820112156100d057806080015161005b8161017b565b91610069604051938461012e565b8183528460a083830101116100d057815f9260a0602093018386015e8301015260c05161009660e0610196565b610100519092906001600160401b0381116100d0576100c1956100bb916080016101a3565b93610329565b60405161014990816105388239f35b5f80fd5b634e487b7160e01b5f52604160045260245ffd5b6080601f91909101601f19168101906001600160401b0382119082101761010e57604052565b6100d4565b608081019081106001600160401b0382111761010e57604052565b601f909101601f19168101906001600160401b0382119082101761010e57604052565b608051906001600160a01b03821682036100d057565b51906001600160a01b03821682036100d057565b6001600160401b03811161010e57601f01601f191660200190565b519081151582036100d057565b81601f820112156100d0578051906001600160401b03821161010e57604051926101d360208460051b018561012e565b82845260208085019360071b830101918183116100d057602001925b8284106101fd575050505090565b6080848303126100d057602060809160405161021881610113565b61022187610167565b815261022e838801610167565b8382015261023e60408801610167565b6040820152606087015160608201528152019301926101ef565b908160209103126100d05761026c90610196565b90565b6040513d5f823e3d90fd5b92602092938360c0936080835280519182918260808601520160a084015e5f60a08284010152601f801991011681019160a08301958583015215156040820152606060a0828403019101528451809452019201905f5b8181106102dd5750505090565b825180516001600160a01b0390811686526020828101518216818801526040808401519092169187019190915260609182015191860191909152608090940193909201916001016102d0565b93919291906001600160a01b03851680156103eb576040516301ffc9a760e01b81526339f7705960e21b600482015290602090829060249082905afa908115610429575f916103fa575b50156103eb575f5160206106815f395f51905f5280546001600160a01b0319166001600160a01b03909616959095179094556103e9936103e4916103d6906103b961042e565b94604051968794630db2a7e560e41b60208701526024860161027a565b03601f19810184528361012e565b6104ca565b565b635c7bfbe960e01b5f5260045ffd5b61041c915060203d602011610422575b610414818361012e565b810190610258565b5f610373565b503d61040a565b61026f565b5f5160206106815f395f51905f52546040516330e6fa3d60e11b815290602090829060049082906001600160a01b03165afa908115610429575f91610490575b506001600160a01b038116156104815790565b63489aaf0d60e11b5f5260045ffd5b90506020813d6020116104c2575b816104ab6020938361012e565b810103126100d0576104bc90610167565b5f61046e565b3d915061049e565b6001600160a01b0381161561052857815f929160208493519201905af43d15610520573d906104f88261017b565b91610506604051938461012e565b82523d5f602084013e5b156105185750565b602081519101fd5b606090610510565b63ee0a129760e01b5f5260045ffdfe608060405236156100a8577f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b5460209060809060049082906001600160a01b03166330e6fa3d60e11b82525afa80156100a3575f90610076575b6001600160a01b0381166100b75763489aaf0d60e11b5f5260045ffd5b5060203d60201161009c575b8061008f610097926100d4565b60800161010b565b610059565b503d610082565b610131565b635d82995b60e01b5f5260045ffd5b5f8091368280378136915af43d5f803e156100d0573d5ff35b3d5ffd5b601f80199101166080016080811067ffffffffffffffff8211176100f757604052565b634e487b7160e01b5f52604160045260245ffd5b602090607f19011261012d576080516001600160a01b038116810361012d5790565b5f80fd5b6040513d5f823e3d90fdfea164736f6c634300081c000a1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+    "sourceMap": "1508:3864:32:-:0;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;;;;1508:3864:32;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;:::i;:::-;;;;;;;;;;;;;;-1:-1:-1;1508:3864:32;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;-1:-1:-1;;;;;1508:3864:32;;;;;;;;;;;:::i;:::-;;;:::i;:::-;;;;;;;;;;;-1:-1:-1;1508:3864:32;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;1508:3864:32;;;;-1:-1:-1;;;;;1508:3864:32;;;;;;;;;;:::o;:::-;;:::i;:::-;;;;;;;-1:-1:-1;;;;;1508:3864:32;;;;;;;:::o;:::-;;;;;-1:-1:-1;;1508:3864:32;;;;-1:-1:-1;;;;;1508:3864:32;;;;;;;;;;:::o;:::-;;;;-1:-1:-1;;;;;1508:3864:32;;;;;;:::o;:::-;;;-1:-1:-1;;;;;1508:3864:32;;;;;;:::o;:::-;-1:-1:-1;;;;;1508:3864:32;;;;;;-1:-1:-1;;1508:3864:32;;;;:::o;:::-;;;;;;;;;;:::o;:::-;;;;;;;;;;;;-1:-1:-1;;;;;1508:3864:32;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;;;;;;;;;;:::i;:::-;;;;:::i;:::-;;;;;;;;:::i;:::-;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;:::o;:::-;;;;;;;;;;1786:66;;;;;;;;;;;;;;;;;;;;;;;;;1508:3864;1786:66;;1508:3864;;;;;;;;;;;1786:66;;;;;;;;;;;1508:3864;;1786:66;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;-1:-1:-1;;;;;1508:3864:32;;;1786:66;;;;;;;1508:3864;;1786:66;;;;;;;;;1508:3864;;;1786:66;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2248:871;;;;;;-1:-1:-1;;;;;1508:3864:32;;2441:28;;2437:89;;1508:3864;;-1:-1:-1;;;2541:85:32;;-1:-1:-1;;;2541:85:32;;;1508:3864;;2541:85;;1508:3864;;;;;;2541:85;;;;;;;2467:1;2541:85;;;2248:871;2540:86;;2536:147;;-1:-1:-1;;;;;;;;;;;1786:66:32;;-1:-1:-1;;;;;;1786:66:32;-1:-1:-1;;;;;1508:3864:32;;;1786:66;;;;;;;3103:8;;2900:134;;;;2827:38;;:::i;:::-;1508:3864;;;2936:50;;;;;;2541:85;2900:134;;;;;;;:::i;:::-;;1508:3864;;2900:134;;;;;;:::i;:::-;3103:8;:::i;:::-;2248:871::o;2536:147::-;2492:23;;;2467:1;2649:23;2541:85;2467:1;2649:23;2541:85;;;;;;;;;;;;;;;:::i;:::-;;;;;:::i;:::-;;;;;;;;;;;:::i;3636:355::-;-1:-1:-1;;;;;;;;;;;1508:3864:32;;;-1:-1:-1;;;3809:37:32;;1508:3864;3809:37;;1508:3864;;3809:37;;1508:3864;;-1:-1:-1;;;;;1508:3864:32;3809:37;;;;;;;-1:-1:-1;3809:37:32;;;3636:355;-1:-1:-1;;;;;;1508:3864:32;;3861:28;3857:97;;3636:355;:::o;3857:97::-;3912:31;;;-1:-1:-1;3912:31:32;3809:37;-1:-1:-1;3912:31:32;3809:37;;;;;;;;;;;;;1508:3864;3809:37;;;:::i;:::-;;;1508:3864;;;;;;;:::i;:::-;3809:37;;;;;;-1:-1:-1;3809:37:32;;4270:510;-1:-1:-1;;;;;1508:3864:32;;4433:36;4429:105;;4585:52;4467:1;4585:52;;;;;;;;;;;1508:3864;;;;;;;;;:::i;:::-;;;;;;;;:::i;:::-;;;;4467:1;4585:52;1508:3864;;;;4651:8;4647:127;;4270:510;:::o;4647:127::-;4585:52;4675:89;;;;;1508:3864;;;;;4429:105;4492:31;;;4467:1;4492:31;;4467:1;4492:31",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405236156100a8577f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b5460209060809060049082906001600160a01b03166330e6fa3d60e11b82525afa80156100a3575f90610076575b6001600160a01b0381166100b75763489aaf0d60e11b5f5260045ffd5b5060203d60201161009c575b8061008f610097926100d4565b60800161010b565b610059565b503d610082565b610131565b635d82995b60e01b5f5260045ffd5b5f8091368280378136915af43d5f803e156100d0573d5ff35b3d5ffd5b601f80199101166080016080811067ffffffffffffffff8211176100f757604052565b634e487b7160e01b5f52604160045260245ffd5b602090607f19011261012d576080516001600160a01b038116810361012d5790565b5f80fd5b6040513d5f823e3d90fdfea164736f6c634300081c000a",
+    "sourceMap": "1508:3864:32:-:0;;;;;;;1786:66;;3809:37;;1508:3864;;3809:37;;1508:3864;;-1:-1:-1;;;;;1508:3864:32;-1:-1:-1;;;3809:37:32;;;;;;;;-1:-1:-1;3809:37:32;;;-1:-1:-1;;;;;;1508:3864:32;;2381:17:206;3857:97:32;3912:31;;;-1:-1:-1;3912:31:32;3809:37;-1:-1:-1;3912:31:32;3809:37;;;;;;;;;;;;;;:::i;:::-;1508:3864;3809:37;;:::i;:::-;;;;-1:-1:-1;3809:37:32;;;;;:::i;1508:3864::-;5339:24;;;;;;;;949:895:206;1019:819;949:895;;1019:819;;;;;;;;;;;;;;;;;;;;;;;1508:3864:32;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;-1:-1:-1;1508:3864:32;;;;;-1:-1:-1;1508:3864:32;;;;;;;;;;;;-1:-1:-1;;;;;1508:3864:32;;;;;;;:::o;:::-;-1:-1:-1;1508:3864:32;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"factoryAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"cutoffDate\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"autoExecute\",\"type\":\"bool\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"asset\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"internalType\":\"struct IATKXvPSettlement.Flow[]\",\"name\":\"flows\",\"type\":\"tuple[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"ETHTransfersNotAllowed\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ImplementationNotSetInFactory\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InitializationWithZeroAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidFactoryAddress\",\"type\":\"error\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"details\":\"This proxy is intended to be deployed by ATKXvPSettlementFactory. It stores the factory address and uses it to determine the logic contract.\",\"kind\":\"dev\",\"methods\":{\"constructor\":{\"params\":{\"autoExecute\":\"Whether to auto-execute after all approvals\",\"cutoffDate\":\"Timestamp after which the settlement expires\",\"factoryAddress\":\"The address of the IATKXvPSettlementFactory contract.\",\"flows\":\"Array of token flows for this settlement\",\"name\":\"The name of the settlement\"}}},\"stateVariables\":{\"_ATK_XVP_SETTLEMENT_FACTORY_ADDRESS_SLOT\":{\"details\":\"Storage slot for the ATKXvPSettlementFactory address. Value: keccak256(\\\"org.atk.contracts.proxy.ATKXvPSettlementProxy.factoryAddress\\\")\"}},\"title\":\"Proxy for ATKXvPSettlement, managed by a factory.\",\"version\":1},\"userdoc\":{\"errors\":{\"ETHTransfersNotAllowed()\":[{\"notice\":\"Custom error for when direct ETH transfers to the proxy are attempted.\"}],\"ImplementationNotSetInFactory()\":[{\"notice\":\"Custom error when the factory does not have an implementation address set for the XvP settlement.\"}],\"InitializationWithZeroAddress()\":[{\"notice\":\"Custom error when attempting to initialize the proxy with a zero address for the implementation.\"}],\"InvalidFactoryAddress()\":[{\"notice\":\"Custom error when the provided factory address is invalid (e.g. zero address or does not support the required interface).\"}]},\"kind\":\"user\",\"methods\":{\"constructor\":{\"notice\":\"Constructs the ATKXvPSettlementProxy.\"}},\"notice\":\"This contract is a proxy that delegates calls to an implementation of ATKXvPSettlement. The implementation address is fetched from a specified ATKXvPSettlementFactory contract.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/xvp/ATKXvPSettlementProxy.sol\":\"ATKXvPSettlementProxy\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/xvp/ATKXvPSettlementImplementation.sol\":{\"keccak256\":\"0xe144e7bd3a745e0d470f9aa0ad7ab667d4d67eb0f33ff4b9ed5f0576050be86a\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://30bb176e086320852571163bed8e71be60fa288be4c97758c4ec523e93adcdb2\",\"dweb:/ipfs/QmUrpWmott1LGzyvqa3uNPSg5yoegEabraqr1e84a3bLQp\"]},\"contracts/addons/xvp/ATKXvPSettlementProxy.sol\":{\"keccak256\":\"0x46a44702f25c1b96f0597bd74e1aef8a1b33a3ab8161bba35b7eeb6a86c93fa8\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://2a7454cd17ad3d81f6ea35851a1205572ce9e1d5e933dfd481a1e46b7cbafc77\",\"dweb:/ipfs/QmNrf2gEooSM1wP32LdnqWc55mMmnU6AGT53tVMjJt4jhq\"]},\"contracts/addons/xvp/IATKXvPSettlement.sol\":{\"keccak256\":\"0xc26ed9be2871bf10ce86718b9e69f7dc563ebaf2904fa6fa9f25f53578c52e54\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://ff6843eaa38b035532ee12043233bed181dac51c8a808a3c7a7cb0d2fb6445b2\",\"dweb:/ipfs/QmNhJ41ua25L8w6prkZATop7Ei68yxaif12E7AhZXHmaGC\"]},\"contracts/addons/xvp/IATKXvPSettlementFactory.sol\":{\"keccak256\":\"0x6d95944a5d8451962d6d809addfc0e6c6bfb17a06da76955236736a4647f220c\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://ca7dc7756ef440770ab69f4a39e54ed53baceb3a5dacb0ae48044cba2e2268f4\",\"dweb:/ipfs/QmbeSAkmCS6LHLBavtShvGViqdBfoUWJoUXCPMXSejyEYs\"]},\"dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC1363.sol\":{\"keccak256\":\"0x9b6b3e7803bc5f2f8cd7ad57db8ac1def61a9930a5a3107df4882e028a9605d7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://da62d6be1f5c6edf577f0cb45666a8aa9c2086a4bac87d95d65f02e2f4c36a4b\",\"dweb:/ipfs/QmNkpvBpoCMvX8JwAFNSc5XxJ2q5BXJpL5L1txb4QkqVFF\"]},\"dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC165.sol\":{\"keccak256\":\"0xde7e9fd9aee8d4f40772f96bb3b58836cbc6dfc0227014a061947f8821ea9724\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11fea9f8bc98949ac6709f0c1699db7430d2948137aa94d5a9e95a91f61a710a\",\"dweb:/ipfs/QmQdfRXxQjwP6yn3DVo1GHPpriKNcFghSPi94Z1oKEFUNS\"]},\"dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC20.sol\":{\"keccak256\":\"0xce41876e78d1badc0512229b4d14e4daf83bc1003d7f83978d18e0e56f965b9c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a2608291cb038b388d80b79a06b6118a42f7894ff67b7da10ec0dbbf5b2973ba\",\"dweb:/ipfs/QmWohqcBLbcxmA4eGPhZDXe5RYMMEEpFq22nfkaUMvTfw1\"]},\"dependencies/@openzeppelin-contracts-5.3.0/proxy/Proxy.sol\":{\"keccak256\":\"0xc3f2ec76a3de8ed7a7007c46166f5550c72c7709e3fc7e8bb3111a7191cdedbd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e73efb4c2ca655882dc237c6b4f234a9bd36d97159d8fcaa837eb01171f726ac\",\"dweb:/ipfs/QmTNnnv7Gu5fs5G1ZMh7Fexp8N4XUs3XrNAngjcxgiss3e\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db\",\"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/utils/SafeERC20.sol\":{\"keccak256\":\"0x982c5cb790ab941d1e04f807120a71709d4c313ba0bfc16006447ffbd27fbbd5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8150ceb4ac947e8a442b2a9c017e01e880b2be2dd958f1fa9bc405f4c5a86508\",\"dweb:/ipfs/QmbcBmFX66AY6Kbhnd5gx7zpkgqnUafo43XnmayAM7zVdB\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/Address.sol\":{\"keccak256\":\"0xaaa1d17c1129b127a4a401db2fbd72960e2671474be3d08cae71ccdc42f7624c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cb2f27cd3952aa667e198fba0d9b7bcec52fbb12c16f013c25fe6fb52b29cc0e\",\"dweb:/ipfs/QmeuohBFoeyDPZA9JNCTEDz3VBfBD4EABWuWXVhHAuEpKR\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/Errors.sol\":{\"keccak256\":\"0x6afa713bfd42cf0f7656efa91201007ac465e42049d7de1d50753a373648c123\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ba1d02f4847670a1b83dec9f7d37f0b0418d6043447b69f3a29a5f9efc547fcf\",\"dweb:/ipfs/QmQ7iH2keLNUKgq2xSWcRmuBE5eZ3F5whYAkAGzCNNoEWB\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/StorageSlot.sol\":{\"keccak256\":\"0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9f660b1f351b757dfe01438e59888f31f33ded3afcf5cb5b0d9bf9aa6f320a8b\",\"dweb:/ipfs/QmarDJ5hZEgBtCmmrVzEZWjub9769eD686jmzb2XpSU1cM\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]},\"dependencies/@openzeppelin-contracts-upgradeable-5.3.0/metatx/ERC2771ContextUpgradeable.sol\":{\"keccak256\":\"0x290ba719fd784ff406a8de038c10dc2d0914794c8b016781712fcbb36ca7bffb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8b5764ef1dab80c115c14e307c5cbd5845320a653a2d8a3658d20dfba6bc7758\",\"dweb:/ipfs/QmSPSasRTVtYyAEnEVCBPZwoQzgKU7gu7q8NeT9AMMpmmx\"]},\"dependencies/@openzeppelin-contracts-upgradeable-5.3.0/proxy/utils/Initializable.sol\":{\"keccak256\":\"0xdb4d24ee2c087c391d587cd17adfe5b3f9d93b3110b1388c2ab6c7c0ad1dcd05\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ab7b6d5b9e2b88176312967fe0f0e78f3d9a1422fa5e4b64e2440c35869b5d08\",\"dweb:/ipfs/QmXKYWWyzcLg1B2k7Sb1qkEXgLCYfXecR9wYW5obRzWP1Q\"]},\"dependencies/@openzeppelin-contracts-upgradeable-5.3.0/utils/ContextUpgradeable.sol\":{\"keccak256\":\"0xdbef5f0c787055227243a7318ef74c8a5a1108ca3a07f2b3a00ef67769e1e397\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://08e39f23d5b4692f9a40803e53a8156b72b4c1f9902a88cd65ba964db103dab9\",\"dweb:/ipfs/QmPKn6EYDgpga7KtpkA8wV2yJCYGMtc9K4LkJfhKX2RVSV\"]},\"dependencies/@openzeppelin-contracts-upgradeable-5.3.0/utils/ReentrancyGuardUpgradeable.sol\":{\"keccak256\":\"0x361126a17677994081cd9cb69c3f50cffff6e920d25cb7e428acdb1ae41d1866\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://19ae787a7dd001269cd60a394b1a5261b78925a0fc3a6f927beb2986a9aa56cf\",\"dweb:/ipfs/QmYLfXiuKmcRgTDBEDXMMjXU8t6JxsspUmjxYzqWS55oEv\"]},\"dependencies/@openzeppelin-contracts-upgradeable-5.3.0/utils/introspection/ERC165Upgradeable.sol\":{\"keccak256\":\"0xc8ed8d2056934b7675b695dec032f2920c2f5c6cf33a17ca85650940675323ab\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3c8ccc75d1cd792d192aa09e54dd49ea35fe85baa9fcd17486f29227d9f29b89\",\"dweb:/ipfs/QmbboSbFUEiM9tdEgBwuTRb7bykFoJXZ7dsSr1PSREJXMr\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "factoryAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cutoffDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "autoExecute",
+              "type": "bool"
+            },
+            {
+              "internalType": "struct IATKXvPSettlement.Flow[]",
+              "name": "flows",
+              "type": "tuple[]",
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "asset",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "from",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ETHTransfersNotAllowed"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ImplementationNotSetInFactory"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InitializationWithZeroAddress"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidFactoryAddress"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "fallback"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "receive"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "constructor": {
+            "params": {
+              "autoExecute": "Whether to auto-execute after all approvals",
+              "cutoffDate": "Timestamp after which the settlement expires",
+              "factoryAddress": "The address of the IATKXvPSettlementFactory contract.",
+              "flows": "Array of token flows for this settlement",
+              "name": "The name of the settlement"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "constructor": {
+            "notice": "Constructs the ATKXvPSettlementProxy."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/addons/xvp/ATKXvPSettlementProxy.sol": "ATKXvPSettlementProxy"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/addons/xvp/ATKXvPSettlementImplementation.sol": {
+        "keccak256": "0xe144e7bd3a745e0d470f9aa0ad7ab667d4d67eb0f33ff4b9ed5f0576050be86a",
+        "urls": [
+          "bzz-raw://30bb176e086320852571163bed8e71be60fa288be4c97758c4ec523e93adcdb2",
+          "dweb:/ipfs/QmUrpWmott1LGzyvqa3uNPSg5yoegEabraqr1e84a3bLQp"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/addons/xvp/ATKXvPSettlementProxy.sol": {
+        "keccak256": "0x46a44702f25c1b96f0597bd74e1aef8a1b33a3ab8161bba35b7eeb6a86c93fa8",
+        "urls": [
+          "bzz-raw://2a7454cd17ad3d81f6ea35851a1205572ce9e1d5e933dfd481a1e46b7cbafc77",
+          "dweb:/ipfs/QmNrf2gEooSM1wP32LdnqWc55mMmnU6AGT53tVMjJt4jhq"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/addons/xvp/IATKXvPSettlement.sol": {
+        "keccak256": "0xc26ed9be2871bf10ce86718b9e69f7dc563ebaf2904fa6fa9f25f53578c52e54",
+        "urls": [
+          "bzz-raw://ff6843eaa38b035532ee12043233bed181dac51c8a808a3c7a7cb0d2fb6445b2",
+          "dweb:/ipfs/QmNhJ41ua25L8w6prkZATop7Ei68yxaif12E7AhZXHmaGC"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/addons/xvp/IATKXvPSettlementFactory.sol": {
+        "keccak256": "0x6d95944a5d8451962d6d809addfc0e6c6bfb17a06da76955236736a4647f220c",
+        "urls": [
+          "bzz-raw://ca7dc7756ef440770ab69f4a39e54ed53baceb3a5dacb0ae48044cba2e2268f4",
+          "dweb:/ipfs/QmbeSAkmCS6LHLBavtShvGViqdBfoUWJoUXCPMXSejyEYs"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC1363.sol": {
+        "keccak256": "0x9b6b3e7803bc5f2f8cd7ad57db8ac1def61a9930a5a3107df4882e028a9605d7",
+        "urls": [
+          "bzz-raw://da62d6be1f5c6edf577f0cb45666a8aa9c2086a4bac87d95d65f02e2f4c36a4b",
+          "dweb:/ipfs/QmNkpvBpoCMvX8JwAFNSc5XxJ2q5BXJpL5L1txb4QkqVFF"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC165.sol": {
+        "keccak256": "0xde7e9fd9aee8d4f40772f96bb3b58836cbc6dfc0227014a061947f8821ea9724",
+        "urls": [
+          "bzz-raw://11fea9f8bc98949ac6709f0c1699db7430d2948137aa94d5a9e95a91f61a710a",
+          "dweb:/ipfs/QmQdfRXxQjwP6yn3DVo1GHPpriKNcFghSPi94Z1oKEFUNS"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/interfaces/IERC20.sol": {
+        "keccak256": "0xce41876e78d1badc0512229b4d14e4daf83bc1003d7f83978d18e0e56f965b9c",
+        "urls": [
+          "bzz-raw://a2608291cb038b388d80b79a06b6118a42f7894ff67b7da10ec0dbbf5b2973ba",
+          "dweb:/ipfs/QmWohqcBLbcxmA4eGPhZDXe5RYMMEEpFq22nfkaUMvTfw1"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/proxy/Proxy.sol": {
+        "keccak256": "0xc3f2ec76a3de8ed7a7007c46166f5550c72c7709e3fc7e8bb3111a7191cdedbd",
+        "urls": [
+          "bzz-raw://e73efb4c2ca655882dc237c6b4f234a9bd36d97159d8fcaa837eb01171f726ac",
+          "dweb:/ipfs/QmTNnnv7Gu5fs5G1ZMh7Fexp8N4XUs3XrNAngjcxgiss3e"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol": {
+        "keccak256": "0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7",
+        "urls": [
+          "bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db",
+          "dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/utils/SafeERC20.sol": {
+        "keccak256": "0x982c5cb790ab941d1e04f807120a71709d4c313ba0bfc16006447ffbd27fbbd5",
+        "urls": [
+          "bzz-raw://8150ceb4ac947e8a442b2a9c017e01e880b2be2dd958f1fa9bc405f4c5a86508",
+          "dweb:/ipfs/QmbcBmFX66AY6Kbhnd5gx7zpkgqnUafo43XnmayAM7zVdB"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/Address.sol": {
+        "keccak256": "0xaaa1d17c1129b127a4a401db2fbd72960e2671474be3d08cae71ccdc42f7624c",
+        "urls": [
+          "bzz-raw://cb2f27cd3952aa667e198fba0d9b7bcec52fbb12c16f013c25fe6fb52b29cc0e",
+          "dweb:/ipfs/QmeuohBFoeyDPZA9JNCTEDz3VBfBD4EABWuWXVhHAuEpKR"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/Errors.sol": {
+        "keccak256": "0x6afa713bfd42cf0f7656efa91201007ac465e42049d7de1d50753a373648c123",
+        "urls": [
+          "bzz-raw://ba1d02f4847670a1b83dec9f7d37f0b0418d6043447b69f3a29a5f9efc547fcf",
+          "dweb:/ipfs/QmQ7iH2keLNUKgq2xSWcRmuBE5eZ3F5whYAkAGzCNNoEWB"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/StorageSlot.sol": {
+        "keccak256": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+        "urls": [
+          "bzz-raw://9f660b1f351b757dfe01438e59888f31f33ded3afcf5cb5b0d9bf9aa6f320a8b",
+          "dweb:/ipfs/QmarDJ5hZEgBtCmmrVzEZWjub9769eD686jmzb2XpSU1cM"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-upgradeable-5.3.0/metatx/ERC2771ContextUpgradeable.sol": {
+        "keccak256": "0x290ba719fd784ff406a8de038c10dc2d0914794c8b016781712fcbb36ca7bffb",
+        "urls": [
+          "bzz-raw://8b5764ef1dab80c115c14e307c5cbd5845320a653a2d8a3658d20dfba6bc7758",
+          "dweb:/ipfs/QmSPSasRTVtYyAEnEVCBPZwoQzgKU7gu7q8NeT9AMMpmmx"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-upgradeable-5.3.0/proxy/utils/Initializable.sol": {
+        "keccak256": "0xdb4d24ee2c087c391d587cd17adfe5b3f9d93b3110b1388c2ab6c7c0ad1dcd05",
+        "urls": [
+          "bzz-raw://ab7b6d5b9e2b88176312967fe0f0e78f3d9a1422fa5e4b64e2440c35869b5d08",
+          "dweb:/ipfs/QmXKYWWyzcLg1B2k7Sb1qkEXgLCYfXecR9wYW5obRzWP1Q"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-upgradeable-5.3.0/utils/ContextUpgradeable.sol": {
+        "keccak256": "0xdbef5f0c787055227243a7318ef74c8a5a1108ca3a07f2b3a00ef67769e1e397",
+        "urls": [
+          "bzz-raw://08e39f23d5b4692f9a40803e53a8156b72b4c1f9902a88cd65ba964db103dab9",
+          "dweb:/ipfs/QmPKn6EYDgpga7KtpkA8wV2yJCYGMtc9K4LkJfhKX2RVSV"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-upgradeable-5.3.0/utils/ReentrancyGuardUpgradeable.sol": {
+        "keccak256": "0x361126a17677994081cd9cb69c3f50cffff6e920d25cb7e428acdb1ae41d1866",
+        "urls": [
+          "bzz-raw://19ae787a7dd001269cd60a394b1a5261b78925a0fc3a6f927beb2986a9aa56cf",
+          "dweb:/ipfs/QmYLfXiuKmcRgTDBEDXMMjXU8t6JxsspUmjxYzqWS55oEv"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-upgradeable-5.3.0/utils/introspection/ERC165Upgradeable.sol": {
+        "keccak256": "0xc8ed8d2056934b7675b695dec032f2920c2f5c6cf33a17ca85650940675323ab",
+        "urls": [
+          "bzz-raw://3c8ccc75d1cd792d192aa09e54dd49ea35fe85baa9fcd17486f29227d9f29b89",
+          "dweb:/ipfs/QmbboSbFUEiM9tdEgBwuTRb7bykFoJXZ7dsSr1PSREJXMr"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "constructor": {
+        "notice": "Constructs the ATKXvPSettlementProxy."
+      }
+    },
+    "errors": {
+      "ETHTransfersNotAllowed()": [
+        {
+          "notice": "Custom error for when direct ETH transfers to the proxy are attempted."
+        }
+      ],
+      "ImplementationNotSetInFactory()": [
+        {
+          "notice": "Custom error when the factory does not have an implementation address set for the XvP settlement."
+        }
+      ],
+      "InitializationWithZeroAddress()": [
+        {
+          "notice": "Custom error when attempting to initialize the proxy with a zero address for the implementation."
+        }
+      ],
+      "InvalidFactoryAddress()": [
+        {
+          "notice": "Custom error when the provided factory address is invalid (e.g. zero address or does not support the required interface)."
+        }
+      ]
+    },
+    "notice": "This contract is a proxy that delegates calls to an implementation of ATKXvPSettlement. The implementation address is fetched from a specified ATKXvPSettlementFactory contract."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "details": "This proxy is intended to be deployed by ATKXvPSettlementFactory. It stores the factory address and uses it to determine the logic contract.",
+    "methods": {
+      "constructor": {
+        "params": {
+          "autoExecute": "Whether to auto-execute after all approvals",
+          "cutoffDate": "Timestamp after which the settlement expires",
+          "factoryAddress": "The address of the IATKXvPSettlementFactory contract.",
+          "flows": "Array of token flows for this settlement",
+          "name": "The name of the settlement"
+        }
+      }
+    },
+    "title": "Proxy for ATKXvPSettlement, managed by a factory."
+  },
+  "id": 32
+}
