@@ -12,6 +12,8 @@ export function fetchAddressListComplianceModule(
     addressListComplianceModule.addresses = [];
     addressListComplianceModule.save();
     AddressListComplianceModuleTemplate.create(address);
+
+    // TODO: should we query the global addresses list?
   }
 
   return addressListComplianceModule;

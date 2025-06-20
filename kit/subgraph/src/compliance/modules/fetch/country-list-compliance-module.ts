@@ -12,6 +12,8 @@ export function fetchCountryListComplianceModule(
     countryListComplianceModule.countries = [];
     countryListComplianceModule.save();
     CountryListComplianceModuleTemplate.create(address);
+
+    // TODO: should we query the global countries list?
   }
 
   return countryListComplianceModule;

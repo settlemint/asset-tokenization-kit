@@ -1,3 +1,4 @@
+import { Bytes } from "@graphprotocol/graph-ts";
 import { GlobalAddressListChange as GlobalAddressListChangeEvent } from "../../../generated/templates/AbstractAddressListComplianceModule/AbstractAddressListComplianceModule";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchAddressListComplianceModule } from "./fetch/address-list-compliance-module";
@@ -13,10 +14,14 @@ export function handleGlobalAddressListChange(
   if (event.params.inList) {
     addressListComplianceModule.addresses.push(event.params.addr);
   } else {
-    addressListComplianceModule.addresses =
-      addressListComplianceModule.addresses.filter(
-        (address) => address != event.params.addr
-      );
+    const newAddresses: Bytes[] = [];
+    const currentAddresses = addressListComplianceModule.addresses;
+    for (let i = 0; i < currentAddresses.length; i++) {
+      if (currentAddresses[i] != event.params.addr) {
+        newAddresses.push(currentAddresses[i]);
+      }
+    }
+    addressListComplianceModule.addresses = newAddresses;
   }
   addressListComplianceModule.save();
 }

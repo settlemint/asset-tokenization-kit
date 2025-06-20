@@ -13,10 +13,14 @@ export function handleGlobalCountryListChange(
   if (event.params.inList) {
     countryListComplianceModule.countries.push(event.params.country);
   } else {
-    countryListComplianceModule.countries =
-      countryListComplianceModule.countries.filter(
-        (country) => country != event.params.country
-      );
+    const newCountries: i32[] = [];
+    const currentCountries = countryListComplianceModule.countries;
+    for (let i = 0; i < currentCountries.length; i++) {
+      if (currentCountries[i] != event.params.country) {
+        newCountries.push(currentCountries[i]);
+      }
+    }
+    countryListComplianceModule.countries = newCountries;
   }
   countryListComplianceModule.save();
 }
