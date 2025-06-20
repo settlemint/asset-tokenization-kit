@@ -34,14 +34,13 @@
     "turbo.json"
   ],
   "scripts": {
-    "dependencies": "turbo run dependencies && git config merge.ours.driver true",
+    "postinstall": "turbo run dependencies && git config merge.ours.driver true && git config merge.ours.name \"Keep ours for generated files\"",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
     "build": "turbo build",
     "docs": "turbo run docs",
     "ci:gha": "turbo run ci:gha",
     "ci:gha:main": "turbo run ci:gha:main",
-    "ci:gha:nightly": "turbo run ci:gha:nightly",
     "ci": "turbo run ci",
     "ci:publish": "turbo run ci:publish",
     "version": "bun run tools/version.ts",
@@ -57,17 +56,17 @@
     "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
     "test:e2e:api:debug": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests --ui",
     "helm": "turbo run helm",
-    "dev:up": "turbo //#setup:dev",
-    "setup:connect": "settlemint connect --instance local && settlemint hasura track -a",
-    "dev:reset": "(docker compose -p atk down || true) && (docker volume ls -q --filter name=^atk | xargs -r docker volume rm || true) && bun run dev:up",
-    "setup:start": "docker compose -p atk up -d",
+    "dev:up": "docker compose -p atk up -d",
+    "postdev:up": "settlemint connect --instance local && settlemint hasura track -a",
+    "dev:reset": "(docker compose -p atk down || true) && (docker volume ls -q --filter name=^atk | xargs -r docker volume rm || true)",
+    "postdev:reset": "bun run dev:up",
+    "artifacts": "turbo run artifacts",
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
   "dependencies": {},
   "devDependencies": {
     "@settlemint/sdk-cli": "2.4.0",
-    "lefthook": "1.11.14",
     "prettier": "3.5.3",
     "turbo": "2.5.4",
     "typescript": "5.8.3"

@@ -316,6 +316,15 @@ reloader:
 
 minio:
   enabled: true
+  global:
+    security:
+      allowInsecureImages: true
+    imagePullSecrets:
+      - image-pull-secret-docker
+      - image-pull-secret-ghcr
+      - image-pull-secret-harbor
+  image:
+    registry: docker.io
   fullnameOverride: 'minio'
   # defaultBuckets: atk
   auth:
@@ -334,3 +343,9 @@ minio:
         echo "Adding atk-service user"
         mc admin user svcacct add provisioning "admin" --access-key "atk-service" --secret-key "atk-service-secret"
       fi
+  console:
+    image:
+      registry: docker.io
+  defaultInitContainers:
+    image:
+      registry: docker.io

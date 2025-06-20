@@ -241,3 +241,4 @@ GitHub Actions workflows:
   and tips
 - Completely ignore dapp-v1 folder
 - For TypeScript, never use the 'any' type
+- Do not use vitest to make tests, use bun:test

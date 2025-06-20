@@ -30,13 +30,3 @@ genesis-output.json
 
 # Soldeer
 /dependencies
-
-
-# Scripts
-scripts/hardhat/abi
-.generated/out-genesis
-.docker
-tools/docker/besu/genesis.json
-
-# Foundry files
-.generated/out

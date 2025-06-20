@@ -1,0 +1,247 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "TOPIC_AML",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TOPIC_ASSET_CLASSIFICATION",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TOPIC_BASE_PRICE",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TOPIC_COLLATERAL",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TOPIC_ISIN",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "TOPIC_KYC",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "view"
+    }
+  ],
+  "bytecode": {
+    "object": "0x60808060405234601957610270908161001e823930815050f35b5f80fdfe60806040526004361015610011575f80fd5b5f3560e01c80633a39e8f0146101c55780636feda22b14610197578063835cd463146101695780638ef293b01461011f5780638fbd7247146100c65763eeebe6ac1461005b575f80fd5b5f3660031901126100c257604051604081019080821067ffffffffffffffff8311176100ae576100aa91604052600981526862617365507269636560b81b602082015260405191829182610239565b0390f35b634e487b7160e01b5f52604160045260245ffd5b5f80fd5b5f3660031901126100c257604051604081019080821067ffffffffffffffff8311176100ae576100aa91604052601381527230b9b9b2ba21b630b9b9b4b334b1b0ba34b7b760691b602082015260405191829182610239565b5f3660031901126100c257604051604081019080821067ffffffffffffffff8311176100ae576100aa91604052600481526334b9b4b760e11b602082015260405191829182610239565b5f3660031901126100c2576100aa61017f610215565b62185b5b60ea1b602082015260405191829182610239565b5f3660031901126100c2576100aa6101ad610215565b626b796360e81b602082015260405191829182610239565b5f3660031901126100c257604051604081019080821067ffffffffffffffff8311176100ae576100aa91604052600a81526918dbdb1b185d195c985b60b21b602082015260405191829182610239565b604051906040820182811067ffffffffffffffff8211176100ae5760405260038252565b602060409281835280519182918282860152018484015e5f828201840152601f01601f191601019056fea164736f6c634300081c000a",
+    "sourceMap": "236:1501:149:-:0;;;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x60806040526004361015610011575f80fd5b5f3560e01c80633a39e8f0146101c55780636feda22b14610197578063835cd463146101695780638ef293b01461011f5780638fbd7247146100c65763eeebe6ac1461005b575f80fd5b5f3660031901126100c257604051604081019080821067ffffffffffffffff8311176100ae576100aa91604052600981526862617365507269636560b81b602082015260405191829182610239565b0390f35b634e487b7160e01b5f52604160045260245ffd5b5f80fd5b5f3660031901126100c257604051604081019080821067ffffffffffffffff8311176100ae576100aa91604052601381527230b9b9b2ba21b630b9b9b4b334b1b0ba34b7b760691b602082015260405191829182610239565b5f3660031901126100c257604051604081019080821067ffffffffffffffff8311176100ae576100aa91604052600481526334b9b4b760e11b602082015260405191829182610239565b5f3660031901126100c2576100aa61017f610215565b62185b5b60ea1b602082015260405191829182610239565b5f3660031901126100c2576100aa6101ad610215565b626b796360e81b602082015260405191829182610239565b5f3660031901126100c257604051604081019080821067ffffffffffffffff8311176100ae576100aa91604052600a81526918dbdb1b185d195c985b60b21b602082015260405191829182610239565b604051906040820182811067ffffffffffffffff8211176100ae5760405260038252565b602060409281835280519182918282860152018484015e5f828201840152601f01601f191601019056fea164736f6c634300081c000a",
+    "sourceMap": "236:1501:149:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;236:1501:149;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;236:1501:149;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;236:1501:149;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;236:1501:149;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;236:1501:149;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;236:1501:149;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;236:1501:149;;;;;;;:::i;:::-;-1:-1:-1;;;236:1501:149;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;236:1501:149;;;;;;;:::i;:::-;-1:-1:-1;;;236:1501:149;;;;;;;;;;;:::i;:::-;;;-1:-1:-1;;236:1501:149;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;236:1501:149;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;236:1501:149;;;;:::o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "TOPIC_AML()": "835cd463",
+    "TOPIC_ASSET_CLASSIFICATION()": "8fbd7247",
+    "TOPIC_BASE_PRICE()": "eeebe6ac",
+    "TOPIC_COLLATERAL()": "3a39e8f0",
+    "TOPIC_ISIN()": "8ef293b0",
+    "TOPIC_KYC()": "6feda22b"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"TOPIC_AML\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TOPIC_ASSET_CLASSIFICATION\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TOPIC_BASE_PRICE\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TOPIC_COLLATERAL\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TOPIC_ISIN\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TOPIC_KYC\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"kind\":\"dev\",\"methods\":{},\"title\":\"ATK  Topic Management\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Central registry for all claim topics and their schemes used in the ATK protocol\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/system/ATKTopics.sol\":\"ATKTopics\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/system/ATKTopics.sol\":{\"keccak256\":\"0x0b757940d4a768b64b6801c371ba79953a1ad76615cb5b7276c389c4d8ff88fc\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://37f18d8329ab27fceb540b26f6f86e5a7a6af80c2c7d82ca922b5a948aea0c40\",\"dweb:/ipfs/QmTCWsPQFR2PrXLwYwUft9Tt4bYXBJN696TDeVbkuLuvRc\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOPIC_AML",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOPIC_ASSET_CLASSIFICATION",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOPIC_BASE_PRICE",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOPIC_COLLATERAL",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOPIC_ISIN",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "TOPIC_KYC",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/system/ATKTopics.sol": "ATKTopics"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/system/ATKTopics.sol": {
+        "keccak256": "0x0b757940d4a768b64b6801c371ba79953a1ad76615cb5b7276c389c4d8ff88fc",
+        "urls": [
+          "bzz-raw://37f18d8329ab27fceb540b26f6f86e5a7a6af80c2c7d82ca922b5a948aea0c40",
+          "dweb:/ipfs/QmTCWsPQFR2PrXLwYwUft9Tt4bYXBJN696TDeVbkuLuvRc"
+        ],
+        "license": "FSL-1.1-MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "notice": "Central registry for all claim topics and their schemes used in the ATK protocol"
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "author": "SettleMint Tokenization Services",
+    "title": "ATK  Topic Management"
+  },
+  "id": 149
+}

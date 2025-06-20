@@ -24,25 +24,224 @@ concurrency:
 jobs:
   qa:
     name: QA
-    uses: ./.github/workflows/reusable-qa.yml
+    runs-on: namespace-profile-atk
     if: |
       github.event_name == 'push' ||
       (github.event_name == 'pull_request' &&
        (github.event.action == 'synchronize' || github.event.action == 'opened'))
-    with:
-      use-pat-token: true
-      turbo-command: |
-        if [ "${{ github.event_name }}" == "pull_request" ]; then
-          echo "Running Turbo with --affected flag for PR"
-          bunx turbo run ci:gha --concurrency=100% --continue=dependencies-successful
-        else
-          echo "Running full Turbo for main branch"
-          bun run ci:gha:main --concurrency=100% --continue=dependencies-successful
-        fi
-    secrets:
-      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-      LANGUINE_API_KEY: ${{ secrets.LANGUINE_API_KEY }}
-      LANGUINE_PROJECT_ID: ${{ secrets.LANGUINE_PROJECT_ID }}
+    steps:
+      - name: Setup 1Password
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load secrets
+        uses: 1password/load-secrets-action@v2
+        env:
+          HARBOR_USER: op://platform/harbor/username
+          HARBOR_PASS: op://platform/harbor/password
+          PAT_TOKEN: op://platform/github-commit-pat/credential
+
+      - name: Checkout repository (with PAT)
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          fetch-depth: 0
+          ref: "${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}"
+          token: ${{ env.PAT_TOKEN }}
+
+      - name: Configure git user
+        if: github.event_name == 'pull_request'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Configure merge strategy
+        if: github.event_name == 'pull_request'
+        run: |
+          # Set up the 'ours' merge driver
+          git config merge.ours.driver true
+          git config merge.ours.name "Keep ours for generated files"
+
+          # Verify .gitattributes exists
+          if [ ! -f .gitattributes ]; then
+            echo "**/.generated/**/* merge=ours" > .gitattributes
+            echo "**/*-cache.d.ts merge=ours" >> .gitattributes
+            echo "**/*-env.d.ts merge=ours" >> .gitattributes
+            echo "**/*-schema.graphql merge=ours" >> .gitattributes
+          fi
+
+      - name: Fetch and merge main
+        id: merge
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: |
+          # Fetch latest main
+          git fetch origin main
+
+          # Attempt merge
+          if git merge origin/main --no-edit; then
+            echo "merge_success=true" >> $GITHUB_OUTPUT
+            echo "✅ Merged main successfully"
+
+            # Check if there were any changes
+            if git diff HEAD~ --quiet; then
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+              echo "ℹ️ No changes after merge"
+            else
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+              echo "📝 Changes detected after merge"
+              git diff HEAD~ --name-only
+            fi
+          else
+            echo "merge_success=false" >> $GITHUB_OUTPUT
+            echo "❌ Merge failed, checking conflicts"
+
+            # List conflicted files
+            git diff --name-only --diff-filter=U
+          fi
+
+      - name: Handle merge conflicts
+        if: github.event_name == 'pull_request' && steps.merge.outputs.merge_success == 'false'
+        run: |
+          # Get list of conflicted files
+          CONFLICTS=$(git diff --name-only --diff-filter=U)
+
+          # Handle generated files specifically
+          for file in $CONFLICTS; do
+            if [[ $file == **/.generated/* ]]; then
+              echo "Auto-resolving generated file: $file"
+              git checkout --ours "$file"
+              git add "$file"
+            else
+              echo "Manual conflict in: $file"
+            fi
+          done
+
+          # Check if all conflicts are resolved
+          if git diff --name-only --diff-filter=U | grep -q .; then
+            echo "❌ Still have unresolved conflicts in non-generated files"
+            git diff --name-only --diff-filter=U
+            exit 1
+          else
+            echo "✅ All conflicts resolved"
+            git commit --no-edit
+          fi
+
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v5
+
+      - name: Set up turbo caching
+        uses: namespace-actions/setup-turbocache@v0
+
+      - name: Setup bun caches
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            ./node_modules
+            ./.turbo
+            ./**/.turbo
+            ~/.bun/install/cache
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Harbor
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        with:
+          registry: harbor.settlemint.com
+          username: ${{ env.HARBOR_USER }}
+          password: ${{ env.HARBOR_PASS }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Install Helm Docs
+        run: |
+          brew install norwoodj/tap/helm-docs
+
+      - name: Install Bun dependencies
+        run: bun install
+
+      - name: Install Helm
+        uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
+
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: local
+
+      - name: Generate artifacts
+        if: github.event_name == 'pull_request'
+        run: |
+          bunx turbo run artifacts --concurrency=100%
+
+      - name: Run the backend services
+        run: |
+          bun dev:up
+
+      - name: CI tests
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "Running Turbo with --affected flag for PR"
+            bunx turbo run ci:gha --concurrency=100% --continue=dependencies-successful --affected
+          else
+            echo "Running full Turbo for main branch"
+            bun run ci:gha:main --concurrency=100% --continue=dependencies-successful
+          fi
+        env:
+          THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
+          THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
+
+      - name: Languine Action
+        uses: languine-ai/languine@v1
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          api-key: ${{ secrets.LANGUINE_API_KEY }}
+          project-id: ${{ secrets.LANGUINE_PROJECT_ID }}
+          create-pull-request: true
+          working-directory: kit/dapp
+
+      - name: Store predeployed output
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: predeployed-output
+          path: |
+            kit/contracts/.generated/portal/*.json
+            kit/contracts/.generated/genesis.json
+            kit/contracts/.generated/genesis-allocations.json
+            kit/subgraph/subgraph-output.txt
+            kit/subgraph/.generated/subgraph-env
+            kit/dapp/.generated/database-export.sql
+
+      - name: Auto-commit artifacts
+        if: |
+          github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' &&
+          github.event_name == 'pull_request'
+        uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6
+        with:
+          commit_message: "chore: update artifacts"
+          branch: main
+          file_pattern: ".gitattributes .generated/**"
 
   pr-labels:
     name: PR Labels
