@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { assetTypeArray } from "@/lib/zod/validators/asset-types";
+import { assetTypes, assetTypeArray } from "@/lib/zod/validators/asset-types";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { orpc } from "@/orpc";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,13 +37,11 @@ export function AssetSelectionStep({ onSuccess }: AssetSelectionStepProps) {
     orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
   );
 
-  const assetOptions = [
-    { value: "bond", label: t("assets.bond") },
-    { value: "equity", label: t("assets.equity") },
-    { value: "fund", label: t("assets.fund") },
-    { value: "stablecoin", label: t("assets.stablecoin") },
-    { value: "deposit", label: t("assets.deposit") },
-  ] as const;
+  // Build asset options from the zod validator
+  const assetOptions = assetTypes.map((type) => ({
+    value: type,
+    label: t(`assets.${type}`),
+  }));
 
   const form = useForm<AssetSelectionFormData>({
     resolver: zodResolver(assetSelectionSchema),
@@ -69,9 +67,9 @@ export function AssetSelectionStep({ onSuccess }: AssetSelectionStepProps) {
     }
 
     // Convert selected assets to factory creation format
-    const factories = data.selectedAssets.map(type => ({
-      type: type,
-      name: `${type.charAt(0).toUpperCase() + type.slice(1)} Token Factory`
+    const factories = data.selectedAssets.map((type) => ({
+      type,
+      name: `${type.charAt(0).toUpperCase() + type.slice(1)} Token Factory`,
     }));
 
     createFactories({
