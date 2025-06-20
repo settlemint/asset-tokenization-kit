@@ -231,6 +231,22 @@ export const baseContract = oc.errors({
   ),
 
   /**
+   * System not created error.
+   *
+   * Thrown when the ATK System bootstrap is not completed
+   */
+  SYSTEM_NOT_CREATED: oo.spec(
+    {
+      message: "System not created",
+      status: 403,
+    },
+    {
+      // OpenAPI security requirement for API documentation
+      security: [{ apiKey: [] }],
+    }
+  ),
+
+  /**
    * Resource not found error.
    *
    * Thrown when a requested resource is not found:

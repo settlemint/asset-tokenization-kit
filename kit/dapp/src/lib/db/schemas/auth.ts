@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
+import type { Address } from "viem";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -24,7 +25,7 @@ export const user = pgTable("user", {
   banned: boolean("banned"),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
-  wallet: text("wallet").unique(),
+  wallet: text("wallet").unique().$type<Address>(),
   pincodeEnabled: boolean("pincode_enabled"),
   pincodeVerificationId: text("pincode_verification_id").unique(),
   twoFactorVerificationId: text("two_factor_verification_id").unique(),

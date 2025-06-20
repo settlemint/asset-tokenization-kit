@@ -19,6 +19,7 @@ export function fetchToken(address: Address): Token {
     token.decimals = tokenContract.decimals();
     token.createdAt = BigInt.zero();
     token.createdBy = Address.zero();
+    token.requiredClaimTopics = [];
     setBigNumber(
       token,
       "totalSupply",

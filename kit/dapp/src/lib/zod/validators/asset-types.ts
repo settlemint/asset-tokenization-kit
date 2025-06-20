@@ -15,7 +15,6 @@ import { z } from "zod/v4";
  * @remarks
  * This constant defines all supported asset types in the platform:
  * - `bond`: Fixed-income debt securities
- * - `cryptocurrency`: Digital or virtual currencies
  * - `equity`: Ownership shares in companies
  * - `fund`: Pooled investment vehicles
  * - `stablecoin`: Cryptocurrency with stable value
@@ -23,7 +22,6 @@ import { z } from "zod/v4";
  */
 export const assetTypes = [
   "bond",
-  "cryptocurrency",
   "equity",
   "fund",
   "stablecoin",
@@ -54,7 +52,6 @@ export const assetTypes = [
  */
 export const AssetTypeEnum = {
   bond: "bond",
-  cryptocurrency: "cryptocurrency",
   equity: "equity",
   fund: "fund",
   stablecoin: "stablecoin",
@@ -176,7 +173,6 @@ export const assetTypeRecord = <T extends z.ZodType>(valueSchema: T) =>
   z
     .object({
       bond: valueSchema.optional(),
-      cryptocurrency: valueSchema.optional(),
       equity: valueSchema.optional(),
       fund: valueSchema.optional(),
       stablecoin: valueSchema.optional(),

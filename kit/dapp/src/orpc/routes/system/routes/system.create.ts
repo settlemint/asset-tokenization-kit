@@ -17,6 +17,7 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { trackTransaction } from "@/orpc/helpers/transactions";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
@@ -110,7 +111,7 @@ export const create = onboardedRouter.system.create
       CREATE_SYSTEM_MUTATION,
       {
         address: contract,
-        from: sender.wallet,
+        from: sender.wallet ?? "",
         // ...(await handleChallenge(sender, verification)),
       }
     );
@@ -128,7 +129,7 @@ export const create = onboardedRouter.system.create
     // Track transaction, yielding only pending/failed events
     // The confirmed event will be yielded at the end with the system ID
     for await (const event of trackTransaction(
-      transactionHash,
+      getEthereumHash(transactionHash),
       context.portalClient,
       context.theGraphClient,
       messages

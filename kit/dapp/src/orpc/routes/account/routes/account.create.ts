@@ -5,6 +5,7 @@ import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm";
+import { getAddress } from "viem";
 import { AccountCreateMessagesSchema } from "./account.create.schema";
 
 /**
@@ -53,7 +54,6 @@ export const create = authRouter.account.create
       });
     }
 
-    // TODO JAN: i can call this twice for the same id, is that normal?
     const { createWallet } = await context.portalClient.request(
       CREATE_ACCOUNT_MUTATION,
       {
@@ -76,7 +76,7 @@ export const create = authRouter.account.create
     await context.db
       .update(user)
       .set({
-        wallet: createWallet.address,
+        wallet: getAddress(createWallet.address),
       })
       .where(eq(user.id, sender.id));
 

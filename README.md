@@ -79,16 +79,15 @@ bun run dev:up
 
 #### Test contracts
 
+Run the following command to deploy the contracts to the local network. This
+will run the script at `kit/contracts/scripts/hardhat/main.ts`.
+
 ```bash
-bun run publish
+bunx turbo contracts#publish
 ```
 
-### Test subgraph
-
-The subgraph can only be tested after you have executed the tests of the
-contracts. The subgraph tests will index the transactions created by the
-contracts ignition script.
+#### Test subgraph
 
 ```bash
-bun run test:integration
+THE_GRAPH_PORT_LOCAL_DEPLOY=8120 THE_GRAPH_PORT_LOCAL_QUERY=8100 bunx turbo subgraph#test:integration
 ```

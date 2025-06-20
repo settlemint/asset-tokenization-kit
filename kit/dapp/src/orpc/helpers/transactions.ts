@@ -99,8 +99,8 @@ export async function* trackTransaction(
    * Type representing the transaction receipt returned by the Portal GraphQL API.
    * Contains transaction status, revert reasons, and block information.
    */
-  let receipt:
-    | NonNullable<
+  let receipt: // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  | NonNullable<
         NonNullable<
           ResultOf<typeof GET_TRANSACTION_QUERY>["getTransaction"]
         >["receipt"]

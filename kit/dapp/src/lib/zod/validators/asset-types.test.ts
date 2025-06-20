@@ -45,7 +45,6 @@ describe("assetType", () => {
 describe("AssetTypeEnum", () => {
   it("should have all asset types", () => {
     expect(AssetTypeEnum.bond).toBe("bond");
-    expect(AssetTypeEnum.cryptocurrency).toBe("cryptocurrency");
     expect(AssetTypeEnum.equity).toBe("equity");
     expect(AssetTypeEnum.fund).toBe("fund");
     expect(AssetTypeEnum.stablecoin).toBe("stablecoin");
@@ -233,12 +232,11 @@ describe("type checking", () => {
 
     it("should handle safeParse", () => {
       const result = assetTypeSet().safeParse(
-        new Set(["stablecoin", "cryptocurrency"])
+        new Set(["stablecoin", "deposit"])
       );
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.has("stablecoin")).toBe(true);
-        expect(result.data.has("cryptocurrency")).toBe(true);
       }
     });
   });
