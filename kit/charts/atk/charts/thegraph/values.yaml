@@ -15,7 +15,7 @@ graph-node:
     imagePullSecrets: []
     extraInitContainers:
       - name: wait-for-postgresql-ready
-        image: postgres
+        image: docker.io/postgres
         command:
           - /bin/sh
           - -c
