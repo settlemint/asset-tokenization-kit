@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { CheckIcon, XIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { useTheme } from "next-themes";
+import { useMemo, type ReactNode } from "react";
 
 export interface Step {
   id: string;
@@ -11,14 +11,14 @@ export interface Step {
   status?: "pending" | "active" | "completed" | "error";
 }
 
-export interface StepWizardProps {
+interface StepWizardProps {
   steps: Step[];
   currentStepId: string;
   title: string;
   description: string;
   onStepChange: (stepId: string) => void;
   children: ReactNode;
-  // onClose?: () => void;
+  onClose?: () => void;
   showBackButton?: boolean;
   showNextButton?: boolean;
   onBack?: () => void;
@@ -36,167 +36,295 @@ export function StepWizard({
   description,
   onStepChange,
   children,
-  // onClose,
-  showBackButton = false,
-  showNextButton = false,
+  onClose,
+  showBackButton = true,
+  showNextButton = true,
   onBack,
   onNext,
-  nextLabel = "Next",
-  backLabel = "Back",
+  nextLabel,
+  backLabel,
   isNextDisabled = false,
   isBackDisabled = false,
 }: StepWizardProps) {
-  // const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
-  const completedSteps = steps.filter(
-    (step) => step.status === "completed"
-  ).length;
-  const progressPercentage = (completedSteps / steps.length) * 100;
+  const { theme } = useTheme();
 
-  const isStepAccessible = (stepIndex: number) => {
-    // Can access completed steps and the next step after the last completed
-    const lastCompletedIndex = steps.findIndex(
-      (step, idx) =>
-        step.status !== "completed" &&
-        idx > 0 &&
-        steps[idx - 1]?.status === "completed"
-    );
+  const sidebarStyle = useMemo(() => {
+    return {
+      backgroundImage:
+        theme === "dark"
+          ? "linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5))"
+          : "linear-gradient(45deg, rgba(52, 110, 238, 0.5), rgba(137, 214, 162, 0.8))",
+      backgroundSize: "cover",
+      backgroundPosition: "top",
+      backgroundRepeat: "no-repeat",
+      minWidth: "280px",
+    };
+  }, [theme]);
 
-    if (lastCompletedIndex === -1) {
-      // All steps are completed or none are
-      return stepIndex === 0 || steps[stepIndex]?.status === "completed";
-    }
-
-    return stepIndex <= lastCompletedIndex;
-  };
+  const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
+  const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
 
   return (
-    <div className="flex min-h-[600px] overflow-hidden rounded-lg bg-background shadow-lg">
-      {/* Left Sidebar */}
-      <div className="relative w-[320px] bg-gradient-to-br from-sm-background-gradient-start to-sm-background-gradient-end p-8">
-        {/* Brand gradient overlay */}
+    <div className="flex h-full min-h-[600px]">
+      <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
+        {/* Sidebar / Steps */}
         <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            background:
-              "linear-gradient(135deg, var(--sm-graphics-primary), var(--sm-graphics-secondary), var(--sm-graphics-tertiary))",
-          }}
-        />
-
-        <div className="relative z-10">
-          <h2 className="mb-2 text-2xl font-bold text-sm-text">{title}</h2>
-          <p className="mb-8 text-sm text-sm-text opacity-80">{description}</p>
+          className="w-[320px] flex-shrink-0 bg-primary p-8 flex flex-col transition-all duration-300"
+          style={sidebarStyle}
+        >
+          {/* Title and Description */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-primary-foreground mb-2">
+              {title}
+            </h2>
+            <p className="text-sm text-primary-foreground/90 leading-relaxed">
+              {description}
+            </p>
+          </div>
 
           {/* Progress Bar */}
           <div className="mb-8">
-            <div className="mb-2 flex justify-between text-sm">
-              <span className="text-sm-text opacity-70">Progress</span>
-              <span className="text-sm-text opacity-70">
-                {completedSteps} of {steps.length} completed
+            <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
+              <span>Step {currentStepIndex + 1}</span>
+              <span>
+                {currentStepIndex + 1} / {steps.length}
               </span>
             </div>
-            <Progress value={progressPercentage} className="h-2" />
+            <Progress
+              value={progressPercentage}
+              className="h-2 bg-primary-foreground/20"
+            />
           </div>
 
           {/* Steps */}
-          <div className="space-y-4">
+          <div className="space-y-0 flex-1 relative">
             {steps.map((step, index) => {
-              const isActive = step.id === currentStepId;
-              const isCompleted = step.status === "completed";
+              const isCurrent = currentStepId === step.id;
+              const isCompleted =
+                index < currentStepIndex || step.status === "completed";
               const isError = step.status === "error";
-              const isAccessible = isStepAccessible(index);
+
+              // Calculate which steps should be accessible
+              const latestCompletedStepIndex = steps.reduce(
+                (maxIndex, s, i) => {
+                  return s.status === "completed"
+                    ? Math.max(maxIndex, i)
+                    : maxIndex;
+                },
+                -1
+              );
+
+              const isAccessible =
+                step.status === "completed" ||
+                step.status === "active" ||
+                index <= latestCompletedStepIndex + 1;
+
+              const finalDisabled = !isAccessible;
 
               return (
-                <button
-                  key={step.id}
-                  onClick={() => {
-                    if (isAccessible) {
-                      onStepChange(step.id);
-                    }
-                  }}
-                  disabled={!isAccessible}
-                  className={cn(
-                    "flex w-full items-center gap-4 rounded-lg p-3 text-left transition-all duration-300",
-                    isActive && "bg-card/90 shadow-md",
-                    !isActive && isAccessible && "hover:bg-card/50",
-                    !isAccessible && "cursor-not-allowed opacity-50"
-                  )}
-                >
-                  {/* Step indicator */}
-                  <div className="relative">
+                <div key={step.id} className="flex items-stretch mb-0">
+                  {/* Dot column with line */}
+                  <div className="relative flex flex-col items-center w-12 pt-0">
+                    {/* The step dot */}
                     <div
                       className={cn(
-                        "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300",
-                        isCompleted && "bg-sm-state-success text-white",
-                        isError && "bg-sm-state-error text-white",
-                        isActive &&
-                          !isCompleted &&
-                          !isError &&
-                          "bg-primary text-primary-foreground",
-                        !isActive && !isCompleted && !isError && "bg-muted"
+                        "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 h-6 w-6 opacity-70 text-primary-foreground transition-all duration-300 ease-in-out",
+                        isCurrent && "opacity-100",
+                        isError && "opacity-100"
                       )}
                     >
-                      {isCompleted ? (
-                        <CheckIcon className="h-5 w-5" />
-                      ) : isError ? (
-                        <XIcon className="h-5 w-5" />
-                      ) : (
-                        <span className="text-sm font-medium">{index + 1}</span>
-                      )}
+                      {/* Conditional Icon Rendering with Transitions */}
+                      <div className="transition-all duration-300 ease-in-out flex items-center justify-center">
+                        {isError ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            className="text-current"
+                          >
+                            <circle cx="8" cy="8" r="7" fill="#ef4444" />
+                            <path
+                              d="M6 6L10 10M10 6L6 10"
+                              stroke="white"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        ) : isCompleted ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            className="text-current"
+                          >
+                            <circle cx="8" cy="8" r="7" fill="white" />
+                            <path
+                              d="M10.5 6.5L7 9.5L5.5 8"
+                              stroke="rgba(54, 139, 207, 1)"
+                              strokeWidth="1.50"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        ) : isCurrent ? (
+                          <svg
+                            width="27"
+                            height="27"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="text-current"
+                          >
+                            <circle
+                              cx="8"
+                              cy="8"
+                              r="6"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            />
+                            <circle cx="8" cy="8" r="3" fill="currentColor" />
+                          </svg>
+                        ) : (
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="text-current"
+                          >
+                            <circle
+                              cx="8"
+                              cy="8"
+                              r="6"
+                              stroke="currentColor"
+                              strokeWidth="1.75"
+                            />
+                          </svg>
+                        )}
+                      </div>
                     </div>
-                    {isActive && (
-                      <div className="absolute inset-0 animate-ping rounded-full bg-primary opacity-25" />
+
+                    {/* Connecting line (for all but last step) */}
+                    {index < steps.length - 1 && (
+                      <div
+                        className={cn(
+                          "w-0 border-l-2 border-dashed flex-grow transition-colors duration-300",
+                          isCompleted ? "border-white/60" : "border-white/30"
+                        )}
+                      />
                     )}
                   </div>
 
-                  {/* Step content */}
-                  <div className="flex-1">
-                    <h3
+                  {/* Content column */}
+                  <div className="flex-1 flex items-center -mt-1 mb-4">
+                    <button
+                      type="button"
                       className={cn(
-                        "font-medium transition-colors",
-                        isActive && "text-sm-text",
-                        !isActive && "text-sm-text opacity-80"
+                        "flex flex-col w-full px-4 py-3 rounded-lg transition-all duration-200 text-left relative z-20 group",
+                        isCurrent && "bg-white/10 backdrop-blur-sm",
+                        finalDisabled && "cursor-not-allowed opacity-60",
+                        !finalDisabled && "hover:bg-white/15",
+                        isCompleted &&
+                          !isCurrent &&
+                          "cursor-pointer hover:bg-white/10"
                       )}
+                      onClick={() => {
+                        if (!finalDisabled) {
+                          onStepChange(step.id);
+                        }
+                      }}
+                      disabled={finalDisabled}
                     >
-                      {step.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {step.description}
-                    </p>
+                      <div className="flex items-center justify-between">
+                        <span
+                          className={cn(
+                            "text-sm transition-all duration-300",
+                            isCurrent
+                              ? "font-bold text-primary-foreground"
+                              : "font-medium text-primary-foreground/90",
+                            isError && "text-red-200"
+                          )}
+                        >
+                          {step.title}
+                        </span>
+                        {isError && (
+                          <span className="text-xs text-red-200 font-medium">
+                            Error
+                          </span>
+                        )}
+                      </div>
+                      <p
+                        className={cn(
+                          "text-xs mt-1 transition-colors duration-300 leading-relaxed",
+                          isCurrent
+                            ? "text-primary-foreground/90"
+                            : "text-primary-foreground/70",
+                          isError && "text-red-200/80"
+                        )}
+                      >
+                        {step.description}
+                      </p>
+                    </button>
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
+
+          {/* Close button */}
+          {onClose && (
+            <Button
+              variant="ghost"
+              className="mt-auto w-full text-primary-foreground hover:bg-white/10 hover:text-primary-foreground transition-all duration-200"
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+          )}
         </div>
-      </div>
 
-      {/* Right Content Area */}
-      <div className="flex flex-1 flex-col">
-        <div className="flex-1 overflow-y-auto p-8">{children}</div>
-
-        {/* Navigation buttons */}
-        {(showBackButton || showNextButton) && (
-          <div className="flex items-center justify-between border-t bg-sm-background-darkest px-8 py-4">
-            <div>
-              {showBackButton && (
-                <Button
-                  variant="outline"
-                  onClick={onBack}
-                  disabled={isBackDisabled}
-                >
-                  {backLabel}
-                </Button>
-              )}
-            </div>
-            <div>
-              {showNextButton && (
-                <Button onClick={onNext} disabled={isNextDisabled}>
-                  {nextLabel}
-                </Button>
-              )}
-            </div>
+        {/* Content area */}
+        <div className="flex-1 flex flex-col bg-background transition-all duration-300">
+          <div className="flex-1 overflow-y-auto p-8">
+            <div className="w-full">{children}</div>
           </div>
-        )}
+
+          {/* Navigation buttons */}
+          {(showBackButton || showNextButton) && (
+            <div className="border-t bg-background p-6">
+              <div className="flex justify-between max-w-2xl">
+                <div>
+                  {showBackButton && onBack && (
+                    <Button
+                      variant="outline"
+                      onClick={onBack}
+                      disabled={isBackDisabled}
+                      className="transition-all duration-200"
+                    >
+                      {backLabel ?? "Back"}
+                    </Button>
+                  )}
+                </div>
+                <div>
+                  {showNextButton && onNext && (
+                    <Button
+                      onClick={onNext}
+                      disabled={isNextDisabled}
+                      className="transition-all duration-200"
+                    >
+                      {nextLabel ?? "Next"}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
