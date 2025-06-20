@@ -29,6 +29,10 @@
     },
     "artifacts": {
       "dependsOn": ["db:export"]
+    },
+    "test": {
+      "outputs": ["coverage/**", "test-results/**"],
+      "inputs": ["src/**/*.{ts,tsx}", "test/**/*.{ts,tsx}"]
     }
   }
 }

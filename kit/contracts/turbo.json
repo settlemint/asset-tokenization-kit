@@ -59,7 +59,7 @@
     "test": {
       "dependsOn": ["compile:forge"],
       "outputs": [],
-      "inputs": ["**/*.sol", "test/**", "!.generated/**"]
+      "inputs": ["**/*.sol", "test/**"]
     }
   }
 }

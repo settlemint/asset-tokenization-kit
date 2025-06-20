@@ -5,6 +5,10 @@
       "outputs": ["**/Chart.lock", "**/charts/**/*.tgz"],
       "inputs": ["**/Chart.yaml"]
     },
+    "docs": {
+      "inputs": ["**/values.yaml", "**/Chart.yaml"],
+      "outputs": ["**/README.md", "README.md"]
+    },
     "compile": {
       "outputs": ["dist/**"]
     },
@@ -45,9 +49,6 @@
     },
     "artifacts": {
       "dependsOn": ["contracts#artifacts:genesis", "contracts#artifacts:abi"]
-    },
-    "docs": {
-      "inputs": ["**/values.yaml"]
     }
   }
 }

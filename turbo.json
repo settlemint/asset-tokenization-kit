@@ -50,10 +50,18 @@
       "cache": false,
       "dependsOn": ["package"]
     },
-    "dependencies": {},
-    "format": {},
+    "format": {
+      "outputs": [],
+      "inputs": [
+        "**/*.{ts,tsx,js,jsx,json,md,sol}"
+      ]
+    },
     "lint": {
-      "dependsOn": ["//#setup:dev", "codegen"]
+      "dependsOn": ["codegen"],
+      "outputs": [],
+      "inputs": [
+        "**/*.{ts,tsx,js,jsx,sol}"
+      ]
     },
     "dev": {
       "cache": false,
@@ -67,10 +75,20 @@
     "helm": {
       "cache": false
     },
-    "docs": {},
-    "test": {},
+    "docs": {
+      "outputs": ["**/README.md", "README.md"]
+    },
+    "test": {
+      "outputs": ["coverage/**", "test-results/**", "*.log"],
+      "inputs": [
+        "**/*.{ts,tsx,js,jsx,sol}"
+      ]
+    },
     "artifacts": {},
-    "test:integration": {},
+    "test:integration": {
+      "outputs": ["test-results/**", "*.log"],
+      "inputs": ["**/*.{ts,tsx,js,jsx}"]
+    },
     "db:studio": {
       "cache": false,
       "persistent": true
