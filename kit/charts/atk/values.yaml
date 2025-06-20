@@ -302,10 +302,6 @@ portal:
       - image-pull-secret-docker
       - image-pull-secret-ghcr
       - image-pull-secret-harbor
-  initContainers:
-    - name: wait-for-postgres
-      image: ghcr.io/settlemint/btp-waitforit:v7.7.5
-      command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
   podLabels:
     app.kubernetes.io/component: portal
   podAnnotations:
@@ -462,6 +458,10 @@ observability:
 # Transaction Signer Configuration
 txsigner:
   enabled: true
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
   # Configuration for the txsigner subchart
   config:
     mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
