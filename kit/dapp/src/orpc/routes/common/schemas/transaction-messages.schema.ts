@@ -1,6 +1,6 @@
 /**
  * Common Transaction Tracking Messages Schema
- * 
+ *
  * Provides typed, localized messages for blockchain transaction tracking
  * that are shared across different mutations involving transactions.
  */
@@ -39,8 +39,12 @@ export const TransactionTrackingMessagesSchema = z.object({
   indexingTimeout: z
     .string()
     .optional()
-    .default("Indexing is taking longer than expected. Data will be available soon."),
+    .default(
+      "Indexing is taking longer than expected. Data will be available soon."
+    ),
 });
 
 // Type export
-export type TransactionTrackingMessages = z.infer<typeof TransactionTrackingMessagesSchema>;
+export type TransactionTrackingMessages = z.infer<
+  typeof TransactionTrackingMessagesSchema
+>;
