@@ -57,7 +57,8 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["compile"]
     },
     "watch": {
       "cache": false,
