@@ -17,7 +17,7 @@ imagePullCredentials:
       # -- Enable this if you want this chart to create an image pull secret for you
       enabled: true
       # -- The registry hosting the packages, e.g docker.io or ghcr.io
-      registry: "ghcr.io"
+      registry: ghcr.io
       # -- The username to access the registry
       username: "op://platform/github-commit-pat/username"
       # -- The password or access token to access the registry

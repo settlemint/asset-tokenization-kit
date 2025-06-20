@@ -19,7 +19,7 @@ commonAnnotations: {}
 # -- TxSigner image
 image:
   # -- TxSigner image registry
-  registry: "ghcr.io"
+  registry: ghcr.io
   # -- TxSigner image repository
   repository: settlemint/btp-signer
   # -- TxSigner image tag (immutable tags are recommended)
