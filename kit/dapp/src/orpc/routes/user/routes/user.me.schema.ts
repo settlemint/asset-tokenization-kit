@@ -57,7 +57,7 @@ export const UserMeSchema = z.object({
    * - issuer: Can issue assets
    * - user: Standard user (investors)
    */
-  role: userRoles(),
+  role: userRoles().default("investor"),
 
   /**
    * User's Ethereum wallet address.

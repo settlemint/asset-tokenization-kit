@@ -12,6 +12,7 @@ import type {
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
+import { formatValidationError } from "@/lib/utils/format-validation-error";
 
 /**
  * Extract the result type from an async iterator of events
@@ -148,8 +149,7 @@ export function useStreamingMutation<
 
         return finalResult;
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "An error occurred";
+        const errorMessage = formatValidationError(error);
         toast.error(errorMessage, { id: toastIdRef.current });
         throw error;
       } finally {

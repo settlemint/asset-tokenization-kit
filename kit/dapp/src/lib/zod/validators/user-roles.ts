@@ -42,7 +42,7 @@ export const userRoleNames = ["admin", "investor", "issuer"] as const;
  * ```
  */
 export const userRoles = () =>
-  z.enum(userRoleNames).describe("User role in the system");
+  z.enum(userRoleNames).describe("User role in the system").default("investor");
 
 /**
  * Type representing a validated user role.

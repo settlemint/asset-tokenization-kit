@@ -72,7 +72,7 @@
 
 :root {
   /* Onboarding Background */
-  --onboarding-background: url('/backgrounds/background-lm.svg');
+  --onboarding-background: url("/backgrounds/background-lm.svg");
   /* SettleMint Brand Colors */
   --sm-text: oklch(0.2264 0 87);
   --sm-text-contrast: oklch(1 0 87);
@@ -142,7 +142,7 @@
 
 .dark {
   /* Onboarding Background */
-  --onboarding-background: url('/backgrounds/background-dm.svg');
+  --onboarding-background: url("/backgrounds/background-dm.svg");
   /* SettleMint Brand Colors */
   --sm-text: oklch(1 0 87);
   --sm-text-contrast: oklch(0.2264 0 87);

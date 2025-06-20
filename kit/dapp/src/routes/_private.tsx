@@ -16,7 +16,7 @@
  * @see {@link https://tanstack.com/router/latest/docs/guide/route-trees#pathless-routes} - TanStack Router pathless routes
  */
 
-import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
+import { SignedIn, useAuthenticate } from "@daveyplate/better-auth-ui";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private")({
@@ -49,17 +49,17 @@ export const Route = createFileRoute("/_private")({
  * - Header with application controls (language switcher, theme toggle)
  * - Container for child route content
  *
- * The component uses Better Auth UI components to handle authentication:
- * - RedirectToSignIn: Redirects unauthenticated users to the sign-in page
- * - SignedIn: Only renders children when user is authenticated
+ * The component uses the useAuthenticate hook from Better Auth UI to handle
+ * authentication checks and automatic redirects in an SSR-safe way.
  */
 function LayoutComponent() {
+  // This hook will automatically redirect unauthenticated users to the sign-in page
+  useAuthenticate();
+
+  // If we reach this point, the user is authenticated
   return (
-    <>
-      <RedirectToSignIn />
-      <SignedIn>
-        <Outlet />
-      </SignedIn>
-    </>
+    <SignedIn>
+      <Outlet />
+    </SignedIn>
   );
 }

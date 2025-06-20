@@ -2,11 +2,38 @@ import type { ORPCErrorCode } from "@orpc/client";
 import { ORPCError, ValidationError } from "@orpc/server";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { APIError } from "better-auth/api";
+import { ZodError } from "zod/v4";
 import { baseRouter } from "../../procedures/base.router";
 
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
 });
+
+/**
+ * Formats Zod validation errors using Zod's built-in pretty printing.
+ *
+ * @param zodError - The ZodError to format
+ * @returns A formatted error object with pretty-printed message and structured errors
+ */
+function formatZodError(zodError: ZodError) {
+  // Use Zod's built-in pretty printing for a nice formatted message
+  const prettyMessage = zodError.toString();
+
+  // Also provide structured errors for programmatic access
+  const formattedErrors = zodError.errors.map((err) => ({
+    path: err.path.join("."),
+    message: err.message,
+    code: err.code,
+    expected: "expected" in err ? err.expected : undefined,
+    received: "received" in err ? err.received : undefined,
+  }));
+
+  return {
+    message: prettyMessage,
+    errors: formattedErrors,
+    errorCount: formattedErrors.length,
+  };
+}
 
 /**
  * Converts Better Auth API errors to ORPC errors.
@@ -110,11 +137,29 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
         error.code === "BAD_REQUEST" &&
         error.cause instanceof ValidationError
       ) {
+        // Check if the underlying cause is a ZodError for better formatting
+        const formattedData =
+          error.cause.cause instanceof ZodError
+            ? formatZodError(error.cause.cause)
+            : error.cause.message;
+
+        logger.error("Input validation failed", {
+          message:
+            typeof formattedData === "object"
+              ? formattedData.message
+              : formattedData,
+          details: formattedData,
+          path:
+            error.cause.cause instanceof ZodError
+              ? error.cause.cause.errors[0]?.path
+              : undefined,
+        });
+
         // Convert ORPC validation issues to Zod format for consistent error structure
         throw new ORPCError("INPUT_VALIDATION_FAILED", {
           status: 422,
-          // Flatten the error structure for easier client consumption
-          data: error.cause.message,
+          // Provide structured error data for easier client consumption
+          data: formattedData,
           cause: error.cause,
         });
       }
@@ -125,12 +170,42 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
         error.code === "INTERNAL_SERVER_ERROR" &&
         error.cause instanceof ValidationError
       ) {
-        // Convert validation issues to structured format
+        // Check if we have ORPC validation issues
+        let formattedData;
+        if (error.cause.issues && Array.isArray(error.cause.issues)) {
+          // Format ORPC validation issues
+          const issues = error.cause.issues.map((issue: any) => ({
+            path: issue.path || "unknown",
+            message: issue.message || "Validation failed",
+            expected: issue.expected,
+            received: issue.received,
+          }));
+
+          formattedData = {
+            message: `Output validation failed:\n${issues.map((i: any) => `- ${i.path}: ${i.message}`).join("\n")}`,
+            errors: issues,
+            errorCount: issues.length,
+          };
+        } else if (error.cause.cause instanceof ZodError) {
+          // Format Zod errors
+          formattedData = formatZodError(error.cause.cause);
+        } else {
+          formattedData = error.cause.message;
+        }
+
+        logger.error("Output validation failed", {
+          message:
+            typeof formattedData === "object"
+              ? formattedData.message
+              : formattedData,
+          details: formattedData,
+          issues: error.cause.issues,
+        });
 
         throw new ORPCError("OUTPUT_VALIDATION_FAILED", {
           status: 522,
-          // Include validation details for debugging (should be logged, not exposed to client)
-          data: error.cause.message,
+          // Include structured validation details for debugging
+          data: formattedData,
           cause: error.cause,
         });
       }
