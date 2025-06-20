@@ -1,0 +1,635 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "areValidComplianceModules",
+      "inputs": [
+        {
+          "name": "_pairs",
+          "type": "tuple[]",
+          "internalType": "struct SMARTComplianceModuleParamPair[]",
+          "components": [
+            {
+              "name": "module",
+              "type": "address",
+              "internalType": "address"
+            },
+            {
+              "name": "params",
+              "type": "bytes",
+              "internalType": "bytes"
+            }
+          ]
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "canTransfer",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "isCompliant",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "created",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "destroyed",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "isValidComplianceModule",
+      "inputs": [
+        {
+          "name": "_module",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_params",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "supportsInterface",
+      "inputs": [
+        {
+          "name": "interfaceId",
+          "type": "bytes4",
+          "internalType": "bytes4"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "transferred",
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_from",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "_amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "error",
+      "name": "InvalidModule",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ZeroAddressNotAllowed",
+      "inputs": []
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "areValidComplianceModules((address,bytes)[])": "00fdecdb",
+    "canTransfer(address,address,address,uint256)": "6d62a4fe",
+    "created(address,address,uint256)": "e2677662",
+    "destroyed(address,address,uint256)": "292d4803",
+    "isValidComplianceModule(address,bytes)": "e50bcad3",
+    "supportsInterface(bytes4)": "01ffc9a7",
+    "transferred(address,address,address,uint256)": "3e5af4ca"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"InvalidModule\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ZeroAddressNotAllowed\",\"type\":\"error\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"module\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"params\",\"type\":\"bytes\"}],\"internalType\":\"struct SMARTComplianceModuleParamPair[]\",\"name\":\"_pairs\",\"type\":\"tuple[]\"}],\"name\":\"areValidComplianceModules\",\"outputs\":[],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"canTransfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"isCompliant\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"created\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"destroyed\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_module\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"_params\",\"type\":\"bytes\"}],\"name\":\"isValidComplianceModule\",\"outputs\":[],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"transferred\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"The main compliance contract acts as a gateway or an oracle for compliance decisions. It typically holds a list of active compliance modules and their specific parameters for a given token. - `canTransfer`: A view function to pre-check if an operation is allowed. - `transferred`, `created`, `destroyed`: Hooks called by the token *after* an operation has successfully occurred, allowing modules to update state or log. - Module Validation: Functions to validate compliance modules before they are added to a token's configuration. This contract itself usually doesn't implement specific rules but delegates them to individual `ISMARTComplianceModule` contracts. This interface extends IERC165 for interface detection support.\",\"errors\":{\"InvalidModule()\":[{\"details\":\"This error is typically reverted when a contract address provided as a compliance module does not correctly implement the `ISMARTComplianceModule` interface, or if the interface check fails.\"}],\"ZeroAddressNotAllowed()\":[{\"details\":\"This error is typically reverted when a contract address provided as a compliance module does not correctly implement the `ISMARTComplianceModule` interface, or if the interface check fails.\"}]},\"kind\":\"dev\",\"methods\":{\"areValidComplianceModules((address,bytes)[])\":{\"details\":\"This function is a `view` function and MUST NOT modify state.      It iterates through each `SMARTComplianceModuleParamPair` in the `_pairs` array      and calls `isValidComplianceModule` for each pair.      If any pair in the array fails validation (i.e., `isValidComplianceModule` reverts), this entire function call should revert.      This is useful for validating a complete set of modules and parameters in a single call, for instance, when initializing a token.\",\"params\":{\"_pairs\":\"An array of `SMARTComplianceModuleParamPair` structs, each containing a module address and its parameters.\"}},\"canTransfer(address,address,address,uint256)\":{\"details\":\"This function MUST be a `view` function (it should not modify state).      It is called by the `ISMART` token contract *before* executing an operation.      The implementation should iterate through all active compliance modules associated with the `_token`,      calling each module's `canTransfer` function with the operation details and module-specific parameters.      If any module indicates non-compliance (e.g., by reverting), this `canTransfer` function should also revert.      If all modules permit the operation, it returns `true`.\",\"params\":{\"_amount\":\"The quantity of tokens involved in the potential operation.\",\"_from\":\"The address of the token sender. For mint operations, this will be `address(0)`.\",\"_to\":\"The address of the token recipient. For burn operations, this will be `address(0)`.\",\"_token\":\"The address of the `ISMART` token contract initiating the compliance check.\"},\"returns\":{\"isCompliant\":\"`true` if the operation is compliant with all rules, otherwise the function should revert.\"}},\"created(address,address,uint256)\":{\"details\":\"This function CAN modify state. It allows compliance modules to react to minting events.      The implementation should only be callable by the `_token` contract.      It typically iterates through active compliance modules and calls their `created` hook.\",\"params\":{\"_amount\":\"The quantity of tokens that were minted.\",\"_to\":\"The address that received the newly minted tokens.\",\"_token\":\"The address of the `ISMART` token contract where the mint occurred.\"}},\"destroyed(address,address,uint256)\":{\"details\":\"This function CAN modify state. It allows compliance modules to react to burn events.      The implementation should only be callable by the `_token` contract.      It typically iterates through active compliance modules and calls their `destroyed` hook.\",\"params\":{\"_amount\":\"The quantity of tokens that were burned.\",\"_from\":\"The address from which tokens were burned.\",\"_token\":\"The address of the `ISMART` token contract where the burn occurred.\"}},\"isValidComplianceModule(address,bytes)\":{\"details\":\"This function is a `view` function and MUST NOT modify state.      It is typically called by an `ISMART` token contract (or a factory) when attempting to add a new compliance module      or update an existing module's parameters for that token.      The validation steps usually include:      1. Checking if `_module` is a non-zero address.      2. Verifying that the `_module` contract implements the `ISMARTComplianceModule` interface (e.g., via ERC165 `supportsInterface`).      3. Calling the `_module.validateParameters(_params)` function to ensure the provided `_params` are valid for that specific module.      If any validation step fails, this function should revert (e.g., `_module.validateParameters` itself might revert with `InvalidParameters`).\",\"params\":{\"_module\":\"The address of the compliance module contract to be validated.\",\"_params\":\"The ABI-encoded parameters to be validated against the `_module`.\"}},\"supportsInterface(bytes4)\":{\"details\":\"Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas.\"},\"transferred(address,address,address,uint256)\":{\"details\":\"This function CAN modify state. It is intended for compliance modules that need to update their internal state      (e.g., transaction counters, volume trackers) or log information post-transfer.      The implementation should only be callable by the `_token` contract it is associated with.      It typically iterates through active compliance modules and calls their `transferred` hook.\",\"params\":{\"_amount\":\"The quantity of tokens that were transferred.\",\"_from\":\"The address of the token sender.\",\"_to\":\"The address of the token recipient.\",\"_token\":\"The address of the `ISMART` token contract where the transfer occurred.\"}}},\"title\":\"ISMART Compliance Oracle Interface\",\"version\":1},\"userdoc\":{\"errors\":{\"InvalidModule()\":[{\"notice\":\"Error indicating that a provided address is not a valid compliance module.\"}],\"ZeroAddressNotAllowed()\":[{\"notice\":\"Error indicating that a provided address is not a valid compliance module.\"}]},\"kind\":\"user\",\"methods\":{\"areValidComplianceModules((address,bytes)[])\":{\"notice\":\"Validates an array of compliance module and parameter pairs.\"},\"canTransfer(address,address,address,uint256)\":{\"notice\":\"Checks if a potential token operation (transfer, mint, or burn) is compliant with all configured rules.\"},\"created(address,address,uint256)\":{\"notice\":\"Hook function called by the `ISMART` token contract *after* new tokens have been successfully minted.\"},\"destroyed(address,address,uint256)\":{\"notice\":\"Hook function called by the `ISMART` token contract *after* tokens have been successfully burned (destroyed).\"},\"isValidComplianceModule(address,bytes)\":{\"notice\":\"Validates a single potential compliance module and its proposed parameters.\"},\"transferred(address,address,address,uint256)\":{\"notice\":\"Hook function called by the `ISMART` token contract *after* a token transfer has successfully occurred.\"}},\"notice\":\"This interface defines the functions for a central compliance contract designed to work with SMART tokens. Its primary role is to determine the legality of token operations (transfers, mints, burns) by orchestrating checks across one or more registered compliance modules.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/smart/interface/ISMARTCompliance.sol\":\"ISMARTCompliance\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/smart/interface/ISMARTCompliance.sol\":{\"keccak256\":\"0x948341e4ad374e1dded6d1b30c395ad0f01e6ea2099fb6b96c5476e8b28c1d77\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://d261e9a0c8682f11ac86048f13e367caee6d5f512d51b8752186b8c01b6ba618\",\"dweb:/ipfs/Qmdp14emh3NFSAphyuAgsTE7qZt1g1UYcNLS3tNNM8T6Hv\"]},\"contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol\":{\"keccak256\":\"0x489a55538b554a0c935bee7efc28f7e821e161638c5726c9d367a644a0b7c62a\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://04bb06aed3ee3c5c6f3df9a59721c08ddd57b5521da1c9c6fd96b7c8b57db813\",\"dweb:/ipfs/QmRuzqKDr2sBHNuQhCzWGa8euNiMyvP7LTjSFjvAj5uFqh\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidModule"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ZeroAddressNotAllowed"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "struct SMARTComplianceModuleParamPair[]",
+              "name": "_pairs",
+              "type": "tuple[]",
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "module",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "params",
+                  "type": "bytes"
+                }
+              ]
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "areValidComplianceModules"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "canTransfer",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "isCompliant",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "created"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "destroyed"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_module",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_params",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "isValidComplianceModule"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transferred"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "areValidComplianceModules((address,bytes)[])": {
+            "details": "This function is a `view` function and MUST NOT modify state.      It iterates through each `SMARTComplianceModuleParamPair` in the `_pairs` array      and calls `isValidComplianceModule` for each pair.      If any pair in the array fails validation (i.e., `isValidComplianceModule` reverts), this entire function call should revert.      This is useful for validating a complete set of modules and parameters in a single call, for instance, when initializing a token.",
+            "params": {
+              "_pairs": "An array of `SMARTComplianceModuleParamPair` structs, each containing a module address and its parameters."
+            }
+          },
+          "canTransfer(address,address,address,uint256)": {
+            "details": "This function MUST be a `view` function (it should not modify state).      It is called by the `ISMART` token contract *before* executing an operation.      The implementation should iterate through all active compliance modules associated with the `_token`,      calling each module's `canTransfer` function with the operation details and module-specific parameters.      If any module indicates non-compliance (e.g., by reverting), this `canTransfer` function should also revert.      If all modules permit the operation, it returns `true`.",
+            "params": {
+              "_amount": "The quantity of tokens involved in the potential operation.",
+              "_from": "The address of the token sender. For mint operations, this will be `address(0)`.",
+              "_to": "The address of the token recipient. For burn operations, this will be `address(0)`.",
+              "_token": "The address of the `ISMART` token contract initiating the compliance check."
+            },
+            "returns": {
+              "isCompliant": "`true` if the operation is compliant with all rules, otherwise the function should revert."
+            }
+          },
+          "created(address,address,uint256)": {
+            "details": "This function CAN modify state. It allows compliance modules to react to minting events.      The implementation should only be callable by the `_token` contract.      It typically iterates through active compliance modules and calls their `created` hook.",
+            "params": {
+              "_amount": "The quantity of tokens that were minted.",
+              "_to": "The address that received the newly minted tokens.",
+              "_token": "The address of the `ISMART` token contract where the mint occurred."
+            }
+          },
+          "destroyed(address,address,uint256)": {
+            "details": "This function CAN modify state. It allows compliance modules to react to burn events.      The implementation should only be callable by the `_token` contract.      It typically iterates through active compliance modules and calls their `destroyed` hook.",
+            "params": {
+              "_amount": "The quantity of tokens that were burned.",
+              "_from": "The address from which tokens were burned.",
+              "_token": "The address of the `ISMART` token contract where the burn occurred."
+            }
+          },
+          "isValidComplianceModule(address,bytes)": {
+            "details": "This function is a `view` function and MUST NOT modify state.      It is typically called by an `ISMART` token contract (or a factory) when attempting to add a new compliance module      or update an existing module's parameters for that token.      The validation steps usually include:      1. Checking if `_module` is a non-zero address.      2. Verifying that the `_module` contract implements the `ISMARTComplianceModule` interface (e.g., via ERC165 `supportsInterface`).      3. Calling the `_module.validateParameters(_params)` function to ensure the provided `_params` are valid for that specific module.      If any validation step fails, this function should revert (e.g., `_module.validateParameters` itself might revert with `InvalidParameters`).",
+            "params": {
+              "_module": "The address of the compliance module contract to be validated.",
+              "_params": "The ABI-encoded parameters to be validated against the `_module`."
+            }
+          },
+          "supportsInterface(bytes4)": {
+            "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+          },
+          "transferred(address,address,address,uint256)": {
+            "details": "This function CAN modify state. It is intended for compliance modules that need to update their internal state      (e.g., transaction counters, volume trackers) or log information post-transfer.      The implementation should only be callable by the `_token` contract it is associated with.      It typically iterates through active compliance modules and calls their `transferred` hook.",
+            "params": {
+              "_amount": "The quantity of tokens that were transferred.",
+              "_from": "The address of the token sender.",
+              "_to": "The address of the token recipient.",
+              "_token": "The address of the `ISMART` token contract where the transfer occurred."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "areValidComplianceModules((address,bytes)[])": {
+            "notice": "Validates an array of compliance module and parameter pairs."
+          },
+          "canTransfer(address,address,address,uint256)": {
+            "notice": "Checks if a potential token operation (transfer, mint, or burn) is compliant with all configured rules."
+          },
+          "created(address,address,uint256)": {
+            "notice": "Hook function called by the `ISMART` token contract *after* new tokens have been successfully minted."
+          },
+          "destroyed(address,address,uint256)": {
+            "notice": "Hook function called by the `ISMART` token contract *after* tokens have been successfully burned (destroyed)."
+          },
+          "isValidComplianceModule(address,bytes)": {
+            "notice": "Validates a single potential compliance module and its proposed parameters."
+          },
+          "transferred(address,address,address,uint256)": {
+            "notice": "Hook function called by the `ISMART` token contract *after* a token transfer has successfully occurred."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/smart/interface/ISMARTCompliance.sol": "ISMARTCompliance"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/smart/interface/ISMARTCompliance.sol": {
+        "keccak256": "0x948341e4ad374e1dded6d1b30c395ad0f01e6ea2099fb6b96c5476e8b28c1d77",
+        "urls": [
+          "bzz-raw://d261e9a0c8682f11ac86048f13e367caee6d5f512d51b8752186b8c01b6ba618",
+          "dweb:/ipfs/Qmdp14emh3NFSAphyuAgsTE7qZt1g1UYcNLS3tNNM8T6Hv"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol": {
+        "keccak256": "0x489a55538b554a0c935bee7efc28f7e821e161638c5726c9d367a644a0b7c62a",
+        "urls": [
+          "bzz-raw://04bb06aed3ee3c5c6f3df9a59721c08ddd57b5521da1c9c6fd96b7c8b57db813",
+          "dweb:/ipfs/QmRuzqKDr2sBHNuQhCzWGa8euNiMyvP7LTjSFjvAj5uFqh"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "areValidComplianceModules((address,bytes)[])": {
+        "notice": "Validates an array of compliance module and parameter pairs."
+      },
+      "canTransfer(address,address,address,uint256)": {
+        "notice": "Checks if a potential token operation (transfer, mint, or burn) is compliant with all configured rules."
+      },
+      "created(address,address,uint256)": {
+        "notice": "Hook function called by the `ISMART` token contract *after* new tokens have been successfully minted."
+      },
+      "destroyed(address,address,uint256)": {
+        "notice": "Hook function called by the `ISMART` token contract *after* tokens have been successfully burned (destroyed)."
+      },
+      "isValidComplianceModule(address,bytes)": {
+        "notice": "Validates a single potential compliance module and its proposed parameters."
+      },
+      "transferred(address,address,address,uint256)": {
+        "notice": "Hook function called by the `ISMART` token contract *after* a token transfer has successfully occurred."
+      }
+    },
+    "errors": {
+      "InvalidModule()": [
+        {
+          "notice": "Error indicating that a provided address is not a valid compliance module."
+        }
+      ],
+      "ZeroAddressNotAllowed()": [
+        {
+          "notice": "Error indicating that a provided address is not a valid compliance module."
+        }
+      ]
+    },
+    "notice": "This interface defines the functions for a central compliance contract designed to work with SMART tokens. Its primary role is to determine the legality of token operations (transfers, mints, burns) by orchestrating checks across one or more registered compliance modules."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "details": "The main compliance contract acts as a gateway or an oracle for compliance decisions. It typically holds a list of active compliance modules and their specific parameters for a given token. - `canTransfer`: A view function to pre-check if an operation is allowed. - `transferred`, `created`, `destroyed`: Hooks called by the token *after* an operation has successfully occurred, allowing modules to update state or log. - Module Validation: Functions to validate compliance modules before they are added to a token's configuration. This contract itself usually doesn't implement specific rules but delegates them to individual `ISMARTComplianceModule` contracts. This interface extends IERC165 for interface detection support.",
+    "methods": {
+      "areValidComplianceModules((address,bytes)[])": {
+        "details": "This function is a `view` function and MUST NOT modify state.      It iterates through each `SMARTComplianceModuleParamPair` in the `_pairs` array      and calls `isValidComplianceModule` for each pair.      If any pair in the array fails validation (i.e., `isValidComplianceModule` reverts), this entire function call should revert.      This is useful for validating a complete set of modules and parameters in a single call, for instance, when initializing a token.",
+        "params": {
+          "_pairs": "An array of `SMARTComplianceModuleParamPair` structs, each containing a module address and its parameters."
+        }
+      },
+      "canTransfer(address,address,address,uint256)": {
+        "details": "This function MUST be a `view` function (it should not modify state).      It is called by the `ISMART` token contract *before* executing an operation.      The implementation should iterate through all active compliance modules associated with the `_token`,      calling each module's `canTransfer` function with the operation details and module-specific parameters.      If any module indicates non-compliance (e.g., by reverting), this `canTransfer` function should also revert.      If all modules permit the operation, it returns `true`.",
+        "params": {
+          "_amount": "The quantity of tokens involved in the potential operation.",
+          "_from": "The address of the token sender. For mint operations, this will be `address(0)`.",
+          "_to": "The address of the token recipient. For burn operations, this will be `address(0)`.",
+          "_token": "The address of the `ISMART` token contract initiating the compliance check."
+        },
+        "returns": {
+          "isCompliant": "`true` if the operation is compliant with all rules, otherwise the function should revert."
+        }
+      },
+      "created(address,address,uint256)": {
+        "details": "This function CAN modify state. It allows compliance modules to react to minting events.      The implementation should only be callable by the `_token` contract.      It typically iterates through active compliance modules and calls their `created` hook.",
+        "params": {
+          "_amount": "The quantity of tokens that were minted.",
+          "_to": "The address that received the newly minted tokens.",
+          "_token": "The address of the `ISMART` token contract where the mint occurred."
+        }
+      },
+      "destroyed(address,address,uint256)": {
+        "details": "This function CAN modify state. It allows compliance modules to react to burn events.      The implementation should only be callable by the `_token` contract.      It typically iterates through active compliance modules and calls their `destroyed` hook.",
+        "params": {
+          "_amount": "The quantity of tokens that were burned.",
+          "_from": "The address from which tokens were burned.",
+          "_token": "The address of the `ISMART` token contract where the burn occurred."
+        }
+      },
+      "isValidComplianceModule(address,bytes)": {
+        "details": "This function is a `view` function and MUST NOT modify state.      It is typically called by an `ISMART` token contract (or a factory) when attempting to add a new compliance module      or update an existing module's parameters for that token.      The validation steps usually include:      1. Checking if `_module` is a non-zero address.      2. Verifying that the `_module` contract implements the `ISMARTComplianceModule` interface (e.g., via ERC165 `supportsInterface`).      3. Calling the `_module.validateParameters(_params)` function to ensure the provided `_params` are valid for that specific module.      If any validation step fails, this function should revert (e.g., `_module.validateParameters` itself might revert with `InvalidParameters`).",
+        "params": {
+          "_module": "The address of the compliance module contract to be validated.",
+          "_params": "The ABI-encoded parameters to be validated against the `_module`."
+        }
+      },
+      "supportsInterface(bytes4)": {
+        "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+      },
+      "transferred(address,address,address,uint256)": {
+        "details": "This function CAN modify state. It is intended for compliance modules that need to update their internal state      (e.g., transaction counters, volume trackers) or log information post-transfer.      The implementation should only be callable by the `_token` contract it is associated with.      It typically iterates through active compliance modules and calls their `transferred` hook.",
+        "params": {
+          "_amount": "The quantity of tokens that were transferred.",
+          "_from": "The address of the token sender.",
+          "_to": "The address of the token recipient.",
+          "_token": "The address of the `ISMART` token contract where the transfer occurred."
+        }
+      }
+    },
+    "errors": {
+      "InvalidModule()": [
+        {
+          "details": "This error is typically reverted when a contract address provided as a compliance module does not correctly implement the `ISMARTComplianceModule` interface, or if the interface check fails."
+        }
+      ],
+      "ZeroAddressNotAllowed()": [
+        {
+          "details": "This error is typically reverted when a contract address provided as a compliance module does not correctly implement the `ISMARTComplianceModule` interface, or if the interface check fails."
+        }
+      ]
+    },
+    "title": "ISMART Compliance Oracle Interface"
+  },
+  "id": 127
+}

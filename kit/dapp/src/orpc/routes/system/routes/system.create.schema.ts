@@ -36,18 +36,25 @@ import { TransactionTrackingMessagesSchema } from "../../common/schemas/transact
  * Combined messages schema for system creation
  * Extends common transaction tracking messages with system-specific messages
  */
-export const SystemCreateMessagesSchema = TransactionTrackingMessagesSchema.extend({
-  systemCreated: z.string().optional().default("System successfully created."),
-  creatingSystem: z.string().optional().default("Creating new system..."),
-  systemCreationFailed: z
-    .string()
-    .optional()
-    .default("Failed to create system. Please try again."),
-  // Messages used by useStreamingMutation hook
-  initialLoading: z.string().optional().default("Creating new system..."),
-  noResultError: z.string().optional().default("No system address received from transaction."),
-  defaultError: z.string().optional().default("Failed to create system."),
-});
+export const SystemCreateMessagesSchema =
+  TransactionTrackingMessagesSchema.extend({
+    systemCreated: z
+      .string()
+      .optional()
+      .default("System successfully created."),
+    creatingSystem: z.string().optional().default("Creating new system..."),
+    systemCreationFailed: z
+      .string()
+      .optional()
+      .default("Failed to create system. Please try again."),
+    // Messages used by useStreamingMutation hook
+    initialLoading: z.string().optional().default("Creating new system..."),
+    noResultError: z
+      .string()
+      .optional()
+      .default("No system address received from transaction."),
+    defaultError: z.string().optional().default("Failed to create system."),
+  });
 
 export const SystemCreateSchema = CreateSchema.extend({
   /**
