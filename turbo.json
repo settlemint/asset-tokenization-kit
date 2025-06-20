@@ -33,6 +33,7 @@
         "GITHUB_SHA_SHORT"
       ]
     },
+    "dependencies": {},
     "build": {
       "dependsOn": ["codegen"]
     },
@@ -52,16 +53,12 @@
     },
     "format": {
       "outputs": [],
-      "inputs": [
-        "**/*.{ts,tsx,js,jsx,json,md,sol}"
-      ]
+      "inputs": ["**/*.{ts,tsx,js,jsx,json,md,sol}"]
     },
     "lint": {
       "dependsOn": ["codegen"],
       "outputs": [],
-      "inputs": [
-        "**/*.{ts,tsx,js,jsx,sol}"
-      ]
+      "inputs": ["**/*.{ts,tsx,js,jsx,sol}"]
     },
     "dev": {
       "cache": false,
@@ -80,9 +77,7 @@
     },
     "test": {
       "outputs": ["coverage/**", "test-results/**", "*.log"],
-      "inputs": [
-        "**/*.{ts,tsx,js,jsx,sol}"
-      ]
+      "inputs": ["**/*.{ts,tsx,js,jsx,sol}"]
     },
     "artifacts": {},
     "test:integration": {
