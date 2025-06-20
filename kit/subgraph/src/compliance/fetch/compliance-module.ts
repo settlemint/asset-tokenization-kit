@@ -13,6 +13,8 @@ export function fetchComplianceModule(address: Address): ComplianceModule {
     complianceModule.name = "unknown";
     complianceModule.typeId = Bytes.fromHexString("0x00");
     complianceModule.deployedInTransaction = Bytes.empty();
+    complianceModule.addresses = [];
+    complianceModule.countries = [];
     complianceModule.save();
   }
 

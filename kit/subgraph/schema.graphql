@@ -264,19 +264,11 @@ type ComplianceModule @entity(immutable: false) {
   account: Account!
   deployedInTransaction: Bytes!
   complianceModuleRegistry: ComplianceModuleRegistry
-  addressList: AddressListComplianceModule
-  countryList: CountryListComplianceModule
+  tokens: [TokenComplianceModule!]! @derivedFrom(field: "complianceModule")
+  addresses: [Bytes!]
+  countries: [Int!]
 }
 
-type AddressListComplianceModule @entity(immutable: false) {
-  id: Bytes!
-  addresses: [Bytes!]!
-}
-
-type CountryListComplianceModule @entity(immutable: false) {
-  id: Bytes!
-  countries: [Int!]!
-}
 
 # ==================================================
 # TOKEN MANAGEMENT
@@ -327,6 +319,8 @@ type Token @entity(immutable: false) {
   # Price
   basePriceClaim: IdentityClaim
   deployedInTransaction: Bytes!
+  # Compliance
+  complianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -341,6 +335,15 @@ type TokenBalance @entity(immutable: false) {
   frozenExact: BigInt!
   available: BigDecimal!
   availableExact: BigInt!
+}
+
+type TokenComplianceModule @entity(immutable: false) {
+  id: Bytes!
+  token: Token!
+  complianceModule: ComplianceModule!
+  encodedParams: Bytes!
+  addresses: [Bytes!]
+  countries: [Int!]
 }
 
 # ==================================================
