@@ -1,23 +1,23 @@
+import { LanguageSwitcher } from "@/components/language/language-switcher";
+import { Logo } from "@/components/logo/logo";
+import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
+import { AssetSelectionStep } from "@/components/onboarding/steps/asset-selection-step";
+import { SystemStep } from "@/components/onboarding/steps/system-step";
+import { WalletStep } from "@/components/onboarding/steps/wallet-step";
+import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { orpc } from "@/orpc";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { orpc } from "@/orpc";
-import { useQuery } from "@tanstack/react-query";
-import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
-import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
-import { WalletStep } from "@/components/onboarding/steps/wallet-step";
-import { SystemStep } from "@/components/onboarding/steps/system-step";
-import { AssetSelectionStep } from "@/components/onboarding/steps/asset-selection-step";
-import { LanguageSwitcher } from "@/components/language/language-switcher";
-import { Logo } from "@/components/logo/logo";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export const Route = createFileRoute("/_private/onboarding/platform")({
   component: PlatformOnboarding,
 });
 
 function PlatformOnboarding() {
-  const { t } = useTranslation("onboarding");
+  const { t } = useTranslation(["general", "onboarding"]);
   const navigate = useNavigate();
   const [currentStepId, setCurrentStepId] = useState("wallet");
 
@@ -37,8 +37,8 @@ function PlatformOnboarding() {
   const steps: Step[] = [
     {
       id: "wallet",
-      title: t("steps.wallet.title"),
-      description: t("steps.wallet.description"),
+      title: t("onboarding:steps.wallet.title"),
+      description: t("onboarding:steps.wallet.description"),
       status: user?.wallet
         ? "completed"
         : currentStepId === "wallet"
@@ -47,8 +47,8 @@ function PlatformOnboarding() {
     },
     {
       id: "system",
-      title: t("steps.system.title"),
-      description: t("steps.system.description"),
+      title: t("onboarding:steps.system.title"),
+      description: t("onboarding:steps.system.description"),
       status: systemAddress?.value
         ? "completed"
         : currentStepId === "system"
@@ -57,8 +57,8 @@ function PlatformOnboarding() {
     },
     {
       id: "assets",
-      title: t("steps.assets.title"),
-      description: t("steps.assets.description"),
+      title: t("onboarding:steps.assets.title"),
+      description: t("onboarding:steps.assets.description"),
       status:
         (systemDetails?.tokenFactories.length ?? 0) > 0
           ? "completed"
@@ -115,8 +115,8 @@ function PlatformOnboarding() {
             <StepWizard
               steps={steps}
               currentStepId={currentStepId}
-              title={t("platform.title")}
-              description={t("platform.description")}
+              title={t("general:appName")}
+              description={t("general:appDescription")}
               onStepChange={handleStepChange}
               showBackButton={false}
               showNextButton={false}
