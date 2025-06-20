@@ -14,9 +14,56 @@ graph-node:
   graphNodeDefaults:
     imagePullSecrets: []
     extraInitContainers:
-      - name: wait-for-postgresql
-        image: ghcr.io/settlemint/btp-waitforit:v7.7.5
-        command: ["/usr/bin/wait-for-it", "postgresql-pgpool:5432", "-t", "0"]
+      - name: wait-for-postgresql-ready
+        image: docker.io/postgres
+        command:
+          - /bin/sh
+          - -c
+          - |
+            set -e
+            echo "Waiting for PostgreSQL to be ready..."
+
+            # Add random delay to prevent all nodes from connecting simultaneously
+            RANDOM_DELAY=$((RANDOM % 30 + 5))
+            echo "Adding random delay of ${RANDOM_DELAY} seconds to stagger connections..."
+            sleep $RANDOM_DELAY
+
+            # Function to test PostgreSQL connection
+            test_postgres() {
+              pg_isready -h postgresql-pgpool -p 5432 -U thegraph && \
+              psql -h postgresql-pgpool -p 5432 -U thegraph -d thegraph -c "SELECT 1;" > /dev/null 2>&1
+            }
+
+            # Wait with exponential backoff
+            RETRY_COUNT=0
+            MAX_RETRIES=30
+            WAIT_TIME=2
+
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+              if test_postgres; then
+                echo "PostgreSQL is ready!"
+                exit 0
+              fi
+
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              echo "PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s..."
+              sleep $WAIT_TIME
+
+              # Exponential backoff with max of 30 seconds
+              WAIT_TIME=$((WAIT_TIME * 2))
+              if [ $WAIT_TIME -gt 30 ]; then
+                WAIT_TIME=30
+              fi
+            done
+
+            echo "PostgreSQL failed to become ready after $MAX_RETRIES attempts"
+            exit 1
+        env:
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: thegraph-pg-secret
+                key: PGPASSWORD
     affinityPresets:
       # -- Create anti-affinity rule to deter scheduling replicas on the same host
       antiAffinityByHostname: false
@@ -132,48 +179,3 @@ graph-node:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-job:
-  fullnameOverride: graph
-  enabled: true
-  # Pod Security Context
-  podSecurityContext: {}
-  # Container Security Context
-  securityContext: {}
-  # Image configuration
-  image:
-    repository: docker.io/node
-    tag: "23.11.1-slim"
-    pullPolicy: IfNotPresent
-  # Pod annotations
-  podAnnotations: {}
-  # Image pull secrets
-  imagePullSecrets:
-    - image-pull-secret-docker
-    - image-pull-secret-ghcr
-    - image-pull-secret-harbor
-  initContainer:
-    graphNodeCheck:
-      image:
-        registry: docker.io
-        repository: busybox
-        tag: 1.37.0 # Use specific stable tag
-        pullPolicy: IfNotPresent
-  # Custom Init Containers (add definitions here if needed, e.g., for dependencies)
-  # extraInitContainers: []
-
-  # Random Delay Init Container Configuration
-  # randomDelayInitContainer:
-  #   enabled: false # Set to true to enable the random delay
-  #   maxSeconds: 31 # Max random sleep duration (exclusive, e.g., 31 means 0-30 seconds)
-  #   image:
-  #     repository: docker.io/busybox
-  #     tag: latest
-  #     pullPolicy: IfNotPresent
-
-  # Resource configuration
-  resources: {}
-  workspace:
-    # Size of the workspace PVC
-    size: 1Gi
-    # Storage class to use for the workspace PVC
-    storageClass: ""

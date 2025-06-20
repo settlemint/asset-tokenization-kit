@@ -1,0 +1,1663 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "allPeriods",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "timestamps",
+          "type": "uint256[]",
+          "internalType": "uint256[]"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "calculateAccruedYield",
+      "inputs": [
+        {
+          "name": "holder",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "totalAmount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "claimYield",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "currentPeriod",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "periodNumber",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "endDate",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "interval",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "durationSeconds",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "lastClaimedPeriod",
+      "inputs": [
+        {
+          "name": "holder",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "periodNumber",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "lastCompletedPeriod",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "periodNumber",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "periodEnd",
+      "inputs": [
+        {
+          "name": "period",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "rate",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "yieldRate",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "startDate",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "startDateTimestamp",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "supportsInterface",
+      "inputs": [
+        {
+          "name": "interfaceId",
+          "type": "bytes4",
+          "internalType": "bytes4"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "timeUntilNextPeriod",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "timeRemaining",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "token",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "tokenContract",
+          "type": "address",
+          "internalType": "contract ISMARTYield"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "topUpUnderlyingAsset",
+      "inputs": [
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "totalUnclaimedYield",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "totalAmount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "totalYieldForNextPeriod",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "totalAmount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "underlyingAsset",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "assetToken",
+          "type": "address",
+          "internalType": "contract IERC20"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "withdrawAllUnderlyingAsset",
+      "inputs": [
+        {
+          "name": "to",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "withdrawUnderlyingAsset",
+      "inputs": [
+        {
+          "name": "to",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "FixedYieldScheduleSet",
+      "inputs": [
+        {
+          "name": "startDate",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "endDate",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "rate",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "interval",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "periodEndTimestamps",
+          "type": "uint256[]",
+          "indexed": false,
+          "internalType": "uint256[]"
+        },
+        {
+          "name": "underlyingAsset",
+          "type": "address",
+          "indexed": false,
+          "internalType": "contract IERC20"
+        },
+        {
+          "name": "yieldForNextPeriod",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "UnderlyingAssetTopUp",
+      "inputs": [
+        {
+          "name": "from",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "UnderlyingAssetWithdrawn",
+      "inputs": [
+        {
+          "name": "to",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "YieldClaimed",
+      "inputs": [
+        {
+          "name": "holder",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "claimedAmount",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "fromPeriod",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "toPeriod",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "periodAmounts",
+          "type": "uint256[]",
+          "indexed": false,
+          "internalType": "uint256[]"
+        },
+        {
+          "name": "periodYields",
+          "type": "uint256[]",
+          "indexed": false,
+          "internalType": "uint256[]"
+        },
+        {
+          "name": "totalUnclaimedYield",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        },
+        {
+          "name": "yieldForNextPeriod",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "AlreadyInitialized",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "CannotInitializeLogicContract",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InsufficientUnderlyingBalance",
+      "inputs": [
+        {
+          "name": "currentBalance",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "requiredBalance",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "InvalidAmount",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidEndDate",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidInterval",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidPeriod",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidRate",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidStartDate",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidToken",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidUnderlyingAsset",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "NoUnderlyingBalance",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "NoYieldAvailable",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ReentrantInitialization",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ScheduleNotActive",
+      "inputs": []
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "allPeriods()": "c54293aa",
+    "calculateAccruedYield(address)": "9a95299a",
+    "claimYield()": "406cf229",
+    "currentPeriod()": "06040618",
+    "endDate()": "c24a0f8b",
+    "interval()": "947a36fb",
+    "lastClaimedPeriod(address)": "817ea144",
+    "lastCompletedPeriod()": "978fd53b",
+    "periodEnd(uint256)": "27614ec4",
+    "rate()": "2c4e722e",
+    "startDate()": "0b97bc86",
+    "supportsInterface(bytes4)": "01ffc9a7",
+    "timeUntilNextPeriod()": "0898c949",
+    "token()": "fc0c546a",
+    "topUpUnderlyingAsset(uint256)": "a206b550",
+    "totalUnclaimedYield()": "1f28d52c",
+    "totalYieldForNextPeriod()": "9fc2f65a",
+    "underlyingAsset()": "7158da7c",
+    "withdrawAllUnderlyingAsset(address)": "e0ecad5a",
+    "withdrawUnderlyingAsset(address,uint256)": "1cf7e149"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"AlreadyInitialized\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CannotInitializeLogicContract\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"currentBalance\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"requiredBalance\",\"type\":\"uint256\"}],\"name\":\"InsufficientUnderlyingBalance\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidAmount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidEndDate\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidInterval\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidPeriod\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidRate\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidStartDate\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidToken\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidUnderlyingAsset\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NoUnderlyingBalance\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NoYieldAvailable\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ReentrantInitialization\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ScheduleNotActive\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"startDate\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"endDate\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"rate\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"interval\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256[]\",\"name\":\"periodEndTimestamps\",\"type\":\"uint256[]\"},{\"indexed\":false,\"internalType\":\"contract IERC20\",\"name\":\"underlyingAsset\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"yieldForNextPeriod\",\"type\":\"uint256\"}],\"name\":\"FixedYieldScheduleSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"UnderlyingAssetTopUp\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"UnderlyingAssetWithdrawn\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"holder\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"claimedAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"fromPeriod\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"toPeriod\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256[]\",\"name\":\"periodAmounts\",\"type\":\"uint256[]\"},{\"indexed\":false,\"internalType\":\"uint256[]\",\"name\":\"periodYields\",\"type\":\"uint256[]\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalUnclaimedYield\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"yieldForNextPeriod\",\"type\":\"uint256\"}],\"name\":\"YieldClaimed\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"allPeriods\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"timestamps\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"holder\",\"type\":\"address\"}],\"name\":\"calculateAccruedYield\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"claimYield\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"currentPeriod\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"periodNumber\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"endDate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"interval\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"durationSeconds\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"holder\",\"type\":\"address\"}],\"name\":\"lastClaimedPeriod\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"periodNumber\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"lastCompletedPeriod\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"periodNumber\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"period\",\"type\":\"uint256\"}],\"name\":\"periodEnd\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"rate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"yieldRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"startDate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"startDateTimestamp\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"timeUntilNextPeriod\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"timeRemaining\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"contract ISMARTYield\",\"name\":\"tokenContract\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"topUpUnderlyingAsset\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalUnclaimedYield\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalYieldForNextPeriod\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"underlyingAsset\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"assetToken\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"withdrawAllUnderlyingAsset\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"withdrawUnderlyingAsset\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Implementing contracts will manage the lifecycle of yield distribution, including calculating yield based on historical balances, allowing users to claim their yield, and administrative functions like topping up the underlying asset used for payments. Functions are `external`, meaning they are designed to be called from other contracts or off-chain applications. Many are `view` functions, which read state but don't modify it.\",\"errors\":{\"AlreadyInitialized()\":[{\"details\":\"Reverted if the `initialize` function is called more than once.\"}],\"CannotInitializeLogicContract()\":[{\"details\":\"Reverted if `initialize` is called directly on a logic contract that was configured via constructor.\"}],\"InsufficientUnderlyingBalance(uint256,uint256)\":[{\"details\":\"Reverted by `topUpUnderlyingAsset` or `withdrawUnderlyingAsset` if the underlying asset transfer fails or if there's not enough balance.\",\"params\":{\"currentBalance\":\"The current balance of the underlying asset in the contract.\",\"requiredBalance\":\"The required balance of the underlying asset for the operation.\"}}],\"InvalidAmount()\":[{\"details\":\"Reverted by `withdrawUnderlyingAsset` if the withdrawal `amount` is zero.\"}],\"InvalidEndDate()\":[{\"details\":\"Reverted if the `endDate_` provided in the constructor is not after the `startDate_`.\"}],\"InvalidInterval()\":[{\"details\":\"Reverted if the `interval_` (distribution interval in seconds) provided in the constructor is zero.\"}],\"InvalidPeriod()\":[{\"details\":\"Reverted by `periodEnd` if an invalid period number (0 or out of bounds) is requested.\"}],\"InvalidRate()\":[{\"details\":\"Reverted if the `rate_` (yield rate in basis points) provided in the constructor is zero.\"}],\"InvalidStartDate()\":[{\"details\":\"Reverted if the `startDate_` provided in the constructor is not in the future (i.e., less than or equal to `block.timestamp`).\"}],\"InvalidToken()\":[{\"details\":\"Reverted if the `tokenAddress` provided in the constructor is the zero address.\"}],\"InvalidUnderlyingAsset()\":[{\"details\":\"Reverted if the `_underlyingAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to` address in withdrawal is zero.\"}],\"NoUnderlyingBalance()\":[{\"details\":\"Reverted by `withdrawUnderlyingAsset` if the underlying asset balance is zero.\"}],\"NoYieldAvailable()\":[{\"details\":\"Reverted by `claimYield` if there is no accumulated yield for the caller to claim for completed periods.\"}],\"ReentrantInitialization()\":[{\"details\":\"Reverted if a re-entrant call occurs during the initialization process.\"}],\"ScheduleNotActive()\":[{\"details\":\"Reverted by `calculateAccruedYield` if the schedule has not yet started (i.e., `block.timestamp < _startDate`).\"}]},\"events\":{\"FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address,uint256)\":{\"params\":{\"endDate\":\"The end date of the yield schedule.\",\"interval\":\"The interval of the yield schedule.\",\"periodEndTimestamps\":\"The timestamps of the end of each period.\",\"rate\":\"The rate of the yield schedule.\",\"startDate\":\"The start date of the yield schedule.\",\"underlyingAsset\":\"The underlying asset of the yield schedule.\",\"yieldForNextPeriod\":\"The yield for the next period.\"}},\"UnderlyingAssetTopUp(address,uint256)\":{\"params\":{\"amount\":\"The quantity of `_underlyingAsset` tokens deposited.\",\"from\":\"The address that sent the `_underlyingAsset` tokens (the funder).\"}},\"UnderlyingAssetWithdrawn(address,uint256)\":{\"params\":{\"amount\":\"The quantity of `_underlyingAsset` tokens withdrawn.\",\"to\":\"The address that received the withdrawn `_underlyingAsset` tokens.\"}},\"YieldClaimed(address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)\":{\"params\":{\"claimedAmount\":\"The total quantity of `_underlyingAsset` transferred to the holder in this claim.\",\"fromPeriod\":\"The first period number (1-indexed) included in this claim.\",\"holder\":\"The address of the token holder who claimed the yield.\",\"periodAmounts\":\"An array containing the amount of yield claimed for each specific period within the `fromPeriod` to `toPeriod` range. The length of this array is `toPeriod - fromPeriod + 1`.\",\"periodYields\":\"An array containing the total yield for each specific period within the `fromPeriod` to `toPeriod` range. The length of this array is `toPeriod - fromPeriod + 1`.\",\"toPeriod\":\"The last period number (1-indexed) included in this claim.\",\"totalUnclaimedYield\":\"The total amount of unclaimed yield remaining in the contract across all holders after this claim.\",\"yieldForNextPeriod\":\"The yield for the next period.\"}}},\"kind\":\"dev\",\"methods\":{\"allPeriods()\":{\"details\":\"Each timestamp in the array marks the conclusion of a yield distribution period. The number of elements in this array corresponds to the total number of periods in the schedule. This is useful for understanding the full timeline of the yield schedule.\",\"returns\":{\"timestamps\":\"An array of Unix timestamps, each representing the end of a distribution period.\"}},\"calculateAccruedYield(address)\":{\"details\":\"This provides an up-to-the-second estimate of what a holder is entitled to, combining fully completed unclaimed periods and a partial calculation for the current period. The pro-rata calculation typically depends on the time elapsed in the current period and the holder's current balance.\",\"params\":{\"holder\":\"The address of the token holder for whom to calculate accrued yield.\"},\"returns\":{\"totalAmount\":\"The total amount of yield tokens accrued by the `holder`.\"}},\"claimYield()\":{\"details\":\"This function will typically: 1. Determine the periods for which the caller has not yet claimed yield. 2. Calculate the yield owed for those periods based on their historical token balance at the end of each respective period. 3. Transfer the total calculated yield (in `underlyingAsset()`) to the caller. 4. Update the caller's `lastClaimedPeriod`. This is a state-changing function and will emit events (e.g., `YieldClaimed`).\"},\"currentPeriod()\":{\"details\":\"If the schedule has not yet started (`block.timestamp < startDate()`), this might return 0. If the schedule has ended (`block.timestamp >= endDate()`), this might return the total number of periods. Otherwise, it returns the 1-indexed number of the period that is currently in progress.\",\"returns\":{\"periodNumber\":\"The current period number (1-indexed), or 0 if not started / an indicator if ended.\"}},\"endDate()\":{\"details\":\"After this timestamp, no more yield will typically accrue or be distributed by this schedule.\",\"returns\":{\"timestamp\":\"The Unix timestamp indicating when the yield schedule concludes.\"}},\"interval()\":{\"details\":\"For example, if yield is distributed daily, the interval would be `86400` seconds. This, along with `startDate` and `endDate`, defines the periodicity of the schedule.\",\"returns\":{\"durationSeconds\":\"The length of each yield period in seconds.\"}},\"lastClaimedPeriod(address)\":{\"details\":\"This is crucial for tracking individual claim statuses. If a holder has never claimed, this might return 0.\",\"params\":{\"holder\":\"The address of the token holder whose last claimed period is being queried.\"},\"returns\":{\"periodNumber\":\"The 1-indexed number of the last period claimed by the `holder`.\"}},\"lastCompletedPeriod()\":{\"details\":\"This indicates up to which period users can typically claim their accrued yield. If no periods have completed (e.g., `block.timestamp < periodEnd(1)`), this might return 0.\",\"returns\":{\"periodNumber\":\"The 1-indexed number of the last fully completed period.\"}},\"periodEnd(uint256)\":{\"details\":\"Periods are typically 1-indexed. Requesting period `0` or a period number greater than the total number of periods should be handled (e.g., revert).\",\"params\":{\"period\":\"The period number (e.g., 1 for the first period, 2 for the second, etc.) whose end timestamp is being queried.\"},\"returns\":{\"timestamp\":\"The Unix timestamp marking the end of the specified `period`.\"}},\"rate()\":{\"details\":\"The interpretation of this rate (e.g., annual percentage rate, per period rate) and its precision (e.g., basis points) depends on the specific implementation of the schedule contract. For a fixed schedule, this rate is a key parameter in calculating yield per period.\",\"returns\":{\"yieldRate\":\"The configured yield rate (e.g., in basis points, where 100 basis points = 1%).\"}},\"startDate()\":{\"details\":\"This function provides the point in time (as a Unix timestamp, seconds since epoch) from which the yield schedule is considered active or when yield calculations/distributions commence. This is a `view` function, meaning it does not modify the contract's state and can be called without gas cost if called externally (not from another contract transaction).\",\"returns\":{\"startDateTimestamp\":\"The Unix timestamp indicating when the yield schedule begins.\"}},\"supportsInterface(bytes4)\":{\"details\":\"Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas.\"},\"timeUntilNextPeriod()\":{\"details\":\"If the schedule has not started, this could be time until `startDate()`. If the schedule is ongoing, this is the time left in the `currentPeriod()`. If the schedule has ended, this might return 0.\",\"returns\":{\"timeRemaining\":\"The time in seconds until the next period begins or current period ends.\"}},\"token()\":{\"details\":\"The schedule contract needs to interact with this token contract to query historical balances (e.g., `balanceOfAt`) and total supplies (`totalSupplyAt`). The returned token contract should implement the `ISMARTYield` interface.\",\"returns\":{\"tokenContract\":\"The `ISMARTYield` compliant token contract address.\"}},\"topUpUnderlyingAsset(uint256)\":{\"details\":\"This function is used to ensure the contract has sufficient reserves of the `underlyingAsset()` to pay out accrued yield. It typically involves the caller first approving the schedule contract to spend their `underlyingAsset` tokens, then this function calls `transferFrom`.\",\"params\":{\"amount\":\"The quantity of the `underlyingAsset` to deposit into the schedule contract.\"}},\"totalUnclaimedYield()\":{\"details\":\"This requires iterating through completed periods and historical token supplies/balances, so it can be gas-intensive if called on-chain frequently. It gives an overview of the outstanding yield liability of the schedule contract.\",\"returns\":{\"totalAmount\":\"The total sum of unclaimed yield tokens.\"}},\"totalYieldForNextPeriod()\":{\"details\":\"This is a projection based on current total supply (or relevant historical supply measure) and the yield rate. Useful for administrators to ensure sufficient underlying assets are available in the contract for future payouts.\",\"returns\":{\"totalAmount\":\"The estimated total yield tokens needed for the next period's distribution.\"}},\"underlyingAsset()\":{\"details\":\"This is the actual token that holders will receive when they claim their yield. It can be the same as `token()` or a different token (e.g., a stablecoin).\",\"returns\":{\"assetToken\":\"The `IERC20` compliant token contract address used for payments.\"}},\"withdrawAllUnderlyingAsset(address)\":{\"details\":\"Similar to `withdrawUnderlyingAsset`, but withdraws the entire balance of `underlyingAsset` held by the contract. Should also be strictly access-controlled.\",\"params\":{\"to\":\"The address to which all `underlyingAsset` tokens will be sent.\"}},\"withdrawUnderlyingAsset(address,uint256)\":{\"details\":\"This is an administrative function and should be strictly access-controlled (e.g., `onlyRole(ADMIN_ROLE)`). Useful for managing excess funds or in emergency situations.\",\"params\":{\"amount\":\"The quantity of `underlyingAsset` tokens to withdraw.\",\"to\":\"The address to which the withdrawn `underlyingAsset` tokens will be sent.\"}}},\"title\":\"Interface for a SMART Fixed Yield Schedule Contract\",\"version\":1},\"userdoc\":{\"events\":{\"FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address,uint256)\":{\"notice\":\"Emitted when a new fixed yield schedule is set.\"},\"UnderlyingAssetTopUp(address,uint256)\":{\"notice\":\"Emitted when an administrator or funder successfully deposits `_underlyingAsset` into the contract to fund yield payments.\"},\"UnderlyingAssetWithdrawn(address,uint256)\":{\"notice\":\"Emitted when an administrator successfully withdraws `_underlyingAsset` from the contract.\"},\"YieldClaimed(address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)\":{\"notice\":\"Emitted when a token holder successfully claims their accrued yield.\"}},\"kind\":\"user\",\"methods\":{\"allPeriods()\":{\"notice\":\"Returns an array of all period end timestamps for this yield schedule.\"},\"calculateAccruedYield(address)\":{\"notice\":\"Calculates the total accrued yield for a specific token holder up to the current moment, including any pro-rata share for the ongoing period.\"},\"claimYield()\":{\"notice\":\"Allows the caller (a token holder) to claim all their available (accrued and unclaimed) yield from completed periods.\"},\"currentPeriod()\":{\"notice\":\"Returns the current, ongoing period number of the yield schedule.\"},\"endDate()\":{\"notice\":\"Returns the timestamp representing the end date and time of the entire yield schedule.\"},\"interval()\":{\"notice\":\"Returns the duration of each distribution interval or period in seconds.\"},\"lastClaimedPeriod(address)\":{\"notice\":\"Returns the last period number for which a specific token holder has successfully claimed their yield.\"},\"lastCompletedPeriod()\":{\"notice\":\"Returns the most recent period number that has been fully completed and is eligible for yield claims.\"},\"periodEnd(uint256)\":{\"notice\":\"Returns the end timestamp for a specific yield distribution period.\"},\"rate()\":{\"notice\":\"Returns the yield rate for the schedule.\"},\"startDate()\":{\"notice\":\"Returns the timestamp representing the start date and time of the yield schedule.\"},\"timeUntilNextPeriod()\":{\"notice\":\"Returns the remaining time in seconds until the start of the next yield distribution period.\"},\"token()\":{\"notice\":\"Returns the address of the SMART token contract for which this yield schedule is defined.\"},\"topUpUnderlyingAsset(uint256)\":{\"notice\":\"Allows anyone to deposit (top-up) the underlying asset into the schedule contract to fund yield payments.\"},\"totalUnclaimedYield()\":{\"notice\":\"Calculates the total amount of yield that has been accrued by all token holders across all completed periods but has not yet been claimed.\"},\"totalYieldForNextPeriod()\":{\"notice\":\"Calculates the total amount of yield that will be required to cover all token holders for the next upcoming distribution period.\"},\"underlyingAsset()\":{\"notice\":\"Returns the ERC20 token contract that is used for making yield payments.\"},\"withdrawAllUnderlyingAsset(address)\":{\"notice\":\"Allows an authorized administrator to withdraw all available `underlyingAsset` tokens from the schedule contract.\"},\"withdrawUnderlyingAsset(address,uint256)\":{\"notice\":\"Allows an authorized administrator to withdraw a specific `amount` of the `underlyingAsset` from the schedule contract.\"}},\"notice\":\"This interface defines the set of functions that a fixed yield schedule contract must implement. A fixed yield schedule typically involves distributing a predetermined rate of yield at regular intervals over a defined period. This interface extends `ISMARTYieldSchedule`, inheriting its `startDate()` function, and adds many more specific functions for managing and querying the fixed yield mechanism.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol\":\"ISMARTFixedYieldSchedule\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/smart/extensions/historical-balances/ISMARTHistoricalBalances.sol\":{\"keccak256\":\"0x748c28628df829a95a42783247fd2e2f082bf644370f54463dd8c060a1a4fdb8\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://ca138ff3a56bdcdbfc7dd9ff17f56c0e15643d7f63172fe03dd47da35b47515f\",\"dweb:/ipfs/Qme1CeWEWgbr2YPJ9dRK98VCZ94naen9BhrrKb2wFhs6iC\"]},\"contracts/smart/extensions/yield/ISMARTYield.sol\":{\"keccak256\":\"0xabc3a75854b3b1b2fade84c3ea2fe058dbbbe88fa07e256e62d92359863e33b4\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://fe6b2e9add6b6abe4c715f6750a8c55c14b4a88edcc2b93f98777fa71303297b\",\"dweb:/ipfs/QmdRmeFStp5yqqZgmeRBpZxvwvEat5qb7szgC6Chom7nGG\"]},\"contracts/smart/extensions/yield/schedules/ISMARTYieldSchedule.sol\":{\"keccak256\":\"0xdfbf07a23c23697347fb56aee34b8ca40f6833d71a3f641f48e7867af27d32f6\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://4d8dccf3d331fd4e9b0fa5f26f9386a6ef432f0c304735ef274d8866e029dd5e\",\"dweb:/ipfs/QmPeH5qE3CTWCWUQgxJ2es7iHzLr4NsFsJzttsPTpqErVK\"]},\"contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol\":{\"keccak256\":\"0x37570268db5ef2509791cd60a6bc8f56bcf58a78a8df3fbd6cce1aaca1228bc5\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://fbe019bf0ab9ed7e9291ae775d16aab465ba495e8a2980ad128c9094b852095d\",\"dweb:/ipfs/QmeCjCn3pHoS7hEc5RuFxSYYgvJEysWBec8zMPy8tsozTb\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db\",\"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "AlreadyInitialized"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "CannotInitializeLogicContract"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "currentBalance",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "requiredBalance",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "InsufficientUnderlyingBalance"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidAmount"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidEndDate"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidInterval"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidPeriod"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidRate"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidStartDate"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidToken"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidUnderlyingAsset"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "NoUnderlyingBalance"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "NoYieldAvailable"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ReentrantInitialization"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ScheduleNotActive"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "startDate",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "endDate",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "rate",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "interval",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "periodEndTimestamps",
+              "type": "uint256[]",
+              "indexed": false
+            },
+            {
+              "internalType": "contract IERC20",
+              "name": "underlyingAsset",
+              "type": "address",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "yieldForNextPeriod",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "FixedYieldScheduleSet",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "UnderlyingAssetTopUp",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "UnderlyingAssetWithdrawn",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "holder",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "claimedAmount",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "fromPeriod",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "toPeriod",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "periodAmounts",
+              "type": "uint256[]",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "periodYields",
+              "type": "uint256[]",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalUnclaimedYield",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "yieldForNextPeriod",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "YieldClaimed",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "allPeriods",
+          "outputs": [
+            {
+              "internalType": "uint256[]",
+              "name": "timestamps",
+              "type": "uint256[]"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "holder",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "calculateAccruedYield",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "totalAmount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "claimYield"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "currentPeriod",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "periodNumber",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "endDate",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "interval",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "durationSeconds",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "holder",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "lastClaimedPeriod",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "periodNumber",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "lastCompletedPeriod",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "periodNumber",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "period",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "periodEnd",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "rate",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "yieldRate",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "startDate",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "startDateTimestamp",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "timeUntilNextPeriod",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "timeRemaining",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "token",
+          "outputs": [
+            {
+              "internalType": "contract ISMARTYield",
+              "name": "tokenContract",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "topUpUnderlyingAsset"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "totalUnclaimedYield",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "totalAmount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "totalYieldForNextPeriod",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "totalAmount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "underlyingAsset",
+          "outputs": [
+            {
+              "internalType": "contract IERC20",
+              "name": "assetToken",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "withdrawAllUnderlyingAsset"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "withdrawUnderlyingAsset"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "allPeriods()": {
+            "details": "Each timestamp in the array marks the conclusion of a yield distribution period. The number of elements in this array corresponds to the total number of periods in the schedule. This is useful for understanding the full timeline of the yield schedule.",
+            "returns": {
+              "timestamps": "An array of Unix timestamps, each representing the end of a distribution period."
+            }
+          },
+          "calculateAccruedYield(address)": {
+            "details": "This provides an up-to-the-second estimate of what a holder is entitled to, combining fully completed unclaimed periods and a partial calculation for the current period. The pro-rata calculation typically depends on the time elapsed in the current period and the holder's current balance.",
+            "params": {
+              "holder": "The address of the token holder for whom to calculate accrued yield."
+            },
+            "returns": {
+              "totalAmount": "The total amount of yield tokens accrued by the `holder`."
+            }
+          },
+          "claimYield()": {
+            "details": "This function will typically: 1. Determine the periods for which the caller has not yet claimed yield. 2. Calculate the yield owed for those periods based on their historical token balance at the end of each respective period. 3. Transfer the total calculated yield (in `underlyingAsset()`) to the caller. 4. Update the caller's `lastClaimedPeriod`. This is a state-changing function and will emit events (e.g., `YieldClaimed`)."
+          },
+          "currentPeriod()": {
+            "details": "If the schedule has not yet started (`block.timestamp < startDate()`), this might return 0. If the schedule has ended (`block.timestamp >= endDate()`), this might return the total number of periods. Otherwise, it returns the 1-indexed number of the period that is currently in progress.",
+            "returns": {
+              "periodNumber": "The current period number (1-indexed), or 0 if not started / an indicator if ended."
+            }
+          },
+          "endDate()": {
+            "details": "After this timestamp, no more yield will typically accrue or be distributed by this schedule.",
+            "returns": {
+              "timestamp": "The Unix timestamp indicating when the yield schedule concludes."
+            }
+          },
+          "interval()": {
+            "details": "For example, if yield is distributed daily, the interval would be `86400` seconds. This, along with `startDate` and `endDate`, defines the periodicity of the schedule.",
+            "returns": {
+              "durationSeconds": "The length of each yield period in seconds."
+            }
+          },
+          "lastClaimedPeriod(address)": {
+            "details": "This is crucial for tracking individual claim statuses. If a holder has never claimed, this might return 0.",
+            "params": {
+              "holder": "The address of the token holder whose last claimed period is being queried."
+            },
+            "returns": {
+              "periodNumber": "The 1-indexed number of the last period claimed by the `holder`."
+            }
+          },
+          "lastCompletedPeriod()": {
+            "details": "This indicates up to which period users can typically claim their accrued yield. If no periods have completed (e.g., `block.timestamp < periodEnd(1)`), this might return 0.",
+            "returns": {
+              "periodNumber": "The 1-indexed number of the last fully completed period."
+            }
+          },
+          "periodEnd(uint256)": {
+            "details": "Periods are typically 1-indexed. Requesting period `0` or a period number greater than the total number of periods should be handled (e.g., revert).",
+            "params": {
+              "period": "The period number (e.g., 1 for the first period, 2 for the second, etc.) whose end timestamp is being queried."
+            },
+            "returns": {
+              "timestamp": "The Unix timestamp marking the end of the specified `period`."
+            }
+          },
+          "rate()": {
+            "details": "The interpretation of this rate (e.g., annual percentage rate, per period rate) and its precision (e.g., basis points) depends on the specific implementation of the schedule contract. For a fixed schedule, this rate is a key parameter in calculating yield per period.",
+            "returns": {
+              "yieldRate": "The configured yield rate (e.g., in basis points, where 100 basis points = 1%)."
+            }
+          },
+          "startDate()": {
+            "details": "This function provides the point in time (as a Unix timestamp, seconds since epoch) from which the yield schedule is considered active or when yield calculations/distributions commence. This is a `view` function, meaning it does not modify the contract's state and can be called without gas cost if called externally (not from another contract transaction).",
+            "returns": {
+              "startDateTimestamp": "The Unix timestamp indicating when the yield schedule begins."
+            }
+          },
+          "supportsInterface(bytes4)": {
+            "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+          },
+          "timeUntilNextPeriod()": {
+            "details": "If the schedule has not started, this could be time until `startDate()`. If the schedule is ongoing, this is the time left in the `currentPeriod()`. If the schedule has ended, this might return 0.",
+            "returns": {
+              "timeRemaining": "The time in seconds until the next period begins or current period ends."
+            }
+          },
+          "token()": {
+            "details": "The schedule contract needs to interact with this token contract to query historical balances (e.g., `balanceOfAt`) and total supplies (`totalSupplyAt`). The returned token contract should implement the `ISMARTYield` interface.",
+            "returns": {
+              "tokenContract": "The `ISMARTYield` compliant token contract address."
+            }
+          },
+          "topUpUnderlyingAsset(uint256)": {
+            "details": "This function is used to ensure the contract has sufficient reserves of the `underlyingAsset()` to pay out accrued yield. It typically involves the caller first approving the schedule contract to spend their `underlyingAsset` tokens, then this function calls `transferFrom`.",
+            "params": {
+              "amount": "The quantity of the `underlyingAsset` to deposit into the schedule contract."
+            }
+          },
+          "totalUnclaimedYield()": {
+            "details": "This requires iterating through completed periods and historical token supplies/balances, so it can be gas-intensive if called on-chain frequently. It gives an overview of the outstanding yield liability of the schedule contract.",
+            "returns": {
+              "totalAmount": "The total sum of unclaimed yield tokens."
+            }
+          },
+          "totalYieldForNextPeriod()": {
+            "details": "This is a projection based on current total supply (or relevant historical supply measure) and the yield rate. Useful for administrators to ensure sufficient underlying assets are available in the contract for future payouts.",
+            "returns": {
+              "totalAmount": "The estimated total yield tokens needed for the next period's distribution."
+            }
+          },
+          "underlyingAsset()": {
+            "details": "This is the actual token that holders will receive when they claim their yield. It can be the same as `token()` or a different token (e.g., a stablecoin).",
+            "returns": {
+              "assetToken": "The `IERC20` compliant token contract address used for payments."
+            }
+          },
+          "withdrawAllUnderlyingAsset(address)": {
+            "details": "Similar to `withdrawUnderlyingAsset`, but withdraws the entire balance of `underlyingAsset` held by the contract. Should also be strictly access-controlled.",
+            "params": {
+              "to": "The address to which all `underlyingAsset` tokens will be sent."
+            }
+          },
+          "withdrawUnderlyingAsset(address,uint256)": {
+            "details": "This is an administrative function and should be strictly access-controlled (e.g., `onlyRole(ADMIN_ROLE)`). Useful for managing excess funds or in emergency situations.",
+            "params": {
+              "amount": "The quantity of `underlyingAsset` tokens to withdraw.",
+              "to": "The address to which the withdrawn `underlyingAsset` tokens will be sent."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "allPeriods()": {
+            "notice": "Returns an array of all period end timestamps for this yield schedule."
+          },
+          "calculateAccruedYield(address)": {
+            "notice": "Calculates the total accrued yield for a specific token holder up to the current moment, including any pro-rata share for the ongoing period."
+          },
+          "claimYield()": {
+            "notice": "Allows the caller (a token holder) to claim all their available (accrued and unclaimed) yield from completed periods."
+          },
+          "currentPeriod()": {
+            "notice": "Returns the current, ongoing period number of the yield schedule."
+          },
+          "endDate()": {
+            "notice": "Returns the timestamp representing the end date and time of the entire yield schedule."
+          },
+          "interval()": {
+            "notice": "Returns the duration of each distribution interval or period in seconds."
+          },
+          "lastClaimedPeriod(address)": {
+            "notice": "Returns the last period number for which a specific token holder has successfully claimed their yield."
+          },
+          "lastCompletedPeriod()": {
+            "notice": "Returns the most recent period number that has been fully completed and is eligible for yield claims."
+          },
+          "periodEnd(uint256)": {
+            "notice": "Returns the end timestamp for a specific yield distribution period."
+          },
+          "rate()": {
+            "notice": "Returns the yield rate for the schedule."
+          },
+          "startDate()": {
+            "notice": "Returns the timestamp representing the start date and time of the yield schedule."
+          },
+          "timeUntilNextPeriod()": {
+            "notice": "Returns the remaining time in seconds until the start of the next yield distribution period."
+          },
+          "token()": {
+            "notice": "Returns the address of the SMART token contract for which this yield schedule is defined."
+          },
+          "topUpUnderlyingAsset(uint256)": {
+            "notice": "Allows anyone to deposit (top-up) the underlying asset into the schedule contract to fund yield payments."
+          },
+          "totalUnclaimedYield()": {
+            "notice": "Calculates the total amount of yield that has been accrued by all token holders across all completed periods but has not yet been claimed."
+          },
+          "totalYieldForNextPeriod()": {
+            "notice": "Calculates the total amount of yield that will be required to cover all token holders for the next upcoming distribution period."
+          },
+          "underlyingAsset()": {
+            "notice": "Returns the ERC20 token contract that is used for making yield payments."
+          },
+          "withdrawAllUnderlyingAsset(address)": {
+            "notice": "Allows an authorized administrator to withdraw all available `underlyingAsset` tokens from the schedule contract."
+          },
+          "withdrawUnderlyingAsset(address,uint256)": {
+            "notice": "Allows an authorized administrator to withdraw a specific `amount` of the `underlyingAsset` from the schedule contract."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol": "ISMARTFixedYieldSchedule"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/smart/extensions/historical-balances/ISMARTHistoricalBalances.sol": {
+        "keccak256": "0x748c28628df829a95a42783247fd2e2f082bf644370f54463dd8c060a1a4fdb8",
+        "urls": [
+          "bzz-raw://ca138ff3a56bdcdbfc7dd9ff17f56c0e15643d7f63172fe03dd47da35b47515f",
+          "dweb:/ipfs/Qme1CeWEWgbr2YPJ9dRK98VCZ94naen9BhrrKb2wFhs6iC"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/yield/ISMARTYield.sol": {
+        "keccak256": "0xabc3a75854b3b1b2fade84c3ea2fe058dbbbe88fa07e256e62d92359863e33b4",
+        "urls": [
+          "bzz-raw://fe6b2e9add6b6abe4c715f6750a8c55c14b4a88edcc2b93f98777fa71303297b",
+          "dweb:/ipfs/QmdRmeFStp5yqqZgmeRBpZxvwvEat5qb7szgC6Chom7nGG"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/yield/schedules/ISMARTYieldSchedule.sol": {
+        "keccak256": "0xdfbf07a23c23697347fb56aee34b8ca40f6833d71a3f641f48e7867af27d32f6",
+        "urls": [
+          "bzz-raw://4d8dccf3d331fd4e9b0fa5f26f9386a6ef432f0c304735ef274d8866e029dd5e",
+          "dweb:/ipfs/QmPeH5qE3CTWCWUQgxJ2es7iHzLr4NsFsJzttsPTpqErVK"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol": {
+        "keccak256": "0x37570268db5ef2509791cd60a6bc8f56bcf58a78a8df3fbd6cce1aaca1228bc5",
+        "urls": [
+          "bzz-raw://fbe019bf0ab9ed7e9291ae775d16aab465ba495e8a2980ad128c9094b852095d",
+          "dweb:/ipfs/QmeCjCn3pHoS7hEc5RuFxSYYgvJEysWBec8zMPy8tsozTb"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol": {
+        "keccak256": "0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7",
+        "urls": [
+          "bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db",
+          "dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "allPeriods()": {
+        "notice": "Returns an array of all period end timestamps for this yield schedule."
+      },
+      "calculateAccruedYield(address)": {
+        "notice": "Calculates the total accrued yield for a specific token holder up to the current moment, including any pro-rata share for the ongoing period."
+      },
+      "claimYield()": {
+        "notice": "Allows the caller (a token holder) to claim all their available (accrued and unclaimed) yield from completed periods."
+      },
+      "currentPeriod()": {
+        "notice": "Returns the current, ongoing period number of the yield schedule."
+      },
+      "endDate()": {
+        "notice": "Returns the timestamp representing the end date and time of the entire yield schedule."
+      },
+      "interval()": {
+        "notice": "Returns the duration of each distribution interval or period in seconds."
+      },
+      "lastClaimedPeriod(address)": {
+        "notice": "Returns the last period number for which a specific token holder has successfully claimed their yield."
+      },
+      "lastCompletedPeriod()": {
+        "notice": "Returns the most recent period number that has been fully completed and is eligible for yield claims."
+      },
+      "periodEnd(uint256)": {
+        "notice": "Returns the end timestamp for a specific yield distribution period."
+      },
+      "rate()": {
+        "notice": "Returns the yield rate for the schedule."
+      },
+      "startDate()": {
+        "notice": "Returns the timestamp representing the start date and time of the yield schedule."
+      },
+      "timeUntilNextPeriod()": {
+        "notice": "Returns the remaining time in seconds until the start of the next yield distribution period."
+      },
+      "token()": {
+        "notice": "Returns the address of the SMART token contract for which this yield schedule is defined."
+      },
+      "topUpUnderlyingAsset(uint256)": {
+        "notice": "Allows anyone to deposit (top-up) the underlying asset into the schedule contract to fund yield payments."
+      },
+      "totalUnclaimedYield()": {
+        "notice": "Calculates the total amount of yield that has been accrued by all token holders across all completed periods but has not yet been claimed."
+      },
+      "totalYieldForNextPeriod()": {
+        "notice": "Calculates the total amount of yield that will be required to cover all token holders for the next upcoming distribution period."
+      },
+      "underlyingAsset()": {
+        "notice": "Returns the ERC20 token contract that is used for making yield payments."
+      },
+      "withdrawAllUnderlyingAsset(address)": {
+        "notice": "Allows an authorized administrator to withdraw all available `underlyingAsset` tokens from the schedule contract."
+      },
+      "withdrawUnderlyingAsset(address,uint256)": {
+        "notice": "Allows an authorized administrator to withdraw a specific `amount` of the `underlyingAsset` from the schedule contract."
+      }
+    },
+    "events": {
+      "FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address,uint256)": {
+        "notice": "Emitted when a new fixed yield schedule is set."
+      },
+      "UnderlyingAssetTopUp(address,uint256)": {
+        "notice": "Emitted when an administrator or funder successfully deposits `_underlyingAsset` into the contract to fund yield payments."
+      },
+      "UnderlyingAssetWithdrawn(address,uint256)": {
+        "notice": "Emitted when an administrator successfully withdraws `_underlyingAsset` from the contract."
+      },
+      "YieldClaimed(address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)": {
+        "notice": "Emitted when a token holder successfully claims their accrued yield."
+      }
+    },
+    "notice": "This interface defines the set of functions that a fixed yield schedule contract must implement. A fixed yield schedule typically involves distributing a predetermined rate of yield at regular intervals over a defined period. This interface extends `ISMARTYieldSchedule`, inheriting its `startDate()` function, and adds many more specific functions for managing and querying the fixed yield mechanism."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "details": "Implementing contracts will manage the lifecycle of yield distribution, including calculating yield based on historical balances, allowing users to claim their yield, and administrative functions like topping up the underlying asset used for payments. Functions are `external`, meaning they are designed to be called from other contracts or off-chain applications. Many are `view` functions, which read state but don't modify it.",
+    "methods": {
+      "allPeriods()": {
+        "details": "Each timestamp in the array marks the conclusion of a yield distribution period. The number of elements in this array corresponds to the total number of periods in the schedule. This is useful for understanding the full timeline of the yield schedule.",
+        "returns": {
+          "timestamps": "An array of Unix timestamps, each representing the end of a distribution period."
+        }
+      },
+      "calculateAccruedYield(address)": {
+        "details": "This provides an up-to-the-second estimate of what a holder is entitled to, combining fully completed unclaimed periods and a partial calculation for the current period. The pro-rata calculation typically depends on the time elapsed in the current period and the holder's current balance.",
+        "params": {
+          "holder": "The address of the token holder for whom to calculate accrued yield."
+        },
+        "returns": {
+          "totalAmount": "The total amount of yield tokens accrued by the `holder`."
+        }
+      },
+      "claimYield()": {
+        "details": "This function will typically: 1. Determine the periods for which the caller has not yet claimed yield. 2. Calculate the yield owed for those periods based on their historical token balance at the end of each respective period. 3. Transfer the total calculated yield (in `underlyingAsset()`) to the caller. 4. Update the caller's `lastClaimedPeriod`. This is a state-changing function and will emit events (e.g., `YieldClaimed`)."
+      },
+      "currentPeriod()": {
+        "details": "If the schedule has not yet started (`block.timestamp < startDate()`), this might return 0. If the schedule has ended (`block.timestamp >= endDate()`), this might return the total number of periods. Otherwise, it returns the 1-indexed number of the period that is currently in progress.",
+        "returns": {
+          "periodNumber": "The current period number (1-indexed), or 0 if not started / an indicator if ended."
+        }
+      },
+      "endDate()": {
+        "details": "After this timestamp, no more yield will typically accrue or be distributed by this schedule.",
+        "returns": {
+          "timestamp": "The Unix timestamp indicating when the yield schedule concludes."
+        }
+      },
+      "interval()": {
+        "details": "For example, if yield is distributed daily, the interval would be `86400` seconds. This, along with `startDate` and `endDate`, defines the periodicity of the schedule.",
+        "returns": {
+          "durationSeconds": "The length of each yield period in seconds."
+        }
+      },
+      "lastClaimedPeriod(address)": {
+        "details": "This is crucial for tracking individual claim statuses. If a holder has never claimed, this might return 0.",
+        "params": {
+          "holder": "The address of the token holder whose last claimed period is being queried."
+        },
+        "returns": {
+          "periodNumber": "The 1-indexed number of the last period claimed by the `holder`."
+        }
+      },
+      "lastCompletedPeriod()": {
+        "details": "This indicates up to which period users can typically claim their accrued yield. If no periods have completed (e.g., `block.timestamp < periodEnd(1)`), this might return 0.",
+        "returns": {
+          "periodNumber": "The 1-indexed number of the last fully completed period."
+        }
+      },
+      "periodEnd(uint256)": {
+        "details": "Periods are typically 1-indexed. Requesting period `0` or a period number greater than the total number of periods should be handled (e.g., revert).",
+        "params": {
+          "period": "The period number (e.g., 1 for the first period, 2 for the second, etc.) whose end timestamp is being queried."
+        },
+        "returns": {
+          "timestamp": "The Unix timestamp marking the end of the specified `period`."
+        }
+      },
+      "rate()": {
+        "details": "The interpretation of this rate (e.g., annual percentage rate, per period rate) and its precision (e.g., basis points) depends on the specific implementation of the schedule contract. For a fixed schedule, this rate is a key parameter in calculating yield per period.",
+        "returns": {
+          "yieldRate": "The configured yield rate (e.g., in basis points, where 100 basis points = 1%)."
+        }
+      },
+      "startDate()": {
+        "details": "This function provides the point in time (as a Unix timestamp, seconds since epoch) from which the yield schedule is considered active or when yield calculations/distributions commence. This is a `view` function, meaning it does not modify the contract's state and can be called without gas cost if called externally (not from another contract transaction).",
+        "returns": {
+          "startDateTimestamp": "The Unix timestamp indicating when the yield schedule begins."
+        }
+      },
+      "supportsInterface(bytes4)": {
+        "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+      },
+      "timeUntilNextPeriod()": {
+        "details": "If the schedule has not started, this could be time until `startDate()`. If the schedule is ongoing, this is the time left in the `currentPeriod()`. If the schedule has ended, this might return 0.",
+        "returns": {
+          "timeRemaining": "The time in seconds until the next period begins or current period ends."
+        }
+      },
+      "token()": {
+        "details": "The schedule contract needs to interact with this token contract to query historical balances (e.g., `balanceOfAt`) and total supplies (`totalSupplyAt`). The returned token contract should implement the `ISMARTYield` interface.",
+        "returns": {
+          "tokenContract": "The `ISMARTYield` compliant token contract address."
+        }
+      },
+      "topUpUnderlyingAsset(uint256)": {
+        "details": "This function is used to ensure the contract has sufficient reserves of the `underlyingAsset()` to pay out accrued yield. It typically involves the caller first approving the schedule contract to spend their `underlyingAsset` tokens, then this function calls `transferFrom`.",
+        "params": {
+          "amount": "The quantity of the `underlyingAsset` to deposit into the schedule contract."
+        }
+      },
+      "totalUnclaimedYield()": {
+        "details": "This requires iterating through completed periods and historical token supplies/balances, so it can be gas-intensive if called on-chain frequently. It gives an overview of the outstanding yield liability of the schedule contract.",
+        "returns": {
+          "totalAmount": "The total sum of unclaimed yield tokens."
+        }
+      },
+      "totalYieldForNextPeriod()": {
+        "details": "This is a projection based on current total supply (or relevant historical supply measure) and the yield rate. Useful for administrators to ensure sufficient underlying assets are available in the contract for future payouts.",
+        "returns": {
+          "totalAmount": "The estimated total yield tokens needed for the next period's distribution."
+        }
+      },
+      "underlyingAsset()": {
+        "details": "This is the actual token that holders will receive when they claim their yield. It can be the same as `token()` or a different token (e.g., a stablecoin).",
+        "returns": {
+          "assetToken": "The `IERC20` compliant token contract address used for payments."
+        }
+      },
+      "withdrawAllUnderlyingAsset(address)": {
+        "details": "Similar to `withdrawUnderlyingAsset`, but withdraws the entire balance of `underlyingAsset` held by the contract. Should also be strictly access-controlled.",
+        "params": {
+          "to": "The address to which all `underlyingAsset` tokens will be sent."
+        }
+      },
+      "withdrawUnderlyingAsset(address,uint256)": {
+        "details": "This is an administrative function and should be strictly access-controlled (e.g., `onlyRole(ADMIN_ROLE)`). Useful for managing excess funds or in emergency situations.",
+        "params": {
+          "amount": "The quantity of `underlyingAsset` tokens to withdraw.",
+          "to": "The address to which the withdrawn `underlyingAsset` tokens will be sent."
+        }
+      }
+    },
+    "events": {
+      "FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address,uint256)": {
+        "params": {
+          "endDate": "The end date of the yield schedule.",
+          "interval": "The interval of the yield schedule.",
+          "periodEndTimestamps": "The timestamps of the end of each period.",
+          "rate": "The rate of the yield schedule.",
+          "startDate": "The start date of the yield schedule.",
+          "underlyingAsset": "The underlying asset of the yield schedule.",
+          "yieldForNextPeriod": "The yield for the next period."
+        }
+      },
+      "UnderlyingAssetTopUp(address,uint256)": {
+        "params": {
+          "amount": "The quantity of `_underlyingAsset` tokens deposited.",
+          "from": "The address that sent the `_underlyingAsset` tokens (the funder)."
+        }
+      },
+      "UnderlyingAssetWithdrawn(address,uint256)": {
+        "params": {
+          "amount": "The quantity of `_underlyingAsset` tokens withdrawn.",
+          "to": "The address that received the withdrawn `_underlyingAsset` tokens."
+        }
+      },
+      "YieldClaimed(address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)": {
+        "params": {
+          "claimedAmount": "The total quantity of `_underlyingAsset` transferred to the holder in this claim.",
+          "fromPeriod": "The first period number (1-indexed) included in this claim.",
+          "holder": "The address of the token holder who claimed the yield.",
+          "periodAmounts": "An array containing the amount of yield claimed for each specific period within the `fromPeriod` to `toPeriod` range. The length of this array is `toPeriod - fromPeriod + 1`.",
+          "periodYields": "An array containing the total yield for each specific period within the `fromPeriod` to `toPeriod` range. The length of this array is `toPeriod - fromPeriod + 1`.",
+          "toPeriod": "The last period number (1-indexed) included in this claim.",
+          "totalUnclaimedYield": "The total amount of unclaimed yield remaining in the contract across all holders after this claim.",
+          "yieldForNextPeriod": "The yield for the next period."
+        }
+      }
+    },
+    "errors": {
+      "AlreadyInitialized()": [
+        {
+          "details": "Reverted if the `initialize` function is called more than once."
+        }
+      ],
+      "CannotInitializeLogicContract()": [
+        {
+          "details": "Reverted if `initialize` is called directly on a logic contract that was configured via constructor."
+        }
+      ],
+      "InsufficientUnderlyingBalance(uint256,uint256)": [
+        {
+          "details": "Reverted by `topUpUnderlyingAsset` or `withdrawUnderlyingAsset` if the underlying asset transfer fails or if there's not enough balance.",
+          "params": {
+            "currentBalance": "The current balance of the underlying asset in the contract.",
+            "requiredBalance": "The required balance of the underlying asset for the operation."
+          }
+        }
+      ],
+      "InvalidAmount()": [
+        {
+          "details": "Reverted by `withdrawUnderlyingAsset` if the withdrawal `amount` is zero."
+        }
+      ],
+      "InvalidEndDate()": [
+        {
+          "details": "Reverted if the `endDate_` provided in the constructor is not after the `startDate_`."
+        }
+      ],
+      "InvalidInterval()": [
+        {
+          "details": "Reverted if the `interval_` (distribution interval in seconds) provided in the constructor is zero."
+        }
+      ],
+      "InvalidPeriod()": [
+        {
+          "details": "Reverted by `periodEnd` if an invalid period number (0 or out of bounds) is requested."
+        }
+      ],
+      "InvalidRate()": [
+        {
+          "details": "Reverted if the `rate_` (yield rate in basis points) provided in the constructor is zero."
+        }
+      ],
+      "InvalidStartDate()": [
+        {
+          "details": "Reverted if the `startDate_` provided in the constructor is not in the future (i.e., less than or equal to `block.timestamp`)."
+        }
+      ],
+      "InvalidToken()": [
+        {
+          "details": "Reverted if the `tokenAddress` provided in the constructor is the zero address."
+        }
+      ],
+      "InvalidUnderlyingAsset()": [
+        {
+          "details": "Reverted if the `_underlyingAsset` (derived from `_token.yieldToken()`) is the zero address, or if `to` address in withdrawal is zero."
+        }
+      ],
+      "NoUnderlyingBalance()": [
+        {
+          "details": "Reverted by `withdrawUnderlyingAsset` if the underlying asset balance is zero."
+        }
+      ],
+      "NoYieldAvailable()": [
+        {
+          "details": "Reverted by `claimYield` if there is no accumulated yield for the caller to claim for completed periods."
+        }
+      ],
+      "ReentrantInitialization()": [
+        {
+          "details": "Reverted if a re-entrant call occurs during the initialization process."
+        }
+      ],
+      "ScheduleNotActive()": [
+        {
+          "details": "Reverted by `calculateAccruedYield` if the schedule has not yet started (i.e., `block.timestamp < _startDate`)."
+        }
+      ]
+    },
+    "title": "Interface for a SMART Fixed Yield Schedule Contract"
+  },
+  "id": 116
+}

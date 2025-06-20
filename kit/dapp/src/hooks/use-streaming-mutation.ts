@@ -29,12 +29,7 @@ type ExtractResultType<T> =
 /**
  * Streaming mutation options that transform callbacks to work with extracted result
  */
-interface StreamingMutationOptions<
-  TData,
-  TError,
-  TVariables,
-  TContext,
-> {
+interface StreamingMutationOptions<TData, TError, TVariables, TContext> {
   mutationOptions: UseMutationOptions<TData, TError, TVariables, TContext>;
   onSuccess?: (
     data: ExtractResultType<TData>,
@@ -55,7 +50,7 @@ interface StreamingMutationOptions<
  *     console.log("System created:", data);
  *   }
  * });
- * 
+ *
  * // Call mutation with all messages
  * mutate({
  *   messages: {
@@ -72,12 +67,7 @@ export function useStreamingMutation<
   TVariables = void,
   TContext = unknown,
 >(
-  options: StreamingMutationOptions<
-    TData,
-    TError,
-    TVariables,
-    TContext
-  >
+  options: StreamingMutationOptions<TData, TError, TVariables, TContext>
 ): UseMutationResult<ExtractResultType<TData>, TError, TVariables, TContext> & {
   isTracking: boolean;
   latestMessage: string | null;
@@ -148,9 +138,7 @@ export function useStreamingMutation<
         return finalResult;
       } catch (error) {
         const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "An error occurred";
+          error instanceof Error ? error.message : "An error occurred";
         toast.error(errorMessage, { id: toastIdRef.current });
         throw error;
       } finally {
