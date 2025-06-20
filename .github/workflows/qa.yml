@@ -228,7 +228,7 @@ jobs:
         with:
           commit_message: "chore: update artifacts"
           branch: main
-          file_pattern: ".gitattributes"
+          file_pattern: ".gitattributes .generated/**"
 
   pr-labels:
     name: PR Labels
