@@ -316,6 +316,17 @@ reloader:
 
 minio:
   enabled: true
+  global:
+    security:
+      allowInsecureImages: true
+    imagePullSecrets:
+      - image-pull-secret-docker
+      - image-pull-secret-ghcr
+      - image-pull-secret-harbor
+  image:
+    registry: docker.io
+    repository: bitnami/minio
+    tag: 2025.5.24-debian-12-r7
   fullnameOverride: 'minio'
   # defaultBuckets: atk
   auth:
@@ -334,3 +345,13 @@ minio:
         echo "Adding atk-service user"
         mc admin user svcacct add provisioning "admin" --access-key "atk-service" --secret-key "atk-service-secret"
       fi
+  console:
+    image:
+      registry: docker.io
+      repository: bitnami/minio-object-browser
+      tag: 2.0.1-debian-12-r3
+  defaultInitContainers:
+    image:
+      registry: docker.io
+      repository: bitnami/os-shell
+      tag: 12-debian-12-r47

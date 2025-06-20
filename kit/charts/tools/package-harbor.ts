@@ -164,37 +164,60 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
       const originalLine = line;
 
       // Process registry: values
-      if (line.includes("registry:") && !line.includes(`${HARBOR_PROXY}/`)) {
-        const registryMatch = line.match(/(\s+registry:\s+)([^\s\n]+)/);
-        if (
-          registryMatch &&
-          registryMatch[2] &&
-          registryMatch[2] !== HARBOR_PROXY &&
-          !registryMatch[2].startsWith(`${HARBOR_PROXY}/`)
-        ) {
-          line = line.replace(
-            /(\s+registry:\s+)([^\s\n]+)/,
-            `$1${HARBOR_PROXY}/$2`
-          );
+      if (line.includes("registry:")) {
+        // Clean up corrupted values like harbor.settlemint.com/""
+        if (line.includes(`${HARBOR_PROXY}/""`)) {
+          line = line.replace(`${HARBOR_PROXY}/""`, '""');
+        } else if (line.includes(`${HARBOR_PROXY}/''`)) {
+          line = line.replace(`${HARBOR_PROXY}/''`, "''");
+        }
+        // Process normal values (but not if already has harbor proxy)
+        else if (!line.includes(`${HARBOR_PROXY}/`)) {
+          const registryMatch = line.match(/(\s+registry:\s+)([^\s\n]+)/);
+          if (
+            registryMatch &&
+            registryMatch[2] &&
+            registryMatch[2] !== HARBOR_PROXY &&
+            !registryMatch[2].startsWith(`${HARBOR_PROXY}/`) &&
+            registryMatch[2] !== '""' &&  // Skip empty string values
+            registryMatch[2] !== "''" &&  // Skip empty string values with single quotes
+            registryMatch[2].trim() !== ""  // Skip actual empty values
+          ) {
+            line = line.replace(
+              /(\s+registry:\s+)([^\s\n]+)/,
+              `$1${HARBOR_PROXY}/$2`
+            );
+          }
         }
       }
 
       // Process imageRegistry: values
-      if (
-        line.includes("imageRegistry:") &&
-        !line.includes(`${HARBOR_PROXY}/`)
-      ) {
-        const registryMatch = line.match(/(\s+imageRegistry:\s+)([^\s\n]+)/);
-        if (
-          registryMatch &&
-          registryMatch[2] &&
-          registryMatch[2] !== HARBOR_PROXY &&
-          !registryMatch[2].startsWith(`${HARBOR_PROXY}/`)
-        ) {
-          line = line.replace(
-            /(\s+imageRegistry:\s+)([^\s\n]+)/,
-            `$1${HARBOR_PROXY}/$2`
-          );
+      if (line.includes("imageRegistry:")) {
+        // Clean up corrupted values like harbor.settlemint.com/""
+        if (line.includes(`${HARBOR_PROXY}/""`)) {
+          line = line.replace(`${HARBOR_PROXY}/""`, '""');
+        } else if (line.includes(`${HARBOR_PROXY}/''`)) {
+          line = line.replace(`${HARBOR_PROXY}/''`, "''");
+        } else if (line.includes(`${HARBOR_PROXY}/"''"`)) {
+          line = line.replace(`${HARBOR_PROXY}/"''"`, '""');
+        }
+        // Process normal values (but not if already has harbor proxy)
+        else if (!line.includes(`${HARBOR_PROXY}/`)) {
+          const registryMatch = line.match(/(\s+imageRegistry:\s+)([^\s\n]+)/);
+          if (
+            registryMatch &&
+            registryMatch[2] &&
+            registryMatch[2] !== HARBOR_PROXY &&
+            !registryMatch[2].startsWith(`${HARBOR_PROXY}/`) &&
+            registryMatch[2] !== '""' &&  // Skip empty string values
+            registryMatch[2] !== "''" &&  // Skip empty string values with single quotes
+            registryMatch[2].trim() !== ""  // Skip actual empty values
+          ) {
+            line = line.replace(
+              /(\s+imageRegistry:\s+)([^\s\n]+)/,
+              `$1${HARBOR_PROXY}/$2`
+            );
+          }
         }
       }
 
