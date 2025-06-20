@@ -320,7 +320,7 @@ type Token @entity(immutable: false) {
   basePriceClaim: IdentityClaim
   deployedInTransaction: Bytes!
   # Compliance
-  complianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
+  tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
 }
 
 type TokenBalance @entity(immutable: false) {

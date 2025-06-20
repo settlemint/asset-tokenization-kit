@@ -669,7 +669,7 @@ templates:
         - Event
       abis:
         - name: TokenFactoryRegistry
-          file: ./abis/TokenFactoryRegistry.json
+          file: ../contracts/.generated/artifacts/contracts/system/token-factory/IATKTokenFactoryRegistry.sol/IATKTokenFactoryRegistry.json
         - name: BondFactory
           file: ../contracts/.generated/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
       eventHandlers:
