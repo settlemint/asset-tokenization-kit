@@ -167,9 +167,6 @@ contract ATKSystemImplementation is
     /// @dev Stores the address of the token factory registry proxy contract.
     address private _tokenFactoryRegistryProxy;
 
-    // @dev Mapping of compliance module type hashes to their addresses.
-    mapping(bytes32 => address) public complianceModulesByType;
-
     // --- Internal Helper for Interface Check ---
     /// @dev Internal helper function to check if a given contract address (`implAddress`)
     /// supports a specific interface (`interfaceId`) using ERC165 introspection.
