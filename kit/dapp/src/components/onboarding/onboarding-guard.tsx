@@ -11,7 +11,7 @@ type OnboardingGuardProps = PropsWithChildren<{
 export function OnboardingGuard({ children, require }: OnboardingGuardProps) {
   const isMounted = useMounted();
   const navigate = useNavigate();
-  const { data: user, isError, error } = useQuery(orpc.user.me.queryOptions());
+  const { data: user, isError } = useQuery(orpc.user.me.queryOptions());
 
   const {
     data: account,
@@ -21,21 +21,6 @@ export function OnboardingGuard({ children, require }: OnboardingGuardProps) {
     ...orpc.account.me.queryOptions(),
     enabled: !!user?.wallet,
   });
-
-  // Handle authentication errors
-  useEffect(() => {
-    if (isError) {
-      // For ORPC errors, the error object will have a code property
-      const errorObj = error as { code?: string };
-      if (errorObj.code === "UNAUTHORIZED") {
-        void navigate({
-          to: "/auth/$pathname",
-          params: { pathname: "sign-in" },
-          replace: true,
-        });
-      }
-    }
-  }, [isError, error, navigate]);
 
   const hasWallet = !!user?.wallet;
   const hasCountry = isSuccess && account?.country !== undefined;

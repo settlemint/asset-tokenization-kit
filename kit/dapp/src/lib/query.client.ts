@@ -41,7 +41,7 @@
  */
 
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryCache, MutationCache } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import superjson from "superjson";
 
@@ -95,7 +95,43 @@ interface QueryError extends Error {
   data?: unknown;
 }
 
+/**
+ * Global error handler for UNAUTHORIZED errors.
+ * Redirects to the sign-in page when authentication fails.
+ */
+const handleUnauthorizedError = (error: unknown) => {
+  const queryError = error as QueryError;
+  if (queryError.code === "UNAUTHORIZED" || queryError.status === 401) {
+    // Only redirect if we're in the browser and not already on the auth page
+    if (typeof window !== "undefined" && !window.location.pathname.startsWith("/auth/")) {
+      window.location.href = "/auth/sign-in";
+    }
+  }
+};
+
+/**
+ * Query cache with global error handling.
+ * Catches all query errors and handles UNAUTHORIZED globally.
+ */
+const queryCache = new QueryCache({
+  onError: (error) => {
+    handleUnauthorizedError(error);
+  },
+});
+
+/**
+ * Mutation cache with global error handling.
+ * Catches all mutation errors and handles UNAUTHORIZED globally.
+ */
+const mutationCache = new MutationCache({
+  onError: (error) => {
+    handleUnauthorizedError(error);
+  },
+});
+
 export const queryClient = new QueryClient({
+  queryCache,
+  mutationCache,
   defaultOptions: {
     queries: {
       // Only refetch on window focus in production to reduce development noise
@@ -117,6 +153,10 @@ export const queryClient = new QueryClient({
        */
       retry: (failureCount, error) => {
         const queryError = error as QueryError;
+        // Don't retry on UNAUTHORIZED errors
+        if (queryError.code === "UNAUTHORIZED" || queryError.status === 401) {
+          return false;
+        }
         // Don't retry on 4xx errors (except 408 Request Timeout)
         if (
           queryError.status &&
@@ -164,6 +204,10 @@ export const queryClient = new QueryClient({
        */
       retry: (failureCount, error) => {
         const mutationError = error as QueryError;
+        // Don't retry on UNAUTHORIZED errors
+        if (mutationError.code === "UNAUTHORIZED" || mutationError.status === 401) {
+          return false;
+        }
         // Don't retry on 4xx errors
         if (
           mutationError.status &&
