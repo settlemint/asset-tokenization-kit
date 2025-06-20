@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
 import { useMemo, type ReactNode } from "react";
 
 export interface Step {
@@ -46,20 +45,15 @@ export function StepWizard({
   isNextDisabled = false,
   isBackDisabled = false,
 }: StepWizardProps) {
-  const { theme } = useTheme();
-
   const sidebarStyle = useMemo(() => {
     return {
-      backgroundImage:
-        theme === "dark"
-          ? "linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5))"
-          : "linear-gradient(45deg, rgba(52, 110, 238, 0.5), rgba(137, 214, 162, 0.8))",
+      background: "var(--sm-wizard-sidebar-gradient)",
       backgroundSize: "cover",
       backgroundPosition: "top",
       backgroundRepeat: "no-repeat",
       minWidth: "280px",
     };
-  }, [theme]);
+  }, []);
 
   const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
   const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
@@ -69,7 +63,7 @@ export function StepWizard({
       <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
         {/* Sidebar / Steps */}
         <div
-          className="w-[320px] flex-shrink-0 bg-primary p-8 flex flex-col transition-all duration-300"
+          className="w-[320px] flex-shrink-0 p-8 flex flex-col transition-all duration-300"
           style={sidebarStyle}
         >
           {/* Title and Description */}
@@ -289,38 +283,37 @@ export function StepWizard({
         </div>
 
         {/* Content area */}
-        <div className="flex-1 flex flex-col bg-background transition-all duration-300">
+        <div
+          className="flex-1 flex flex-col transition-all duration-300 relative overflow-hidden"
+          style={{ backgroundColor: "var(--sm-background-lightest)" }}
+        >
           <div className="flex-1 overflow-y-auto p-8">
-            <div className="w-full">{children}</div>
+            <div className="w-full h-full">{children}</div>
           </div>
 
           {/* Navigation buttons */}
           {(showBackButton || showNextButton) && (
-            <div className="border-t bg-background p-6">
-              <div className="flex justify-between max-w-2xl">
-                <div>
-                  {showBackButton && onBack && (
-                    <Button
-                      variant="outline"
-                      onClick={onBack}
-                      disabled={isBackDisabled}
-                      className="transition-all duration-200"
-                    >
-                      {backLabel ?? "Back"}
-                    </Button>
-                  )}
-                </div>
-                <div>
-                  {showNextButton && onNext && (
-                    <Button
-                      onClick={onNext}
-                      disabled={isNextDisabled}
-                      className="transition-all duration-200"
-                    >
-                      {nextLabel ?? "Next"}
-                    </Button>
-                  )}
-                </div>
+            <div className="p-6 relative z-20">
+              <div className="flex justify-end gap-3">
+                {showBackButton && onBack && (
+                  <Button
+                    variant="outline"
+                    onClick={onBack}
+                    disabled={isBackDisabled}
+                    className="transition-all duration-200"
+                  >
+                    {backLabel ?? "Back"}
+                  </Button>
+                )}
+                {showNextButton && onNext && (
+                  <Button
+                    onClick={onNext}
+                    disabled={isNextDisabled}
+                    className="transition-all duration-200"
+                  >
+                    {nextLabel ?? "Next"}
+                  </Button>
+                )}
               </div>
             </div>
           )}

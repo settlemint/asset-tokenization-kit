@@ -9,7 +9,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { orpc } from "@/orpc";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/platform")({
@@ -19,7 +19,6 @@ export const Route = createFileRoute("/_private/onboarding/platform")({
 function PlatformOnboarding() {
   const { t } = useTranslation(["general", "onboarding"]);
   const navigate = useNavigate();
-  const [currentStepId, setCurrentStepId] = useState("wallet");
 
   // Query user and system data to determine step statuses
   const { data: user } = useQuery(orpc.user.me.queryOptions());
@@ -33,12 +32,34 @@ function PlatformOnboarding() {
     enabled: !!systemAddress?.value,
   });
 
+  // Start with first step, will update when data loads
+  const [currentStepId, setCurrentStepId] = useState("wallet");
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  // Determine initial step based on what's completed
+  const getInitialStep = () => {
+    if (!user?.wallet) return "wallet";
+    if (!systemAddress?.value) return "system";
+    if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
+    return "assets"; // Default to last step if all complete
+  };
+
+  // Set initial step once when data is loaded
+  useEffect(() => {
+    // Only set initial step once when we have user data
+    if (!hasInitialized && user !== undefined) {
+      const initialStep = getInitialStep();
+      setCurrentStepId(initialStep);
+      setHasInitialized(true);
+    }
+  }, [user, systemAddress, systemDetails, hasInitialized]);
+
   // Define steps with dynamic statuses
   const steps: Step[] = [
     {
       id: "wallet",
-      title: t("onboarding:steps.wallet.title"),
-      description: t("onboarding:steps.wallet.description"),
+      title: "Generate Wallet",
+      description: "Create your secure blockchain wallet",
       status: user?.wallet
         ? "completed"
         : currentStepId === "wallet"
@@ -47,8 +68,8 @@ function PlatformOnboarding() {
     },
     {
       id: "system",
-      title: t("onboarding:steps.system.title"),
-      description: t("onboarding:steps.system.description"),
+      title: "Deploy System",
+      description: "Deploy your SMART tokenization system",
       status: systemAddress?.value
         ? "completed"
         : currentStepId === "system"
@@ -73,16 +94,94 @@ function PlatformOnboarding() {
   };
 
   const handleWalletSuccess = () => {
-    setCurrentStepId("system");
+    // Don't auto-advance
   };
 
   const handleSystemSuccess = () => {
-    setCurrentStepId("assets");
+    // Don't auto-advance
   };
 
   const handleAssetsSuccess = () => {
     // Platform onboarding complete, redirect to dashboard
     void navigate({ to: "/" });
+  };
+
+  // Navigation handlers
+  const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
+
+  // Store references to step action functions
+  const walletActionRef = useRef<(() => void) | null>(null);
+  const systemActionRef = useRef<(() => void) | null>(null);
+
+  const handleNext = () => {
+    // Check if current step needs special action
+    if (
+      currentStepId === "wallet" &&
+      !user?.wallet &&
+      walletActionRef.current
+    ) {
+      walletActionRef.current();
+      return;
+    }
+
+    if (
+      currentStepId === "system" &&
+      !systemAddress?.value &&
+      systemActionRef.current
+    ) {
+      systemActionRef.current();
+      return;
+    }
+
+    // Normal navigation - move to next step
+    if (currentStepIndex < steps.length - 1) {
+      const nextStep = steps[currentStepIndex + 1];
+      if (nextStep) {
+        setCurrentStepId(nextStep.id);
+      }
+    } else if (currentStepIndex === steps.length - 1) {
+      // Last step - complete onboarding
+      handleAssetsSuccess();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStepIndex > 0) {
+      const prevStep = steps[currentStepIndex - 1];
+      if (prevStep) {
+        setCurrentStepId(prevStep.id);
+      }
+    }
+  };
+
+  // Determine if next button should be disabled
+  const isNextDisabled = () => {
+    // For wallet step, enable button if no wallet
+    if (currentStepId === "wallet" && !user?.wallet) {
+      return false; // Enable the "Generate Wallet" button
+    }
+
+    // For system step, enable button if no system
+    if (currentStepId === "system" && !systemAddress?.value) {
+      return false; // Enable the "Deploy System" button
+    }
+
+    const currentStep = steps[currentStepIndex];
+    return currentStep?.status !== "completed";
+  };
+
+  // Determine button labels
+  const getNextLabel = () => {
+    if (currentStepIndex === steps.length - 1) {
+      return t("onboarding:complete", "Complete");
+    }
+    if (currentStepId === "wallet" && !user?.wallet) {
+      return "Generate Wallet";
+    }
+    if (currentStepId === "system" && !systemAddress?.value) {
+      return "Deploy System";
+    }
+    return t("onboarding:next", "Next");
   };
 
   return (
@@ -115,17 +214,33 @@ function PlatformOnboarding() {
             <StepWizard
               steps={steps}
               currentStepId={currentStepId}
-              title={t("general:appName")}
-              description={t("general:appDescription")}
+              title="Let's get you set up!"
+              description="You will need a wallet and an identity on the blockchain to use this platform."
               onStepChange={handleStepChange}
-              showBackButton={false}
-              showNextButton={false}
+              showBackButton={currentStepIndex > 0}
+              showNextButton={true}
+              onBack={handleBack}
+              onNext={handleNext}
+              isBackDisabled={false}
+              isNextDisabled={isNextDisabled()}
+              nextLabel={getNextLabel()}
+              backLabel={t("onboarding:back", "Back")}
             >
               {currentStepId === "wallet" && (
-                <WalletStep onSuccess={handleWalletSuccess} />
+                <WalletStep
+                  onSuccess={handleWalletSuccess}
+                  onRegisterAction={(action) => {
+                    walletActionRef.current = action;
+                  }}
+                />
               )}
               {currentStepId === "system" && (
-                <SystemStep onSuccess={handleSystemSuccess} />
+                <SystemStep
+                  onSuccess={handleSystemSuccess}
+                  onRegisterAction={(action) => {
+                    systemActionRef.current = action;
+                  }}
+                />
               )}
               {currentStepId === "assets" && (
                 <AssetSelectionStep onSuccess={handleAssetsSuccess} />

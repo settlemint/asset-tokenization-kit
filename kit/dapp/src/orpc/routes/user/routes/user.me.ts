@@ -49,7 +49,7 @@ export const me = authRouter.user.me.handler(({ context }) => {
     id: user.id,
     name: user.name,
     email: user.email,
-    role: user.role ?? "investor", // Default to "investor" if role is null/undefined
+    role: user.role,
     wallet: user.wallet ?? null,
   };
 });

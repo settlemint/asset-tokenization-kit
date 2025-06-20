@@ -2,7 +2,7 @@ import type { ORPCErrorCode } from "@orpc/client";
 import { ORPCError, ValidationError } from "@orpc/server";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { APIError } from "better-auth/api";
-import { ZodError } from "zod/v4";
+import { z } from "zod/v4";
 import { baseRouter } from "../../procedures/base.router";
 
 const logger = createLogger({
@@ -15,12 +15,12 @@ const logger = createLogger({
  * @param zodError - The ZodError to format
  * @returns A formatted error object with pretty-printed message and structured errors
  */
-function formatZodError(zodError: ZodError) {
-  // Use Zod's built-in pretty printing for a nice formatted message
-  const prettyMessage = zodError.toString();
+function formatZodError(zodError: z.ZodError) {
+  // Use Zod's prettifyError function for a nice formatted message
+  const prettyMessage = z.prettifyError(zodError);
 
   // Also provide structured errors for programmatic access
-  const formattedErrors = zodError.errors.map((err) => ({
+  const formattedErrors = zodError.issues.map((err) => ({
     path: err.path.join("."),
     message: err.message,
     code: err.code,
@@ -139,7 +139,7 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
       ) {
         // Check if the underlying cause is a ZodError for better formatting
         const formattedData =
-          error.cause.cause instanceof ZodError
+          error.cause.cause instanceof z.ZodError
             ? formatZodError(error.cause.cause)
             : error.cause.message;
 
@@ -150,8 +150,8 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
               : formattedData,
           details: formattedData,
           path:
-            error.cause.cause instanceof ZodError
-              ? error.cause.cause.errors[0]?.path
+            error.cause.cause instanceof z.ZodError
+              ? error.cause.cause.issues[0]?.path
               : undefined,
         });
 
@@ -172,21 +172,29 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
       ) {
         // Check if we have ORPC validation issues
         let formattedData;
-        if (error.cause.issues && Array.isArray(error.cause.issues)) {
+        if (Array.isArray(error.cause.issues)) {
           // Format ORPC validation issues
-          const issues = error.cause.issues.map((issue: any) => ({
-            path: issue.path || "unknown",
-            message: issue.message || "Validation failed",
-            expected: issue.expected,
-            received: issue.received,
-          }));
+          interface ORPCValidationIssue {
+            path?: string;
+            message?: string;
+            expected?: unknown;
+            received?: unknown;
+          }
+          const issues = error.cause.issues.map(
+            (issue: ORPCValidationIssue) => ({
+              path: issue.path ?? "unknown",
+              message: issue.message ?? "Validation failed",
+              expected: issue.expected,
+              received: issue.received,
+            })
+          );
 
           formattedData = {
-            message: `Output validation failed:\n${issues.map((i: any) => `- ${i.path}: ${i.message}`).join("\n")}`,
+            message: `Output validation failed:\n${issues.map((i) => `- ${i.path}: ${i.message}`).join("\n")}`,
             errors: issues,
             errorCount: issues.length,
           };
-        } else if (error.cause.cause instanceof ZodError) {
+        } else if (error.cause.cause instanceof z.ZodError) {
           // Format Zod errors
           formattedData = formatZodError(error.cause.cause);
         } else {

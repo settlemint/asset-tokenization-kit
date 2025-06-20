@@ -2,7 +2,7 @@
  * Formats validation errors for display in the UI
  */
 
-import type { ORPCError } from "@orpc/client";
+import type { ORPCError } from "@orpc/server";
 
 interface FormattedValidationError {
   path: string;
@@ -18,22 +18,28 @@ interface ValidationErrorData {
   errorCount: number;
 }
 
+type ValidationError = ORPCError<
+  "INPUT_VALIDATION_FAILED" | "OUTPUT_VALIDATION_FAILED",
+  ValidationErrorData
+>;
+
 /**
  * Checks if an error is a validation error with structured data
  */
-export function isValidationError(error: unknown): error is ORPCError & {
-  data: ValidationErrorData;
-} {
+export function isValidationError(error: unknown): error is ValidationError {
+  if (!(error instanceof Error)) return false;
+
+  const orpcError = error as ORPCError<string, unknown>;
+
   return (
-    error instanceof Error &&
-    "code" in error &&
-    (error.code === "INPUT_VALIDATION_FAILED" ||
-      error.code === "OUTPUT_VALIDATION_FAILED") &&
-    "data" in error &&
-    typeof error.data === "object" &&
-    error.data !== null &&
-    "errors" in error.data &&
-    Array.isArray(error.data.errors)
+    "code" in orpcError &&
+    (orpcError.code === "INPUT_VALIDATION_FAILED" ||
+      orpcError.code === "OUTPUT_VALIDATION_FAILED") &&
+    "data" in orpcError &&
+    typeof orpcError.data === "object" &&
+    orpcError.data !== null &&
+    "errors" in orpcError.data &&
+    Array.isArray((orpcError.data as { errors?: unknown[] }).errors)
   );
 }
 
@@ -65,13 +71,16 @@ export function formatValidationError(error: unknown): string {
 
   if (errorCount === 1) {
     const firstError = errors[0];
+    if (!firstError) {
+      return error.message;
+    }
     return firstError.path
       ? `${firstError.path}: ${firstError.message}`
       : firstError.message;
   }
 
   // Multiple errors - format as a list
-  const errorMessages = errors.map((err) =>
+  const errorMessages = errors.map((err: FormattedValidationError) =>
     err.path ? `• ${err.path}: ${err.message}` : `• ${err.message}`
   );
 
