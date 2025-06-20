@@ -27,7 +27,6 @@ export const create = authRouter.account.create
       });
     }
 
-    // TODO JAN: i can call this twice for the same id, is that normal?
     const { createWallet } = await context.portalClient.request(
       CREATE_ACCOUNT_MUTATION,
       {

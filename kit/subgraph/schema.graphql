@@ -259,6 +259,7 @@ type Token @entity(immutable: false) {
   createdBy: Account!
   account: Account!
   accessControl: AccessControl
+  requiredClaimTopics: [String!]!
   identity: Identity
   balances: [TokenBalance!]! @derivedFrom(field: "token")
   type: String!

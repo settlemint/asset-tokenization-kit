@@ -4,7 +4,9 @@ import type { hasuraClient } from "@/lib/settlemint/hasura";
 import type { client as minioClient } from "@/lib/settlemint/minio";
 import type { portalClient } from "@/lib/settlemint/portal";
 import type { theGraphClient } from "@/lib/settlemint/the-graph";
+import type { TokenFactory } from "@/orpc/middlewares/system/system.middleware";
 import type { getHeaders } from "@tanstack/react-start/server";
+import type { Address } from "viem";
 
 /**
  * ORPC procedure context type definition.
@@ -95,4 +97,23 @@ export interface Context {
    * @see {@link @/lib/settlemint/hasura} - Hasura client configuration
    */
   hasuraClient?: typeof hasuraClient;
+
+  /**
+   * System information.
+   * Injected by systemMiddleware for procedures that need to interact with the system.
+   * @optional
+   * @see {@link @/lib/settlemint/system} - System client configuration
+   */
+  system?: {
+    address: Address;
+    tokenFactories: TokenFactory[];
+  };
+
+  /**
+   * Token factory information.
+   * Injected by tokenFactoryMiddleware for procedures that need to interact with a specific token factory.
+   * @optional
+   * @see {@link @/orpc/middlewares/system/token-factory.middleware} - Token factory middleware configuration
+   */
+  tokenFactory?: TokenFactory;
 }

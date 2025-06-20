@@ -10,6 +10,7 @@
  * 2. Session middleware (from public router)
  * 3. Auth middleware (from auth router)
  * 4. Wallet middleware - Ensures user has a wallet
+ * 5. System middleware - Ensures system is onboarded
  *
  * Use this router for procedures that require:
  * - A verified user wallet address
@@ -19,7 +20,10 @@
  * @see {@link ./auth.router} - Authenticated router that this extends
  * @see {@link ../middlewares/auth/wallet.middleware} - Wallet verification middleware
  */
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { walletMiddleware } from "../middlewares/auth/wallet.middleware";
 import { authRouter } from "./auth.router";
 
-export const onboardedRouter = authRouter.use(walletMiddleware);
+export const onboardedRouter = authRouter
+  .use(walletMiddleware)
+  .use(systemMiddleware);

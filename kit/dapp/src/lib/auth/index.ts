@@ -18,7 +18,14 @@
  */
 
 import { metadata } from "@/config/metadata";
+import {
+  accessControl,
+  adminRole,
+  issuerRole,
+  userRole,
+} from "@/lib/auth/permissions";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import type { UserRole } from "@/lib/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -146,7 +153,14 @@ const getAuthConfig = serverOnly(() =>
       /**
        * Admin plugin for user management capabilities.
        */
-      admin(),
+      admin({
+        ac: accessControl,
+        roles: {
+          admin: adminRole,
+          user: userRole,
+          issuer: issuerRole,
+        },
+      }),
 
       /**
        * API key plugin configuration for programmatic access.
@@ -161,6 +175,7 @@ const getAuthConfig = serverOnly(() =>
           maxRequests: 60, // 60 requests per minute
         },
         permissions: {
+          // TODO: assing a role to the api key when created
           defaultPermissions: {
             planets: ["read"], // Default read-only permissions
           },
@@ -211,6 +226,7 @@ export type Session = typeof auth.$Infer.Session;
  * The wallet field is overridden to use the branded EthereumAddress type
  * for additional type safety when working with blockchain addresses.
  */
-export type SessionUser = Omit<Session["user"], "wallet"> & {
+export type SessionUser = Omit<Session["user"], "wallet" | "role"> & {
+  role: UserRole;
   wallet?: EthereumAddress | null;
 };

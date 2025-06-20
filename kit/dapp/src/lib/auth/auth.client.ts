@@ -23,6 +23,7 @@ import {
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import type { auth } from ".";
+import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
 
 /**
  * The main authentication client instance for the application.
@@ -74,7 +75,14 @@ export const authClient = createAuthClient({
      * - Update user roles and permissions
      * - Manage user accounts
      */
-    adminClient(),
+    adminClient({
+      ac: accessControl,
+      roles: {
+        admin: adminRole,
+        user: userRole,
+        issuer: issuerRole,
+      },
+    }),
 
     /**
      * API key plugin for programmatic access.
