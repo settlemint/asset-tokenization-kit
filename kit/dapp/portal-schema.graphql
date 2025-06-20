@@ -7499,6 +7499,467 @@ type ATKSystemRolesTransactionReceiptOutput {
   userOperationReceipts: [UserOperationReceipt!]
 }
 
+type ATKTimeBoundAirdropFactoryImplementation {
+  DEFAULT_ADMIN_ROLE: String
+
+  """
+  Returns the total number of time-bound airdrop proxy contracts created by this factory.
+  """
+  allAirdropsLength: ATKTimeBoundAirdropFactoryImplementationAllAirdropsLengthOutput
+
+  """
+  Address of the current `ATKTimeBoundAirdrop` logic contract (implementation).
+  """
+  atkTimeBoundAirdropImplementation: String
+
+  """
+  Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+  """
+  getRoleAdmin(role: String!): String
+
+  """Returns `true` if `account` has been granted `role`."""
+  hasRole(account: String!, role: String!): Boolean
+  id: ID
+
+  """
+  Mapping indicating whether an system addon address was deployed by this factory.
+  """
+  isFactorySystemAddon(systemAddonAddress: String!): ATKTimeBoundAirdropFactoryImplementationIsFactorySystemAddonOutput
+
+  """Indicates whether any particular address is the trusted forwarder."""
+  isTrustedForwarder(forwarder: String!): Boolean
+
+  """
+  Predicts the deployment address of a time-bound airdrop proxy.
+  The predicted address of the time-bound airdrop proxy.
+  """
+  predictTimeBoundAirdropAddress(endTime: String!, name: String!, owner: String!, root: String!, startTime: String!, token: String!): ATKTimeBoundAirdropFactoryImplementationPredictTimeBoundAirdropAddressOutput
+
+  """
+  Returns the address of the current `ATKTimeBoundAirdrop` logic contract (implementation).
+  """
+  supportsInterface(interfaceId: String!): Boolean
+
+  """Returns the address of the trusted forwarder."""
+  trustedForwarder: String
+
+  """Returns a unique identifier for the type of this contract."""
+  typeId: String
+}
+
+type ATKTimeBoundAirdropFactoryImplementationAllAirdropsLengthOutput {
+  count: String
+}
+
+input ATKTimeBoundAirdropFactoryImplementationCreateInput {
+  """The timestamp when claims end."""
+  endTime: String!
+
+  """The human-readable name for the airdrop."""
+  name: String!
+
+  """The initial owner of the contract."""
+  owner: String!
+
+  """The Merkle root for verifying claims."""
+  root: String!
+
+  """The timestamp when claims can begin."""
+  startTime: String!
+
+  """The address of the ERC20 token to be distributed."""
+  token: String!
+}
+
+input ATKTimeBoundAirdropFactoryImplementationGrantRoleInput {
+  account: String!
+  role: String!
+}
+
+input ATKTimeBoundAirdropFactoryImplementationInitializeInput {
+  """The address of the initial admin."""
+  initialAdmin_: String!
+
+  """The address of the `IATKSystem` contract."""
+  systemAddress_: String!
+}
+
+type ATKTimeBoundAirdropFactoryImplementationIsFactorySystemAddonOutput {
+  isFactorySystemAddon: Boolean
+}
+
+type ATKTimeBoundAirdropFactoryImplementationPredictTimeBoundAirdropAddressOutput {
+  predictedAddress: String
+}
+
+input ATKTimeBoundAirdropFactoryImplementationRenounceRoleInput {
+  callerConfirmation: String!
+  role: String!
+}
+
+input ATKTimeBoundAirdropFactoryImplementationRevokeRoleInput {
+  account: String!
+  role: String!
+}
+
+"""Returns the transaction hash"""
+type ATKTimeBoundAirdropFactoryImplementationTransactionOutput {
+  transactionHash: String
+}
+
+"""Returns the transaction receipt"""
+type ATKTimeBoundAirdropFactoryImplementationTransactionReceiptOutput {
+  """Blob Gas Price"""
+  blobGasPrice: String
+
+  """Blob Gas Used"""
+  blobGasUsed: String
+
+  """Block Hash"""
+  blockHash: String!
+
+  """Block Number"""
+  blockNumber: String!
+
+  """Contract Address"""
+  contractAddress: String
+
+  """Cumulative Gas Used"""
+  cumulativeGasUsed: String!
+
+  """Effective Gas Price"""
+  effectiveGasPrice: String!
+
+  """Events (decoded from the logs)"""
+  events: JSON!
+
+  """From"""
+  from: String!
+
+  """Gas Used"""
+  gasUsed: String!
+
+  """Logs"""
+  logs: JSON!
+
+  """Logs Bloom"""
+  logsBloom: String!
+
+  """ABI-encoded string containing the revert reason"""
+  revertReason: String
+
+  """Decoded revert reason"""
+  revertReasonDecoded: String
+
+  """Root"""
+  root: String
+
+  """Status"""
+  status: TransactionReceiptStatus!
+
+  """To"""
+  to: String
+
+  """Transaction Hash"""
+  transactionHash: String!
+
+  """Transaction Index"""
+  transactionIndex: Int!
+
+  """Type"""
+  type: String!
+
+  """List of user operation receipts associated with this transaction"""
+  userOperationReceipts: [UserOperationReceipt!]
+}
+
+input ATKTimeBoundAirdropFactoryImplementationUpdateImplementationInput {
+  """The address of the new `ATKTimeBoundAirdrop` logic contract."""
+  _newImplementation: String!
+}
+
+type ATKTimeBoundAirdropImplementation {
+  """
+  Maximum number of items allowed in batch operations to prevent OOM and gas limit issues.
+  """
+  MAX_BATCH_SIZE: String
+
+  """
+  Returns the claim tracker contract.
+  The claim tracker contract.
+  """
+  claimTracker: String
+
+  """
+  Returns the end time when claims are no longer available.
+  The timestamp when claims end.
+  """
+  endTime: String
+
+  """
+  Gets the amount already claimed for a specific index.
+  claimedAmount The amount already claimed for this index.
+  """
+  getClaimedAmount(index: String!): String
+
+  """
+  Returns the time remaining until the airdrop starts (if not started) or ends (if active).
+  The number of seconds remaining, 0 if ended.
+  """
+  getTimeRemaining: ATKTimeBoundAirdropImplementationGetTimeRemainingOutput
+  id: ID
+
+  """
+  Checks if the airdrop is currently active (within the time window).
+  True if the current time is within the claim window.
+  """
+  isActive: ATKTimeBoundAirdropImplementationIsActiveOutput
+
+  """
+  Checks if a claim has been fully claimed for a specific index.
+  claimed True if the index has been fully claimed, false otherwise.
+  """
+  isClaimed(index: String!, totalAmount: String!): Boolean
+
+  """Indicates whether any particular address is the trusted forwarder."""
+  isTrustedForwarder(forwarder: String!): Boolean
+
+  """
+  Returns the Merkle root for verifying airdrop claims.
+  The Merkle root for verifying airdrop claims.
+  """
+  merkleRoot: String
+
+  """
+  Returns the name of this airdrop.
+  The human-readable name of the airdrop.
+  """
+  name: String
+
+  """Returns the address of the current owner."""
+  owner: String
+
+  """
+  Returns the start time when claims become available.
+  The timestamp when claims can begin.
+  """
+  startTime: String
+
+  """
+  Returns the token being distributed in this airdrop.
+  The ERC20 token being distributed.
+  """
+  token: String
+
+  """Returns the address of the trusted forwarder."""
+  trustedForwarder: String
+}
+
+input ATKTimeBoundAirdropImplementationBatchClaimInput {
+  """The indices of the claims in the Merkle tree."""
+  indices: [String!]!
+
+  """The Merkle proof arrays for verification of each claim."""
+  merkleProofs: [[String!]!]!
+
+  """The total amounts allocated for each index."""
+  totalAmounts: [String!]!
+}
+
+input ATKTimeBoundAirdropImplementationClaimInput {
+  """The index of the claim in the Merkle tree."""
+  index: String!
+
+  """The Merkle proof array for verification."""
+  merkleProof: [String!]!
+
+  """The total amount allocated for this index."""
+  totalAmount: String!
+}
+
+type ATKTimeBoundAirdropImplementationGetTimeRemainingOutput {
+  timeRemaining: String
+}
+
+input ATKTimeBoundAirdropImplementationInitializeInput {
+  """The timestamp when claims end."""
+  endTime_: String!
+
+  """The human-readable name for this airdrop."""
+  name_: String!
+
+  """The initial owner of the contract."""
+  owner_: String!
+
+  """The Merkle root for verifying claims."""
+  root_: String!
+
+  """The timestamp when claims can begin."""
+  startTime_: String!
+
+  """The address of the ERC20 token to be distributed."""
+  token_: String!
+}
+
+type ATKTimeBoundAirdropImplementationIsActiveOutput {
+  active: Boolean
+}
+
+"""Returns the transaction hash"""
+type ATKTimeBoundAirdropImplementationTransactionOutput {
+  transactionHash: String
+}
+
+"""Returns the transaction receipt"""
+type ATKTimeBoundAirdropImplementationTransactionReceiptOutput {
+  """Blob Gas Price"""
+  blobGasPrice: String
+
+  """Blob Gas Used"""
+  blobGasUsed: String
+
+  """Block Hash"""
+  blockHash: String!
+
+  """Block Number"""
+  blockNumber: String!
+
+  """Contract Address"""
+  contractAddress: String
+
+  """Cumulative Gas Used"""
+  cumulativeGasUsed: String!
+
+  """Effective Gas Price"""
+  effectiveGasPrice: String!
+
+  """Events (decoded from the logs)"""
+  events: JSON!
+
+  """From"""
+  from: String!
+
+  """Gas Used"""
+  gasUsed: String!
+
+  """Logs"""
+  logs: JSON!
+
+  """Logs Bloom"""
+  logsBloom: String!
+
+  """ABI-encoded string containing the revert reason"""
+  revertReason: String
+
+  """Decoded revert reason"""
+  revertReasonDecoded: String
+
+  """Root"""
+  root: String
+
+  """Status"""
+  status: TransactionReceiptStatus!
+
+  """To"""
+  to: String
+
+  """Transaction Hash"""
+  transactionHash: String!
+
+  """Transaction Index"""
+  transactionIndex: Int!
+
+  """Type"""
+  type: String!
+
+  """List of user operation receipts associated with this transaction"""
+  userOperationReceipts: [UserOperationReceipt!]
+}
+
+input ATKTimeBoundAirdropImplementationTransferOwnershipInput {
+  newOwner: String!
+}
+
+input ATKTimeBoundAirdropImplementationWithdrawTokensInput {
+  """The address to send the withdrawn tokens to."""
+  to: String!
+}
+
+type ATKTimeBoundAirdropProxy {
+  id: ID
+}
+
+"""Returns the transaction hash"""
+type ATKTimeBoundAirdropProxyTransactionOutput {
+  transactionHash: String
+}
+
+"""Returns the transaction receipt"""
+type ATKTimeBoundAirdropProxyTransactionReceiptOutput {
+  """Blob Gas Price"""
+  blobGasPrice: String
+
+  """Blob Gas Used"""
+  blobGasUsed: String
+
+  """Block Hash"""
+  blockHash: String!
+
+  """Block Number"""
+  blockNumber: String!
+
+  """Contract Address"""
+  contractAddress: String
+
+  """Cumulative Gas Used"""
+  cumulativeGasUsed: String!
+
+  """Effective Gas Price"""
+  effectiveGasPrice: String!
+
+  """Events (decoded from the logs)"""
+  events: JSON!
+
+  """From"""
+  from: String!
+
+  """Gas Used"""
+  gasUsed: String!
+
+  """Logs"""
+  logs: JSON!
+
+  """Logs Bloom"""
+  logsBloom: String!
+
+  """ABI-encoded string containing the revert reason"""
+  revertReason: String
+
+  """Decoded revert reason"""
+  revertReasonDecoded: String
+
+  """Root"""
+  root: String
+
+  """Status"""
+  status: TransactionReceiptStatus!
+
+  """To"""
+  to: String
+
+  """Transaction Hash"""
+  transactionHash: String!
+
+  """Transaction Index"""
+  transactionIndex: Int!
+
+  """Type"""
+  type: String!
+
+  """List of user operation receipts associated with this transaction"""
+  userOperationReceipts: [UserOperationReceipt!]
+}
+
 type ATKTokenAccessManagerImplementation {
   DEFAULT_ADMIN_ROLE: String
 
@@ -12285,6 +12746,38 @@ input DeployContractATKSystemFactoryInput {
 
 input DeployContractATKSystemImplementationInput {
   forwarder_: String!
+}
+
+input DeployContractATKTimeBoundAirdropFactoryImplementationInput {
+  forwarder: String!
+}
+
+input DeployContractATKTimeBoundAirdropImplementationInput {
+  """The address of the forwarder contract."""
+  forwarder_: String!
+}
+
+input DeployContractATKTimeBoundAirdropProxyInput {
+  """The timestamp when claims end."""
+  endTime: String!
+
+  """The address of the IATKTimeBoundAirdropFactory contract."""
+  factoryAddress: String!
+
+  """The human-readable name for the airdrop."""
+  name: String!
+
+  """The initial owner of the contract."""
+  owner: String!
+
+  """The Merkle root for verifying claims."""
+  root: String!
+
+  """The timestamp when claims can begin."""
+  startTime: String!
+
+  """The address of the ERC20 token to be distributed."""
+  token: String!
 }
 
 input DeployContractATKTokenAccessManagerImplementationInput {
@@ -17261,6 +17754,295 @@ type IATKSystemTrustedIssuersRegistryImplementationOutput {
 
 type IATKSystemTrustedIssuersRegistryProxyOutput {
   trustedIssuersRegistryProxyAddress: String
+}
+
+type IATKTimeBoundAirdrop {
+  """
+  Returns the claim tracker contract.
+  The claim tracker contract.
+  """
+  claimTracker: String
+
+  """
+  Returns the end time when claims are no longer available.
+  The timestamp when claims end.
+  """
+  endTime: String
+
+  """
+  Gets the amount already claimed for a specific index.
+  claimedAmount The amount already claimed for this index.
+  """
+  getClaimedAmount(index: String!): String
+
+  """
+  Returns the time remaining until the airdrop starts (if not started) or ends (if active).
+  The number of seconds remaining, 0 if ended.
+  """
+  getTimeRemaining: IATKTimeBoundAirdropGetTimeRemainingOutput
+  id: ID
+
+  """
+  Checks if the airdrop is currently active (within the time window).
+  True if the current time is within the claim window.
+  """
+  isActive: IATKTimeBoundAirdropIsActiveOutput
+
+  """
+  Checks if a claim has been fully claimed for a specific index.
+  claimed True if the index has been fully claimed, false otherwise.
+  """
+  isClaimed(index: String!, totalAmount: String!): Boolean
+
+  """
+  Returns the Merkle root for verifying airdrop claims.
+  The Merkle root for verifying airdrop claims.
+  """
+  merkleRoot: String
+
+  """
+  Returns the name of this airdrop.
+  The human-readable name of the airdrop.
+  """
+  name: String
+
+  """
+  Returns the start time when claims become available.
+  The timestamp when claims can begin.
+  """
+  startTime: String
+
+  """
+  Returns the token being distributed in this airdrop.
+  The ERC20 token being distributed.
+  """
+  token: String
+}
+
+input IATKTimeBoundAirdropBatchClaimInput {
+  """The indices of the claims in the Merkle tree."""
+  indices: [String!]!
+
+  """The Merkle proofs for each index."""
+  merkleProofs: [[String!]!]!
+
+  """The total amounts allocated for each index."""
+  totalAmounts: [String!]!
+}
+
+input IATKTimeBoundAirdropClaimInput {
+  """The index of the claim in the Merkle tree."""
+  index: String!
+
+  """The Merkle proof array."""
+  merkleProof: [String!]!
+
+  """The total amount allocated for this index."""
+  totalAmount: String!
+}
+
+type IATKTimeBoundAirdropFactory {
+  """
+  Returns the total number of time-bound airdrop proxies created by this factory.
+  The number of time-bound airdrop proxies created.
+  """
+  allAirdropsLength: IATKTimeBoundAirdropFactoryAllAirdropsLengthOutput
+
+  """
+  Returns the address of the current ATKTimeBoundAirdrop logic contract (implementation).
+  The address of the time-bound airdrop implementation.
+  """
+  atkTimeBoundAirdropImplementation: String
+  id: ID
+
+  """
+  Predicts the deployment address of a time-bound airdrop proxy.
+  The predicted address of the time-bound airdrop proxy.
+  """
+  predictTimeBoundAirdropAddress(endTime: String!, name: String!, owner: String!, root: String!, startTime: String!, token: String!): IATKTimeBoundAirdropFactoryPredictTimeBoundAirdropAddressOutput
+}
+
+type IATKTimeBoundAirdropFactoryAllAirdropsLengthOutput {
+  count: String
+}
+
+input IATKTimeBoundAirdropFactoryCreateInput {
+  """The timestamp when claims end"""
+  endTime: String!
+
+  """The human-readable name for the airdrop"""
+  name: String!
+
+  """The initial owner of the contract"""
+  owner: String!
+
+  """The Merkle root for verifying claims"""
+  root: String!
+
+  """The timestamp when claims can begin"""
+  startTime: String!
+
+  """The address of the ERC20 token to be distributed"""
+  token: String!
+}
+
+type IATKTimeBoundAirdropFactoryPredictTimeBoundAirdropAddressOutput {
+  predictedAddress: String
+}
+
+"""Returns the transaction hash"""
+type IATKTimeBoundAirdropFactoryTransactionOutput {
+  transactionHash: String
+}
+
+"""Returns the transaction receipt"""
+type IATKTimeBoundAirdropFactoryTransactionReceiptOutput {
+  """Blob Gas Price"""
+  blobGasPrice: String
+
+  """Blob Gas Used"""
+  blobGasUsed: String
+
+  """Block Hash"""
+  blockHash: String!
+
+  """Block Number"""
+  blockNumber: String!
+
+  """Contract Address"""
+  contractAddress: String
+
+  """Cumulative Gas Used"""
+  cumulativeGasUsed: String!
+
+  """Effective Gas Price"""
+  effectiveGasPrice: String!
+
+  """Events (decoded from the logs)"""
+  events: JSON!
+
+  """From"""
+  from: String!
+
+  """Gas Used"""
+  gasUsed: String!
+
+  """Logs"""
+  logs: JSON!
+
+  """Logs Bloom"""
+  logsBloom: String!
+
+  """ABI-encoded string containing the revert reason"""
+  revertReason: String
+
+  """Decoded revert reason"""
+  revertReasonDecoded: String
+
+  """Root"""
+  root: String
+
+  """Status"""
+  status: TransactionReceiptStatus!
+
+  """To"""
+  to: String
+
+  """Transaction Hash"""
+  transactionHash: String!
+
+  """Transaction Index"""
+  transactionIndex: Int!
+
+  """Type"""
+  type: String!
+
+  """List of user operation receipts associated with this transaction"""
+  userOperationReceipts: [UserOperationReceipt!]
+}
+
+type IATKTimeBoundAirdropGetTimeRemainingOutput {
+  timeRemaining: String
+}
+
+type IATKTimeBoundAirdropIsActiveOutput {
+  active: Boolean
+}
+
+"""Returns the transaction hash"""
+type IATKTimeBoundAirdropTransactionOutput {
+  transactionHash: String
+}
+
+"""Returns the transaction receipt"""
+type IATKTimeBoundAirdropTransactionReceiptOutput {
+  """Blob Gas Price"""
+  blobGasPrice: String
+
+  """Blob Gas Used"""
+  blobGasUsed: String
+
+  """Block Hash"""
+  blockHash: String!
+
+  """Block Number"""
+  blockNumber: String!
+
+  """Contract Address"""
+  contractAddress: String
+
+  """Cumulative Gas Used"""
+  cumulativeGasUsed: String!
+
+  """Effective Gas Price"""
+  effectiveGasPrice: String!
+
+  """Events (decoded from the logs)"""
+  events: JSON!
+
+  """From"""
+  from: String!
+
+  """Gas Used"""
+  gasUsed: String!
+
+  """Logs"""
+  logs: JSON!
+
+  """Logs Bloom"""
+  logsBloom: String!
+
+  """ABI-encoded string containing the revert reason"""
+  revertReason: String
+
+  """Decoded revert reason"""
+  revertReasonDecoded: String
+
+  """Root"""
+  root: String
+
+  """Status"""
+  status: TransactionReceiptStatus!
+
+  """To"""
+  to: String
+
+  """Transaction Hash"""
+  transactionHash: String!
+
+  """Transaction Index"""
+  transactionIndex: Int!
+
+  """Type"""
+  type: String!
+
+  """List of user operation receipts associated with this transaction"""
+  userOperationReceipts: [UserOperationReceipt!]
+}
+
+input IATKTimeBoundAirdropWithdrawTokensInput {
+  """The address to send the withdrawn tokens to."""
+  to: String!
 }
 
 type IATKTokenFactory {
@@ -32834,6 +33616,454 @@ type Mutation {
   ): ATKSystemImplementationTransactionOutput
 
   """
+  Creates and deploys a new `ATKTimeBoundAirdropProxy` contract for a given configuration. The proxy will point to the current `atkTimeBoundAirdropImplementation`.
+  This function performs the following steps: 1. **Authorization Check**: Verifies the caller has the `DEPLOYER_ROLE`. 2. **Salt Generation**: Computes a unique `salt` for CREATE2. 3. **Initialization Data**: Prepares the `initData` for the proxy to call `initialize` on the implementation. 4. **Proxy Deployment**: Deploys a `ATKTimeBoundAirdropProxy` using CREATE2. 5. **Event Emission**: Emits `ATKTimeBoundAirdropCreated`. 6. **Registry Update**: Adds the new proxy to `allAirdrops`.
+  The address of the newly created `ATKTimeBoundAirdropProxy` contract.
+  """
+  ATKTimeBoundAirdropFactoryImplementationCreate(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTimeBoundAirdropFactoryImplementationCreateInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionOutput
+
+  """
+  Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleGranted} event.
+  """
+  ATKTimeBoundAirdropFactoryImplementationGrantRole(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTimeBoundAirdropFactoryImplementationGrantRoleInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionOutput
+
+  """
+  Initializes the `ATKTimeBoundAirdropFactory`.
+  Initializes the factory, deploys the initial `ATKTimeBoundAirdrop` implementation, and sets up support for meta-transactions via ERC2771Context.
+  """
+  ATKTimeBoundAirdropFactoryImplementationInitialize(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTimeBoundAirdropFactoryImplementationInitializeInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionOutput
+
+  """
+  Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `callerConfirmation`. May emit a {RoleRevoked} event.
+  """
+  ATKTimeBoundAirdropFactoryImplementationRenounceRole(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTimeBoundAirdropFactoryImplementationRenounceRoleInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionOutput
+
+  """
+  Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleRevoked} event.
+  """
+  ATKTimeBoundAirdropFactoryImplementationRevokeRole(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTimeBoundAirdropFactoryImplementationRevokeRoleInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionOutput
+
+  """
+  Updates the address of the `ATKTimeBoundAirdrop` implementation contract.
+  Only callable by the factory owner. New proxies created after this call will use the new implementation. This does NOT automatically upgrade existing proxy instances.
+  """
+  ATKTimeBoundAirdropFactoryImplementationUpdateImplementation(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTimeBoundAirdropFactoryImplementationUpdateImplementationInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionOutput
+
+  """
+  Claims multiple airdrop allocations for the caller in a single transaction.
+  Batch version for gas efficiency. Uses onlyActive modifier for time validation.
+  """
+  ATKTimeBoundAirdropImplementationBatchClaim(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTimeBoundAirdropImplementationBatchClaimInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropImplementationTransactionOutput
+
+  """
+  Claims an airdrop allocation for the caller within the time window.
+  Validates time constraints, Merkle proof, and processes claims.
+  """
+  ATKTimeBoundAirdropImplementationClaim(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTimeBoundAirdropImplementationClaimInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropImplementationTransactionOutput
+
+  """
+  Initializes the time-bound airdrop contract with specified parameters.
+  Sets up the base airdrop functionality and time-bound specific parameters.      Deploys its own amount claim tracker for partial claims support.
+  """
+  ATKTimeBoundAirdropImplementationInitialize(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTimeBoundAirdropImplementationInitializeInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropImplementationTransactionOutput
+
+  """
+  Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.
+  """
+  ATKTimeBoundAirdropImplementationRenounceOwnership(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropImplementationTransactionOutput
+
+  """
+  Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
+  """
+  ATKTimeBoundAirdropImplementationTransferOwnership(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTimeBoundAirdropImplementationTransferOwnershipInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropImplementationTransactionOutput
+
+  """Allows the owner to withdraw any tokens remaining in the contract."""
+  ATKTimeBoundAirdropImplementationWithdrawTokens(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTimeBoundAirdropImplementationWithdrawTokensInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTimeBoundAirdropImplementationTransactionOutput
+
+  """
   Grants `role` to each address in `accounts`.
   This function now calls the `grantRole` from `AccessControlUpgradeable`.      Requires the caller to have the admin role for `role`.
   """
@@ -38758,6 +39988,84 @@ type Mutation {
     verificationId: String
   ): ContractDeploymentTransactionOutput
 
+  """Deploy a ATKTimeBoundAirdropFactoryImplementation contract"""
+  DeployContractATKTimeBoundAirdropFactoryImplementation(
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+    constructorArguments: DeployContractATKTimeBoundAirdropFactoryImplementationInput!
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ContractDeploymentTransactionOutput
+
+  """Deploy a ATKTimeBoundAirdropImplementation contract"""
+  DeployContractATKTimeBoundAirdropImplementation(
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+    constructorArguments: DeployContractATKTimeBoundAirdropImplementationInput!
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ContractDeploymentTransactionOutput
+
+  """Deploy a ATKTimeBoundAirdropProxy contract"""
+  DeployContractATKTimeBoundAirdropProxy(
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+    constructorArguments: DeployContractATKTimeBoundAirdropProxyInput!
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ContractDeploymentTransactionOutput
+
   """Deploy a ATKTokenAccessManagerImplementation contract"""
   DeployContractATKTokenAccessManagerImplementation(
     """
@@ -40006,6 +41314,56 @@ type Mutation {
 
   """Deploy a IATKSystemFactory contract"""
   DeployContractIATKSystemFactory(
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ContractDeploymentTransactionOutput
+
+  """Deploy a IATKTimeBoundAirdrop contract"""
+  DeployContractIATKTimeBoundAirdrop(
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ContractDeploymentTransactionOutput
+
+  """Deploy a IATKTimeBoundAirdropFactory contract"""
+  DeployContractIATKTimeBoundAirdropFactory(
     """
     Challenge response that is used to verify access to the private key of the from address
     """
@@ -49008,6 +50366,151 @@ type Mutation {
     """
     verificationId: String
   ): IATKSystemTransactionOutput
+
+  """
+  Claims multiple airdrop allocations for the caller in a single transaction.
+  """
+  IATKTimeBoundAirdropBatchClaim(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: IATKTimeBoundAirdropBatchClaimInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTimeBoundAirdropTransactionOutput
+
+  """Claims an airdrop allocation for the caller."""
+  IATKTimeBoundAirdropClaim(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: IATKTimeBoundAirdropClaimInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTimeBoundAirdropTransactionOutput
+
+  """
+  Creates a new time-bound airdrop proxy contract.
+  The address of the newly created time-bound airdrop proxy.
+  """
+  IATKTimeBoundAirdropFactoryCreate(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: IATKTimeBoundAirdropFactoryCreateInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTimeBoundAirdropFactoryTransactionOutput
+
+  """Allows the owner to withdraw any tokens remaining in the contract."""
+  IATKTimeBoundAirdropWithdrawTokens(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: IATKTimeBoundAirdropWithdrawTokensInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTimeBoundAirdropTransactionOutput
 
   """Initializes the token registry."""
   IATKTokenFactoryInitialize(
@@ -71594,6 +73097,90 @@ type Query {
     """The address of the contract"""
     address: String!
   ): ATKSystemRoles
+  ATKTimeBoundAirdropFactoryImplementation(
+    """The address of the contract"""
+    address: String!
+  ): ATKTimeBoundAirdropFactoryImplementation
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropFactoryImplementationCreateReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropFactoryImplementationGrantRoleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropFactoryImplementationInitializeReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropFactoryImplementationRenounceRoleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropFactoryImplementationRevokeRoleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropFactoryImplementationUpdateImplementationReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropFactoryImplementationTransactionReceiptOutput
+  ATKTimeBoundAirdropImplementation(
+    """The address of the contract"""
+    address: String!
+  ): ATKTimeBoundAirdropImplementation
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropImplementationBatchClaimReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropImplementationTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropImplementationClaimReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropImplementationTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropImplementationInitializeReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropImplementationTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropImplementationRenounceOwnershipReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropImplementationTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropImplementationTransferOwnershipReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropImplementationTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTimeBoundAirdropImplementationWithdrawTokensReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTimeBoundAirdropImplementationTransactionReceiptOutput
+  ATKTimeBoundAirdropProxy(
+    """The address of the contract"""
+    address: String!
+  ): ATKTimeBoundAirdropProxy
   ATKTokenAccessManagerImplementation(
     """The address of the contract"""
     address: String!
@@ -73750,6 +75337,38 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): IATKSystemTransactionReceiptOutput
+  IATKTimeBoundAirdrop(
+    """The address of the contract"""
+    address: String!
+  ): IATKTimeBoundAirdrop
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTimeBoundAirdropBatchClaimReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTimeBoundAirdropTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTimeBoundAirdropClaimReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTimeBoundAirdropTransactionReceiptOutput
+  IATKTimeBoundAirdropFactory(
+    """The address of the contract"""
+    address: String!
+  ): IATKTimeBoundAirdropFactory
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTimeBoundAirdropFactoryCreateReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTimeBoundAirdropFactoryTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTimeBoundAirdropWithdrawTokensReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTimeBoundAirdropTransactionReceiptOutput
   IATKTokenFactory(
     """The address of the contract"""
     address: String!
@@ -77858,6 +79477,42 @@ type Query {
     transactionHash: String
   ): ContractsPaginatedOutput
 
+  """Get all contracts for the ATKTimeBoundAirdropFactoryImplementation ABI"""
+  getContractsAtkTimeBoundAirdropFactoryImplementation(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsPaginatedOutput
+
+  """Get all contracts for the ATKTimeBoundAirdropImplementation ABI"""
+  getContractsAtkTimeBoundAirdropImplementation(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsPaginatedOutput
+
+  """Get all contracts for the ATKTimeBoundAirdropProxy ABI"""
+  getContractsAtkTimeBoundAirdropProxy(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsPaginatedOutput
+
   """Get all contracts for the ATKTokenAccessManagerImplementation ABI"""
   getContractsAtkTokenAccessManagerImplementation(
     """Page number, starts from 0"""
@@ -78808,6 +80463,48 @@ type Query {
   ): ContractsDeployStatusPaginatedOutput
 
   """
+  Get all contracts with their deployment status for the ATKTimeBoundAirdropFactoryImplementation ABI
+  """
+  getContractsDeployStatusAtkTimeBoundAirdropFactoryImplementation(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the ATKTimeBoundAirdropImplementation ABI
+  """
+  getContractsDeployStatusAtkTimeBoundAirdropImplementation(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the ATKTimeBoundAirdropProxy ABI
+  """
+  getContractsDeployStatusAtkTimeBoundAirdropProxy(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
   Get all contracts with their deployment status for the ATKTokenAccessManagerImplementation ABI
   """
   getContractsDeployStatusAtkTokenAccessManagerImplementation(
@@ -79393,6 +81090,34 @@ type Query {
   Get all contracts with their deployment status for the IATKSystemFactory ABI
   """
   getContractsDeployStatusIatkSystemFactory(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the IATKTimeBoundAirdrop ABI
+  """
+  getContractsDeployStatusIatkTimeBoundAirdrop(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the IATKTimeBoundAirdropFactory ABI
+  """
+  getContractsDeployStatusIatkTimeBoundAirdropFactory(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -80551,6 +82276,30 @@ type Query {
 
   """Get all contracts for the IATKSystemFactory ABI"""
   getContractsIatkSystemFactory(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsPaginatedOutput
+
+  """Get all contracts for the IATKTimeBoundAirdrop ABI"""
+  getContractsIatkTimeBoundAirdrop(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsPaginatedOutput
+
+  """Get all contracts for the IATKTimeBoundAirdropFactory ABI"""
+  getContractsIatkTimeBoundAirdropFactory(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -89622,6 +91371,48 @@ type Subscription {
   ): ContractsDeployStatusPaginatedOutput
 
   """
+  Get all contracts with their deployment status for the ATKTimeBoundAirdropFactoryImplementation ABI
+  """
+  getContractsDeployStatusAtkTimeBoundAirdropFactoryImplementation(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the ATKTimeBoundAirdropImplementation ABI
+  """
+  getContractsDeployStatusAtkTimeBoundAirdropImplementation(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the ATKTimeBoundAirdropProxy ABI
+  """
+  getContractsDeployStatusAtkTimeBoundAirdropProxy(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
   Get all contracts with their deployment status for the ATKTokenAccessManagerImplementation ABI
   """
   getContractsDeployStatusAtkTokenAccessManagerImplementation(
@@ -90207,6 +91998,34 @@ type Subscription {
   Get all contracts with their deployment status for the IATKSystemFactory ABI
   """
   getContractsDeployStatusIatkSystemFactory(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the IATKTimeBoundAirdrop ABI
+  """
+  getContractsDeployStatusIatkTimeBoundAirdrop(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the IATKTimeBoundAirdropFactory ABI
+  """
+  getContractsDeployStatusIatkTimeBoundAirdropFactory(
     """Page number, starts from 0"""
     page: Int = 0
 
