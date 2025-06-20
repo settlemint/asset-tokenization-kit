@@ -25,11 +25,13 @@ import arGeneralTranslations from "@/locales/ar/general.json";
 import arLanguageTranslations from "@/locales/ar/language.json";
 import arOnboardingTranslations from "@/locales/ar/onboarding.json";
 import arThemeTranslations from "@/locales/ar/theme.json";
+import arTokensTranslations from "@/locales/ar/tokens.json";
 import deAuthTranslations from "@/locales/de/auth.json";
 import deGeneralTranslations from "@/locales/de/general.json";
 import deLanguageTranslations from "@/locales/de/language.json";
 import deOnboardingTranslations from "@/locales/de/onboarding.json";
 import deThemeTranslations from "@/locales/de/theme.json";
+import deTokensTranslations from "@/locales/de/tokens.json";
 import enAuthTranslations from "@/locales/en/auth.json";
 import enGeneralTranslations from "@/locales/en/general.json";
 import enLanguageTranslations from "@/locales/en/language.json";
@@ -41,6 +43,7 @@ import jaGeneralTranslations from "@/locales/ja/general.json";
 import jaLanguageTranslations from "@/locales/ja/language.json";
 import jaOnboardingTranslations from "@/locales/ja/onboarding.json";
 import jaThemeTranslations from "@/locales/ja/theme.json";
+import jaTokensTranslations from "@/locales/ja/tokens.json";
 import "./types";
 
 /**
@@ -75,7 +78,7 @@ export const resources = {
     theme: deThemeTranslations,
     language: deLanguageTranslations,
     onboarding: deOnboardingTranslations,
-    tokens: enTokensTranslations, // TODO: Add German translations
+    tokens: deTokensTranslations,
   },
   ar: {
     auth: arAuthTranslations,
@@ -83,7 +86,7 @@ export const resources = {
     theme: arThemeTranslations,
     language: arLanguageTranslations,
     onboarding: arOnboardingTranslations,
-    tokens: enTokensTranslations, // TODO: Add Arabic translations
+    tokens: arTokensTranslations,
   },
   ja: {
     auth: jaAuthTranslations,
@@ -91,7 +94,7 @@ export const resources = {
     theme: jaThemeTranslations,
     language: jaLanguageTranslations,
     onboarding: jaOnboardingTranslations,
-    tokens: enTokensTranslations, // TODO: Add Japanese translations
+    tokens: jaTokensTranslations,
   },
 } as const;
 
