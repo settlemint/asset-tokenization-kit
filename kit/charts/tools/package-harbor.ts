@@ -126,7 +126,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
     let inCodeStudio = false;
     let featuresSectionIndent = "";
 
-    const modifiedLines = lines.map((line) => {
+    const modifiedLines = lines.map((line, index) => {
       // Track if we're entering or leaving the features section
       if (line.trim() === "features:") {
         inFeaturesSection = true;
@@ -235,7 +235,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
           // FIRST: Clean up double-harbor entries when there's a nearby registry field
           if (repoValue.startsWith(HARBOR_PROXY)) {
             // Check if there's a registry field nearby (within 5 lines before this one)
-            const currentLineIndex = lines.indexOf(line);
+            const currentLineIndex = index;
             let hasNearbyRegistry = false;
 
             for (let i = Math.max(0, currentLineIndex - 5); i < currentLineIndex; i++) {
@@ -293,7 +293,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
           // BUT ONLY if there's no nearby registry field
           if (!processed && !repoValue.includes(HARBOR_PROXY)) {
             // Check if there's a registry field nearby (within 5 lines before this one)
-            const currentLineIndex = lines.indexOf(line);
+            const currentLineIndex = index;
             let hasNearbyRegistry = false;
 
             for (let i = Math.max(0, currentLineIndex - 5); i < currentLineIndex; i++) {
