@@ -17,13 +17,10 @@
       "dependsOn": ["compile", "codegen", "lint", "test"]
     },
     "ci:gha": {
-      "dependsOn": ["ci:base", "build", "//#setup:dev"]
+      "dependsOn": ["ci:base", "build", "artifacts", "test:integration"]
     },
     "ci:gha:main": {
       "dependsOn": ["ci:gha", "publish"]
-    },
-    "ci:gha:nightly": {
-      "dependsOn": ["ci:gha:main", "test:integration"]
     },
     "//#version": {
       "cache": false,
@@ -34,13 +31,16 @@
       ]
     },
     "build": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["codegen"],
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
     },
     "codegen": {
-      "dependsOn": ["dependencies", "docs", "//#setup:dev"]
+      "dependsOn": ["dependencies", "docs"],
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
     },
     "compile": {
-      "dependsOn": ["dependencies", "codegen", "^compile"]
+      "dependsOn": ["dependencies", "codegen", "^compile"],
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
     },
     "package": {
       "cache": false,
@@ -50,15 +50,18 @@
       "cache": false,
       "dependsOn": ["package"]
     },
-    "dependencies": {},
-    "format": {},
+    "dependencies": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
+    "format": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
     "lint": {
-      "dependsOn": ["//#setup:dev", "codegen"]
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
     },
     "dev": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["compile"]
+      "persistent": true
     },
     "watch": {
       "cache": false,
@@ -67,33 +70,31 @@
     "helm": {
       "cache": false
     },
-    "docs": {},
-    "test": {},
-    "artifacts": {},
-    "test:integration": {},
+    "docs": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
+    "test": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
+    "artifacts": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
+    "test:integration": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
     "db:studio": {
       "cache": false,
       "persistent": true
     },
-    "db:export": {},
+    "db:export": {
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
+    },
     "db:push": {
       "cache": false
     },
-    "//#setup:connect": {
-      "cache": false,
-      "dependsOn": ["//#setup:start"]
-    },
-    "//#setup:dev": {
-      "cache": false,
-      "dependsOn": ["//#setup:start", "//#setup:connect"]
-    },
-    "//#setup:start": {
-      "cache": false,
-      "dependsOn": [
-        "contracts#artifacts",
-        "dapp#artifacts",
-        "subgraph#artifacts"
-      ]
+    "//#dev:connect": {
+      "outputs": ["**/.env", "**/.env.local"],
+      "inputs": ["$TURBO_DEFAULT$", "!**/.generated/**", "!**/.generated"]
     }
   }
 }
