@@ -36,5 +36,9 @@ export const tokenFactoryMiddleware = (
       throw errors.FORBIDDEN();
     }
 
-    return next();
+    return next({
+      context: {
+        tokenFactory,
+      },
+    });
   });
