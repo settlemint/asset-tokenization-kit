@@ -56,9 +56,9 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
  * const system = await client.system.read({
  *   id: "0x5e771e1417100000000000000000000000020088"
  * });
- * 
+ *
  * console.log(`System ${system.id} has ${system.tokenFactories.length} factories`);
- * 
+ *
  * system.tokenFactories.forEach(factory => {
  *   console.log(`${factory.name} (${factory.typeId}): ${factory.id}`);
  * });
@@ -84,7 +84,7 @@ export const read = onboardedRouter.system.read
     // Transform and return the data
     const output: SystemReadOutput = {
       id: result.system.id as `0x${string}`,
-      tokenFactories: result.system.tokenFactories.map(factory => ({
+      tokenFactories: result.system.tokenFactories.map((factory) => ({
         id: factory.id as `0x${string}`,
         name: factory.name,
         typeId: factory.typeId,

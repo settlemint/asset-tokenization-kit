@@ -143,7 +143,9 @@ export const FactoryCreateMessagesSchema =
     systemNotBootstrapped: z
       .string()
       .optional()
-      .default("System needs to be bootstrapped first. Please wait for system initialization to complete."),
+      .default(
+        "System needs to be bootstrapped first. Please wait for system initialization to complete."
+      ),
   });
 
 /**

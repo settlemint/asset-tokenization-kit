@@ -73,7 +73,7 @@ export const contract = {
    *
    * Contains type definitions for token factory management procedures.
    * Token factories are the foundation for creating tokenized assets including
-   * bonds, equity, funds, stablecoins, and deposits. This contract provides 
+   * bonds, equity, funds, stablecoins, and deposits. This contract provides
    * type-safe access to factory creation and management operations.
    *
    * @see {@link ./tokens/tokens.contract} - Tokens contract implementation

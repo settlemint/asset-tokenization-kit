@@ -10,7 +10,7 @@
  * const system = await client.system.read({
  *   id: "0x1234..."
  * });
- * 
+ *
  * // Access token factories
  * system.tokenFactories.forEach(factory => {
  *   console.log(factory.name, factory.typeId);
@@ -39,12 +39,12 @@ const TokenFactorySchema = z.object({
    * The factory contract address
    */
   id: ethereumAddress,
-  
+
   /**
    * The name of the token factory
    */
   name: z.string(),
-  
+
   /**
    * The type identifier of the factory (bond, equity, fund, etc.)
    */
@@ -59,7 +59,7 @@ export const SystemReadOutputSchema = z.object({
    * The system contract address
    */
   id: ethereumAddress,
-  
+
   /**
    * List of token factories deployed by this system
    */

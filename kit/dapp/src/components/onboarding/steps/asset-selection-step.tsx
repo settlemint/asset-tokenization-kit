@@ -9,8 +9,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { assetTypes, assetTypeArray } from "@/lib/zod/validators/asset-types";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { assetTypeArray, assetTypes } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
@@ -31,7 +31,7 @@ interface AssetSelectionStepProps {
 
 export function AssetSelectionStep({ onSuccess }: AssetSelectionStepProps) {
   const { t } = useTranslation("onboarding");
-  
+
   // Fetch system address from settings
   const { data: systemAddress } = useQuery(
     orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
@@ -81,17 +81,39 @@ export function AssetSelectionStep({ onSuccess }: AssetSelectionStepProps) {
         defaultError: t("create-factory-messages.default-error"),
         factoryCreated: t("create-factory-messages.factory-created"),
         creatingFactory: t("create-factory-messages.creating-factory"),
-        factoryCreationFailed: t("create-factory-messages.factory-creation-failed"),
-        systemNotBootstrapped: t("create-factory-messages.system-not-bootstrapped"),
-        batchProgress: t("create-factory-messages.multiple-factories.deploying"),
-        batchCompleted: t("create-factory-messages.multiple-factories.all-completed"),
-        streamTimeout: t("create-factory-messages.transaction-tracking.stream-timeout"),
-        waitingForMining: t("create-factory-messages.transaction-tracking.waiting-for-mining"),
-        transactionFailed: t("create-factory-messages.transaction-tracking.transaction-failed"),
-        transactionDropped: t("create-factory-messages.transaction-tracking.transaction-dropped"),
-        waitingForIndexing: t("create-factory-messages.transaction-tracking.waiting-for-indexing"),
-        transactionIndexed: t("create-factory-messages.transaction-tracking.transaction-indexed"),
-        indexingTimeout: t("create-factory-messages.transaction-tracking.indexing-timeout"),
+        factoryCreationFailed: t(
+          "create-factory-messages.factory-creation-failed"
+        ),
+        systemNotBootstrapped: t(
+          "create-factory-messages.system-not-bootstrapped"
+        ),
+        batchProgress: t(
+          "create-factory-messages.multiple-factories.deploying"
+        ),
+        batchCompleted: t(
+          "create-factory-messages.multiple-factories.all-completed"
+        ),
+        streamTimeout: t(
+          "create-factory-messages.transaction-tracking.stream-timeout"
+        ),
+        waitingForMining: t(
+          "create-factory-messages.transaction-tracking.waiting-for-mining"
+        ),
+        transactionFailed: t(
+          "create-factory-messages.transaction-tracking.transaction-failed"
+        ),
+        transactionDropped: t(
+          "create-factory-messages.transaction-tracking.transaction-dropped"
+        ),
+        waitingForIndexing: t(
+          "create-factory-messages.transaction-tracking.waiting-for-indexing"
+        ),
+        transactionIndexed: t(
+          "create-factory-messages.transaction-tracking.transaction-indexed"
+        ),
+        indexingTimeout: t(
+          "create-factory-messages.transaction-tracking.indexing-timeout"
+        ),
       },
     });
   };
@@ -153,11 +175,15 @@ export function AssetSelectionStep({ onSuccess }: AssetSelectionStepProps) {
             </FormItem>
           )}
         />
-        <Button 
-          type="submit" 
-          disabled={isPending || selectedAssets.length === 0 || !systemAddress?.value}
+        <Button
+          type="submit"
+          disabled={
+            isPending || selectedAssets.length === 0 || !systemAddress?.value
+          }
         >
-          {isPending ? t("create-factory-messages.button.deploying") : t("create-factory-messages.button.deploy")}
+          {isPending
+            ? t("create-factory-messages.button.deploying")
+            : t("create-factory-messages.button.deploy")}
         </Button>
       </form>
     </Form>

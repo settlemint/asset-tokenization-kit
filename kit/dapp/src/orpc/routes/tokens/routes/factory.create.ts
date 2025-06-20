@@ -160,7 +160,7 @@ async function* processSingleFactory(
         if (event.message.includes("SystemNotBootstrapped")) {
           failureMessage = messages.systemNotBootstrapped;
         }
-        
+
         yield {
           status: "failed",
           message: failureMessage,
@@ -191,7 +191,7 @@ async function* processSingleFactory(
     // Check for specific error types
     let errorMessage = messages.defaultError;
     let errorDetail = messages.defaultError;
-    
+
     if (error instanceof Error) {
       errorDetail = error.message;
       // Check for SystemNotBootstrapped error
@@ -199,7 +199,7 @@ async function* processSingleFactory(
         errorMessage = messages.systemNotBootstrapped;
       }
     }
-    
+
     yield {
       status: "failed",
       message: errorMessage,
