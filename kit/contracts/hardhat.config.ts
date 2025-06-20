@@ -19,6 +19,10 @@ const config: HardhatUserConfig = {
       },
     ],
   },
+  paths: {
+    artifacts: "./.generated/artifacts",
+    cache: "./.generated/cache",
+  },
   networks: {
     hardhat: {},
     localhost: {

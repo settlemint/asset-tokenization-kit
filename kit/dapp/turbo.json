@@ -5,6 +5,8 @@
       "dependsOn": ["codegen:settlemint", "codegen:gql-tada"]
     },
     "codegen:settlemint": {
+      "dependsOn": ["//#setup:connect"],
+      "inputs": [".env.local", ".env"],
       "outputs": [
         "*-env-*.d.ts",
         "*-schema.graphql",
@@ -16,7 +18,17 @@
       "outputs": ["*-cache.d.ts"]
     },
     "build": {
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".output/**"]
+    },
+    "publish": {
+      "dependsOn": ["build"]
+    },
+    "db:export": {
+      "inputs": ["src/lib/db/**"],
+      "outputs": [".generated/database-export.sql"]
+    },
+    "artifacts": {
+      "dependsOn": ["db:export"]
     }
   }
 }

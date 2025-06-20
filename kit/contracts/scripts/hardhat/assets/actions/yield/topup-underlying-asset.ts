@@ -1,9 +1,9 @@
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatDecimals } from "../../../utils/format-decimals";
-import { toDecimals } from "../../../utils/to-decimals";
+import { formatBaseUnits } from "../../../utils/format-base-units";
+import { toBaseUnits } from "../../../utils/to-base-units";
 import { waitForEvent } from "../../../utils/wait-for-event";
 import { approve } from "../core/approve";
 import { mint } from "../core/mint";
@@ -15,7 +15,7 @@ export const topupUnderlyingAsset = async (
 ) => {
   const tokenContract = owner.getContractInstance({
     address: asset.address,
-    abi: SMARTContracts.ismartYield,
+    abi: ATKContracts.ismartYield,
   });
 
   const scheduleAddress = await tokenContract.read.yieldSchedule();
@@ -24,10 +24,10 @@ export const topupUnderlyingAsset = async (
 
   const scheduleContract = owner.getContractInstance({
     address: scheduleAddress,
-    abi: SMARTContracts.ismartFixedYieldSchedule,
+    abi: ATKContracts.ismartFixedYieldSchedule,
   });
 
-  const topUpAmount = toDecimals(amount, underlyingAsset.decimals);
+  const topUpAmount = toBaseUnits(amount, underlyingAsset.decimals);
 
   const topUpTransactionHash = await withDecodedRevertReason(() =>
     scheduleContract.write.topUpUnderlyingAsset([topUpAmount])
@@ -39,6 +39,6 @@ export const topupUnderlyingAsset = async (
   });
 
   console.log(
-    `[Topup underlying asset] ${asset.symbol} underlying asset topped up with amount ${formatDecimals(topUpAmount, underlyingAsset.decimals)} ${underlyingAsset.symbol}.`
+    `[Topup underlying asset] ${asset.symbol} underlying asset topped up with amount ${formatBaseUnits(topUpAmount, underlyingAsset.decimals)} ${underlyingAsset.symbol}.`
   );
 };

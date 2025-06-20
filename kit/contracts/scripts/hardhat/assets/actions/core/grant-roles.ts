@@ -1,5 +1,5 @@
-import { SMARTContracts } from "../../../constants/contracts";
-import { SMARTRoles } from "../../../constants/roles";
+import { ATKContracts } from "../../../constants/contracts";
+import { ATKRoles } from "../../../constants/roles";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
@@ -11,11 +11,11 @@ import { waitForSuccess } from "../../../utils/wait-for-success";
 export const grantRoles = async (
   asset: Asset<any>,
   targetActor: AbstractActor,
-  roles: (typeof SMARTRoles)[keyof typeof SMARTRoles][]
+  roles: (typeof ATKRoles)[keyof typeof ATKRoles][]
 ) => {
   const accessManagerContract = owner.getContractInstance({
     address: asset.accessManager,
-    abi: SMARTContracts.accessManager,
+    abi: ATKContracts.accessManager,
   });
 
   const transactionHash = await withDecodedRevertReason(() =>
@@ -24,10 +24,10 @@ export const grantRoles = async (
 
   await waitForSuccess(transactionHash);
 
-  // Find the role name from the SMARTRoles object
+  // Find the role name from the ATKRoles object
   const roleNames = roles.map((role) =>
-    Object.keys(SMARTRoles).find(
-      (key) => SMARTRoles[key as keyof typeof SMARTRoles] === role
+    Object.keys(ATKRoles).find(
+      (key) => ATKRoles[key as keyof typeof ATKRoles] === role
     )
   );
 

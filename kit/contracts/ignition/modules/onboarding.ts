@@ -1,19 +1,26 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import SMARTOnboardingBondModule from "./onboarding/assets/bond";
-import SMARTOnboardingDepositModule from "./onboarding/assets/deposit";
-import SMARTOnboardingEquityModule from "./onboarding/assets/equity";
-import SMARTOnboardingFundModule from "./onboarding/assets/fund";
-import SMARTOnboardingStableCoinModule from "./onboarding/assets/stablecoin";
-import SMARTOnboardingSystemModule from "./onboarding/system";
+import ATKOnboardingPushAirdropFactoryModule from "./onboarding/addons/airdrop/push-airdrop-factory";
+import ATKOnboardingVestingAirdropFactoryModule from "./onboarding/addons/airdrop/vesting-airdrop-factory";
+import ATKOnboardingFixedYieldScheduleFactoryModule from "./onboarding/addons/fixed-yield-schedule-factory";
+import ATKOnboardingXvPSettlementFactoryModule from "./onboarding/addons/xvp-settlement-factory";
+import ATKOnboardingBondModule from "./onboarding/assets/bond";
+import ATKOnboardingDepositModule from "./onboarding/assets/deposit";
+import ATKOnboardingEquityModule from "./onboarding/assets/equity";
+import ATKOnboardingFundModule from "./onboarding/assets/fund";
+import ATKOnboardingStableCoinModule from "./onboarding/assets/stablecoin";
+import ATKOnboardingSystemModule from "./onboarding/system";
+import AddressBlockListModule from "./predeployed/modules/address-block-list-module";
 import CountryAllowListModule from "./predeployed/modules/country-allow-list-module";
 import CountryBlockListModule from "./predeployed/modules/country-block-list-module";
+import IdentityAllowListModule from "./predeployed/modules/identity-allow-list-module";
+import IdentityBlockListModule from "./predeployed/modules/identity-block-list-module";
 
 /**
- * This module is used to deploy the SMART contracts, this should be used to
+ * This module is used to deploy the ATK contracts, this should be used to
  * bootstrap a public network. For SettleMint consortium networks this is handled
  * by predeploying in the genesis file.
  */
-const SMARTOnboardingModule = buildModule("SMARTOnboardingModule", (m) => {
+const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
   const {
     system,
     compliance,
@@ -22,18 +29,36 @@ const SMARTOnboardingModule = buildModule("SMARTOnboardingModule", (m) => {
     trustedIssuersRegistry,
     topicSchemeRegistry,
     identityFactory,
-    fixedYieldScheduleFactory,
-  } = m.useModule(SMARTOnboardingSystemModule);
+  } = m.useModule(ATKOnboardingSystemModule);
 
   // This can be setup based out of configuration in the onboarding wizard at some point
-  const { bondFactory } = m.useModule(SMARTOnboardingBondModule);
-  const { depositFactory } = m.useModule(SMARTOnboardingDepositModule);
-  const { equityFactory } = m.useModule(SMARTOnboardingEquityModule);
-  const { fundFactory } = m.useModule(SMARTOnboardingFundModule);
-  const { stablecoinFactory } = m.useModule(SMARTOnboardingStableCoinModule);
+  const { bondFactory } = m.useModule(ATKOnboardingBondModule);
+  const { depositFactory } = m.useModule(ATKOnboardingDepositModule);
+  const { equityFactory } = m.useModule(ATKOnboardingEquityModule);
+  const { fundFactory } = m.useModule(ATKOnboardingFundModule);
+  const { stablecoinFactory } = m.useModule(ATKOnboardingStableCoinModule);
 
   const { countryAllowListModule } = m.useModule(CountryAllowListModule);
   const { countryBlockListModule } = m.useModule(CountryBlockListModule);
+  const { addressBlockListModule } = m.useModule(AddressBlockListModule);
+  const { identityBlockListModule } = m.useModule(IdentityBlockListModule);
+  const { identityAllowListModule } = m.useModule(IdentityAllowListModule);
+
+  const { fixedYieldScheduleFactory } = m.useModule(
+    ATKOnboardingFixedYieldScheduleFactoryModule
+  );
+
+  const { xvpSettlementFactory } = m.useModule(
+    ATKOnboardingXvPSettlementFactoryModule
+  );
+
+  const { vestingAirdropFactory } = m.useModule(
+    ATKOnboardingVestingAirdropFactoryModule
+  );
+
+  const { pushAirdropFactory } = m.useModule(
+    ATKOnboardingPushAirdropFactoryModule
+  );
 
   return {
     system,
@@ -48,11 +73,18 @@ const SMARTOnboardingModule = buildModule("SMARTOnboardingModule", (m) => {
     equityFactory,
     fundFactory,
     stablecoinFactory,
-    fixedYieldScheduleFactory,
     // Compliance modules
     countryAllowListModule,
     countryBlockListModule,
+    addressBlockListModule,
+    identityBlockListModule,
+    identityAllowListModule,
+    // Addons
+    fixedYieldScheduleFactory,
+    xvpSettlementFactory,
+    vestingAirdropFactory,
+    pushAirdropFactory,
   };
 });
 
-export default SMARTOnboardingModule;
+export default ATKOnboardingModule;

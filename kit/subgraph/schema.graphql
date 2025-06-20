@@ -1,6 +1,10 @@
 # --------------------------------------------------
-# SMART Indexer
+# SMART Indexer Schema
 # --------------------------------------------------
+
+# ==================================================
+# CORE ENTITIES
+# ==================================================
 
 type Account @entity(immutable: false) {
   id: Bytes!
@@ -30,6 +34,10 @@ type EventValue @entity(immutable: true) {
   entry: Event!
 }
 
+# ==================================================
+# ACCESS CONTROL & SYSTEM
+# ==================================================
+
 type AccessControl @entity(immutable: false) {
   id: Bytes!
   admin: [Account!]!
@@ -46,11 +54,12 @@ type AccessControl @entity(immutable: false) {
   custodian: [Account!]!
   emergency: [Account!]!
   implementationManager: [Account!]!
-  allowListManager: [Account!]!
+  bypassListManager: [Account!]!
 }
 
 type System @entity(immutable: false) {
   id: Bytes!
+  deployedInTransaction: Bytes!
   accessControl: AccessControl!
   account: Account
   compliance: Compliance
@@ -62,21 +71,110 @@ type System @entity(immutable: false) {
   tokenFactories: [TokenFactory!]! @derivedFrom(field: "system")
 }
 
+type SystemAddon @entity(immutable: false) {
+  id: Bytes!
+  deployedInTransaction: Bytes!
+  accessControl: AccessControl!
+  name: String!
+  typeId: Bytes!
+  system: System
+  account: Account!
+}
+
+type VaultFactory @entity(immutable: false) {
+  id: Bytes!
+  deployedInTransaction: Bytes!
+  accessControl: AccessControl!
+  systemAddon: SystemAddon!
+  system: System!
+  account: Account!
+  vaults: [Vault!]! @derivedFrom(field: "factory")
+}
+
+type Vault @entity(immutable: false) {
+  id: Bytes!
+  createdAt: BigInt!
+  createdBy: Account!
+  factory: VaultFactory!
+  account: Account!
+  accessControl: AccessControl!
+  required: BigInt!
+  signers: [Account!]!
+  transactions: [VaultTransaction!]! @derivedFrom(field: "vault")
+  balance: BigDecimal!
+  balanceExact: BigInt!
+  deployedInTransaction: Bytes!
+}
+
+type VaultTransaction @entity(immutable: false) {
+  id: Bytes!
+  vault: Vault!
+  txIndex: BigInt!
+  to: Account!
+  value: BigDecimal!
+  valueExact: BigInt!
+  data: Bytes!
+  comment: String!
+  executed: Boolean!
+  confirmationsRequired: BigInt!
+  confirmationsCount: BigInt!
+  confirmations: [VaultTransactionConfirmation!]!
+    @derivedFrom(field: "transaction")
+  submittedBy: Account!
+  submittedAt: BigInt!
+  executedAt: BigInt
+  executedBy: Account
+  # Type-specific fields
+  erc20Transfer: VaultERC20Transfer
+  contractCall: VaultContractCall
+  deployedInTransaction: Bytes!
+}
+
+type VaultTransactionConfirmation @entity(immutable: false) {
+  id: Bytes!
+  transaction: VaultTransaction!
+  signer: Account!
+  confirmed: Boolean!
+  confirmedAt: BigInt
+  revokedAt: BigInt
+  deployedInTransaction: Bytes!
+}
+
+type VaultERC20Transfer @entity(immutable: false) {
+  id: Bytes!
+  token: Account!
+  amount: BigDecimal!
+  amountExact: BigInt!
+}
+
+type VaultContractCall @entity(immutable: false) {
+  id: Bytes!
+  target: Account!
+  calldata: Bytes!
+  returnData: Bytes
+}
+
 type Compliance @entity(immutable: false) {
   id: Bytes!
   account: Account!
 }
 
+# ==================================================
+# IDENTITY MANAGEMENT
+# ==================================================
+
 type IdentityRegistryStorage @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
   account: Account!
+  deployedInTransaction: Bytes!
 }
 
 type IdentityFactory @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
   account: Account!
+  deployedInTransaction: Bytes!
 }
 
 type IdentityRegistry @entity(immutable: false) {
@@ -87,12 +185,14 @@ type IdentityRegistry @entity(immutable: false) {
   trustedIssuersRegistry: TrustedIssuersRegistry
   topicSchemeRegistry: TopicSchemeRegistry
   identityRegistryStorage: IdentityRegistryStorage
+  deployedInTransaction: Bytes!
 }
 
 type TrustedIssuersRegistry @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
   account: Account!
+  deployedInTransaction: Bytes!
 }
 
 type TopicSchemeRegistry @entity(immutable: false) {
@@ -100,6 +200,7 @@ type TopicSchemeRegistry @entity(immutable: false) {
   accessControl: AccessControl!
   account: Account!
   schemes: [TopicScheme!]! @derivedFrom(field: "registry")
+  deployedInTransaction: Bytes!
 }
 
 type TopicScheme @entity(immutable: false) {
@@ -108,12 +209,45 @@ type TopicScheme @entity(immutable: false) {
   name: String!
   signature: String!
   enabled: Boolean!
+  deployedInTransaction: Bytes!
 }
+
+type Identity @entity(immutable: false) {
+  id: Bytes!
+  registry: IdentityRegistry
+  claims: [IdentityClaim!]! @derivedFrom(field: "identity")
+  account: Account
+  token: Token
+  deployedInTransaction: Bytes!
+}
+
+type IdentityClaim @entity(immutable: false) {
+  id: Bytes!
+  identity: Identity!
+  name: String!
+  issuer: Identity!
+  uri: String
+  revoked: Boolean!
+  values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
+  deployedInTransaction: Bytes!
+}
+
+type IdentityClaimValue @entity(immutable: false) {
+  id: Bytes!
+  claim: IdentityClaim!
+  key: String!
+  value: String!
+}
+
+# ==================================================
+# TOKEN MANAGEMENT
+# ==================================================
 
 type TokenFactory @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
-  type: String!
+  name: String!
+  typeId: Bytes!
   system: System
   account: Account!
   tokens: [Token!]! @derivedFrom(field: "tokenFactory")
@@ -121,6 +255,8 @@ type TokenFactory @entity(immutable: false) {
 
 type Token @entity(immutable: false) {
   id: Bytes!
+  createdAt: BigInt!
+  createdBy: Account!
   account: Account!
   accessControl: AccessControl
   identity: Identity
@@ -132,14 +268,23 @@ type Token @entity(immutable: false) {
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
+  # Extensions
   pausable: TokenPausable
   collateral: TokenCollateral
   capped: TokenCapped
   yield_: TokenYield
+  redeemable: TokenRedeemable
+  # Type specific
+  bond: TokenBond
+  fund: TokenFund
+  # Price
+  basePriceClaim: IdentityClaim
+  deployedInTransaction: Bytes!
 }
 
 type TokenBalance @entity(immutable: false) {
   id: Bytes!
+  lastUpdatedAt: BigInt!
   token: Token!
   account: Account!
   value: BigDecimal!
@@ -150,6 +295,10 @@ type TokenBalance @entity(immutable: false) {
   available: BigDecimal!
   availableExact: BigInt!
 }
+
+# ==================================================
+# TOKEN EXTENSIONS
+# ==================================================
 
 type TokenPausable @entity(immutable: false) {
   id: Bytes!
@@ -172,8 +321,74 @@ type TokenYield @entity(immutable: false) {
   schedule: TokenFixedYieldSchedule!
 }
 
+type TokenRedeemable @entity(immutable: false) {
+  id: Bytes!
+  redeemedAmount: BigDecimal!
+  redeemedAmountExact: BigInt!
+}
+
+# ==================================================
+# TOKEN TYPES
+# ==================================================
+
+type TokenBond @entity(immutable: false) {
+  id: Bytes!
+  faceValue: BigDecimal!
+  faceValueExact: BigInt!
+  maturityDate: BigInt!
+  isMatured: Boolean!
+  underlyingAsset: Token!
+}
+
+type TokenFund @entity(immutable: false) {
+  id: Bytes!
+  managementFeeBps: Int!
+}
+
+# ==================================================
+# XVP SETTLEMENT
+# ==================================================
+
+type XvPSettlement @entity(immutable: false) {
+  id: Bytes!
+  name: String!
+  cutoffDate: BigInt!
+  autoExecute: Boolean!
+  executed: Boolean!
+  cancelled: Boolean!
+  createdAt: BigInt!
+  flows: [XvPSettlementFlow!]! @derivedFrom(field: "xvpSettlement")
+  approvals: [XvPSettlementApproval!]! @derivedFrom(field: "xvpSettlement")
+  participants: [Account!]!
+  deployedInTransaction: Bytes!
+}
+
+type XvPSettlementFlow @entity(immutable: false) {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  asset: Token!
+  from: Account!
+  to: Account!
+  amount: BigDecimal!
+  amountExact: BigInt!
+}
+
+type XvPSettlementApproval @entity(immutable: false) {
+  id: Bytes!
+  xvpSettlement: XvPSettlement!
+  account: Account!
+  approved: Boolean!
+  timestamp: BigInt
+}
+
+# ==================================================
+# YIELD SCHEDULES
+# ==================================================
+
 type TokenFixedYieldSchedule @entity(immutable: false) {
   id: Bytes!
+  createdAt: BigInt!
+  createdBy: Account!
   account: Account!
   token: Token!
   startDate: BigInt!
@@ -187,11 +402,10 @@ type TokenFixedYieldSchedule @entity(immutable: false) {
   totalYield: BigDecimal!
   totalYieldExact: BigInt!
   underlyingAsset: Token!
-  underlyingAssetBalanceAvailable: BigDecimal!
-  underlyingAssetBalanceAvailableExact: BigInt!
   currentPeriod: TokenFixedYieldSchedulePeriod
   nextPeriod: TokenFixedYieldSchedulePeriod
   periods: [TokenFixedYieldSchedulePeriod!]! @derivedFrom(field: "schedule")
+  deployedInTransaction: Bytes!
 }
 
 type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
@@ -205,29 +419,319 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
   totalUnclaimedYieldExact: BigInt!
   totalYield: BigDecimal!
   totalYieldExact: BigInt!
+  deployedInTransaction: Bytes!
 }
 
-type Identity @entity(immutable: false) {
-  id: Bytes!
-  registry: IdentityRegistry
-  claims: [IdentityClaim!]! @derivedFrom(field: "identity")
-  account: Account
-  token: Token
+# ==================================================
+# SYSTEM STATISTICS
+# ==================================================
+
+type SystemStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+
+  system: System!
+
+  # Value of all tokens in the system in base FIAT currency
+  totalValueInBaseCurrency: BigDecimal!
 }
 
-type IdentityClaim @entity(immutable: false) {
-  id: Bytes!
-  identity: Identity!
-  name: String!
-  issuer: Identity!
-  uri: String
-  revoked: Boolean!
-  values: [IdentityClaimValue!]! @derivedFrom(field: "claim")
+type SystemStats
+  @aggregation(intervals: ["hour", "day"], source: "SystemStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+
+  system: System!
+
+  # Value of all tokens in the system in base FIAT currency
+  totalValueInBaseCurrency: BigDecimal!
+    @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
 }
 
-type IdentityClaimValue @entity(immutable: false) {
-  id: Bytes!
-  claim: IdentityClaim!
-  key: String!
-  value: String!
+# ==================================================
+# ACCOUNT STATISTICS
+# ==================================================
+
+type AccountStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+
+  account: Account!
+
+  # Value of all tokens for the account in base FIAT currency
+  totalValueInBaseCurrency: BigDecimal!
+
+  # Balance metrics
+  balancesCount: Int!
+}
+
+type AccountStats
+  @aggregation(intervals: ["hour", "day"], source: "AccountStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+
+  account: Account!
+
+  # Value metrics (in base FIAT currency)
+  totalValueInBaseCurrency: BigDecimal!
+    @aggregate(fn: "last", arg: "totalValueInBaseCurrency")
+
+  # Balance metrics
+  balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
+}
+
+# ==================================================
+# EVENT STATISTICS
+# ==================================================
+
+type EventStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+
+  account: Account!
+  eventName: String!
+}
+
+type EventStats
+  @aggregation(intervals: ["hour", "day"], source: "EventStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+
+  account: Account!
+  eventName: String!
+
+  eventsCount: Int! @aggregate(fn: "count", cumulative: true)
+}
+
+# ==================================================
+# TOKEN STATISTICS
+# ==================================================
+
+# Total count of tokens by type
+type TokenTypeStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+
+  type: String!
+
+  count: Int!
+  # Percentage of total supply (eg bonds take 8% of the total supply accross all types)
+  percentageOfTotalSupply: BigDecimal!
+}
+
+type TokenTypeStats
+  @aggregation(intervals: ["hour", "day"], source: "TokenTypeStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+
+  type: String!
+
+  count: Int! @aggregate(fn: "last", arg: "count")
+  # Percentage of total supply (eg bonds take 8% of the total supply accross all types)
+  percentageOfTotalSupply: BigDecimal!
+    @aggregate(fn: "last", arg: "percentageOfTotalSupply")
+}
+
+type TokenStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+
+  token: Token!
+  type: String!
+
+  # Balance metrics
+  balancesCount: Int!
+
+  # Supply metrics
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  minted: BigDecimal!
+  mintedExact: BigInt!
+  burned: BigDecimal!
+  burnedExact: BigInt!
+  transfered: BigDecimal!
+  transferedExact: BigInt!
+}
+
+type TokenStats
+  @aggregation(intervals: ["hour", "day"], source: "TokenStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+
+  token: Token!
+  type: String!
+
+  # Balance metrics
+  balancesCount: Int! @aggregate(fn: "last", arg: "balancesCount")
+
+  # Supply metrics
+  totalSupply: BigDecimal! @aggregate(fn: "last", arg: "totalSupply")
+  totalSupplyExact: BigInt! @aggregate(fn: "last", arg: "totalSupplyExact")
+  totalMinted: BigDecimal! @aggregate(fn: "sum", arg: "minted")
+  totalMintedExact: BigInt! @aggregate(fn: "sum", arg: "mintedExact")
+  totalBurned: BigDecimal! @aggregate(fn: "sum", arg: "burned")
+  totalBurnedExact: BigInt! @aggregate(fn: "sum", arg: "burnedExact")
+  totalTransfered: BigDecimal! @aggregate(fn: "sum", arg: "transfered")
+  totalTransferedExact: BigInt! @aggregate(fn: "sum", arg: "transferedExact")
+}
+
+# Collateral statistics for tokens
+type TokenCollateralStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+
+  token: Token!
+
+  collateral: BigDecimal!
+  collateralExact: BigInt!
+  collateralAvailable: BigDecimal!
+  collateralAvailableExact: BigInt!
+  collateralUsed: BigDecimal!
+  collateralUsedExact: BigInt!
+}
+
+type TokenCollateralStats
+  @aggregation(intervals: ["hour", "day"], source: "TokenCollateralStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+
+  token: Token!
+
+  collateral: BigDecimal! @aggregate(fn: "last", arg: "collateral")
+  collateralExact: BigInt! @aggregate(fn: "last", arg: "collateralExact")
+  collateralAvailable: BigDecimal!
+    @aggregate(fn: "last", arg: "collateralAvailable")
+  collateralAvailableExact: BigInt!
+    @aggregate(fn: "last", arg: "collateralAvailableExact")
+  collateralUsed: BigDecimal! @aggregate(fn: "last", arg: "collateralUsed")
+  collateralUsedExact: BigInt!
+    @aggregate(fn: "last", arg: "collateralUsedExact")
+}
+
+# Bond statistics for tokens
+type TokenBondStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+
+  token: Token!
+
+  underlyingAssetBalanceAvailable: BigDecimal!
+  underlyingAssetBalanceAvailableExact: BigInt!
+  underlyingAssetBalanceRequired: BigDecimal!
+  underlyingAssetBalanceRequiredExact: BigInt!
+}
+
+type TokenBondStats
+  @aggregation(intervals: ["hour", "day"], source: "TokenBondStatsData") {
+  id: Int8!
+  timestamp: Timestamp!
+
+  token: Token!
+
+  underlyingAssetBalanceAvailable: BigDecimal!
+    @aggregate(fn: "last", arg: "underlyingAssetBalanceAvailable")
+  underlyingAssetBalanceAvailableExact: BigInt!
+    @aggregate(fn: "last", arg: "underlyingAssetBalanceAvailableExact")
+  underlyingAssetBalanceRequired: BigDecimal!
+    @aggregate(fn: "last", arg: "underlyingAssetBalanceRequired")
+  underlyingAssetBalanceRequiredExact: BigInt!
+    @aggregate(fn: "last", arg: "underlyingAssetBalanceRequiredExact")
+  coveredPercentage: BigDecimal!
+    @aggregate(
+      fn: "last"
+      arg: "(underlyingAssetBalanceAvailable / underlyingAssetBalanceRequired) * 100"
+    )
+}
+
+# Token distribution statistics by concentration segments
+type TokenDistributionStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+
+  token: Token!
+
+  # Percentage owned by top 5 holders
+  percentageOwnedByTop5Holders: BigDecimal!
+
+  # Concentration segments
+  # 0-2%
+  balancesCountSegment1: Int!
+  totalValueSegment1: BigDecimal!
+  totalValueSegment1Exact: BigInt!
+
+  # 2-10%
+  balancesCountSegment2: Int!
+  totalValueSegment2: BigDecimal!
+  totalValueSegment2Exact: BigInt!
+
+  # 10-20%
+  balancesCountSegment3: Int!
+  totalValueSegment3: BigDecimal!
+  totalValueSegment3Exact: BigInt!
+
+  # 20-40%
+  balancesCountSegment4: Int!
+  totalValueSegment4: BigDecimal!
+  totalValueSegment4Exact: BigInt!
+
+  # 40-100%
+  balancesCountSegment5: Int!
+  totalValueSegment5: BigDecimal!
+  totalValueSegment5Exact: BigInt!
+}
+
+type TokenDistributionStats
+  @aggregation(
+    intervals: ["hour", "day"]
+    source: "TokenDistributionStatsData"
+  ) {
+  id: Int8!
+  timestamp: Timestamp!
+
+  token: Token!
+
+  # Percentage owned by top 5 holders
+  percentageOwnedByTop5Holders: BigDecimal!
+    @aggregate(fn: "last", arg: "percentageOwnedByTop5Holders")
+
+  # Concentration segments
+  # 0-2%
+  balancesCountSegment1: Int!
+    @aggregate(fn: "last", arg: "balancesCountSegment1")
+  totalValueSegment1: BigDecimal!
+    @aggregate(fn: "last", arg: "totalValueSegment1")
+  totalValueSegment1Exact: BigInt!
+    @aggregate(fn: "last", arg: "totalValueSegment1Exact")
+
+  # 2-10%
+  balancesCountSegment2: Int!
+    @aggregate(fn: "last", arg: "balancesCountSegment2")
+  totalValueSegment2: BigDecimal!
+    @aggregate(fn: "last", arg: "totalValueSegment2")
+  totalValueSegment2Exact: BigInt!
+    @aggregate(fn: "last", arg: "totalValueSegment2Exact")
+
+  # 10-20%
+  balancesCountSegment3: Int!
+    @aggregate(fn: "last", arg: "balancesCountSegment3")
+  totalValueSegment3: BigDecimal!
+    @aggregate(fn: "last", arg: "totalValueSegment3")
+  totalValueSegment3Exact: BigInt!
+    @aggregate(fn: "last", arg: "totalValueSegment3Exact")
+
+  # 20-40%
+  balancesCountSegment4: Int!
+    @aggregate(fn: "last", arg: "balancesCountSegment4")
+  totalValueSegment4: BigDecimal!
+    @aggregate(fn: "last", arg: "totalValueSegment4")
+  totalValueSegment4Exact: BigInt!
+    @aggregate(fn: "last", arg: "totalValueSegment4Exact")
+
+  # 40-100%
+  balancesCountSegment5: Int!
+    @aggregate(fn: "last", arg: "balancesCountSegment5")
+  totalValueSegment5: BigDecimal!
+    @aggregate(fn: "last", arg: "totalValueSegment5")
+  totalValueSegment5Exact: BigInt!
+    @aggregate(fn: "last", arg: "totalValueSegment5Exact")
 }

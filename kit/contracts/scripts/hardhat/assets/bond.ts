@@ -1,8 +1,6 @@
-import { encodeAbiParameters, parseAbiParameters } from "viem";
+import { atkDeployer } from "../services/deployer";
 
-import { smartProtocolDeployer } from "../services/deployer";
-
-import { SMARTTopic } from "../constants/topics";
+import { ATKTopic } from "../constants/topics";
 import {
   frozenInvestor,
   investorA,
@@ -11,24 +9,30 @@ import {
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
-import { toDecimals } from "../utils/to-decimals";
+import { getAnvilTimeMilliseconds, getAnvilTimeSeconds } from "../utils/anvil";
+import { toBaseUnits } from "../utils/to-base-units";
+import { mature } from "./actions/bond/mature";
 import { burn } from "./actions/burnable/burn";
+import { setCap } from "./actions/capped/set-cap";
+import { setAddressParametersForComplianceModule } from "./actions/compliance/set-address-parameters-for-compliance-module";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
 import { forcedTransfer } from "./actions/custodian/forced-transfer";
 import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
+import { redeem } from "./actions/redeemable/redeem";
 import { setupAsset } from "./actions/setup-asset";
 import { claimYield } from "./actions/yield/claim-yield";
 import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
 import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
 import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
+import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
 
 export const createBond = async (depositToken: Asset<any>) => {
   console.log("\n=== Creating bond... ===\n");
 
-  const bondFactory = smartProtocolDeployer.getBondFactoryContract();
+  const bondFactory = atkDeployer.getBondFactoryContract();
 
   const bond = new Asset<"bondFactory">(
     "Euro Bonds",
@@ -38,33 +42,26 @@ export const createBond = async (depositToken: Asset<any>) => {
     bondFactory
   );
 
-  const encodedBlockedCountries = encodeAbiParameters(
-    parseAbiParameters("uint16[]"),
-    [[]]
-  );
-
+  const anvilTimeSeconds = await getAnvilTimeSeconds(owner);
+  const faceValue = toBaseUnits(0.000123, depositToken.decimals);
+  const cap = toBaseUnits(1_000_000, bond.decimals);
   const transactionHash = await bondFactory.write.createBond([
     bond.name,
     bond.symbol,
     bond.decimals,
-    toDecimals(1000000, bond.decimals),
-    BigInt(Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60), // 1 year
-    BigInt(123),
+    cap,
+    BigInt(anvilTimeSeconds + 365 * 24 * 60 * 60), // 1 year
+    faceValue,
     depositToken.address!,
-    [topicManager.getTopicId(SMARTTopic.kyc)],
-    [
-      {
-        module: smartProtocolDeployer.getContractAddress(
-          "countryBlockListModule"
-        ),
-        params: encodedBlockedCountries,
-      },
-    ],
+    [topicManager.getTopicId(ATKTopic.kyc)],
+    getDefaultComplianceModules(),
   ]);
 
   await bond.waitUntilDeployed(transactionHash);
 
-  await setupAsset(bond);
+  await setupAsset(bond, {
+    basePrice: 1.23,
+  });
 
   // core
   await mint(bond, owner, 100n);
@@ -74,6 +71,9 @@ export const createBond = async (depositToken: Asset<any>) => {
   // burnable
   await burn(bond, investorB, 2n);
 
+  // capped
+  await setCap(bond, 1_500_000n);
+
   // custodian
   await forcedTransfer(bond, owner, investorA, investorB, 2n);
   await setAddressFrozen(bond, owner, frozenInvestor, true);
@@ -81,13 +81,31 @@ export const createBond = async (depositToken: Asset<any>) => {
   await unfreezePartialTokens(bond, owner, investorB, 2n);
 
   // yield
-  const { advanceToNextPeriod } = await setYieldSchedule(
+  const anvilTime = await getAnvilTimeMilliseconds(owner);
+  const { advanceToNextPeriod, scheduleContract } = await setYieldSchedule(
     bond,
-    new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day from now
-    new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days from now
+    new Date(anvilTime + 1 * 24 * 60 * 60 * 1000), // 1 day from now
+    new Date(anvilTime + 4 * 24 * 60 * 60 * 1000), // 4 days from now
     50, // 0.5%
     12 * 60 * 60 // 12 hours in seconds
   );
+
+  // Make sure bond and yield can hold deposit token
+  const allowedIdentities = await Promise.all([
+    investorA.getIdentity(),
+    investorB.getIdentity(),
+    // owner also needs to be able to hold deposit token ... topUpUnderlyingAsset will mint to owner
+    owner.getIdentity(),
+    bond.address,
+    scheduleContract.address,
+  ]);
+
+  await setAddressParametersForComplianceModule(
+    depositToken,
+    "identityAllowListModule",
+    allowedIdentities
+  );
+
   // do some mint/burns to change the yield
   await mint(bond, owner, 10n);
   await burn(bond, owner, 1n);
@@ -108,7 +126,13 @@ export const createBond = async (depositToken: Asset<any>) => {
   }
   await withdrawnUnderlyingAsset(bond, depositToken, investorA.address, 5n);
 
-  // TODO: execute all other functions of the bond
+  // mature bond
+  await mint(depositToken, bond.address, 150n);
+  await mature(bond);
+
+  // redeemable
+  await redeem(bond, owner, 10n);
+  await redeem(bond, investorB, 1n);
 
   return bond;
 };

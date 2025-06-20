@@ -10,7 +10,8 @@
     },
     "codegen:interfaceid": {
       "dependsOn": ["contracts#compile"],
-      "outputs": ["src/erc165/utils/interfaceids.ts"]
+      "outputs": ["src/erc165/utils/interfaceids.ts"],
+      "inputs": ["**/*.sol", "!.generated/**"]
     },
     "codegen:gql-tada": {
       "dependsOn": ["publish"],
@@ -19,14 +20,23 @@
     },
     "compile": {
       "dependsOn": ["^compile", "codegen"],
-      "outputs": ["build/**"]
+      "outputs": [
+        "build/**",
+        ".generated/subgraph-hash.txt",
+        ".generated/.env.subgraph"
+      ],
+      "inputs": ["subgraph.yaml", "schema.graphql"]
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "^publish"]
+      "dependsOn": ["package", "^publish", "codegen:interfaceid"]
     },
-    "test": {
+    "test:integration": {
       "dependsOn": ["codegen:gql-tada"]
+    },
+    "translate": {},
+    "artifacts": {
+      "dependsOn": ["build", "compile", "translate"]
     }
   }
 }

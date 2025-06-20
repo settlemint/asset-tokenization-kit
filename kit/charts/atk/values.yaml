@@ -297,6 +297,11 @@ hasura:
 
 portal:
   enabled: true
+  image:
+    pullSecrets:
+      - image-pull-secret-docker
+      - image-pull-secret-ghcr
+      - image-pull-secret-harbor
   initContainers:
     - name: wait-for-postgres
       image: ghcr.io/settlemint/btp-waitforit:v7.7.5
@@ -352,6 +357,18 @@ support:
   # https://github.com/stakater/Reloader/tree/master/deployments/kubernetes/chart/reloader
   reloader:
     enabled: true
+
+  minio:
+    enabled: true
+    image:
+      pullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+    ingress:
+      enabled: true
+      ingressClassName: "settlemint-nginx"
+      hostname: minio.k8s.orb.local
 
 observability:
   enabled: true

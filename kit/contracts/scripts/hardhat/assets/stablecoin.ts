@@ -1,6 +1,4 @@
-import { encodeAbiParameters, parseAbiParameters } from "viem";
-
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 
 import {
   frozenInvestor,
@@ -8,7 +6,7 @@ import {
   investorB,
 } from "../entities/actors/investors";
 
-import { SMARTTopic } from "../constants/topics";
+import { ATKTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
@@ -20,12 +18,12 @@ import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
+import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
 
 export const createStableCoin = async () => {
   console.log("\n=== Creating stablecoin... ===\n");
 
-  const stablecoinFactory =
-    smartProtocolDeployer.getStablecoinFactoryContract();
+  const stablecoinFactory = atkDeployer.getStablecoinFactoryContract();
 
   const stableCoin = new Asset<"stablecoinFactory">(
     "Tether",
@@ -35,30 +33,19 @@ export const createStableCoin = async () => {
     stablecoinFactory
   );
 
-  const encodedBlockedCountries = encodeAbiParameters(
-    parseAbiParameters("uint16[]"),
-    [[]]
-  );
-
   const transactionHash = await stablecoinFactory.write.createStableCoin([
     stableCoin.name,
     stableCoin.symbol,
     stableCoin.decimals,
-    [topicManager.getTopicId(SMARTTopic.kyc)],
-    [
-      {
-        module: smartProtocolDeployer.getContractAddress(
-          "countryBlockListModule"
-        ),
-        params: encodedBlockedCountries,
-      },
-    ],
+    [topicManager.getTopicId(ATKTopic.kyc)],
+    getDefaultComplianceModules(),
   ]);
 
   await stableCoin.waitUntilDeployed(transactionHash);
 
   await setupAsset(stableCoin, {
     collateral: 1000n,
+    basePrice: 0.86,
   });
 
   // core
@@ -73,8 +60,6 @@ export const createStableCoin = async () => {
   await setAddressFrozen(stableCoin, owner, frozenInvestor, true);
   await freezePartialTokens(stableCoin, owner, investorB, 250n);
   await unfreezePartialTokens(stableCoin, owner, investorB, 125n);
-
-  // TODO: execute all other functions of the stablecoin
 
   return stableCoin;
 };

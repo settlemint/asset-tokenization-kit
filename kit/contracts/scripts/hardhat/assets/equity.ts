@@ -1,6 +1,4 @@
-import { encodeAbiParameters, parseAbiParameters } from "viem";
-
-import { SMARTTopic } from "../constants/topics";
+import { ATKTopic } from "../constants/topics";
 import {
   frozenInvestor,
   investorA,
@@ -8,7 +6,7 @@ import {
 } from "../entities/actors/investors";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
@@ -18,11 +16,12 @@ import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
+import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
 
 export const createEquity = async () => {
   console.log("\n=== Creating equity... ===\n");
 
-  const equityFactory = smartProtocolDeployer.getEquityFactoryContract();
+  const equityFactory = atkDeployer.getEquityFactoryContract();
 
   const equity = new Asset<"equityFactory">(
     "Apple",
@@ -32,24 +31,12 @@ export const createEquity = async () => {
     equityFactory
   );
 
-  const encodedBlockedCountries = encodeAbiParameters(
-    parseAbiParameters("uint16[]"),
-    [[]]
-  );
-
   const transactionHash = await equityFactory.write.createEquity([
     equity.name,
     equity.symbol,
     equity.decimals,
-    [topicManager.getTopicId(SMARTTopic.kyc)],
-    [
-      {
-        module: smartProtocolDeployer.getContractAddress(
-          "countryBlockListModule"
-        ),
-        params: encodedBlockedCountries,
-      },
-    ],
+    [topicManager.getTopicId(ATKTopic.kyc)],
+    getDefaultComplianceModules(),
   ]);
 
   await equity.waitUntilDeployed(transactionHash);
@@ -57,6 +44,7 @@ export const createEquity = async () => {
   await setupAsset(equity, {
     assetClass: "Class A",
     assetCategory: "Category A",
+    basePrice: 173.02,
   });
 
   // core
@@ -71,8 +59,6 @@ export const createEquity = async () => {
   await setAddressFrozen(equity, owner, frozenInvestor, true);
   await freezePartialTokens(equity, owner, investorB, 25n);
   await unfreezePartialTokens(equity, owner, investorB, 12n);
-
-  // TODO: execute all other functions of the equity
 
   return equity;
 };

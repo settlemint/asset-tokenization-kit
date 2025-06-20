@@ -26,7 +26,7 @@ Configuration Details:
   Load Balancer: https://{{ (index .Values.erpc.ingress.hosts 0).host | default "rpc.k8s.orb.local" }}
   Hasura GraphQL: https://{{ (index .Values "hasura" "graphql-engine" "ingress" "hostName" ) | default "hasura.k8s.orb.local" }}/v1/graphql
   Hasura Admin Secret: {{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | default "atk" }}
-  Database URL: {{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_DATABASE_URL | default "postgresql://hasura:atk@postgresql-pgpool:5432/hasura" }}
+  Database URL: {{ printf "postgresql://hasura:atk@postgresql-pgpool.%s:5432/hasura" (include "atk.extractDomain" (dict "url" (index .Values "hasura" "graphql-engine" "ingress" "hostName" | default "hasura.k8s.orb.local"))) }}
   The Graph Endpoint: https://{{ (index .Values "thegraph" "graph-node" "ingress" "hosts" 0).host | default "graph.k8s.orb.local" }}
   Subgraph Names: kit
   Portal GraphQL: https://{{ .Values.portal.ingress.hostname | default "portal.k8s.orb.local" }}/graphql
@@ -57,7 +57,7 @@ SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS=["https://{{ (index .Values "thegraph" "
 
 === .env.local ===
 SETTLEMINT_HASURA_ADMIN_SECRET={{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_ADMIN_SECRET | default "atk" }}
-SETTLEMINT_HASURA_DATABASE_URL={{ .Values.dapp.secretEnv.SETTLEMINT_HASURA_DATABASE_URL | default "postgresql://hasura:atk@postgresql-pgpool:5432/hasura" }}
+SETTLEMINT_HASURA_DATABASE_URL={{ printf "postgresql://hasura:atk@postgresql-pgpool.%s:5432/hasura" (include "atk.extractDomain" (dict "url" (index .Values "hasura" "graphql-engine" "ingress" "hostName" | default "hasura.k8s.orb.local"))) }}
 SETTLEMINT_MINIO_SECRET_KEY=<MINIO_SECRET_KEY>
 
 ========================================================================

@@ -21,6 +21,7 @@ yarn-error.log*
 
 # dotenv environment variables file
 .env
+.env.subgraph
 
 # Testing
 coverage
@@ -38,3 +39,6 @@ subgraph-output.txt
 the-graph-schema.graphql
 the-graph-env.d.ts
 the-graph-cache.d.ts
+
+subgraph.json
+.generated/subgraph-hash.txt

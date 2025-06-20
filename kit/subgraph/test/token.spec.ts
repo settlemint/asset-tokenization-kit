@@ -37,8 +37,8 @@ describe("Tokens", () => {
       {
         name: "Euro Deposits",
         type: "deposit",
-        totalSupply: "10750",
-        totalSupplyExact: "10750000000",
+        totalSupply: "10900",
+        totalSupplyExact: "10900000000",
       },
       {
         name: "Paused Stablecoin",

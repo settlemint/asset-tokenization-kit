@@ -1,8 +1,8 @@
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import { claimIssuer } from "../../../entities/actors/claim-issuer";
 import { owner } from "../../../entities/actors/owner";
 
-import { SMARTTopic } from "../../../constants/topics";
+import { ATKTopic } from "../../../constants/topics";
 import { Asset } from "../../../entities/asset";
 import { encodeClaimData } from "../../../utils/claim-scheme-utils";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
@@ -22,7 +22,7 @@ export const issueAssetClassificationClaim = async (
   assetCategory: string
 ) => {
   const encodedAssetClassificationData = encodeClaimData(
-    SMARTTopic.assetClassification,
+    ATKTopic.assetClassification,
     [assetClass, assetCategory]
   );
 
@@ -32,13 +32,13 @@ export const issueAssetClassificationClaim = async (
     topicId,
   } = await claimIssuer.createClaim(
     asset.identity!,
-    SMARTTopic.assetClassification,
+    ATKTopic.assetClassification,
     encodedAssetClassificationData
   );
 
   const tokenIdentityContract = owner.getContractInstance({
     address: asset.identity,
-    abi: SMARTContracts.tokenIdentity,
+    abi: ATKContracts.tokenIdentity,
   });
 
   const claimIssuerIdentityAddress = await claimIssuer.getIdentity();

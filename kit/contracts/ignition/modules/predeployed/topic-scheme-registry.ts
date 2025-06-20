@@ -7,7 +7,7 @@ const TopicSchemeRegistryModule = buildModule(
     const { forwarder } = m.useModule(ForwarderModule);
 
     const topicSchemeRegistry = m.contract(
-      "SMARTTopicSchemeRegistryImplementation",
+      "ATKTopicSchemeRegistryImplementation",
       [forwarder]
     );
 

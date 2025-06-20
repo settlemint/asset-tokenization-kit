@@ -2,7 +2,7 @@
 
 import { $ } from "bun";
 import { join } from "node:path";
-import { logger } from "../../../tools/logging";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 /**
@@ -12,18 +12,23 @@ import { getKitProjectPath } from "../../../tools/root";
  *   - From root: turbo run dependencies --filter=contracts
  */
 
-const log = logger;
+const logger = createLogger({
+  level:
+    (process.env.LOG_LEVEL as LogLevel) ||
+    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+    "info",
+});
 
 /**
  * Find the contracts directory using intelligent root detection
  */
 async function findContractsDirectory(): Promise<string> {
-  log.debug("Finding contracts directory...");
+  logger.debug("Finding contracts directory...");
 
   // If we're already in kit/contracts with foundry.toml, use current directory
   const foundryFile = Bun.file("foundry.toml");
   if (await foundryFile.exists()) {
-    log.debug("Found foundry.toml in current directory");
+    logger.debug("Found foundry.toml in current directory");
     return process.cwd();
   }
 
@@ -37,10 +42,10 @@ async function findContractsDirectory(): Promise<string> {
       throw new Error("foundry.toml not found in contracts directory");
     }
 
-    log.debug(`Found contracts directory: ${contractsPath}`);
+    logger.debug(`Found contracts directory: ${contractsPath}`);
     return contractsPath;
   } catch (error) {
-    log.error(`Could not find contracts directory: ${error}`);
+    logger.error(`Could not find contracts directory: ${error}`);
     throw new Error(
       "Could not find foundry.toml file. Run this script from kit/contracts or project root."
     );
@@ -68,7 +73,7 @@ async function hasDependencies(projectDir: string): Promise<boolean> {
  * Check if forge command is available
  */
 async function checkForgeInstalled(): Promise<void> {
-  log.debug("Checking for Forge installation...");
+  logger.debug("Checking for Forge installation...");
 
   const forgePath = Bun.which("forge");
   if (!forgePath) {
@@ -77,20 +82,20 @@ async function checkForgeInstalled(): Promise<void> {
     );
   }
 
-  log.debug(`Forge found at: ${forgePath}`);
+  logger.debug(`Forge found at: ${forgePath}`);
 }
 
 /**
  * Install Soldeer dependencies
  */
 async function installSoldeerDependencies(projectDir: string): Promise<void> {
-  log.info("Installing Soldeer dependencies...");
+  logger.info("Installing Soldeer dependencies...");
 
   try {
     await $`forge soldeer install`.cwd(projectDir).quiet();
-    log.success("Soldeer dependencies installed");
+    logger.info("Soldeer dependencies installed");
   } catch (error) {
-    log.error(`Failed to install dependencies: ${error}`);
+    logger.error(`Failed to install dependencies: ${error}`);
     throw error;
   }
 }
@@ -113,7 +118,7 @@ async function findOnChainIdDirs(projectDir: string): Promise<string[]> {
   }
 
   if (!dirExists) {
-    log.debug("No dependencies directory found");
+    logger.debug("No dependencies directory found");
     return [];
   }
 
@@ -128,7 +133,7 @@ async function findOnChainIdDirs(projectDir: string): Promise<string[]> {
   })) {
     const fullPath = join(dependenciesDir, dir);
     onchainidDirs.push(fullPath);
-    log.debug(`Found OnChain ID directory: ${dir}`);
+    logger.debug(`Found OnChain ID directory: ${dir}`);
   }
 
   return onchainidDirs;
@@ -157,17 +162,17 @@ async function patchOnChainIdContracts(projectDir: string): Promise<void> {
   const onchainidDirs = await findOnChainIdDirs(projectDir);
 
   if (onchainidDirs.length === 0) {
-    log.info("No OnChain ID contracts found to patch");
+    logger.info("No OnChain ID contracts found to patch");
     return;
   }
 
-  log.info(`Found ${onchainidDirs.length} OnChain ID directories to patch`);
+  logger.info(`Found ${onchainidDirs.length} OnChain ID directories to patch`);
 
   let totalFilesPatched = 0;
 
   for (const onchainidDir of onchainidDirs) {
     const dirName = onchainidDir.split("/").pop() || "";
-    log.debug(`Processing ${dirName}...`);
+    logger.debug(`Processing ${dirName}...`);
 
     const solFiles = await findSolidityFiles(onchainidDir);
     let filesPatched = 0;
@@ -201,17 +206,17 @@ async function patchOnChainIdContracts(projectDir: string): Promise<void> {
         await Bun.write(solFile, content);
         filesPatched++;
         totalFilesPatched++;
-        log.debug(`Patched: ${solFile}`);
+        logger.debug(`Patched: ${solFile}`);
       }
     }
 
     if (filesPatched > 0) {
-      log.success(`Patched ${filesPatched} files in ${dirName}`);
+      logger.info(`Patched ${filesPatched} files in ${dirName}`);
     }
   }
 
   if (totalFilesPatched > 0) {
-    log.success(`Total files patched: ${totalFilesPatched}`);
+    logger.info(`Total files patched: ${totalFilesPatched}`);
   }
 }
 
@@ -219,19 +224,19 @@ async function patchOnChainIdContracts(projectDir: string): Promise<void> {
  * Main execution
  */
 async function main(): Promise<void> {
-  log.info("Starting Soldeer dependency installer...");
+  logger.info("Starting Soldeer dependency installer...");
 
   try {
     // Find the contracts directory
     const projectDir = await findContractsDirectory();
-    log.info(`Using contracts directory: ${projectDir}`);
+    logger.info(`Using contracts directory: ${projectDir}`);
 
     // Check if forge is installed
     await checkForgeInstalled();
 
     // Check if project has dependencies
     if (!(await hasDependencies(projectDir))) {
-      log.info("No dependencies found in foundry.toml");
+      logger.info("No dependencies found in foundry.toml");
       return;
     }
 
@@ -241,11 +246,11 @@ async function main(): Promise<void> {
     // Patch OnChain ID contracts
     await patchOnChainIdContracts(projectDir);
 
-    log.success(
+    logger.info(
       "All done installing soldeer dependencies and patching onchainid contracts!"
     );
   } catch (error) {
-    log.error(
+    logger.error(
       `Error: ${error instanceof Error ? error.message : String(error)}`
     );
     process.exit(1);

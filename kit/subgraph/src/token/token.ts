@@ -10,11 +10,11 @@ import {
   UpdatedTokenInformation,
 } from "../../generated/templates/Token/Token";
 import { fetchEvent } from "../event/fetch/event";
-import { updateYield } from "../fixed-yield-schedule/utils/fixed-yield-schedule-utils";
 import {
   decreaseTokenBalanceValue,
   increaseTokenBalanceValue,
 } from "../token-balance/utils/token-balance-utils";
+import { updateYield } from "../token-extensions/fixed-yield-schedule/utils/fixed-yield-schedule-utils";
 import { fetchToken } from "./fetch/token";
 import { increaseTokenSupply } from "./utils/token-utils";
 
@@ -48,7 +48,12 @@ export function handleMintCompleted(event: MintCompleted): void {
   fetchEvent(event, "Mint");
   const token = fetchToken(event.address);
   increaseTokenSupply(token, event.params.amount);
-  increaseTokenBalanceValue(token, event.params.to, event.params.amount);
+  increaseTokenBalanceValue(
+    token,
+    event.params.to,
+    event.params.amount,
+    event.block.timestamp
+  );
 }
 
 export function handleModuleParametersUpdated(
@@ -60,8 +65,18 @@ export function handleModuleParametersUpdated(
 export function handleTransferCompleted(event: TransferCompleted): void {
   fetchEvent(event, "Transfer");
   const token = fetchToken(event.address);
-  decreaseTokenBalanceValue(token, event.params.from, event.params.amount);
-  increaseTokenBalanceValue(token, event.params.to, event.params.amount);
+  decreaseTokenBalanceValue(
+    token,
+    event.params.from,
+    event.params.amount,
+    event.block.timestamp
+  );
+  increaseTokenBalanceValue(
+    token,
+    event.params.to,
+    event.params.amount,
+    event.block.timestamp
+  );
   if (token.yield_) {
     updateYield(token);
   }

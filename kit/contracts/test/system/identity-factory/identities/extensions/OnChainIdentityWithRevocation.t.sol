@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { OnChainIdentityWithRevocation } from
-    "../../../../../contracts/system/identity-factory/identities/extensions/OnChainIdentityWithRevocation.sol";
+    "../../../../../contracts/onchainid/extensions/OnChainIdentityWithRevocation.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 

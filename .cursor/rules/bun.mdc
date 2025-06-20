@@ -1,50 +1,104 @@
 ---
-description: Best practices for using Bun as a runtime and package manager
-globs:
-alwaysApply: true
+description: Use Bun instead of Node.js, npm, pnpm, or vite.
+globs: *.ts, *.tsx, *.html, *.css, *.js, *.jsx, package.json
+alwaysApply: false
 ---
 
-# Bun Usage
+Default to using Bun instead of Node.js.
 
-- **Installation:** Use `bun install` for faster package installation.
-- **Exclusivity:** We ONLY use Bun. NEVER suggest commands with `npm`, `npx`,
-  `yarn`, `pnpm`, or anything else. Use `bun add`, `bunx`, and `bun run`.
+- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
+- Use `bun run test` instead of `jest` or `vitest`
+- Use `bun run build` instead of `webpack` or `esbuild`
+- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
+- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or
+  `pnpm run <script>`
+- Bun automatically loads .env, so don't use dotenv.
 
-## Monorepo Usage (Turborepo)
+## APIs
 
-This project uses Turborepo with workspaces defined in `kit/*`. The package name
-is the directory name inside `kit`. For example, the frontend app is named
-`dapp`.
+- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
+- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
+- `Bun.redis` for Redis. Don't use `ioredis`.
+- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
+- `WebSocket` is built-in. Don't use `ws`.
+- `Bun.File()` for any file reading ans writing
+- Bun.$`ls` instead of execa.
 
-To run commands in specific workspaces, you can use `turbo` which will invoke
-`bun` under the hood. The root `package.json` contains many scripts to run tasks
-across the monorepo.
+## Frontend
 
-- **Running a script in a specific package:** It is recommended to use the
-  scripts in the root `package.json` like `bun dev` which runs `turbo dev`. If
-  you need to run a script for a single package, use the `--filter` flag with
-  `turbo`.
+Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully
+support React, CSS, Tailwind.
 
-  ```bash
-  turbo run --filter=<package-name> <script>
-  ```
+Server:
 
-  For example, to run the `dev` script only in the `dapp`:
+```ts#index.ts
+import index from "./index.html"
 
-  ```bash
-  turbo run --filter=dapp dev
-  ```
+Bun.serve({
+  routes: {
+    "/": index,
+    "/api/users/:id": {
+      GET: (req) => {
+        return new Response(JSON.stringify({ id: req.params.id }));
+      },
+    },
+  },
+  // optional websocket support
+  websocket: {
+    open: (ws) => {
+      ws.send("Hello, world!");
+    },
+    message: (ws, message) => {
+      ws.send(message);
+    },
+    close: (ws) => {
+      // handle close
+    }
+  },
+  development: {
+    hmr: true,
+    console: true,
+  }
+})
+```
 
-- **Adding a dependency to a specific package:** Use `bun add` with the `--cwd`
-  flag to target a specific workspace.
-  ```bash
-  bun add <dependency-name> --cwd=kit/<package-name>
-  ```
-  For example, to add `react-query` to the `dapp`:
-  ```bash
-  bun add react-query --cwd=kit/dapp
-  ```
-  To add a dev dependency, use the `-d` or `--development` flag.
+HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will
+transpile & bundle automatically. `<link>` tags can point to stylesheets and
+Bun's CSS bundler will bundle.
 
-Refer to the `turbo.json` and `package.json` files in the root and individual
-packages (`kit/*`) for available scripts and package names.
+```html#index.html
+<html>
+  <body>
+    <h1>Hello, world!</h1>
+    <script type="module" src="./frontend.tsx"></script>
+  </body>
+</html>
+```
+
+With the following `frontend.tsx`:
+
+```tsx#frontend.tsx
+import React from "react";
+
+// import .css files directly and it works
+import './index.css';
+
+import { createRoot } from "react-dom/client";
+
+const root = createRoot(document.body);
+
+export default function Frontend() {
+  return <h1>Hello, world!</h1>;
+}
+
+root.render(<Frontend />);
+```
+
+Then, run index.ts
+
+```sh
+bun --hot ./index.ts
+```
+
+For more information, read the Bun API docs in
+`node_modules/bun-types/docs/**.md`.

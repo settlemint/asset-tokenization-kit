@@ -4,7 +4,7 @@ import ForwarderModule from "./forwarder";
 const IdentityRegistryModule = buildModule("IdentityRegistryModule", (m) => {
   const { forwarder } = m.useModule(ForwarderModule);
 
-  const identityRegistry = m.contract("SMARTIdentityRegistryImplementation", [
+  const identityRegistry = m.contract("ATKIdentityRegistryImplementation", [
     forwarder,
   ]);
 

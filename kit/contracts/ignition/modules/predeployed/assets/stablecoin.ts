@@ -5,10 +5,10 @@ const StableCoinModule = buildModule("StableCoinModule", (m) => {
   const { forwarder } = m.useModule(ForwarderModule);
 
   const stablecoinFactoryImplementation = m.contract(
-    "SMARTStableCoinFactoryImplementation",
+    "ATKStableCoinFactoryImplementation",
     [forwarder]
   );
-  const stablecoinImplementation = m.contract("SMARTStableCoinImplementation", [
+  const stablecoinImplementation = m.contract("ATKStableCoinImplementation", [
     forwarder,
   ]);
 

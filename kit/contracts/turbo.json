@@ -2,31 +2,45 @@
   "extends": ["//"],
   "tasks": {
     "dependencies": {
-      "outputs": ["dependencies/**", "soldeer.lock"],
+      "outputs": ["dependencies/**"],
       "inputs": ["foundry.toml"]
     },
     "compile": {
       "dependsOn": ["compile:forge", "compile:hardhat"]
     },
     "compile:forge": {
-      "outputs": ["out/**", "cache_forge/**"]
+      "dependsOn": ["dependencies"],
+      "outputs": [".generated/out/**", ".generated/cache_forge/**"],
+      "inputs": ["contracts/**/*.sol"]
     },
     "compile:hardhat": {
-      "outputs": ["artifacts/**", "cache/**"]
+      "dependsOn": ["dependencies"],
+      "outputs": [".generated/artifacts/**", ".generated/cache/**"],
+      "inputs": ["contracts/**/*.sol"]
     },
     "codegen": {
-      "dependsOn": ["codegen:types", "codegen:genesis", "codegen:abi"]
+      "dependsOn": ["codegen:types"]
     },
     "codegen:types": {
-      "dependsOn": ["compile"],
-      "outputs": ["scripts/hardhat/abi/**"]
+      "dependsOn": ["compile:hardhat"],
+      "outputs": ["scripts/hardhat/abi/**"],
+      "inputs": ["contracts/**"]
     },
-    "codegen:abi": {
-      "dependsOn": ["compile"],
-      "outputs": ["portal/**"]
+    "artifacts": {
+      "dependsOn": ["artifacts:genesis", "artifacts:abi"]
     },
-    "codegen:genesis": {
-      "outputs": ["tools/genesis-output.json"]
+    "artifacts:genesis": {
+      "dependsOn": ["compile:forge"],
+      "outputs": [
+        ".generated/genesis-allocations.json",
+        ".generated/genesis.json"
+      ],
+      "inputs": ["contracts/**/*.sol"]
+    },
+    "artifacts:abi": {
+      "dependsOn": ["compile"],
+      "outputs": [".generated/portal/*.json"],
+      "inputs": ["contracts/**/*.sol"]
     },
     "format": {
       "dependsOn": ["format:forge", "format:prettier"]
@@ -35,7 +49,17 @@
     "format:prettier": {},
     "publish": {
       "cache": false,
-      "dependsOn": ["package", "codegen"]
+      "dependsOn": [
+        "package",
+        "codegen",
+        "subgraph#codegen:interfaceid",
+        "//#setup:dev"
+      ]
+    },
+    "test": {
+      "dependsOn": ["compile:forge"],
+      "outputs": [],
+      "inputs": ["**/*.sol", "test/**", "!.generated/**"]
     }
   }
 }

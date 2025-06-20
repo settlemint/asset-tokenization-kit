@@ -28,14 +28,24 @@
       "matchPackageNames": ["/^@settlemint//"]
     },
     {
-      "groupName": "Elysia",
-      "groupSlug": "elysia",
-      "matchPackageNames": ["elysia", "/^@elysiajs//"]
+      "groupName": "ORPC",
+      "groupSlug": "orpc",
+      "matchPackageNames": ["/^@orpc//"]
     },
     {
-      "groupName": "ORPC / Tanstack",
-      "groupSlug": "orpc",
-      "matchPackageNames": ["/^@orpc//", "/^@tanstack//"]
+      "groupName": "Bun",
+      "groupSlug": "bun",
+      "matchPackageNames": ["/^bun/", "/^oven/bun/"]
+    },
+    {
+      "groupName": "Tanstack",
+      "groupSlug": "tanstack",
+      "matchPackageNames": ["/^@tanstack//"]
+    },
+    {
+      "groupName": "Better Auth",
+      "groupSlug": "better-auth",
+      "matchPackageNames": ["/^@better-auth//", "better-auth"]
     },
     {
       "groupName": "Next Safe Action",

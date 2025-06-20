@@ -89,11 +89,6 @@ A Helm chart for the blockscout components
 | job.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | job.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | job.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
-| job.initContainer.cloneRepo.atkTag | string | `"1.1.1"` |  |
-| job.initContainer.cloneRepo.image.pullPolicy | string | `"IfNotPresent"` |  |
-| job.initContainer.cloneRepo.image.registry | string | `"docker.io"` |  |
-| job.initContainer.cloneRepo.image.repository | string | `"alpine/git"` |  |
-| job.initContainer.cloneRepo.image.tag | string | `"2.49.0"` |  |
 | job.initContainer.graphNodeCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | job.initContainer.graphNodeCheck.image.registry | string | `"docker.io"` |  |
 | job.initContainer.graphNodeCheck.image.repository | string | `"busybox"` |  |

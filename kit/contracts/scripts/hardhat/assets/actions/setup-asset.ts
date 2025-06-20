@@ -1,17 +1,20 @@
 import { Countries } from "../../constants/countries";
-import { SMARTRoles } from "../../constants/roles";
-import { SMARTTopic } from "../../constants/topics";
+import { ATKRoles } from "../../constants/roles";
+import { ATKTopic } from "../../constants/topics";
 import { owner } from "../../entities/actors/owner";
 import type { Asset } from "../../entities/asset";
-import { smartProtocolDeployer } from "../../services/deployer";
-import { addCountryComplianceModule } from "./core/add-country-allow-list-compliance-module";
+import { atkDeployer } from "../../services/deployer";
+import { getAnvilTimeMilliseconds } from "../../utils/anvil";
+import { addCountryComplianceModule } from "./compliance/add-country-allow-list-compliance-module";
+import { removeComplianceModule } from "./compliance/remove-compliance-module";
+import { setCountryParametersForComplianceModule } from "./compliance/set-country-parameters-for-compliance-module";
 import { grantRoles } from "./core/grant-roles";
 import { issueAssetClassificationClaim } from "./core/issue-asset-classification-claim";
+import { issueBasePriceClaim } from "./core/issue-base-price-claim";
 import { issueCollateralClaim } from "./core/issue-collateral-claim";
 import { issueIsinClaim } from "./core/issue-isin-claim";
-import { removeComplianceModule } from "./core/remove-compliance-module";
-import { setCountryParametersForComplianceModule } from "./core/set-country-parameters-for-compliance-module";
 import { updateRequiredTopics } from "./core/update-required-topic";
+import { unpauseAsset } from "./pausable/unpause-asset";
 
 export const setupAsset = async (
   asset: Asset<any>,
@@ -19,17 +22,19 @@ export const setupAsset = async (
     collateral,
     assetClass,
     assetCategory,
+    basePrice,
   }: {
-    collateral?: bigint;
+    collateral?: number | bigint;
     assetClass?: string;
     assetCategory?: string;
+    basePrice?: number;
   } = {}
 ) => {
   // needs to be done so that he can update the topics and compliance modules
-  await grantRoles(asset, owner, [SMARTRoles.tokenGovernanceRole]);
+  await grantRoles(asset, owner, [ATKRoles.tokenGovernanceRole]);
 
   // set extra topic
-  await updateRequiredTopics(asset, [SMARTTopic.kyc, SMARTTopic.aml]);
+  await updateRequiredTopics(asset, [ATKTopic.kyc, ATKTopic.aml]);
 
   // add country allow list compliance module
   await addCountryComplianceModule(asset, "countryAllowListModule", [
@@ -46,11 +51,11 @@ export const setupAsset = async (
   // remove country block list compliance module
   await removeComplianceModule(
     asset,
-    smartProtocolDeployer.getContractAddress("countryBlockListModule")
+    atkDeployer.getContractAddress("countryBlockListModule")
   );
 
   // needs to be done so that he can add the claims
-  await grantRoles(asset, owner, [SMARTRoles.claimManagerRole]);
+  await grantRoles(asset, owner, [ATKRoles.claimManagerRole]);
 
   // issue isin claim
   await issueIsinClaim(asset, asset.isin);
@@ -62,23 +67,27 @@ export const setupAsset = async (
 
   if (collateral) {
     // Update collateral
-    const now = new Date();
+    const anvilTime = new Date(await getAnvilTimeMilliseconds(owner));
     const oneYearFromNow = new Date(
-      now.getFullYear() + 1,
-      now.getMonth(),
-      now.getDate()
+      anvilTime.getFullYear() + 1,
+      anvilTime.getMonth(),
+      anvilTime.getDate()
     );
-    await issueCollateralClaim(
-      asset,
-      collateral,
-      asset.decimals,
-      oneYearFromNow
-    );
+    await issueCollateralClaim(asset, collateral, oneYearFromNow);
   }
+
+  if (basePrice) {
+    // issue base price claim
+    await issueBasePriceClaim(asset, basePrice);
+  }
+
   // needs supply management role to mint
   // needs custodian role for custodian actions
   await grantRoles(asset, owner, [
-    SMARTRoles.supplyManagementRole,
-    SMARTRoles.custodianRole,
+    ATKRoles.supplyManagementRole,
+    ATKRoles.custodianRole,
+    ATKRoles.emergencyRole, // for unpausing
   ]);
+
+  await unpauseAsset(asset);
 };

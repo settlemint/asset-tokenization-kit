@@ -1,6 +1,7 @@
 import {
   accessControlAbi,
   accessManagerAbi,
+  addressBlockListAbi,
   bondAbi,
   bondFactoryAbi,
   complianceAbi,
@@ -14,24 +15,30 @@ import {
   fundAbi,
   fundFactoryAbi,
   identityAbi,
+  identityAllowListAbi,
+  identityBlockListAbi,
   identityFactoryAbi,
   identityRegistryAbi,
   identityRegistryStorageAbi,
   ismartAbi,
   ismartBurnableAbi,
+  ismartCappedAbi,
   ismartCustodianAbi,
   ismartFixedYieldScheduleAbi,
   ismartPausableAbi,
+  ismartRedeemableAbi,
   ismartYieldAbi,
+  pushAirdropFactoryAbi,
   stablecoinAbi,
   stablecoinFactoryAbi,
   systemAbi,
   tokenIdentityAbi,
   topicSchemeRegistryAbi,
   trustedIssuersRegistryAbi,
+  vestingAirdropFactoryAbi,
 } from "../abi";
 
-export const SMARTContracts = {
+export const ATKContracts = {
   // onboarding
   system: systemAbi,
   compliance: complianceAbi,
@@ -45,7 +52,6 @@ export const SMARTContracts = {
   equityFactory: equityFactoryAbi,
   fundFactory: fundFactoryAbi,
   stablecoinFactory: stablecoinFactoryAbi,
-  fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
   // token
   accessManager: accessManagerAbi,
   identity: identityAbi,
@@ -65,7 +71,16 @@ export const SMARTContracts = {
   ismartPausable: ismartPausableAbi,
   ismartYield: ismartYieldAbi,
   ismartFixedYieldSchedule: ismartFixedYieldScheduleAbi,
+  ismartCapped: ismartCappedAbi,
+  ismartRedeemable: ismartRedeemableAbi,
   // compliance modules
   countryAllowListModule: countryAllowListAbi,
   countryBlockListModule: countryBlockListAbi,
+  addressBlockListModule: addressBlockListAbi,
+  identityBlockListModule: identityBlockListAbi,
+  identityAllowListModule: identityAllowListAbi,
+  // addons
+  fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
+  vestingAirdropFactory: vestingAirdropFactoryAbi,
+  pushAirdropFactory: pushAirdropFactoryAbi,
 } as const;

@@ -1,9 +1,9 @@
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 import { waitForSuccess } from "../utils/wait-for-success";
 
 export const setGlobalBlockedCountries = async (countryCodes: number[]) => {
   const countryBlockListModule =
-    smartProtocolDeployer.getCountryBlockListModuleContract();
+    atkDeployer.getCountryBlockListModuleContract();
 
   const transactionHash =
     await countryBlockListModule.write.setGlobalBlockedCountries([

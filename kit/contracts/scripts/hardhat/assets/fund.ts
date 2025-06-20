@@ -1,6 +1,4 @@
-import { encodeAbiParameters, parseAbiParameters } from "viem";
-
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 
 import {
   frozenInvestor,
@@ -8,7 +6,7 @@ import {
   investorB,
 } from "../entities/actors/investors";
 
-import { SMARTTopic } from "../constants/topics";
+import { ATKTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
@@ -19,12 +17,14 @@ import { forcedTransfer } from "./actions/custodian/forced-transfer";
 import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
+import { collectManagementFee } from "./actions/fund/collect-management-fee";
 import { setupAsset } from "./actions/setup-asset";
+import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
 
 export const createFund = async () => {
   console.log("\n=== Creating fund... ===\n");
 
-  const fundFactory = smartProtocolDeployer.getFundFactoryContract();
+  const fundFactory = atkDeployer.getFundFactoryContract();
 
   const fund = new Asset<"fundFactory">(
     "Bens Bugs",
@@ -34,25 +34,13 @@ export const createFund = async () => {
     fundFactory
   );
 
-  const encodedBlockedCountries = encodeAbiParameters(
-    parseAbiParameters("uint16[]"),
-    [[]]
-  );
-
   const transactionHash = await fundFactory.write.createFund([
     fund.name,
     fund.symbol,
     fund.decimals,
     20,
-    [topicManager.getTopicId(SMARTTopic.kyc)],
-    [
-      {
-        module: smartProtocolDeployer.getContractAddress(
-          "countryBlockListModule"
-        ),
-        params: encodedBlockedCountries,
-      },
-    ],
+    [topicManager.getTopicId(ATKTopic.kyc)],
+    getDefaultComplianceModules(),
   ]);
 
   await fund.waitUntilDeployed(transactionHash);
@@ -60,6 +48,7 @@ export const createFund = async () => {
   await setupAsset(fund, {
     assetClass: "Class A",
     assetCategory: "Category A",
+    basePrice: 20.0,
   });
 
   // core
@@ -75,7 +64,9 @@ export const createFund = async () => {
   await freezePartialTokens(fund, owner, investorB, 2n);
   await unfreezePartialTokens(fund, owner, investorB, 1n);
 
-  // TODO: execute all other functions of the fund
+  // management fee
+  await collectManagementFee(fund, 30);
+  await collectManagementFee(fund, 8);
 
   return fund;
 };

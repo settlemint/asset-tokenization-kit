@@ -4,10 +4,10 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
-import { ISMARTIdentityRegistry } from "../../contracts/interface/ISMARTIdentityRegistry.sol";
-import { ISMARTIdentityFactory } from "../../contracts/system/identity-factory/ISMARTIdentityFactory.sol";
-import { ISMARTTopicSchemeRegistry } from "../../contracts/system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol";
-import { SMARTTopics } from "../../contracts/system/SMARTTopics.sol";
+import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
+import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
+import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
+import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 
 contract ClaimUtils is Test {
     // Signature Schemes (ERC735)
@@ -17,7 +17,7 @@ contract ClaimUtils is Test {
     address internal _claimIssuer;
     uint256 internal _claimIssuerPrivateKey;
     ISMARTIdentityRegistry internal _identityRegistry;
-    ISMARTIdentityFactory internal _identityFactory;
+    IATKIdentityFactory internal _identityFactory;
     ISMARTTopicSchemeRegistry internal _topicSchemeRegistry;
 
     constructor(
@@ -25,7 +25,7 @@ contract ClaimUtils is Test {
         address claimIssuer_,
         uint256 claimIssuerPrivateKey_,
         ISMARTIdentityRegistry identityRegistry_,
-        ISMARTIdentityFactory identityFactory_,
+        IATKIdentityFactory identityFactory_,
         ISMARTTopicSchemeRegistry topicSchemeRegistry_
     ) {
         _platformAdmin = platformAdmin_;
@@ -212,7 +212,7 @@ contract ClaimUtils is Test {
     {
         bytes memory encodedData = abi.encode(amount, expiryTimestamp);
         _issueTokenIdentityClaimInternal(
-            tokenAddress_, tokenOwner_, getTopicId(SMARTTopics.TOPIC_COLLATERAL), encodedData
+            tokenAddress_, tokenOwner_, getTopicId(ATKTopics.TOPIC_COLLATERAL), encodedData
         );
     }
 
@@ -222,7 +222,7 @@ contract ClaimUtils is Test {
      */
     function issueKYCClaim(address clientWalletAddress_) public {
         // Use CLAIM_TOPIC_KYC from the constants library
-        issueInvestorClaim(clientWalletAddress_, SMARTTopics.TOPIC_KYC, "Verified KYC by Issuer");
+        issueInvestorClaim(clientWalletAddress_, ATKTopics.TOPIC_KYC, "Verified KYC by Issuer");
     }
 
     /**
@@ -231,7 +231,7 @@ contract ClaimUtils is Test {
      */
     function issueAMLClaim(address clientWalletAddress_) public {
         // Use CLAIM_TOPIC_AML from the constants library
-        issueInvestorClaim(clientWalletAddress_, SMARTTopics.TOPIC_AML, "Verified AML by Issuer");
+        issueInvestorClaim(clientWalletAddress_, ATKTopics.TOPIC_AML, "Verified AML by Issuer");
     }
 
     /**

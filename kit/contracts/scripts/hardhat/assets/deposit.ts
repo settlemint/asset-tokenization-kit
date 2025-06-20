@@ -1,14 +1,13 @@
-import { encodeAbiParameters, parseAbiParameters } from "viem";
 import {
   frozenInvestor,
   investorA,
   investorB,
 } from "../entities/actors/investors";
 
-import { SMARTTopic } from "../constants/topics";
+import { ATKTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
-import { smartProtocolDeployer } from "../services/deployer";
+import { atkDeployer } from "../services/deployer";
 import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
@@ -18,11 +17,13 @@ import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
 import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
+import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
+import { encodeAddressParams } from "./utils/encode-address-params";
 
 export const createDeposit = async () => {
   console.log("\n=== Creating deposit... ===\n");
 
-  const depositFactory = smartProtocolDeployer.getDepositFactoryContract();
+  const depositFactory = atkDeployer.getDepositFactoryContract();
 
   const deposit = new Asset<"depositFactory">(
     "Euro Deposits",
@@ -32,22 +33,21 @@ export const createDeposit = async () => {
     depositFactory
   );
 
-  const encodedBlockedCountries = encodeAbiParameters(
-    parseAbiParameters("uint16[]"),
-    [[]]
-  );
+  const allowedIdentities = await Promise.all([
+    investorA.getIdentity(),
+    investorB.getIdentity(),
+  ]);
 
   const transactionHash = await depositFactory.write.createDeposit([
     deposit.name,
     deposit.symbol,
     deposit.decimals,
-    [topicManager.getTopicId(SMARTTopic.kyc)],
+    [topicManager.getTopicId(ATKTopic.kyc)],
     [
+      ...getDefaultComplianceModules(),
       {
-        module: smartProtocolDeployer.getContractAddress(
-          "countryBlockListModule"
-        ),
-        params: encodedBlockedCountries,
+        module: atkDeployer.getContractAddress("identityAllowListModule"),
+        params: encodeAddressParams(allowedIdentities),
       },
     ],
   ]);
@@ -56,6 +56,7 @@ export const createDeposit = async () => {
 
   await setupAsset(deposit, {
     collateral: 100000n,
+    basePrice: 1,
   });
 
   // core
@@ -70,8 +71,6 @@ export const createDeposit = async () => {
   await setAddressFrozen(deposit, owner, frozenInvestor, true);
   await freezePartialTokens(deposit, owner, investorB, 250n);
   await unfreezePartialTokens(deposit, owner, investorB, 125n);
-
-  // TODO: execute all other functions of the deposit
 
   return deposit;
 };

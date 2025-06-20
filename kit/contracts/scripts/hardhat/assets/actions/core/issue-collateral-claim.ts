@@ -1,13 +1,13 @@
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import { claimIssuer } from "../../../entities/actors/claim-issuer";
 import { owner } from "../../../entities/actors/owner";
 
-import { SMARTTopic } from "../../../constants/topics";
+import { ATKTopic } from "../../../constants/topics";
 import type { Asset } from "../../../entities/asset";
 import { encodeClaimData } from "../../../utils/claim-scheme-utils";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatDecimals } from "../../../utils/format-decimals";
-import { toDecimals } from "../../../utils/to-decimals";
+import { formatBaseUnits } from "../../../utils/format-base-units";
+import { toBaseUnits } from "../../../utils/to-base-units";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 /**
@@ -16,13 +16,11 @@ import { waitForSuccess } from "../../../utils/wait-for-success";
  *
  * @param tokenIdentityAddress The address of the token's identity contract.
  * @param amount The collateral amount (as a BigInt).
- * @param decimals The number of decimals of the token.
  * @param expiryTimestamp The expiry timestamp of the collateral as a JavaScript `Date` object.
  */
 export const issueCollateralClaim = async (
   asset: Asset<any>,
-  amount: bigint,
-  decimals: number,
+  amount: number | bigint,
   expiryTimestamp: Date
 ) => {
   // Convert Date object to Unix timestamp (seconds) and then to bigint
@@ -30,11 +28,11 @@ export const issueCollateralClaim = async (
     Math.floor(expiryTimestamp.getTime() / 1000)
   );
 
-  const tokenAmount = toDecimals(amount, decimals);
+  const tokenAmount = toBaseUnits(amount, asset.decimals);
 
   // 1. Encode the collateral claim data (amount, expiryTimestamp)
   // Corresponds to abi.encode(amount, expiryTimestamp) in Solidity
-  const encodedCollateralData = encodeClaimData(SMARTTopic.collateral, [
+  const encodedCollateralData = encodeClaimData(ATKTopic.collateral, [
     tokenAmount,
     expiryTimestampBigInt,
   ]);
@@ -47,14 +45,14 @@ export const issueCollateralClaim = async (
     topicId,
   } = await claimIssuer.createClaim(
     asset.identity,
-    SMARTTopic.collateral,
+    ATKTopic.collateral,
     encodedCollateralData
   );
 
   // 3. Get an instance of the token's identity contract, interacted with by the 'owner' (assumed token owner)
   const tokenIdentityContract = owner.getContractInstance({
     address: asset.identity!,
-    abi: SMARTContracts.tokenIdentity,
+    abi: ATKContracts.tokenIdentity,
   });
 
   // 4. Get the identity address of the claim issuer
@@ -77,6 +75,6 @@ export const issueCollateralClaim = async (
 
   // Log with the original Date object for better readability if desired, or the timestamp
   console.log(
-    `[Collateral claim] issued for token identity ${asset.name} (${asset.identity}) with amount ${formatDecimals(tokenAmount, decimals)} ${asset.symbol} and expiry ${expiryTimestamp.toISOString()} (Unix: ${expiryTimestampBigInt}).`
+    `[Collateral claim] issued for token identity ${asset.name} (${asset.identity}) with amount ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} and expiry ${expiryTimestamp.toISOString()} (Unix: ${expiryTimestampBigInt}).`
   );
 };

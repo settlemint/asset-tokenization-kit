@@ -25,10 +25,10 @@
  *   bun run graph-deploy.ts --help     # Show help
  */
 
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { join, relative } from "path";
 import { parseArgs } from "util";
 import { parse, stringify } from "yaml";
-import { logger, LogLevel } from "../../../tools/logging";
 import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
 
 // ============================================================================
@@ -37,6 +37,7 @@ import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
 
 interface DeploymentConfig {
   environment: "local" | "remote";
+  port: string;
   verbose: boolean;
   quiet: boolean;
   debug: boolean;
@@ -79,9 +80,16 @@ const EXIT_CODES = {
 
 type ExitCode = (typeof EXIT_CODES)[keyof typeof EXIT_CODES];
 
-const LOCAL_GRAPH_NODE = "http://localhost:8020";
 const GRAPH_NAME = "smart-protocol";
 const GRAPH_VERSION_PREFIX = "v1.0.0";
+
+// Create logger instance
+const logger = createLogger({
+  level:
+    (process.env.LOG_LEVEL as LogLevel) ||
+    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+    "info",
+});
 
 // ============================================================================
 // GLOBAL STATE AND CLEANUP
@@ -101,7 +109,7 @@ async function cleanup(): Promise<void> {
         graphPaths.subgraphConfig,
         JSON.stringify(originalAddresses, null, 2)
       );
-      logger.success("Original configuration restored");
+      logger.info("Original configuration restored");
     } catch (error) {
       logger.error("Failed to restore original configuration:", error);
     }
@@ -149,13 +157,13 @@ function setupCleanup(): void {
  * Show script usage information
  */
 function showUsage(): void {
-  console.log(`
+  logger.info(`
 Usage: bun run graph-deploy.ts --local|--remote [OPTIONS]
 
 Deploy the SMART Protocol subgraph to a Graph node.
 
 Arguments:
-  --local     Deploy to local Graph node (localhost:8020)
+  --local     Deploy to local Graph node
   --remote    Deploy to SettleMint platform
 
 Options:
@@ -166,14 +174,14 @@ Options:
 
 Examples:
   # Deploy to local Graph node
-  bun run graph-deploy.ts --local
+  bun run graph-deploy.ts --local --port 8020
 
   # Deploy to SettleMint with verbose output
   bun run graph-deploy.ts --remote --verbose
 
 Requirements:
   - Contracts must be deployed (deployed_addresses.json must exist)
-  - For local deployment: Graph node running at localhost:8020
+  - For local deployment: Graph node running at localhost:<port>
   - For remote deployment: SettleMint CLI installed and authenticated
 `);
 }
@@ -183,7 +191,7 @@ Requirements:
  */
 function parseArguments(): DeploymentConfig {
   try {
-    const { values, positionals } = parseArgs({
+    const { values } = parseArgs({
       args: Bun.argv.slice(2),
       options: {
         local: { type: "boolean" },
@@ -192,6 +200,11 @@ function parseArguments(): DeploymentConfig {
         verbose: { type: "boolean", short: "v" },
         quiet: { type: "boolean", short: "q" },
         debug: { type: "boolean", short: "d" },
+        port: {
+          type: "string",
+          short: "p",
+          default: process.env.THE_GRAPH_PORT_LOCAL_DEPLOY || "8020",
+        },
       },
       allowPositionals: false,
     });
@@ -217,16 +230,20 @@ function parseArguments(): DeploymentConfig {
     }
 
     // Set log level based on flags
-    if (values.debug) {
-      logger.setLevel(LogLevel.DEBUG);
-    } else if (values.verbose) {
-      logger.setLevel(LogLevel.INFO);
-    } else if (values.quiet) {
-      logger.setLevel(LogLevel.ERROR);
+    // Note: SettleMint SDK logger level is set at creation time
+    // Use LOG_LEVEL or SETTLEMINT_LOG_LEVEL env vars to control logging level
+    if (values.debug || values.verbose || values.quiet) {
+      const levelHint = values.debug
+        ? "debug"
+        : values.verbose
+          ? "info"
+          : "error";
+      logger.debug(`Log level hint: ${levelHint} (set via env vars)`);
     }
 
     return {
       environment: values.local ? "local" : "remote",
+      port: values.port,
       verbose: Boolean(values.verbose || values.debug),
       quiet: Boolean(values.quiet),
       debug: Boolean(values.debug),
@@ -256,7 +273,7 @@ async function initGraphPaths(): Promise<GraphPaths> {
         contractsRoot,
         "ignition",
         "deployments",
-        "smart-protocol-local",
+        "atk-local",
         "deployed_addresses.json"
       ),
       subgraphConfig: join(subgraphRoot, "subgraph.json"),
@@ -297,22 +314,22 @@ async function validateEnvironment(config: DeploymentConfig): Promise<void> {
 
   // Validate deployment-specific requirements
   if (config.environment === "local") {
-    await validateLocalEnvironment();
+    await validateLocalEnvironment(`http://localhost:${config.port}`);
   } else {
     await validateRemoteEnvironment();
   }
 
-  logger.success("Environment validation completed");
+  logger.info("Environment validation completed");
 }
 
 /**
  * Validate local deployment environment
  */
-async function validateLocalEnvironment(): Promise<void> {
+async function validateLocalEnvironment(node: string): Promise<void> {
   logger.info("Checking local Graph node...");
 
   try {
-    const response = await fetch(`${LOCAL_GRAPH_NODE}/graphql`, {
+    const response = await fetch(`${node}/graphql`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query: "{ __schema { types { name } } }" }),
@@ -322,10 +339,10 @@ async function validateLocalEnvironment(): Promise<void> {
       throw new Error(`Graph node responded with status: ${response.status}`);
     }
 
-    logger.success("Local Graph node is accessible");
+    logger.info(`Local Graph node (${node}) is accessible`);
   } catch (error) {
     logger.error("Failed to connect to local Graph node:", error);
-    logger.error(`Make sure Graph node is running at ${LOCAL_GRAPH_NODE}`);
+    logger.error(`Make sure Graph node is running at ${node}`);
     throw error;
   }
 }
@@ -338,7 +355,7 @@ async function validateRemoteEnvironment(): Promise<void> {
 
   try {
     await Bun.$`settlemint --version`.quiet();
-    logger.success("SettleMint CLI is available");
+    logger.info("SettleMint CLI is available");
   } catch (error) {
     logger.error("SettleMint CLI validation failed:", error);
     logger.error("Please install and authenticate SettleMint CLI");
@@ -357,7 +374,7 @@ async function readDeployedAddresses(): Promise<DeployedAddresses> {
     const addresses = (await addressesFile.json()) as DeployedAddresses;
 
     logger.debug("Deployed addresses:", addresses);
-    logger.success(`Found ${Object.keys(addresses).length} deployed contracts`);
+    logger.info(`Found ${Object.keys(addresses).length} deployed contracts`);
 
     return addresses;
   } catch (error) {
@@ -389,7 +406,7 @@ async function updateSubgraphConfig(
       JSON.stringify(addresses, null, 2)
     );
 
-    logger.success("Subgraph configuration updated");
+    logger.info("Subgraph configuration updated");
   } catch (error) {
     logger.error("Failed to update subgraph configuration:", error);
     throw error;
@@ -421,7 +438,7 @@ async function updateSubgraphYaml(addresses: DeployedAddresses): Promise<void> {
         const addressKey = Object.keys(addresses).find(
           (key) =>
             key.endsWith(`#${dataSource.name}`) ||
-            key.endsWith(`#SMART${dataSource.name}`)
+            key.endsWith(`#ATK${dataSource.name}`)
         );
         if (!addressKey) {
           logger.warn(`No address found for '${dataSource.name}'`);
@@ -445,7 +462,7 @@ async function updateSubgraphYaml(addresses: DeployedAddresses): Promise<void> {
       stringify(updatedSubgraphYamlConfig)
     );
 
-    logger.success("Subgraph yaml updated");
+    logger.info("Subgraph yaml updated");
   } catch (error) {
     logger.error("Failed to update subgraph yaml:", error);
     throw error;
@@ -461,7 +478,7 @@ async function generateCode(): Promise<void> {
 
     await Bun.$`bun run codegen`.cwd(graphPaths!.subgraphRoot);
 
-    logger.success("TypeScript code generation completed");
+    logger.info("TypeScript code generation completed");
   } catch (error) {
     logger.error("Failed to generate TypeScript code:", error);
     throw error;
@@ -472,16 +489,17 @@ async function generateCode(): Promise<void> {
  * Create local subgraph
  */
 async function createLocalSubgraph(
+  node: string,
   graphName: string = GRAPH_NAME
 ): Promise<void> {
   logger.info(`Creating local subgraph: ${graphName}`);
 
   try {
     // Create new subgraph
-    await Bun.$`bunx graph create --node ${LOCAL_GRAPH_NODE} ${graphName}`.cwd(
+    await Bun.$`bunx graph create --node ${node} ${graphName}`.cwd(
       graphPaths!.subgraphRoot
     );
-    logger.success(`Created subgraph: ${graphName}`);
+    logger.info(`Created subgraph: ${graphName}`);
   } catch (err) {
     const error = err as Error;
     logger.warn(
@@ -495,14 +513,15 @@ async function createLocalSubgraph(
  * Remove local subgraph
  */
 async function removeLocalSubgraph(
+  node: string,
   graphName: string = GRAPH_NAME
 ): Promise<void> {
   try {
     logger.info(`Removing local subgraph: ${graphName}`);
-    await Bun.$`bunx graph remove --node ${LOCAL_GRAPH_NODE} ${graphName}`.cwd(
+    await Bun.$`bunx graph remove --node ${node} ${graphName}`.cwd(
       graphPaths!.subgraphRoot
     );
-    logger.success(`Removed subgraph: ${graphName}`);
+    logger.info(`Removed subgraph: ${graphName}`);
   } catch (err) {
     const error = err as Error;
     logger.warn(
@@ -514,31 +533,32 @@ async function removeLocalSubgraph(
 /**
  * Deploy to local Graph node
  */
-async function deployLocal(): Promise<void> {
+async function deployLocal(config: DeploymentConfig): Promise<void> {
   try {
     const graphName = GRAPH_NAME;
     const versionLabel = `${GRAPH_VERSION_PREFIX}.${Date.now()}`;
+    const node = `http://localhost:${config.port}`;
 
     logger.info("Deploying subgraph locally...");
     logger.info(`  Name: ${graphName}`);
     logger.info(`  Version: ${versionLabel}`);
-    logger.info(`  Graph Node: ${LOCAL_GRAPH_NODE}`);
+    logger.info(`  Graph Node: ${node}`);
     logger.info(`  IPFS: https://ipfs.console.settlemint.com`);
 
     // Remove existing subgraph first
-    await removeLocalSubgraph(graphName);
+    await removeLocalSubgraph(node, graphName);
 
     // Create subgraph first
-    await createLocalSubgraph(graphName);
+    await createLocalSubgraph(node, graphName);
 
     // Deploy subgraph
-    await Bun.$`bunx graph deploy --version-label ${versionLabel} --node ${LOCAL_GRAPH_NODE} --ipfs https://ipfs.console.settlemint.com ${graphName} ${graphPaths!.subgraphYaml}`.cwd(
+    await Bun.$`bunx graph deploy --version-label ${versionLabel} --node ${node} --ipfs https://ipfs.console.settlemint.com ${graphName} ${graphPaths!.subgraphYaml}`.cwd(
       graphPaths!.subgraphRoot
     );
 
-    logger.success("Subgraph deployed successfully!");
+    logger.info("Subgraph deployed successfully!");
     logger.info(
-      `  Access your subgraph at: ${LOCAL_GRAPH_NODE}/subgraphs/name/${graphName}`
+      `  Access your subgraph at: ${node}/subgraphs/name/${graphName}`
     );
   } catch (error) {
     logger.error("Local deployment failed:", error);
@@ -558,7 +578,7 @@ async function deployRemote(): Promise<void> {
       graphPaths!.projectRoot
     );
 
-    logger.success("Subgraph deployed to SettleMint successfully!");
+    logger.info("Subgraph deployed to SettleMint successfully!");
   } catch (error) {
     logger.error("SettleMint deployment failed:", error);
     throw error;
@@ -568,13 +588,13 @@ async function deployRemote(): Promise<void> {
 /**
  * Execute local deployment workflow
  */
-async function executeLocalWorkflow(): Promise<void> {
+async function executeLocalWorkflow(config: DeploymentConfig): Promise<void> {
   try {
     const addresses = await readDeployedAddresses();
     await updateSubgraphConfig(addresses);
     await updateSubgraphYaml(addresses);
     await generateCode();
-    await deployLocal();
+    await deployLocal(config);
   } catch (error) {
     logger.error("Local deployment workflow failed:", error);
     throw error;
@@ -641,12 +661,12 @@ async function main(): Promise<void> {
 
     // Execute deployment workflow
     if (config.environment === "local") {
-      await executeLocalWorkflow();
+      await executeLocalWorkflow(config);
     } else {
       await executeRemoteWorkflow();
     }
 
-    logger.success("Deployment completed successfully!");
+    logger.info("Deployment completed successfully!");
   } catch (error) {
     logger.error("Deployment failed:", error);
     exitCode = EXIT_CODES.ERROR;

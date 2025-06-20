@@ -1,32 +1,58 @@
-"use client";
+import { queryClient } from "@/lib/query.client";
+import type { SettingKey } from "@/lib/zod/validators/settings-key";
+import { orpc } from "@/orpc";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { apiClient } from "@/lib/api/client";
-import { DEFAULT_SETTINGS, type SettingKey } from "@/lib/db/schema-settings";
-import { useEffect, useState } from "react";
-
-type Settings = typeof DEFAULT_SETTINGS;
-
-export function useSettings(key: SettingKey): Settings[SettingKey] {
-  const [value, setValue] = useState<Settings[SettingKey]>(
-    DEFAULT_SETTINGS[key]
+/**
+ * Custom hook for managing application settings.
+ *
+ * Provides a tuple similar to React's useState but backed by the settings API.
+ * The hook automatically handles loading states, caching, and cache invalidation.
+ *
+ * @param key - The setting key to manage
+ * @returns A tuple containing the current setting value and a setter function
+ *
+ * @example
+ * ```typescript
+ * const [systemAddress, setSystemAddress] = useSettings("SYSTEM_ADDRESS");
+ *
+ * // Read the value
+ * console.log(systemAddress); // "0x..."
+ *
+ * // Update the value
+ * setSystemAddress("0x1234...");
+ * ```
+ */
+export function useSettings(
+  key: SettingKey
+): [string | null, (value: string) => void] {
+  // Query for the current setting value
+  const { data: setting } = useQuery(
+    orpc.settings.read.queryOptions({
+      input: { key },
+    })
   );
 
-  useEffect(() => {
-    const loadSetting = async () => {
-      try {
-        const { data } = await apiClient.api.setting({ key }).get();
+  // Mutation for updating the setting
+  const { mutate: updateSetting } = useMutation(
+    orpc.settings.upsert.mutationOptions({
+      onSuccess: () => {
+        // Invalidate the specific setting query
+        void queryClient.invalidateQueries({
+          queryKey: orpc.settings.read.key({
+            input: { key },
+          }),
+          refetchType: "all",
+        });
+      },
+    })
+  );
 
-        setValue(
-          (data?.value as Settings[SettingKey]) ?? DEFAULT_SETTINGS[key]
-        );
-      } catch (error) {
-        console.error("Failed to load setting:", error);
-        setValue(DEFAULT_SETTINGS[key]);
-      }
-    };
+  // Setter function that wraps the mutation
+  const setSetting = (value: string) => {
+    updateSetting({ key, value });
+  };
 
-    void loadSetting();
-  }, [key]);
-
-  return value;
+  // Return the current value (or null if not set) and the setter
+  return [setting?.value ?? null, setSetting];
 }

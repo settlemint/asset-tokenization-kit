@@ -12,14 +12,14 @@ import type {
   WalletClient,
 } from "viem";
 
-import SMARTOnboardingModule from "../../../ignition/modules/onboarding";
-import { SMARTContracts } from "../constants/contracts";
+import ATKOnboardingModule from "../../../ignition/modules/onboarding";
+import { ATKContracts } from "../constants/contracts";
 import { owner } from "../entities/actors/owner";
 // --- Utility Imports ---
 
 // Type for the keys of CONTRACT_METADATA, e.g., "system" | "compliance" | ...
-export type ContractName = keyof Pick<
-  typeof SMARTContracts,
+export type PredeployedContractName = keyof Pick<
+  typeof ATKContracts,
   | "system"
   | "compliance"
   | "identityRegistry"
@@ -34,7 +34,12 @@ export type ContractName = keyof Pick<
   | "stablecoinFactory"
   | "countryAllowListModule"
   | "countryBlockListModule"
+  | "addressBlockListModule"
+  | "identityBlockListModule"
+  | "identityAllowListModule"
   | "fixedYieldScheduleFactory"
+  | "vestingAirdropFactory"
+  | "pushAirdropFactory"
 >;
 
 // Helper type for Viem contract instances
@@ -47,23 +52,23 @@ export type ViemContract<
 > = GetContractReturnType<TAbi, TClient>;
 
 /**
- * Defines the structure for the contracts deployed by SMARTOnboardingModule,
+ * Defines the structure for the contracts deployed by ATKOnboardingModule,
  * typed with Viem for write operations (includes WalletClient).
  */
-export type SMARTOnboardingContracts = {
-  [K in ContractName]: ViemContract<
-    (typeof SMARTContracts)[K], // Access ABI by key
+export type ATKOnboardingContracts = {
+  [K in PredeployedContractName]: ViemContract<
+    (typeof ATKContracts)[K], // Access ABI by key
     { public: PublicClient; wallet: WalletClient<Transport, Chain, Account> }
   >;
 };
 
 // Type for storing deployed contract addresses
 type DeployedContractAddresses = {
-  [K in ContractName]: { address: Address };
+  [K in PredeployedContractName]: { address: Address };
 };
 
 /**
- * Configuration options for the SmartProtocolDeployer
+ * Configuration options for the ATKDeployer
  */
 export interface DeployerOptions {
   /** Whether to reset (clear) existing deployment before deploying */
@@ -77,13 +82,13 @@ export interface DeployerOptions {
 /**
  * A singleton class to manage the deployment and access of SMART Protocol contracts.
  */
-export class SmartProtocolDeployer {
+export class ATKDeployer {
   private _deployedContractAddresses: DeployedContractAddresses | undefined;
   private _deploymentId: string;
 
   public constructor() {
     this._deployedContractAddresses = undefined;
-    this._deploymentId = "smart-protocol-local"; // Default deployment ID
+    this._deploymentId = "atk-local"; // Default deployment ID
   }
 
   /**
@@ -107,7 +112,7 @@ export class SmartProtocolDeployer {
   }
 
   /**
-   * Deploys the SMARTOnboardingModule contracts using Hardhat Ignition.
+   * Deploys the ATKOnboardingModule contracts using Hardhat Ignition.
    * Stores the Viem-typed contract instances internally.
    * This method should only be called once unless reset is used.
    */
@@ -129,18 +134,18 @@ export class SmartProtocolDeployer {
 
     if (this._deployedContractAddresses && !reset) {
       console.warn(
-        "SMARTOnboardingModule has already been deployed. Skipping setup. Use reset option to redeploy."
+        "ATKOnboardingModule has already been deployed. Skipping setup. Use reset option to redeploy."
       );
       return;
     }
 
-    console.log("🚀 Starting deployment of SMARTOnboardingModule...");
+    console.log("🚀 Starting deployment of ATKOnboardingModule...");
     console.log(`📁 Using deployment ID: ${this._deploymentId}`);
 
     try {
       // 1. Deploy contracts and get their addresses
       const deploymentAddresses = (await hre.ignition.deploy(
-        SMARTOnboardingModule,
+        ATKOnboardingModule,
         {
           deploymentId: this._deploymentId,
           displayUi,
@@ -151,7 +156,7 @@ export class SmartProtocolDeployer {
       this._deployedContractAddresses = deploymentAddresses;
 
       console.log(
-        "✅ SMARTOnboardingModule deployed successfully! Contract addresses and default signer initialized."
+        "✅ ATKOnboardingModule deployed successfully! Contract addresses and default signer initialized."
       );
       console.log(
         `📂 Deployment artifacts stored in: ignition/deployments/${this._deploymentId}`
@@ -168,7 +173,7 @@ export class SmartProtocolDeployer {
         }
       }
     } catch (error) {
-      console.error("❌ Failed to deploy SMARTOnboardingModule:", error);
+      console.error("❌ Failed to deploy ATKOnboardingModule:", error);
       throw error; // Re-throw the error to indicate failure
     }
   }
@@ -194,12 +199,12 @@ export class SmartProtocolDeployer {
     return this._deployedContractAddresses !== undefined;
   }
 
-  private getContract<K extends ContractName>(
-    // Use ContractName here
+  private getContract<K extends PredeployedContractName>(
+    // Use PredeployedContractName here
     contractName: K,
     explicitWalletClient?: WalletClient<Transport, Chain, Account>
   ): ViemContract<
-    (typeof SMARTContracts)[K],
+    (typeof ATKContracts)[K],
     { public: PublicClient; wallet: WalletClient<Transport, Chain, Account> }
   > {
     if (!this._deployedContractAddresses) {
@@ -219,11 +224,11 @@ export class SmartProtocolDeployer {
 
     return owner.getContractInstance({
       address: contractInfo.address,
-      abi: SMARTContracts[contractName],
+      abi: ATKContracts[contractName],
     });
   }
 
-  public getContractAddress(contractName: ContractName): Address {
+  public getContractAddress(contractName: PredeployedContractName): Address {
     if (!this._deployedContractAddresses) {
       throw new Error(
         "Contracts not deployed. Call setUp() before accessing contracts."
@@ -237,93 +242,105 @@ export class SmartProtocolDeployer {
 
   public getSystemContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["system"] {
+  ): ATKOnboardingContracts["system"] {
     return this.getContract("system", walletClient);
   }
 
   public getComplianceContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["compliance"] {
+  ): ATKOnboardingContracts["compliance"] {
     return this.getContract("compliance", walletClient);
   }
 
   public getIdentityRegistryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["identityRegistry"] {
+  ): ATKOnboardingContracts["identityRegistry"] {
     return this.getContract("identityRegistry", walletClient);
   }
 
   public getIdentityRegistryStorageContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["identityRegistryStorage"] {
+  ): ATKOnboardingContracts["identityRegistryStorage"] {
     return this.getContract("identityRegistryStorage", walletClient);
   }
 
   public getTrustedIssuersRegistryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["trustedIssuersRegistry"] {
+  ): ATKOnboardingContracts["trustedIssuersRegistry"] {
     return this.getContract("trustedIssuersRegistry", walletClient);
   }
 
   public getTopicSchemeRegistryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["topicSchemeRegistry"] {
+  ): ATKOnboardingContracts["topicSchemeRegistry"] {
     return this.getContract("topicSchemeRegistry", walletClient);
   }
 
   public getIdentityFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["identityFactory"] {
+  ): ATKOnboardingContracts["identityFactory"] {
     return this.getContract("identityFactory", walletClient);
   }
 
   public getBondFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["bondFactory"] {
+  ): ATKOnboardingContracts["bondFactory"] {
     return this.getContract("bondFactory", walletClient);
   }
 
   public getDepositFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["depositFactory"] {
+  ): ATKOnboardingContracts["depositFactory"] {
     return this.getContract("depositFactory", walletClient);
   }
 
   public getEquityFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["equityFactory"] {
+  ): ATKOnboardingContracts["equityFactory"] {
     return this.getContract("equityFactory", walletClient);
   }
 
   public getFundFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["fundFactory"] {
+  ): ATKOnboardingContracts["fundFactory"] {
     return this.getContract("fundFactory", walletClient);
   }
 
   public getStablecoinFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["stablecoinFactory"] {
+  ): ATKOnboardingContracts["stablecoinFactory"] {
     return this.getContract("stablecoinFactory", walletClient);
   }
 
   public getCountryAllowListModuleContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["countryAllowListModule"] {
+  ): ATKOnboardingContracts["countryAllowListModule"] {
     return this.getContract("countryAllowListModule", walletClient);
   }
 
   public getCountryBlockListModuleContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["countryBlockListModule"] {
+  ): ATKOnboardingContracts["countryBlockListModule"] {
     return this.getContract("countryBlockListModule", walletClient);
   }
 
   public getFixedYieldScheduleFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): SMARTOnboardingContracts["fixedYieldScheduleFactory"] {
+  ): ATKOnboardingContracts["fixedYieldScheduleFactory"] {
     return this.getContract("fixedYieldScheduleFactory", walletClient);
+  }
+
+  public getVestingAirdropFactoryContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): ATKOnboardingContracts["vestingAirdropFactory"] {
+    return this.getContract("vestingAirdropFactory", walletClient);
+  }
+
+  public getPushAirdropFactoryContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): ATKOnboardingContracts["pushAirdropFactory"] {
+    return this.getContract("pushAirdropFactory", walletClient);
   }
 }
 
-export const smartProtocolDeployer = new SmartProtocolDeployer();
+export const atkDeployer = new ATKDeployer();

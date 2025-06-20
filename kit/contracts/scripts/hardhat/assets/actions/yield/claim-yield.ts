@@ -1,8 +1,8 @@
-import { SMARTContracts } from "../../../constants/contracts";
+import { ATKContracts } from "../../../constants/contracts";
 import type { AbstractActor } from "../../../entities/actors/abstract-actor";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatDecimals } from "../../../utils/format-decimals";
+import { formatBaseUnits } from "../../../utils/format-base-units";
 import { waitForEvent } from "../../../utils/wait-for-event";
 
 export const claimYield = async (
@@ -12,13 +12,13 @@ export const claimYield = async (
 ) => {
   const tokenContract = actor.getContractInstance({
     address: asset.address,
-    abi: SMARTContracts.ismartYield,
+    abi: ATKContracts.ismartYield,
   });
 
   const scheduleAddress = await tokenContract.read.yieldSchedule();
   const scheduleContract = actor.getContractInstance({
     address: scheduleAddress,
-    abi: SMARTContracts.ismartFixedYieldSchedule,
+    abi: ATKContracts.ismartFixedYieldSchedule,
   });
 
   const transactionHash = await withDecodedRevertReason(() =>
@@ -40,6 +40,6 @@ export const claimYield = async (
     };
 
   console.log(
-    `[Claim yield] ${formatDecimals(claimedAmount, underlyingAsset.decimals)} ${asset.symbol} yield claimed from period ${fromPeriod} to ${toPeriod}`
+    `[Claim yield] ${formatBaseUnits(claimedAmount, underlyingAsset.decimals)} ${asset.symbol} yield claimed from period ${fromPeriod} to ${toPeriod}`
   );
 };

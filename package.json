@@ -1,7 +1,7 @@
 {
   "name": "@settlemint/asset-tokenization-kit",
   "description": "SettleMint Kit - Asset Tokenization",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
@@ -34,54 +34,61 @@
     "turbo.json"
   ],
   "scripts": {
-    "postinstall": "turbo run dependencies",
+    "dependencies": "turbo run dependencies && git config merge.ours.driver true",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
     "build": "turbo build",
     "docs": "turbo run docs",
     "ci:gha": "turbo run ci:gha",
+    "ci:gha:main": "turbo run ci:gha:main",
+    "ci:gha:nightly": "turbo run ci:gha:nightly",
     "ci": "turbo run ci",
     "ci:publish": "turbo run ci:publish",
     "version": "bun run tools/version.ts",
     "clean": "git clean -fdX -e '.env' -e '.env.*' -e '!.env' -e '!.env.*' && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' -o -name 'bun.lock' \\) -exec rm -f {} + && bun install",
-    "dev": "turbo dev",
+    "dev": "turbo dev watch db:studio",
     "lint": "turbo lint",
     "format": "turbo format",
     "test": "turbo test",
-    "deploy:local": "turbo deploy:local",
-    "deploy:remote": "turbo deploy:remote",
+    "test:integration": "turbo test:integration",
+    "publish": "turbo publish",
     "test:e2e:ui": "bun run --cwd kit/e2e playwright test --config=playwright.ui.config.ts --project=ui-tests",
     "test:e2e:ui:debug": "bun run --cwd kit/e2e playwright test --config=playwright.ui.config.ts --project=ui-tests --ui",
     "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
     "test:e2e:api:debug": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests --ui",
     "helm": "turbo run helm",
-    "extract-env": "bun run tools/extract-env.ts"
+    "dev:up": "turbo //#setup:dev",
+    "setup:connect": "settlemint connect --instance local && settlemint hasura track -a",
+    "dev:reset": "(docker compose -p atk down || true) && (docker volume ls -q --filter name=^atk | xargs -r docker volume rm || true) && bun run dev:up",
+    "setup:start": "docker compose -p atk up -d",
+    "extract-env": "bun run tools/extract-env.ts",
+    "db:studio": "turbo run db:studio"
   },
-  "dependencies": {
-    "zod-validation-error": "3.4.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@settlemint/sdk-cli": "2.3.6",
-    "lefthook": "1.11.13",
+    "@settlemint/sdk-cli": "2.4.0",
+    "lefthook": "1.11.14",
     "prettier": "3.5.3",
     "turbo": "2.5.4",
     "typescript": "5.8.3"
   },
   "trustedDependencies": [
-    "@prisma/client",
-    "@prisma/engines",
-    "better-sqlite3",
+    "@sentry/cli",
+    "@tailwindcss/oxide",
+    "canvas",
+    "core-js",
     "esbuild",
     "keccak",
     "lefthook",
-    "prisma",
     "protobufjs",
-    "secp256k1"
+    "secp256k1",
+    "unrs-resolver",
+    "vue-demi"
   ],
   "workspaces": [
     "kit/*"
   ],
-  "packageManager": "bun@1.2.10",
+  "packageManager": "bun@1.2.16",
   "overrides": {
     "react-is": "19.1.0",
     "graphql": "16.11.0",
@@ -89,6 +96,16 @@
     "ws": "8.18.2",
     "adm-zip": "0.5.16",
     "undici": "7.10.0",
-    "prettier": "3.5.3"
+    "prettier": "3.5.3",
+    "zod": "3.25.67",
+    "@tanstack/query-sync-storage-persister": "5.80.10",
+    "@tanstack/react-query": "5.80.10",
+    "@tanstack/react-query-devtools": "5.80.10",
+    "@tanstack/react-query-persist-client": "5.80.10",
+    "@tanstack/react-router": "1.121.27",
+    "@tanstack/react-router-devtools": "1.121.27",
+    "@tanstack/react-router-with-query": "1.121.27",
+    "@tanstack/react-start": "1.121.28",
+    "@tanstack/router-devtools": "1.121.27"
   }
 }

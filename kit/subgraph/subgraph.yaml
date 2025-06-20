@@ -20,33 +20,13 @@ dataSources:
         - Event
       abis:
         - name: SystemFactory
-          file: ../contracts/artifacts/contracts/system/ISMARTSystemFactory.sol/ISMARTSystemFactory.json
+          file: ../contracts/.generated/artifacts/contracts/system/IATKSystemFactory.sol/IATKSystemFactory.json
         - name: System
-          file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
+          file: ../contracts/.generated/artifacts/contracts/system/IATKSystem.sol/IATKSystem.json
       eventHandlers:
-        - event: SMARTSystemCreated(indexed address,indexed address)
-          handler: handleSMARTSystemCreated
+        - event: ATKSystemCreated(indexed address,indexed address)
+          handler: handleATKSystemCreated
       file: ./src/system-factory/system-factory.ts
-  - kind: ethereum
-    name: FixedYieldScheduleFactory
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000020089"
-      abi: FixedYieldScheduleFactory
-      startBlock: 0
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - SMARTFixedYieldScheduleCreated
-      abis:
-        - name: FixedYieldScheduleFactory
-          file: ../contracts/artifacts/contracts/system/yield/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json
-      eventHandlers:
-        - event: SMARTFixedYieldScheduleCreated(indexed address,indexed address)
-          handler: handleSMARTFixedYieldScheduleCreated
-      file: ./src/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
 templates:
   - kind: ethereum
     name: AccessControl
@@ -62,7 +42,7 @@ templates:
         - Event
       abis:
         - name: AccessControl
-          file: ../contracts/artifacts/@openzeppelin/contracts/access/AccessControl.sol/AccessControl.json
+          file: ../contracts/.generated/artifacts/@openzeppelin/contracts/access/AccessControl.sol/AccessControl.json
       eventHandlers:
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
@@ -85,7 +65,11 @@ templates:
         - Event
       abis:
         - name: System
-          file: ../contracts/artifacts/contracts/system/ISMARTSystem.sol/ISMARTSystem.json
+          file: ../contracts/.generated/artifacts/contracts/system/IATKSystem.sol/IATKSystem.json
+        - name: BondFactory
+          file: ../contracts/.generated/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
+        - name: IERC165
+          file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
             address,address,address,address,address,address)
@@ -103,8 +87,12 @@ templates:
           handler: handleIdentityRegistryStorageImplementationUpdated
         - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
           handler: handleTokenAccessManagerImplementationUpdated
-        - event: TokenFactoryCreated(indexed address,string,address,address,uint256)
+        - event: TokenFactoryCreated(indexed
+            address,string,bytes32,address,address,uint256)
           handler: handleTokenFactoryCreated
+        - event: SystemAddonCreated(indexed
+            address,string,bytes32,address,address,bytes,uint256)
+          handler: handleSystemAddonCreated
         - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
           handler: handleTokenIdentityImplementationUpdated
         - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
@@ -127,12 +115,12 @@ templates:
         - Event
       abis:
         - name: TokenFactory
-          file: ../contracts/artifacts/contracts/system/token-factory/ISMARTTokenFactory.sol/ISMARTTokenFactory.json
+          file: ../contracts/.generated/artifacts/contracts/system/token-factory/IATKTokenFactory.sol/IATKTokenFactory.json
         - name: Token
-          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
+          file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
         - event: TokenAssetCreated(indexed address,indexed address,indexed
-            address,address)
+            address,bytes4[],address)
           handler: handleTokenAssetCreated
         - event: TokenImplementationUpdated(indexed address,indexed address,indexed
             address)
@@ -152,9 +140,9 @@ templates:
         - Event
       abis:
         - name: Token
-          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
+          file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
         - name: FixedYieldSchedule
-          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
+          file: ../contracts/.generated/artifacts/contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -190,13 +178,13 @@ templates:
         - Event
       abis:
         - name: Pausable
-          file: ../contracts/artifacts/contracts/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json
+          file: ../contracts/.generated/artifacts/contracts/smart/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json
       eventHandlers:
         - event: Paused(indexed address)
           handler: handlePaused
         - event: Unpaused(indexed address)
           handler: handleUnpaused
-      file: ./src/pausable/pausable.ts
+      file: ./src/token-extensions/pausable/pausable.ts
   - kind: ethereum
     name: Burnable
     network: settlemint
@@ -211,11 +199,11 @@ templates:
         - Event
       abis:
         - name: Burnable
-          file: ../contracts/artifacts/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json
+          file: ../contracts/.generated/artifacts/contracts/smart/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json
       eventHandlers:
         - event: BurnCompleted(indexed address,indexed address,uint256)
           handler: handleBurnCompleted
-      file: ./src/burnable/burnable.ts
+      file: ./src/token-extensions/burnable/burnable.ts
   - kind: ethereum
     name: Identity
     network: settlemint
@@ -230,7 +218,7 @@ templates:
         - Event
       abis:
         - name: Identity
-          file: ../contracts/artifacts/@onchainid/contracts/interface/IIdentity.sol/IIdentity.json
+          file: ../contracts/.generated/artifacts/@onchainid/contracts/interface/IIdentity.sol/IIdentity.json
       eventHandlers:
         - event: Approved(indexed uint256,bool)
           handler: handleApproved
@@ -268,9 +256,9 @@ templates:
         - Event
       abis:
         - name: IdentityFactory
-          file: ../contracts/artifacts/contracts/system/identity-factory/ISMARTIdentityFactory.sol/ISMARTIdentityFactory.json
+          file: ../contracts/.generated/artifacts/contracts/system/identity-factory/IATKIdentityFactory.sol/IATKIdentityFactory.json
         - name: Token
-          file: ../contracts/artifacts/contracts/interface/ISMART.sol/ISMART.json
+          file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
         - event: IdentityCreated(indexed address,indexed address,indexed address)
           handler: handleIdentityCreated
@@ -291,7 +279,7 @@ templates:
         - Event
       abis:
         - name: TopicSchemeRegistry
-          file: ../contracts/artifacts/contracts/system/topic-scheme-registry/ISMARTTopicSchemeRegistry.sol/ISMARTTopicSchemeRegistry.json
+          file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMARTTopicSchemeRegistry.sol/ISMARTTopicSchemeRegistry.json
       eventHandlers:
         - event: TopicSchemeRegistered(indexed address,indexed uint256,string,string)
           handler: handleTopicSchemeRegistered
@@ -316,7 +304,7 @@ templates:
         - Event
       abis:
         - name: IdentityRegistry
-          file: ../contracts/artifacts/contracts/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json
+          file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json
       eventHandlers:
         - event: CountryUpdated(indexed address,indexed address,indexed uint16)
           handler: handleCountryUpdated
@@ -348,7 +336,7 @@ templates:
         - Event
       abis:
         - name: Custodian
-          file: ../contracts/artifacts/contracts/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json
+          file: ../contracts/.generated/artifacts/contracts/smart/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json
       eventHandlers:
         - event: AddressFrozen(indexed address,indexed address,indexed bool)
           handler: handleAddressFrozen
@@ -358,7 +346,7 @@ templates:
           handler: handleTokensFrozen
         - event: TokensUnfrozen(indexed address,indexed address,uint256)
           handler: handleTokensUnfrozen
-      file: ./src/custodian/custodian.ts
+      file: ./src/token-extensions/custodian/custodian.ts
   - kind: ethereum
     name: Capped
     network: settlemint
@@ -372,11 +360,11 @@ templates:
         - CapSet
       abis:
         - name: Capped
-          file: ../contracts/artifacts/contracts/extensions/capped/ISMARTCapped.sol/ISMARTCapped.json
+          file: ../contracts/.generated/artifacts/contracts/smart/extensions/capped/ISMARTCapped.sol/ISMARTCapped.json
       eventHandlers:
         - event: CapSet(indexed address,uint256)
           handler: handleCapSet
-      file: ./src/capped/capped.ts
+      file: ./src/token-extensions/capped/capped.ts
   - kind: ethereum
     name: Yield
     network: settlemint
@@ -391,13 +379,13 @@ templates:
         - YieldScheduleSet
       abis:
         - name: Yield
-          file: ../contracts/artifacts/contracts/extensions/yield/ISMARTYield.sol/ISMARTYield.json
+          file: ../contracts/.generated/artifacts/contracts/smart/extensions/yield/ISMARTYield.sol/ISMARTYield.json
       eventHandlers:
         - event: CheckpointUpdated(indexed address,indexed address,uint256,uint256)
           handler: handleCheckpointUpdated
         - event: YieldScheduleSet(indexed address,indexed address)
           handler: handleYieldScheduleSet
-      file: ./src/yield/yield.ts
+      file: ./src/token-extensions/yield/yield.ts
   - kind: ethereum
     name: FixedYieldSchedule
     network: settlemint
@@ -414,7 +402,7 @@ templates:
         - YieldClaimed
       abis:
         - name: FixedYieldSchedule
-          file: ../contracts/artifacts/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
+          file: ../contracts/.generated/artifacts/contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json
       eventHandlers:
         - event: FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address,uint256)
           handler: handleFixedYieldScheduleSet
@@ -425,4 +413,243 @@ templates:
         - event: YieldClaimed(indexed
             address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)
           handler: handleYieldClaimed
-      file: ./src/fixed-yield-schedule/fixed-yield-schedule.ts
+      file: ./src/token-extensions/fixed-yield-schedule/fixed-yield-schedule.ts
+  - kind: ethereum
+    name: Redeemable
+    network: settlemint
+    source:
+      abi: Redeemable
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Redeemed
+      abis:
+        - name: Redeemable
+          file: ../contracts/.generated/artifacts/contracts/smart/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json
+      eventHandlers:
+        - event: Redeemed(indexed address,uint256)
+          handler: handleRedeemed
+      file: ./src/token-extensions/redeemable/redeemable.ts
+  - kind: ethereum
+    name: Bond
+    network: settlemint
+    source:
+      abi: Bond
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - BondMatured
+        - BondRedeemed
+      abis:
+        - name: Bond
+          file: ../contracts/.generated/artifacts/contracts/assets/bond/IATKBond.sol/IATKBond.json
+      eventHandlers:
+        - event: BondMatured(indexed uint256)
+          handler: handleBondMatured
+        - event: BondRedeemed(indexed address,indexed address,uint256,uint256)
+          handler: handleBondRedeemed
+      file: ./src/token-assets/bond/bond.ts
+  - kind: ethereum
+    name: BondFactory
+    network: settlemint
+    source:
+      abi: BondFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - BondCreated
+      abis:
+        - name: BondFactory
+          file: ../contracts/.generated/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
+        - name: Token
+          file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
+      eventHandlers:
+        - event: BondCreated(indexed address,indexed
+            address,string,string,uint8,uint256,uint256,uint256,address)
+          handler: handleBondCreated
+      file: ./src/token-assets/bond-factory/bond-factory.ts
+  - kind: ethereum
+    name: Fund
+    network: settlemint
+    source:
+      abi: Fund
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ManagementFeeCollected
+      abis:
+        - name: Fund
+          file: ../contracts/.generated/artifacts/contracts/assets/fund/IATKFund.sol/IATKFund.json
+      eventHandlers:
+        - event: ManagementFeeCollected(indexed address,uint256,uint256)
+          handler: handleManagementFeeCollected
+      file: ./src/token-assets/fund/fund.ts
+  - kind: ethereum
+    name: FundFactory
+    network: settlemint
+    source:
+      abi: FundFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - FundCreated
+      abis:
+        - name: FundFactory
+          file: ../contracts/.generated/artifacts/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json
+      eventHandlers:
+        - event: FundCreated(indexed address,indexed address,string,string,uint8,uint24)
+          handler: handleFundCreated
+      file: ./src/token-assets/fund-factory/fund-factory.ts
+  - kind: ethereum
+    name: FixedYieldScheduleFactory
+    network: settlemint
+    source:
+      abi: FixedYieldScheduleFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ATKFixedYieldScheduleCreated
+      abis:
+        - name: FixedYieldScheduleFactory
+          file: ../contracts/.generated/artifacts/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json
+      eventHandlers:
+        - event: ATKFixedYieldScheduleCreated(indexed address,indexed address)
+          handler: handleATKFixedYieldScheduleCreated
+      file: ./src/token-extensions/fixed-yield-schedule-factory/fixed-yield-schedule-factory.ts
+  - kind: ethereum
+    name: VaultFactory
+    network: settlemint
+    source:
+      abi: VaultFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - VaultCreated
+      abis:
+        - name: VaultFactory
+          file: ../contracts/.generated/artifacts/contracts/addons/vault/IATKVaultFactory.sol/IATKVaultFactory.json
+        - name: Vault
+          file: ../contracts/.generated/artifacts/contracts/addons/vault/ATKVault.sol/ATKVault.json
+      eventHandlers:
+        - event: ATKVaultCreated(indexed address,indexed address)
+          handler: handleATKVaultCreated
+      file: ./src/addons/vault/vault-factory.ts
+  - kind: ethereum
+    name: Vault
+    network: settlemint
+    source:
+      abi: Vault
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - VaultDeposit
+        - VaultTransactionSubmitted
+        - VaultTransactionConfirmed
+        - VaultTransactionRevoked
+        - VaultTransactionExecuted
+        - VaultRequirementChanged
+      abis:
+        - name: Vault
+          file: ../contracts/.generated/artifacts/contracts/addons/vault/ATKVault.sol/ATKVault.json
+      eventHandlers:
+        - event: Deposit(indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: SubmitTransaction(indexed address,indexed uint256,indexed
+            address,uint256,bytes,string)
+          handler: handleSubmitTransaction
+        - event: SubmitERC20TransferTransaction(indexed address,indexed uint256,indexed
+            address,address,uint256,string)
+          handler: handleSubmitERC20TransferTransaction
+        - event: SubmitContractCallTransaction(indexed address,indexed uint256,indexed
+            address,uint256,bytes4,bytes,string)
+          handler: handleSubmitContractCallTransaction
+        - event: ConfirmTransaction(indexed address,indexed uint256)
+          handler: handleConfirmTransaction
+        - event: RevokeConfirmation(indexed address,indexed uint256)
+          handler: handleRevokeConfirmation
+        - event: ExecuteTransaction(indexed address,indexed uint256)
+          handler: handleExecuteTransaction
+        - event: RequirementChanged(indexed address,uint256)
+          handler: handleRequirementChanged
+        - event: TransactionExecutionFailed(indexed uint256,address,bytes)
+          handler: handleTransactionExecutionFailed
+      file: ./src/addons/vault/vault.ts
+  - kind: ethereum
+    name: GenericERC165
+    network: settlemint
+    source:
+      abi: IERC165
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Address
+        - Event
+      abis:
+        - name: IERC165
+          file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
+      callHandlers: []
+      eventHandlers: []
+      file: ./src/erc165/erc165.ts
+  - kind: ethereum
+    name: XvPSettlementFactory
+    network: settlemint
+    source:
+      abi: XvPSettlementFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ATKXvPSettlementCreated
+      abis:
+        - name: XvPSettlementFactory
+          file: ../contracts/.generated/artifacts/contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol/ATKXvPSettlementFactoryImplementation.json
+      eventHandlers:
+        - event: ATKXvPSettlementCreated(indexed address,indexed address)
+          handler: handleATKXvPSettlementCreated
+      file: ./src/addons/xvp/xvp-settlement-factory.ts
+  - kind: ethereum
+    name: XvPSettlement
+    network: settlemint
+    source:
+      abi: XvPSettlement
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - XvPSettlementApproved
+        - XvPSettlementApprovalRevoked
+        - XvPSettlementExecuted
+        - XvPSettlementCancelled
+      abis:
+        - name: XvPSettlement
+          file: ../contracts/.generated/artifacts/contracts/addons/xvp/ATKXvPSettlementImplementation.sol/ATKXvPSettlementImplementation.json
+      eventHandlers:
+        - event: XvPSettlementApproved(indexed address)
+          handler: handleXvPSettlementApproved
+        - event: XvPSettlementApprovalRevoked(indexed address)
+          handler: handleXvPSettlementApprovalRevoked
+        - event: XvPSettlementExecuted(indexed address)
+          handler: handleXvPSettlementExecuted
+        - event: XvPSettlementCancelled(indexed address)
+          handler: handleXvPSettlementCancelled
+      file: ./src/addons/xvp/xvp-settlement.ts

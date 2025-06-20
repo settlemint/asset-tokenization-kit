@@ -1,15 +1,29 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "remoteCache": {
-    "enabled": true
-  },
+  "globalPassThroughEnv": [
+    "THE_GRAPH_PORT_LOCAL_DEPLOY",
+    "THE_GRAPH_PORT_LOCAL_QUERY",
+    "FORCE_COLOR",
+    "NO_COLOR",
+    "TERM",
+    "CI"
+  ],
   "tasks": {
     "ci": {
-      "dependsOn": ["compile", "codegen", "lint", "build"]
+      "dependsOn": ["ci:base", "format"]
+    },
+    "ci:base": {
+      "dependsOn": ["compile", "codegen", "lint", "test"]
     },
     "ci:gha": {
-      "dependsOn": ["publish", "ci", "test"]
+      "dependsOn": ["ci:base", "build", "//#setup:dev"]
+    },
+    "ci:gha:main": {
+      "dependsOn": ["ci:gha", "publish"]
+    },
+    "ci:gha:nightly": {
+      "dependsOn": ["ci:gha:main", "test:integration"]
     },
     "//#version": {
       "cache": false,
@@ -23,10 +37,10 @@
       "dependsOn": ["codegen"]
     },
     "codegen": {
-      "dependsOn": ["dependencies", "docs"]
+      "dependsOn": ["dependencies", "docs", "//#setup:dev"]
     },
     "compile": {
-      "dependsOn": ["dependencies"]
+      "dependsOn": ["dependencies", "codegen", "^compile"]
     },
     "package": {
       "cache": false,
@@ -39,19 +53,47 @@
     "dependencies": {},
     "format": {},
     "lint": {
-      "dependsOn": ["//#version"]
+      "dependsOn": ["//#setup:dev", "codegen"]
     },
     "dev": {
-      "dependsOn": ["dapp#codegen"],
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["compile"]
+    },
+    "watch": {
       "cache": false,
       "persistent": true
     },
     "helm": {
       "cache": false
     },
-    "docs": {
+    "docs": {},
+    "test": {},
+    "artifacts": {},
+    "test:integration": {},
+    "db:studio": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:export": {},
+    "db:push": {
       "cache": false
     },
-    "test": {}
+    "//#setup:connect": {
+      "cache": false,
+      "dependsOn": ["//#setup:start"]
+    },
+    "//#setup:dev": {
+      "cache": false,
+      "dependsOn": ["//#setup:start", "//#setup:connect"]
+    },
+    "//#setup:start": {
+      "cache": false,
+      "dependsOn": [
+        "contracts#artifacts",
+        "dapp#artifacts",
+        "subgraph#artifacts"
+      ]
+    }
   }
 }

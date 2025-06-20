@@ -15,9 +15,10 @@ A Helm chart for the supporting components
 | Repository | Name | Version |
 |------------|------|---------|
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.12.3 |
-| https://stakater.github.io/stakater-charts | reloader | 2.1.3 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql-ha | 16.0.11 |
-| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.0 |
+| https://stakater.github.io/stakater-charts | reloader | 2.1.4 |
+| oci://registry-1.docker.io/bitnamicharts | minio | 17.0.6 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql-ha | 16.0.14 |
+| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.5 |
 
 ## Values
 
@@ -127,6 +128,15 @@ A Helm chart for the supporting components
 | ingress-nginx.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | ingress-nginx.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | ingress-nginx.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
+| minio.auth.rootPassword | string | `"atk-password"` |  |
+| minio.auth.rootUser | string | `"admin"` |  |
+| minio.enabled | bool | `true` |  |
+| minio.fullnameOverride | string | `"minio"` |  |
+| minio.provisioning.config[0].name | string | `"region"` |  |
+| minio.provisioning.config[0].options.name | string | `"eu-central-1"` |  |
+| minio.provisioning.enabled | bool | `true` |  |
+| minio.provisioning.extraCommands | string | `"if ! mc admin user svcacct info provisioning atk-service >/dev/null 2>&1; then\n  echo \"Adding atk-service user\"\n  mc admin user svcacct add provisioning \"admin\" --access-key \"atk-service\" --secret-key \"atk-service-secret\"\nfi"` |  |
+| minio.statefulset.replicaCount | int | `1` |  |
 | postgresql-ha.commonLabels."app.kubernetes.io/managed-by" | string | `"helm"` |  |
 | postgresql-ha.commonLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | postgresql-ha.enabled | bool | `true` |  |
@@ -148,7 +158,7 @@ A Helm chart for the supporting components
 | postgresql-ha.pgpool.resourcesPreset | string | `"none"` |  |
 | postgresql-ha.postgresql.dbUserConnectionLimit | int | `1000` |  |
 | postgresql-ha.postgresql.image.registry | string | `"docker.io"` |  |
-| postgresql-ha.postgresql.initdbScripts."create_blockscout_db.sql" | string | `"CREATE DATABASE blockscout;\nCREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;\n\\c blockscout;\nGRANT ALL ON SCHEMA public TO blockscout;\nCREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;\nCREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;\n\\c thegraph;\nGRANT ALL ON SCHEMA public TO thegraph;\nCREATE DATABASE hasura;\nCREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;\n\\c hasura;\nGRANT ALL ON SCHEMA public TO hasura;\nCREATE DATABASE portal;\nCREATE USER portal WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE portal TO portal;\n\\c portal;\nGRANT ALL ON SCHEMA public TO portal;\nCREATE DATABASE txsigner;\nCREATE USER txsigner WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;\n\\c txsigner;\nGRANT ALL ON SCHEMA public TO txsigner;\n"` |  |
+| postgresql-ha.postgresql.initdbScripts."create_db.sql" | string | `"CREATE DATABASE blockscout;\nCREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;\n\\c blockscout;\nGRANT ALL ON SCHEMA public TO blockscout;\nCREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;\nCREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;\n\\c thegraph;\nGRANT ALL ON SCHEMA public TO thegraph;\nCREATE DATABASE hasura;\nCREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;\n\\c hasura;\nGRANT ALL ON SCHEMA public TO hasura;\nCREATE DATABASE portal;\nCREATE USER portal WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE portal TO portal;\n\\c portal;\nGRANT ALL ON SCHEMA public TO portal;\nCREATE DATABASE txsigner;\nCREATE USER txsigner WITH PASSWORD 'atk' SUPERUSER;\nGRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;\n\\c txsigner;\nGRANT ALL ON SCHEMA public TO txsigner;\n"` |  |
 | postgresql-ha.postgresql.maxConnections | int | `1000` |  |
 | postgresql-ha.postgresql.password | string | `"atk"` |  |
 | postgresql-ha.postgresql.postgresConnectionLimit | int | `1000` |  |

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { AbstractComplianceModule } from "../../../contracts/system/compliance/modules/AbstractComplianceModule.sol";
+import { AbstractComplianceModule } from "../../../contracts/smart/modules/AbstractComplianceModule.sol";
 
 /**
  * @title MockedComplianceModule

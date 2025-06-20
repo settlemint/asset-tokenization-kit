@@ -41,5 +41,5 @@ maintainers:
     url: https://github.com/erpc/erpc
 dependencies:
   - name: common
-    version: 2.31.1
+    version: 2.31.3
     repository: oci://registry-1.docker.io/bitnamicharts

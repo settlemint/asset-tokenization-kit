@@ -1,5 +1,5 @@
-import { SMARTContracts } from "../../../constants/contracts";
-import { SMARTTopic } from "../../../constants/topics";
+import { ATKContracts } from "../../../constants/contracts";
+import { ATKTopic } from "../../../constants/topics";
 import { claimIssuer } from "../../../entities/actors/claim-issuer";
 import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
@@ -8,7 +8,7 @@ import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const issueIsinClaim = async (asset: Asset<any>, isin: string) => {
-  const encodedIsinData = encodeClaimData(SMARTTopic.isin, [isin]);
+  const encodedIsinData = encodeClaimData(ATKTopic.isin, [isin]);
 
   const {
     data: isinClaimData,
@@ -16,13 +16,13 @@ export const issueIsinClaim = async (asset: Asset<any>, isin: string) => {
     topicId,
   } = await claimIssuer.createClaim(
     asset.identity,
-    SMARTTopic.isin,
+    ATKTopic.isin,
     encodedIsinData
   );
 
   const tokenIdentityContract = owner.getContractInstance({
     address: asset.identity,
-    abi: SMARTContracts.tokenIdentity,
+    abi: ATKContracts.tokenIdentity,
   });
 
   const claimIssuerIdentity = await claimIssuer.getIdentity();

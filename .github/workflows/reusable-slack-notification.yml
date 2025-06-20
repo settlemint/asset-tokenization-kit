@@ -197,6 +197,12 @@ jobs:
             tail -1)
 
           if [ -n "$SLACK_TS" ] && [ "$SLACK_TS" != "" ]; then
+          COMMENT=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.build_status.outputs.pr_number }}/comments" \
+            | jq -r '.[] | select(.body | startswith("<!-- slack-ts:")) | .body' | head -1)
+
+          if [ -n "$COMMENT" ]; then
+            SLACK_TS=$(echo "$COMMENT" | sed -n 's/<!-- slack-ts:\(.*\) *-->.*/\1/p')
             echo "slack_ts=$SLACK_TS" >> $GITHUB_OUTPUT
             echo "message_exists=true" >> $GITHUB_OUTPUT
             echo "Debug: Found existing Slack message with timestamp: $SLACK_TS"
@@ -334,9 +340,11 @@ jobs:
               return;
             }
             
+            console.log(`Debug: Storing Slack timestamp: ${timestamp}`);
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: ${{ steps.build_status.outputs.pr_number }},
               body: `<!-- slack-ts:${timestamp}-->\n🤖 Slack notification sent for this PR (${workflowName} - Run #${runId})`
+              body: `<!-- slack-ts:${timestamp}-->\n🤖 Slack notification sent for this PR`
             });

@@ -11,10 +11,9 @@
  *   bun run codegen-types.ts bond equity  # Generate specific ABIs
  */
 
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { $ } from "bun";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { logger, LogLevel } from "../../../tools/logging";
 import { getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -38,49 +37,62 @@ interface ContractArtifact {
 // CONSTANTS
 // =============================================================================
 
-const log = logger;
+const logger = createLogger({
+  level:
+    (process.env.LOG_LEVEL as LogLevel) ||
+    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+    "info",
+});
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
-const ARTIFACTS_DIR = join(CONTRACTS_ROOT, "artifacts");
+const ARTIFACTS_DIR = join(CONTRACTS_ROOT, ".generated", "artifacts");
 const OUTPUT_DIR = join(CONTRACTS_ROOT, "scripts/hardhat/abi");
 
 const ABI_PATHS = {
   // onboarding
-  system: `${ARTIFACTS_DIR}/contracts/system/ISMARTSystem.sol/ISMARTSystem.json`,
-  compliance: `${ARTIFACTS_DIR}/contracts/interface/ISMARTCompliance.sol/ISMARTCompliance.json`,
-  identityRegistry: `${ARTIFACTS_DIR}/contracts/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json`,
-  identityRegistryStorage: `${ARTIFACTS_DIR}/contracts/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol/IERC3643IdentityRegistryStorage.json`,
-  trustedIssuersRegistry: `${ARTIFACTS_DIR}/contracts/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol/IERC3643TrustedIssuersRegistry.json`,
-  topicSchemeRegistry: `${ARTIFACTS_DIR}/contracts/system/topic-scheme-registry/SMARTTopicSchemeRegistryImplementation.sol/SMARTTopicSchemeRegistryImplementation.json`,
-  identityFactory: `${ARTIFACTS_DIR}/contracts/system/identity-factory/ISMARTIdentityFactory.sol/ISMARTIdentityFactory.json`,
-  bondFactory: `${ARTIFACTS_DIR}/contracts/assets/bond/ISMARTBondFactory.sol/ISMARTBondFactory.json`,
-  depositFactory: `${ARTIFACTS_DIR}/contracts/assets/deposit/SMARTDepositFactoryImplementation.sol/SMARTDepositFactoryImplementation.json`,
-  equityFactory: `${ARTIFACTS_DIR}/contracts/assets/equity/ISMARTEquityFactory.sol/ISMARTEquityFactory.json`,
-  fundFactory: `${ARTIFACTS_DIR}/contracts/assets/fund/ISMARTFundFactory.sol/ISMARTFundFactory.json`,
-  stablecoinFactory: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/ISMARTStableCoinFactory.sol/ISMARTStableCoinFactory.json`,
-  fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/system/yield/SMARTFixedYieldScheduleFactory.sol/SMARTFixedYieldScheduleFactory.json`,
+  system: `${ARTIFACTS_DIR}/contracts/system/IATKSystem.sol/IATKSystem.json`,
+  compliance: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMARTCompliance.sol/ISMARTCompliance.json`,
+  identityRegistry: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMARTIdentityRegistry.sol/ISMARTIdentityRegistry.json`,
+  identityRegistryStorage: `${ARTIFACTS_DIR}/contracts/smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol/IERC3643IdentityRegistryStorage.json`,
+  trustedIssuersRegistry: `${ARTIFACTS_DIR}/contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol/IERC3643TrustedIssuersRegistry.json`,
+  topicSchemeRegistry: `${ARTIFACTS_DIR}/contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol/ATKTopicSchemeRegistryImplementation.json`,
+  identityFactory: `${ARTIFACTS_DIR}/contracts/system/identity-factory/IATKIdentityFactory.sol/IATKIdentityFactory.json`,
+  bondFactory: `${ARTIFACTS_DIR}/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json`,
+  depositFactory: `${ARTIFACTS_DIR}/contracts/assets/deposit/ATKDepositFactoryImplementation.sol/ATKDepositFactoryImplementation.json`,
+  equityFactory: `${ARTIFACTS_DIR}/contracts/assets/equity/IATKEquityFactory.sol/IATKEquityFactory.json`,
+  fundFactory: `${ARTIFACTS_DIR}/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json`,
+  stablecoinFactory: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/IATKStableCoinFactory.sol/IATKStableCoinFactory.json`,
   // token
-  accessManager: `${ARTIFACTS_DIR}/contracts/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
-  identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/SMARTIdentityImplementation.sol/SMARTIdentityImplementation.json`,
-  tokenIdentity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/SMARTTokenIdentityImplementation.sol/SMARTTokenIdentityImplementation.json`,
+  accessManager: `${ARTIFACTS_DIR}/contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
+  identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKIdentityImplementation.sol/ATKIdentityImplementation.json`,
+  tokenIdentity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol/ATKTokenIdentityImplementation.json`,
   // tokens
-  deposit: `${ARTIFACTS_DIR}/contracts/assets/deposit/SMARTDepositImplementation.sol/SMARTDepositImplementation.json`,
-  equity: `${ARTIFACTS_DIR}/contracts/assets/equity/ISMARTEquity.sol/ISMARTEquity.json`,
-  fund: `${ARTIFACTS_DIR}/contracts/assets/fund/ISMARTFund.sol/ISMARTFund.json`,
-  stablecoin: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/ISMARTStableCoin.sol/ISMARTStableCoin.json`,
-  bond: `${ARTIFACTS_DIR}/contracts/assets/bond/ISMARTBond.sol/ISMARTBond.json`,
+  deposit: `${ARTIFACTS_DIR}/contracts/assets/deposit/ATKDepositImplementation.sol/ATKDepositImplementation.json`,
+  equity: `${ARTIFACTS_DIR}/contracts/assets/equity/IATKEquity.sol/IATKEquity.json`,
+  fund: `${ARTIFACTS_DIR}/contracts/assets/fund/IATKFund.sol/IATKFund.json`,
+  stablecoin: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/IATKStableCoin.sol/IATKStableCoin.json`,
+  bond: `${ARTIFACTS_DIR}/contracts/assets/bond/IATKBond.sol/IATKBond.json`,
   // Open Zeppelin
   accessControl: `${ARTIFACTS_DIR}/@openzeppelin/contracts/access/IAccessControl.sol/IAccessControl.json`,
   // smart
-  ismart: `${ARTIFACTS_DIR}/contracts/interface/ISMART.sol/ISMART.json`,
-  ismartBurnable: `${ARTIFACTS_DIR}/contracts/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json`,
-  ismartCustodian: `${ARTIFACTS_DIR}/contracts/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json`,
-  ismartPausable: `${ARTIFACTS_DIR}/contracts/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json`,
-  ismartYield: `${ARTIFACTS_DIR}/contracts/extensions/yield/ISMARTYield.sol/ISMARTYield.json`,
-  ismartFixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json`,
+  ismart: `${ARTIFACTS_DIR}/contracts/smart/interface/ISMART.sol/ISMART.json`,
+  ismartBurnable: `${ARTIFACTS_DIR}/contracts/smart/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json`,
+  ismartCustodian: `${ARTIFACTS_DIR}/contracts/smart/extensions/custodian/ISMARTCustodian.sol/ISMARTCustodian.json`,
+  ismartPausable: `${ARTIFACTS_DIR}/contracts/smart/extensions/pausable/ISMARTPausable.sol/ISMARTPausable.json`,
+  ismartYield: `${ARTIFACTS_DIR}/contracts/smart/extensions/yield/ISMARTYield.sol/ISMARTYield.json`,
+  ismartFixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol/ISMARTFixedYieldSchedule.json`,
+  ismartCapped: `${ARTIFACTS_DIR}/contracts/smart/extensions/capped/ISMARTCapped.sol/ISMARTCapped.json`,
+  ismartRedeemable: `${ARTIFACTS_DIR}/contracts/smart/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json`,
   // compliance modules
-  identityVerification: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/SMARTIdentityVerificationModule.sol/SMARTIdentityVerificationModule.json`,
-  countryAllowList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
-  countryBlockList: `${ARTIFACTS_DIR}/contracts/system/compliance/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
+  identityVerification: `${ARTIFACTS_DIR}/contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol/SMARTIdentityVerificationComplianceModule.json`,
+  countryAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/CountryAllowListComplianceModule.sol/CountryAllowListComplianceModule.json`,
+  countryBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/CountryBlockListComplianceModule.sol/CountryBlockListComplianceModule.json`,
+  addressBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/AddressBlockListComplianceModule.sol/AddressBlockListComplianceModule.json`,
+  identityBlockList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityBlockListComplianceModule.sol/IdentityBlockListComplianceModule.json`,
+  identityAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityAllowListComplianceModule.sol/IdentityAllowListComplianceModule.json`,
+  // addons
+  fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json`,
+  vestingAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol/IATKVestingAirdropFactory.json`,
+  pushAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol/IATKPushAirdropFactory.json`,
 } as const;
 
 const AVAILABLE_ABIS = {
@@ -97,7 +109,6 @@ const AVAILABLE_ABIS = {
     "equityFactory",
     "fundFactory",
     "stablecoinFactory",
-    "fixedYieldScheduleFactory",
   ],
   tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
@@ -109,11 +120,21 @@ const AVAILABLE_ABIS = {
     "ismartPausable",
     "ismartYield",
     "ismartFixedYieldSchedule",
+    "ismartCapped",
+    "ismartRedeemable",
   ],
   complianceModules: [
     "identityVerification",
     "countryAllowList",
     "countryBlockList",
+    "addressBlockList",
+    "identityBlockList",
+    "identityAllowList",
+  ],
+  addons: [
+    "fixedYieldScheduleFactory",
+    "vestingAirdropFactory",
+    "pushAirdropFactory",
   ],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 
@@ -124,6 +145,7 @@ const ALL_ABIS = [
   ...AVAILABLE_ABIS.openZeppelin,
   ...AVAILABLE_ABIS.coreSmart,
   ...AVAILABLE_ABIS.complianceModules,
+  ...AVAILABLE_ABIS.addons,
 ];
 
 // =============================================================================
@@ -141,7 +163,7 @@ let options: ScriptOptions = {
 // =============================================================================
 
 function showUsage(): void {
-  console.log(`
+  logger.info(`
 Usage: bun run codegen-types.ts [OPTIONS] [ABI_NAMES...]
 
 Generate TypeScript typings from Hardhat contract ABIs.
@@ -198,6 +220,9 @@ AVAILABLE ABI NAMES:
 
     Compliance Modules:
       ${AVAILABLE_ABIS.complianceModules.join(", ")}
+
+    Addons:
+      ${AVAILABLE_ABIS.addons.join(", ")}
 `);
 }
 
@@ -212,12 +237,13 @@ function parseArguments(args: string[]): void {
         process.exit(0);
       case "-v":
       case "--verbose":
-        log.setLevel(LogLevel.DEBUG);
-        log.info("Verbose mode enabled");
+        // Note: SettleMint SDK logger level is set at creation time
+        logger.info("Verbose mode requested (set LOG_LEVEL=debug in env)");
         break;
       case "-q":
       case "--quiet":
-        log.setLevel(LogLevel.ERROR);
+        // Note: SettleMint SDK logger level is set at creation time
+        // Quiet mode can be achieved by setting LOG_LEVEL=error in env
         break;
       case "-l":
       case "--list":
@@ -225,11 +251,11 @@ function parseArguments(args: string[]): void {
         break;
       case "--skip-build":
         options.skipBuild = true;
-        log.info("Skip build mode enabled");
+        logger.info("Skip build mode enabled");
         break;
       default:
         if (arg?.startsWith("-")) {
-          log.error(`Unknown option: ${arg}`);
+          logger.error(`Unknown option: ${arg}`);
           showUsage();
           process.exit(1);
         } else {
@@ -246,11 +272,11 @@ function parseArguments(args: string[]): void {
 
 async function compileContracts(): Promise<boolean> {
   if (options.skipBuild) {
-    log.info("Skipping contract compilation");
+    logger.info("Skipping contract compilation");
     return true;
   }
 
-  log.info("Compiling contracts with Hardhat...");
+  logger.info("Compiling contracts with Hardhat...");
 
   try {
     // Set working directory for shell commands);
@@ -259,69 +285,75 @@ async function compileContracts(): Promise<boolean> {
     const result = await $`settlemint scs hardhat build`.quiet();
 
     if (result.exitCode === 0) {
-      log.success("Contracts compiled successfully");
+      logger.info("Contracts compiled successfully");
       return true;
     } else {
-      log.error("Failed to compile contracts");
+      logger.error("Failed to compile contracts");
       if (result.stderr) {
-        console.error(result.stderr.toString());
+        logger.error(result.stderr.toString());
       }
       return false;
     }
   } catch (err) {
     const shellError = err as $.ShellError;
-    log.info(shellError.stdout.toString());
-    log.error(shellError.stderr.toString());
-    log.error(`Failed to execute compilation`);
+    logger.info(shellError.stdout.toString());
+    logger.error(shellError.stderr.toString());
+    logger.error(`Failed to execute compilation`);
     return false;
   }
 }
 
 function listAbiNames(): void {
-  log.info("Available ABI names:");
+  logger.info("Available ABI names:");
 
-  console.log("\n📦 Onboarding:");
-  AVAILABLE_ABIS.onboarding.forEach((name) => console.log(`  • ${name}`));
+  logger.info("\nOnboarding:");
+  AVAILABLE_ABIS.onboarding.forEach((name) => logger.info(`  • ${name}`));
 
-  console.log("\n🔗 Token Infrastructure:");
+  logger.info("\nToken Infrastructure:");
   AVAILABLE_ABIS.tokenInfrastructure.forEach((name) =>
-    console.log(`  • ${name}`)
+    logger.info(`  • ${name}`)
   );
 
-  console.log("\n💰 Asset Tokens:");
-  AVAILABLE_ABIS.assetTokens.forEach((name) => console.log(`  • ${name}`));
+  logger.info("\nAsset Tokens:");
+  AVAILABLE_ABIS.assetTokens.forEach((name) => logger.info(`  • ${name}`));
 
-  console.log("\n🧠 Core SMART:");
-  AVAILABLE_ABIS.coreSmart.forEach((name) => console.log(`  • ${name}`));
+  logger.info("\nCore ATK:");
+  AVAILABLE_ABIS.coreSmart.forEach((name) => logger.info(`  • ${name}`));
 
-  console.log("\n🔒 Open Zeppelin:");
-  AVAILABLE_ABIS.openZeppelin.forEach((name) => console.log(`  • ${name}`));
+  logger.info("\nOpen Zeppelin:");
+  AVAILABLE_ABIS.openZeppelin.forEach((name) => logger.info(`  • ${name}`));
 
-  console.log("\n🔒 Compliance Modules:");
+  logger.info("\nCompliance Modules:");
   AVAILABLE_ABIS.complianceModules.forEach((name) =>
-    console.log(`  • ${name}`)
+    logger.info(`  • ${name}`)
   );
+
+  logger.info("\nAddons:");
+  AVAILABLE_ABIS.addons.forEach((name) => logger.info(`  • ${name}`));
 }
 
-function findArtifactFile(contractName: string): string | null {
+async function findArtifactFile(contractName: string): Promise<string | null> {
   const artifactPath = ABI_PATHS[contractName as keyof typeof ABI_PATHS];
-  if (artifactPath && existsSync(artifactPath)) {
-    return artifactPath;
+  if (artifactPath) {
+    const file = Bun.file(artifactPath);
+    if (await file.exists()) {
+      return artifactPath;
+    }
   }
 
-  log.warn(`Artifact not found for contract: ${contractName}`);
+  logger.warn(`Artifact not found for contract: ${contractName}`);
   return null;
 }
 
-function generateAbiTyping(contractName: string): boolean {
-  const artifactPath = findArtifactFile(contractName);
+async function generateAbiTyping(contractName: string): Promise<boolean> {
+  const artifactPath = await findArtifactFile(contractName);
   if (!artifactPath) {
     return false;
   }
 
   try {
-    const artifactContent = readFileSync(artifactPath, "utf-8");
-    const artifact: ContractArtifact = JSON.parse(artifactContent);
+    const artifactFile = Bun.file(artifactPath);
+    const artifact: ContractArtifact = await artifactFile.json();
 
     const abiContent = `// Generated automatically by codegen-types.ts
 // Do not edit this file manually
@@ -331,57 +363,59 @@ export const ${contractName}Abi = ${JSON.stringify(artifact.abi, null, 2)} as co
 export type ${contractName}Abi = typeof ${contractName}Abi;
 `;
 
-    // Ensure output directory exists
-    if (!existsSync(OUTPUT_DIR)) {
-      mkdirSync(OUTPUT_DIR, { recursive: true });
-    }
+    // Ensure output directory exists by writing a temporary file
+    const tempPath = join(OUTPUT_DIR, ".gitkeep");
+    await Bun.write(tempPath, "");
+    await Bun.file(tempPath).unlink();
 
     const outputPath = join(OUTPUT_DIR, `${contractName}.ts`);
-    writeFileSync(outputPath, abiContent);
+    await Bun.write(outputPath, abiContent);
 
-    log.success(`Generated ABI typing for ${contractName}`);
-    log.debug(`Output written to: ${outputPath}`);
+    logger.info(`Generated ABI typing for ${contractName}`);
+    logger.debug(`Output written to: ${outputPath}`);
 
     return true;
   } catch (error) {
-    log.error(`Failed to generate ABI typing for ${contractName}: ${error}`);
+    logger.error(`Failed to generate ABI typing for ${contractName}: ${error}`);
     return false;
   }
 }
 
-function generateAllAbiTypings(): boolean {
-  log.info(`Generating ABI typings for ${ALL_ABIS.length} contracts...`);
+async function generateAllAbiTypings(): Promise<boolean> {
+  logger.info(`Generating ABI typings for ${ALL_ABIS.length} contracts...`);
 
   let successCount = 0;
   let failureCount = 0;
 
   for (const contractName of ALL_ABIS) {
-    if (generateAbiTyping(contractName)) {
+    if (await generateAbiTyping(contractName)) {
       successCount++;
     } else {
       failureCount++;
     }
   }
 
-  log.info(
+  logger.info(
     `Generation complete: ${successCount} successful, ${failureCount} failed`
   );
   return failureCount === 0;
 }
 
-function generateSpecificAbiTypings(abiNames: string[]): boolean {
+async function generateSpecificAbiTypings(
+  abiNames: string[]
+): Promise<boolean> {
   // Validate ABI names
   const validAbiNames = new Set(ALL_ABIS);
   const invalidAbis = abiNames.filter(
     (name) => !validAbiNames.has(name as any)
   );
   if (invalidAbis.length > 0) {
-    log.error(`Invalid ABI names: ${invalidAbis.join(", ")}`);
-    log.info("Use --list to see available ABI names");
+    logger.error(`Invalid ABI names: ${invalidAbis.join(", ")}`);
+    logger.info("Use --list to see available ABI names");
     return false;
   }
 
-  log.info(
+  logger.info(
     `Generating ABI typings for ${abiNames.length} specific contracts...`
   );
 
@@ -389,35 +423,38 @@ function generateSpecificAbiTypings(abiNames: string[]): boolean {
   let failureCount = 0;
 
   for (const contractName of abiNames) {
-    if (generateAbiTyping(contractName)) {
+    if (await generateAbiTyping(contractName)) {
       successCount++;
     } else {
       failureCount++;
     }
   }
 
-  log.info(
+  logger.info(
     `Generation complete: ${successCount} successful, ${failureCount} failed`
   );
   return failureCount === 0;
 }
 
-function generateIndexFile(): void {
-  const exports = ALL_ABIS.filter((name) =>
-    existsSync(join(OUTPUT_DIR, `${name}.ts`))
-  )
-    .map((name) => `export * from "./${name}";`)
-    .join("\n");
+async function generateIndexFile(): Promise<void> {
+  const exports: string[] = [];
+
+  for (const name of ALL_ABIS) {
+    const file = Bun.file(join(OUTPUT_DIR, `${name}.ts`));
+    if (await file.exists()) {
+      exports.push(`export * from "./${name}";`);
+    }
+  }
 
   const indexContent = `// Generated automatically by codegen-types.ts
 // Do not edit this file manually
 
-${exports}
+${exports.join("\n")}
 `;
 
   const indexPath = join(OUTPUT_DIR, "index.ts");
-  writeFileSync(indexPath, indexContent);
-  log.success("Generated index.ts file");
+  await Bun.write(indexPath, indexContent);
+  logger.info("Generated index.ts file");
 }
 
 // =============================================================================
@@ -425,8 +462,8 @@ ${exports}
 // =============================================================================
 
 async function main(): Promise<void> {
-  log.info("Starting ABI typings generation...");
-  log.debug(`Contracts root: ${CONTRACTS_ROOT}`);
+  logger.info("Starting ABI typings generation...");
+  logger.debug(`Contracts root: ${CONTRACTS_ROOT}`);
 
   // Parse command line arguments
   parseArguments(Bun.argv.slice(2));
@@ -447,13 +484,13 @@ async function main(): Promise<void> {
         }
 
         // Generate all ABI typings
-        if (!generateAllAbiTypings()) {
+        if (!(await generateAllAbiTypings())) {
           exitCode = 1;
           break;
         }
 
-        generateIndexFile();
-        log.success("All ABI typings generated successfully");
+        await generateIndexFile();
+        logger.info("All ABI typings generated successfully");
         break;
 
       case "generate-specific":
@@ -464,27 +501,23 @@ async function main(): Promise<void> {
         }
 
         // Generate specific ABI typings
-        if (!generateSpecificAbiTypings(options.specificAbis)) {
+        if (!(await generateSpecificAbiTypings(options.specificAbis))) {
           exitCode = 1;
           break;
         }
 
-        generateIndexFile();
-        log.success("Specific ABI typings generated successfully");
+        await generateIndexFile();
+        logger.info("Specific ABI typings generated successfully");
         break;
 
       default:
-        log.error(`Unknown operation mode: ${options.operationMode}`);
+        logger.error(`Unknown operation mode: ${options.operationMode}`);
         exitCode = 1;
         break;
     }
   } catch (error) {
-    log.error(`Unexpected error: ${error}`);
+    logger.error(`Unexpected error: ${error}`);
     exitCode = 1;
-  }
-
-  if (exitCode === 0) {
-    log.info("ABI typings generation completed successfully");
   }
 
   process.exit(exitCode);

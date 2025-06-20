@@ -1,12 +1,12 @@
 {
-  "projectId": "prj_d3nfmf2kk7lv5j8mc06oibbw",
+  "projectId": "prj_jdg37laq31m3gg4ti9jmwrkr",
   "locale": {
     "source": "en",
     "targets": ["de", "ja", "ar"]
   },
   "files": {
     "json": {
-      "include": ["messages/[locale].json"]
+      "include": ["locales/[locale]/*.json"]
     }
   }
 }

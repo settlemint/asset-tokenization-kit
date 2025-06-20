@@ -130,3 +130,16 @@ Common image pull secrets list (without the key, for flexible usage)
 - name: image-pull-secret-harbor
 {{- end }}
 {{- end }}
+
+{{/*
+Extract domain from a hostname (e.g., "hasura.k8s.orb.local" -> "k8s.orb.local")
+*/}}
+{{- define "atk.extractDomain" -}}
+{{- $parts := splitList "." .url -}}
+{{- if gt (len $parts) 1 -}}
+{{- $domain := slice $parts 1 | join "." -}}
+{{- $domain -}}
+{{- else -}}
+{{- .url -}}
+{{- end -}}
+{{- end -}}

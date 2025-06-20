@@ -1,0 +1,15 @@
+.gitignore
+.prettierignore
+*.d.ts
+*.graphql
+.tsbuildinfo
+.next/
+.turbo/
+.env
+.env.local
+next-env.d.ts
+.nitro/
+.output/
+.tanstack/
+project.inlang/
+routeTree.gen.ts

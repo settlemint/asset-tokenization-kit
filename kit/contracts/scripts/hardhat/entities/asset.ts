@@ -1,11 +1,11 @@
 import { Address, type Hex } from "viem";
 import {
-  SMARTOnboardingContracts,
-  type ContractName,
+  ATKOnboardingContracts,
+  type PredeployedContractName,
 } from "../services/deployer";
 import { waitForEvent } from "../utils/wait-for-event";
 
-export class Asset<T extends ContractName> {
+export class Asset<T extends PredeployedContractName> {
   public address!: Address;
   public identity!: Address;
   public accessManager!: Address;
@@ -15,7 +15,7 @@ export class Asset<T extends ContractName> {
     public readonly symbol: string,
     public readonly decimals: number,
     public readonly isin: string,
-    public readonly contract: SMARTOnboardingContracts[T]
+    public readonly contract: ATKOnboardingContracts[T]
   ) {}
 
   public async waitUntilDeployed(transactionHash: Hex) {
