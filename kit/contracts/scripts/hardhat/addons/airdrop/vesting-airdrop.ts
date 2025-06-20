@@ -41,6 +41,5 @@ export const createVestingAirdrop = async (
   ]);
 
   await vestingAirdrop.waitUntilDeployed(transactionHash);
-
   return vestingAirdrop;
 };
