@@ -54,6 +54,11 @@ export function HyperText({
   const iterationCount = useRef(0);
   const elementRef = useRef<HTMLElement>(null);
 
+  // Update displayText when children changes
+  useEffect(() => {
+    setDisplayText(children.split(""));
+  }, [children]);
+
   const handleAnimationTrigger = () => {
     if (animateOnHover && !isAnimating) {
       iterationCount.current = 0;

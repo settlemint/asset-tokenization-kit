@@ -60,8 +60,15 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
 
   // Register the action with parent
   useEffect(() => {
-    if (onRegisterAction && !hasWallet) {
-      onRegisterAction(handleGenerateWallet);
+    if (onRegisterAction) {
+      if (!hasWallet) {
+        onRegisterAction(handleGenerateWallet);
+      } else {
+        // Unregister by passing a no-op function when wallet exists
+        onRegisterAction(() => {
+          // No action needed when wallet already exists
+        });
+      }
     }
   }, [onRegisterAction, hasWallet]);
 

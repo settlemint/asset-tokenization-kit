@@ -98,16 +98,23 @@ export function AnimatedBeam({
       updatePath();
     });
 
+    // Track currently observed element
+    let observedElement: HTMLElement | null = null;
+
     // Observe the container element
     if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
+      observedElement = containerRef.current;
+      resizeObserver.observe(observedElement);
     }
 
     // Call the updatePath initially to set the initial path
     updatePath();
 
-    // Clean up the observer on component unmount
+    // Clean up the observer on component unmount or when containerRef changes
     return () => {
+      if (observedElement) {
+        resizeObserver.unobserve(observedElement);
+      }
       resizeObserver.disconnect();
     };
   }, [

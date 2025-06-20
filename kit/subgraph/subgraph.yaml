@@ -72,7 +72,8 @@ templates:
         - name: IERC165
           file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
-        - event: Bootstrapped(indexed address,indexed address,indexed
+        - event:
+            Bootstrapped(indexed address,indexed address,indexed
             address,address,address,address,address,address,address,address,address)
           handler: handleBootstrapped
         - event:
@@ -96,7 +97,8 @@ templates:
             TokenAccessManagerImplementationUpdated(indexed address,indexed
             address)
           handler: handleTokenAccessManagerImplementationUpdated
-        - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
+        - event:
+            TokenIdentityImplementationUpdated(indexed address,indexed address)
           handler: handleTokenIdentityImplementationUpdated
         - event:
             TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
@@ -106,13 +108,17 @@ templates:
             TopicSchemeRegistryImplementationUpdated(indexed address,indexed
             address)
           handler: handleTopicSchemeRegistryImplementationUpdated
-        - event: TokenFactoryRegistryImplementationUpdated(indexed address,indexed
+        - event:
+            TokenFactoryRegistryImplementationUpdated(indexed address,indexed
             address)
           handler: handleTokenFactoryRegistryImplementationUpdated
-        - event: ComplianceModuleRegistryImplementationUpdated(indexed address,indexed
-            address)
+        - event:
+            ComplianceModuleRegistryImplementationUpdated(indexed
+            address,indexed address)
           handler: handleComplianceModuleRegistryImplementationUpdated
-        - event: SystemAddonRegistryImplementationUpdated(indexed address,indexed address)
+        - event:
+            SystemAddonRegistryImplementationUpdated(indexed address,indexed
+            address)
           handler: handleSystemAddonRegistryImplementationUpdated
       file: ./src/system/system.ts
   - kind: ethereum
@@ -716,10 +722,12 @@ templates:
         - name: BondFactory
           file: ../contracts/.generated/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
       eventHandlers:
-        - event: TokenFactoryImplementationUpdated(indexed address,indexed bytes32,indexed
-            address)
+        - event:
+            TokenFactoryImplementationUpdated(indexed address,indexed
+            bytes32,indexed address)
           handler: handleTokenFactoryImplementationUpdated
-        - event: TokenFactoryRegistered(indexed
+        - event:
+            TokenFactoryRegistered(indexed
             address,string,bytes32,address,address,uint256)
           handler: handleTokenFactoryRegistered
       file: ./src/token-factory/token-factory-registry.ts
@@ -739,10 +747,12 @@ templates:
         - name: SystemAddonRegistry
           file: ../contracts/.generated/artifacts/contracts/system/addons/IATKSystemAddonRegistry.sol/IATKSystemAddonRegistry.json
       eventHandlers:
-        - event: AddonImplementationUpdated(indexed address,indexed bytes32,indexed
+        - event:
+            AddonImplementationUpdated(indexed address,indexed bytes32,indexed
             address)
           handler: handleAddonImplementationUpdated
-        - event: SystemAddonRegistered(indexed
+        - event:
+            SystemAddonRegistered(indexed
             address,string,bytes32,address,address,bytes,uint256)
           handler: handleSystemAddonRegistered
       file: ./src/system-addons/system-addon-registry.ts
@@ -762,7 +772,8 @@ templates:
         - name: ComplianceModuleRegistry
           file: ../contracts/.generated/artifacts/contracts/system/compliance/IATKComplianceModuleRegistry.sol/IATKComplianceModuleRegistry.json
       eventHandlers:
-        - event: ComplianceModuleRegistered(indexed address,string,bytes32,indexed
+        - event:
+            ComplianceModuleRegistered(indexed address,string,bytes32,indexed
             address,uint256)
           handler: handleComplianceModuleRegistered
       file: ./src/compliance/compliance-module-registry.ts

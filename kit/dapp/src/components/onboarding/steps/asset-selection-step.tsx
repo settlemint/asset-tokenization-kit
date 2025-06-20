@@ -113,8 +113,6 @@ export function AssetSelectionStep({
   // Use all available token types from the enum
   const availableAssets = TokenTypeEnum.options;
 
-  const watchedAssets = form.watch("assets");
-
   const hasDeployedAssets = (systemDetails?.tokenFactories.length ?? 0) > 0;
 
   // Register the action with parent
@@ -122,7 +120,7 @@ export function AssetSelectionStep({
     if (onRegisterAction && !hasDeployedAssets) {
       onRegisterAction(handleDeployFactories);
     }
-  }, [onRegisterAction, hasDeployedAssets, watchedAssets.length]);
+  }, [onRegisterAction, hasDeployedAssets]);
 
   return (
     <div className="h-full flex flex-col">

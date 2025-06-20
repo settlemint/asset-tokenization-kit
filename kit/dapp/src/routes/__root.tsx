@@ -30,9 +30,8 @@ import {
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
-import { lazy, Suspense, type ReactNode, useEffect } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { Toaster } from "sonner";
-import { setupDevShortcuts } from "@/lib/utils/dev-shortcuts";
 
 // Lazy load dev tools to reduce bundle size in production
 const ReactQueryDevtools = lazy(() =>
@@ -132,11 +131,6 @@ function RootComponent() {
  * @param children - The route content to render within the document
  */
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
-  // Set up development shortcuts on mount
-  useEffect(() => {
-    setupDevShortcuts();
-  }, []);
-
   return (
     <html suppressHydrationWarning>
       <head>
