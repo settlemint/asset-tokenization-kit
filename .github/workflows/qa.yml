@@ -241,7 +241,7 @@ jobs:
         with:
           commit_message: "chore: update artifacts"
           branch: main
-          file_pattern: ".gitattributes .generated/**"
+          file_pattern: ".gitattributes .generated/** bun.lock"
 
   pr-labels:
     name: PR Labels
