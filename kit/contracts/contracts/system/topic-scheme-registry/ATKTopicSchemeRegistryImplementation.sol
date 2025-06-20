@@ -11,6 +11,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 
 // Interface imports
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
+import { IATKTopicSchemeRegistry } from "./IATKTopicSchemeRegistry.sol";
 
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
@@ -24,7 +25,7 @@ contract ATKTopicSchemeRegistryImplementation is
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
-    ISMARTTopicSchemeRegistry
+    IATKTopicSchemeRegistry
 {
     // --- Storage Variables ---
     /// @notice Mapping from topic ID to topic scheme information
@@ -322,7 +323,8 @@ contract ATKTopicSchemeRegistryImplementation is
         override(ERC165Upgradeable, AccessControlUpgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(ISMARTTopicSchemeRegistry).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKTopicSchemeRegistry).interfaceId
+            || interfaceId == type(ISMARTTopicSchemeRegistry).interfaceId || super.supportsInterface(interfaceId);
     }
 
     // --- Meta-transaction Support ---

@@ -131,7 +131,11 @@ A Helm chart for the supporting components
 | minio.auth.rootPassword | string | `"atk-password"` |  |
 | minio.auth.rootUser | string | `"admin"` |  |
 | minio.console.image.registry | string | `"docker.io"` |  |
+| minio.console.image.repository | string | `"bitnami/minio-object-browser"` |  |
+| minio.console.image.tag | string | `"2.0.1-debian-12-r3"` |  |
 | minio.defaultInitContainers.image.registry | string | `"docker.io"` |  |
+| minio.defaultInitContainers.image.repository | string | `"bitnami/os-shell"` |  |
+| minio.defaultInitContainers.image.tag | string | `"12-debian-12-r47"` |  |
 | minio.enabled | bool | `true` |  |
 | minio.fullnameOverride | string | `"minio"` |  |
 | minio.global.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
@@ -139,6 +143,8 @@ A Helm chart for the supporting components
 | minio.global.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
 | minio.global.security.allowInsecureImages | bool | `true` |  |
 | minio.image.registry | string | `"docker.io"` |  |
+| minio.image.repository | string | `"bitnami/minio"` |  |
+| minio.image.tag | string | `"2025.5.24-debian-12-r7"` |  |
 | minio.provisioning.config[0].name | string | `"region"` |  |
 | minio.provisioning.config[0].options.name | string | `"eu-central-1"` |  |
 | minio.provisioning.enabled | bool | `true` |  |

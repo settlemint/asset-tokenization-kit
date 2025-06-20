@@ -71,6 +71,14 @@ const CONTRACT_ADDRESSES = {
   ATKTokenAccessManagerImplementation:
     "0x5e771e1417100000000000000000000000020009",
 
+  // Registry implementations
+  ATKTokenFactoryRegistryImplementation:
+    "0x5e771e1417100000000000000000000000020010",
+  ATKComplianceModuleRegistryImplementation:
+    "0x5e771e1417100000000000000000000000020011",
+  ATKSystemAddonRegistryImplementation:
+    "0x5e771e1417100000000000000000000000020012",
+
   // System
   ATKSystemImplementation: "0x5e771e1417100000000000000000000000020087",
   ATKSystemFactory: "0x5e771e1417100000000000000000000000020088",
@@ -126,6 +134,12 @@ const CONTRACT_FILES = {
     "contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol",
   ATKTokenAccessManagerImplementation:
     "contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol",
+  ATKTokenFactoryRegistryImplementation:
+    "contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol",
+  ATKComplianceModuleRegistryImplementation:
+    "contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol",
+  ATKSystemAddonRegistryImplementation:
+    "contracts/system/addons/ATKSystemAddonRegistryImplementation.sol",
 
   // System
   ATKSystemImplementation: "contracts/system/ATKSystemImplementation.sol",
@@ -452,6 +466,9 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKTokenIdentityImplementation,
           CONTRACT_ADDRESSES.ATKTokenAccessManagerImplementation,
           CONTRACT_ADDRESSES.SMARTIdentityVerificationComplianceModule,
+          CONTRACT_ADDRESSES.ATKTokenFactoryRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKComplianceModuleRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKSystemAddonRegistryImplementation,
           forwarderAddress,
         ];
 

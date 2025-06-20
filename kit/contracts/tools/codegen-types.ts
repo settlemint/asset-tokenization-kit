@@ -71,6 +71,10 @@ const ABI_PATHS = {
   fund: `${ARTIFACTS_DIR}/contracts/assets/fund/IATKFund.sol/IATKFund.json`,
   stablecoin: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/IATKStableCoin.sol/IATKStableCoin.json`,
   bond: `${ARTIFACTS_DIR}/contracts/assets/bond/IATKBond.sol/IATKBond.json`,
+  // registries
+  tokenFactoryRegistry: `${ARTIFACTS_DIR}/contracts/system/token-factory/IATKTokenFactoryRegistry.sol/IATKTokenFactoryRegistry.json`,
+  complianceModuleRegistry: `${ARTIFACTS_DIR}/contracts/system/compliance/IATKComplianceModuleRegistry.sol/IATKComplianceModuleRegistry.json`,
+  systemAddonRegistry: `${ARTIFACTS_DIR}/contracts/system/addons/IATKSystemAddonRegistry.sol/IATKSystemAddonRegistry.json`,
   // Open Zeppelin
   accessControl: `${ARTIFACTS_DIR}/@openzeppelin/contracts/access/IAccessControl.sol/IAccessControl.json`,
   // smart
@@ -109,6 +113,9 @@ const AVAILABLE_ABIS = {
     "equityFactory",
     "fundFactory",
     "stablecoinFactory",
+    "tokenFactoryRegistry",
+    "complianceModuleRegistry",
+    "systemAddonRegistry",
   ],
   tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
