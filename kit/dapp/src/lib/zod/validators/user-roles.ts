@@ -15,13 +15,13 @@ import { z } from "zod/v4";
  * @remarks
  * Simple role hierarchy for application access:
  * - `admin`: Full administrative access, can manage users and settings
- * - `user`: Standard user access, can perform regular operations
+ * - `investor`: Standard investor access, can perform regular operations
  * - `issuer`: Asset issuance permissions, can create and manage assets
  *
  * Note: This is separate from system roles (roles.ts) which handle
  * blockchain/smart contract permissions.
  */
-export const userRoleNames = ["admin", "user", "issuer"] as const;
+export const userRoleNames = ["admin", "investor", "issuer"] as const;
 
 /**
  * Creates a Zod schema that validates user roles.
@@ -33,9 +33,9 @@ export const userRoleNames = ["admin", "user", "issuer"] as const;
  * const schema = userRoles();
  *
  * // Valid roles
- * schema.parse("admin");  // Administrative access
- * schema.parse("user");   // Standard user access
- * schema.parse("issuer"); // Asset issuance access
+ * schema.parse("admin");    // Administrative access
+ * schema.parse("investor"); // Standard investor access
+ * schema.parse("issuer");   // Asset issuance access
  *
  * // Invalid role
  * schema.parse("moderator"); // Throws ZodError
@@ -86,12 +86,12 @@ export function isUserRole(value: unknown): value is UserRole {
  * @example
  * ```typescript
  * try {
- *   const role = getUserRole("user"); // Returns "user" as UserRole
+ *   const role = getUserRole("investor"); // Returns "investor" as UserRole
  *   const invalid = getUserRole("superuser"); // Throws Error
  * } catch (error) {
  *   console.error("Invalid user role provided");
- *   // Default to user for safety
- *   assignRole("user");
+ *   // Default to investor for safety
+ *   assignRole("investor");
  * }
  *
  * // Use in middleware
@@ -102,7 +102,7 @@ export function isUserRole(value: unknown): value is UserRole {
  *
  * // Permission checks
  * const role = getUserRole(currentUser.role);
- * const canEdit = role === "admin" || role === "user";
+ * const canEdit = role === "admin" || role === "investor";
  * const canCreateAssets = role === "admin" || role === "issuer";
  * ```
  */

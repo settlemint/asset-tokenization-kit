@@ -278,10 +278,10 @@ describe("safeParse", () => {
     });
 
     it("should handle promise schemas", () => {
+      // Promise schemas require async parsing, so safeParse should throw
       const schema = z.promise(z.string());
       const promise = Promise.resolve("test");
-      const result = safeParse(schema, promise);
-      expect(result).toBeInstanceOf(Promise);
+      expect(() => safeParse(schema, promise)).toThrow();
     });
 
     it("should handle instanceof schemas", () => {

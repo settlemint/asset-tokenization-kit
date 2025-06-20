@@ -35,6 +35,7 @@ import enGeneralTranslations from "@/locales/en/general.json";
 import enLanguageTranslations from "@/locales/en/language.json";
 import enOnboardingTranslations from "@/locales/en/onboarding.json";
 import enThemeTranslations from "@/locales/en/theme.json";
+import enTokensTranslations from "@/locales/en/tokens.json";
 import jaAuthTranslations from "@/locales/ja/auth.json";
 import jaGeneralTranslations from "@/locales/ja/general.json";
 import jaLanguageTranslations from "@/locales/ja/language.json";
@@ -66,6 +67,7 @@ export const resources = {
     theme: enThemeTranslations,
     language: enLanguageTranslations,
     onboarding: enOnboardingTranslations,
+    tokens: enTokensTranslations,
   },
   de: {
     auth: deAuthTranslations,
@@ -73,6 +75,7 @@ export const resources = {
     theme: deThemeTranslations,
     language: deLanguageTranslations,
     onboarding: deOnboardingTranslations,
+    tokens: enTokensTranslations, // TODO: Add German translations
   },
   ar: {
     auth: arAuthTranslations,
@@ -80,6 +83,7 @@ export const resources = {
     theme: arThemeTranslations,
     language: arLanguageTranslations,
     onboarding: arOnboardingTranslations,
+    tokens: enTokensTranslations, // TODO: Add Arabic translations
   },
   ja: {
     auth: jaAuthTranslations,
@@ -87,6 +91,7 @@ export const resources = {
     theme: jaThemeTranslations,
     language: jaLanguageTranslations,
     onboarding: jaOnboardingTranslations,
+    tokens: enTokensTranslations, // TODO: Add Japanese translations
   },
 } as const;
 

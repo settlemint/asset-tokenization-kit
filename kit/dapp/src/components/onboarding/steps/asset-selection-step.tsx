@@ -1,4 +1,11 @@
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -7,185 +14,161 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
+import { queryClient } from "@/lib/query.client";
+// import { assetTypes } from "@/lib/zod/validators/asset-types";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
-import { assetTypeArray, assetTypes } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
+import { TokenTypeEnum } from "@/orpc/routes/tokens/routes/factory.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
+import { Package } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod/v4";
 
 const assetSelectionSchema = z.object({
-  selectedAssets: assetTypeArray(),
+  assets: z.array(TokenTypeEnum).min(1, "Select at least one asset type"),
 });
 
-type AssetSelectionFormData = z.infer<typeof assetSelectionSchema>;
+type AssetSelectionFormValues = z.infer<typeof assetSelectionSchema>;
 
 interface AssetSelectionStepProps {
   onSuccess?: () => void;
 }
 
 export function AssetSelectionStep({ onSuccess }: AssetSelectionStepProps) {
-  const { t } = useTranslation("onboarding");
+  const { t } = useTranslation(["onboarding", "general", "tokens"]);
 
-  // Fetch system address from settings
   const { data: systemAddress } = useQuery(
     orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
   );
 
-  // Build asset options from the zod validator
-  const assetOptions = assetTypes.map((type) => ({
-    value: type,
-    label: t(`assets.${type}`),
-  }));
-
-  const form = useForm<AssetSelectionFormData>({
+  const form = useForm<AssetSelectionFormValues>({
     resolver: zodResolver(assetSelectionSchema),
     defaultValues: {
-      selectedAssets: [],
+      assets: [],
     },
   });
 
-  const selectedAssets = form.watch("selectedAssets");
+  const { mutate: createFactories, isTracking: isPending } =
+    useStreamingMutation({
+      mutationOptions: orpc.tokens.factoryCreate.mutationOptions(),
+      onSuccess: () => {
+        toast.success(t("assets.deployed"));
+        void queryClient.invalidateQueries({
+          queryKey: orpc.system.read.key(),
+        });
+        onSuccess?.();
+      },
+    });
 
-  const { mutate: createFactories, isPending } = useStreamingMutation({
-    mutationOptions: orpc.tokens.factoryCreate.mutationOptions(),
-    onSuccess: () => {
-      form.reset();
-      onSuccess?.();
-    },
-  });
-
-  const onSubmit = (data: AssetSelectionFormData) => {
+  const onSubmit = (values: AssetSelectionFormValues) => {
     if (!systemAddress?.value) {
-      toast.error(t("create-factory-messages.system-not-found"));
+      toast.error(t("assets.no-system"));
       return;
     }
 
-    // Convert selected assets to factory creation format
-    const factories = data.selectedAssets.map((type) => ({
-      type,
-      name: `${type.charAt(0).toUpperCase() + type.slice(1)} Token Factory`,
+    const factories = values.assets.map((assetType) => ({
+      type: assetType,
+      name: `${assetType.charAt(0).toUpperCase() + assetType.slice(1)} Factory`,
     }));
 
     createFactories({
       contract: systemAddress.value,
       factories,
-      messages: {
-        initialLoading: t("create-factory-messages.initial-loading"),
-        noResultError: t("create-factory-messages.no-result-error"),
-        defaultError: t("create-factory-messages.default-error"),
-        factoryCreated: t("create-factory-messages.factory-created"),
-        creatingFactory: t("create-factory-messages.creating-factory"),
-        factoryCreationFailed: t(
-          "create-factory-messages.factory-creation-failed"
-        ),
-        systemNotBootstrapped: t(
-          "create-factory-messages.system-not-bootstrapped"
-        ),
-        batchProgress: t(
-          "create-factory-messages.multiple-factories.deploying"
-        ),
-        batchCompleted: t(
-          "create-factory-messages.multiple-factories.all-completed"
-        ),
-        streamTimeout: t(
-          "create-factory-messages.transaction-tracking.stream-timeout"
-        ),
-        waitingForMining: t(
-          "create-factory-messages.transaction-tracking.waiting-for-mining"
-        ),
-        transactionFailed: t(
-          "create-factory-messages.transaction-tracking.transaction-failed"
-        ),
-        transactionDropped: t(
-          "create-factory-messages.transaction-tracking.transaction-dropped"
-        ),
-        waitingForIndexing: t(
-          "create-factory-messages.transaction-tracking.waiting-for-indexing"
-        ),
-        transactionIndexed: t(
-          "create-factory-messages.transaction-tracking.transaction-indexed"
-        ),
-        indexingTimeout: t(
-          "create-factory-messages.transaction-tracking.indexing-timeout"
-        ),
-      },
     });
   };
 
+  // Use all available token types from the enum
+  const availableAssets = TokenTypeEnum.options;
+
+  const watchedAssets = form.watch("assets");
+  const isSubmitDisabled =
+    !systemAddress?.value || watchedAssets.length === 0 || isPending;
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="selectedAssets"
-          render={() => (
-            <FormItem>
-              <div className="mb-4">
-                <FormLabel className="text-base">
-                  {t("asset-selection.title")}
-                </FormLabel>
-                <FormDescription>
-                  {t("asset-selection.description")}
-                </FormDescription>
-              </div>
-              <div className="space-y-2">
-                {assetOptions.map((asset) => (
-                  <FormField
-                    key={asset.value}
-                    control={form.control}
-                    name="selectedAssets"
-                    render={({ field }) => {
-                      return (
-                        <FormItem
-                          key={asset.value}
-                          className="flex flex-row items-start space-x-3 space-y-0"
-                        >
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value.includes(asset.value)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  field.onChange([...field.value, asset.value]);
-                                } else {
-                                  field.onChange(
-                                    field.value.filter(
-                                      (value) => value !== asset.value
-                                    )
-                                  );
-                                }
-                              }}
-                            />
-                          </FormControl>
-                          <FormLabel className="text-sm font-normal">
-                            {asset.label}
-                          </FormLabel>
-                        </FormItem>
-                      );
-                    }}
-                  />
-                ))}
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button
-          type="submit"
-          disabled={
-            isPending || selectedAssets.length === 0 || !systemAddress?.value
-          }
-        >
-          {isPending
-            ? t("create-factory-messages.button.deploying")
-            : t("create-factory-messages.button.deploy")}
-        </Button>
-      </form>
-    </Form>
+    <Card>
+      <CardHeader>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-sm-graphics-tertiary/20">
+          <Package className="h-6 w-6 text-sm-graphics-tertiary" />
+        </div>
+        <CardTitle>{t("assets.title")}</CardTitle>
+        <CardDescription>{t("assets.description")}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="rounded-lg bg-muted p-4">
+          <p className="text-sm text-muted-foreground">{t("assets.info")}</p>
+        </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="assets"
+              render={() => (
+                <FormItem>
+                  <FormLabel>{t("assets.select-label")}</FormLabel>
+                  <FormDescription>
+                    {t("assets.select-description")}
+                  </FormDescription>
+                  <div className="grid gap-3">
+                    {availableAssets.map((assetType) => (
+                      <FormField
+                        key={assetType}
+                        control={form.control}
+                        name="assets"
+                        render={({ field }) => (
+                          <FormItem
+                            key={assetType}
+                            className="flex flex-row items-start space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value.includes(assetType)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    field.onChange([...field.value, assetType]);
+                                  } else {
+                                    field.onChange(
+                                      field.value.filter(
+                                        (value) => value !== assetType
+                                      )
+                                    );
+                                  }
+                                }}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="text-sm font-medium">
+                                {t(`asset-types.${assetType}`, {
+                                  ns: "tokens",
+                                })}
+                              </FormLabel>
+                              <p className="text-sm text-muted-foreground">
+                                {t(`assets.descriptions.${assetType}`)}
+                              </p>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="submit"
+              disabled={isSubmitDisabled}
+              className="w-full"
+            >
+              {isPending ? t("general:deploying") : t("assets.deploy")}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

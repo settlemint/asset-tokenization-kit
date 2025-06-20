@@ -322,3 +322,4 @@ The dApp includes sophisticated cache management:
 - Always run `bun run ci` before suggesting a PR is ready
 - Token factory creation now requires system bootstrapping first
 - Asset types are centralized in the zod validator (no more cryptocurrency)
+- never use barrel files

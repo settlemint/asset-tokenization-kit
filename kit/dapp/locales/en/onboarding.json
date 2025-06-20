@@ -1,16 +1,69 @@
 {
-  "card-description": "You will need a wallet and an identity on the blockchain to use this platform. ",
+  "card-description": "You will need a wallet and an identity on the blockchain to use this platform.",
   "card-title": "Let's get you set up!",
-  "create-system-messages": {
-    "initial-loading": "Preparing to deploy your SMART system...",
-    "no-result-error": "System deployment completed but no address was returned",
-    "default-error": "Failed to deploy your SMART system",
-    "system-created": "SMART system successfully created",
-    "creating-system": "Creating new system...",
-    "system-creation-failed": "Failed to create system. Please try again.",
-    "button": {
-      "deploy": "Deploy a new SMART system",
-      "deploying": "Deploying..."
+  "platform": {
+    "title": "Platform Setup",
+    "description": "Let's set up your digital asset platform"
+  },
+  "issuer": {
+    "title": "Issuer Setup",
+    "description": "Set up your account to start issuing digital assets"
+  },
+  "investor": {
+    "title": "Investor Setup",
+    "description": "Set up your account to start investing in digital assets"
+  },
+  "steps": {
+    "wallet": {
+      "title": "Create Wallet",
+      "description": "Generate your blockchain wallet"
+    },
+    "system": {
+      "title": "Deploy System",
+      "description": "Initialize the core smart contracts"
+    },
+    "assets": {
+      "title": "Select Assets",
+      "description": "Choose supported asset types"
+    },
+    "identity": {
+      "title": "Verify Identity",
+      "description": "Complete KYC verification",
+      "info": "Identity verification ensures compliance with regulations and enables you to invest in digital assets.",
+      "coming-soon": "Coming Soon",
+      "coming-soon-description": "Identity verification is currently under development. In the meantime, we'll create your wallet so you can explore the platform."
+    }
+  },
+  "wallet": {
+    "title": "Generate Wallet",
+    "description": "Create your blockchain wallet for transactions",
+    "info": "Your wallet is your gateway to the blockchain. It allows you to hold digital assets and execute transactions securely.",
+    "generate": "Generate Wallet",
+    "success": "Wallet successfully created!",
+    "generated": "Wallet generated successfully",
+    "already-exists": "Wallet already exists for this user",
+    "creation-failed": "Failed to create wallet. Please try again."
+  },
+  "system": {
+    "title": "Deploy SMART System",
+    "description": "Initialize the core infrastructure for your platform",
+    "info": "The SMART system is the foundation of your digital asset platform. It manages all token operations and ensures compliance.",
+    "deploy": "Deploy System",
+    "deployed": "System deployed successfully",
+    "success": "System successfully deployed!",
+    "messages": {
+      "initial-loading": "Preparing to deploy your SMART system...",
+      "no-result-error": "System deployment completed but no address was returned",
+      "default-error": "Failed to deploy your SMART system",
+      "created": "SMART system successfully created",
+      "creating": "Creating new system...",
+      "creation-failed": "Failed to create system. Please try again.",
+      "pending": {
+        "mining": "Deploying your SMART system...",
+        "indexing": "Indexing the new SMART system..."
+      },
+      "error": "Failed to deploy your SMART system",
+      "timeout": "Transaction tracking timeout"
     },
     "transaction-tracking": {
       "stream-timeout": "System deployment tracking timed out after 90 seconds",
@@ -22,57 +75,21 @@
       "indexing-timeout": "System indexing timed out, please refresh the page"
     }
   },
-  "messages": {
-    "pending": {
-      "mining": "Deploying your SMART system...",
-      "indexing": "Indexing the new SMART system..."
-    },
-    "success": "Your SMART system is deployed!",
-    "error": "Failed to deploy your SMART system",
-    "timeout": "Transaction tracking timeout"
-  },
-  "wallet-generated": "Wallet generated successfully",
-  "wallet-already-exists": "Wallet already exists for this user",
-  "wallet-creation-failed": "Failed to create wallet. Please try again.",
   "assets": {
-    "bond": "Bonds",
-    "equity": "Equities",
-    "fund": "Funds",
-    "stablecoin": "Stable coins",
-    "deposit": "Deposits"
-  },
-  "asset-selection": {
-    "title": "Asset Types",
-    "description": "Select the asset types you want to support on your platform",
-    "continue": "Continue"
-  },
-  "create-factory-messages": {
-    "initial-loading": "Preparing to deploy token factories...",
-    "no-result-error": "Factory deployment completed but no address was returned",
-    "default-error": "Failed to deploy token factory",
-    "factory-created": "Token factory successfully created",
-    "creating-factory": "Creating token factory...",
-    "factory-creation-failed": "Failed to create token factory. Please try again.",
-    "system-not-found": "System address not found. Please ensure a system is deployed first.",
-    "system-not-bootstrapped": "System needs to be bootstrapped first. Please wait for system initialization to complete.",
-    "deploying-button": "Deploying...",
-    "button": {
-      "deploy": "Deploy token factories",
-      "deploying": "Deploying factories..."
-    },
-    "transaction-tracking": {
-      "stream-timeout": "Factory deployment tracking timed out after 90 seconds",
-      "waiting-for-mining": "Deploying token factories on chain...",
-      "transaction-failed": "Factory deployment transaction failed",
-      "transaction-dropped": "Factory deployment transaction was not confirmed on-chain in time",
-      "waiting-for-indexing": "Waiting for factories to be indexed...",
-      "transaction-indexed": "Factories successfully indexed and ready to use",
-      "indexing-timeout": "Factory indexing timed out, please refresh the page"
-    },
-    "multiple-factories": {
-      "deploying": "Deploying {{current}} of {{total}} factories...",
-      "completed": "{{completed}} of {{total}} factories deployed",
-      "all-completed": "All token factories deployed successfully"
+    "title": "Select Asset Types",
+    "description": "Choose which digital asset types to enable on your platform",
+    "info": "Select the types of digital assets your platform will support. You can add more asset types later.",
+    "select-label": "Available Asset Types",
+    "select-description": "Select one or more asset types to deploy their factory contracts",
+    "deploy": "Deploy Selected Assets",
+    "deployed": "Asset factories deployed successfully",
+    "no-system": "System not found. Please deploy the system first.",
+    "descriptions": {
+      "bond": "Tokenized debt securities with fixed income features",
+      "equity": "Digital shares representing ownership in companies",
+      "fund": "Investment fund tokens for pooled investments",
+      "stablecoin": "Price-stable digital currencies",
+      "deposit": "Tokenized bank deposits and certificates"
     }
   }
 }

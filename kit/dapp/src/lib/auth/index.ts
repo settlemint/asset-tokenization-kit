@@ -22,6 +22,7 @@ import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { serverOnly } from "@tanstack/react-start";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { APIError } from "better-auth/api";
 import { admin, apiKey, openAPI } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
@@ -139,6 +140,29 @@ const getAuthConfig = serverOnly(() =>
       max: 100, // max requests in the window
     },
 
+    databaseHooks: {
+      user: {
+        create: {
+          before: async (user) => {
+            try {
+              const firstUser = await db.query.user.findFirst();
+              return {
+                data: {
+                  ...user,
+                  role: firstUser ? "investor" : "admin",
+                },
+              };
+            } catch (error) {
+              throw new APIError("BAD_REQUEST", {
+                message: "Failed to set the user role",
+                cause: error instanceof Error ? error : undefined,
+              });
+            }
+          },
+        },
+      },
+    },
+
     /**
      * Authentication plugins for extended functionality.
      */
@@ -211,6 +235,7 @@ export type Session = typeof auth.$Infer.Session;
  * The wallet field is overridden to use the branded EthereumAddress type
  * for additional type safety when working with blockchain addresses.
  */
-export type SessionUser = Omit<Session["user"], "wallet"> & {
+export type SessionUser = Omit<Session["user"], "wallet" | "role"> & {
   wallet?: EthereumAddress | null;
+  role: "admin" | "investor" | "issuer";
 };

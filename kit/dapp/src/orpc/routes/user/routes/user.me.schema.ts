@@ -7,6 +7,7 @@
  */
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { userRoles } from "@/lib/zod/validators/user-roles";
 import { z } from "zod/v4";
 
 /**
@@ -48,6 +49,15 @@ export const UserMeSchema = z.object({
    * Primary identifier for authentication and communication.
    */
   email: z.email(),
+
+  /**
+   * User's role in the system.
+   * Determines access permissions and onboarding flow.
+   * - admin: First user, can perform platform onboarding
+   * - issuer: Can issue assets
+   * - user: Standard user (investors)
+   */
+  role: userRoles(),
 
   /**
    * User's Ethereum wallet address.
