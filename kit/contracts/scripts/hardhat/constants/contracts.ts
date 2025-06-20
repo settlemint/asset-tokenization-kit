@@ -28,12 +28,14 @@ import {
   ismartPausableAbi,
   ismartRedeemableAbi,
   ismartYieldAbi,
+  pushAirdropFactoryAbi,
   stablecoinAbi,
   stablecoinFactoryAbi,
   systemAbi,
   tokenIdentityAbi,
   topicSchemeRegistryAbi,
   trustedIssuersRegistryAbi,
+  vestingAirdropFactoryAbi,
   xvpSettlementAbi,
   xvpSettlementFactoryAbi,
 } from "../abi";
@@ -52,8 +54,6 @@ export const ATKContracts = {
   equityFactory: equityFactoryAbi,
   fundFactory: fundFactoryAbi,
   stablecoinFactory: stablecoinFactoryAbi,
-  fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
-  xvpSettlementFactory: xvpSettlementFactoryAbi,
   // token
   accessManager: accessManagerAbi,
   identity: identityAbi,
@@ -83,4 +83,9 @@ export const ATKContracts = {
   addressBlockListModule: addressBlockListAbi,
   identityBlockListModule: identityBlockListAbi,
   identityAllowListModule: identityAllowListAbi,
+  // addons
+  fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
+  vestingAirdropFactory: vestingAirdropFactoryAbi,
+  pushAirdropFactory: pushAirdropFactoryAbi,
+  xvpSettlementFactory: xvpSettlementFactoryAbi,
 } as const;

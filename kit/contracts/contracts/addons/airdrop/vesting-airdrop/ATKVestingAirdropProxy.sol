@@ -31,6 +31,7 @@ contract ATKVestingAirdropProxy is Proxy {
 
     /// @notice Constructs the ATKVestingAirdropProxy.
     /// @param factoryAddress The address of the IATKVestingAirdropFactory contract.
+    /// @param name The human-readable name for this airdrop.
     /// @param token The address of the ERC20 token to be distributed.
     /// @param root The Merkle root for verifying claims.
     /// @param owner The initial owner of the contract.
@@ -38,6 +39,7 @@ contract ATKVestingAirdropProxy is Proxy {
     /// @param initializationDeadline The timestamp after which no new vesting can be initialized.
     constructor(
         address factoryAddress,
+        string memory name,
         address token,
         bytes32 root,
         address owner,
@@ -58,6 +60,7 @@ contract ATKVestingAirdropProxy is Proxy {
 
         bytes memory initData = abi.encodeWithSelector(
             ATKVestingAirdropImplementation.initialize.selector,
+            name,
             token,
             root,
             owner,
