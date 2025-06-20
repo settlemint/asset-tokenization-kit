@@ -17,6 +17,46 @@ const logger = createLogger({
 });
 
 /**
+ * Check if a repository/image value is an implicit Docker Hub image
+ * This function properly handles local registries and other registry URLs
+ */
+function isImplicitDockerHubImage(value: string): boolean {
+  // Skip empty or already processed values
+  if (!value || value.includes(HARBOR_PROXY)) {
+    return false;
+  }
+
+  // If it starts with localhost, it's a local registry
+  if (value.startsWith('localhost')) {
+    return false;
+  }
+
+  // If it contains a colon followed by digits, it's likely a registry with port (e.g., localhost:5000, registry.example.com:443)
+  if (/:\d+/.test(value)) {
+    return false;
+  }
+
+  // If it contains a domain-like pattern (dot followed by known TLD patterns), it's likely a registry
+  if (/\.[a-z]{2,}(\/|$)/i.test(value)) {
+    return false;
+  }
+
+  // Now check for implicit Docker Hub patterns:
+  // 1. Simple image names without / (e.g., "postgres", "nginx")
+  if (!value.includes('/')) {
+    return true;
+  }
+
+  // 2. Org/repo patterns without explicit registry (e.g., "graphprotocol/graph-node", "bitnami/postgresql")
+  // This should only match if it doesn't contain dots that would indicate a registry
+  if (value.includes('/') && !value.includes('.')) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Find the charts directory using intelligent root detection
  */
 async function findChartsDirectory(): Promise<string> {
@@ -310,14 +350,8 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
 
             // Only apply harbor prefix if there's no nearby registry field
             if (!hasNearbyRegistry) {
-              // Check if it's an implicit Docker Hub image (contains / but no explicit registry)
-              if (repoValue.includes('/') && !repoValue.includes('.')) {
-                // This is likely an implicit Docker Hub image (e.g., "graphprotocol/graph-node", "bitnami/postgresql")
-                const newValue = `${HARBOR_PROXY}/docker.io/${repoValue}`;
-                line = line.replace(repoValue, newValue);
-              }
-              // Handle simple image names without / (e.g., "postgres", "nginx")
-              else if (!repoValue.includes('/') && !repoValue.includes('.')) {
+              // Check if it's an implicit Docker Hub image
+              if (isImplicitDockerHubImage(repoValue)) {
                 const newValue = `${HARBOR_PROXY}/docker.io/${repoValue}`;
                 line = line.replace(repoValue, newValue);
               }
@@ -359,14 +393,8 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
 
           // If not processed and not already harbored, handle implicit Docker Hub images
           if (!processed && !imageValue.includes(HARBOR_PROXY)) {
-            // Check if it's an implicit Docker Hub image (contains / but no explicit registry)
-            if (imageValue.includes('/') && !imageValue.includes('.')) {
-              // This is likely an implicit Docker Hub image (e.g., "graphprotocol/graph-node", "bitnami/postgresql")
-              const newValue = `${HARBOR_PROXY}/docker.io/${imageValue}`;
-              line = line.replace(imageValue, newValue);
-            }
-            // Handle simple image names without / (e.g., "postgres", "nginx")
-            else if (!imageValue.includes('/') && !imageValue.includes('.')) {
+            // Check if it's an implicit Docker Hub image
+            if (isImplicitDockerHubImage(imageValue)) {
               const newValue = `${HARBOR_PROXY}/docker.io/${imageValue}`;
               line = line.replace(imageValue, newValue);
             }
