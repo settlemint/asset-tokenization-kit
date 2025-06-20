@@ -13,7 +13,7 @@
       "inputs": ["**/*.sol"]
     },
     "compile:hardhat": {
-      "outputs": ["artifacts/**", "cache/**"],
+      "outputs": [".generated/artifacts/**", ".generated/cache/**"],
       "inputs": ["**/*.sol"]
     },
     "compile:typescript": {
@@ -32,7 +32,10 @@
       "dependsOn": ["artifacts:genesis", "artifacts:abi"]
     },
     "artifacts:genesis": {
-      "outputs": [".generated/genesis.json", ".generated/genesis-allocations.json"],
+      "outputs": [
+        ".generated/genesis.json",
+        ".generated/genesis-allocations.json"
+      ],
       "inputs": ["contracts/**"]
     },
     "artifacts:abi": {
