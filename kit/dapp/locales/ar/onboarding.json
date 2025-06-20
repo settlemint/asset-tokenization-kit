@@ -9,5 +9,37 @@
     "success": "تم نشر نظام SMART الخاص بك!",
     "error": "فشل في نشر نظام SMART الخاص بك",
     "timeout": "انتهت مهلة تتبع المعاملة"
+  },
+  "create-system-messages": {
+    "initial-loading": "جارٍ التحضير لنشر نظام SMART الخاص بك...",
+    "no-result-error": "اكتمل نشر النظام ولكن لم يتم إرجاع عنوان",
+    "default-error": "فشل نشر نظام SMART الخاص بك",
+    "system-created": "تم إنشاء نظام SMART بنجاح",
+    "creating-system": "جارٍ إنشاء نظام جديد...",
+    "system-creation-failed": "فشل في إنشاء النظام. يرجى المحاولة مرة أخرى.",
+    "transaction-tracking": {
+      "stream-timeout": "انتهت مهلة تتبع نشر النظام بعد 90 ثانية",
+      "waiting-for-mining": "جارٍ نشر نظام SMART الخاص بك على السلسلة...",
+      "transaction-failed": "فشل معاملة نشر النظام",
+      "transaction-dropped": "لم يتم تأكيد معاملة نشر النظام على السلسلة في الوقت المحدد",
+      "waiting-for-indexing": "في انتظار فهرسة النظام...",
+      "transaction-indexed": "تم فهرسة النظام بنجاح وجاهز للاستخدام",
+      "indexing-timeout": "انتهت مهلة فهرسة النظام، يرجى تحديث الصفحة"
+    }
+  },
+  "wallet-generated": "تم إنشاء المحفظة بنجاح",
+  "wallet-already-exists": "توجد محفظة بالفعل لهذا المستخدم",
+  "wallet-creation-failed": "فشل في إنشاء المحفظة. يرجى المحاولة مرة أخرى.",
+  "assets": {
+    "bond": "السندات",
+    "equity": "الأسهم",
+    "fund": "الصناديق",
+    "stablecoin": "العملات المستقرة",
+    "deposit": "الودائع"
+  },
+  "asset-selection": {
+    "title": "أنواع الأصول",
+    "description": "اختر أنواع الأصول التي تريد دعمها على منصتك",
+    "continue": "متابعة"
   }
 }

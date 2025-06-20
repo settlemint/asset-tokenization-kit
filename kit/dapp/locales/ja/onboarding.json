@@ -9,5 +9,37 @@
     "success": "あなたのSMARTシステムが展開されました！",
     "error": "あなたのSMARTシステムの展開に失敗しました",
     "timeout": "取引追跡のタイムアウト"
+  },
+  "create-system-messages": {
+    "initial-loading": "SMARTシステムのデプロイを準備中...",
+    "no-result-error": "システムのデプロイが完了しましたが、アドレスが返されませんでした",
+    "default-error": "SMARTシステムのデプロイに失敗しました",
+    "system-created": "SMARTシステムが正常に作成されました",
+    "creating-system": "新しいシステムを作成中...",
+    "system-creation-failed": "システムの作成に失敗しました。もう一度お試しください。",
+    "transaction-tracking": {
+      "stream-timeout": "システムデプロイの追跡が90秒後にタイムアウトしました",
+      "waiting-for-mining": "チェーン上でSMARTシステムをデプロイ中...",
+      "transaction-failed": "システムデプロイのトランザクションが失敗しました",
+      "transaction-dropped": "システムデプロイのトランザクションが時間内にオンチェーンで確認されませんでした",
+      "waiting-for-indexing": "システムがインデックスされるのを待っています...",
+      "transaction-indexed": "システムが正常にインデックスされ、使用準備が整いました",
+      "indexing-timeout": "システムのインデックス作成がタイムアウトしました。ページを更新してください"
+    }
+  },
+  "wallet-generated": "ウォレットが正常に生成されました",
+  "wallet-already-exists": "このユーザーのウォレットは既に存在します",
+  "wallet-creation-failed": "ウォレットの作成に失敗しました。もう一度お試しください。",
+  "assets": {
+    "bond": "債券",
+    "equity": "株式",
+    "fund": "ファンド",
+    "stablecoin": "ステーブルコイン",
+    "deposit": "預金"
+  },
+  "asset-selection": {
+    "title": "資産タイプ",
+    "description": "プラットフォームでサポートしたい資産タイプを選択してください",
+    "continue": "続ける"
   }
 }

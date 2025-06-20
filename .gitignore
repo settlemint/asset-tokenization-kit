@@ -54,3 +54,19 @@ kit/charts/atk/charts/besu-network/charts/besu-genesis/files/genesis-output.json
 
 # Worktrees
 .worktrees
+
+# Generated files
+**/.generated/
+.generated/
+kit/dapp/blockscout-cache.d.ts
+kit/dapp/blockscout-env.d.ts
+kit/dapp/blockscout-schema.graphql
+kit/dapp/hasura-cache.d.ts
+kit/dapp/hasura-env.d.ts
+kit/dapp/hasura-schema.graphql
+kit/dapp/portal-cache.d.ts
+kit/dapp/portal-env.d.ts
+kit/dapp/portal-schema.graphql
+kit/dapp/the-graph-cache-kit.d.ts
+kit/dapp/the-graph-env-kit.d.ts
+kit/dapp/the-graph-schema-kit.graphql

@@ -16,12 +16,14 @@ import { IATKAirdrop } from "../IATKAirdrop.sol";
 ///      2. `claim` or `batchClaim`: User claims the vested portion of their tokens at any time after initialization.
 interface IATKVestingAirdrop is IATKAirdrop {
     /// @notice Initializes the vesting airdrop contract with specified parameters.
+    /// @param name_ The human-readable name for this airdrop.
     /// @param token_ The address of the ERC20 token to be distributed.
     /// @param root_ The Merkle root for verifying claims.
     /// @param owner_ The initial owner of the contract.
     /// @param vestingStrategy_ The address of the vesting strategy contract for vesting calculations.
     /// @param initializationDeadline_ The timestamp after which no new vesting can be initialized.
     function initialize(
+        string memory name_,
         address token_,
         bytes32 root_,
         address owner_,

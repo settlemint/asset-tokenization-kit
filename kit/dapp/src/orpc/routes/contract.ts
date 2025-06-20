@@ -1,9 +1,8 @@
+import { accountContract } from "@/orpc/routes/account/account.contract";
 import { settingsContract } from "@/orpc/routes/settings/settings.contract";
+import { systemContract } from "@/orpc/routes/system/system.contract";
 import { tokenContract } from "@/orpc/routes/token/token.contract";
 import { userContract } from "@/orpc/routes/user/user.contract";
-import { accountContract } from "./account/account.contract";
-import { systemContract } from "./system/system.contract";
-import { transactionContract } from "./transaction/transaction.contract";
 
 /**
  * Main ORPC contract definition.
@@ -68,16 +67,6 @@ export const contract = {
    * @see {@link ./token/token.router} - Corresponding router implementation
    */
   token: tokenContract,
-
-  /**
-   * Transaction-related API contract.
-   *
-   * Contains type definitions for transaction-related procedures.
-   *
-   * @see {@link ./transaction/transaction.contract} - Transaction contract implementation
-   * @see {@link ./transaction/transaction.router} - Corresponding router implementation
-   */
-  transaction: transactionContract,
 
   /**
    * User-related API contract.

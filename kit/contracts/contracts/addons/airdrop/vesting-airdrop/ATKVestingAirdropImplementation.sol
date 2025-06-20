@@ -78,12 +78,14 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
     /// @notice Initializes the vesting airdrop contract with specified parameters.
     /// @dev Sets up the base airdrop functionality and vesting-specific parameters.
     ///      Deploys its own claim tracker for secure claim management.
+    /// @param name_ The human-readable name for this airdrop.
     /// @param token_ The address of the ERC20 token to be distributed.
     /// @param root_ The Merkle root for verifying claims.
     /// @param owner_ The initial owner of the contract.
     /// @param vestingStrategy_ The address of the vesting strategy contract for vesting calculations.
     /// @param initializationDeadline_ The timestamp after which no new vesting can be initialized.
     function initialize(
+        string memory name_,
         address token_,
         bytes32 root_,
         address owner_,
@@ -107,7 +109,7 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
         address claimTracker_ = address(new ATKAmountClaimTracker(address(this)));
 
         // Initialize base airdrop contract
-        __ATKAirdrop_init(token_, root_, owner_, claimTracker_);
+        __ATKAirdrop_init(name_, token_, root_, owner_, claimTracker_);
         __ReentrancyGuard_init();
 
         // Set vesting-specific state

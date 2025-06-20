@@ -42,6 +42,7 @@ const logger = createLogger({
 // File paths
 const CONTRACTS_ROOT = await getKitProjectPath("contracts");
 const FORGE_OUT_DIR = `${CONTRACTS_ROOT}/.generated/out-genesis`;
+const FORGE_CACHE_DIR = `${CONTRACTS_ROOT}/.generated/cache-genesis`;
 const OUTPUT_DIR = `${CONTRACTS_ROOT}/.generated`;
 const ALL_ALLOCATIONS_FILE = `${OUTPUT_DIR}/genesis-allocations.json`;
 const ROOT_DIR = (await findTurboRoot())?.monorepoRoot;
@@ -463,10 +464,10 @@ class ContractDeployer {
     logger.debug(`Validating bytecode for ${contractName}...`);
 
     const result = isDebugEnabled()
-      ? await $`forge inspect ${solFile}:${contractName} bytecode --out ${FORGE_OUT_DIR}`.cwd(
+      ? await $`forge inspect ${solFile}:${contractName} bytecode --out ${FORGE_OUT_DIR} --cache-path ${FORGE_CACHE_DIR}`.cwd(
           CONTRACTS_ROOT
         )
-      : await $`forge inspect ${solFile}:${contractName} bytecode --out ${FORGE_OUT_DIR}`
+      : await $`forge inspect ${solFile}:${contractName} bytecode --out ${FORGE_OUT_DIR} --cache-path ${FORGE_CACHE_DIR}`
           .cwd(CONTRACTS_ROOT)
           .quiet();
 
@@ -533,18 +534,18 @@ class ContractDeployer {
     let result;
     if (args.length > 0) {
       result = isDebugEnabled()
-        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --constructor-args ${args}`.cwd(
+        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --cache-path ${FORGE_CACHE_DIR} --constructor-args ${args}`.cwd(
             CONTRACTS_ROOT
           )
-        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --constructor-args ${args}`
+        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --cache-path ${FORGE_CACHE_DIR} --constructor-args ${args}`
             .cwd(CONTRACTS_ROOT)
             .quiet();
     } else {
       result = isDebugEnabled()
-        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR}`.cwd(
+        ? await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --cache-path ${FORGE_CACHE_DIR}`.cwd(
             CONTRACTS_ROOT
           )
-        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR}`
+        : await $`forge create ${solFile}:${contractName} --broadcast --unlocked --from 0x976EA74026E726554dB657fA54763abd0C3a0aa9 --json --rpc-url http://localhost:${this.config.anvilPort} --optimize --optimizer-runs 200 --out ${FORGE_OUT_DIR} --cache-path ${FORGE_CACHE_DIR}`
             .cwd(CONTRACTS_ROOT)
             .quiet();
     }
@@ -605,10 +606,10 @@ class ContractDeployer {
 
     // Get storage layout from contract
     const layoutResult = isDebugEnabled()
-      ? await $`forge inspect ${solFile}:${contractName} storageLayout --force --json --out ${FORGE_OUT_DIR}`.cwd(
+      ? await $`forge inspect ${solFile}:${contractName} storageLayout --force --json --out ${FORGE_OUT_DIR} --cache-path ${FORGE_CACHE_DIR}`.cwd(
           CONTRACTS_ROOT
         )
-      : await $`forge inspect ${solFile}:${contractName} storageLayout --force --json --out ${FORGE_OUT_DIR}`
+      : await $`forge inspect ${solFile}:${contractName} storageLayout --force --json --out ${FORGE_OUT_DIR} --cache-path ${FORGE_CACHE_DIR}`
           .cwd(CONTRACTS_ROOT)
           .quiet();
 
