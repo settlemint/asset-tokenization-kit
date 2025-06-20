@@ -171,6 +171,18 @@ export function handleSystemAddonCreated(event: SystemAddonCreated): void {
   ) {
     VaultFactoryTemplate.create(event.params.proxyAddress);
   }
+  if (
+    event.params.typeId ==
+    crypto.keccak256(ByteArray.fromUTF8("ATKVestingAirdropFactory"))
+  ) {
+    VestingAirdropFactoryTemplate.create(event.params.proxyAddress);
+  }
+  if (
+    event.params.typeId ==
+    crypto.keccak256(ByteArray.fromUTF8("ATKPushAirdropFactory"))
+  ) {
+    PushAirdropFactoryTemplate.create(event.params.proxyAddress);
+  }
   systemAddon.system = fetchSystem(event.address).id;
   systemAddon.save();
 }

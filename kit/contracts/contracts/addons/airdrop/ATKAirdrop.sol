@@ -82,26 +82,6 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
     /// @dev Set once at initialization and immutable thereafter. Handles claim tracking logic.
     IATKClaimTracker internal _claimTracker;
 
-    // --- Events ---
-
-    /// @notice Emitted when a user successfully claims their airdrop allocation.
-    /// @param claimant The address that claimed the tokens.
-    /// @param amount The amount of tokens claimed.
-    /// @param index The index of the claim in the Merkle tree.
-    event Claimed(address indexed claimant, uint256 amount, uint256 index);
-
-    /// @notice Emitted when the contract owner withdraws unclaimed tokens.
-    /// @param to The address receiving the withdrawn tokens.
-    /// @param amount The amount of tokens withdrawn.
-    event TokensWithdrawn(address indexed to, uint256 amount);
-
-    /// @notice Emitted when a user claims multiple allocations in a single transaction.
-    /// @param claimant The address that claimed the tokens.
-    /// @param totalAmount The total amount of tokens claimed in the batch.
-    /// @param indices The indices of the claims in the Merkle tree.
-    /// @param amounts The amounts claimed for each index.
-    event BatchClaimed(address indexed claimant, uint256 totalAmount, uint256[] indices, uint256[] amounts);
-
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
@@ -286,7 +266,7 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
 
         // Transfer tokens
         _token.safeTransfer(account, claimAmount);
-        emit Claimed(account, claimAmount, index);
+        emit AirdropTokensTransferred(account, index, claimAmount);
     }
 
     /// @dev Internal function to process a batch claim.
@@ -315,7 +295,7 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
         }
 
         totalTransferred = 0;
-        uint256[] memory transferredAmounts = new uint256[](indices.length);
+        address[] memory recipients = new address[](indices.length);
 
         for (uint256 i = 0; i < indices.length; i++) {
             uint256 index = indices[i];
@@ -342,12 +322,12 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
             _claimTracker.recordClaim(index, claimAmount, totalAmount);
 
             totalTransferred += claimAmount;
-            transferredAmounts[i] = claimAmount;
+            recipients[i] = account;
         }
 
         if (totalTransferred > 0) {
             _token.safeTransfer(account, totalTransferred);
-            emit BatchClaimed(account, totalTransferred, indices, transferredAmounts);
+            emit AirdropBatchTokensTransferred(recipients, indices, claimAmounts);
         }
 
         return totalTransferred;
