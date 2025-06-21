@@ -5,10 +5,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
 import { supportedLanguages } from "@/lib/i18n";
 import { Check, Languages } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 // Language display names mapping
@@ -32,16 +31,6 @@ interface LanguageSwitcherProps {
 }
 
 /**
- * Mapping of button sizes to skeleton sizes.
- */
-const skeletonSizes: Record<string, string> = {
-  icon: "h-10 w-10",
-  default: "h-10 w-16",
-  sm: "size-9",
-  lg: "h-11 w-20",
-};
-
-/**
  * A component that allows users to switch between different languages.
  * @param props - The component props.
  * @returns A dropdown menu for language selection.
@@ -52,7 +41,6 @@ export function LanguageSwitcher({
   className,
 }: LanguageSwitcherProps = {}) {
   const { i18n, t } = useTranslation("language");
-  const [mounted, setMounted] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
   /**
@@ -70,19 +58,6 @@ export function LanguageSwitcher({
     },
     [i18n]
   );
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    const skeletonSize = skeletonSizes[size ?? "icon"] ?? skeletonSizes.icon;
-    return (
-      <Skeleton
-        className={`${skeletonSize} rounded-md${className ? ` ${className}` : ""}`}
-      />
-    );
-  }
 
   return (
     <DropdownMenu>
