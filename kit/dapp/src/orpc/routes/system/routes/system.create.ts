@@ -224,6 +224,7 @@ export const create = onboardedRouter.system.create
     }
 
     // Track bootstrap transaction
+    let bootstrapSucceeded = false;
     for await (const event of trackTransaction(
       bootstrapTransactionHash,
       context.portalClient,
@@ -233,33 +234,47 @@ export const create = onboardedRouter.system.create
         waitingForMining: messages.bootstrappingSystem,
       }
     )) {
-      // Only yield pending and failed events for bootstrap
-      if (event.status === "pending" || event.status === "failed") {
-        yield withEventMeta(
-          {
-            status: event.status,
-            message: event.message,
-            result: undefined,
-          },
-          { id: `${bootstrapTransactionHash}-bootstrap`, retry: 1000 }
-        );
+      // Yield all bootstrap events
+      yield withEventMeta(
+        {
+          status: event.status,
+          message: event.message,
+          result: undefined,
+        },
+        { id: `${bootstrapTransactionHash}-bootstrap`, retry: 1000 }
+      );
 
-        // If bootstrap failed, stop processing
-        if (event.status === "failed") {
-          return;
-        }
+      // Track bootstrap success/failure
+      if (event.status === "confirmed") {
+        bootstrapSucceeded = true;
+      } else if (event.status === "failed") {
+        bootstrapSucceeded = false;
+        // Don't return early - we still need to report the system ID
+        break;
       }
     }
 
-    // Yield the final confirmed event with the system ID
-    yield withEventMeta(
-      {
-        status: "confirmed",
-        message: messages.systemCreated,
-        result: system.id,
-      },
-      { id: transactionHash, retry: 1000 }
-    );
+    // Always yield the final event with the system ID
+    // If bootstrap failed, we still return the system ID but with failed status
+    if (!bootstrapSucceeded) {
+      yield withEventMeta(
+        {
+          status: "failed",
+          message: `${messages.systemCreatedBootstrapFailed} System address: ${system.id}`,
+          result: system.id,
+        },
+        { id: transactionHash, retry: 1000 }
+      );
+    } else {
+      yield withEventMeta(
+        {
+          status: "confirmed",
+          message: messages.systemCreated,
+          result: system.id,
+        },
+        { id: transactionHash, retry: 1000 }
+      );
+    }
 
     return;
   });
