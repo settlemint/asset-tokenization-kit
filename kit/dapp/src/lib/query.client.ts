@@ -108,11 +108,13 @@ interface QueryError extends Error {
  */
 const handleUnauthorizedError = (error: unknown) => {
   const queryError = error as QueryError;
-  if ((queryError.code === "UNAUTHORIZED" || queryError.status === 401) && (typeof window !== "undefined" &&
-        !window.location.pathname.startsWith("/auth/"))) {
-        window.location.href = "/auth/sign-in";
+  if (
+    (queryError.code === "UNAUTHORIZED" || queryError.status === 401) &&
+    typeof window !== "undefined" &&
+    !window.location.pathname.startsWith("/auth/")
+  ) {
+    window.location.href = "/auth/sign-in";
   }
-
 };
 
 /**

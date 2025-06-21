@@ -282,7 +282,7 @@ describe("safeParse", () => {
       // depending on the version and configuration
       const schema = z.promise(z.string());
       const promise = Promise.resolve("test");
-      
+
       // In some Zod versions, using promise schemas with safeParse throws
       // because they require async parsing methods
       expect(() => safeParse(schema, promise)).toThrow(
