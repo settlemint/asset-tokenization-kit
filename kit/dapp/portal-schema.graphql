@@ -1593,81 +1593,6 @@ type ATKComplianceModuleRegistryImplementationTransactionReceiptOutput {
   userOperationReceipts: [UserOperationReceipt!]
 }
 
-type ATKComplianceProxy {
-  id: ID
-}
-
-"""Returns the transaction hash"""
-type ATKComplianceProxyTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type ATKComplianceProxyTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
-}
-
 type ATKDepositFactoryImplementation {
   DEFAULT_ADMIN_ROLE: String
 
@@ -4436,81 +4361,6 @@ type ATKIdentityFactoryImplementationTransactionReceiptOutput {
   userOperationReceipts: [UserOperationReceipt!]
 }
 
-type ATKIdentityFactoryProxy {
-  id: ID
-}
-
-"""Returns the transaction hash"""
-type ATKIdentityFactoryProxyTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type ATKIdentityFactoryProxyTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
-}
-
 type ATKIdentityImplementation {
   ACTION_KEY_PURPOSE: String
   CLAIM_SIGNER_KEY_PURPOSE: String
@@ -5087,81 +4937,6 @@ input ATKIdentityRegistryImplementationUpdateIdentityInput {
   _userAddress: String!
 }
 
-type ATKIdentityRegistryProxy {
-  id: ID
-}
-
-"""Returns the transaction hash"""
-type ATKIdentityRegistryProxyTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type ATKIdentityRegistryProxyTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
-}
-
 type ATKIdentityRegistryStorageImplementation {
   DEFAULT_ADMIN_ROLE: String
 
@@ -5404,81 +5179,6 @@ input ATKIdentityRegistryStorageImplementationUnbindIdentityRegistryInput {
   The address of the `SMARTIdentityRegistry` contract to unbind. This registry will no longer be able to modify storage data.
   """
   _identityRegistry: String!
-}
-
-type ATKIdentityRegistryStorageProxy {
-  id: ID
-}
-
-"""Returns the transaction hash"""
-type ATKIdentityRegistryStorageProxyTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type ATKIdentityRegistryStorageProxyTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
 }
 
 type ATKLinearVestingStrategy {
@@ -6830,81 +6530,6 @@ type ATKStableCoinProxyTransactionReceiptOutput {
   userOperationReceipts: [UserOperationReceipt!]
 }
 
-type ATKSystemAddonProxy {
-  id: ID
-}
-
-"""Returns the transaction hash"""
-type ATKSystemAddonProxyTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type ATKSystemAddonProxyTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
-}
-
 type ATKSystemAddonRegistryImplementation {
   DEFAULT_ADMIN_ROLE: String
   addon(addonTypeHash: String!): String
@@ -7528,81 +7153,6 @@ type ATKSystemImplementationTransactionReceiptOutput {
 input ATKSystemImplementationUpgradeToAndCallInput {
   data: String!
   newImplementation: String!
-}
-
-type ATKSystemProxy {
-  id: ID
-}
-
-"""Returns the transaction hash"""
-type ATKSystemProxyTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type ATKSystemProxyTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
 }
 
 type ATKSystemRoles {
@@ -8415,81 +7965,6 @@ type ATKTokenAccessManagerProxyTransactionReceiptOutput {
   userOperationReceipts: [UserOperationReceipt!]
 }
 
-type ATKTokenFactoryProxy {
-  id: ID
-}
-
-"""Returns the transaction hash"""
-type ATKTokenFactoryProxyTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type ATKTokenFactoryProxyTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
-}
-
 type ATKTokenFactoryRegistryImplementation {
   DEFAULT_ADMIN_ROLE: String
 
@@ -9101,81 +8576,6 @@ input ATKTopicSchemeRegistryImplementationUpdateTopicSchemeInput {
   newSignature: String!
 }
 
-type ATKTopicSchemeRegistryProxy {
-  id: ID
-}
-
-"""Returns the transaction hash"""
-type ATKTopicSchemeRegistryProxyTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type ATKTopicSchemeRegistryProxyTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
-}
-
 type ATKTopics {
   TOPIC_AML: String
   TOPIC_ASSET_CLASSIFICATION: String
@@ -9440,81 +8840,6 @@ input ATKTrustedIssuersRegistryImplementationUpdateIssuerClaimTopicsInput {
   The `IClaimIssuer` compliant contract address of the issuer whose claim topics are to be updated.
   """
   _trustedIssuer: String!
-}
-
-type ATKTrustedIssuersRegistryProxy {
-  id: ID
-}
-
-"""Returns the transaction hash"""
-type ATKTrustedIssuersRegistryProxyTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type ATKTrustedIssuersRegistryProxyTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
 }
 
 type ATKTypedImplementationProxy {
@@ -9830,81 +9155,6 @@ type ATKVaultFactoryImplementationTransactionOutput {
 
 """Returns the transaction receipt"""
 type ATKVaultFactoryImplementationTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
-}
-
-type ATKVaultFactoryProxy {
-  id: ID
-}
-
-"""Returns the transaction hash"""
-type ATKVaultFactoryProxyTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type ATKVaultFactoryProxyTransactionReceiptOutput {
   """Blob Gas Price"""
   blobGasPrice: String
 
@@ -12902,16 +12152,6 @@ input DeployContractATKComplianceModuleRegistryImplementationInput {
   trustedForwarder: String!
 }
 
-input DeployContractATKComplianceProxyInput {
-  """The addresses of the initial admins."""
-  initialAdmins: [String!]!
-
-  """
-  The address of the `IATKSystem` contract. This system contract is responsible for providing the address of the actual compliance logic (implementation) contract.
-  """
-  systemAddress: String!
-}
-
 input DeployContractATKDepositFactoryImplementationInput {
   """The address of the trusted forwarder for meta-transactions."""
   forwarder: String!
@@ -13075,14 +12315,6 @@ input DeployContractATKIdentityFactoryImplementationInput {
   trustedForwarder: String!
 }
 
-input DeployContractATKIdentityFactoryProxyInput {
-  """The address that will be granted initial administrative privileges."""
-  initialAdmin: String!
-
-  """The address of the `IATKSystem` contract."""
-  systemAddress: String!
-}
-
 input DeployContractATKIdentityImplementationInput {
   forwarder: String!
 }
@@ -13102,36 +12334,11 @@ input DeployContractATKIdentityRegistryImplementationInput {
   trustedForwarder: String!
 }
 
-input DeployContractATKIdentityRegistryProxyInput {
-  """The address of the `ISMARTIdentityRegistryStorage` contract."""
-  identityStorage: String!
-
-  """The address that will be granted initial administrative roles."""
-  initialAdmin: String!
-
-  """The address of the `IATKSystem` contract."""
-  systemAddress: String!
-
-  """The address of the `ISMARTTopicSchemeRegistry` contract."""
-  topicSchemeRegistry: String!
-
-  """The address of the `IERC3643TrustedIssuersRegistry` contract."""
-  trustedIssuersRegistry: String!
-}
-
 input DeployContractATKIdentityRegistryStorageImplementationInput {
   """
   The address of the trusted forwarder contract for ERC2771 meta-transactions. If this is `address(0)`, meta-transactions via a forwarder are effectively disabled for this context, and `_msgSender()` will behave like the standard `msg.sender`.
   """
   trustedForwarder: String!
-}
-
-input DeployContractATKIdentityRegistryStorageProxyInput {
-  """The address that will be granted the `DEFAULT_ADMIN_ROLE`."""
-  initialAdmin: String!
-
-  """The address of the `IATKSystem` contract."""
-  systemAddress: String!
 }
 
 input DeployContractATKLinearVestingStrategyInput {
@@ -13213,19 +12420,6 @@ input DeployContractATKStableCoinProxyInput {
 
   """The address of the token factory contract."""
   tokenFactoryAddress: String!
-}
-
-input DeployContractATKSystemAddonProxyInput {
-  """The hash of the addon type."""
-  addonTypeHash: String!
-
-  """
-  The encoded function call to initialize the proxy (e.g., abi.encodeWithSelector(...)).
-  """
-  initializeData: String!
-
-  """The address of the `IATKSystem` contract."""
-  systemAddress: String!
 }
 
 input DeployContractATKSystemAddonRegistryImplementationInput {
@@ -13348,25 +12542,6 @@ input DeployContractATKTokenAccessManagerProxyInput {
   systemAddress: String!
 }
 
-input DeployContractATKTokenFactoryProxyInput {
-  """The hash of the factory type."""
-  factoryTypeHash: String!
-
-  """The address of the identity verification module."""
-  identityVerificationModule: String!
-
-  """The address of the initial admin for the token factory."""
-  initialAdmin: String!
-
-  """
-  The address of the IATKSystem contract that provides the implementation.
-  """
-  systemAddress: String!
-
-  """The address of the token implementation contract."""
-  tokenImplementation: String!
-}
-
 input DeployContractATKTokenFactoryRegistryImplementationInput {
   trustedForwarder: String!
 }
@@ -13388,21 +12563,11 @@ input DeployContractATKTopicSchemeRegistryImplementationInput {
   trustedForwarder: String!
 }
 
-input DeployContractATKTopicSchemeRegistryProxyInput {
-  initialAdmin: String!
-  systemAddress: String!
-}
-
 input DeployContractATKTrustedIssuersRegistryImplementationInput {
   """
   The address of the trusted forwarder contract for ERC2771 meta-transactions. If `address(0)`, meta-transactions via a forwarder are effectively disabled.
   """
   trustedForwarder: String!
-}
-
-input DeployContractATKTrustedIssuersRegistryProxyInput {
-  initialAdmin: String!
-  systemAddress: String!
 }
 
 input DeployContractATKTypedImplementationProxyInput {
@@ -13418,19 +12583,6 @@ input DeployContractATKTypedImplementationProxyInput {
 
 input DeployContractATKVaultFactoryImplementationInput {
   forwarder: String!
-}
-
-input DeployContractATKVaultFactoryProxyInput {
-  """
-  Address of the trusted forwarder for meta-transactions (passed to implementation constructor)
-  """
-  forwarder_: String!
-
-  """Address that will have admin role"""
-  initialAdmin_: String!
-
-  """Address of the ATK System contract"""
-  systemAddress: String!
 }
 
 input DeployContractATKVaultInput {
@@ -14764,107 +13916,6 @@ input IATKComplianceAddMultipleToBypassListInput {
 input IATKComplianceAddToBypassListInput {
   """The address to add to the bypass list."""
   account: String!
-}
-
-type IATKComplianceBypassList {
-  id: ID
-
-  """
-  Checks if an address is on the bypass list.
-  True if the address is on the bypass list, false otherwise.
-  """
-  isBypassed(account: String!): Boolean
-}
-
-input IATKComplianceBypassListAddMultipleToBypassListInput {
-  """Array of addresses to add to the bypass list."""
-  accounts: [String!]!
-}
-
-input IATKComplianceBypassListAddToBypassListInput {
-  """The address to add to the bypass list."""
-  account: String!
-}
-
-input IATKComplianceBypassListRemoveFromBypassListInput {
-  """The address to remove from the bypass list."""
-  account: String!
-}
-
-input IATKComplianceBypassListRemoveMultipleFromBypassListInput {
-  """Array of addresses to remove from the bypass list."""
-  accounts: [String!]!
-}
-
-"""Returns the transaction hash"""
-type IATKComplianceBypassListTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type IATKComplianceBypassListTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
 }
 
 type IATKComplianceCanTransferOutput {
@@ -41465,32 +40516,6 @@ type Mutation {
     verificationId: String
   ): ContractDeploymentTransactionOutput
 
-  """Deploy a ATKComplianceProxy contract"""
-  DeployContractATKComplianceProxy(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-    constructorArguments: DeployContractATKComplianceProxyInput!
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
   """Deploy a ATKDepositFactoryImplementation contract"""
   DeployContractATKDepositFactoryImplementation(
     """
@@ -41828,32 +40853,6 @@ type Mutation {
     verificationId: String
   ): ContractDeploymentTransactionOutput
 
-  """Deploy a ATKIdentityFactoryProxy contract"""
-  DeployContractATKIdentityFactoryProxy(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-    constructorArguments: DeployContractATKIdentityFactoryProxyInput!
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
   """Deploy a ATKIdentityImplementation contract"""
   DeployContractATKIdentityImplementation(
     """
@@ -41932,32 +40931,6 @@ type Mutation {
     verificationId: String
   ): ContractDeploymentTransactionOutput
 
-  """Deploy a ATKIdentityRegistryProxy contract"""
-  DeployContractATKIdentityRegistryProxy(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-    constructorArguments: DeployContractATKIdentityRegistryProxyInput!
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
   """Deploy a ATKIdentityRegistryStorageImplementation contract"""
   DeployContractATKIdentityRegistryStorageImplementation(
     """
@@ -41965,32 +40938,6 @@ type Mutation {
     """
     challengeResponse: String
     constructorArguments: DeployContractATKIdentityRegistryStorageImplementationInput!
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
-  """Deploy a ATKIdentityRegistryStorageProxy contract"""
-  DeployContractATKIdentityRegistryStorageProxy(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-    constructorArguments: DeployContractATKIdentityRegistryStorageProxyInput!
 
     """The address of the sender"""
     from: String!
@@ -42217,32 +41164,6 @@ type Mutation {
     verificationId: String
   ): ContractDeploymentTransactionOutput
 
-  """Deploy a ATKSystemAddonProxy contract"""
-  DeployContractATKSystemAddonProxy(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-    constructorArguments: DeployContractATKSystemAddonProxyInput!
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
   """Deploy a ATKSystemAddonRegistryImplementation contract"""
   DeployContractATKSystemAddonRegistryImplementation(
     """
@@ -42302,31 +41223,6 @@ type Mutation {
     """
     challengeResponse: String
     constructorArguments: DeployContractATKSystemImplementationInput!
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
-  """Deploy a ATKSystemProxy contract"""
-  DeployContractATKSystemProxy(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
 
     """The address of the sender"""
     from: String!
@@ -42501,32 +41397,6 @@ type Mutation {
     verificationId: String
   ): ContractDeploymentTransactionOutput
 
-  """Deploy a ATKTokenFactoryProxy contract"""
-  DeployContractATKTokenFactoryProxy(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-    constructorArguments: DeployContractATKTokenFactoryProxyInput!
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
   """Deploy a ATKTokenFactoryRegistryImplementation contract"""
   DeployContractATKTokenFactoryRegistryImplementation(
     """
@@ -42631,32 +41501,6 @@ type Mutation {
     verificationId: String
   ): ContractDeploymentTransactionOutput
 
-  """Deploy a ATKTopicSchemeRegistryProxy contract"""
-  DeployContractATKTopicSchemeRegistryProxy(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-    constructorArguments: DeployContractATKTopicSchemeRegistryProxyInput!
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
   """Deploy a ATKTopics contract"""
   DeployContractATKTopics(
     """
@@ -42689,32 +41533,6 @@ type Mutation {
     """
     challengeResponse: String
     constructorArguments: DeployContractATKTrustedIssuersRegistryImplementationInput!
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
-  """Deploy a ATKTrustedIssuersRegistryProxy contract"""
-  DeployContractATKTrustedIssuersRegistryProxy(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-    constructorArguments: DeployContractATKTrustedIssuersRegistryProxyInput!
 
     """The address of the sender"""
     from: String!
@@ -42793,32 +41611,6 @@ type Mutation {
     """
     challengeResponse: String
     constructorArguments: DeployContractATKVaultFactoryImplementationInput!
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
-  """Deploy a ATKVaultFactoryProxy contract"""
-  DeployContractATKVaultFactoryProxy(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-    constructorArguments: DeployContractATKVaultFactoryProxyInput!
 
     """The address of the sender"""
     from: String!
@@ -43399,31 +42191,6 @@ type Mutation {
 
   """Deploy a IATKCompliance contract"""
   DeployContractIATKCompliance(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
-  """Deploy a IATKComplianceBypassList contract"""
-  DeployContractIATKComplianceBypassList(
     """
     Challenge response that is used to verify access to the private key of the from address
     """
@@ -47454,158 +46221,6 @@ type Mutation {
     """
     verificationId: String
   ): IATKComplianceTransactionOutput
-
-  """
-  Adds multiple addresses to the compliance bypass list in a single transaction.
-  Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function. This is a gas-efficient way to add multiple addresses to the bypass list at once.
-  """
-  IATKComplianceBypassListAddMultipleToBypassList(
-    """The address of the contract"""
-    address: String!
-
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-    input: IATKComplianceBypassListAddMultipleToBypassListInput!
-
-    """Metadata (store custom metadata from your application)"""
-    metadata: JSON
-
-    """Simulate the transaction before sending it"""
-    simulate: Boolean
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): IATKComplianceBypassListTransactionOutput
-
-  """
-  Adds an address to the compliance bypass list.
-  Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function. Addresses on the bypass list can bypass compliance checks in canTransfer function.
-  """
-  IATKComplianceBypassListAddToBypassList(
-    """The address of the contract"""
-    address: String!
-
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-    input: IATKComplianceBypassListAddToBypassListInput!
-
-    """Metadata (store custom metadata from your application)"""
-    metadata: JSON
-
-    """Simulate the transaction before sending it"""
-    simulate: Boolean
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): IATKComplianceBypassListTransactionOutput
-
-  """
-  Removes an address from the compliance bypass list.
-  Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
-  """
-  IATKComplianceBypassListRemoveFromBypassList(
-    """The address of the contract"""
-    address: String!
-
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-    input: IATKComplianceBypassListRemoveFromBypassListInput!
-
-    """Metadata (store custom metadata from your application)"""
-    metadata: JSON
-
-    """Simulate the transaction before sending it"""
-    simulate: Boolean
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): IATKComplianceBypassListTransactionOutput
-
-  """
-  Removes multiple addresses from the compliance bypass list in a single transaction.
-  Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
-  """
-  IATKComplianceBypassListRemoveMultipleFromBypassList(
-    """The address of the contract"""
-    address: String!
-
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-    input: IATKComplianceBypassListRemoveMultipleFromBypassListInput!
-
-    """Metadata (store custom metadata from your application)"""
-    metadata: JSON
-
-    """Simulate the transaction before sending it"""
-    simulate: Boolean
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): IATKComplianceBypassListTransactionOutput
 
   """
   Hook function called by the `ISMART` token contract *after* new tokens have been successfully minted.
@@ -76159,10 +74774,6 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): ATKComplianceModuleRegistryImplementationTransactionReceiptOutput
-  ATKComplianceProxy(
-    """The address of the contract"""
-    address: String!
-  ): ATKComplianceProxy
   ATKDepositFactoryImplementation(
     """The address of the contract"""
     address: String!
@@ -76941,10 +75552,6 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): ATKIdentityFactoryImplementationTransactionReceiptOutput
-  ATKIdentityFactoryProxy(
-    """The address of the contract"""
-    address: String!
-  ): ATKIdentityFactoryProxy
   ATKIdentityImplementation(
     """The address of the contract"""
     address: String!
@@ -77089,10 +75696,6 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): ATKIdentityRegistryImplementationTransactionReceiptOutput
-  ATKIdentityRegistryProxy(
-    """The address of the contract"""
-    address: String!
-  ): ATKIdentityRegistryProxy
   ATKIdentityRegistryStorageImplementation(
     """The address of the contract"""
     address: String!
@@ -77169,10 +75772,6 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): ATKIdentityRegistryStorageImplementationTransactionReceiptOutput
-  ATKIdentityRegistryStorageProxy(
-    """The address of the contract"""
-    address: String!
-  ): ATKIdentityRegistryStorageProxy
   ATKLinearVestingStrategy(
     """The address of the contract"""
     address: String!
@@ -77487,10 +76086,6 @@ type Query {
     """The address of the contract"""
     address: String!
   ): ATKStableCoinProxy
-  ATKSystemAddonProxy(
-    """The address of the contract"""
-    address: String!
-  ): ATKSystemAddonProxy
   ATKSystemAddonRegistryImplementation(
     """The address of the contract"""
     address: String!
@@ -77653,10 +76248,6 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): ATKSystemImplementationTransactionReceiptOutput
-  ATKSystemProxy(
-    """The address of the contract"""
-    address: String!
-  ): ATKSystemProxy
   ATKSystemRoles(
     """The address of the contract"""
     address: String!
@@ -77801,10 +76392,6 @@ type Query {
     """The address of the contract"""
     address: String!
   ): ATKTokenAccessManagerProxy
-  ATKTokenFactoryProxy(
-    """The address of the contract"""
-    address: String!
-  ): ATKTokenFactoryProxy
   ATKTokenFactoryRegistryImplementation(
     """The address of the contract"""
     address: String!
@@ -77947,10 +76534,6 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): ATKTopicSchemeRegistryImplementationTransactionReceiptOutput
-  ATKTopicSchemeRegistryProxy(
-    """The address of the contract"""
-    address: String!
-  ): ATKTopicSchemeRegistryProxy
   ATKTopics(
     """The address of the contract"""
     address: String!
@@ -78001,10 +76584,6 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): ATKTrustedIssuersRegistryImplementationTransactionReceiptOutput
-  ATKTrustedIssuersRegistryProxy(
-    """The address of the contract"""
-    address: String!
-  ): ATKTrustedIssuersRegistryProxy
   ATKTypedImplementationProxy(
     """The address of the contract"""
     address: String!
@@ -78077,10 +76656,6 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): ATKVaultFactoryImplementationTransactionReceiptOutput
-  ATKVaultFactoryProxy(
-    """The address of the contract"""
-    address: String!
-  ): ATKVaultFactoryProxy
 
   """Fetches the receipt for the given transaction hash"""
   ATKVaultGrantRoleReceipt(
@@ -78989,34 +77564,6 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): IATKComplianceTransactionReceiptOutput
-  IATKComplianceBypassList(
-    """The address of the contract"""
-    address: String!
-  ): IATKComplianceBypassList
-
-  """Fetches the receipt for the given transaction hash"""
-  IATKComplianceBypassListAddMultipleToBypassListReceipt(
-    """The transaction hash"""
-    transactionHash: String!
-  ): IATKComplianceBypassListTransactionReceiptOutput
-
-  """Fetches the receipt for the given transaction hash"""
-  IATKComplianceBypassListAddToBypassListReceipt(
-    """The transaction hash"""
-    transactionHash: String!
-  ): IATKComplianceBypassListTransactionReceiptOutput
-
-  """Fetches the receipt for the given transaction hash"""
-  IATKComplianceBypassListRemoveFromBypassListReceipt(
-    """The transaction hash"""
-    transactionHash: String!
-  ): IATKComplianceBypassListTransactionReceiptOutput
-
-  """Fetches the receipt for the given transaction hash"""
-  IATKComplianceBypassListRemoveMultipleFromBypassListReceipt(
-    """The transaction hash"""
-    transactionHash: String!
-  ): IATKComplianceBypassListTransactionReceiptOutput
 
   """Fetches the receipt for the given transaction hash"""
   IATKComplianceCreatedReceipt(
@@ -84041,18 +82588,6 @@ type Query {
     transactionHash: String
   ): ContractsPaginatedOutput
 
-  """Get all contracts for the ATKComplianceProxy ABI"""
-  getContractsAtkComplianceProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
   """Get all contracts for the ATKDepositFactoryImplementation ABI"""
   getContractsAtkDepositFactoryImplementation(
     """Page number, starts from 0"""
@@ -84211,18 +82746,6 @@ type Query {
     transactionHash: String
   ): ContractsPaginatedOutput
 
-  """Get all contracts for the ATKIdentityFactoryProxy ABI"""
-  getContractsAtkIdentityFactoryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
   """Get all contracts for the ATKIdentityImplementation ABI"""
   getContractsAtkIdentityImplementation(
     """Page number, starts from 0"""
@@ -84259,32 +82782,8 @@ type Query {
     transactionHash: String
   ): ContractsPaginatedOutput
 
-  """Get all contracts for the ATKIdentityRegistryProxy ABI"""
-  getContractsAtkIdentityRegistryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
   """Get all contracts for the ATKIdentityRegistryStorageImplementation ABI"""
   getContractsAtkIdentityRegistryStorageImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
-  """Get all contracts for the ATKIdentityRegistryStorageProxy ABI"""
-  getContractsAtkIdentityRegistryStorageProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -84391,18 +82890,6 @@ type Query {
     transactionHash: String
   ): ContractsPaginatedOutput
 
-  """Get all contracts for the ATKSystemAddonProxy ABI"""
-  getContractsAtkSystemAddonProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
   """Get all contracts for the ATKSystemAddonRegistryImplementation ABI"""
   getContractsAtkSystemAddonRegistryImplementation(
     """Page number, starts from 0"""
@@ -84429,18 +82916,6 @@ type Query {
 
   """Get all contracts for the ATKSystemImplementation ABI"""
   getContractsAtkSystemImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
-  """Get all contracts for the ATKSystemProxy ABI"""
-  getContractsAtkSystemProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -84523,18 +82998,6 @@ type Query {
     transactionHash: String
   ): ContractsPaginatedOutput
 
-  """Get all contracts for the ATKTokenFactoryProxy ABI"""
-  getContractsAtkTokenFactoryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
   """Get all contracts for the ATKTokenFactoryRegistryImplementation ABI"""
   getContractsAtkTokenFactoryRegistryImplementation(
     """Page number, starts from 0"""
@@ -84583,18 +83046,6 @@ type Query {
     transactionHash: String
   ): ContractsPaginatedOutput
 
-  """Get all contracts for the ATKTopicSchemeRegistryProxy ABI"""
-  getContractsAtkTopicSchemeRegistryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
   """Get all contracts for the ATKTopics ABI"""
   getContractsAtkTopics(
     """Page number, starts from 0"""
@@ -84609,18 +83060,6 @@ type Query {
 
   """Get all contracts for the ATKTrustedIssuersRegistryImplementation ABI"""
   getContractsAtkTrustedIssuersRegistryImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
-  """Get all contracts for the ATKTrustedIssuersRegistryProxy ABI"""
-  getContractsAtkTrustedIssuersRegistryProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -84657,18 +83096,6 @@ type Query {
 
   """Get all contracts for the ATKVaultFactoryImplementation ABI"""
   getContractsAtkVaultFactoryImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
-  """Get all contracts for the ATKVaultFactoryProxy ABI"""
-  getContractsAtkVaultFactoryProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -85027,20 +83454,6 @@ type Query {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the ATKComplianceProxy ABI
-  """
-  getContractsDeployStatusAtkComplianceProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
   Get all contracts with their deployment status for the ATKDepositFactoryImplementation ABI
   """
   getContractsDeployStatusAtkDepositFactoryImplementation(
@@ -85223,20 +83636,6 @@ type Query {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the ATKIdentityFactoryProxy ABI
-  """
-  getContractsDeployStatusAtkIdentityFactoryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
   Get all contracts with their deployment status for the ATKIdentityImplementation ABI
   """
   getContractsDeployStatusAtkIdentityImplementation(
@@ -85279,37 +83678,9 @@ type Query {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the ATKIdentityRegistryProxy ABI
-  """
-  getContractsDeployStatusAtkIdentityRegistryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
   Get all contracts with their deployment status for the ATKIdentityRegistryStorageImplementation ABI
   """
   getContractsDeployStatusAtkIdentityRegistryStorageImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
-  Get all contracts with their deployment status for the ATKIdentityRegistryStorageProxy ABI
-  """
-  getContractsDeployStatusAtkIdentityRegistryStorageProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -85431,20 +83802,6 @@ type Query {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the ATKSystemAddonProxy ABI
-  """
-  getContractsDeployStatusAtkSystemAddonProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
   Get all contracts with their deployment status for the ATKSystemAddonRegistryImplementation ABI
   """
   getContractsDeployStatusAtkSystemAddonRegistryImplementation(
@@ -85476,20 +83833,6 @@ type Query {
   Get all contracts with their deployment status for the ATKSystemImplementation ABI
   """
   getContractsDeployStatusAtkSystemImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
-  Get all contracts with their deployment status for the ATKSystemProxy ABI
-  """
-  getContractsDeployStatusAtkSystemProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -85585,20 +83928,6 @@ type Query {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the ATKTokenFactoryProxy ABI
-  """
-  getContractsDeployStatusAtkTokenFactoryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
   Get all contracts with their deployment status for the ATKTokenFactoryRegistryImplementation ABI
   """
   getContractsDeployStatusAtkTokenFactoryRegistryImplementation(
@@ -85654,20 +83983,6 @@ type Query {
     transactionHash: String
   ): ContractsDeployStatusPaginatedOutput
 
-  """
-  Get all contracts with their deployment status for the ATKTopicSchemeRegistryProxy ABI
-  """
-  getContractsDeployStatusAtkTopicSchemeRegistryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
   """Get all contracts with their deployment status for the ATKTopics ABI"""
   getContractsDeployStatusAtkTopics(
     """Page number, starts from 0"""
@@ -85684,20 +83999,6 @@ type Query {
   Get all contracts with their deployment status for the ATKTrustedIssuersRegistryImplementation ABI
   """
   getContractsDeployStatusAtkTrustedIssuersRegistryImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
-  Get all contracts with their deployment status for the ATKTrustedIssuersRegistryProxy ABI
-  """
-  getContractsDeployStatusAtkTrustedIssuersRegistryProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -85738,20 +84039,6 @@ type Query {
   Get all contracts with their deployment status for the ATKVaultFactoryImplementation ABI
   """
   getContractsDeployStatusAtkVaultFactoryImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
-  Get all contracts with their deployment status for the ATKVaultFactoryProxy ABI
-  """
-  getContractsDeployStatusAtkVaultFactoryProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -85968,20 +84255,6 @@ type Query {
   Get all contracts with their deployment status for the IATKCompliance ABI
   """
   getContractsDeployStatusIatkCompliance(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
-  Get all contracts with their deployment status for the IATKComplianceBypassList ABI
-  """
-  getContractsDeployStatusIatkComplianceBypassList(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -87302,18 +85575,6 @@ type Query {
 
   """Get all contracts for the IATKCompliance ABI"""
   getContractsIatkCompliance(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
-  """Get all contracts for the IATKComplianceBypassList ABI"""
-  getContractsIatkComplianceBypassList(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -96242,20 +94503,6 @@ type Subscription {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the ATKComplianceProxy ABI
-  """
-  getContractsDeployStatusAtkComplianceProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
   Get all contracts with their deployment status for the ATKDepositFactoryImplementation ABI
   """
   getContractsDeployStatusAtkDepositFactoryImplementation(
@@ -96438,20 +94685,6 @@ type Subscription {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the ATKIdentityFactoryProxy ABI
-  """
-  getContractsDeployStatusAtkIdentityFactoryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
   Get all contracts with their deployment status for the ATKIdentityImplementation ABI
   """
   getContractsDeployStatusAtkIdentityImplementation(
@@ -96494,37 +94727,9 @@ type Subscription {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the ATKIdentityRegistryProxy ABI
-  """
-  getContractsDeployStatusAtkIdentityRegistryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
   Get all contracts with their deployment status for the ATKIdentityRegistryStorageImplementation ABI
   """
   getContractsDeployStatusAtkIdentityRegistryStorageImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
-  Get all contracts with their deployment status for the ATKIdentityRegistryStorageProxy ABI
-  """
-  getContractsDeployStatusAtkIdentityRegistryStorageProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -96646,20 +94851,6 @@ type Subscription {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the ATKSystemAddonProxy ABI
-  """
-  getContractsDeployStatusAtkSystemAddonProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
   Get all contracts with their deployment status for the ATKSystemAddonRegistryImplementation ABI
   """
   getContractsDeployStatusAtkSystemAddonRegistryImplementation(
@@ -96691,20 +94882,6 @@ type Subscription {
   Get all contracts with their deployment status for the ATKSystemImplementation ABI
   """
   getContractsDeployStatusAtkSystemImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
-  Get all contracts with their deployment status for the ATKSystemProxy ABI
-  """
-  getContractsDeployStatusAtkSystemProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -96800,20 +94977,6 @@ type Subscription {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the ATKTokenFactoryProxy ABI
-  """
-  getContractsDeployStatusAtkTokenFactoryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
   Get all contracts with their deployment status for the ATKTokenFactoryRegistryImplementation ABI
   """
   getContractsDeployStatusAtkTokenFactoryRegistryImplementation(
@@ -96869,20 +95032,6 @@ type Subscription {
     transactionHash: String
   ): ContractsDeployStatusPaginatedOutput
 
-  """
-  Get all contracts with their deployment status for the ATKTopicSchemeRegistryProxy ABI
-  """
-  getContractsDeployStatusAtkTopicSchemeRegistryProxy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
   """Get all contracts with their deployment status for the ATKTopics ABI"""
   getContractsDeployStatusAtkTopics(
     """Page number, starts from 0"""
@@ -96899,20 +95048,6 @@ type Subscription {
   Get all contracts with their deployment status for the ATKTrustedIssuersRegistryImplementation ABI
   """
   getContractsDeployStatusAtkTrustedIssuersRegistryImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
-  Get all contracts with their deployment status for the ATKTrustedIssuersRegistryProxy ABI
-  """
-  getContractsDeployStatusAtkTrustedIssuersRegistryProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -96953,20 +95088,6 @@ type Subscription {
   Get all contracts with their deployment status for the ATKVaultFactoryImplementation ABI
   """
   getContractsDeployStatusAtkVaultFactoryImplementation(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
-  Get all contracts with their deployment status for the ATKVaultFactoryProxy ABI
-  """
-  getContractsDeployStatusAtkVaultFactoryProxy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -97183,20 +95304,6 @@ type Subscription {
   Get all contracts with their deployment status for the IATKCompliance ABI
   """
   getContractsDeployStatusIatkCompliance(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
-  Get all contracts with their deployment status for the IATKComplianceBypassList ABI
-  """
-  getContractsDeployStatusIatkComplianceBypassList(
     """Page number, starts from 0"""
     page: Int = 0
 
