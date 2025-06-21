@@ -194,6 +194,7 @@ export const FactoryCreateOutputSchema = z.object({
   message: z.string(),
   currentFactory: FactoryResultSchema.optional(),
   results: z.array(FactoryResultSchema).optional(),
+  result: z.array(FactoryResultSchema).optional(), // Added for useStreamingMutation hook compatibility
   progress: z
     .object({
       current: z.number(),

@@ -327,6 +327,7 @@ export const factoryCreate = onboardedRouter.tokens.factoryCreate
         status: "completed",
         message: completionMessage,
         results,
+        result: results, // Add result field for useStreamingMutation hook
         progress: { current: totalFactories, total: totalFactories },
       },
       { id: "factory-creation-complete", retry: 1000 }
