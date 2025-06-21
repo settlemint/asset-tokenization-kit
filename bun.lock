@@ -78,7 +78,7 @@
         "drizzle-orm": "0.44.2",
         "i18n-iso-countries": "7.14.0",
         "i18next": "25.2.1",
-        "lucide-react": "0.521.0",
+        "lucide-react": "0.522.0",
         "next-themes": "0.4.6",
         "postcss": "8.5.6",
         "react": "19.1.0",
@@ -2567,7 +2567,7 @@
 
     "lru_map": ["lru_map@0.3.3", "", {}, "sha512-Pn9cox5CsMYngeDbmChANltQl+5pi6XmTrraMSzhPmMBbmgcxmqWry0U3PGapCU1yB4/LqCcom7qhHZiF/jGfQ=="],
 
-    "lucide-react": ["lucide-react@0.521.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-+CqQ8lil0zuIov1k5jbmSoLmdur2DriygyxwZcv3pYhnZcbmOe08sAH2iIcHX/GB86Ve5Flk+v7Peqz9+N/FWw=="],
+    "lucide-react": ["lucide-react@0.522.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-jnJbw974yZ7rQHHEFKJOlWAefG3ATSCZHANZxIdx8Rk/16siuwjgA4fBULpXEAWx/RlTs3FzmKW/udWUuO0aRw=="],
 
     "luxon": ["luxon@3.6.1", "", {}, "sha512-tJLxrKJhO2ukZ5z0gyjY1zPh3Rh88Ej9P7jNrZiHMUXHae1yvI2imgOZtL1TO8TW6biMMKfTtAOoEJANgtWBMQ=="],
 
