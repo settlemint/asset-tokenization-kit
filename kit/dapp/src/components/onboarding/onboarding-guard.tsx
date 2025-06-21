@@ -1,16 +1,16 @@
+import {
+  type OnboardingType,
+  type PlatformOnboardingRequirements,
+  determineOnboardingType,
+  isInvestorOnboardingComplete,
+  isIssuerOnboardingComplete,
+  isPlatformOnboardingComplete,
+} from "@/lib/types/onboarding";
 import { useMounted } from "@/lib/utils/use-mounted";
 import { orpc } from "@/orpc";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { type PropsWithChildren, useEffect } from "react";
-import {
-  type OnboardingType,
-  type PlatformOnboardingRequirements,
-  determineOnboardingType,
-  isPlatformOnboardingComplete,
-  isIssuerOnboardingComplete,
-  isInvestorOnboardingComplete,
-} from "@/lib/types/onboarding";
 
 type OnboardingGuardProps = PropsWithChildren<{
   require: "onboarded" | "not-onboarded" | "platform-onboarded";
@@ -26,10 +26,10 @@ export function OnboardingGuard({
   const navigate = useNavigate();
 
   // Fetch user data
-  const { data: user, isError } = useQuery(orpc.user.me.queryOptions());
+  const { data: user, isLoading } = useQuery(orpc.user.me.queryOptions());
 
   // Check if user queries are still loading
-  const userLoading = !user && !isError;
+  const userLoading = isLoading;
 
   // Fetch system address from settings
   const { data: systemAddress } = useQuery({

@@ -5,10 +5,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -24,16 +23,6 @@ interface ThemeToggleProps {
 }
 
 /**
- * Mapping of button sizes to skeleton sizes.
- */
-const skeletonSizes = {
-  icon: "h-10 w-10",
-  default: "h-10 w-16",
-  sm: "size-94",
-  lg: "h-11 w-20",
-} as const;
-
-/**
  * A component that allows users to toggle between different theme options.
  * @param props - The component props.
  * @returns A dropdown menu for theme selection.
@@ -44,7 +33,6 @@ export function ThemeToggle({
   className,
 }: ThemeToggleProps) {
   const { setTheme, resolvedTheme, themes } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const { t } = useTranslation("theme");
 
   /**
@@ -57,15 +45,6 @@ export function ThemeToggle({
     },
     [setTheme]
   );
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    const skeletonSize = skeletonSizes[size ?? "default"];
-    return <Skeleton className={`${skeletonSize} rounded-md ${className}`} />;
-  }
 
   return (
     <DropdownMenu>
