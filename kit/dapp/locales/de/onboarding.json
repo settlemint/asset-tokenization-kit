@@ -1,78 +1,95 @@
 {
-  "card-description": "Sie benötigen eine Wallet und eine Identität auf der Blockchain, um diese Plattform zu nutzen. ",
+  "card-description": "Sie benötigen eine Wallet und eine Identität auf der Blockchain, um diese Plattform zu nutzen.",
   "card-title": "Lassen Sie uns alles einrichten!",
-  "messages": {
-    "pending": {
-      "mining": "Ihr SMART-System wird bereitgestellt...",
-      "indexing": "Das neue SMART-System wird indexiert..."
-    },
-    "success": "Ihr SMART-System ist bereitgestellt!",
-    "error": "Bereitstellung Ihres SMART-Systems fehlgeschlagen",
-    "timeout": "Zeitüberschreitung bei der Transaktionsverfolgung"
+  "platform": {
+    "title": "Plattform-Einrichtung",
+    "description": "Richten Sie Ihre digitale Asset-Plattform ein"
   },
-  "create-system-messages": {
-    "initial-loading": "Bereite die Bereitstellung deines SMART-Systems vor...",
-    "no-result-error": "Die Bereitstellung des Systems wurde abgeschlossen, aber es wurde keine Adresse zurückgegeben",
-    "default-error": "Die Bereitstellung deines SMART-Systems ist fehlgeschlagen",
-    "system-created": "SMART-System erfolgreich erstellt",
-    "creating-system": "Neues System wird erstellt...",
-    "system-creation-failed": "Die Erstellung des Systems ist fehlgeschlagen. Bitte versuche es erneut.",
-    "button": {
-      "deploy": "Neues SMART-System bereitstellen",
-      "deploying": "Bereitstellung läuft..."
+  "issuer": {
+    "title": "Emittenten-Einrichtung",
+    "description": "Richten Sie Ihr Konto ein, um digitale Assets auszugeben"
+  },
+  "investor": {
+    "title": "Investoren-Einrichtung",
+    "description": "Richten Sie Ihr Konto ein, um in digitale Assets zu investieren"
+  },
+  "steps": {
+    "wallet": {
+      "title": "Wallet erstellen",
+      "description": "Generieren Sie Ihre Blockchain-Wallet"
+    },
+    "system": {
+      "title": "System bereitstellen",
+      "description": "Initialisieren Sie die Kern-Smart-Contracts"
+    },
+    "assets": {
+      "title": "Assets auswählen",
+      "description": "Wählen Sie unterstützte Asset-Typen"
+    },
+    "identity": {
+      "title": "Identität verifizieren",
+      "description": "Schließen Sie die KYC-Verifizierung ab",
+      "info": "Die Identitätsverifizierung gewährleistet die Einhaltung von Vorschriften und ermöglicht Ihnen, in digitale Assets zu investieren.",
+      "coming-soon": "Demnächst verfügbar",
+      "coming-soon-description": "Die Identitätsverifizierung befindet sich derzeit in der Entwicklung. In der Zwischenzeit erstellen wir Ihre Wallet, damit Sie die Plattform erkunden können."
+    }
+  },
+  "wallet": {
+    "title": "Wallet generieren",
+    "description": "Erstellen Sie Ihre Blockchain-Wallet für Transaktionen",
+    "info": "Ihre Wallet ist Ihr Zugang zur Blockchain. Sie ermöglicht es Ihnen, digitale Assets sicher zu halten und Transaktionen auszuführen.",
+    "generate": "Wallet generieren",
+    "success": "Wallet erfolgreich erstellt!",
+    "generated": "Wallet erfolgreich erstellt",
+    "already-exists": "Wallet existiert bereits für diesen Benutzer",
+    "creation-failed": "Die Erstellung der Wallet ist fehlgeschlagen. Bitte versuchen Sie es erneut."
+  },
+  "system": {
+    "title": "SMART-System bereitstellen",
+    "description": "Initialisieren Sie die Kerninfrastruktur für Ihre Plattform",
+    "info": "Das SMART-System ist die Grundlage Ihrer digitalen Asset-Plattform. Es verwaltet alle Token-Operationen und gewährleistet die Compliance.",
+    "deploy": "System bereitstellen",
+    "deployed": "System erfolgreich bereitgestellt",
+    "success": "System erfolgreich bereitgestellt!",
+    "messages": {
+      "initial-loading": "Bereite die Bereitstellung Ihres SMART-Systems vor...",
+      "no-result-error": "Die Systembestellung wurde abgeschlossen, aber es wurde keine Adresse zurückgegeben",
+      "default-error": "Die Bereitstellung Ihres SMART-Systems ist fehlgeschlagen",
+      "created": "SMART-System erfolgreich erstellt",
+      "creating": "Neues System wird erstellt...",
+      "creation-failed": "Die Erstellung des Systems ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "pending": {
+        "mining": "Ihr SMART-System wird bereitgestellt...",
+        "indexing": "Das neue SMART-System wird indexiert..."
+      },
+      "error": "Bereitstellung Ihres SMART-Systems fehlgeschlagen",
+      "timeout": "Zeitüberschreitung bei der Transaktionsverfolgung"
     },
     "transaction-tracking": {
       "stream-timeout": "Die Verfolgung der Systembereitstellung hat nach 90 Sekunden abgelaufen",
-      "waiting-for-mining": "Bereitstellung deines SMART-Systems auf der Blockchain...",
+      "waiting-for-mining": "Bereitstellung Ihres SMART-Systems auf der Blockchain...",
       "transaction-failed": "Die Transaktion zur Bereitstellung des Systems ist fehlgeschlagen",
       "transaction-dropped": "Die Transaktion zur Bereitstellung des Systems wurde nicht rechtzeitig on-chain bestätigt",
       "waiting-for-indexing": "Warte darauf, dass das System indiziert wird...",
       "transaction-indexed": "System erfolgreich indiziert und bereit zur Nutzung",
-      "indexing-timeout": "Die Indizierung des Systems hat abgelaufen, bitte lade die Seite neu"
+      "indexing-timeout": "Die Indizierung des Systems hat abgelaufen, bitte laden Sie die Seite neu"
     }
   },
-  "wallet-generated": "Wallet erfolgreich erstellt",
-  "wallet-already-exists": "Wallet existiert bereits für diesen Benutzer",
-  "wallet-creation-failed": "Die Erstellung der Wallet ist fehlgeschlagen. Bitte versuche es erneut.",
   "assets": {
-    "bond": "Anleihen",
-    "equity": "Aktien",
-    "fund": "Fonds",
-    "stablecoin": "Stablecoins",
-    "deposit": "Einlagen"
-  },
-  "asset-selection": {
-    "title": "Asset-Typen",
-    "description": "Wählen Sie die Asset-Typen aus, die Sie auf Ihrer Plattform unterstützen möchten",
-    "continue": "Weiter"
-  },
-  "create-factory-messages": {
-    "initial-loading": "Bereite die Bereitstellung von Token-Fabriken vor...",
-    "no-result-error": "Die Bereitstellung der Fabrik wurde abgeschlossen, aber es wurde keine Adresse zurückgegeben",
-    "default-error": "Die Bereitstellung der Token-Fabrik ist fehlgeschlagen",
-    "factory-created": "Token-Fabrik erfolgreich erstellt",
-    "creating-factory": "Token-Fabrik wird erstellt...",
-    "factory-creation-failed": "Die Erstellung der Token-Fabrik ist fehlgeschlagen. Bitte versuche es erneut.",
-    "system-not-found": "Systemadresse nicht gefunden. Bitte stellen Sie sicher, dass zuerst ein System bereitgestellt wurde.",
-    "system-not-bootstrapped": "Das System muss zuerst initialisiert werden. Bitte warten Sie auf den Abschluss der Systeminitialisierung.",
-    "deploying-button": "Wird bereitgestellt...",
-    "button": {
-      "deploy": "Token-Fabriken bereitstellen",
-      "deploying": "Fabriken werden bereitgestellt..."
-    },
-    "transaction-tracking": {
-      "stream-timeout": "Die Verfolgung der Fabrik-Bereitstellung hat nach 90 Sekunden abgelaufen",
-      "waiting-for-mining": "Bereitstellung von Token-Fabriken auf der Blockchain...",
-      "transaction-failed": "Die Transaktion zur Bereitstellung der Fabrik ist fehlgeschlagen",
-      "transaction-dropped": "Die Transaktion zur Bereitstellung der Fabrik wurde nicht rechtzeitig on-chain bestätigt",
-      "waiting-for-indexing": "Warte darauf, dass die Fabriken indiziert werden...",
-      "transaction-indexed": "Fabriken erfolgreich indiziert und bereit zur Nutzung",
-      "indexing-timeout": "Die Indizierung der Fabriken hat abgelaufen, bitte lade die Seite neu"
-    },
-    "multiple-factories": {
-      "deploying": "Bereitstellung {{current}} von {{total}} Fabriken...",
-      "completed": "{{completed}} von {{total}} Fabriken bereitgestellt",
-      "all-completed": "Alle Token-Fabriken erfolgreich bereitgestellt"
+    "title": "Asset-Typen auswählen",
+    "description": "Wählen Sie, welche digitalen Asset-Typen auf Ihrer Plattform aktiviert werden sollen",
+    "info": "Wählen Sie die Typen digitaler Assets aus, die Ihre Plattform unterstützen wird. Sie können später weitere Asset-Typen hinzufügen.",
+    "select-label": "Verfügbare Asset-Typen",
+    "select-description": "Wählen Sie einen oder mehrere Asset-Typen aus, um deren Factory-Verträge bereitzustellen",
+    "deploy": "Ausgewählte Assets bereitstellen",
+    "deployed": "Asset-Fabriken erfolgreich bereitgestellt",
+    "no-system": "System nicht gefunden. Bitte stellen Sie zuerst das System bereit.",
+    "descriptions": {
+      "bond": "Tokenisierte Schuldverschreibungen mit Festzinsmerkmalen",
+      "equity": "Digitale Aktien, die Unternehmenseigentum repräsentieren",
+      "fund": "Investment-Fonds-Token für gepoolte Investitionen",
+      "stablecoin": "Preisstabile digitale Währungen",
+      "deposit": "Tokenisierte Bankeinlagen und Zertifikate"
     }
   }
 }
