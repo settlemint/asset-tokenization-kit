@@ -243,6 +243,33 @@ type IdentityClaimValue @entity(immutable: false) {
   value: String!
 }
 
+
+# ==================================================
+# Compliance
+# ==================================================
+
+type ComplianceModuleRegistry @entity(immutable: false) {
+  id: Bytes!
+  accessControl: AccessControl!
+  account: Account!
+  deployedInTransaction: Bytes!
+  complianceModules: [ComplianceModule!]! @derivedFrom(field: "complianceModuleRegistry")
+}
+
+type ComplianceModule @entity(immutable: false) {
+  id: Bytes!
+  accessControl: AccessControl!
+  name: String!
+  typeId: Bytes!
+  account: Account!
+  deployedInTransaction: Bytes!
+  complianceModuleRegistry: ComplianceModuleRegistry
+  tokens: [TokenComplianceModule!]! @derivedFrom(field: "complianceModule")
+  addresses: [Bytes!]
+  countries: [Int!]
+}
+
+
 # ==================================================
 # Compliance
 # ==================================================
@@ -795,3 +822,4 @@ type TokenDistributionStats
   totalValueSegment5Exact: BigInt!
     @aggregate(fn: "last", arg: "totalValueSegment5Exact")
 }
+
