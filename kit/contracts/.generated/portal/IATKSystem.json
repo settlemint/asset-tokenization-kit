@@ -2,44 +2,6 @@
   "abi": [
     {
       "type": "function",
-      "name": "addonImplementation",
-      "inputs": [
-        {
-          "name": "addonTypeHash",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "addonProxy",
-      "inputs": [
-        {
-          "name": "addonTypeHash",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
       "name": "bootstrap",
       "inputs": [],
       "outputs": [],
@@ -47,20 +9,7 @@
     },
     {
       "type": "function",
-      "name": "complianceImplementation",
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "complianceImplementationAddress",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "complianceProxy",
+      "name": "compliance",
       "inputs": [],
       "outputs": [
         {
@@ -73,69 +22,11 @@
     },
     {
       "type": "function",
-      "name": "createSystemAddon",
-      "inputs": [
-        {
-          "name": "name",
-          "type": "string",
-          "internalType": "string"
-        },
-        {
-          "name": "implementation",
-          "type": "address",
-          "internalType": "address"
-        },
-        {
-          "name": "initializationData",
-          "type": "bytes",
-          "internalType": "bytes"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "proxyAddress",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "createTokenFactory",
-      "inputs": [
-        {
-          "name": "_name",
-          "type": "string",
-          "internalType": "string"
-        },
-        {
-          "name": "_factoryImplementation",
-          "type": "address",
-          "internalType": "address"
-        },
-        {
-          "name": "_tokenImplementation",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "identityFactoryImplementation",
+      "name": "complianceModuleRegistry",
       "inputs": [],
       "outputs": [
         {
-          "name": "identityFactoryImplementationAddress",
+          "name": "",
           "type": "address",
           "internalType": "address"
         }
@@ -144,7 +35,7 @@
     },
     {
       "type": "function",
-      "name": "identityFactoryProxy",
+      "name": "identityFactory",
       "inputs": [],
       "outputs": [
         {
@@ -161,7 +52,7 @@
       "inputs": [],
       "outputs": [
         {
-          "name": "identityImplementationAddress",
+          "name": "",
           "type": "address",
           "internalType": "address"
         }
@@ -170,20 +61,7 @@
     },
     {
       "type": "function",
-      "name": "identityRegistryImplementation",
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "identityRegistryImplementationAddress",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "identityRegistryProxy",
+      "name": "identityRegistry",
       "inputs": [],
       "outputs": [
         {
@@ -196,20 +74,7 @@
     },
     {
       "type": "function",
-      "name": "identityRegistryStorageImplementation",
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "identityRegistryStorageImplementationAddress",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "identityRegistryStorageProxy",
+      "name": "identityRegistryStorage",
       "inputs": [],
       "outputs": [
         {
@@ -235,42 +100,6 @@
     },
     {
       "type": "function",
-      "name": "setAddonImplementation",
-      "inputs": [
-        {
-          "name": "addonTypeHash",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        },
-        {
-          "name": "implementation",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "setTokenFactoryImplementation",
-      "inputs": [
-        {
-          "name": "factoryTypeHash",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        },
-        {
-          "name": "implementation",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
       "name": "supportsInterface",
       "inputs": [
         {
@@ -290,27 +119,8 @@
     },
     {
       "type": "function",
-      "name": "tokenAccessManagerImplementation",
+      "name": "systemAddonRegistry",
       "inputs": [],
-      "outputs": [
-        {
-          "name": "tokenAccessManagerImplementationAddress",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "tokenFactoryImplementation",
-      "inputs": [
-        {
-          "name": "factoryTypeHash",
-          "type": "bytes32",
-          "internalType": "bytes32"
-        }
-      ],
       "outputs": [
         {
           "name": "",
@@ -322,14 +132,21 @@
     },
     {
       "type": "function",
-      "name": "tokenFactoryProxy",
-      "inputs": [
+      "name": "tokenAccessManagerImplementation",
+      "inputs": [],
+      "outputs": [
         {
-          "name": "factoryTypeHash",
-          "type": "bytes32",
-          "internalType": "bytes32"
+          "name": "",
+          "type": "address",
+          "internalType": "address"
         }
       ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "tokenFactoryRegistry",
+      "inputs": [],
       "outputs": [
         {
           "name": "",
@@ -345,7 +162,7 @@
       "inputs": [],
       "outputs": [
         {
-          "name": "tokenIdentityImplementationAddress",
+          "name": "",
           "type": "address",
           "internalType": "address"
         }
@@ -354,20 +171,7 @@
     },
     {
       "type": "function",
-      "name": "topicSchemeRegistryImplementation",
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "topicSchemeRegistryImplementationAddress",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "topicSchemeRegistryProxy",
+      "name": "topicSchemeRegistry",
       "inputs": [],
       "outputs": [
         {
@@ -380,20 +184,7 @@
     },
     {
       "type": "function",
-      "name": "trustedIssuersRegistryImplementation",
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "trustedIssuersRegistryImplementationAddress",
-          "type": "address",
-          "internalType": "address"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "trustedIssuersRegistryProxy",
+      "name": "trustedIssuersRegistry",
       "inputs": [],
       "outputs": [
         {
@@ -403,31 +194,6 @@
         }
       ],
       "stateMutability": "view"
-    },
-    {
-      "type": "event",
-      "name": "AddonImplementationUpdated",
-      "inputs": [
-        {
-          "name": "sender",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
-        },
-        {
-          "name": "addonTypeHash",
-          "type": "bytes32",
-          "indexed": true,
-          "internalType": "bytes32"
-        },
-        {
-          "name": "newImplementation",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
-        }
-      ],
-      "anonymous": false
     },
     {
       "type": "event",
@@ -476,6 +242,24 @@
           "internalType": "address"
         },
         {
+          "name": "tokenFactoryRegistryProxy",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        },
+        {
+          "name": "systemAddonRegistryProxy",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        },
+        {
+          "name": "complianceModuleRegistryProxy",
+          "type": "address",
+          "indexed": false,
+          "internalType": "address"
+        },
+        {
           "name": "identityVerificationModule",
           "type": "address",
           "indexed": false,
@@ -487,6 +271,62 @@
     {
       "type": "event",
       "name": "ComplianceImplementationUpdated",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "newImplementation",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ComplianceModuleRegistered",
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "indexed": false,
+          "internalType": "string"
+        },
+        {
+          "name": "moduleTypeHash",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "module",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "timestamp",
+          "type": "uint256",
+          "indexed": false,
+          "internalType": "uint256"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ComplianceModuleRegistryImplementationUpdated",
       "inputs": [
         {
           "name": "sender",
@@ -581,7 +421,7 @@
     },
     {
       "type": "event",
-      "name": "SystemAddonCreated",
+      "name": "SystemAddonRegistryImplementationUpdated",
       "inputs": [
         {
           "name": "sender",
@@ -590,40 +430,10 @@
           "internalType": "address"
         },
         {
-          "name": "name",
-          "type": "string",
-          "indexed": false,
-          "internalType": "string"
-        },
-        {
-          "name": "typeId",
-          "type": "bytes32",
-          "indexed": false,
-          "internalType": "bytes32"
-        },
-        {
-          "name": "proxyAddress",
+          "name": "newImplementation",
           "type": "address",
-          "indexed": false,
+          "indexed": true,
           "internalType": "address"
-        },
-        {
-          "name": "implementation",
-          "type": "address",
-          "indexed": false,
-          "internalType": "address"
-        },
-        {
-          "name": "initializationData",
-          "type": "bytes",
-          "indexed": false,
-          "internalType": "bytes"
-        },
-        {
-          "name": "timestamp",
-          "type": "uint256",
-          "indexed": false,
-          "internalType": "uint256"
         }
       ],
       "anonymous": false
@@ -649,62 +459,13 @@
     },
     {
       "type": "event",
-      "name": "TokenFactoryCreated",
+      "name": "TokenFactoryRegistryImplementationUpdated",
       "inputs": [
         {
           "name": "sender",
           "type": "address",
           "indexed": true,
           "internalType": "address"
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "indexed": false,
-          "internalType": "string"
-        },
-        {
-          "name": "typeId",
-          "type": "bytes32",
-          "indexed": false,
-          "internalType": "bytes32"
-        },
-        {
-          "name": "proxyAddress",
-          "type": "address",
-          "indexed": false,
-          "internalType": "address"
-        },
-        {
-          "name": "implementationAddress",
-          "type": "address",
-          "indexed": false,
-          "internalType": "address"
-        },
-        {
-          "name": "timestamp",
-          "type": "uint256",
-          "indexed": false,
-          "internalType": "uint256"
-        }
-      ],
-      "anonymous": false
-    },
-    {
-      "type": "event",
-      "name": "TokenFactoryImplementationUpdated",
-      "inputs": [
-        {
-          "name": "sender",
-          "type": "address",
-          "indexed": true,
-          "internalType": "address"
-        },
-        {
-          "name": "factoryTypeHash",
-          "type": "bytes32",
-          "indexed": true,
-          "internalType": "bytes32"
         },
         {
           "name": "newImplementation",
@@ -784,34 +545,23 @@
     "linkReferences": {}
   },
   "methodIdentifiers": {
-    "addonImplementation(bytes32)": "e1554666",
-    "addonProxy(bytes32)": "b00a0fdc",
     "bootstrap()": "fb969b0a",
-    "complianceImplementation()": "917fc629",
-    "complianceProxy()": "98468e51",
-    "createSystemAddon(string,address,bytes)": "157f1181",
-    "createTokenFactory(string,address,address)": "e277d07d",
-    "identityFactoryImplementation()": "e32d4b67",
-    "identityFactoryProxy()": "78e72222",
+    "compliance()": "6290865d",
+    "complianceModuleRegistry()": "9ccca773",
+    "identityFactory()": "e5f0c352",
     "identityImplementation()": "6d7203cb",
-    "identityRegistryImplementation()": "a18dd9ea",
-    "identityRegistryProxy()": "d62def8f",
-    "identityRegistryStorageImplementation()": "6dbe06f5",
-    "identityRegistryStorageProxy()": "72b3f57e",
+    "identityRegistry()": "134e18f4",
+    "identityRegistryStorage()": "5f513eb4",
     "identityVerificationModule()": "c8b5d911",
-    "setAddonImplementation(bytes32,address)": "e045d701",
-    "setTokenFactoryImplementation(bytes32,address)": "80f1d105",
     "supportsInterface(bytes4)": "01ffc9a7",
+    "systemAddonRegistry()": "6668f95d",
     "tokenAccessManagerImplementation()": "44eecc17",
-    "tokenFactoryImplementation(bytes32)": "1cece55f",
-    "tokenFactoryProxy(bytes32)": "139aca99",
+    "tokenFactoryRegistry()": "97da9999",
     "tokenIdentityImplementation()": "3cdbceda",
-    "topicSchemeRegistryImplementation()": "588aa306",
-    "topicSchemeRegistryProxy()": "7d6b252e",
-    "trustedIssuersRegistryImplementation()": "39b14cdf",
-    "trustedIssuersRegistryProxy()": "d907c456"
+    "topicSchemeRegistry()": "84c9f8a1",
+    "trustedIssuersRegistry()": "fb703a7b"
   },
-  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"addonTypeHash\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"AddonImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"complianceProxy\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"identityRegistryProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"identityRegistryStorageProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"trustedIssuersRegistryProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"topicSchemeRegistryProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"identityFactoryProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"identityVerificationModule\",\"type\":\"address\"}],\"name\":\"Bootstrapped\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"ComplianceImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"IdentityFactoryImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"IdentityImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"IdentityRegistryImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"IdentityRegistryStorageImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"typeId\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"proxyAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"initializationData\",\"type\":\"bytes\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"SystemAddonCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"TokenAccessManagerImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"typeId\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"proxyAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"implementationAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"TokenFactoryCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"factoryTypeHash\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"TokenFactoryImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"TokenIdentityImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"TopicSchemeRegistryImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"TrustedIssuersRegistryImplementationUpdated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"addonTypeHash\",\"type\":\"bytes32\"}],\"name\":\"addonImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"addonTypeHash\",\"type\":\"bytes32\"}],\"name\":\"addonProxy\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"bootstrap\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"complianceImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"complianceImplementationAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"complianceProxy\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"complianceProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"initializationData\",\"type\":\"bytes\"}],\"name\":\"createSystemAddon\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"proxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_name\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"_factoryImplementation\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_tokenImplementation\",\"type\":\"address\"}],\"name\":\"createTokenFactory\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityFactoryImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityFactoryImplementationAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityFactoryProxy\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityFactoryProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityImplementationAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityRegistryImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityRegistryImplementationAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityRegistryProxy\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityRegistryProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityRegistryStorageImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityRegistryStorageImplementationAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityRegistryStorageProxy\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityRegistryStorageProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityVerificationModule\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityVerificationModuleAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"addonTypeHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"}],\"name\":\"setAddonImplementation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"factoryTypeHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"}],\"name\":\"setTokenFactoryImplementation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenAccessManagerImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"tokenAccessManagerImplementationAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"factoryTypeHash\",\"type\":\"bytes32\"}],\"name\":\"tokenFactoryImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"factoryTypeHash\",\"type\":\"bytes32\"}],\"name\":\"tokenFactoryProxy\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenIdentityImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"tokenIdentityImplementationAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"topicSchemeRegistryImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"topicSchemeRegistryImplementationAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"topicSchemeRegistryProxy\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"topicSchemeRegistryProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"trustedIssuersRegistryImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"trustedIssuersRegistryImplementationAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"trustedIssuersRegistryProxy\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"trustedIssuersRegistryProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"details\":\"The ATK System contract serves as the main hub and discovery point for various modules and features within the ATK Protocol. It allows other contracts and external users to find the addresses of crucial components like compliance modules, identity registries, and their corresponding proxy contracts. These proxies are important because they enable these components to be upgraded in the future without altering the addresses that other parts of the system use to interact with them, ensuring stability and maintainability.\",\"events\":{\"AddonImplementationUpdated(address,bytes32,address)\":{\"params\":{\"addonTypeHash\":\"The hash of the addon type being updated.\",\"newImplementation\":\"The address of the new system addon implementation contract.\",\"sender\":\"The address that called the `setAddonImplementation` function.\"}},\"Bootstrapped(address,address,address,address,address,address,address,address)\":{\"params\":{\"complianceProxy\":\"The address of the deployed ATKComplianceProxy contract.\",\"identityFactoryProxy\":\"The address of the deployed ATKIdentityFactoryProxy contract.\",\"identityRegistryProxy\":\"The address of the deployed ATKIdentityRegistryProxy contract.\",\"identityRegistryStorageProxy\":\"The address of the deployed ATKIdentityRegistryStorageProxy contract.\",\"identityVerificationModule\":\"The address of the deployed IdentityVerificationModule contract.\",\"sender\":\"The address that called the `bootstrap` function.\",\"topicSchemeRegistryProxy\":\"The address of the deployed ATKTopicSchemeRegistryProxy contract.\",\"trustedIssuersRegistryProxy\":\"The address of the deployed ATKTrustedIssuersRegistryProxy contract.\"}},\"ComplianceImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new compliance module implementation contract.\",\"sender\":\"The address that called the `updateComplianceImplementation` function.\"}},\"IdentityFactoryImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new identity factory module implementation contract.\",\"sender\":\"The address that called the `updateIdentityFactoryImplementation` function.\"}},\"IdentityImplementationUpdated(address,address)\":{\"details\":\"Standard identity contracts are typically used to represent users or general entities.\",\"params\":{\"newImplementation\":\"The address of the new standard identity module implementation contract.\",\"sender\":\"The address that called the `updateIdentityImplementation` function.\"}},\"IdentityRegistryImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new identity registry module implementation contract.\",\"sender\":\"The address that called the `updateIdentityRegistryImplementation` function.\"}},\"IdentityRegistryStorageImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new identity registry storage module implementation contract.\",\"sender\":\"The address that called the `updateIdentityRegistryStorageImplementation` function.\"}},\"SystemAddonCreated(address,string,bytes32,address,address,bytes,uint256)\":{\"params\":{\"implementation\":\"The address of the deployed system addon implementation.\",\"initializationData\":\"The encoded function call to initialize the system addon.\",\"name\":\"The human-readable name of the system addon.\",\"proxyAddress\":\"The address of the deployed system addon proxy.\",\"sender\":\"The address that created the system addon.\",\"timestamp\":\"The timestamp of the system addon creation.\",\"typeId\":\"The type identifier of the system addon.\"}},\"TokenAccessManagerImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new token access manager module implementation contract.\",\"sender\":\"The address that called the `updateTokenAccessManagerImplementation` function.\"}},\"TokenFactoryCreated(address,string,bytes32,address,address,uint256)\":{\"params\":{\"implementationAddress\":\"The address of the deployed token factory implementation.\",\"name\":\"The human-readable name of the token factory.\",\"proxyAddress\":\"The address of the deployed token factory proxy.\",\"sender\":\"The address that registered the token factory.\",\"timestamp\":\"The timestamp of the token factory creation.\",\"typeId\":\"The type identifier of the token factory.\"}},\"TokenFactoryImplementationUpdated(address,bytes32,address)\":{\"params\":{\"factoryTypeHash\":\"The hash of the factory type being updated.\",\"newImplementation\":\"The address of the new token factory implementation contract.\",\"sender\":\"The address that called the `updateTokenFactoryImplementation` function.\"}},\"TokenIdentityImplementationUpdated(address,address)\":{\"details\":\"Token identity contracts might be specialized identities associated with specific tokens.\",\"params\":{\"newImplementation\":\"The address of the new token identity module implementation contract.\",\"sender\":\"The address that called the `updateTokenIdentityImplementation` function.\"}},\"TopicSchemeRegistryImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new topic scheme registry module implementation contract.\",\"sender\":\"The address that called the `updateTopicSchemeRegistryImplementation` function.\"}},\"TrustedIssuersRegistryImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new trusted issuers registry module implementation contract.\",\"sender\":\"The address that called the `updateTrustedIssuersRegistryImplementation` function.\"}}},\"kind\":\"dev\",\"methods\":{\"addonImplementation(bytes32)\":{\"params\":{\"addonTypeHash\":\"The hash of the addon type.\"},\"returns\":{\"_0\":\"The address of the system addon implementation contract.\"}},\"addonProxy(bytes32)\":{\"params\":{\"addonTypeHash\":\"The hash of the addon type.\"},\"returns\":{\"_0\":\"The address of the system addon proxy contract.\"}},\"bootstrap()\":{\"details\":\"This function is responsible for the initial deployment and configuration of the ATK Protocol. This involves deploying necessary smart contracts, setting initial parameters, and defining the relationships and connections between different components of the system. It is critically important that this function is called only ONCE during the very first deployment of the protocol. Attempting to call it more than once could result in severe errors, misconfigurations, or unpredictable behavior in the protocol's operation.\"},\"complianceImplementation()\":{\"details\":\"Compliance modules are responsible for enforcing rules and restrictions on token transfers, account interactions, or other operations within the ATK Protocol. For example, they might check if a transfer is allowed based on regulatory requirements. This function returns the specific address of the contract that holds the actual programming code (the \\\"logic\\\") for these compliance checks. It's important to note that this address can change if the compliance logic is updated or upgraded to a new version.\",\"returns\":{\"complianceImplementationAddress\":\"The blockchain address of the smart contract containing the compliance logic.\"}},\"complianceProxy()\":{\"details\":\"A proxy contract is an intermediary contract that delegates all function calls it receives to another contract, known as the implementation contract (which contains the actual logic). The primary benefit of using a proxy is that the underlying logic (implementation) can be upgraded without changing the address that other contracts or users interact with. This provides flexibility and allows for bug fixes or feature additions without disrupting the ecosystem. This function returns the stable, unchanging address of the compliance module's proxy contract. All interactions with the compliance module should go through this proxy address.\",\"returns\":{\"complianceProxyAddress\":\"The blockchain address of the compliance module's proxy contract.\"}},\"createSystemAddon(string,address,bytes)\":{\"params\":{\"implementation\":\"The address of the logic contract to use for the proxy.\",\"initializationData\":\"Encoded function call to initialize the proxy (e.g., abi.encodeWithSelector(...)).\",\"name\":\"A human-readable identifier (e.g., \\\"Swap\\\", \\\"YieldContract\\\").\"},\"returns\":{\"proxyAddress\":\"The address of the newly deployed proxy.\"}},\"createTokenFactory(string,address,address)\":{\"params\":{\"_factoryImplementation\":\"The address of the token factory implementation contract.\",\"_name\":\"The human-readable name of the token factory.\",\"_tokenImplementation\":\"The address of the token implementation contract.\"}},\"identityFactoryImplementation()\":{\"details\":\"Identity factories are responsible for the creation of new identity contracts or records within the ATK Protocol. They provide a standardized way to onboard new users or entities and associate them with an on-chain identity. This function returns the specific address of the contract that holds the actual programming code (the \\\"logic\\\") for this identity creation process. This address can change if the identity factory's logic is upgraded.\",\"returns\":{\"identityFactoryImplementationAddress\":\"The blockchain address of the smart contract containing the identity factory logic.\"}},\"identityFactoryProxy()\":{\"details\":\"This function returns the stable, unchanging address of the identity factory's proxy contract. To create new identities within the ATK Protocol, you should interact with this proxy address. It will delegate the identity creation requests to the current active logic implementation of the identity factory.\",\"returns\":{\"identityFactoryProxyAddress\":\"The blockchain address of the identity factory module's proxy contract.\"}},\"identityImplementation()\":{\"details\":\"Standard identity contracts are the actual on-chain representations of individual users, organizations, or entities within the ATK Protocol. These contracts typically hold claims and attributes related to an identity. This function returns the address of the base implementation (template) contract that new standard identity contracts will be created from (often via a proxy pattern). This address can change if the underlying logic for standard identity contracts is upgraded.\",\"returns\":{\"identityImplementationAddress\":\"The blockchain address of the smart contract containing the standard identity logic.\"}},\"identityRegistryImplementation()\":{\"details\":\"Identity registries are a core component for managing information about users, organizations, or any entity interacting with ATK tokens. This can include details like Know Your Customer (KYC) / Anti-Money Laundering (AML) status, investor qualifications, country of residence, or other relevant identity attributes. This function returns the specific address of the contract that holds the actual programming code (the \\\"logic\\\") for the identity registry. Similar to other modules, this address can change if the identity registry's logic is upgraded.\",\"returns\":{\"identityRegistryImplementationAddress\":\"The blockchain address of the smart contract containing the identity registry logic.\"}},\"identityRegistryProxy()\":{\"details\":\"Similar to the compliance proxy, this function returns the stable, unchanging address of the identity registry's proxy contract. To interact with the identity registry (e.g., to query identity information or register a new identity, depending on its features), you should use this proxy address. It will automatically forward your requests to the current logic implementation contract.\",\"returns\":{\"identityRegistryProxyAddress\":\"The blockchain address of the identity registry module's proxy contract.\"}},\"identityRegistryStorageImplementation()\":{\"details\":\"Identity registry storage modules are dedicated to securely and efficiently storing the data associated with the identities managed by the identity registry. This separation of logic and storage can enhance security and upgradeability. This function returns the specific address of the contract that holds the actual programming code (the \\\"logic\\\") for managing this identity data storage. This address may change if the storage management logic is upgraded or if data is migrated to a new storage system.\",\"returns\":{\"identityRegistryStorageImplementationAddress\":\"The blockchain address of the smart contract containing the identity registry storage logic.\"}},\"identityRegistryStorageProxy()\":{\"details\":\"This function returns the stable, unchanging address of the identity registry storage's proxy contract. All interactions related to storing or retrieving identity data should go through this proxy address. It ensures that calls are directed to the current logic implementation for identity data management.\",\"returns\":{\"identityRegistryStorageProxyAddress\":\"The blockchain address of the identity registry storage module's proxy contract.\"}},\"identityVerificationModule()\":{\"details\":\"This function returns the stable, unchanging address of the identity verification module's proxy contract. To interact with the identity verification module (e.g., to verify an identity or check verification status), you should use this proxy address. It will forward calls to the current logic implementation.\",\"returns\":{\"identityVerificationModuleAddress\":\"The blockchain address of the identity verification module's proxy.\"}},\"setAddonImplementation(bytes32,address)\":{\"params\":{\"addonTypeHash\":\"The hash of the addon type to update.\",\"implementation\":\"The new address for the system addon logic contract.\"}},\"setTokenFactoryImplementation(bytes32,address)\":{\"params\":{\"factoryTypeHash\":\"The hash of the factory type to update.\",\"implementation\":\"The new address for the token factory logic contract.\"}},\"supportsInterface(bytes4)\":{\"details\":\"Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas.\"},\"tokenAccessManagerImplementation()\":{\"details\":\"Token access managers are responsible for managing access control for tokens. This function returns the address of the base implementation (template) contract that new token access managers will be created from. This address can change if the underlying logic for token access managers is upgraded.\",\"returns\":{\"tokenAccessManagerImplementationAddress\":\"The blockchain address of the smart contract containing the\"}},\"tokenFactoryImplementation(bytes32)\":{\"params\":{\"factoryTypeHash\":\"The hash of the factory type.\"},\"returns\":{\"_0\":\"The address of the token factory implementation contract.\"}},\"tokenFactoryProxy(bytes32)\":{\"params\":{\"factoryTypeHash\":\"The hash of the factory type.\"},\"returns\":{\"_0\":\"The address of the token factory proxy contract.\"}},\"tokenIdentityImplementation()\":{\"details\":\"Token identity contracts are a specialized type of identity contract that might be specifically linked to certain tokens, tokenized assets, or have features tailored for token interactions. This function returns the address of the base implementation (template) contract that new token identity contracts will be created from. This address can change if the underlying logic for token identity contracts is upgraded.\",\"returns\":{\"tokenIdentityImplementationAddress\":\"The blockchain address of the smart contract containing the token identity logic.\"}},\"topicSchemeRegistryImplementation()\":{\"details\":\"Topic scheme registries manage the registration and lifecycle of topic schemes used for claim data structures. They store mapping between topic IDs and their corresponding signatures for encoding/decoding claim data. This function returns the specific address of the contract that holds the actual programming code (the \\\"logic\\\") for managing topic schemes. This address can change if the topic scheme registry's logic is upgraded.\",\"returns\":{\"topicSchemeRegistryImplementationAddress\":\"The blockchain address of the smart contract containing the topic scheme registry logic.\"}},\"topicSchemeRegistryProxy()\":{\"details\":\"This function returns the stable, unchanging address of the topic scheme registry's proxy contract. To interact with the topic scheme registry (e.g., to register topic schemes or retrieve topic signatures), you should use this proxy address. It will forward calls to the current logic implementation.\",\"returns\":{\"topicSchemeRegistryProxyAddress\":\"The blockchain address of the topic scheme registry module's proxy.\"}},\"trustedIssuersRegistryImplementation()\":{\"details\":\"Trusted issuers registries play a crucial role in decentralized identity systems. They maintain a list of entities (known as \\\"issuers,\\\" such as KYC providers, accreditation bodies, etc.) that are authorized and trusted to make verifiable claims or attestations about identities (e.g., \\\"User X is KYC verified,\\\" \\\"Entity Y is an accredited investor\\\"). This function returns the specific address of the contract that holds the actual programming code (the \\\"logic\\\") for managing this list of trusted issuers. This address can change if the trusted issuers registry's logic is upgraded.\",\"returns\":{\"trustedIssuersRegistryImplementationAddress\":\"The blockchain address of the smart contract containing the trusted issuers registry logic.\"}},\"trustedIssuersRegistryProxy()\":{\"details\":\"This function returns the stable, unchanging address of the trusted issuers registry's proxy contract. To interact with the trusted issuers registry (e.g., to check if an issuer is trusted or to add/remove issuers, depending on its features), you should use this proxy address. It will forward calls to the current logic implementation.\",\"returns\":{\"trustedIssuersRegistryProxyAddress\":\"The blockchain address of the trusted issuers registry module's proxy.\"}}},\"title\":\"IATKSystem Interface\",\"version\":1},\"userdoc\":{\"events\":{\"AddonImplementationUpdated(address,bytes32,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for a system addon is updated.\"},\"Bootstrapped(address,address,address,address,address,address,address,address)\":{\"notice\":\"Emitted when the `bootstrap` function has been successfully executed, creating and linking proxy contracts for all core modules of the ATKSystem.\"},\"ComplianceImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the compliance module is updated.\"},\"IdentityFactoryImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the identity factory module is updated.\"},\"IdentityImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the standard identity module is updated.\"},\"IdentityRegistryImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the identity registry module is updated.\"},\"IdentityRegistryStorageImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the identity registry storage module is updated.\"},\"SystemAddonCreated(address,string,bytes32,address,address,bytes,uint256)\":{\"notice\":\"Emitted when a system addon is created.\"},\"TokenAccessManagerImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the token access manager module is updated.\"},\"TokenFactoryCreated(address,string,bytes32,address,address,uint256)\":{\"notice\":\"Emitted when a ATKTokenFactory is registered.\"},\"TokenFactoryImplementationUpdated(address,bytes32,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for a token factory is updated.\"},\"TokenIdentityImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the token identity module is updated.\"},\"TopicSchemeRegistryImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the topic scheme registry module is updated.\"},\"TrustedIssuersRegistryImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the trusted issuers registry module is updated.\"}},\"kind\":\"user\",\"methods\":{\"addonImplementation(bytes32)\":{\"notice\":\"Returns the address of the current system addon implementation.\"},\"addonProxy(bytes32)\":{\"notice\":\"Returns the address of the system addon proxy.\"},\"bootstrap()\":{\"notice\":\"Initializes and sets up the entire ATK Protocol system.\"},\"complianceImplementation()\":{\"notice\":\"Retrieves the current, active smart contract address of the compliance module's logic.\"},\"complianceProxy()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the compliance module.\"},\"createSystemAddon(string,address,bytes)\":{\"notice\":\"Deploys and registers a new system addon with a proxy and initializer.\"},\"createTokenFactory(string,address,address)\":{\"notice\":\"Creates a new token factory implementation and proxy.\"},\"identityFactoryImplementation()\":{\"notice\":\"Retrieves the current, active smart contract address of the identity factory module's logic.\"},\"identityFactoryProxy()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the identity factory module.\"},\"identityImplementation()\":{\"notice\":\"Retrieves the current, active smart contract address of the standard identity contract's logic.\"},\"identityRegistryImplementation()\":{\"notice\":\"Retrieves the current, active smart contract address of the identity registry module's logic.\"},\"identityRegistryProxy()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the identity registry module.\"},\"identityRegistryStorageImplementation()\":{\"notice\":\"Retrieves the current, active smart contract address of the identity registry storage module's logic.\"},\"identityRegistryStorageProxy()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the identity registry storage module.\"},\"identityVerificationModule()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the identity verification module.\"},\"setAddonImplementation(bytes32,address)\":{\"notice\":\"Sets (updates) the address of a system addon's implementation (logic) contract.\"},\"setTokenFactoryImplementation(bytes32,address)\":{\"notice\":\"Sets (updates) the address of a token factory's implementation (logic) contract.\"},\"tokenAccessManagerImplementation()\":{\"notice\":\"Retrieves the current, active smart contract address of the token access manager contract's logic.\"},\"tokenFactoryImplementation(bytes32)\":{\"notice\":\"Returns the address of the current token registry implementation.\"},\"tokenFactoryProxy(bytes32)\":{\"notice\":\"Returns the address of the token factory proxy.\"},\"tokenIdentityImplementation()\":{\"notice\":\"Retrieves the current, active smart contract address of the token identity contract's logic.\"},\"topicSchemeRegistryImplementation()\":{\"notice\":\"Retrieves the current, active smart contract address of the topic scheme registry module's logic.\"},\"topicSchemeRegistryProxy()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the topic scheme registry module.\"},\"trustedIssuersRegistryImplementation()\":{\"notice\":\"Retrieves the current, active smart contract address of the trusted issuers registry module's logic.\"},\"trustedIssuersRegistryProxy()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the trusted issuers registry module.\"}},\"notice\":\"This interface outlines the essential functions for interacting with the ATK Protocol's central system contract.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/system/IATKSystem.sol\":\"IATKSystem\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/system/IATKSystem.sol\":{\"keccak256\":\"0xd5003b5cc8d60d6294bd8ef78aedc102250d48e6f9414cd665fce1bf06c47cad\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://76da38c57bfb2ebc21bdc229f9a7a5a48c858102e90b82682542719b303b639c\",\"dweb:/ipfs/QmUMgEPYLSkYqqdBGz5jK5xURpNf4PmSaACW8UV3LrXiiU\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"complianceProxy\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"identityRegistryProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"identityRegistryStorageProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"trustedIssuersRegistryProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"topicSchemeRegistryProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"identityFactoryProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenFactoryRegistryProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"systemAddonRegistryProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"complianceModuleRegistryProxy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"identityVerificationModule\",\"type\":\"address\"}],\"name\":\"Bootstrapped\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"ComplianceImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"moduleTypeHash\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"module\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"ComplianceModuleRegistered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"ComplianceModuleRegistryImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"IdentityFactoryImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"IdentityImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"IdentityRegistryImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"IdentityRegistryStorageImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"SystemAddonRegistryImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"TokenAccessManagerImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"TokenFactoryRegistryImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"TokenIdentityImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"TopicSchemeRegistryImplementationUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"}],\"name\":\"TrustedIssuersRegistryImplementationUpdated\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"bootstrap\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"compliance\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"complianceProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"complianceModuleRegistry\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityFactory\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityFactoryProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityRegistry\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityRegistryProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityRegistryStorage\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityRegistryStorageProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"identityVerificationModule\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"identityVerificationModuleAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"systemAddonRegistry\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenAccessManagerImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenFactoryRegistry\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tokenIdentityImplementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"topicSchemeRegistry\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"topicSchemeRegistryProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"trustedIssuersRegistry\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"trustedIssuersRegistryProxyAddress\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"details\":\"The ATK System contract serves as the main hub and discovery point for various modules and features within the ATK Protocol. It allows other contracts and external users to find the addresses of crucial components like compliance modules, identity registries, and their corresponding proxy contracts. These proxies are important because they enable these components to be upgraded in the future without altering the addresses that other parts of the system use to interact with them, ensuring stability and maintainability.\",\"events\":{\"Bootstrapped(address,address,address,address,address,address,address,address,address,address,address)\":{\"params\":{\"complianceModuleRegistryProxy\":\"The address of the deployed ATKComplianceModuleRegistryProxy contract.\",\"complianceProxy\":\"The address of the deployed ATKComplianceProxy contract.\",\"identityFactoryProxy\":\"The address of the deployed ATKIdentityFactoryProxy contract.\",\"identityRegistryProxy\":\"The address of the deployed ATKIdentityRegistryProxy contract.\",\"identityRegistryStorageProxy\":\"The address of the deployed ATKIdentityRegistryStorageProxy contract.\",\"identityVerificationModule\":\"The address of the deployed IdentityVerificationModule contract.\",\"sender\":\"The address that called the `bootstrap` function.\",\"systemAddonRegistryProxy\":\"The address of the deployed ATKSystemAddonRegistryProxy contract.\",\"tokenFactoryRegistryProxy\":\"The address of the deployed ATKTokenFactoryRegistryProxy contract.\",\"topicSchemeRegistryProxy\":\"The address of the deployed ATKTopicSchemeRegistryProxy contract.\",\"trustedIssuersRegistryProxy\":\"The address of the deployed ATKTrustedIssuersRegistryProxy contract.\"}},\"ComplianceImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new compliance module implementation contract.\",\"sender\":\"The address that called the `updateComplianceImplementation` function.\"}},\"ComplianceModuleRegistered(address,string,bytes32,address,uint256)\":{\"params\":{\"module\":\"The address of the compliance module.\",\"moduleTypeHash\":\"The type hash of the compliance module.\",\"name\":\"The name of the compliance module.\",\"sender\":\"The address that called the registration function.\",\"timestamp\":\"The timestamp of the registration.\"}},\"ComplianceModuleRegistryImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new compliance module registry implementation contract.\",\"sender\":\"The address that called the function.\"}},\"IdentityFactoryImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new identity factory module implementation contract.\",\"sender\":\"The address that called the `updateIdentityFactoryImplementation` function.\"}},\"IdentityImplementationUpdated(address,address)\":{\"details\":\"Standard identity contracts are typically used to represent users or general entities.\",\"params\":{\"newImplementation\":\"The address of the new standard identity module implementation contract.\",\"sender\":\"The address that called the `updateIdentityImplementation` function.\"}},\"IdentityRegistryImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new identity registry module implementation contract.\",\"sender\":\"The address that called the `updateIdentityRegistryImplementation` function.\"}},\"IdentityRegistryStorageImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new identity registry storage module implementation contract.\",\"sender\":\"The address that called the `updateIdentityRegistryStorageImplementation` function.\"}},\"SystemAddonRegistryImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new addon registry implementation contract.\",\"sender\":\"The address that called the function.\"}},\"TokenAccessManagerImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new token access manager module implementation contract.\",\"sender\":\"The address that called the `updateTokenAccessManagerImplementation` function.\"}},\"TokenFactoryRegistryImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new token factory registry implementation contract.\",\"sender\":\"The address that called the function.\"}},\"TokenIdentityImplementationUpdated(address,address)\":{\"details\":\"Token identity contracts might be specialized identities associated with specific tokens.\",\"params\":{\"newImplementation\":\"The address of the new token identity module implementation contract.\",\"sender\":\"The address that called the `updateTokenIdentityImplementation` function.\"}},\"TopicSchemeRegistryImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new topic scheme registry module implementation contract.\",\"sender\":\"The address that called the `updateTopicSchemeRegistryImplementation` function.\"}},\"TrustedIssuersRegistryImplementationUpdated(address,address)\":{\"params\":{\"newImplementation\":\"The address of the new trusted issuers registry module implementation contract.\",\"sender\":\"The address that called the `updateTrustedIssuersRegistryImplementation` function.\"}}},\"kind\":\"dev\",\"methods\":{\"bootstrap()\":{\"details\":\"This function is responsible for the initial deployment and configuration of the ATK Protocol. This involves deploying necessary smart contracts, setting initial parameters, and defining the relationships and connections between different components of the system. It is critically important that this function is called only ONCE during the very first deployment of the protocol. Attempting to call it more than once could result in severe errors, misconfigurations, or unpredictable behavior in the protocol's operation.\"},\"compliance()\":{\"details\":\"A proxy contract is an intermediary contract that delegates all function calls it receives to another contract, known as the implementation contract (which contains the actual logic). The primary benefit of using a proxy is that the underlying logic (implementation) can be upgraded without changing the address that other contracts or users interact with. This provides flexibility and allows for bug fixes or feature additions without disrupting the ecosystem. This function returns the stable, unchanging address of the compliance module's proxy contract. All interactions with the compliance module should go through this proxy address.\",\"returns\":{\"complianceProxyAddress\":\"The blockchain address of the compliance module's proxy contract.\"}},\"complianceModuleRegistry()\":{\"returns\":{\"_0\":\"The address of the compliance module registry contract.\"}},\"identityFactory()\":{\"details\":\"This function returns the stable, unchanging address of the identity factory's proxy contract. To create new identities within the ATK Protocol, you should interact with this proxy address. It will delegate the identity creation requests to the current active logic implementation of the identity factory.\",\"returns\":{\"identityFactoryProxyAddress\":\"The blockchain address of the identity factory module's proxy contract.\"}},\"identityImplementation()\":{\"returns\":{\"_0\":\"The address of the identity implementation contract.\"}},\"identityRegistry()\":{\"details\":\"Similar to the compliance proxy, this function returns the stable, unchanging address of the identity registry's proxy contract. To interact with the identity registry (e.g., to query identity information or register a new identity, depending on its features), you should use this proxy address. It will automatically forward your requests to the current logic implementation contract.\",\"returns\":{\"identityRegistryProxyAddress\":\"The blockchain address of the identity registry module's proxy contract.\"}},\"identityRegistryStorage()\":{\"details\":\"This function returns the stable, unchanging address of the identity registry storage's proxy contract. All interactions related to storing or retrieving identity data should go through this proxy address. It ensures that calls are directed to the current logic implementation for identity data management.\",\"returns\":{\"identityRegistryStorageProxyAddress\":\"The blockchain address of the identity registry storage module's proxy contract.\"}},\"identityVerificationModule()\":{\"details\":\"This function returns the stable, unchanging address of the identity verification module's proxy contract. To interact with the identity verification module (e.g., to verify an identity or check verification status), you should use this proxy address. It will forward calls to the current logic implementation.\",\"returns\":{\"identityVerificationModuleAddress\":\"The blockchain address of the identity verification module's proxy.\"}},\"supportsInterface(bytes4)\":{\"details\":\"Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas.\"},\"systemAddonRegistry()\":{\"returns\":{\"_0\":\"The address of the system addon registry contract.\"}},\"tokenAccessManagerImplementation()\":{\"returns\":{\"_0\":\"The address of the access manager implementation contract.\"}},\"tokenFactoryRegistry()\":{\"returns\":{\"_0\":\"The address of the token factory registry contract.\"}},\"tokenIdentityImplementation()\":{\"returns\":{\"_0\":\"The address of the token identity implementation contract.\"}},\"topicSchemeRegistry()\":{\"details\":\"This function returns the stable, unchanging address of the topic scheme registry's proxy contract. To interact with the topic scheme registry (e.g., to register topic schemes or retrieve topic signatures), you should use this proxy address. It will forward calls to the current logic implementation.\",\"returns\":{\"topicSchemeRegistryProxyAddress\":\"The blockchain address of the topic scheme registry module's proxy.\"}},\"trustedIssuersRegistry()\":{\"details\":\"This function returns the stable, unchanging address of the trusted issuers registry's proxy contract. To interact with the trusted issuers registry (e.g., to check if an issuer is trusted or to add/remove issuers, depending on its features), you should use this proxy address. It will forward calls to the current logic implementation.\",\"returns\":{\"trustedIssuersRegistryProxyAddress\":\"The blockchain address of the trusted issuers registry module's proxy.\"}}},\"title\":\"IATKSystem Interface\",\"version\":1},\"userdoc\":{\"events\":{\"Bootstrapped(address,address,address,address,address,address,address,address,address,address,address)\":{\"notice\":\"Emitted when the `bootstrap` function has been successfully executed, creating and linking proxy contracts for all core modules of the ATKSystem.\"},\"ComplianceImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the compliance module is updated.\"},\"ComplianceModuleRegistered(address,string,bytes32,address,uint256)\":{\"notice\":\"Emitted when a compliance module is registered.\"},\"ComplianceModuleRegistryImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the compliance module registry is updated.\"},\"IdentityFactoryImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the identity factory module is updated.\"},\"IdentityImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the standard identity module is updated.\"},\"IdentityRegistryImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the identity registry module is updated.\"},\"IdentityRegistryStorageImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the identity registry storage module is updated.\"},\"SystemAddonRegistryImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the addon registry is updated.\"},\"TokenAccessManagerImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the token access manager module is updated.\"},\"TokenFactoryRegistryImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the token factory registry is updated.\"},\"TokenIdentityImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the token identity module is updated.\"},\"TopicSchemeRegistryImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the topic scheme registry module is updated.\"},\"TrustedIssuersRegistryImplementationUpdated(address,address)\":{\"notice\":\"Emitted when the implementation (logic contract) for the trusted issuers registry module is updated.\"}},\"kind\":\"user\",\"methods\":{\"bootstrap()\":{\"notice\":\"Initializes and sets up the entire ATK Protocol system.\"},\"compliance()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the compliance module.\"},\"complianceModuleRegistry()\":{\"notice\":\"Returns the address of the compliance module registry.\"},\"identityFactory()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the identity factory module.\"},\"identityImplementation()\":{\"notice\":\"Returns the address of the identity implementation.\"},\"identityRegistry()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the identity registry module.\"},\"identityRegistryStorage()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the identity registry storage module.\"},\"identityVerificationModule()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the identity verification module.\"},\"systemAddonRegistry()\":{\"notice\":\"Returns the address of the system addon registry.\"},\"tokenAccessManagerImplementation()\":{\"notice\":\"Returns the address of the access manager implementation.\"},\"tokenFactoryRegistry()\":{\"notice\":\"Returns the address of the token factory registry.\"},\"tokenIdentityImplementation()\":{\"notice\":\"Returns the address of the token identity implementation.\"},\"topicSchemeRegistry()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the topic scheme registry module.\"},\"trustedIssuersRegistry()\":{\"notice\":\"Retrieves the smart contract address of the proxy for the trusted issuers registry module.\"}},\"notice\":\"This interface outlines the essential functions for interacting with the ATK Protocol's central system contract.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/system/IATKSystem.sol\":\"IATKSystem\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/system/IATKSystem.sol\":{\"keccak256\":\"0x9b142a029ec94141890b4000c54583ac8bd261c4c9cc1a17724f8601c581293b\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://ac8c729ce44ab357ea1bd0de2c7a04cc7666550af9c8253a30e3329c29c13551\",\"dweb:/ipfs/QmTJPSssQ8WS5Uw34WpzAHyvebe9Z2XAojUD6yzMS6iqYC\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
   "metadata": {
     "compiler": {
       "version": "0.8.28+commit.7893614a"
@@ -819,31 +569,6 @@
     "language": "Solidity",
     "output": {
       "abi": [
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "sender",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "internalType": "bytes32",
-              "name": "addonTypeHash",
-              "type": "bytes32",
-              "indexed": true
-            },
-            {
-              "internalType": "address",
-              "name": "newImplementation",
-              "type": "address",
-              "indexed": true
-            }
-          ],
-          "type": "event",
-          "name": "AddonImplementationUpdated",
-          "anonymous": false
-        },
         {
           "inputs": [
             {
@@ -890,6 +615,24 @@
             },
             {
               "internalType": "address",
+              "name": "tokenFactoryRegistryProxy",
+              "type": "address",
+              "indexed": false
+            },
+            {
+              "internalType": "address",
+              "name": "systemAddonRegistryProxy",
+              "type": "address",
+              "indexed": false
+            },
+            {
+              "internalType": "address",
+              "name": "complianceModuleRegistryProxy",
+              "type": "address",
+              "indexed": false
+            },
+            {
+              "internalType": "address",
               "name": "identityVerificationModule",
               "type": "address",
               "indexed": false
@@ -916,6 +659,62 @@
           ],
           "type": "event",
           "name": "ComplianceImplementationUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string",
+              "indexed": false
+            },
+            {
+              "internalType": "bytes32",
+              "name": "moduleTypeHash",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "module",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "ComplianceModuleRegistered",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newImplementation",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "ComplianceModuleRegistryImplementationUpdated",
           "anonymous": false
         },
         {
@@ -1003,44 +802,14 @@
               "indexed": true
             },
             {
-              "internalType": "string",
-              "name": "name",
-              "type": "string",
-              "indexed": false
-            },
-            {
-              "internalType": "bytes32",
-              "name": "typeId",
-              "type": "bytes32",
-              "indexed": false
-            },
-            {
               "internalType": "address",
-              "name": "proxyAddress",
+              "name": "newImplementation",
               "type": "address",
-              "indexed": false
-            },
-            {
-              "internalType": "address",
-              "name": "implementation",
-              "type": "address",
-              "indexed": false
-            },
-            {
-              "internalType": "bytes",
-              "name": "initializationData",
-              "type": "bytes",
-              "indexed": false
-            },
-            {
-              "internalType": "uint256",
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
+              "indexed": true
             }
           ],
           "type": "event",
-          "name": "SystemAddonCreated",
+          "name": "SystemAddonRegistryImplementationUpdated",
           "anonymous": false
         },
         {
@@ -1071,55 +840,6 @@
               "indexed": true
             },
             {
-              "internalType": "string",
-              "name": "name",
-              "type": "string",
-              "indexed": false
-            },
-            {
-              "internalType": "bytes32",
-              "name": "typeId",
-              "type": "bytes32",
-              "indexed": false
-            },
-            {
-              "internalType": "address",
-              "name": "proxyAddress",
-              "type": "address",
-              "indexed": false
-            },
-            {
-              "internalType": "address",
-              "name": "implementationAddress",
-              "type": "address",
-              "indexed": false
-            },
-            {
-              "internalType": "uint256",
-              "name": "timestamp",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "type": "event",
-          "name": "TokenFactoryCreated",
-          "anonymous": false
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "sender",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "internalType": "bytes32",
-              "name": "factoryTypeHash",
-              "type": "bytes32",
-              "indexed": true
-            },
-            {
               "internalType": "address",
               "name": "newImplementation",
               "type": "address",
@@ -1127,7 +847,7 @@
             }
           ],
           "type": "event",
-          "name": "TokenFactoryImplementationUpdated",
+          "name": "TokenFactoryRegistryImplementationUpdated",
           "anonymous": false
         },
         {
@@ -1188,44 +908,6 @@
           "anonymous": false
         },
         {
-          "inputs": [
-            {
-              "internalType": "bytes32",
-              "name": "addonTypeHash",
-              "type": "bytes32"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "addonImplementation",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes32",
-              "name": "addonTypeHash",
-              "type": "bytes32"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "addonProxy",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
           "inputs": [],
           "stateMutability": "nonpayable",
           "type": "function",
@@ -1235,20 +917,7 @@
           "inputs": [],
           "stateMutability": "view",
           "type": "function",
-          "name": "complianceImplementation",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "complianceImplementationAddress",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "inputs": [],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "complianceProxy",
+          "name": "compliance",
           "outputs": [
             {
               "internalType": "address",
@@ -1258,55 +927,10 @@
           ]
         },
         {
-          "inputs": [
-            {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            },
-            {
-              "internalType": "address",
-              "name": "implementation",
-              "type": "address"
-            },
-            {
-              "internalType": "bytes",
-              "name": "initializationData",
-              "type": "bytes"
-            }
-          ],
-          "stateMutability": "nonpayable",
+          "inputs": [],
+          "stateMutability": "view",
           "type": "function",
-          "name": "createSystemAddon",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "proxyAddress",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "string",
-              "name": "_name",
-              "type": "string"
-            },
-            {
-              "internalType": "address",
-              "name": "_factoryImplementation",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "_tokenImplementation",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "createTokenFactory",
+          "name": "complianceModuleRegistry",
           "outputs": [
             {
               "internalType": "address",
@@ -1319,20 +943,7 @@
           "inputs": [],
           "stateMutability": "view",
           "type": "function",
-          "name": "identityFactoryImplementation",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "identityFactoryImplementationAddress",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "inputs": [],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "identityFactoryProxy",
+          "name": "identityFactory",
           "outputs": [
             {
               "internalType": "address",
@@ -1349,7 +960,7 @@
           "outputs": [
             {
               "internalType": "address",
-              "name": "identityImplementationAddress",
+              "name": "",
               "type": "address"
             }
           ]
@@ -1358,20 +969,7 @@
           "inputs": [],
           "stateMutability": "view",
           "type": "function",
-          "name": "identityRegistryImplementation",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "identityRegistryImplementationAddress",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "inputs": [],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "identityRegistryProxy",
+          "name": "identityRegistry",
           "outputs": [
             {
               "internalType": "address",
@@ -1384,20 +982,7 @@
           "inputs": [],
           "stateMutability": "view",
           "type": "function",
-          "name": "identityRegistryStorageImplementation",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "identityRegistryStorageImplementationAddress",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "inputs": [],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "identityRegistryStorageProxy",
+          "name": "identityRegistryStorage",
           "outputs": [
             {
               "internalType": "address",
@@ -1422,40 +1007,6 @@
         {
           "inputs": [
             {
-              "internalType": "bytes32",
-              "name": "addonTypeHash",
-              "type": "bytes32"
-            },
-            {
-              "internalType": "address",
-              "name": "implementation",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "setAddonImplementation"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes32",
-              "name": "factoryTypeHash",
-              "type": "bytes32"
-            },
-            {
-              "internalType": "address",
-              "name": "implementation",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "setTokenFactoryImplementation"
-        },
-        {
-          "inputs": [
-            {
               "internalType": "bytes4",
               "name": "interfaceId",
               "type": "bytes4"
@@ -1476,26 +1027,7 @@
           "inputs": [],
           "stateMutability": "view",
           "type": "function",
-          "name": "tokenAccessManagerImplementation",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "tokenAccessManagerImplementationAddress",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes32",
-              "name": "factoryTypeHash",
-              "type": "bytes32"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "tokenFactoryImplementation",
+          "name": "systemAddonRegistry",
           "outputs": [
             {
               "internalType": "address",
@@ -1505,16 +1037,23 @@
           ]
         },
         {
-          "inputs": [
-            {
-              "internalType": "bytes32",
-              "name": "factoryTypeHash",
-              "type": "bytes32"
-            }
-          ],
+          "inputs": [],
           "stateMutability": "view",
           "type": "function",
-          "name": "tokenFactoryProxy",
+          "name": "tokenAccessManagerImplementation",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "tokenFactoryRegistry",
           "outputs": [
             {
               "internalType": "address",
@@ -1531,7 +1070,7 @@
           "outputs": [
             {
               "internalType": "address",
-              "name": "tokenIdentityImplementationAddress",
+              "name": "",
               "type": "address"
             }
           ]
@@ -1540,20 +1079,7 @@
           "inputs": [],
           "stateMutability": "view",
           "type": "function",
-          "name": "topicSchemeRegistryImplementation",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "topicSchemeRegistryImplementationAddress",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "inputs": [],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "topicSchemeRegistryProxy",
+          "name": "topicSchemeRegistry",
           "outputs": [
             {
               "internalType": "address",
@@ -1566,20 +1092,7 @@
           "inputs": [],
           "stateMutability": "view",
           "type": "function",
-          "name": "trustedIssuersRegistryImplementation",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "trustedIssuersRegistryImplementationAddress",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "inputs": [],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "trustedIssuersRegistryProxy",
+          "name": "trustedIssuersRegistry",
           "outputs": [
             {
               "internalType": "address",
@@ -1592,91 +1105,38 @@
       "devdoc": {
         "kind": "dev",
         "methods": {
-          "addonImplementation(bytes32)": {
-            "params": {
-              "addonTypeHash": "The hash of the addon type."
-            },
-            "returns": {
-              "_0": "The address of the system addon implementation contract."
-            }
-          },
-          "addonProxy(bytes32)": {
-            "params": {
-              "addonTypeHash": "The hash of the addon type."
-            },
-            "returns": {
-              "_0": "The address of the system addon proxy contract."
-            }
-          },
           "bootstrap()": {
             "details": "This function is responsible for the initial deployment and configuration of the ATK Protocol. This involves deploying necessary smart contracts, setting initial parameters, and defining the relationships and connections between different components of the system. It is critically important that this function is called only ONCE during the very first deployment of the protocol. Attempting to call it more than once could result in severe errors, misconfigurations, or unpredictable behavior in the protocol's operation."
           },
-          "complianceImplementation()": {
-            "details": "Compliance modules are responsible for enforcing rules and restrictions on token transfers, account interactions, or other operations within the ATK Protocol. For example, they might check if a transfer is allowed based on regulatory requirements. This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for these compliance checks. It's important to note that this address can change if the compliance logic is updated or upgraded to a new version.",
-            "returns": {
-              "complianceImplementationAddress": "The blockchain address of the smart contract containing the compliance logic."
-            }
-          },
-          "complianceProxy()": {
+          "compliance()": {
             "details": "A proxy contract is an intermediary contract that delegates all function calls it receives to another contract, known as the implementation contract (which contains the actual logic). The primary benefit of using a proxy is that the underlying logic (implementation) can be upgraded without changing the address that other contracts or users interact with. This provides flexibility and allows for bug fixes or feature additions without disrupting the ecosystem. This function returns the stable, unchanging address of the compliance module's proxy contract. All interactions with the compliance module should go through this proxy address.",
             "returns": {
               "complianceProxyAddress": "The blockchain address of the compliance module's proxy contract."
             }
           },
-          "createSystemAddon(string,address,bytes)": {
-            "params": {
-              "implementation": "The address of the logic contract to use for the proxy.",
-              "initializationData": "Encoded function call to initialize the proxy (e.g., abi.encodeWithSelector(...)).",
-              "name": "A human-readable identifier (e.g., \"Swap\", \"YieldContract\")."
-            },
+          "complianceModuleRegistry()": {
             "returns": {
-              "proxyAddress": "The address of the newly deployed proxy."
+              "_0": "The address of the compliance module registry contract."
             }
           },
-          "createTokenFactory(string,address,address)": {
-            "params": {
-              "_factoryImplementation": "The address of the token factory implementation contract.",
-              "_name": "The human-readable name of the token factory.",
-              "_tokenImplementation": "The address of the token implementation contract."
-            }
-          },
-          "identityFactoryImplementation()": {
-            "details": "Identity factories are responsible for the creation of new identity contracts or records within the ATK Protocol. They provide a standardized way to onboard new users or entities and associate them with an on-chain identity. This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for this identity creation process. This address can change if the identity factory's logic is upgraded.",
-            "returns": {
-              "identityFactoryImplementationAddress": "The blockchain address of the smart contract containing the identity factory logic."
-            }
-          },
-          "identityFactoryProxy()": {
+          "identityFactory()": {
             "details": "This function returns the stable, unchanging address of the identity factory's proxy contract. To create new identities within the ATK Protocol, you should interact with this proxy address. It will delegate the identity creation requests to the current active logic implementation of the identity factory.",
             "returns": {
               "identityFactoryProxyAddress": "The blockchain address of the identity factory module's proxy contract."
             }
           },
           "identityImplementation()": {
-            "details": "Standard identity contracts are the actual on-chain representations of individual users, organizations, or entities within the ATK Protocol. These contracts typically hold claims and attributes related to an identity. This function returns the address of the base implementation (template) contract that new standard identity contracts will be created from (often via a proxy pattern). This address can change if the underlying logic for standard identity contracts is upgraded.",
             "returns": {
-              "identityImplementationAddress": "The blockchain address of the smart contract containing the standard identity logic."
+              "_0": "The address of the identity implementation contract."
             }
           },
-          "identityRegistryImplementation()": {
-            "details": "Identity registries are a core component for managing information about users, organizations, or any entity interacting with ATK tokens. This can include details like Know Your Customer (KYC) / Anti-Money Laundering (AML) status, investor qualifications, country of residence, or other relevant identity attributes. This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for the identity registry. Similar to other modules, this address can change if the identity registry's logic is upgraded.",
-            "returns": {
-              "identityRegistryImplementationAddress": "The blockchain address of the smart contract containing the identity registry logic."
-            }
-          },
-          "identityRegistryProxy()": {
+          "identityRegistry()": {
             "details": "Similar to the compliance proxy, this function returns the stable, unchanging address of the identity registry's proxy contract. To interact with the identity registry (e.g., to query identity information or register a new identity, depending on its features), you should use this proxy address. It will automatically forward your requests to the current logic implementation contract.",
             "returns": {
               "identityRegistryProxyAddress": "The blockchain address of the identity registry module's proxy contract."
             }
           },
-          "identityRegistryStorageImplementation()": {
-            "details": "Identity registry storage modules are dedicated to securely and efficiently storing the data associated with the identities managed by the identity registry. This separation of logic and storage can enhance security and upgradeability. This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for managing this identity data storage. This address may change if the storage management logic is upgraded or if data is migrated to a new storage system.",
-            "returns": {
-              "identityRegistryStorageImplementationAddress": "The blockchain address of the smart contract containing the identity registry storage logic."
-            }
-          },
-          "identityRegistryStorageProxy()": {
+          "identityRegistryStorage()": {
             "details": "This function returns the stable, unchanging address of the identity registry storage's proxy contract. All interactions related to storing or retrieving identity data should go through this proxy address. It ensures that calls are directed to the current logic implementation for identity data management.",
             "returns": {
               "identityRegistryStorageProxyAddress": "The blockchain address of the identity registry storage module's proxy contract."
@@ -1688,68 +1148,36 @@
               "identityVerificationModuleAddress": "The blockchain address of the identity verification module's proxy."
             }
           },
-          "setAddonImplementation(bytes32,address)": {
-            "params": {
-              "addonTypeHash": "The hash of the addon type to update.",
-              "implementation": "The new address for the system addon logic contract."
-            }
-          },
-          "setTokenFactoryImplementation(bytes32,address)": {
-            "params": {
-              "factoryTypeHash": "The hash of the factory type to update.",
-              "implementation": "The new address for the token factory logic contract."
-            }
-          },
           "supportsInterface(bytes4)": {
             "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
           },
+          "systemAddonRegistry()": {
+            "returns": {
+              "_0": "The address of the system addon registry contract."
+            }
+          },
           "tokenAccessManagerImplementation()": {
-            "details": "Token access managers are responsible for managing access control for tokens. This function returns the address of the base implementation (template) contract that new token access managers will be created from. This address can change if the underlying logic for token access managers is upgraded.",
             "returns": {
-              "tokenAccessManagerImplementationAddress": "The blockchain address of the smart contract containing the"
+              "_0": "The address of the access manager implementation contract."
             }
           },
-          "tokenFactoryImplementation(bytes32)": {
-            "params": {
-              "factoryTypeHash": "The hash of the factory type."
-            },
+          "tokenFactoryRegistry()": {
             "returns": {
-              "_0": "The address of the token factory implementation contract."
-            }
-          },
-          "tokenFactoryProxy(bytes32)": {
-            "params": {
-              "factoryTypeHash": "The hash of the factory type."
-            },
-            "returns": {
-              "_0": "The address of the token factory proxy contract."
+              "_0": "The address of the token factory registry contract."
             }
           },
           "tokenIdentityImplementation()": {
-            "details": "Token identity contracts are a specialized type of identity contract that might be specifically linked to certain tokens, tokenized assets, or have features tailored for token interactions. This function returns the address of the base implementation (template) contract that new token identity contracts will be created from. This address can change if the underlying logic for token identity contracts is upgraded.",
             "returns": {
-              "tokenIdentityImplementationAddress": "The blockchain address of the smart contract containing the token identity logic."
+              "_0": "The address of the token identity implementation contract."
             }
           },
-          "topicSchemeRegistryImplementation()": {
-            "details": "Topic scheme registries manage the registration and lifecycle of topic schemes used for claim data structures. They store mapping between topic IDs and their corresponding signatures for encoding/decoding claim data. This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for managing topic schemes. This address can change if the topic scheme registry's logic is upgraded.",
-            "returns": {
-              "topicSchemeRegistryImplementationAddress": "The blockchain address of the smart contract containing the topic scheme registry logic."
-            }
-          },
-          "topicSchemeRegistryProxy()": {
+          "topicSchemeRegistry()": {
             "details": "This function returns the stable, unchanging address of the topic scheme registry's proxy contract. To interact with the topic scheme registry (e.g., to register topic schemes or retrieve topic signatures), you should use this proxy address. It will forward calls to the current logic implementation.",
             "returns": {
               "topicSchemeRegistryProxyAddress": "The blockchain address of the topic scheme registry module's proxy."
             }
           },
-          "trustedIssuersRegistryImplementation()": {
-            "details": "Trusted issuers registries play a crucial role in decentralized identity systems. They maintain a list of entities (known as \"issuers,\" such as KYC providers, accreditation bodies, etc.) that are authorized and trusted to make verifiable claims or attestations about identities (e.g., \"User X is KYC verified,\" \"Entity Y is an accredited investor\"). This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for managing this list of trusted issuers. This address can change if the trusted issuers registry's logic is upgraded.",
-            "returns": {
-              "trustedIssuersRegistryImplementationAddress": "The blockchain address of the smart contract containing the trusted issuers registry logic."
-            }
-          },
-          "trustedIssuersRegistryProxy()": {
+          "trustedIssuersRegistry()": {
             "details": "This function returns the stable, unchanging address of the trusted issuers registry's proxy contract. To interact with the trusted issuers registry (e.g., to check if an issuer is trusted or to add/remove issuers, depending on its features), you should use this proxy address. It will forward calls to the current logic implementation.",
             "returns": {
               "trustedIssuersRegistryProxyAddress": "The blockchain address of the trusted issuers registry module's proxy."
@@ -1761,79 +1189,46 @@
       "userdoc": {
         "kind": "user",
         "methods": {
-          "addonImplementation(bytes32)": {
-            "notice": "Returns the address of the current system addon implementation."
-          },
-          "addonProxy(bytes32)": {
-            "notice": "Returns the address of the system addon proxy."
-          },
           "bootstrap()": {
             "notice": "Initializes and sets up the entire ATK Protocol system."
           },
-          "complianceImplementation()": {
-            "notice": "Retrieves the current, active smart contract address of the compliance module's logic."
-          },
-          "complianceProxy()": {
+          "compliance()": {
             "notice": "Retrieves the smart contract address of the proxy for the compliance module."
           },
-          "createSystemAddon(string,address,bytes)": {
-            "notice": "Deploys and registers a new system addon with a proxy and initializer."
+          "complianceModuleRegistry()": {
+            "notice": "Returns the address of the compliance module registry."
           },
-          "createTokenFactory(string,address,address)": {
-            "notice": "Creates a new token factory implementation and proxy."
-          },
-          "identityFactoryImplementation()": {
-            "notice": "Retrieves the current, active smart contract address of the identity factory module's logic."
-          },
-          "identityFactoryProxy()": {
+          "identityFactory()": {
             "notice": "Retrieves the smart contract address of the proxy for the identity factory module."
           },
           "identityImplementation()": {
-            "notice": "Retrieves the current, active smart contract address of the standard identity contract's logic."
+            "notice": "Returns the address of the identity implementation."
           },
-          "identityRegistryImplementation()": {
-            "notice": "Retrieves the current, active smart contract address of the identity registry module's logic."
-          },
-          "identityRegistryProxy()": {
+          "identityRegistry()": {
             "notice": "Retrieves the smart contract address of the proxy for the identity registry module."
           },
-          "identityRegistryStorageImplementation()": {
-            "notice": "Retrieves the current, active smart contract address of the identity registry storage module's logic."
-          },
-          "identityRegistryStorageProxy()": {
+          "identityRegistryStorage()": {
             "notice": "Retrieves the smart contract address of the proxy for the identity registry storage module."
           },
           "identityVerificationModule()": {
             "notice": "Retrieves the smart contract address of the proxy for the identity verification module."
           },
-          "setAddonImplementation(bytes32,address)": {
-            "notice": "Sets (updates) the address of a system addon's implementation (logic) contract."
-          },
-          "setTokenFactoryImplementation(bytes32,address)": {
-            "notice": "Sets (updates) the address of a token factory's implementation (logic) contract."
+          "systemAddonRegistry()": {
+            "notice": "Returns the address of the system addon registry."
           },
           "tokenAccessManagerImplementation()": {
-            "notice": "Retrieves the current, active smart contract address of the token access manager contract's logic."
+            "notice": "Returns the address of the access manager implementation."
           },
-          "tokenFactoryImplementation(bytes32)": {
-            "notice": "Returns the address of the current token registry implementation."
-          },
-          "tokenFactoryProxy(bytes32)": {
-            "notice": "Returns the address of the token factory proxy."
+          "tokenFactoryRegistry()": {
+            "notice": "Returns the address of the token factory registry."
           },
           "tokenIdentityImplementation()": {
-            "notice": "Retrieves the current, active smart contract address of the token identity contract's logic."
+            "notice": "Returns the address of the token identity implementation."
           },
-          "topicSchemeRegistryImplementation()": {
-            "notice": "Retrieves the current, active smart contract address of the topic scheme registry module's logic."
-          },
-          "topicSchemeRegistryProxy()": {
+          "topicSchemeRegistry()": {
             "notice": "Retrieves the smart contract address of the proxy for the topic scheme registry module."
           },
-          "trustedIssuersRegistryImplementation()": {
-            "notice": "Retrieves the current, active smart contract address of the trusted issuers registry module's logic."
-          },
-          "trustedIssuersRegistryProxy()": {
+          "trustedIssuersRegistry()": {
             "notice": "Retrieves the smart contract address of the proxy for the trusted issuers registry module."
           }
         },
@@ -1867,10 +1262,10 @@
     },
     "sources": {
       "contracts/system/IATKSystem.sol": {
-        "keccak256": "0xd5003b5cc8d60d6294bd8ef78aedc102250d48e6f9414cd665fce1bf06c47cad",
+        "keccak256": "0x9b142a029ec94141890b4000c54583ac8bd261c4c9cc1a17724f8601c581293b",
         "urls": [
-          "bzz-raw://76da38c57bfb2ebc21bdc229f9a7a5a48c858102e90b82682542719b303b639c",
-          "dweb:/ipfs/QmUMgEPYLSkYqqdBGz5jK5xURpNf4PmSaACW8UV3LrXiiU"
+          "bzz-raw://ac8c729ce44ab357ea1bd0de2c7a04cc7666550af9c8253a30e3329c29c13551",
+          "dweb:/ipfs/QmTJPSssQ8WS5Uw34WpzAHyvebe9Z2XAojUD6yzMS6iqYC"
         ],
         "license": "FSL-1.1-MIT"
       },
@@ -1889,91 +1284,61 @@
     "version": 1,
     "kind": "user",
     "methods": {
-      "addonImplementation(bytes32)": {
-        "notice": "Returns the address of the current system addon implementation."
-      },
-      "addonProxy(bytes32)": {
-        "notice": "Returns the address of the system addon proxy."
-      },
       "bootstrap()": {
         "notice": "Initializes and sets up the entire ATK Protocol system."
       },
-      "complianceImplementation()": {
-        "notice": "Retrieves the current, active smart contract address of the compliance module's logic."
-      },
-      "complianceProxy()": {
+      "compliance()": {
         "notice": "Retrieves the smart contract address of the proxy for the compliance module."
       },
-      "createSystemAddon(string,address,bytes)": {
-        "notice": "Deploys and registers a new system addon with a proxy and initializer."
+      "complianceModuleRegistry()": {
+        "notice": "Returns the address of the compliance module registry."
       },
-      "createTokenFactory(string,address,address)": {
-        "notice": "Creates a new token factory implementation and proxy."
-      },
-      "identityFactoryImplementation()": {
-        "notice": "Retrieves the current, active smart contract address of the identity factory module's logic."
-      },
-      "identityFactoryProxy()": {
+      "identityFactory()": {
         "notice": "Retrieves the smart contract address of the proxy for the identity factory module."
       },
       "identityImplementation()": {
-        "notice": "Retrieves the current, active smart contract address of the standard identity contract's logic."
+        "notice": "Returns the address of the identity implementation."
       },
-      "identityRegistryImplementation()": {
-        "notice": "Retrieves the current, active smart contract address of the identity registry module's logic."
-      },
-      "identityRegistryProxy()": {
+      "identityRegistry()": {
         "notice": "Retrieves the smart contract address of the proxy for the identity registry module."
       },
-      "identityRegistryStorageImplementation()": {
-        "notice": "Retrieves the current, active smart contract address of the identity registry storage module's logic."
-      },
-      "identityRegistryStorageProxy()": {
+      "identityRegistryStorage()": {
         "notice": "Retrieves the smart contract address of the proxy for the identity registry storage module."
       },
       "identityVerificationModule()": {
         "notice": "Retrieves the smart contract address of the proxy for the identity verification module."
       },
-      "setAddonImplementation(bytes32,address)": {
-        "notice": "Sets (updates) the address of a system addon's implementation (logic) contract."
-      },
-      "setTokenFactoryImplementation(bytes32,address)": {
-        "notice": "Sets (updates) the address of a token factory's implementation (logic) contract."
+      "systemAddonRegistry()": {
+        "notice": "Returns the address of the system addon registry."
       },
       "tokenAccessManagerImplementation()": {
-        "notice": "Retrieves the current, active smart contract address of the token access manager contract's logic."
+        "notice": "Returns the address of the access manager implementation."
       },
-      "tokenFactoryImplementation(bytes32)": {
-        "notice": "Returns the address of the current token registry implementation."
-      },
-      "tokenFactoryProxy(bytes32)": {
-        "notice": "Returns the address of the token factory proxy."
+      "tokenFactoryRegistry()": {
+        "notice": "Returns the address of the token factory registry."
       },
       "tokenIdentityImplementation()": {
-        "notice": "Retrieves the current, active smart contract address of the token identity contract's logic."
+        "notice": "Returns the address of the token identity implementation."
       },
-      "topicSchemeRegistryImplementation()": {
-        "notice": "Retrieves the current, active smart contract address of the topic scheme registry module's logic."
-      },
-      "topicSchemeRegistryProxy()": {
+      "topicSchemeRegistry()": {
         "notice": "Retrieves the smart contract address of the proxy for the topic scheme registry module."
       },
-      "trustedIssuersRegistryImplementation()": {
-        "notice": "Retrieves the current, active smart contract address of the trusted issuers registry module's logic."
-      },
-      "trustedIssuersRegistryProxy()": {
+      "trustedIssuersRegistry()": {
         "notice": "Retrieves the smart contract address of the proxy for the trusted issuers registry module."
       }
     },
     "events": {
-      "AddonImplementationUpdated(address,bytes32,address)": {
-        "notice": "Emitted when the implementation (logic contract) for a system addon is updated."
-      },
-      "Bootstrapped(address,address,address,address,address,address,address,address)": {
+      "Bootstrapped(address,address,address,address,address,address,address,address,address,address,address)": {
         "notice": "Emitted when the `bootstrap` function has been successfully executed, creating and linking proxy contracts for all core modules of the ATKSystem."
       },
       "ComplianceImplementationUpdated(address,address)": {
         "notice": "Emitted when the implementation (logic contract) for the compliance module is updated."
+      },
+      "ComplianceModuleRegistered(address,string,bytes32,address,uint256)": {
+        "notice": "Emitted when a compliance module is registered."
+      },
+      "ComplianceModuleRegistryImplementationUpdated(address,address)": {
+        "notice": "Emitted when the implementation (logic contract) for the compliance module registry is updated."
       },
       "IdentityFactoryImplementationUpdated(address,address)": {
         "notice": "Emitted when the implementation (logic contract) for the identity factory module is updated."
@@ -1987,17 +1352,14 @@
       "IdentityRegistryStorageImplementationUpdated(address,address)": {
         "notice": "Emitted when the implementation (logic contract) for the identity registry storage module is updated."
       },
-      "SystemAddonCreated(address,string,bytes32,address,address,bytes,uint256)": {
-        "notice": "Emitted when a system addon is created."
+      "SystemAddonRegistryImplementationUpdated(address,address)": {
+        "notice": "Emitted when the implementation (logic contract) for the addon registry is updated."
       },
       "TokenAccessManagerImplementationUpdated(address,address)": {
         "notice": "Emitted when the implementation (logic contract) for the token access manager module is updated."
       },
-      "TokenFactoryCreated(address,string,bytes32,address,address,uint256)": {
-        "notice": "Emitted when a ATKTokenFactory is registered."
-      },
-      "TokenFactoryImplementationUpdated(address,bytes32,address)": {
-        "notice": "Emitted when the implementation (logic contract) for a token factory is updated."
+      "TokenFactoryRegistryImplementationUpdated(address,address)": {
+        "notice": "Emitted when the implementation (logic contract) for the token factory registry is updated."
       },
       "TokenIdentityImplementationUpdated(address,address)": {
         "notice": "Emitted when the implementation (logic contract) for the token identity module is updated."
@@ -2017,91 +1379,38 @@
     "author": "SettleMint Tokenization Services",
     "details": "The ATK System contract serves as the main hub and discovery point for various modules and features within the ATK Protocol. It allows other contracts and external users to find the addresses of crucial components like compliance modules, identity registries, and their corresponding proxy contracts. These proxies are important because they enable these components to be upgraded in the future without altering the addresses that other parts of the system use to interact with them, ensuring stability and maintainability.",
     "methods": {
-      "addonImplementation(bytes32)": {
-        "params": {
-          "addonTypeHash": "The hash of the addon type."
-        },
-        "returns": {
-          "_0": "The address of the system addon implementation contract."
-        }
-      },
-      "addonProxy(bytes32)": {
-        "params": {
-          "addonTypeHash": "The hash of the addon type."
-        },
-        "returns": {
-          "_0": "The address of the system addon proxy contract."
-        }
-      },
       "bootstrap()": {
         "details": "This function is responsible for the initial deployment and configuration of the ATK Protocol. This involves deploying necessary smart contracts, setting initial parameters, and defining the relationships and connections between different components of the system. It is critically important that this function is called only ONCE during the very first deployment of the protocol. Attempting to call it more than once could result in severe errors, misconfigurations, or unpredictable behavior in the protocol's operation."
       },
-      "complianceImplementation()": {
-        "details": "Compliance modules are responsible for enforcing rules and restrictions on token transfers, account interactions, or other operations within the ATK Protocol. For example, they might check if a transfer is allowed based on regulatory requirements. This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for these compliance checks. It's important to note that this address can change if the compliance logic is updated or upgraded to a new version.",
-        "returns": {
-          "complianceImplementationAddress": "The blockchain address of the smart contract containing the compliance logic."
-        }
-      },
-      "complianceProxy()": {
+      "compliance()": {
         "details": "A proxy contract is an intermediary contract that delegates all function calls it receives to another contract, known as the implementation contract (which contains the actual logic). The primary benefit of using a proxy is that the underlying logic (implementation) can be upgraded without changing the address that other contracts or users interact with. This provides flexibility and allows for bug fixes or feature additions without disrupting the ecosystem. This function returns the stable, unchanging address of the compliance module's proxy contract. All interactions with the compliance module should go through this proxy address.",
         "returns": {
           "complianceProxyAddress": "The blockchain address of the compliance module's proxy contract."
         }
       },
-      "createSystemAddon(string,address,bytes)": {
-        "params": {
-          "implementation": "The address of the logic contract to use for the proxy.",
-          "initializationData": "Encoded function call to initialize the proxy (e.g., abi.encodeWithSelector(...)).",
-          "name": "A human-readable identifier (e.g., \"Swap\", \"YieldContract\")."
-        },
+      "complianceModuleRegistry()": {
         "returns": {
-          "proxyAddress": "The address of the newly deployed proxy."
+          "_0": "The address of the compliance module registry contract."
         }
       },
-      "createTokenFactory(string,address,address)": {
-        "params": {
-          "_factoryImplementation": "The address of the token factory implementation contract.",
-          "_name": "The human-readable name of the token factory.",
-          "_tokenImplementation": "The address of the token implementation contract."
-        }
-      },
-      "identityFactoryImplementation()": {
-        "details": "Identity factories are responsible for the creation of new identity contracts or records within the ATK Protocol. They provide a standardized way to onboard new users or entities and associate them with an on-chain identity. This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for this identity creation process. This address can change if the identity factory's logic is upgraded.",
-        "returns": {
-          "identityFactoryImplementationAddress": "The blockchain address of the smart contract containing the identity factory logic."
-        }
-      },
-      "identityFactoryProxy()": {
+      "identityFactory()": {
         "details": "This function returns the stable, unchanging address of the identity factory's proxy contract. To create new identities within the ATK Protocol, you should interact with this proxy address. It will delegate the identity creation requests to the current active logic implementation of the identity factory.",
         "returns": {
           "identityFactoryProxyAddress": "The blockchain address of the identity factory module's proxy contract."
         }
       },
       "identityImplementation()": {
-        "details": "Standard identity contracts are the actual on-chain representations of individual users, organizations, or entities within the ATK Protocol. These contracts typically hold claims and attributes related to an identity. This function returns the address of the base implementation (template) contract that new standard identity contracts will be created from (often via a proxy pattern). This address can change if the underlying logic for standard identity contracts is upgraded.",
         "returns": {
-          "identityImplementationAddress": "The blockchain address of the smart contract containing the standard identity logic."
+          "_0": "The address of the identity implementation contract."
         }
       },
-      "identityRegistryImplementation()": {
-        "details": "Identity registries are a core component for managing information about users, organizations, or any entity interacting with ATK tokens. This can include details like Know Your Customer (KYC) / Anti-Money Laundering (AML) status, investor qualifications, country of residence, or other relevant identity attributes. This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for the identity registry. Similar to other modules, this address can change if the identity registry's logic is upgraded.",
-        "returns": {
-          "identityRegistryImplementationAddress": "The blockchain address of the smart contract containing the identity registry logic."
-        }
-      },
-      "identityRegistryProxy()": {
+      "identityRegistry()": {
         "details": "Similar to the compliance proxy, this function returns the stable, unchanging address of the identity registry's proxy contract. To interact with the identity registry (e.g., to query identity information or register a new identity, depending on its features), you should use this proxy address. It will automatically forward your requests to the current logic implementation contract.",
         "returns": {
           "identityRegistryProxyAddress": "The blockchain address of the identity registry module's proxy contract."
         }
       },
-      "identityRegistryStorageImplementation()": {
-        "details": "Identity registry storage modules are dedicated to securely and efficiently storing the data associated with the identities managed by the identity registry. This separation of logic and storage can enhance security and upgradeability. This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for managing this identity data storage. This address may change if the storage management logic is upgraded or if data is migrated to a new storage system.",
-        "returns": {
-          "identityRegistryStorageImplementationAddress": "The blockchain address of the smart contract containing the identity registry storage logic."
-        }
-      },
-      "identityRegistryStorageProxy()": {
+      "identityRegistryStorage()": {
         "details": "This function returns the stable, unchanging address of the identity registry storage's proxy contract. All interactions related to storing or retrieving identity data should go through this proxy address. It ensures that calls are directed to the current logic implementation for identity data management.",
         "returns": {
           "identityRegistryStorageProxyAddress": "The blockchain address of the identity registry storage module's proxy contract."
@@ -2113,68 +1422,36 @@
           "identityVerificationModuleAddress": "The blockchain address of the identity verification module's proxy."
         }
       },
-      "setAddonImplementation(bytes32,address)": {
-        "params": {
-          "addonTypeHash": "The hash of the addon type to update.",
-          "implementation": "The new address for the system addon logic contract."
-        }
-      },
-      "setTokenFactoryImplementation(bytes32,address)": {
-        "params": {
-          "factoryTypeHash": "The hash of the factory type to update.",
-          "implementation": "The new address for the token factory logic contract."
-        }
-      },
       "supportsInterface(bytes4)": {
         "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
       },
+      "systemAddonRegistry()": {
+        "returns": {
+          "_0": "The address of the system addon registry contract."
+        }
+      },
       "tokenAccessManagerImplementation()": {
-        "details": "Token access managers are responsible for managing access control for tokens. This function returns the address of the base implementation (template) contract that new token access managers will be created from. This address can change if the underlying logic for token access managers is upgraded.",
         "returns": {
-          "tokenAccessManagerImplementationAddress": "The blockchain address of the smart contract containing the"
+          "_0": "The address of the access manager implementation contract."
         }
       },
-      "tokenFactoryImplementation(bytes32)": {
-        "params": {
-          "factoryTypeHash": "The hash of the factory type."
-        },
+      "tokenFactoryRegistry()": {
         "returns": {
-          "_0": "The address of the token factory implementation contract."
-        }
-      },
-      "tokenFactoryProxy(bytes32)": {
-        "params": {
-          "factoryTypeHash": "The hash of the factory type."
-        },
-        "returns": {
-          "_0": "The address of the token factory proxy contract."
+          "_0": "The address of the token factory registry contract."
         }
       },
       "tokenIdentityImplementation()": {
-        "details": "Token identity contracts are a specialized type of identity contract that might be specifically linked to certain tokens, tokenized assets, or have features tailored for token interactions. This function returns the address of the base implementation (template) contract that new token identity contracts will be created from. This address can change if the underlying logic for token identity contracts is upgraded.",
         "returns": {
-          "tokenIdentityImplementationAddress": "The blockchain address of the smart contract containing the token identity logic."
+          "_0": "The address of the token identity implementation contract."
         }
       },
-      "topicSchemeRegistryImplementation()": {
-        "details": "Topic scheme registries manage the registration and lifecycle of topic schemes used for claim data structures. They store mapping between topic IDs and their corresponding signatures for encoding/decoding claim data. This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for managing topic schemes. This address can change if the topic scheme registry's logic is upgraded.",
-        "returns": {
-          "topicSchemeRegistryImplementationAddress": "The blockchain address of the smart contract containing the topic scheme registry logic."
-        }
-      },
-      "topicSchemeRegistryProxy()": {
+      "topicSchemeRegistry()": {
         "details": "This function returns the stable, unchanging address of the topic scheme registry's proxy contract. To interact with the topic scheme registry (e.g., to register topic schemes or retrieve topic signatures), you should use this proxy address. It will forward calls to the current logic implementation.",
         "returns": {
           "topicSchemeRegistryProxyAddress": "The blockchain address of the topic scheme registry module's proxy."
         }
       },
-      "trustedIssuersRegistryImplementation()": {
-        "details": "Trusted issuers registries play a crucial role in decentralized identity systems. They maintain a list of entities (known as \"issuers,\" such as KYC providers, accreditation bodies, etc.) that are authorized and trusted to make verifiable claims or attestations about identities (e.g., \"User X is KYC verified,\" \"Entity Y is an accredited investor\"). This function returns the specific address of the contract that holds the actual programming code (the \"logic\") for managing this list of trusted issuers. This address can change if the trusted issuers registry's logic is upgraded.",
-        "returns": {
-          "trustedIssuersRegistryImplementationAddress": "The blockchain address of the smart contract containing the trusted issuers registry logic."
-        }
-      },
-      "trustedIssuersRegistryProxy()": {
+      "trustedIssuersRegistry()": {
         "details": "This function returns the stable, unchanging address of the trusted issuers registry's proxy contract. To interact with the trusted issuers registry (e.g., to check if an issuer is trusted or to add/remove issuers, depending on its features), you should use this proxy address. It will forward calls to the current logic implementation.",
         "returns": {
           "trustedIssuersRegistryProxyAddress": "The blockchain address of the trusted issuers registry module's proxy."
@@ -2182,21 +1459,17 @@
       }
     },
     "events": {
-      "AddonImplementationUpdated(address,bytes32,address)": {
+      "Bootstrapped(address,address,address,address,address,address,address,address,address,address,address)": {
         "params": {
-          "addonTypeHash": "The hash of the addon type being updated.",
-          "newImplementation": "The address of the new system addon implementation contract.",
-          "sender": "The address that called the `setAddonImplementation` function."
-        }
-      },
-      "Bootstrapped(address,address,address,address,address,address,address,address)": {
-        "params": {
+          "complianceModuleRegistryProxy": "The address of the deployed ATKComplianceModuleRegistryProxy contract.",
           "complianceProxy": "The address of the deployed ATKComplianceProxy contract.",
           "identityFactoryProxy": "The address of the deployed ATKIdentityFactoryProxy contract.",
           "identityRegistryProxy": "The address of the deployed ATKIdentityRegistryProxy contract.",
           "identityRegistryStorageProxy": "The address of the deployed ATKIdentityRegistryStorageProxy contract.",
           "identityVerificationModule": "The address of the deployed IdentityVerificationModule contract.",
           "sender": "The address that called the `bootstrap` function.",
+          "systemAddonRegistryProxy": "The address of the deployed ATKSystemAddonRegistryProxy contract.",
+          "tokenFactoryRegistryProxy": "The address of the deployed ATKTokenFactoryRegistryProxy contract.",
           "topicSchemeRegistryProxy": "The address of the deployed ATKTopicSchemeRegistryProxy contract.",
           "trustedIssuersRegistryProxy": "The address of the deployed ATKTrustedIssuersRegistryProxy contract."
         }
@@ -2205,6 +1478,21 @@
         "params": {
           "newImplementation": "The address of the new compliance module implementation contract.",
           "sender": "The address that called the `updateComplianceImplementation` function."
+        }
+      },
+      "ComplianceModuleRegistered(address,string,bytes32,address,uint256)": {
+        "params": {
+          "module": "The address of the compliance module.",
+          "moduleTypeHash": "The type hash of the compliance module.",
+          "name": "The name of the compliance module.",
+          "sender": "The address that called the registration function.",
+          "timestamp": "The timestamp of the registration."
+        }
+      },
+      "ComplianceModuleRegistryImplementationUpdated(address,address)": {
+        "params": {
+          "newImplementation": "The address of the new compliance module registry implementation contract.",
+          "sender": "The address that called the function."
         }
       },
       "IdentityFactoryImplementationUpdated(address,address)": {
@@ -2232,15 +1520,10 @@
           "sender": "The address that called the `updateIdentityRegistryStorageImplementation` function."
         }
       },
-      "SystemAddonCreated(address,string,bytes32,address,address,bytes,uint256)": {
+      "SystemAddonRegistryImplementationUpdated(address,address)": {
         "params": {
-          "implementation": "The address of the deployed system addon implementation.",
-          "initializationData": "The encoded function call to initialize the system addon.",
-          "name": "The human-readable name of the system addon.",
-          "proxyAddress": "The address of the deployed system addon proxy.",
-          "sender": "The address that created the system addon.",
-          "timestamp": "The timestamp of the system addon creation.",
-          "typeId": "The type identifier of the system addon."
+          "newImplementation": "The address of the new addon registry implementation contract.",
+          "sender": "The address that called the function."
         }
       },
       "TokenAccessManagerImplementationUpdated(address,address)": {
@@ -2249,21 +1532,10 @@
           "sender": "The address that called the `updateTokenAccessManagerImplementation` function."
         }
       },
-      "TokenFactoryCreated(address,string,bytes32,address,address,uint256)": {
+      "TokenFactoryRegistryImplementationUpdated(address,address)": {
         "params": {
-          "implementationAddress": "The address of the deployed token factory implementation.",
-          "name": "The human-readable name of the token factory.",
-          "proxyAddress": "The address of the deployed token factory proxy.",
-          "sender": "The address that registered the token factory.",
-          "timestamp": "The timestamp of the token factory creation.",
-          "typeId": "The type identifier of the token factory."
-        }
-      },
-      "TokenFactoryImplementationUpdated(address,bytes32,address)": {
-        "params": {
-          "factoryTypeHash": "The hash of the factory type being updated.",
-          "newImplementation": "The address of the new token factory implementation contract.",
-          "sender": "The address that called the `updateTokenFactoryImplementation` function."
+          "newImplementation": "The address of the new token factory registry implementation contract.",
+          "sender": "The address that called the function."
         }
       },
       "TokenIdentityImplementationUpdated(address,address)": {
@@ -2288,5 +1560,5 @@
     },
     "title": "IATKSystem Interface"
   },
-  "id": 151
+  "id": 147
 }

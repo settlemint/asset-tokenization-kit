@@ -46,6 +46,16 @@
         }
       ],
       "stateMutability": "pure"
+    },
+    {
+      "type": "error",
+      "name": "CliffExceedsVestingDuration",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidVestingDuration",
+      "inputs": []
     }
   ],
   "bytecode": {
@@ -62,7 +72,7 @@
     "calculateClaimableAmount(address,uint256,uint256,uint256)": "07a297ab",
     "supportsMultipleClaims()": "f826851a"
   },
-  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"vestingStartTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedAmount\",\"type\":\"uint256\"}],\"name\":\"calculateClaimableAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"claimableAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"supportsMultipleClaims\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"supportsMultiple\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"details\":\"This interface allows for different vesting calculation strategies (e.g., linear, cliff-based).      Implementations should be stateless and calculate claimable amounts based on provided parameters.\",\"kind\":\"dev\",\"methods\":{\"calculateClaimableAmount(address,uint256,uint256,uint256)\":{\"params\":{\"account\":\"The address of the claimant.\",\"claimedAmount\":\"The amount already claimed for this specific index.\",\"totalAmount\":\"The total allocation for the specific index being claimed.\",\"vestingStartTime\":\"The timestamp when vesting started for this allocation.\"},\"returns\":{\"claimableAmount\":\"The amount that can be claimed now.\"}},\"supportsMultipleClaims()\":{\"returns\":{\"supportsMultiple\":\"True if the strategy supports multiple claims over time.\"}}},\"title\":\"IATKVestingStrategy\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"calculateClaimableAmount(address,uint256,uint256,uint256)\":{\"notice\":\"Calculates the amount claimable based on the strategy's vesting parameters.\"},\"supportsMultipleClaims()\":{\"notice\":\"Returns whether this strategy supports multiple claims (vesting).\"}},\"notice\":\"Interface for vesting strategy implementations in ATK vesting airdrop contracts.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol\":\"IATKVestingStrategy\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol\":{\"keccak256\":\"0x4b407d87d884f6e3f8d005f6b5f31760168dd0d7e73b4794b817f64215a33153\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://27e95586b6131529d539130c90d51fa3c625f5d047451780f2c9f551737bdc84\",\"dweb:/ipfs/QmUa7u4dMP99YoWPpepXWQvGUhUNZKzYcNG44XZV8RZm6R\"]}},\"version\":1}",
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"CliffExceedsVestingDuration\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidVestingDuration\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"vestingStartTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedAmount\",\"type\":\"uint256\"}],\"name\":\"calculateClaimableAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"claimableAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"supportsMultipleClaims\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"supportsMultiple\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"details\":\"This interface allows for different vesting calculation strategies (e.g., linear, cliff-based).      Implementations should be stateless and calculate claimable amounts based on provided parameters.\",\"kind\":\"dev\",\"methods\":{\"calculateClaimableAmount(address,uint256,uint256,uint256)\":{\"params\":{\"account\":\"The address of the claimant.\",\"claimedAmount\":\"The amount already claimed for this specific index.\",\"totalAmount\":\"The total allocation for the specific index being claimed.\",\"vestingStartTime\":\"The timestamp when vesting started for this allocation.\"},\"returns\":{\"claimableAmount\":\"The amount that can be claimed now.\"}},\"supportsMultipleClaims()\":{\"returns\":{\"supportsMultiple\":\"True if the strategy supports multiple claims over time.\"}}},\"title\":\"IATKVestingStrategy\",\"version\":1},\"userdoc\":{\"errors\":{\"CliffExceedsVestingDuration()\":[{\"notice\":\"Error indicating that the cliff duration exceeds the vesting duration.\"}],\"InvalidVestingDuration()\":[{\"notice\":\"Error indicating that an invalid vesting duration was provided.\"}]},\"kind\":\"user\",\"methods\":{\"calculateClaimableAmount(address,uint256,uint256,uint256)\":{\"notice\":\"Calculates the amount claimable based on the strategy's vesting parameters.\"},\"supportsMultipleClaims()\":{\"notice\":\"Returns whether this strategy supports multiple claims (vesting).\"}},\"notice\":\"Interface for vesting strategy implementations in ATK vesting airdrop contracts.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol\":\"IATKVestingStrategy\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol\":{\"keccak256\":\"0x1420e4c7893aefd7a8e6f8005d45e49ded0962eb48844f02cace8d5eb80c1ffb\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://6bc6a150382bb409761d493cb19f5833d6cda901ac58e44b753295ccc8aa5241\",\"dweb:/ipfs/Qme34qnstjvVhKmNNYit9H3WnrFhZgG8Tahpk1bm8rsbh8\"]}},\"version\":1}",
   "metadata": {
     "compiler": {
       "version": "0.8.28+commit.7893614a"
@@ -70,6 +80,16 @@
     "language": "Solidity",
     "output": {
       "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "CliffExceedsVestingDuration"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidVestingDuration"
+        },
         {
           "inputs": [
             {
@@ -180,10 +200,10 @@
     },
     "sources": {
       "contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol": {
-        "keccak256": "0x4b407d87d884f6e3f8d005f6b5f31760168dd0d7e73b4794b817f64215a33153",
+        "keccak256": "0x1420e4c7893aefd7a8e6f8005d45e49ded0962eb48844f02cace8d5eb80c1ffb",
         "urls": [
-          "bzz-raw://27e95586b6131529d539130c90d51fa3c625f5d047451780f2c9f551737bdc84",
-          "dweb:/ipfs/QmUa7u4dMP99YoWPpepXWQvGUhUNZKzYcNG44XZV8RZm6R"
+          "bzz-raw://6bc6a150382bb409761d493cb19f5833d6cda901ac58e44b753295ccc8aa5241",
+          "dweb:/ipfs/Qme34qnstjvVhKmNNYit9H3WnrFhZgG8Tahpk1bm8rsbh8"
         ],
         "license": "FSL-1.1-MIT"
       }
@@ -200,6 +220,18 @@
       "supportsMultipleClaims()": {
         "notice": "Returns whether this strategy supports multiple claims (vesting)."
       }
+    },
+    "errors": {
+      "CliffExceedsVestingDuration()": [
+        {
+          "notice": "Error indicating that the cliff duration exceeds the vesting duration."
+        }
+      ],
+      "InvalidVestingDuration()": [
+        {
+          "notice": "Error indicating that an invalid vesting duration was provided."
+        }
+      ]
     },
     "notice": "Interface for vesting strategy implementations in ATK vesting airdrop contracts."
   },
@@ -228,5 +260,5 @@
     },
     "title": "IATKVestingStrategy"
   },
-  "id": 25
+  "id": 22
 }

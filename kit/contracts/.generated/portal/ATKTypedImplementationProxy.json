@@ -1,0 +1,275 @@
+{
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        {
+          "name": "registryAddress_",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "typeHash_",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "initializeData_",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "fallback",
+      "stateMutability": "payable"
+    },
+    {
+      "type": "receive",
+      "stateMutability": "payable"
+    },
+    {
+      "type": "error",
+      "name": "ETHTransfersNotAllowed",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InitializationWithZeroAddress",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidRegistryAddress",
+      "inputs": []
+    }
+  ],
+  "bytecode": {
+    "object": "0x6080604052346100a4576104d5803803809161001a826100bc565b60803960608160800191126100a45761003161010a565b60a05160c05192916001600160401b0384116100a45782609f850112156100a457836080015161006081610120565b9361006e60405195866100e7565b81855260a082870101116100a4576020815f9260a061009598018388015e8501015261015e565b604051610147908161034e8239f35b5f80fd5b634e487b7160e01b5f52604160045260245ffd5b6080601f91909101601f19168101906001600160401b038211908210176100e257604052565b6100a8565b601f909101601f19168101906001600160401b038211908210176100e257604052565b608051906001600160a01b03821682036100a457565b6001600160401b0381116100e257601f01601f191660200190565b908160209103126100a4575180151581036100a45790565b6040513d5f823e3d90fd5b9091906001600160a01b03811680159081156101dc575b506101cd575f5160206104b55f395f51905f5280546001600160a01b0319166001600160a01b039092169190911790556101cb916101be905f5160206104955f395f51905f5255565b6101c661024e565b6102e0565b565b637bfd2e8360e01b5f5260045ffd5b6040516301ffc9a760e01b81526329e20ef560e11b60048201529150602090829060249082905afa908115610249575f9161021a575b50155f610175565b61023c915060203d602011610242575b61023481836100e7565b81019061013b565b5f610212565b503d61022a565b610153565b60018060a01b035f5160206104b55f395f51905f52541660205f5160206104955f395f51905f52546024604051809481936329e20ef560e11b835260048301525afa908115610249575f916102a1575090565b90506020813d6020116102d8575b816102bc602093836100e7565b810103126100a457516001600160a01b03811681036100a45790565b3d91506102af565b6001600160a01b0381161561033e57815f929160208493519201905af43d15610336573d9061030e82610120565b9161031c60405193846100e7565b82523d5f602084013e5b1561032e5750565b602081519101fd5b606090610326565b63ee0a129760e01b5f5260045ffdfe608060405236156100b1576020608060248160018060a01b037fa31119ed2f30cf540b9f48eb7e1890285b3a2287937a099a1e0f359fc5ce172b54167f2a94c78684c8756e2c9669f50cc2acf3b762274c5f6f55e8495bba510078ce48546329e20ef560e11b83526084525afa80156100a6575f901561011d575060203d60201161009f575b8061009261009a926100c0565b6080016100f7565b61011d565b503d610085565b6040513d5f823e3d90fd5b635d82995b60e01b5f5260045ffd5b601f80199101166080016080811067ffffffffffffffff8211176100e357604052565b634e487b7160e01b5f52604160045260245ffd5b602090607f190112610119576080516001600160a01b03811681036101195790565b5f80fd5b5f8091368280378136915af43d5f803e15610136573d5ff35b3d5ffdfea164736f6c634300081c000a2a94c78684c8756e2c9669f50cc2acf3b762274c5f6f55e8495bba510078ce48a31119ed2f30cf540b9f48eb7e1890285b3a2287937a099a1e0f359fc5ce172b",
+    "sourceMap": "1318:4807:145:-:0;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;:::i;:::-;;;;;;;-1:-1:-1;;;;;1318:4807:145;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;:::i;:::-;;;;;;;;;;;;;;-1:-1:-1;1318:4807:145;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;-1:-1:-1;1318:4807:145;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;1318:4807:145;;;;-1:-1:-1;;;;;1318:4807:145;;;;;;;;;;:::o;:::-;;:::i;:::-;;;;;-1:-1:-1;;1318:4807:145;;;;-1:-1:-1;;;;;1318:4807:145;;;;;;;;;;:::o;:::-;;;;-1:-1:-1;;;;;1318:4807:145;;;;;;:::o;:::-;-1:-1:-1;;;;;1318:4807:145;;;;;;-1:-1:-1;;1318:4807:145;;;;:::o;:::-;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;;;;3142:890;;;;-1:-1:-1;;;;;1318:4807:145;;3256:30;;;:145;;;;3142:890;3239:229;;;-1:-1:-1;;;;;;;;;;;1632:66:145;;-1:-1:-1;;;;;;1632:66:145;-1:-1:-1;;;;;1318:4807:145;;;1632:66;;;;;;4009:15;;3684:95;;-1:-1:-1;;;;;;;;;;;1932:66:145;;3684:95;3864:17;;:::i;:::-;4009:15;:::i;:::-;3142:890::o;3239:229::-;3433:24;;;3284:1;3433:24;;3284:1;3433:24;3256:145;1318:4807;;-1:-1:-1;;;3307:94:145;;-1:-1:-1;;;3307:94:145;;;1318:4807;;-1:-1:-1;3307:94:145;;1318:4807;;;;;;3307:94;;;;;;;3284:1;3307:94;;;3256:145;3306:95;;3256:145;;;3307:94;;;;;;;;;;;;;;;:::i;:::-;;;;;:::i;:::-;;;;;;;;;;;:::i;5702:237::-;1318:4807;;;;;-1:-1:-1;;;;;;;;;;;1318:4807:145;;;-1:-1:-1;;;;;;;;;;;1318:4807:145;5898:34;1318:4807;;3351:49;;;;;;;5898:34;;;;;1318:4807;5898:34;;;;;;;-1:-1:-1;5898:34:145;;;5891:41;5702:237;:::o;5898:34::-;;;1318:4807;5898:34;;1318:4807;5898:34;;;;;;1318:4807;5898:34;;;:::i;:::-;;;1318:4807;;;;;-1:-1:-1;;;;;1318:4807:145;;;;;;5702:237;:::o;5898:34::-;;;-1:-1:-1;5898:34:145;;4716:471;-1:-1:-1;;;;;1318:4807:145;;4843:35;4839:104;;4994:50;4876:1;4994:50;;;;;;;;;;;1318:4807;;;;;;;;;:::i;:::-;;;;;;;;:::i;:::-;;;;4876:1;4994:50;1318:4807;;;;5058:8;5054:127;;4716:471;:::o;5054:127::-;4994:50;5082:89;;;;;1318:4807;;;;;4839:104;4901:31;;;4876:1;4901:31;;4876:1;4901:31",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405236156100b1576020608060248160018060a01b037fa31119ed2f30cf540b9f48eb7e1890285b3a2287937a099a1e0f359fc5ce172b54167f2a94c78684c8756e2c9669f50cc2acf3b762274c5f6f55e8495bba510078ce48546329e20ef560e11b83526084525afa80156100a6575f901561011d575060203d60201161009f575b8061009261009a926100c0565b6080016100f7565b61011d565b503d610085565b6040513d5f823e3d90fd5b635d82995b60e01b5f5260045ffd5b601f80199101166080016080811067ffffffffffffffff8211176100e357604052565b634e487b7160e01b5f52604160045260245ffd5b602090607f190112610119576080516001600160a01b03811681036101195790565b5f80fd5b5f8091368280378136915af43d5f803e15610136573d5ff35b3d5ffdfea164736f6c634300081c000a",
+    "sourceMap": "1318:4807:145:-:0;;;;;;;;;5898:34;1318:4807;;;;;;1632:66;;1318:4807;1932:66;;1318:4807;;;5898:34;;;1318:4807;5898:34;;;;;;-1:-1:-1;5898:34:145;;2381:17:206;5898:34:145;;1318:4807;5898:34;1318:4807;5898:34;;;;;;;;;:::i;:::-;1318:4807;5898:34;;:::i;:::-;2381:17:206;:::i;5898:34:145:-;-1:-1:-1;5898:34:145;;;;1318:4807;;;-1:-1:-1;1318:4807:145;;;;;;6092:24;;;;;;;;1318:4807;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;-1:-1:-1;1318:4807:145;;;;;-1:-1:-1;1318:4807:145;;;;;;;;;;;;-1:-1:-1;;;;;1318:4807:145;;;;;;;:::o;:::-;-1:-1:-1;1318:4807:145;;949:895:206;1019:819;949:895;;1019:819;;;;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"registryAddress_\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"typeHash_\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"initializeData_\",\"type\":\"bytes\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"ETHTransfersNotAllowed\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InitializationWithZeroAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidRegistryAddress\",\"type\":\"error\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"details\":\"Child contracts must:      1. Provide their unique storage slot for the IATKSystem address via the constructor.      2. Implement `_getSpecificImplementationAddress` to fetch their logic contract address from IATKSystem         and revert with a specific error if not found.      3. In their own constructor, fetch the implementation address, prepare initialization data,         and then call `_performInitializationDelegatecall`.\",\"errors\":{\"ETHTransfersNotAllowed()\":[{\"details\":\"Many contracts are not designed to receive or hold Ether directly, and will revert such transactions to prevent loss of funds or unexpected behavior.\"}],\"InitializationWithZeroAddress()\":[{\"details\":\"This typically occurs in proxy constructors if the logic contract address fetched from the system is address(0).\"}]},\"kind\":\"dev\",\"methods\":{\"constructor\":{\"details\":\"Validates and stores the `registryAddress_` and `typeHash_`.\",\"params\":{\"initializeData_\":\"The data to pass to the implementation's `initialize` function.\",\"registryAddress_\":\"The address of the IATKTypedImplementationRegistry contract.\",\"typeHash_\":\"The type hash of the implementation.\"}}},\"stateVariables\":{\"_ATK_TYPED_IMPLEMENTATION_REGISTRY_ADDRESS_SLOT\":{\"details\":\"Fixed storage slot for the IATKTypedImplementationRegistry address. Value: keccak256(\\\"org.smart.contracts.proxy.ATKTypedImplementationProxy.registryAddress\\\")\"},\"_ATK_TYPED_IMPLEMENTATION_REGISTRY_TYPE_HASH_SLOT\":{\"details\":\"Fixed storage slot for the type hash. Value: keccak256(\\\"org.smart.contracts.proxy.ATKTypedImplementationProxy.typeHash\\\")\"}},\"title\":\"Abstract Base Proxy for ATK System Components\",\"version\":1},\"userdoc\":{\"errors\":{\"ETHTransfersNotAllowed()\":[{\"notice\":\"Error indicating that an attempt was made to send Ether to a contract that does not allow or expect it.\"}],\"InitializationWithZeroAddress()\":[{\"notice\":\"Error indicating that an attempt was made to initialize a component with a zero address for its implementation.\"}]},\"kind\":\"user\",\"methods\":{\"constructor\":{\"notice\":\"Constructs the ATKTypedImplementationProxy.\"}},\"notice\":\"Provides common functionality for proxy contracts that interact with an IATKSystem contract         to determine their implementation address and handle initialization.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/system/ATKTypedImplementationProxy.sol\":\"ATKTypedImplementationProxy\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/system/ATKSystemErrors.sol\":{\"keccak256\":\"0xb25dad91c3bd82830df4fd80d645264a54303a04f2a7e3599b7953546f6d5e28\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://728ea6df7945ec4772b493e82a3028809b25205adc6638185d0d2f0f11d7fc13\",\"dweb:/ipfs/QmNzsofiSzpSwJcRqYhgVU9EaexNNiYmfKnDmztrjX4Z6Y\"]},\"contracts/system/ATKTypedImplementationProxy.sol\":{\"keccak256\":\"0x3cfaf7a43d432bbf755b3c1092308791ce63ba7d15c728bea061e76b21df91f6\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://e68c56e023f5fd9ec5de50e638c244dc53b12e813a9b113ca5cd519ed290a856\",\"dweb:/ipfs/QmdEd5238PiGxqMgKP9G8fWNZbZnUyTgeHCxsYKPxx2uF9\"]},\"contracts/system/IATKSystem.sol\":{\"keccak256\":\"0x9b142a029ec94141890b4000c54583ac8bd261c4c9cc1a17724f8601c581293b\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://ac8c729ce44ab357ea1bd0de2c7a04cc7666550af9c8253a30e3329c29c13551\",\"dweb:/ipfs/QmTJPSssQ8WS5Uw34WpzAHyvebe9Z2XAojUD6yzMS6iqYC\"]},\"contracts/system/IATKTypedImplementationRegistry.sol\":{\"keccak256\":\"0x6ce6bfabc160b6aaf73cf33771dbf261909276527708c97f7a2aa3f63b062e49\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://3de7cda74c4238694045a413425dd90bbe801b0b7e0bab88ce4a72fa67ee5cba\",\"dweb:/ipfs/Qma2c459NfsuxcKf1CCax8Vjn5BvXQVnsWiY12HBFzo3z5\"]},\"dependencies/@openzeppelin-contracts-5.3.0/proxy/Proxy.sol\":{\"keccak256\":\"0xc3f2ec76a3de8ed7a7007c46166f5550c72c7709e3fc7e8bb3111a7191cdedbd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e73efb4c2ca655882dc237c6b4f234a9bd36d97159d8fcaa837eb01171f726ac\",\"dweb:/ipfs/QmTNnnv7Gu5fs5G1ZMh7Fexp8N4XUs3XrNAngjcxgiss3e\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/StorageSlot.sol\":{\"keccak256\":\"0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9f660b1f351b757dfe01438e59888f31f33ded3afcf5cb5b0d9bf9aa6f320a8b\",\"dweb:/ipfs/QmarDJ5hZEgBtCmmrVzEZWjub9769eD686jmzb2XpSU1cM\"]},\"dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621\",\"dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.28+commit.7893614a"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "registryAddress_",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "typeHash_",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "initializeData_",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "ETHTransfersNotAllowed"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InitializationWithZeroAddress"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidRegistryAddress"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "fallback"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "receive"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "constructor": {
+            "details": "Validates and stores the `registryAddress_` and `typeHash_`.",
+            "params": {
+              "initializeData_": "The data to pass to the implementation's `initialize` function.",
+              "registryAddress_": "The address of the IATKTypedImplementationRegistry contract.",
+              "typeHash_": "The type hash of the implementation."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "constructor": {
+            "notice": "Constructs the ATKTypedImplementationProxy."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/",
+        "@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/",
+        "@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/",
+        "forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/",
+        "forge-std/=dependencies/forge-std-1.9.7/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "none"
+      },
+      "compilationTarget": {
+        "contracts/system/ATKTypedImplementationProxy.sol": "ATKTypedImplementationProxy"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/system/ATKSystemErrors.sol": {
+        "keccak256": "0xb25dad91c3bd82830df4fd80d645264a54303a04f2a7e3599b7953546f6d5e28",
+        "urls": [
+          "bzz-raw://728ea6df7945ec4772b493e82a3028809b25205adc6638185d0d2f0f11d7fc13",
+          "dweb:/ipfs/QmNzsofiSzpSwJcRqYhgVU9EaexNNiYmfKnDmztrjX4Z6Y"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/system/ATKTypedImplementationProxy.sol": {
+        "keccak256": "0x3cfaf7a43d432bbf755b3c1092308791ce63ba7d15c728bea061e76b21df91f6",
+        "urls": [
+          "bzz-raw://e68c56e023f5fd9ec5de50e638c244dc53b12e813a9b113ca5cd519ed290a856",
+          "dweb:/ipfs/QmdEd5238PiGxqMgKP9G8fWNZbZnUyTgeHCxsYKPxx2uF9"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/system/IATKSystem.sol": {
+        "keccak256": "0x9b142a029ec94141890b4000c54583ac8bd261c4c9cc1a17724f8601c581293b",
+        "urls": [
+          "bzz-raw://ac8c729ce44ab357ea1bd0de2c7a04cc7666550af9c8253a30e3329c29c13551",
+          "dweb:/ipfs/QmTJPSssQ8WS5Uw34WpzAHyvebe9Z2XAojUD6yzMS6iqYC"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "contracts/system/IATKTypedImplementationRegistry.sol": {
+        "keccak256": "0x6ce6bfabc160b6aaf73cf33771dbf261909276527708c97f7a2aa3f63b062e49",
+        "urls": [
+          "bzz-raw://3de7cda74c4238694045a413425dd90bbe801b0b7e0bab88ce4a72fa67ee5cba",
+          "dweb:/ipfs/Qma2c459NfsuxcKf1CCax8Vjn5BvXQVnsWiY12HBFzo3z5"
+        ],
+        "license": "FSL-1.1-MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/proxy/Proxy.sol": {
+        "keccak256": "0xc3f2ec76a3de8ed7a7007c46166f5550c72c7709e3fc7e8bb3111a7191cdedbd",
+        "urls": [
+          "bzz-raw://e73efb4c2ca655882dc237c6b4f234a9bd36d97159d8fcaa837eb01171f726ac",
+          "dweb:/ipfs/QmTNnnv7Gu5fs5G1ZMh7Fexp8N4XUs3XrNAngjcxgiss3e"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/StorageSlot.sol": {
+        "keccak256": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+        "urls": [
+          "bzz-raw://9f660b1f351b757dfe01438e59888f31f33ded3afcf5cb5b0d9bf9aa6f320a8b",
+          "dweb:/ipfs/QmarDJ5hZEgBtCmmrVzEZWjub9769eD686jmzb2XpSU1cM"
+        ],
+        "license": "MIT"
+      },
+      "dependencies/@openzeppelin-contracts-5.3.0/utils/introspection/IERC165.sol": {
+        "keccak256": "0x79796192ec90263f21b464d5bc90b777a525971d3de8232be80d9c4f9fb353b8",
+        "urls": [
+          "bzz-raw://f6fda447a62815e8064f47eff0dd1cf58d9207ad69b5d32280f8d7ed1d1e4621",
+          "dweb:/ipfs/QmfDRc7pxfaXB2Dh9np5Uf29Na3pQ7tafRS684wd3GLjVL"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "version": 1,
+    "kind": "user",
+    "methods": {
+      "constructor": {
+        "notice": "Constructs the ATKTypedImplementationProxy."
+      }
+    },
+    "errors": {
+      "ETHTransfersNotAllowed()": [
+        {
+          "notice": "Error indicating that an attempt was made to send Ether to a contract that does not allow or expect it."
+        }
+      ],
+      "InitializationWithZeroAddress()": [
+        {
+          "notice": "Error indicating that an attempt was made to initialize a component with a zero address for its implementation."
+        }
+      ]
+    },
+    "notice": "Provides common functionality for proxy contracts that interact with an IATKSystem contract         to determine their implementation address and handle initialization."
+  },
+  "devdoc": {
+    "version": 1,
+    "kind": "dev",
+    "author": "SettleMint Tokenization Services",
+    "details": "Child contracts must:      1. Provide their unique storage slot for the IATKSystem address via the constructor.      2. Implement `_getSpecificImplementationAddress` to fetch their logic contract address from IATKSystem         and revert with a specific error if not found.      3. In their own constructor, fetch the implementation address, prepare initialization data,         and then call `_performInitializationDelegatecall`.",
+    "methods": {
+      "constructor": {
+        "details": "Validates and stores the `registryAddress_` and `typeHash_`.",
+        "params": {
+          "initializeData_": "The data to pass to the implementation's `initialize` function.",
+          "registryAddress_": "The address of the IATKTypedImplementationRegistry contract.",
+          "typeHash_": "The type hash of the implementation."
+        }
+      }
+    },
+    "errors": {
+      "ETHTransfersNotAllowed()": [
+        {
+          "details": "Many contracts are not designed to receive or hold Ether directly, and will revert such transactions to prevent loss of funds or unexpected behavior."
+        }
+      ],
+      "InitializationWithZeroAddress()": [
+        {
+          "details": "This typically occurs in proxy constructors if the logic contract address fetched from the system is address(0)."
+        }
+      ]
+    },
+    "title": "Abstract Base Proxy for ATK System Components"
+  },
+  "id": 145
+}

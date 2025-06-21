@@ -27,7 +27,7 @@
   "methodIdentifiers": {
     "typeId()": "8f940f63"
   },
-  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"typeId\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This interface is used to identify the type of a contract.      It is used to identify the type of a contract.      It is used to identify the type of a contract.\",\"kind\":\"dev\",\"methods\":{},\"title\":\"IWithTypeIdentifier\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"typeId()\":{\"notice\":\"Returns a unique identifier for the type of this contract.\"}},\"notice\":\"Interface for contracts that have a unique type identifier.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/system/IWithTypeIdentifier.sol\":\"IWithTypeIdentifier\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/system/IWithTypeIdentifier.sol\":{\"keccak256\":\"0x5daeff2cd8e4fdd75391e29db38bce1dce171216a0155fba695e0b7d5cabd4ee\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://ea7a2fb858b8c9a05d6e67791264656a7577f1642a3a4310bd35164d73794764\",\"dweb:/ipfs/QmNnL4GMCsa7p1TBkbC43g7jcDNoUJNRdHe5CpJrTZTQTY\"]}},\"version\":1}",
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"typeId\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This interface is used to identify the type of a contract.      It is used to identify the type of a contract.      It is used to identify the type of a contract.\",\"kind\":\"dev\",\"methods\":{},\"title\":\"IWithTypeIdentifier\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"typeId()\":{\"notice\":\"Returns a unique identifier for the type of this contract.\"}},\"notice\":\"Interface for contracts that have a unique type identifier.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/smart/interface/IWithTypeIdentifier.sol\":\"IWithTypeIdentifier\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/smart/interface/IWithTypeIdentifier.sol\":{\"keccak256\":\"0x5daeff2cd8e4fdd75391e29db38bce1dce171216a0155fba695e0b7d5cabd4ee\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://ea7a2fb858b8c9a05d6e67791264656a7577f1642a3a4310bd35164d73794764\",\"dweb:/ipfs/QmNnL4GMCsa7p1TBkbC43g7jcDNoUJNRdHe5CpJrTZTQTY\"]}},\"version\":1}",
   "metadata": {
     "compiler": {
       "version": "0.8.28+commit.7893614a"
@@ -83,14 +83,14 @@
         "bytecodeHash": "none"
       },
       "compilationTarget": {
-        "contracts/system/IWithTypeIdentifier.sol": "IWithTypeIdentifier"
+        "contracts/smart/interface/IWithTypeIdentifier.sol": "IWithTypeIdentifier"
       },
       "evmVersion": "cancun",
       "libraries": {},
       "viaIR": true
     },
     "sources": {
-      "contracts/system/IWithTypeIdentifier.sol": {
+      "contracts/smart/interface/IWithTypeIdentifier.sol": {
         "keccak256": "0x5daeff2cd8e4fdd75391e29db38bce1dce171216a0155fba695e0b7d5cabd4ee",
         "urls": [
           "bzz-raw://ea7a2fb858b8c9a05d6e67791264656a7577f1642a3a4310bd35164d73794764",
@@ -117,5 +117,5 @@
     "details": "This interface is used to identify the type of a contract.      It is used to identify the type of a contract.      It is used to identify the type of a contract.",
     "title": "IWithTypeIdentifier"
   },
-  "id": 153
+  "id": 128
 }

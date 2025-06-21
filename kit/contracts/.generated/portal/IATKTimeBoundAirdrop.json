@@ -205,6 +205,31 @@
       ],
       "outputs": [],
       "stateMutability": "nonpayable"
+    },
+    {
+      "type": "error",
+      "name": "AirdropEnded",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "AirdropNotStarted",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidEndTime",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidStartTime",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "InvalidTimeWindow",
+      "inputs": []
     }
   ],
   "bytecode": {
@@ -232,7 +257,7 @@
     "token()": "fc0c546a",
     "withdrawTokens(address)": "49df728c"
   },
-  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"indices\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"totalAmounts\",\"type\":\"uint256[]\"},{\"internalType\":\"bytes32[][]\",\"name\":\"merkleProofs\",\"type\":\"bytes32[][]\"}],\"name\":\"batchClaim\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"bytes32[]\",\"name\":\"merkleProof\",\"type\":\"bytes32[]\"}],\"name\":\"claim\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"claimTracker\",\"outputs\":[{\"internalType\":\"contract IATKClaimTracker\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"endTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getClaimedAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTimeRemaining\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"timeRemaining\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isActive\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"active\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"}],\"name\":\"isClaimed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"merkleRoot\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"startTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"withdrawTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"details\":\"Defines the functions specific to time-bound airdrops where claims are restricted to a specific time window.\",\"kind\":\"dev\",\"methods\":{\"batchClaim(uint256[],uint256[],bytes32[][])\":{\"params\":{\"indices\":\"The indices of the claims in the Merkle tree.\",\"merkleProofs\":\"The Merkle proofs for each index.\",\"totalAmounts\":\"The total amounts allocated for each index.\"}},\"claim(uint256,uint256,bytes32[])\":{\"params\":{\"index\":\"The index of the claim in the Merkle tree.\",\"merkleProof\":\"The Merkle proof array.\",\"totalAmount\":\"The total amount allocated for this index.\"}},\"claimTracker()\":{\"returns\":{\"_0\":\"The claim tracker contract.\"}},\"endTime()\":{\"returns\":{\"_0\":\"The timestamp when claims end.\"}},\"getClaimedAmount(uint256)\":{\"params\":{\"index\":\"The index to check.\"},\"returns\":{\"_0\":\"claimedAmount The amount already claimed for this index.\"}},\"getTimeRemaining()\":{\"returns\":{\"timeRemaining\":\"The number of seconds remaining, 0 if ended.\"}},\"isActive()\":{\"returns\":{\"active\":\"True if the current time is within the claim window.\"}},\"isClaimed(uint256,uint256)\":{\"params\":{\"index\":\"The index to check in the Merkle tree.\",\"totalAmount\":\"The total amount allocated for this index.\"},\"returns\":{\"_0\":\"claimed True if the index has been fully claimed, false otherwise.\"}},\"merkleRoot()\":{\"returns\":{\"_0\":\"The Merkle root for verifying airdrop claims.\"}},\"name()\":{\"returns\":{\"_0\":\"The human-readable name of the airdrop.\"}},\"startTime()\":{\"returns\":{\"_0\":\"The timestamp when claims can begin.\"}},\"token()\":{\"returns\":{\"_0\":\"The ERC20 token being distributed.\"}},\"withdrawTokens(address)\":{\"params\":{\"to\":\"The address to send the withdrawn tokens to.\"}}},\"title\":\"IATKTimeBoundAirdrop\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"batchClaim(uint256[],uint256[],bytes32[][])\":{\"notice\":\"Claims multiple airdrop allocations for the caller in a single transaction.\"},\"claim(uint256,uint256,bytes32[])\":{\"notice\":\"Claims an airdrop allocation for the caller.\"},\"claimTracker()\":{\"notice\":\"Returns the claim tracker contract.\"},\"endTime()\":{\"notice\":\"Returns the end time when claims are no longer available.\"},\"getClaimedAmount(uint256)\":{\"notice\":\"Gets the amount already claimed for a specific index.\"},\"getTimeRemaining()\":{\"notice\":\"Returns the time remaining until the airdrop starts (if not started) or ends (if active).\"},\"isActive()\":{\"notice\":\"Checks if the airdrop is currently active (within the time window).\"},\"isClaimed(uint256,uint256)\":{\"notice\":\"Checks if a claim has been fully claimed for a specific index.\"},\"merkleRoot()\":{\"notice\":\"Returns the Merkle root for verifying airdrop claims.\"},\"name()\":{\"notice\":\"Returns the name of this airdrop.\"},\"startTime()\":{\"notice\":\"Returns the start time when claims become available.\"},\"token()\":{\"notice\":\"Returns the token being distributed in this airdrop.\"},\"withdrawTokens(address)\":{\"notice\":\"Allows the owner to withdraw any tokens remaining in the contract.\"}},\"notice\":\"Interface for time-bound airdrop contracts in the ATK Protocol.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdrop.sol\":\"IATKTimeBoundAirdrop\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/airdrop/IATKAirdrop.sol\":{\"keccak256\":\"0x5556406001ca17a94dfeb60a9db57417b262020690af11bf58dc5893085b7297\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://f426858498d7594fdc8ec019332bb69689c5d6db8f6b5ee4c51b81d5fd3c2d13\",\"dweb:/ipfs/QmbA7Bc5JRPXn47hAHq9nWQo9LR5EDk18savmyxr5nqiSh\"]},\"contracts/addons/airdrop/claim-tracker/IATKClaimTracker.sol\":{\"keccak256\":\"0x9e3a319030370650afc13f8c1fc8c3fb3570072849200787b68c19546b6c68be\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://85ba8ece757f0f2bce8a517ac93e7a967cd5fc60eb5b4af65004396453fe792f\",\"dweb:/ipfs/QmQ9Wvi78aWmEvT3LmisnM1QGKRPBLJUhKeRKM6g8yUzne\"]},\"contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdrop.sol\":{\"keccak256\":\"0x304354b3b7b1208f1f71c0ca677c4aec61fc6f67e956aae00a98443dd46d5891\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://15b76e5dbaf8d12323393e15cc59a74458d4850feebe74228a91dd8f6b8bdf81\",\"dweb:/ipfs/QmXahQLS6coAtJQmFWzDv92j9ePutqzuPjzfAPEVH8iXW3\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db\",\"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9\"]}},\"version\":1}",
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.28+commit.7893614a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"AirdropEnded\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"AirdropNotStarted\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidEndTime\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidStartTime\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidTimeWindow\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"indices\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"totalAmounts\",\"type\":\"uint256[]\"},{\"internalType\":\"bytes32[][]\",\"name\":\"merkleProofs\",\"type\":\"bytes32[][]\"}],\"name\":\"batchClaim\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"bytes32[]\",\"name\":\"merkleProof\",\"type\":\"bytes32[]\"}],\"name\":\"claim\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"claimTracker\",\"outputs\":[{\"internalType\":\"contract IATKClaimTracker\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"endTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getClaimedAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTimeRemaining\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"timeRemaining\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isActive\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"active\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"}],\"name\":\"isClaimed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"merkleRoot\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"startTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"withdrawTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"SettleMint Tokenization Services\",\"details\":\"Defines the functions specific to time-bound airdrops where claims are restricted to a specific time window.\",\"kind\":\"dev\",\"methods\":{\"batchClaim(uint256[],uint256[],bytes32[][])\":{\"params\":{\"indices\":\"The indices of the claims in the Merkle tree.\",\"merkleProofs\":\"The Merkle proofs for each index.\",\"totalAmounts\":\"The total amounts allocated for each index.\"}},\"claim(uint256,uint256,bytes32[])\":{\"params\":{\"index\":\"The index of the claim in the Merkle tree.\",\"merkleProof\":\"The Merkle proof array.\",\"totalAmount\":\"The total amount allocated for this index.\"}},\"claimTracker()\":{\"returns\":{\"_0\":\"The claim tracker contract.\"}},\"endTime()\":{\"returns\":{\"_0\":\"The timestamp when claims end.\"}},\"getClaimedAmount(uint256)\":{\"params\":{\"index\":\"The index to check.\"},\"returns\":{\"_0\":\"claimedAmount The amount already claimed for this index.\"}},\"getTimeRemaining()\":{\"returns\":{\"timeRemaining\":\"The number of seconds remaining, 0 if ended.\"}},\"isActive()\":{\"returns\":{\"active\":\"True if the current time is within the claim window.\"}},\"isClaimed(uint256,uint256)\":{\"params\":{\"index\":\"The index to check in the Merkle tree.\",\"totalAmount\":\"The total amount allocated for this index.\"},\"returns\":{\"_0\":\"claimed True if the index has been fully claimed, false otherwise.\"}},\"merkleRoot()\":{\"returns\":{\"_0\":\"The Merkle root for verifying airdrop claims.\"}},\"name()\":{\"returns\":{\"_0\":\"The human-readable name of the airdrop.\"}},\"startTime()\":{\"returns\":{\"_0\":\"The timestamp when claims can begin.\"}},\"token()\":{\"returns\":{\"_0\":\"The ERC20 token being distributed.\"}},\"withdrawTokens(address)\":{\"params\":{\"to\":\"The address to send the withdrawn tokens to.\"}}},\"title\":\"IATKTimeBoundAirdrop\",\"version\":1},\"userdoc\":{\"errors\":{\"AirdropEnded()\":[{\"notice\":\"Thrown when attempting to claim after the airdrop has ended.\"}],\"AirdropNotStarted()\":[{\"notice\":\"Thrown when attempting to claim before the airdrop has started.\"}],\"InvalidEndTime()\":[{\"notice\":\"Thrown when the provided end time is invalid (e.g., before start time).\"}],\"InvalidStartTime()\":[{\"notice\":\"Thrown when the provided start time is invalid (e.g., in the past).\"}],\"InvalidTimeWindow()\":[{\"notice\":\"Thrown when the time window configuration is invalid.\"}]},\"kind\":\"user\",\"methods\":{\"batchClaim(uint256[],uint256[],bytes32[][])\":{\"notice\":\"Claims multiple airdrop allocations for the caller in a single transaction.\"},\"claim(uint256,uint256,bytes32[])\":{\"notice\":\"Claims an airdrop allocation for the caller.\"},\"claimTracker()\":{\"notice\":\"Returns the claim tracker contract.\"},\"endTime()\":{\"notice\":\"Returns the end time when claims are no longer available.\"},\"getClaimedAmount(uint256)\":{\"notice\":\"Gets the amount already claimed for a specific index.\"},\"getTimeRemaining()\":{\"notice\":\"Returns the time remaining until the airdrop starts (if not started) or ends (if active).\"},\"isActive()\":{\"notice\":\"Checks if the airdrop is currently active (within the time window).\"},\"isClaimed(uint256,uint256)\":{\"notice\":\"Checks if a claim has been fully claimed for a specific index.\"},\"merkleRoot()\":{\"notice\":\"Returns the Merkle root for verifying airdrop claims.\"},\"name()\":{\"notice\":\"Returns the name of this airdrop.\"},\"startTime()\":{\"notice\":\"Returns the start time when claims become available.\"},\"token()\":{\"notice\":\"Returns the token being distributed in this airdrop.\"},\"withdrawTokens(address)\":{\"notice\":\"Allows the owner to withdraw any tokens remaining in the contract.\"}},\"notice\":\"Interface for time-bound airdrop contracts in the ATK Protocol.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdrop.sol\":\"IATKTimeBoundAirdrop\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"none\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@onchainid-v2.2.1/=dependencies/@onchainid-v2.2.1/contracts/\",\":@onchainid/contracts/=dependencies/@onchainid-v2.2.1/contracts/\",\":@openzeppelin-contracts-5.3.0/=dependencies/@openzeppelin-contracts-5.3.0/\",\":@openzeppelin-contracts-upgradeable-5.3.0/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts-upgradeable/=dependencies/@openzeppelin-contracts-upgradeable-5.3.0/\",\":@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.3.0/\",\":forge-std-1.9.7/=dependencies/forge-std-1.9.7/src/\",\":forge-std/=dependencies/forge-std-1.9.7/src/\"],\"viaIR\":true},\"sources\":{\"contracts/addons/airdrop/IATKAirdrop.sol\":{\"keccak256\":\"0x5556406001ca17a94dfeb60a9db57417b262020690af11bf58dc5893085b7297\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://f426858498d7594fdc8ec019332bb69689c5d6db8f6b5ee4c51b81d5fd3c2d13\",\"dweb:/ipfs/QmbA7Bc5JRPXn47hAHq9nWQo9LR5EDk18savmyxr5nqiSh\"]},\"contracts/addons/airdrop/claim-tracker/IATKClaimTracker.sol\":{\"keccak256\":\"0x9e3a319030370650afc13f8c1fc8c3fb3570072849200787b68c19546b6c68be\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://85ba8ece757f0f2bce8a517ac93e7a967cd5fc60eb5b4af65004396453fe792f\",\"dweb:/ipfs/QmQ9Wvi78aWmEvT3LmisnM1QGKRPBLJUhKeRKM6g8yUzne\"]},\"contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdrop.sol\":{\"keccak256\":\"0x964a3f6995008caf310ed1bc19fcd19bfb7910235f7bce0d4b14f1c347d56a39\",\"license\":\"FSL-1.1-MIT\",\"urls\":[\"bzz-raw://6f5129b33d4e9d0730d0b22d260f4714293b0aac7ab34fb9ad2ebcf8cd65b838\",\"dweb:/ipfs/QmTvYXa623KauBDALFS6pKAfoggYWgCq4wpazhruPdoB7y\"]},\"dependencies/@openzeppelin-contracts-5.3.0/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe06a3f08a987af6ad2e1c1e774405d4fe08f1694b67517438b467cecf0da0ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://df6f0c459663c9858b6cba2cda1d14a7d05a985bed6d2de72bd8e78c25ee79db\",\"dweb:/ipfs/QmeTTxZ7qVk9rjEv2R4CpCwdf8UMCcRqDNMvzNxHc3Fnn9\"]}},\"version\":1}",
   "metadata": {
     "compiler": {
       "version": "0.8.28+commit.7893614a"
@@ -240,6 +265,31 @@
     "language": "Solidity",
     "output": {
       "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "AirdropEnded"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "AirdropNotStarted"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidEndTime"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidStartTime"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "InvalidTimeWindow"
+        },
         {
           "inputs": [
             {
@@ -615,10 +665,10 @@
         "license": "FSL-1.1-MIT"
       },
       "contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdrop.sol": {
-        "keccak256": "0x304354b3b7b1208f1f71c0ca677c4aec61fc6f67e956aae00a98443dd46d5891",
+        "keccak256": "0x964a3f6995008caf310ed1bc19fcd19bfb7910235f7bce0d4b14f1c347d56a39",
         "urls": [
-          "bzz-raw://15b76e5dbaf8d12323393e15cc59a74458d4850feebe74228a91dd8f6b8bdf81",
-          "dweb:/ipfs/QmXahQLS6coAtJQmFWzDv92j9ePutqzuPjzfAPEVH8iXW3"
+          "bzz-raw://6f5129b33d4e9d0730d0b22d260f4714293b0aac7ab34fb9ad2ebcf8cd65b838",
+          "dweb:/ipfs/QmTvYXa623KauBDALFS6pKAfoggYWgCq4wpazhruPdoB7y"
         ],
         "license": "FSL-1.1-MIT"
       },
@@ -676,6 +726,33 @@
       "withdrawTokens(address)": {
         "notice": "Allows the owner to withdraw any tokens remaining in the contract."
       }
+    },
+    "errors": {
+      "AirdropEnded()": [
+        {
+          "notice": "Thrown when attempting to claim after the airdrop has ended."
+        }
+      ],
+      "AirdropNotStarted()": [
+        {
+          "notice": "Thrown when attempting to claim before the airdrop has started."
+        }
+      ],
+      "InvalidEndTime()": [
+        {
+          "notice": "Thrown when the provided end time is invalid (e.g., before start time)."
+        }
+      ],
+      "InvalidStartTime()": [
+        {
+          "notice": "Thrown when the provided start time is invalid (e.g., in the past)."
+        }
+      ],
+      "InvalidTimeWindow()": [
+        {
+          "notice": "Thrown when the time window configuration is invalid."
+        }
+      ]
     },
     "notice": "Interface for time-bound airdrop contracts in the ATK Protocol."
   },
@@ -764,5 +841,5 @@
     },
     "title": "IATKTimeBoundAirdrop"
   },
-  "id": 16
+  "id": 14
 }

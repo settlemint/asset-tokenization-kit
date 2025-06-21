@@ -86,5 +86,5 @@
     "details": "It declares an `internal virtual` function `_smartSender()`. Concrete implementations      (like `SMARTExtension` or `SMARTExtensionUpgradeable`) will override this function      to return the actual initiator of a call, typically by using OpenZeppelin's `_msgSender()`      from `Context.sol` or `ERC2771Context.sol` (if meta-transactions are supported).      An 'abstract contract' provides a template or a partial implementation that other contracts can inherit and complete.      It cannot be deployed on its own.",
     "title": "Abstract Contract for SMART Sender Context"
   },
-  "id": 86
+  "id": 82
 }
