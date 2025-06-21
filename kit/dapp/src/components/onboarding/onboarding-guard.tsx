@@ -96,7 +96,9 @@ export function OnboardingGuard({
     // Handle platform-onboarded requirement
     if (require === "platform-onboarded" && !isPlatformOnboarded) {
       // Only admin users can do platform onboarding
-      if (userRole !== "admin") {
+      if (userRole === "admin") {
+        void navigate({ to: "/onboarding/platform" });
+      } else {
         void navigate({ to: "/" });
       }
       return;
@@ -104,10 +106,21 @@ export function OnboardingGuard({
 
     // Handle onboarded requirement
     if (require === "onboarded" && !isOnboardingComplete) {
-      void navigate({
-        to: "/onboarding",
-        search: { type: onboardingType },
-      });
+      // Navigate to specific onboarding route based on type
+      switch (onboardingType) {
+        case "platform":
+          void navigate({ to: "/onboarding/platform" });
+          break;
+        case "issuer":
+          void navigate({ to: "/onboarding/issuer" });
+          break;
+        case "investor":
+          void navigate({ to: "/onboarding/investor" });
+          break;
+        default:
+          // Fallback to generic onboarding route if type is unknown
+          void navigate({ to: "/onboarding" });
+      }
       return;
     }
 
@@ -124,10 +137,21 @@ export function OnboardingGuard({
       onboardingType &&
       !allowedTypes.includes(onboardingType)
     ) {
-      void navigate({
-        to: "/onboarding",
-        search: { type: onboardingType },
-      });
+      // Navigate to specific onboarding route based on type
+      switch (onboardingType) {
+        case "platform":
+          void navigate({ to: "/onboarding/platform" });
+          break;
+        case "issuer":
+          void navigate({ to: "/onboarding/issuer" });
+          break;
+        case "investor":
+          void navigate({ to: "/onboarding/investor" });
+          break;
+        default:
+          // Fallback to generic onboarding route if type is unknown
+          void navigate({ to: "/onboarding" });
+      }
     }
   }, [
     isCheckComplete,
