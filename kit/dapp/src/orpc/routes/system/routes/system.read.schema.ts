@@ -61,6 +61,11 @@ export const SystemReadOutputSchema = z.object({
   id: ethereumAddress,
 
   /**
+   * The token factory registry contract address
+   */
+  tokenFactoryRegistry: ethereumAddress,
+
+  /**
    * List of token factories deployed by this system
    */
   tokenFactories: z.array(TokenFactorySchema),

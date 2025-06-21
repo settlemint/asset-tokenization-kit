@@ -6,6 +6,7 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { queryClient } from "@/lib/query.client";
 import { orpc } from "@/orpc";
@@ -51,16 +52,13 @@ export function AssetSelectionStep({
   onRegisterAction,
 }: AssetSelectionStepProps) {
   const { t } = useTranslation(["onboarding", "general", "tokens"]);
-
-  const { data: systemAddress } = useQuery(
-    orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
-  );
+  const [systemAddress] = useSettings("SYSTEM_ADDRESS");
 
   const { data: systemDetails } = useQuery({
     ...orpc.system.read.queryOptions({
-      input: { id: systemAddress?.value ?? "" },
+      input: { id: systemAddress ?? "" },
     }),
-    enabled: !!systemAddress?.value,
+    enabled: !!systemAddress,
   });
 
   const form = useForm<AssetSelectionFormValues>({
@@ -79,7 +77,7 @@ export function AssetSelectionStep({
       });
       await queryClient.invalidateQueries({
         queryKey: orpc.system.read.queryOptions({
-          input: { id: systemAddress?.value ?? "" },
+          input: { id: systemAddress ?? "" },
         }).queryKey,
         refetchType: "all",
       });
@@ -88,7 +86,7 @@ export function AssetSelectionStep({
   });
 
   const handleDeployFactories = () => {
-    if (!systemAddress?.value) {
+    if (!systemAddress || !systemDetails?.tokenFactoryRegistry) {
       toast.error(t("assets.no-system"));
       return;
     }
@@ -105,7 +103,7 @@ export function AssetSelectionStep({
     }));
 
     createFactories({
-      contract: systemAddress.value,
+      contract: systemDetails.tokenFactoryRegistry,
       factories,
     });
   };

@@ -15,8 +15,8 @@
  * @see {@link @/orpc/helpers/transactions} - Transaction tracking
  */
 
-import { portalGraphql } from "@/lib/settlemint/portal";
 import type { portalClient as PortalClientType } from "@/lib/settlemint/portal";
+import { portalGraphql } from "@/lib/settlemint/portal";
 import type { theGraphClient as TheGraphClientType } from "@/lib/settlemint/the-graph";
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { trackTransaction } from "@/orpc/helpers/transactions";
@@ -47,17 +47,17 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
   mutation CreateTokenFactory(
     $address: String!
     $from: String!
-    $_factoryImplementation: String!
-    $_tokenImplementation: String!
-    $_name: String!
+    $factoryImplementation: String!
+    $tokenImplementation: String!
+    $name: String!
   ) {
-    ATKSystemImplementationCreateTokenFactory(
+    IATKTokenFactoryRegistryRegisterTokenFactory(
       address: $address
       from: $from
       input: {
-        _factoryImplementation: $_factoryImplementation
-        _name: $_name
-        _tokenImplementation: $_tokenImplementation
+        factoryImplementation: $factoryImplementation
+        name: $name
+        tokenImplementation: $tokenImplementation
       }
     ) {
       transactionHash
@@ -108,14 +108,15 @@ async function* processSingleFactory(
       {
         address: context.systemContract,
         from: context.senderWallet,
-        _factoryImplementation: factoryImplementation,
-        _tokenImplementation: tokenImplementation,
-        _name: name,
+        factoryImplementation: factoryImplementation,
+        tokenImplementation: tokenImplementation,
+        name: name,
       }
     );
 
     const transactionHash =
-      txHashResult.ATKSystemImplementationCreateTokenFactory?.transactionHash;
+      txHashResult.IATKTokenFactoryRegistryRegisterTokenFactory
+        ?.transactionHash;
 
     if (!transactionHash) {
       yield {

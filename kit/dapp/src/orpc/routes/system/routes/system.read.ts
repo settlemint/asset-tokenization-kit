@@ -14,6 +14,7 @@
  */
 
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import type { SystemReadOutput } from "./system.read.schema";
@@ -28,10 +29,13 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
   query SystemDetails($id: ID!) {
     system(id: $id) {
       id
-      tokenFactories {
+      tokenFactoryRegistry {
         id
-        name
-        typeId
+        tokenFactories {
+          id
+          name
+          typeId
+        }
       }
     }
   }
@@ -83,12 +87,15 @@ export const read = onboardedRouter.system.read
 
     // Transform and return the data
     const output: SystemReadOutput = {
-      id: result.system.id as `0x${string}`,
-      tokenFactories: result.system.tokenFactories.map((factory) => ({
-        id: factory.id as `0x${string}`,
-        name: factory.name,
-        typeId: factory.typeId,
-      })),
+      id: result.system.id as EthereumAddress,
+      tokenFactoryRegistry: result.system.tokenFactoryRegistry
+        ?.id as EthereumAddress,
+      tokenFactories:
+        result.system.tokenFactoryRegistry?.tokenFactories.map((factory) => ({
+          id: factory.id as EthereumAddress,
+          name: factory.name,
+          typeId: factory.typeId,
+        })) ?? [],
     };
 
     return output;
