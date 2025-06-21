@@ -9,6 +9,8 @@ import { AbstractComplianceModule } from "../../../contracts/smart/modules/Abstr
  * Allows controlling transfer failures and tracking hook calls and their parameters in a single history array.
  */
 contract MockedComplianceModule is AbstractComplianceModule {
+    bytes32 public constant override typeId = keccak256("MockedComplianceModule");
+
     /// @notice Flag to indicate if the next transfer check should fail.
     bool public nextTransferShouldFail;
 

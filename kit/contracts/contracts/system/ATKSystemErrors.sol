@@ -76,7 +76,7 @@ error IdentityVerificationModuleNotSet();
 /// @notice Error indicating that the system addon implementation address has not been set.
 /// @dev This error is thrown if an operation requires the system addon implementation, but its logic contract address
 /// is zero or has not been configured in the `SMARTSystem`.
-error AddonImplementationNotSet(bytes32 addonTypeHash);
+error SystemAddonImplementationNotSet(bytes32 addonTypeHash);
 
 /// @notice Error indicating that an index provided for accessing an array or list is out of its valid range.
 /// @dev For example, trying to access the 5th element in an array that only has 3 elements.
@@ -107,7 +107,14 @@ error TokenFactoryImplementationNotSet(bytes32 registryTypeHash);
 error TokenFactoryTypeAlreadyRegistered(string typeName);
 
 /// @notice Error indicating that a system addon type hash has already been registered.
-error AddonTypeAlreadyRegistered(string typeName);
+error SystemAddonTypeAlreadyRegistered(string typeName);
+
+/// @notice Error indicating that a compliance module has already been registered with the given name.
+/// @param name The name of the compliance module that was already registered.
+error ComplianceModuleAlreadyRegistered(string name);
+
+/// @notice Error indicating that an invalid compliance module address was provided.
+error InvalidComplianceModuleAddress();
 
 /// @notice Error indicating that the token implementation address has not been set.
 error TokenImplementationNotSet();
@@ -130,3 +137,23 @@ error InitializationWithZeroAddress();
 /// @notice Error indicating that an invalid ATKSystem implementation address was provided.
 /// @dev This error is thrown if the ATKSystem implementation address is the zero address.
 error InvalidSystemImplementation();
+
+/// @notice Error indicating that the compliance module registry implementation address has not been set.
+/// @dev This error is thrown if an operation requires the compliance module registry, but its logic contract address is
+/// zero or has not been configured in the `SMARTSystem`.
+error ComplianceModuleRegistryImplementationNotSet();
+
+/// @notice Error indicating that the addon registry implementation address has not been set.
+/// @dev This error is thrown if an operation requires the addon registry, but its logic contract address is
+/// zero or has not been configured in the `SMARTSystem`.
+error AddonRegistryImplementationNotSet();
+
+/// @notice Error indicating that the token factory registry implementation address has not been set.
+/// @dev This error is thrown if an operation requires the token factory registry, but its logic contract address is
+/// zero or has not been configured in the `SMARTSystem`.
+error TokenFactoryRegistryImplementationNotSet();
+
+/// @notice Error indicating that the component implementation address has not been set.
+/// @dev This error is thrown if an operation requires the component implementation, but its logic contract address is
+/// zero or has not been configured in the `SMARTSystem`.
+error ComponentImplementationNotSet(bytes32 componentTypeHash);

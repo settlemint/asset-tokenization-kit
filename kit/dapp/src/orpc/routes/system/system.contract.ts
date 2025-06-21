@@ -3,6 +3,10 @@ import {
   SystemCreateOutputSchema,
   SystemCreateSchema,
 } from "@/orpc/routes/system/routes/system.create.schema";
+import {
+  SystemReadOutputSchema,
+  SystemReadSchema,
+} from "@/orpc/routes/system/routes/system.read.schema";
 import { eventIterator } from "@orpc/server";
 import { z } from "zod/v4";
 import { baseContract } from "../../procedures/base.contract";
@@ -55,18 +59,40 @@ const create = baseContract
   .output(eventIterator(SystemCreateOutputSchema));
 
 /**
+ * Contract definition for the system read endpoint.
+ *
+ * Defines the type-safe interface for retrieving a specific system:
+ * - HTTP GET method with system ID parameter
+ * - Input validation for system address
+ * - Output includes system details and associated token factories
+ * - OpenAPI documentation with proper tags and descriptions
+ */
+const read = baseContract
+  .route({
+    method: "GET",
+    path: "/systems/:id",
+    description: "Get details of a specific SMART system",
+    successDescription: "SMART system details with token factories",
+    tags: ["system"],
+  })
+  .input(SystemReadSchema)
+  .output(SystemReadOutputSchema);
+
+/**
  * System API contract collection.
  *
  * Exports all system-related API contracts for use in the main contract registry.
  * Currently includes:
  * - list: Retrieve paginated list of SMART systems
+ * - create: Deploy a new SMART system
+ * - read: Retrieve a specific system with its token factories
  *
  * Future endpoints may include:
- * - get: Retrieve a specific system by ID
- * - deploy: Deploy a new SMART system
  * - update: Update system configuration
+ * - delete: Remove a system
  */
 export const systemContract = {
   list,
   create,
+  read,
 };

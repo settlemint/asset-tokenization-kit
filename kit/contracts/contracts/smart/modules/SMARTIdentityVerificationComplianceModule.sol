@@ -10,6 +10,8 @@ import { ISMART } from "../interface/ISMART.sol";
 /// @notice This module is used to verify the identity of an investor.
 /// @dev This module is used to verify the identity of an investor.
 contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
+    bytes32 public constant override typeId = keccak256("SMARTIdentityVerificationComplianceModule");
+
     /// @notice Reverted when a token operation (like transfer or mint) is attempted, but the recipient
     ///         (or potentially sender, depending on the operation) does not meet the required identity verification
     /// status.

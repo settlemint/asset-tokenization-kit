@@ -33,6 +33,8 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 ///                   `abi.encode(uint16[] memory additionalAllowedCountries)`. These are countries allowed *in
 /// addition* to the global list for a specific token.
 contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
+    bytes32 public constant override typeId = keccak256("CountryAllowListComplianceModule");
+
     // --- Events ---
     /// @notice Emitted when one or more countries are added to or removed from this module instance's global
     /// allow-list.

@@ -41,12 +41,26 @@ export const SystemCreateMessagesSchema =
     systemCreated: z
       .string()
       .optional()
-      .default("System successfully created."),
+      .default("System successfully created and bootstrapped."),
     creatingSystem: z.string().optional().default("Creating new system..."),
     systemCreationFailed: z
       .string()
       .optional()
       .default("Failed to create system. Please try again."),
+    bootstrappingSystem: z
+      .string()
+      .optional()
+      .default("Bootstrapping system..."),
+    bootstrapFailed: z
+      .string()
+      .optional()
+      .default("Failed to bootstrap system. Please try again."),
+    systemCreatedBootstrapFailed: z
+      .string()
+      .optional()
+      .default(
+        "System created but bootstrap failed. You may need to manually bootstrap the system."
+      ),
     // Messages used by useStreamingMutation hook
     initialLoading: z.string().optional().default("Creating new system..."),
     noResultError: z

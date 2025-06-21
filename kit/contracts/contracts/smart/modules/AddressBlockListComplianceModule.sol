@@ -11,6 +11,8 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 /// @author SettleMint Tokenization Services
 /// @notice This compliance module restricts token transfers *to* specific wallet addresses.
 contract AddressBlockListComplianceModule is AbstractAddressListComplianceModule {
+    bytes32 public constant override typeId = keccak256("AddressBlockListComplianceModule");
+
     event GlobalBlockedAddressesUpdated(address[] addresses, bool indexed blocked);
 
     constructor(address _trustedForwarder) AbstractAddressListComplianceModule(_trustedForwarder) { }

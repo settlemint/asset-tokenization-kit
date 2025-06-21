@@ -47,7 +47,7 @@ contract ATKTopicSchemeRegistryTest is Test {
         );
 
         // Get the topic scheme registry from the system
-        topicSchemeRegistry = ISMARTTopicSchemeRegistry(systemUtils.system().topicSchemeRegistryProxy());
+        topicSchemeRegistry = ISMARTTopicSchemeRegistry(systemUtils.system().topicSchemeRegistry());
 
         // Capture the initial state after system bootstrap (includes default topic schemes)
         initialTopicSchemeCount = topicSchemeRegistry.getTopicSchemeCount();

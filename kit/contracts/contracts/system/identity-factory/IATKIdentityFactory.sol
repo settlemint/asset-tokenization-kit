@@ -24,6 +24,14 @@ interface IATKIdentityFactory is IERC165 {
     /// @param token The address of the token contract for which the identity was created.
     event TokenIdentityCreated(address indexed sender, address indexed identity, address indexed token);
 
+    function initialize(
+        address systemAddress,
+        address initialAdmin,
+        address[] memory initialIdentityIssuerAdmins,
+        address[] memory initialTokenIdentityIssuerAdmins
+    )
+        external;
+
     // --- State-Changing Functions ---
 
     /// @notice Creates a new on-chain identity for a given user wallet address.

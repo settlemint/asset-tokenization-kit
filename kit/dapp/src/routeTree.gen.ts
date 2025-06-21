@@ -16,7 +16,11 @@ import { Route as PrivateRouteImport } from './routes/_private'
 import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 import { Route as PrivateOnboardingRouteImport } from './routes/_private/onboarding'
 import { Route as PrivateOnboardedRouteImport } from './routes/_private/_onboarded'
+import { Route as PrivateOnboardingIndexRouteImport } from './routes/_private/onboarding/index'
 import { Route as PrivateOnboardedIndexRouteImport } from './routes/_private/_onboarded/index'
+import { Route as PrivateOnboardingPlatformRouteImport } from './routes/_private/onboarding/platform'
+import { Route as PrivateOnboardingIssuerRouteImport } from './routes/_private/onboarding/issuer'
+import { Route as PrivateOnboardingInvestorRouteImport } from './routes/_private/onboarding/investor'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -46,11 +50,33 @@ const PrivateOnboardedRoute = PrivateOnboardedRouteImport.update({
   id: '/_onboarded',
   getParentRoute: () => PrivateRoute,
 } as any)
+const PrivateOnboardingIndexRoute = PrivateOnboardingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PrivateOnboardingRoute,
+} as any)
 const PrivateOnboardedIndexRoute = PrivateOnboardedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PrivateOnboardedRoute,
 } as any)
+const PrivateOnboardingPlatformRoute =
+  PrivateOnboardingPlatformRouteImport.update({
+    id: '/platform',
+    path: '/platform',
+    getParentRoute: () => PrivateOnboardingRoute,
+  } as any)
+const PrivateOnboardingIssuerRoute = PrivateOnboardingIssuerRouteImport.update({
+  id: '/issuer',
+  path: '/issuer',
+  getParentRoute: () => PrivateOnboardingRoute,
+} as any)
+const PrivateOnboardingInvestorRoute =
+  PrivateOnboardingInvestorRouteImport.update({
+    id: '/investor',
+    path: '/investor',
+    getParentRoute: () => PrivateOnboardingRoute,
+  } as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -69,30 +95,56 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
-  '/onboarding': typeof PrivateOnboardingRoute
+  '/onboarding': typeof PrivateOnboardingRouteWithChildren
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/onboarding/investor': typeof PrivateOnboardingInvestorRoute
+  '/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
+  '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/': typeof PrivateOnboardedIndexRoute
+  '/onboarding/': typeof PrivateOnboardingIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
-  '/onboarding': typeof PrivateOnboardingRoute
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/onboarding/investor': typeof PrivateOnboardingInvestorRoute
+  '/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
+  '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/': typeof PrivateOnboardedIndexRoute
+  '/onboarding': typeof PrivateOnboardingIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_private': typeof PrivateRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/_private/_onboarded': typeof PrivateOnboardedRouteWithChildren
-  '/_private/onboarding': typeof PrivateOnboardingRoute
+  '/_private/onboarding': typeof PrivateOnboardingRouteWithChildren
   '/auth/$pathname': typeof AuthPathnameRoute
+  '/_private/onboarding/investor': typeof PrivateOnboardingInvestorRoute
+  '/_private/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
+  '/_private/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/_private/_onboarded/': typeof PrivateOnboardedIndexRoute
+  '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/auth' | '/onboarding' | '/auth/$pathname' | '/'
+  fullPaths:
+    | '/auth'
+    | '/onboarding'
+    | '/auth/$pathname'
+    | '/onboarding/investor'
+    | '/onboarding/issuer'
+    | '/onboarding/platform'
+    | '/'
+    | '/onboarding/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/onboarding' | '/auth/$pathname' | '/'
+  to:
+    | '/auth'
+    | '/auth/$pathname'
+    | '/onboarding/investor'
+    | '/onboarding/issuer'
+    | '/onboarding/platform'
+    | '/'
+    | '/onboarding'
   id:
     | '__root__'
     | '/_private'
@@ -100,7 +152,11 @@ export interface FileRouteTypes {
     | '/_private/_onboarded'
     | '/_private/onboarding'
     | '/auth/$pathname'
+    | '/_private/onboarding/investor'
+    | '/_private/onboarding/issuer'
+    | '/_private/onboarding/platform'
     | '/_private/_onboarded/'
+    | '/_private/onboarding/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -174,12 +230,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedRouteImport
       parentRoute: typeof PrivateRoute
     }
+    '/_private/onboarding/': {
+      id: '/_private/onboarding/'
+      path: '/'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof PrivateOnboardingIndexRouteImport
+      parentRoute: typeof PrivateOnboardingRoute
+    }
     '/_private/_onboarded/': {
       id: '/_private/_onboarded/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PrivateOnboardedIndexRouteImport
       parentRoute: typeof PrivateOnboardedRoute
+    }
+    '/_private/onboarding/platform': {
+      id: '/_private/onboarding/platform'
+      path: '/platform'
+      fullPath: '/onboarding/platform'
+      preLoaderRoute: typeof PrivateOnboardingPlatformRouteImport
+      parentRoute: typeof PrivateOnboardingRoute
+    }
+    '/_private/onboarding/issuer': {
+      id: '/_private/onboarding/issuer'
+      path: '/issuer'
+      fullPath: '/onboarding/issuer'
+      preLoaderRoute: typeof PrivateOnboardingIssuerRouteImport
+      parentRoute: typeof PrivateOnboardingRoute
+    }
+    '/_private/onboarding/investor': {
+      id: '/_private/onboarding/investor'
+      path: '/investor'
+      fullPath: '/onboarding/investor'
+      preLoaderRoute: typeof PrivateOnboardingInvestorRouteImport
+      parentRoute: typeof PrivateOnboardingRoute
     }
   }
 }
@@ -220,14 +304,31 @@ const PrivateOnboardedRouteChildren: PrivateOnboardedRouteChildren = {
 const PrivateOnboardedRouteWithChildren =
   PrivateOnboardedRoute._addFileChildren(PrivateOnboardedRouteChildren)
 
+interface PrivateOnboardingRouteChildren {
+  PrivateOnboardingInvestorRoute: typeof PrivateOnboardingInvestorRoute
+  PrivateOnboardingIssuerRoute: typeof PrivateOnboardingIssuerRoute
+  PrivateOnboardingPlatformRoute: typeof PrivateOnboardingPlatformRoute
+  PrivateOnboardingIndexRoute: typeof PrivateOnboardingIndexRoute
+}
+
+const PrivateOnboardingRouteChildren: PrivateOnboardingRouteChildren = {
+  PrivateOnboardingInvestorRoute: PrivateOnboardingInvestorRoute,
+  PrivateOnboardingIssuerRoute: PrivateOnboardingIssuerRoute,
+  PrivateOnboardingPlatformRoute: PrivateOnboardingPlatformRoute,
+  PrivateOnboardingIndexRoute: PrivateOnboardingIndexRoute,
+}
+
+const PrivateOnboardingRouteWithChildren =
+  PrivateOnboardingRoute._addFileChildren(PrivateOnboardingRouteChildren)
+
 interface PrivateRouteChildren {
   PrivateOnboardedRoute: typeof PrivateOnboardedRouteWithChildren
-  PrivateOnboardingRoute: typeof PrivateOnboardingRoute
+  PrivateOnboardingRoute: typeof PrivateOnboardingRouteWithChildren
 }
 
 const PrivateRouteChildren: PrivateRouteChildren = {
   PrivateOnboardedRoute: PrivateOnboardedRouteWithChildren,
-  PrivateOnboardingRoute: PrivateOnboardingRoute,
+  PrivateOnboardingRoute: PrivateOnboardingRouteWithChildren,
 }
 
 const PrivateRouteWithChildren =

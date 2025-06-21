@@ -5,7 +5,9 @@ import ATKOnboardingSystemModule from "../../system";
 const ATKOnboardingPushAirdropFactoryModule = buildModule(
   "ATKOnboardingPushAirdropFactoryModule",
   (m) => {
-    const { system } = m.useModule(ATKOnboardingSystemModule);
+    const { system, systemAddonRegistry } = m.useModule(
+      ATKOnboardingSystemModule
+    );
     const { pushAirdropFactoryImplementation } = m.useModule(ATKModule);
 
     const platformAdmin = m.getAccount(0);
@@ -16,14 +18,18 @@ const ATKOnboardingPushAirdropFactoryModule = buildModule(
       [system.address, platformAdmin]
     );
 
-    const createPushAirdropFactoryAddon = m.call(system, "createSystemAddon", [
-      "push-airdrop-factory",
-      pushAirdropFactoryImplementation,
-      encodedInitializationData,
-    ]);
+    const createPushAirdropFactoryAddon = m.call(
+      systemAddonRegistry,
+      "registerSystemAddon",
+      [
+        "push-airdrop-factory",
+        pushAirdropFactoryImplementation,
+        encodedInitializationData,
+      ]
+    );
     const pushAirdropFactoryAddress = m.readEventArgument(
       createPushAirdropFactoryAddon,
-      "SystemAddonCreated",
+      "SystemAddonRegistered",
       "proxyAddress",
       { id: "pushAirdropFactoryAddress" }
     );

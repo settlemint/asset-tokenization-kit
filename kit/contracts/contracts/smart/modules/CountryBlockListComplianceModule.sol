@@ -34,6 +34,8 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 ///                   `abi.encode(uint16[] memory additionalBlockedCountries)`. These are countries blocked *in
 /// addition* to the global list for a specific token.
 contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
+    bytes32 public constant override typeId = keccak256("CountryBlockListComplianceModule");
+
     // --- Events ---
     /// @notice Emitted when one or more countries are added to or removed from this module instance's global
     /// block-list.

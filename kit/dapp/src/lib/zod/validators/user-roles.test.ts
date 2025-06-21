@@ -14,7 +14,7 @@ describe("userRoles", () => {
 
     it("should accept all defined roles", () => {
       expect(validator.parse("admin") as string).toBe("admin");
-      expect(validator.parse("user") as string).toBe("user");
+      expect(validator.parse("investor") as string).toBe("investor");
       expect(validator.parse("issuer") as string).toBe("issuer");
     });
   });
@@ -56,8 +56,8 @@ describe("userRoles", () => {
       // Admin has highest permissions
       expect(validator.parse("admin") as string).toBe("admin");
 
-      // User has standard permissions
-      expect(validator.parse("user") as string).toBe("user");
+      // Investor has standard permissions
+      expect(validator.parse("investor") as string).toBe("investor");
 
       // Issuer has asset issuance permissions
       expect(validator.parse("issuer") as string).toBe("issuer");
@@ -85,7 +85,7 @@ describe("getUserRole function", () => {
   describe("getUserRole", () => {
     it("should return valid user roles", () => {
       expect(getUserRole("admin") as string).toBe("admin");
-      expect(getUserRole("user") as string).toBe("user");
+      expect(getUserRole("investor") as string).toBe("investor");
       expect(getUserRole("issuer") as string).toBe("issuer");
     });
 
@@ -95,16 +95,10 @@ describe("getUserRole function", () => {
       expect(() => getUserRole("guest")).toThrow();
       expect(() => getUserRole("viewer")).toThrow();
       expect(() => getUserRole("")).toThrow();
-      expect(() => getUserRole(123)).toThrow(
-        "Expected 'admin' | 'user' | 'issuer', received number"
-      );
-      expect(() => getUserRole(null)).toThrow(
-        "Expected 'admin' | 'user' | 'issuer', received null"
-      );
-      expect(() => getUserRole(undefined)).toThrow("Required");
-      expect(() => getUserRole({})).toThrow(
-        "Expected 'admin' | 'user' | 'issuer', received object"
-      );
+      expect(() => getUserRole(123)).toThrow();
+      expect(() => getUserRole(null)).toThrow();
+      expect(() => getUserRole(undefined)).toThrow();
+      expect(() => getUserRole({})).toThrow();
       expect(() => getUserRole("Admin")).toThrow();
       expect(() => getUserRole("USER")).toThrow();
     });

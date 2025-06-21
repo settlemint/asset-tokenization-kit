@@ -42,12 +42,18 @@ mock.module("@/lib/settlemint/portal", () => ({
 describe("challenge-response", () => {
   const mockWalletAddress =
     "0x1234567890123456789012345678901234567890" as EthereumAddress;
-  const mockUser: SessionUser = {
+  const mockUser = {
     id: "user-123",
     email: "test@example.com",
-    // pincodeVerificationId: "pincode-verification-id",
-    // secretCodeVerificationId: "secret-code-verification-id",
-    // twoFactorVerificationId: "two-factor-verification-id",
+    name: "Test User",
+    emailVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    banned: false,
+    role: "investor" as const,
+    pincodeVerificationId: "pincode-verification-id",
+    secretCodeVerificationId: "secret-code-verification-id",
+    twoFactorVerificationId: "two-factor-verification-id",
     wallet: mockWalletAddress,
   } as SessionUser;
 

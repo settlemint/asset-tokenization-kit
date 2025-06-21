@@ -12,7 +12,7 @@ import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
-    "../../system/AbstractATKSystemAddonFactoryImplementation.sol";
+    "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { SMARTFixedYieldScheduleUpgradeable } from
     "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
 import { ATKFixedYieldProxy } from "./ATKFixedYieldProxy.sol";
