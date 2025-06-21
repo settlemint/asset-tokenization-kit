@@ -12,7 +12,7 @@ declare module 'gql.tada' {
       TadaDocumentNode<{ ATKSystemFactoryCreateSystem: { transactionHash: string | null; } | null; }, { from: string; address: string; }, void>;
     "\n  mutation BootstrapSystemMutation($address: String!, $from: String!) {\n    IATKSystemBootstrap(\n      address: $address\n      from: $from\n    ) {\n      transactionHash\n    }\n  }\n":
       TadaDocumentNode<{ IATKSystemBootstrap: { transactionHash: string | null; } | null; }, { from: string; address: string; }, void>;
-    "\n  mutation CreateTokenFactory(\n    $address: String!\n    $from: String!\n    $_factoryImplementation: String!\n    $_tokenImplementation: String!\n    $_name: String!\n  ) {\n    ATKSystemImplementationCreateTokenFactory(\n      address: $address\n      from: $from\n      input: {\n        _factoryImplementation: $_factoryImplementation\n        _name: $_name\n        _tokenImplementation: $_tokenImplementation\n      }\n    ) {\n      transactionHash\n    }\n  }\n":
-      TadaDocumentNode<{ ATKSystemImplementationCreateTokenFactory: unknown; }, { _name: string; _tokenImplementation: string; _factoryImplementation: string; from: string; address: string; }, void>;
+    "\n  mutation CreateTokenFactory(\n    $address: String!\n    $from: String!\n    $factoryImplementation: String!\n    $tokenImplementation: String!\n    $name: String!\n  ) {\n    IATKTokenFactoryRegistryRegisterTokenFactory(\n      address: $address\n      from: $from\n      input: {\n        factoryImplementation: $factoryImplementation\n        name: $name\n        tokenImplementation: $tokenImplementation\n      }\n    ) {\n      transactionHash\n    }\n  }\n":
+      TadaDocumentNode<{ IATKTokenFactoryRegistryRegisterTokenFactory: { transactionHash: string | null; } | null; }, { name: string; tokenImplementation: string; factoryImplementation: string; from: string; address: string; }, void>;
   }
 }

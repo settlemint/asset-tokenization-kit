@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { supportedLanguages } from "@/lib/i18n";
+import { useMounted } from "@/lib/utils/use-mounted";
 import { Check, Languages } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -40,6 +41,7 @@ export function LanguageSwitcher({
   size = "icon",
   className,
 }: LanguageSwitcherProps = {}) {
+  const mounted = useMounted();
   const { i18n, t } = useTranslation("language");
   const [isPending, setIsPending] = useState(false);
 
@@ -58,6 +60,11 @@ export function LanguageSwitcher({
     },
     [i18n]
   );
+
+  // Show skeleton during SSR to prevent hydration mismatch
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <DropdownMenu>

@@ -5,6 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useMounted } from "@/lib/utils/use-mounted";
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCallback } from "react";
@@ -32,6 +33,7 @@ export function ThemeToggle({
   size = "icon",
   className,
 }: ThemeToggleProps) {
+  const mounted = useMounted();
   const { setTheme, resolvedTheme, themes } = useTheme();
   const { t } = useTranslation("theme");
 
@@ -45,6 +47,11 @@ export function ThemeToggle({
     },
     [setTheme]
   );
+
+  // Show skeleton during SSR to prevent hydration mismatch
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <DropdownMenu>
