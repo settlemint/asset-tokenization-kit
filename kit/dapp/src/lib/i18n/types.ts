@@ -32,6 +32,7 @@ import type enGeneralTranslations from "@/locales/en/general.json";
 import type enLanguageTranslations from "@/locales/en/language.json";
 import type enOnboardingTranslations from "@/locales/en/onboarding.json";
 import type enThemeTranslations from "@/locales/en/theme.json";
+import type enTokensTranslations from "@/locales/en/tokens.json";
 
 declare module "i18next" {
   /**
@@ -61,6 +62,7 @@ declare module "i18next" {
       theme: typeof enThemeTranslations;
       language: typeof enLanguageTranslations;
       onboarding: typeof enOnboardingTranslations;
+      tokens: typeof enTokensTranslations;
     };
   }
 }

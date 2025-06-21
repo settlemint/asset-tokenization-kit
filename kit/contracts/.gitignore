@@ -3,8 +3,6 @@ node_modules
 
 # Generated files - ignore everything except what's needed for docker-compose
 .generated/*
-!.generated/genesis.json
-!.generated/portal/
 
 # Hardhat files
 /.generated/cache

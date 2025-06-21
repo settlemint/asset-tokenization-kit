@@ -48,7 +48,6 @@ const ATKModule = buildModule("ATKModule", (m) => {
   const { vaultFactoryImplementation } = m.useModule(VaultFactoryModule);
   const { atkVaultImplementation } = m.useModule(VaultModule);
 
-
   const { countryAllowListModule } = m.useModule(CountryAllowListModule);
   const { countryBlockListModule } = m.useModule(CountryBlockListModule);
   const { addressBlockListModule } = m.useModule(AddressBlockListModule);

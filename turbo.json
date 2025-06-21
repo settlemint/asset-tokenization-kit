@@ -7,7 +7,10 @@
     "FORCE_COLOR",
     "NO_COLOR",
     "TERM",
-    "CI"
+    "CI",
+    "BUILD_ID",
+    "GITHUB_SHA",
+    "GIT_COMMIT"
   ],
   "tasks": {
     "ci": {
@@ -52,7 +55,8 @@
     "lint": {},
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["codegen"]
     },
     "watch": {
       "cache": false,

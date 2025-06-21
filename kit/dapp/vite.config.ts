@@ -3,7 +3,19 @@ import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import tsConfigPaths from "vite-tsconfig-paths";
 
+// Generate a unique build ID
+// In development: changes on every restart to bust cache when Docker volumes change
+// In production: use CI/CD provided BUILD_ID or git commit hash
+const BUILD_ID =
+  process.env.BUILD_ID ||
+  process.env.GITHUB_SHA ||
+  process.env.GIT_COMMIT ||
+  Date.now().toString();
+
 export default defineConfig({
+  define: {
+    "process.env.BUILD_ID": JSON.stringify(BUILD_ID),
+  },
   server: {
     port: 3000,
   },

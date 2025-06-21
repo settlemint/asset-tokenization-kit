@@ -235,9 +235,91 @@ GitHub Actions workflows:
 - First user signup gets admin privileges in the dApp
 - Never push directly to main branch
 
+## Important Development Notes
+
+### Deprecated Components
+
+- **dapp-v1 folder**: This is completely deprecated and should be ignored. All
+  modern development happens in `kit/dapp` which uses:
+  - TanStack Start/Router/Query
+  - Better Auth for authentication
+  - Drizzle ORM with PostgreSQL
+
+### Quality Assurance Suite
+
+Before creating a PR, always run the full QA suite:
+
+```bash
+# Clean install and run full QA
+bun run clean && bun install && bun run ci
+```
+
+The `bun run ci` command executes these tasks in sequence:
+
+1. **Format Check** (`turbo run format`)
+
+   - Prettier formatting validation
+   - Ensures consistent code style
+   - Auto-fixable with `bun run format`
+
+2. **Compilation** (`turbo run compile`)
+
+   - Smart contract compilation (Foundry + Hardhat)
+   - Type generation from contracts
+   - Dependency validation
+
+3. **Code Generation** (`turbo run codegen`)
+
+   - GraphQL schema type generation
+   - Smart contract TypeScript bindings
+   - SDK updates for all services
+
+4. **Linting** (`turbo run lint`)
+
+   - ESLint for TypeScript/JavaScript
+   - Solhint for Solidity contracts
+   - Strict type checking enabled
+
+5. **Unit Tests** (`turbo run test`)
+   - Contract tests via Foundry
+   - Component tests for dApp
+   - Database schema tests
+
+### Environment Variables for Builds
+
+The following environment variables are passed through Turbo for builds:
+
+- `BUILD_ID`: Custom build identifier
+- `GITHUB_SHA`: Git commit hash (for CI/CD)
+- `GIT_COMMIT`: Alternative git commit reference
+
+These are used for cache busting in production deployments.
+
+### Cache Management
+
+The dApp includes sophisticated cache management:
+
+- **Query Cache Persistence**: Offline support via localStorage
+- **Cross-Tab Sync**: Broadcast Channel API for multi-tab synchronization
+- **Build-Based Cache Busting**: Automatic cache clearing on new deployments
+- **Dev Shortcuts**:
+  - `Cmd/Ctrl + Shift + K`: Clear all caches and reload
+  - `Cmd/Ctrl + Shift + Q`: Clear query cache only
+  - Console: `clearCache()` function available
+
+### Authentication & Error Handling
+
+- **Global UNAUTHORIZED Handler**: Automatic redirect to `/auth/sign-in` on 401
+- **No Retry on Auth Failures**: Prevents unnecessary API calls
+- **Cross-Tab Auth Sync**: Authentication state synchronized across tabs
+
 ## Memories
 
 - Always include ./.cursor/rules/\*.mdc in your context to get the latest rules
   and tips
-- Completely ignore dapp-v1 folder
+- Completely ignore dapp-v1 folder - it's deprecated
 - Do not use vitest to make tests, use bun:test
+- Always run `bun run ci` before suggesting a PR is ready
+- Token factory creation now requires system bootstrapping first
+- Asset types are centralized in the zod validator (no more cryptocurrency)
+- never use barrel files
