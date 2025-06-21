@@ -48,19 +48,221 @@ Default to using Bun instead of Node.js.
 For more information, read the Bun API docs in
 `node_modules/bun-types/docs/**.md`.
 
-## Key Commands
+## Complete Command Reference
+
+### Root-Level Commands (Run from project root)
+
+#### Core Development Commands
+```bash
+bun install               # Install all dependencies
+bun run dev              # Start development environment (turbo dev + db:studio)
+bun run dev:up           # Start Docker Compose services
+bun run dev:reset        # Reset Docker environment (removes containers and volumes)
+bun run clean            # Clean build artifacts and reinstall dependencies
+```
+
+#### CI/CD & Testing Commands
+```bash
+bun run ci               # Run full CI pipeline (format, compile, codegen, lint, test)
+bun run ci:gha           # GitHub Actions CI pipeline (includes integration tests and build)
+bun run ci:gha:main      # Main branch CI pipeline (includes publishing)
+bun run test             # Run all tests
+bun run test:integration # Run integration tests
+bun run test:e2e:ui      # Run UI E2E tests
+bun run test:e2e:ui:debug # Debug UI E2E tests with Playwright UI
+bun run test:e2e:api     # Run API E2E tests
+bun run test:e2e:api:debug # Debug API E2E tests
+```
+
+#### Build & Compilation Commands
+```bash
+bun run compile          # Compile all projects
+bun run codegen          # Generate code for all projects
+bun run build            # Build all projects
+bun run artifacts        # Generate artifacts
+```
+
+#### Code Quality Commands
+```bash
+bun run lint             # Run linters across all projects
+bun run format           # Format code across all projects
+```
+
+#### Utility Commands
+```bash
+bun run version          # Update version numbers
+bun run helm             # Run Helm-related tasks
+bun run db:studio        # Open Drizzle Studio
+bun run extract-env      # Extract environment variables
+bun run publish          # Publish artifacts
+```
+
+### Contract Commands (kit/contracts)
+
+#### Compilation & Building
+```bash
+cd kit/contracts
+bun compile:forge        # Compile with Foundry
+bun compile:hardhat      # Compile with Hardhat
+bun compile:typescript   # TypeScript type checking
+```
+
+#### Code Generation
+```bash
+bun codegen:types        # Generate TypeScript types from contracts
+bun artifacts:genesis    # Generate genesis configuration
+bun artifacts:abi        # Generate ABI files for portal
+bun abi-output          # Generate ABI outputs
+```
+
+#### Testing & Deployment
+```bash
+bun test                 # Run Foundry tests with verbosity
+bun deploy:remote        # Deploy to remote network
+bun publish              # Deploy contracts locally
+forge test -vvv          # Run tests with verbosity
+forge test --gas-report  # Include gas usage report
+forge test --match-test testName  # Run specific test
+forge test --match-contract ContractName  # Test specific contract
+```
+
+#### Code Quality
+```bash
+bun lint                 # Run Solhint on contracts
+bun format:forge         # Format Solidity with Forge
+bun format:prettier      # Format with Prettier
+```
+
+#### Utilities
+```bash
+bun dependencies         # Check and update dependencies
+bun clean:deployments    # Clean deployment artifacts
+```
+
+### dApp Commands (kit/dapp)
+
+#### Development
+```bash
+cd kit/dapp
+bun dev                  # Start Vite development server
+bun build                # Build production bundle
+bun watch                # Watch TypeScript for changes
+```
+
+#### Code Generation
+```bash
+bun codegen:settlemint   # Generate SettleMint SDK code
+bun codegen:gql-tada     # Generate GraphQL types
+bun addresses            # Display contract addresses
+bunx shadcn@canary add <component> --cwd .  # Add shadcn component
+```
+
+#### Database Management
+```bash
+bun db:check             # Check database schema
+bun db:push              # Push schema changes to database
+bun db:export            # Export database
+bun db:track             # Track tables with Hasura
+bun db:studio            # Open Drizzle Studio GUI
+bun db:auth:generate     # Generate Better Auth schema
+```
+
+#### Deployment
+```bash
+bun publish              # Build and push Docker image
+```
+
+#### Code Quality
+```bash
+bun typecheck            # Run TypeScript type checking
+bun lint                 # Run ESLint
+bun lint:fix             # Fix ESLint issues
+bun format               # Format with Prettier
+```
+
+#### Internationalization
+```bash
+bun translate            # Run Languine translations
+```
+
+### Subgraph Commands (kit/subgraph)
+
+#### Code Generation
+```bash
+cd kit/subgraph
+bun codegen              # Generate AssemblyScript types
+bun codegen:interfaceid  # Generate interface IDs
+bun codegen:gql-tada     # Generate GraphQL schema and types
+```
+
+#### Building & Deployment
+```bash
+bun compile              # Build subgraph
+bun publish              # Deploy to local Graph node
+bun publish:remote       # Deploy to remote Graph node
+bun deploy:local         # Deploy to local (alias)
+bun deploy:remote        # Deploy to remote (alias)
+```
+
+#### Testing
+```bash
+bun test:integration     # Run integration tests
+bun test:integration:local # Full local integration test suite
+```
+
+#### Code Quality
+```bash
+bun format               # Format with Prettier
+```
+
+### Charts/Helm Commands (kit/charts)
+
+#### Kubernetes Management
+```bash
+cd kit/charts
+bun reset                # Reset Orbstack Kubernetes cluster
+bun helm                 # Deploy Helm chart
+bun helm:check-context   # Verify Kubernetes context
+bun helm:secrets         # Inject secrets from 1Password
+bun helm:extract-env     # Extract environment variables
+bun helm:connect         # Connect to SettleMint
+bun helm:subgraph        # Update subgraph hash in values
+```
+
+#### Package Management
+```bash
+bun compile              # Generate Helm templates
+bun package:harbor       # Package for Harbor registry
+bun package:pack         # Create Helm package
+bun package:push:harbor  # Push to Harbor
+bun package:version      # Update package version
+```
+
+#### Utilities
+```bash
+bun dependencies         # Update dependencies
+bun artifacts            # Copy artifacts
+bun docs                 # Generate Helm documentation
+```
+
+### E2E Testing Commands (kit/e2e)
+
+```bash
+cd kit/e2e
+bun test:e2e             # Run Playwright tests
+bun test:e2e:ui          # Run tests with Playwright UI
+bun test:e2e:ui:local    # Run tests against local environment
+```
 
 ### Development Setup
 
 ```bash
-# Install dependencies (uses Bun)
+# Initial setup
 bun install
-
-# Connect to SettleMint platform
 bunx settlemint login
 bunx settlemint connect
 
-# Start local development environment
+# Start local environment
 bun run dev:up            # Start Docker Compose services
 bunx settlemint connect --instance local  # Connect to local instance
 
@@ -77,41 +279,12 @@ bun dev
 # Run full QA suite from root
 bun run clean && bun install && bun run ci
 
-# Run specific test suites
-bun run test              # All tests
-bun run test:e2e:ui       # UI E2E tests
-bun run test:e2e:ui:debug # Debug UI tests
-bun run test:e2e:api      # API E2E tests
-
-# Run contract tests
-cd kit/contracts
-bun test                  # Run all contract tests
-forge test --match-test testName  # Run specific test
-forge test --match-contract ContractName  # Test specific contract
-
-# Linting and formatting
-bun run lint              # Run all linters
-bun run format            # Format code
-```
-
-### Contract Development
-
-```bash
-cd kit/contracts
-
-# Compile contracts
-bun compile:forge          # Foundry compilation
-bun compile:hardhat        # Hardhat compilation
-bun run compile            # Compile all
-
-# Generate artifacts
-bun genesis                # Generate genesis configuration
-bun abi-output            # Generate ABI files for portal
-bun codegen:types         # Generate TypeScript types
-
-# Testing
-forge test -vvv           # Run tests with verbosity
-forge test --gas-report   # Include gas usage report
+# The CI pipeline runs these in sequence:
+# 1. Format check (turbo run format)
+# 2. Compilation (turbo run compile)
+# 3. Code generation (turbo run codegen)
+# 4. Linting (turbo run lint)
+# 5. Unit tests (turbo run test)
 ```
 
 ## Solidity Development Guidelines (kit/contracts)
@@ -290,31 +463,93 @@ When testing tokenized assets:
 - Follow ERC-3643 for identity and compliance
 - Use proxy patterns for upgradeability
 
-### Database Management
+### Turbo Pipeline Tasks
+
+The project uses Turbo for monorepo management. These tasks are defined in turbo.json:
 
 ```bash
-cd kit/dapp
+# Run any turbo task with:
+turbo run <task>
 
-# Database operations
-bun db:push               # Push schema changes
-bun db:pull               # Pull current schema
-bun db:generate           # Generate migrations
-bun db:studio             # Open Drizzle Studio GUI
+# Available tasks:
+ci                    # Full CI pipeline
+ci:base               # Base CI tasks
+ci:gha                # GitHub Actions CI
+ci:gha:main           # Main branch CI
+build                 # Build task with codegen dependency
+codegen               # Code generation with dependencies
+compile               # Compilation with dependencies
+package               # Packaging (no cache)
+publish               # Publishing (no cache)
+dependencies          # Dependency management
+format                # Code formatting
+lint                  # Linting
+dev                   # Development mode (persistent)
+watch                 # Watch mode (persistent)
+helm                  # Helm operations (no cache)
+docs                  # Documentation generation
+test                  # Testing
+test:integration      # Integration testing
+artifacts             # Artifact generation
+db:studio             # Database studio (persistent)
 ```
 
-### Subgraph Development
+### Docker Compose Services
+
+Available services via docker-compose.yml:
 
 ```bash
-cd kit/subgraph
+# Start all services
+bun run dev:up
 
-# Build and deploy
-bun codegen               # Generate AssemblyScript types
-bun build                 # Build subgraph
-bun compile               # Compile subgraph
-bun deploy:remote         # Deploy to remote
-bun deploy:local          # Deploy to local
-bun test:integration      # Run integration tests
+# Available services:
+anvil                 # Test blockchain node
+graph-node-anvil      # Graph node for test environment
+besu                  # Hyperledger Besu blockchain
+txsigner              # Transaction signer service
+postgres              # PostgreSQL database
+portal                # Smart contract portal
+redis                 # Redis cache
+hasura                # GraphQL engine
+graph-node            # The Graph indexing
+minio                 # Object storage
+blockscout-backend    # Blockchain explorer backend
+blockscout-frontend   # Blockchain explorer frontend
 ```
+
+### Environment Variables
+
+The following environment variables are passed through Turbo:
+- `THE_GRAPH_PORT_LOCAL_DEPLOY`
+- `THE_GRAPH_PORT_LOCAL_QUERY`
+- `FORCE_COLOR`
+- `NO_COLOR`
+- `TERM`
+- `CI`
+- `BUILD_ID`
+- `GITHUB_SHA`
+- `GIT_COMMIT`
+- `GITHUB_REF_SLUG`
+- `GITHUB_REF_NAME`
+- `GITHUB_SHA_SHORT`
+
+### Additional Tools & Utilities
+
+1. **SettleMint CLI** - Used throughout for blockchain operations
+2. **Foundry** - Smart contract development framework
+3. **Hardhat** - Ethereum development environment
+4. **Playwright** - E2E testing framework
+5. **Drizzle** - Database ORM
+6. **Better Auth** - Authentication library
+7. **Vite** - Frontend build tool
+8. **Turbo** - Monorepo build system
+9. **Helm** - Kubernetes package manager
+10. **Docker** - Container platform
+11. **TheGraph** - Blockchain data indexing
+12. **Hasura** - GraphQL engine
+13. **Blockscout** - Blockchain explorer
+14. **Languine** - Translation management
+15. **1Password CLI** - Secret management
 
 ## Architecture Overview
 
