@@ -128,17 +128,6 @@ jobs:
           THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
           THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
 
-      - name: Languine Action
-        uses: languine-ai/languine@v1
-        if: github.event_name != 'pull_request'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          api-key: ${{ secrets.LANGUINE_API_KEY }}
-          project-id: ${{ secrets.LANGUINE_PROJECT_ID }}
-          create-pull-request: false
-          working-directory: kit/dapp
-
       - name: Store predeployed output
         if: github.event_name == 'pull_request' && always()
         uses: actions/upload-artifact@v4
