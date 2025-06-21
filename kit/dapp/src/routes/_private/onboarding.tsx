@@ -5,11 +5,7 @@ export const Route = createFileRoute("/_private/onboarding")({
 });
 
 function OnboardingLayout() {
-  return (
-    <div className="min-h-screen w-full bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
-      <div className="flex min-h-screen items-center justify-center">
-        <Outlet />
-      </div>
-    </div>
-  );
+  // The onboarding layout is just a pass-through since child routes
+  // handle their own backgrounds and layouts
+  return <Outlet />;
 }

@@ -115,9 +115,6 @@ export function setupDevCacheManagement() {
       window.location.reload();
     };
 
-    console.log("[Dev] Cache utilities available:");
-    console.log("- clearCache() - Clear all caches and reload");
-
     // Listen for cache clear events from other tabs
     try {
       const bc = new BroadcastChannel("atk-cache-clear");
@@ -138,9 +135,8 @@ export function setupDevCacheManagement() {
 
   // Clear cache on Vite HMR if needed
   if (import.meta.hot) {
-    // You can uncomment this to clear cache on every HMR update
-    // import.meta.hot.on('vite:beforeUpdate', () => {
-    //   clearQueryCache();
-    // });
+    import.meta.hot.on("vite:beforeUpdate", () => {
+      clearQueryCache();
+    });
   }
 }

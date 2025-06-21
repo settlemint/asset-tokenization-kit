@@ -23,7 +23,7 @@
       "dependsOn": ["build"]
     },
     "db:export": {
-      "inputs": ["src/lib/db/**"],
+      "inputs": ["src/lib/db/**", "tools/export-database.ts"],
       "outputs": [".generated/database-export.sql"]
     },
     "artifacts": {
