@@ -108,7 +108,6 @@ jobs:
           instance: local
 
       - name: Generate artifacts
-        if: github.event_name == 'pull_request'
         run: |
           bunx turbo run artifacts --concurrency=100%
 
