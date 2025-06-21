@@ -15,6 +15,39 @@ building digital asset platforms. It consists of:
 - Kubernetes deployment via Helm charts
 - End-to-end tests using Playwright
 
+## Package Management & Runtime
+
+### Bun as Default Package Manager
+
+Default to using the Bun package manager instead of NPM, PNPM or YARN.
+
+- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
+
+### Bun as Default Runtime
+
+Default to using Bun instead of Node.js.
+
+- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
+- Use `bun run test` instead of `jest` or `vitest`
+- Use `bun run build` instead of `webpack` or `esbuild`
+- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
+- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or
+  `pnpm run <script>`
+- Bun automatically loads .env, so don't use dotenv.
+
+### Bun APIs
+
+- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
+- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
+- `Bun.redis` for Redis. Don't use `ioredis`.
+- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
+- `WebSocket` is built-in. Don't use `ws`.
+- `Bun.File()` for any file reading and writing
+- `Bun.$` instead of execa.
+
+For more information, read the Bun API docs in
+`node_modules/bun-types/docs/**.md`.
+
 ## Key Commands
 
 ### Development Setup
@@ -85,23 +118,27 @@ forge test --gas-report   # Include gas usage report
 
 ### 1. General Principles
 
-- **Think first, code second**: Minimize the number of lines changed and consider ripple effects across the codebase.
-- **Prefer simplicity**: Fewer moving parts ➜ fewer bugs and lower audit overhead.
+- **Think first, code second**: Minimize the number of lines changed and
+  consider ripple effects across the codebase.
+- **Prefer simplicity**: Fewer moving parts ➜ fewer bugs and lower audit
+  overhead.
 
 ### 2. Assembly Usage
 
-| Rule | Rationale |
-|------|-----------|
-| Use assembly only when essential. | Keeps code readable and auditable. |
-| Assembly is mandatory for low-level external calls. | Gives full control over call parameters & return data, and saves gas. |
-| Precede every assembly block with: • A brief justification (1-2 lines). • Equivalent Solidity pseudocode. | Documents intent for reviewers. |
-| Mark assembly blocks memory-safe when the Solidity docs' criteria are met. | Enables compiler optimizations. |
+| Rule                                                                                                      | Rationale                                                             |
+| --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Use assembly only when essential.                                                                         | Keeps code readable and auditable.                                    |
+| Assembly is mandatory for low-level external calls.                                                       | Gives full control over call parameters & return data, and saves gas. |
+| Precede every assembly block with: • A brief justification (1-2 lines). • Equivalent Solidity pseudocode. | Documents intent for reviewers.                                       |
+| Mark assembly blocks memory-safe when the Solidity docs' criteria are met.                                | Enables compiler optimizations.                                       |
 
 ### 3. Gas Optimization
 
-- Keep a dedicated **Gas Optimization** section in the PR description; justify any measurable gas deltas.
+- Keep a dedicated **Gas Optimization** section in the PR description; justify
+  any measurable gas deltas.
 - Prefer `calldata` over `memory`.
-- Limit storage (`sstore`, `sload`) operations; cache in memory wherever possible.
+- Limit storage (`sstore`, `sload`) operations; cache in memory wherever
+  possible.
 - Use forge snapshot and benchmarks:
   ```bash
   cd kit/contracts
@@ -113,7 +150,8 @@ forge test --gas-report   # Include gas usage report
 
 ### 4. Handling "Stack Too Deep"
 
-- **Struct hack (tests only)**: Bundle local variables into a temporary struct declared above the test.
+- **Struct hack (tests only)**: Bundle local variables into a temporary struct
+  declared above the test.
 - **Scoped blocks**: Wrap code in `{ ... }` to drop unused vars from the stack.
 - **Internal helper functions**: Encapsulate logic to shorten call frames.
 - **Refactor / delete unnecessary variables before other tricks**.
@@ -144,6 +182,7 @@ if (to == address(0)) revert CannotTransferToZeroAddress();
 ```
 
 **Benefits of custom errors**:
+
 - More gas efficient than require strings
 - Better error identification in tests and debugging
 - Cleaner, more professional code
@@ -155,38 +194,46 @@ This applies to all Solidity code including contracts, libraries, and scripts.
 
 #### Core Testing Principles
 
-**Every feature or change MUST have comprehensive tests before creating a PR**. This is non-negotiable for maintaining code quality and preventing regressions.
+**Every feature or change MUST have comprehensive tests before creating a PR**.
+This is non-negotiable for maintaining code quality and preventing regressions.
 
 #### When to Write Tests
 
-- **New Features**: Write tests that demonstrate the complete flow and all edge cases
+- **New Features**: Write tests that demonstrate the complete flow and all edge
+  cases
 - **Bug Fixes**: Add tests that reproduce the bug and verify the fix
-- **Refactoring**: Ensure existing tests still pass; add new ones if behavior changes
-- **Gas Optimizations**: Include benchmark tests showing before/after comparisons
+- **Refactoring**: Ensure existing tests still pass; add new ones if behavior
+  changes
+- **Gas Optimizations**: Include benchmark tests showing before/after
+  comparisons
 
 #### Types of Required Tests
 
 **Unit Tests**:
-- Write clear unit tests that demonstrate the general flow of your feature/change
+
+- Write clear unit tests that demonstrate the general flow of your
+  feature/change
 - Test both happy paths and failure cases
 - Include edge cases and boundary conditions
 - Test revert conditions with specific error messages
 
 **Fuzz Tests**:
+
 - **Fuzz tests are highly encouraged** for all new functionality
 - Use Foundry's built-in fuzzing capabilities
 - Apply random arguments to thoroughly test your implementation
 
 Example fuzz test pattern:
+
 ```solidity
 function testFuzz_myFeature(uint256 amount, address user) public {
     // Bound inputs to reasonable ranges
     amount = bound(amount, 1, type(uint128).max);
     vm.assume(user != address(0));
-    
+
     // Test your feature with random inputs
     myContract.myFeature(amount, user);
-    
+
     // Assert expected outcomes
     assertEq(myContract.balanceOf(user), amount);
 }
@@ -195,6 +242,7 @@ function testFuzz_myFeature(uint256 amount, address user) public {
 #### Testing Checklist Before PR
 
 Before opening any PR, ensure:
+
 - [ ] All new functions have unit tests
 - [ ] Critical paths have fuzz tests with random inputs
 - [ ] Edge cases and revert scenarios are tested
@@ -217,13 +265,18 @@ forge coverage                 # code coverage
 ### 9. Asset Tokenization Kit Specific Guidelines
 
 #### Contract Structure
+
 - Follow the SMART protocol patterns for all asset implementations
-- Use the established factory pattern (`ATKBondFactory`, `ATKEquityFactory`, etc.)
+- Use the established factory pattern (`ATKBondFactory`, `ATKEquityFactory`,
+  etc.)
 - Implement proper ERC-3643 compliance for all tokenized assets
-- Utilize the extension system (`SMARTBurnable`, `SMARTCapped`, etc.) for modularity
+- Utilize the extension system (`SMARTBurnable`, `SMARTCapped`, etc.) for
+  modularity
 
 #### Testing Assets
+
 When testing tokenized assets:
+
 - Test compliance features (identity registry, claim topics)
 - Test factory deployment patterns
 - Test proxy upgradeability
@@ -231,6 +284,7 @@ When testing tokenized assets:
 - Include integration tests with the compliance system
 
 #### Common Patterns
+
 - Use `AccessControl` for role-based permissions
 - Implement `Pausable` for emergency stops
 - Follow ERC-3643 for identity and compliance
@@ -363,6 +417,25 @@ GitHub Actions workflows:
   - Security scanning (CodeQL, Trivy)
   - Uses Namespace Cloud for optimization
 
+## Commit and PR Workflow
+
+- Before committing, always run `bun run ci`
+- When asked to create a PR, add all current changes, and analyse the branch
+  history to accurately describe the changes.
+- When pushing new changes to a branch with a PR, always update the title and
+  description to describe the entire changeset
+- On a clean branch/checkout, always run `bun install` followed by
+  `bunx settlemint connect --instance local`
+- Before opening a PR, make sure to run `bun run artifacts` to generate all the
+  checked in generated code. Commit the changes.
+
+## External Tools and Documentation
+
+- use context7 mcp server to always inspect the latest version of the
+  documentation
+- if the user references a linear ticket, use the linear mcp server to check it
+  out
+
 ## Troubleshooting
 
 ### Common Issues
@@ -468,15 +541,90 @@ The dApp includes sophisticated cache management:
 - **No Retry on Auth Failures**: Prevents unnecessary API calls
 - **Cross-Tab Auth Sync**: Authentication state synchronized across tabs
 
+## UI Components with shadcn
+
+The following official shadcn-ui components are available. Please check to see
+if they are installed under `./kit/dapp/components/ui` before installing them
+with `bunx shadcn@canary add <component-id>`.
+
+Notice that The 'shadcn-ui' package is deprecated. Please use the 'shadcn'
+package instead. For example:
+
+```bash
+bunx shadcn@canary add progress --cwd kit/dapp
+```
+
+YOU MUST use `bunx shadcn@canary` when installing shadcn packages.
+
+Docs for each components are available at
+`https://ui.shadcn.com/docs/components/<component-id>`. Fetch and read the docs
+before using the component so that your knowledge is up-to-date.
+
+| #   | Component ID    | Human-friendly name | What it's for                                                                              |
+| --- | --------------- | ------------------- | ------------------------------------------------------------------------------------------ |
+| 1   | accordion       | Accordion           | Stack of headings that expand/collapse to reveal hidden content.                           |
+| 2   | alert           | Alert               | Static call-out box for status or info messages.                                           |
+| 3   | alert-dialog    | Alert Dialog        | Modal that interrupts the flow to confirm or warn about critical actions.                  |
+| 4   | aspect-ratio    | Aspect Ratio        | Wrapper that locks children to a fixed width-to-height ratio (great for responsive media). |
+| 5   | avatar          | Avatar              | Small user/asset image or initials placeholder.                                            |
+| 6   | badge           | Badge               | Tiny label for counts or status (e.g. "New", "3").                                         |
+| 7   | breadcrumb      | Breadcrumb          | Navigation trail that shows "where you are" in the app hierarchy.                          |
+| 8   | button          | Button              | Click/tap element that triggers an action.                                                 |
+| 9   | calendar        | Calendar            | Stand-alone calendar view, used by Date Picker or on its own.                              |
+| 10  | card            | Card                | Content container with optional header/body/footer.                                        |
+| 11  | carousel        | Carousel            | Horizontal slider that cycles through a set of items or images.                            |
+| 12  | chart           | Chart               | Light wrapper for quick bar/line/pie visualizations.                                       |
+| 13  | checkbox        | Checkbox            | Square control for on/off selection of independent items.                                  |
+| 14  | collapsible     | Collapsible         | Utility that hides/reveals content with smooth height animation.                           |
+| 15  | combobox        | Combobox            | Autocomplete text input that filters a long list and lets users pick an item.              |
+| 16  | command         | Command Palette     | VS Code-style keyboard overlay for fuzzy-searching actions.                                |
+| 17  | context-menu    | Context Menu        | Right-click (long-press) menu with context-specific commands.                              |
+| 18  | data-table      | Data Table          | Table with helpers for sorting, filtering and pagination.                                  |
+| 19  | date-picker     | Date Picker         | Input field that pops a calendar for choosing dates or ranges.                             |
+| 20  | dialog          | Dialog              | Generic modal overlay for arbitrary interactive content.                                   |
+| 21  | drawer          | Drawer              | Slide-in panel (often from edge/bottom) for secondary workflows.                           |
+| 22  | dropdown-menu   | Dropdown Menu       | Triggered list of options/actions that auto-dismisses on selection.                        |
+| 23  | form            | Form                | Helpers and styles for accessible, validated forms.                                        |
+| 24  | hover-card      | Hover Card          | Lightweight popover that appears on hover/focus to show extra info.                        |
+| 25  | input           | Input               | Standard single-line text field.                                                           |
+| 26  | input-otp       | Input OTP           | Grouped inputs optimised for entering one-time pass-codes.                                 |
+| 27  | label           | Label               | Accessible label element for any form control.                                             |
+| 28  | menubar         | Menubar             | Horizontal desktop-app-style menu with dropdown sub-menus.                                 |
+| 29  | navigation-menu | Navigation Menu     | Multi-level nav bar with active indicators and hover previews.                             |
+| 30  | pagination      | Pagination          | Next/previous + numbered page controls for paginated data sets.                            |
+| 31  | popover         | Popover             | Non-modal floating panel anchored to a trigger (e.g. emoji picker).                        |
+| 32  | progress        | Progress            | Linear bar that shows completion percentage.                                               |
+| 33  | radio-group     | Radio Group         | Set of mutually-exclusive selection buttons.                                               |
+| 34  | resizable       | Resizable           | Wrapper that lets users drag to resize split panes.                                        |
+| 35  | scroll-area     | Scroll Area         | Augments native scrolling with custom styling and shadows.                                 |
+| 36  | select          | Select              | Styled single-select dropdown (native <select> replacement).                               |
+| 37  | separator       | Separator           | Horizontal or vertical rule dividing content.                                              |
+| 38  | sheet           | Sheet               | Mobile-friendly slide-up bottom sheet (from tiny to full-screen).                          |
+| 39  | sidebar         | Sidebar             | Vertical navigation rail that can collapse/expand.                                         |
+| 40  | skeleton        | Skeleton            | Grey placeholder shapes shown while real content loads.                                    |
+| 41  | slider          | Slider              | Draggable handle on a track for numeric values or ranges.                                  |
+| 42  | sonner          | Sonner              | Opinionated toast component (thin wrapper around the Sonner library).                      |
+| 43  | switch          | Switch              | Toggle switch for true/false settings.                                                     |
+| 44  | table           | Table               | Basic static table markup & styling.                                                       |
+| 45  | tabs            | Tabs                | Tab strip that swaps between associated panels.                                            |
+| 46  | textarea        | Textarea            | Multi-line text input.                                                                     |
+| 47  | toast           | Toast               | Ephemeral message that pops at screen edge and auto-dismisses.                             |
+| 48  | toggle          | Toggle              | Pressable button that stays pressed/un-pressed to indicate state.                          |
+| 49  | toggle-group    | Toggle Group        | Collection of toggles acting as single- or multi-select controls.                          |
+| 50  | tooltip         | Tooltip             | Small hover/focus label supplying helper text.                                             |
+
 ## Using Cast and Forge
 
 ### Cast - Command-Line Blockchain Interaction
 
-Cast is Foundry's Swiss Army knife for interacting with Ethereum from the command line. **Use Cast for blockchain utilities and quick operations** rather than writing custom scripts for common tasks.
+Cast is Foundry's Swiss Army knife for interacting with Ethereum from the
+command line. **Use Cast for blockchain utilities and quick operations** rather
+than writing custom scripts for common tasks.
 
 #### Common Cast Utilities
 
 **Cryptographic Operations:**
+
 ```bash
 # Compute keccak256 hash
 cast keccak "transfer(address,uint256)"
@@ -492,6 +640,7 @@ cast calldata-decode "transfer(address,uint256)" 0xa9059cbb...
 ```
 
 **Reading from Blockchain:**
+
 ```bash
 # Read contract state (call)
 cast call CONTRACT_ADDRESS "balanceOf(address)" USER_ADDRESS --rpc-url $RPC_URL
@@ -507,6 +656,7 @@ cast gas-price --rpc-url $RPC_URL
 ```
 
 **Writing to Blockchain:**
+
 ```bash
 # Send transaction (write operation)
 cast send CONTRACT_ADDRESS "setNumber(uint256)" 42 --rpc-url $RPC_URL --private-key $PRIVATE_KEY
@@ -516,6 +666,7 @@ cast estimate CONTRACT_ADDRESS "transfer(address,uint256)" RECIPIENT 1000 --rpc-
 ```
 
 **Data Conversion Utilities:**
+
 ```bash
 # Convert between units
 cast to-wei 1 ether        # Convert to wei
@@ -533,6 +684,7 @@ cast to-checksum-address 0x...  # EIP-55 checksum
 #### When to Use Cast vs Custom Code
 
 **Use Cast for:**
+
 - Quick keccak256 hashing of function signatures or data
 - Reading contract state, storage slots, balances
 - Sending simple transactions
@@ -542,6 +694,7 @@ cast to-checksum-address 0x...  # EIP-55 checksum
 - Computing contract addresses before deployment
 
 **Write custom code when:**
+
 - Building complex multi-step interactions
 - Implementing business logic
 - Creating reusable libraries or contracts
@@ -550,11 +703,469 @@ cast to-checksum-address 0x...  # EIP-55 checksum
 
 ### Best Practices
 
-1. **Use Cast for prototyping**: Before writing a complex script, test your calls with Cast
+1. **Use Cast for prototyping**: Before writing a complex script, test your
+   calls with Cast
 2. **Verify with Cast**: After deployments, use Cast to verify contract state
 3. **Debug with Cast**: Use `cast run` to debug failed transactions
-4. **Prefer Cast for one-offs**: Don't write scripts for operations Cast can handle
-5. **Chain Cast commands**: Combine Cast commands with shell scripting for powerful workflows
+4. **Prefer Cast for one-offs**: Don't write scripts for operations Cast can
+   handle
+5. **Chain Cast commands**: Combine Cast commands with shell scripting for
+   powerful workflows
+
+## TypeScript Best Practices
+
+### Any inside generic functions
+
+When building generic functions, you may need to use any inside the function
+body.
+
+This is because TypeScript often cannot match your runtime logic to the logic
+done inside your types.
+
+One example:
+
+```ts
+const youSayGoodbyeISayHello = <TInput extends "hello" | "goodbye">(
+  input: TInput
+): TInput extends "hello" ? "goodbye" : "hello" => {
+  if (input === "goodbye") {
+    return "hello"; // Error!
+  } else {
+    return "goodbye"; // Error!
+  }
+};
+```
+
+On the type level (and the runtime), this function returns `goodbye` when the
+input is `hello`.
+
+There is no way to make this work concisely in TypeScript.
+
+So using `any` is the most concise solution:
+
+```ts
+const youSayGoodbyeISayHello = <TInput extends "hello" | "goodbye">(
+  input: TInput
+): TInput extends "hello" ? "goodbye" : "hello" => {
+  if (input === "goodbye") {
+    return "hello" as any;
+  } else {
+    return "goodbye" as any;
+  }
+};
+```
+
+Outside of generic functions, use `any` extremely sparingly.
+
+### Default exports
+
+Unless explicitly required by the framework, do not use default exports.
+
+```ts
+// BAD
+export default function myFunction() {
+  return <div>Hello</div>;
+}
+```
+
+```ts
+// GOOD
+export function myFunction() {
+  return <div>Hello</div>;
+}
+```
+
+Default exports create confusion from the importing file.
+
+```ts
+// BAD
+import myFunction from "./myFunction";
+```
+
+```ts
+// GOOD
+import { myFunction } from "./myFunction";
+```
+
+There are certain situations where a framework may require a default export. For
+instance, Next.js requires a default export for pages.
+
+```tsx
+// This is fine, if required by the framework
+export default function MyPage() {
+  return <div>Hello</div>;
+}
+```
+
+### Discriminated unions
+
+Proactively use discriminated unions to model data that can be in one of a few
+different shapes.
+
+For example, when sending events between environments:
+
+```ts
+type UserCreatedEvent = {
+  type: "user.created";
+  data: { id: string; email: string };
+};
+
+type UserDeletedEvent = {
+  type: "user.deleted";
+  data: { id: string };
+};
+
+type Event = UserCreatedEvent | UserDeletedEvent;
+```
+
+Use switch statements to handle the results of discriminated unions:
+
+```ts
+const handleEvent = (event: Event) => {
+  switch (event.type) {
+    case "user.created":
+      console.log(event.data.email);
+      break;
+    case "user.deleted":
+      console.log(event.data.id);
+      break;
+  }
+};
+```
+
+Use discriminated unions to prevent the 'bag of optionals' problem.
+
+For example, when describing a fetching state:
+
+```ts
+// BAD - allows impossible states
+type FetchingState<TData> = {
+  status: "idle" | "loading" | "success" | "error";
+  data?: TData;
+  error?: Error;
+};
+
+// GOOD - prevents impossible states
+type FetchingState<TData> =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "success"; data: TData }
+  | { status: "error"; error: Error };
+```
+
+### Enums
+
+Do not introduce new enums into the codebase. Retain existing enums.
+
+If you require enum-like behaviour, use an `as const` object:
+
+```ts
+const backendToFrontendEnum = {
+  xs: "EXTRA_SMALL",
+  sm: "SMALL",
+  md: "MEDIUM",
+} as const;
+
+type LowerCaseEnum = keyof typeof backendToFrontendEnum; // "xs" | "sm" | "md"
+
+type UpperCaseEnum = (typeof backendToFrontendEnum)[LowerCaseEnum]; // "EXTRA_SMALL" | "SMALL" | "MEDIUM"
+```
+
+Remember that numeric enums behave differently to string enums. Numeric enums
+produce a reverse mapping:
+
+```ts
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right,
+}
+
+const direction = Direction.Up; // 0
+const directionName = Direction[0]; // "Up"
+```
+
+This means that the enum `Direction` above will have eight keys instead of four.
+
+```ts
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right,
+}
+
+Object.keys(Direction).length; // 8
+```
+
+### Import type
+
+Use import type whenever you are importing a type.
+
+Prefer top-level `import type` over inline `import { type ... }`.
+
+```ts
+// BAD
+import { type User } from "./user";
+```
+
+```ts
+// GOOD
+import type { User } from "./user";
+```
+
+The reason for this is that in certain environments, the first version's import
+will not be erased. So you'll be left with:
+
+```ts
+// Before transpilation
+import { type User } from "./user";
+
+// After transpilation
+import "./user";
+```
+
+### Installing packages
+
+When installing libraries, do not rely on your own training data.
+
+Your training data has a cut-off date. You're probably not aware of all of the
+latest developments in the JavaScript and TypeScript world.
+
+This means that instead of picking a version manually (via updating the
+`package.json` file), you should use a script to install the latest version of a
+library.
+
+```bash
+bun add -D @typescript-eslint/eslint-plugin
+```
+
+This will ensure you're always using the latest version.
+
+Prefer to install packages, not in the root, but in the mono repo packages
+
+### Interface extends
+
+ALWAYS prefer interfaces when modelling inheritance.
+
+The `&` operator has terrible performance in TypeScript. Only use it where
+`interface extends` is not possible.
+
+```ts
+// BAD
+
+type A = {
+  a: string;
+};
+
+type B = {
+  b: string;
+};
+
+type C = A & B;
+```
+
+```ts
+// GOOD
+
+interface A {
+  a: string;
+}
+
+interface B {
+  b: string;
+}
+
+interface C extends A, B {
+  // Additional properties can be added here
+}
+```
+
+### JSDoc
+
+Use JSDoc comments to annotate functions and types.
+
+Be concise in JSDoc comments, and only provide JSDoc comments if the function's
+behaviour is not self-evident for a novice developer.
+
+Use the JSDoc inline `@link` tag to link to other functions and types within the
+same file.
+
+```ts
+/**
+ * Subtracts two numbers
+ */
+const subtract = (a: number, b: number) => a - b;
+
+/**
+ * Does the opposite to {@link subtract}
+ */
+const add = (a: number, b: number) => a + b;
+```
+
+### Naming conventions
+
+- Use kebab-case for file names (e.g., `my-component.ts`)
+- Use camelCase for variables and function names (e.g., `myVariable`,
+  `myFunction()`)
+- Use UpperCamelCase (PascalCase) for classes, types, and interfaces (e.g.,
+  `MyClass`, `MyInterface`)
+- Use ALL_CAPS for constants and enum values (e.g., `MAX_COUNT`, `Color.RED`)
+- Inside generic types, functions or classes, prefix type parameters with `T`
+  (e.g., `TKey`, `TValue`)
+
+```ts
+type RecordOfArrays<TItem> = Record<string, TItem[]>;
+```
+
+### No unchecked access
+
+If the user has this rule enabled in their `tsconfig.json`, indexing into
+objects and arrays will behave differently from how you expect.
+
+```ts
+const obj: Record<string, string> = {};
+
+// With noUncheckedIndexedAccess, value will
+// be `string | undefined`
+// Without it, value will be `string`
+const value = obj.key;
+```
+
+```ts
+const arr: string[] = [];
+
+// With noUncheckedIndexedAccess, value will
+// be `string | undefined`
+// Without it, value will be `string`
+const value = arr[0];
+```
+
+### Optional properties
+
+Use optional properties extremely sparingly. Only use them when the property is
+truly optional, and consider whether bugs may be caused by a failure to pass the
+property.
+
+In the example below we always want to pass user ID to `AuthOptions`. This is
+because if we forget to pass it somewhere in the code base, it will cause our
+function to be not authenticated.
+
+```ts
+// BAD
+type AuthOptions = {
+  userId?: string;
+};
+
+const func = (options: AuthOptions) => {
+  const userId = options.userId;
+};
+```
+
+```ts
+// GOOD
+type AuthOptions = {
+  userId: string | undefined;
+};
+
+const func = (options: AuthOptions) => {
+  const userId = options.userId;
+};
+```
+
+### Readonly properties
+
+Use `readonly` properties for object types by default. This will prevent
+accidental mutation at runtime.
+
+Omit `readonly` only when the property is genuinely mutable.
+
+```ts
+// BAD
+type User = {
+  id: string;
+};
+
+const user: User = {
+  id: "1",
+};
+
+user.id = "2";
+```
+
+```ts
+// GOOD
+type User = {
+  readonly id: string;
+};
+
+const user: User = {
+  id: "1",
+};
+
+user.id = "2"; // Error
+```
+
+### Return types
+
+When declaring functions on the top-level of a module, declare their return
+types. This will help future AI assistants understand the function's purpose.
+
+```ts
+const myFunc = (): string => {
+  return "hello";
+};
+```
+
+One exception to this is components which return JSX. No need to declare the
+return type of a component, as it is always JSX.
+
+```tsx
+const MyComponent = () => {
+  return <div>Hello</div>;
+};
+```
+
+### Throwing
+
+Think carefully before implementing code that throws errors.
+
+If a thrown error produces a desirable outcome in the system, go for it. For
+instance, throwing a custom error inside a backend framework's request handler.
+
+However, for code that you would need a manual try catch for, consider using a
+result type instead:
+
+```ts
+type Result<T, E extends Error> =
+  | { ok: true; value: T }
+  | { ok: false; error: E };
+```
+
+For example, when parsing JSON:
+
+```ts
+const parseJson = (input: string): Result<unknown, Error> => {
+  try {
+    return { ok: true, value: JSON.parse(input) };
+  } catch (error) {
+    return { ok: false, error: error as Error };
+  }
+};
+```
+
+This way you can handle the error in the caller:
+
+```ts
+const result = parseJson('{"name": "John"}');
+
+if (result.ok) {
+  console.log(result.value);
+} else {
+  console.error(result.error);
+}
+```
 
 ## Memories
 
@@ -566,4 +1177,5 @@ cast to-checksum-address 0x...  # EIP-55 checksum
 - Token factory creation now requires system bootstrapping first
 - Asset types are centralized in the zod validator (no more cryptocurrency)
 - never use barrel files
-- For Solidity development in kit/contracts, always follow the Solidity Development Guidelines section
+- For Solidity development in kit/contracts, always follow the Solidity
+  Development Guidelines section
