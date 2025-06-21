@@ -240,7 +240,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6
         with:
           commit_message: "chore: update artifacts"
-          branch: main
+          branch: ${{ github.head_ref }}
           file_pattern: "bun.lock .gitattributes **/.generated/** **/*-cache.d.ts **/*-env.d.ts **/*-schema.graphql"
 
   pr-labels:
