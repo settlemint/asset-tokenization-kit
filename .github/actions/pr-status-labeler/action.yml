@@ -19,6 +19,10 @@ inputs:
     description: 'Whether the PR has been merged'
     required: false
     default: 'false'
+  is_abandoned:
+    description: 'Whether the PR has been abandoned (closed without merging)'
+    required: false
+    default: 'false'
 
 runs:
   using: 'composite'
@@ -32,7 +36,8 @@ runs:
             { name: 'status:ready-for-review', color: 'FBCA04', description: 'Pull request is ready for review' },  // Yellow
             { name: 'status:approved', color: '28A745', description: 'Pull request has been approved' },  // Bright green
             { name: 'status:mergeable', color: '0E8A16', description: 'Pull request is approved, tests pass, and ready to merge' },  // Dark green
-            { name: 'status:merged', color: '6F42C1', description: 'Pull request has been merged' }  // Purple
+            { name: 'status:merged', color: '6F42C1', description: 'Pull request has been merged' },  // Purple
+            { name: 'status:abandoned', color: 'C0C0C0', description: 'Pull request was closed without merging' }  // Light gray
           ];
 
           // Get all existing labels
@@ -82,7 +87,7 @@ runs:
       uses: actions/github-script@v7
       with:
         script: |
-          const labels = ['status:draft', 'status:ready-for-review', 'status:approved', 'status:mergeable', 'status:merged'];
+          const labels = ['status:draft', 'status:ready-for-review', 'status:approved', 'status:mergeable', 'status:merged', 'status:abandoned'];
           const pr_number = ${{ inputs.pr_number }};
 
           for (const label of labels) {
@@ -104,16 +109,19 @@ runs:
       with:
         script: |
           const pr_number = ${{ inputs.pr_number }};
-          const is_draft = ${{ inputs.is_draft }};
-          const has_approval = ${{ inputs.has_approval }};
+          const is_draft = '${{ inputs.is_draft }}' === 'true';
+          const has_approval = '${{ inputs.has_approval }}' === 'true';
           const qa_status = '${{ inputs.qa_status }}';
-          const is_merged = ${{ inputs.is_merged }};
+          const is_merged = '${{ inputs.is_merged }}' === 'true';
+          const is_abandoned = '${{ inputs.is_abandoned }}' === 'true';
           
           let label = '';
 
           // Determine the appropriate label based on PR state
           if (is_merged) {
             label = 'status:merged';
+          } else if (is_abandoned) {
+            label = 'status:abandoned';
           } else if (is_draft) {
             label = 'status:draft';
           } else if (has_approval && qa_status === 'success') {

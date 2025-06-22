@@ -39,13 +39,43 @@ jobs:
         with:
           fetch-depth: 0  # Full history for better context
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup 1Password
+        uses: 1password/load-secrets-action/configure@v2
         with:
-          bun-version: 1.2.16
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+      - name: Load all secrets
+        id: secrets
+        uses: 1password/load-secrets-action@v2
+        env:
+          HARBOR_USER: op://platform/harbor/username
+          HARBOR_PASS: op://platform/harbor/password
+          NPM_TOKEN: op://platform/npmjs/credential
+
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          npm_token: ${{ env.NPM_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Harbor
+        uses: docker/login-action@v3
+        with:
+          registry: harbor.settlemint.com
+          username: ${{ env.HARBOR_USER }}
+          password: ${{ env.HARBOR_PASS }}
+
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: local
 
       - name: Run Claude Code Review
         id: claude-review
