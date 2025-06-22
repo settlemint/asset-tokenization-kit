@@ -144,15 +144,19 @@ jobs:
               review.user.login !== pr_author
             );
             
-            // Determine QA status based on previous job results
-            const qa_success = '${{ needs.qa.result }}' === 'success' && 
-                              '${{ needs.secret-scanning.result }}' !== 'failure';
-            
             core.setOutput('has_approval', has_approval);
-            core.setOutput('qa_status', qa_success ? 'success' : 'failed');
+            
+      - name: Determine QA status
+        id: qa_status
+        run: |
+          if [[ "${{ needs.qa.result }}" == "success" && "${{ needs.secret-scanning.result }}" != "failure" ]]; then
+            echo "qa_status=success" >> $GITHUB_OUTPUT
+          else
+            echo "qa_status=failed" >> $GITHUB_OUTPUT
+          fi
     outputs:
       has_approval: ${{ steps.check_approval.outputs.has_approval }}
-      qa_status: ${{ steps.check_approval.outputs.qa_status }}
+      qa_status: ${{ steps.qa_status.outputs.qa_status }}
 
   # Apply final PR status label
   label-pr-final-status:
