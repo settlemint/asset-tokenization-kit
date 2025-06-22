@@ -47,13 +47,36 @@ jobs:
       always() &&
       needs.label-pr-status.result == 'success' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
+    runs-on: namespace-profile-atk-services
+    steps:
+      - name: Get PR labels
+        id: get_labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: ${{ github.event.pull_request.number }}
+            });
+            return JSON.stringify(pr.labels);
+    outputs:
+      pr_labels: ${{ steps.get_labels.outputs.result }}
+
+  # Actually send the notification
+  slack-notify-pr-status-send:
+    name: Send Slack - PR Status
+    needs: [slack-notify-pr-status]
+    if: |
+      always() &&
+      needs.slack-notify-pr-status.result == 'success'
     uses: ./.github/workflows/reusable-slack-pr-notifier.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
       pr_title: ${{ github.event.pull_request.title }}
       pr_url: ${{ github.event.pull_request.html_url }}
-      pr_author: ${{ github.event.pull_request.user.login }}
-      repo_name: ${{ github.repository }}
+      pr_labels: ${{ needs.slack-notify-pr-status.outputs.pr_labels }}
+      action: 'labeled'
       runs-on: namespace-profile-atk-services
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
@@ -79,13 +102,36 @@ jobs:
       always() &&
       needs.label-qa-start.result == 'success' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
+    runs-on: namespace-profile-atk-services
+    steps:
+      - name: Get PR labels
+        id: get_labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: ${{ github.event.pull_request.number }}
+            });
+            return JSON.stringify(pr.labels);
+    outputs:
+      pr_labels: ${{ steps.get_labels.outputs.result }}
+
+  # Actually send the notification
+  slack-notify-qa-start-send:
+    name: Send Slack - QA Running
+    needs: [slack-notify-qa-start]
+    if: |
+      always() &&
+      needs.slack-notify-qa-start.result == 'success'
     uses: ./.github/workflows/reusable-slack-pr-notifier.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
       pr_title: ${{ github.event.pull_request.title }}
       pr_url: ${{ github.event.pull_request.html_url }}
-      pr_author: ${{ github.event.pull_request.user.login }}
-      repo_name: ${{ github.repository }}
+      pr_labels: ${{ needs.slack-notify-qa-start.outputs.pr_labels }}
+      action: 'labeled'
       runs-on: namespace-profile-atk-services
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
@@ -164,13 +210,36 @@ jobs:
       always() &&
       needs.label-qa-end.result == 'success' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
+    runs-on: namespace-profile-atk-services
+    steps:
+      - name: Get PR labels
+        id: get_labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: ${{ github.event.pull_request.number }}
+            });
+            return JSON.stringify(pr.labels);
+    outputs:
+      pr_labels: ${{ steps.get_labels.outputs.result }}
+
+  # Actually send the notification
+  slack-notify-qa-end-send:
+    name: Send Slack - QA Complete
+    needs: [slack-notify-qa-end]
+    if: |
+      always() &&
+      needs.slack-notify-qa-end.result == 'success'
     uses: ./.github/workflows/reusable-slack-pr-notifier.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
       pr_title: ${{ github.event.pull_request.title }}
       pr_url: ${{ github.event.pull_request.html_url }}
-      pr_author: ${{ github.event.pull_request.user.login }}
-      repo_name: ${{ github.repository }}
+      pr_labels: ${{ needs.slack-notify-qa-end.outputs.pr_labels }}
+      action: 'labeled'
       runs-on: namespace-profile-atk-services
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
@@ -178,7 +247,7 @@ jobs:
   # Update PR status with review and QA information
   update-pr-status:
     name: Update PR Status
-    needs: [label-qa-end, qa, secret-scanning]
+    needs: [label-qa-end, qa, secret-scanning, slack-notify-qa-end-send]
     if: |
       always() &&
       !endsWith(github.event.pull_request.user.login, '[bot]') &&
@@ -275,13 +344,36 @@ jobs:
       always() &&
       needs.label-pr-final-status.result == 'success' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
+    runs-on: namespace-profile-atk-services
+    steps:
+      - name: Get PR labels
+        id: get_labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: ${{ github.event.pull_request.number }}
+            });
+            return JSON.stringify(pr.labels);
+    outputs:
+      pr_labels: ${{ steps.get_labels.outputs.result }}
+
+  # Actually send the notification
+  slack-notify-final-status-send:
+    name: Send Slack - Final Status
+    needs: [slack-notify-final-status]
+    if: |
+      always() &&
+      needs.slack-notify-final-status.result == 'success'
     uses: ./.github/workflows/reusable-slack-pr-notifier.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
       pr_title: ${{ github.event.pull_request.title }}
       pr_url: ${{ github.event.pull_request.html_url }}
-      pr_author: ${{ github.event.pull_request.user.login }}
-      repo_name: ${{ github.repository }}
+      pr_labels: ${{ needs.slack-notify-final-status.outputs.pr_labels }}
+      action: 'labeled'
       runs-on: namespace-profile-atk-services
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
@@ -309,13 +401,36 @@ jobs:
       needs.label-pr-closed.result == 'success' &&
       github.event.action == 'closed' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
+    runs-on: namespace-profile-atk-services
+    steps:
+      - name: Get PR labels
+        id: get_labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: ${{ github.event.pull_request.number }}
+            });
+            return JSON.stringify(pr.labels);
+    outputs:
+      pr_labels: ${{ steps.get_labels.outputs.result }}
+
+  # Actually send the notification
+  slack-notify-pr-closed-send:
+    name: Send Slack - PR Closed
+    needs: [slack-notify-pr-closed]
+    if: |
+      always() &&
+      needs.slack-notify-pr-closed.result == 'success'
     uses: ./.github/workflows/reusable-slack-pr-notifier.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
       pr_title: ${{ github.event.pull_request.title }}
       pr_url: ${{ github.event.pull_request.html_url }}
-      pr_author: ${{ github.event.pull_request.user.login }}
-      repo_name: ${{ github.repository }}
+      pr_labels: ${{ needs.slack-notify-pr-closed.outputs.pr_labels }}
+      action: 'labeled'
       runs-on: namespace-profile-atk-services
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
@@ -323,7 +438,7 @@ jobs:
   # Manage auto-merge based on PR state
   manage-auto-merge:
     name: Manage Auto-Merge
-    needs: [update-pr-status, label-pr-final-status, slack-notify-final-status]
+    needs: [update-pr-status, label-pr-final-status, slack-notify-final-status-send]
     if: |
       always() &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
