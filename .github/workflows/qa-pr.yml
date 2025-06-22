@@ -48,10 +48,8 @@ jobs:
   # Label PR as QA running when workflow starts
   label-qa-start:
     name: Label QA Start
-    needs: [label-qa-pending]
     if: |
-      always() &&
-      (github.event.action == 'synchronize' || github.event.action == 'opened')
+      github.event.action == 'synchronize' || github.event.action == 'opened'
     uses: ./.github/workflows/reusable-build-status-labeler.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
@@ -140,9 +138,10 @@ jobs:
             });
             
             // Check if PR has approval (excluding the PR author)
+            const pr_author = `${{ github.event.pull_request.user.login }}`;
             const has_approval = reviews.data.some(review => 
               review.state === 'APPROVED' && 
-              review.user.login !== '${{ github.event.pull_request.user.login }}'
+              review.user.login !== pr_author
             );
             
             // Determine QA status based on previous job results
@@ -151,7 +150,6 @@ jobs:
             
             core.setOutput('has_approval', has_approval);
             core.setOutput('qa_status', qa_success ? 'success' : 'failed');
-            
     outputs:
       has_approval: ${{ steps.check_approval.outputs.has_approval }}
       qa_status: ${{ steps.check_approval.outputs.qa_status }}

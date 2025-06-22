@@ -57,9 +57,10 @@ jobs:
             });
             
             // Check if PR has approval (excluding the PR author)
+            const pr_author = `${{ github.event.pull_request.user.login }}`;
             const has_approval = reviews.data.some(review => 
               review.state === 'APPROVED' && 
-              review.user.login !== '${{ github.event.pull_request.user.login }}'
+              review.user.login !== pr_author
             );
             
             core.setOutput('has_approval', has_approval);
