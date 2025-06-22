@@ -109,11 +109,11 @@ runs:
       with:
         script: |
           const pr_number = ${{ inputs.pr_number }};
-          const is_draft = ${{ inputs.is_draft }};
-          const has_approval = ${{ inputs.has_approval }};
+          const is_draft = '${{ inputs.is_draft }}' === 'true';
+          const has_approval = '${{ inputs.has_approval }}' === 'true';
           const qa_status = '${{ inputs.qa_status }}';
-          const is_merged = ${{ inputs.is_merged }};
-          const is_abandoned = ${{ inputs.is_abandoned }};
+          const is_merged = '${{ inputs.is_merged }}' === 'true';
+          const is_abandoned = '${{ inputs.is_abandoned }}' === 'true';
           
           let label = '';
 
