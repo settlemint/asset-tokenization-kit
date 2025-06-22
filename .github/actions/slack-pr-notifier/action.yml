@@ -430,7 +430,6 @@ runs:
                 console.log('Successfully stored Slack timestamp');
               }
               }
-            }
             } else {
               // Always update the message to ensure latest title and content
               console.log('Updating Slack message with latest content');
