@@ -163,16 +163,60 @@ jobs:
             try {
               if (!slackTs) {
                 // Send new message
+                // Get PR author info
+                const pr_author = `${{ github.event.pull_request.user.login }}`;
+                const author_avatar = `${{ github.event.pull_request.user.avatar_url }}`;
+                
                 const result = await slackAPI('chat.postMessage', {
                   channel: process.env.SLACK_CHANNEL_ID,
-                  text: `[${repoName}][#${pr_number}] ${pr_title}`,
+                  text: `PR #${pr_number}: ${pr_title}`,
                   blocks: [
+                    {
+                      type: 'header',
+                      text: {
+                        type: 'plain_text',
+                        text: `PR #${pr_number}`,
+                        emoji: true
+                      }
+                    },
                     {
                       type: 'section',
                       text: {
                         type: 'mrkdwn',
-                        text: `*[${repoName}][#${pr_number}]* ${pr_title}\n<${pr_url}|View PR>`
+                        text: `*${pr_title}*`
                       }
+                    },
+                    {
+                      type: 'context',
+                      elements: [
+                        {
+                          type: 'image',
+                          image_url: author_avatar,
+                          alt_text: pr_author
+                        },
+                        {
+                          type: 'mrkdwn',
+                          text: `*Author:* ${pr_author} • *Repository:* ${repoName}`
+                        }
+                      ]
+                    },
+                    {
+                      type: 'divider'
+                    },
+                    {
+                      type: 'actions',
+                      elements: [
+                        {
+                          type: 'button',
+                          text: {
+                            type: 'plain_text',
+                            text: '👀 View PR',
+                            emoji: true
+                          },
+                          url: pr_url,
+                          style: 'primary'
+                        }
+                      ]
                     }
                   ]
                 });
@@ -428,16 +472,60 @@ jobs:
             try {
               if (!slackTs) {
                 // Send new message
+                // Get PR author info
+                const pr_author = `${{ github.event.pull_request.user.login }}`;
+                const author_avatar = `${{ github.event.pull_request.user.avatar_url }}`;
+                
                 const result = await slackAPI('chat.postMessage', {
                   channel: process.env.SLACK_CHANNEL_ID,
-                  text: `[${repoName}][#${pr_number}] ${pr_title}`,
+                  text: `PR #${pr_number}: ${pr_title}`,
                   blocks: [
+                    {
+                      type: 'header',
+                      text: {
+                        type: 'plain_text',
+                        text: `PR #${pr_number}`,
+                        emoji: true
+                      }
+                    },
                     {
                       type: 'section',
                       text: {
                         type: 'mrkdwn',
-                        text: `*[${repoName}][#${pr_number}]* ${pr_title}\n<${pr_url}|View PR>`
+                        text: `*${pr_title}*`
                       }
+                    },
+                    {
+                      type: 'context',
+                      elements: [
+                        {
+                          type: 'image',
+                          image_url: author_avatar,
+                          alt_text: pr_author
+                        },
+                        {
+                          type: 'mrkdwn',
+                          text: `*Author:* ${pr_author} • *Repository:* ${repoName}`
+                        }
+                      ]
+                    },
+                    {
+                      type: 'divider'
+                    },
+                    {
+                      type: 'actions',
+                      elements: [
+                        {
+                          type: 'button',
+                          text: {
+                            type: 'plain_text',
+                            text: '👀 View PR',
+                            emoji: true
+                          },
+                          url: pr_url,
+                          style: 'primary'
+                        }
+                      ]
                     }
                   ]
                 });
@@ -735,16 +823,60 @@ jobs:
             try {
               if (!slackTs) {
                 // Send new message
+                // Get PR author info
+                const pr_author = `${{ github.event.pull_request.user.login }}`;
+                const author_avatar = `${{ github.event.pull_request.user.avatar_url }}`;
+                
                 const result = await slackAPI('chat.postMessage', {
                   channel: process.env.SLACK_CHANNEL_ID,
-                  text: `[${repoName}][#${pr_number}] ${pr_title}`,
+                  text: `PR #${pr_number}: ${pr_title}`,
                   blocks: [
+                    {
+                      type: 'header',
+                      text: {
+                        type: 'plain_text',
+                        text: `PR #${pr_number}`,
+                        emoji: true
+                      }
+                    },
                     {
                       type: 'section',
                       text: {
                         type: 'mrkdwn',
-                        text: `*[${repoName}][#${pr_number}]* ${pr_title}\n<${pr_url}|View PR>`
+                        text: `*${pr_title}*`
                       }
+                    },
+                    {
+                      type: 'context',
+                      elements: [
+                        {
+                          type: 'image',
+                          image_url: author_avatar,
+                          alt_text: pr_author
+                        },
+                        {
+                          type: 'mrkdwn',
+                          text: `*Author:* ${pr_author} • *Repository:* ${repoName}`
+                        }
+                      ]
+                    },
+                    {
+                      type: 'divider'
+                    },
+                    {
+                      type: 'actions',
+                      elements: [
+                        {
+                          type: 'button',
+                          text: {
+                            type: 'plain_text',
+                            text: '👀 View PR',
+                            emoji: true
+                          },
+                          url: pr_url,
+                          style: 'primary'
+                        }
+                      ]
                     }
                   ]
                 });
@@ -1080,16 +1212,60 @@ jobs:
             try {
               if (!slackTs) {
                 // Send new message
+                // Get PR author info
+                const pr_author = `${{ github.event.pull_request.user.login }}`;
+                const author_avatar = `${{ github.event.pull_request.user.avatar_url }}`;
+                
                 const result = await slackAPI('chat.postMessage', {
                   channel: process.env.SLACK_CHANNEL_ID,
-                  text: `[${repoName}][#${pr_number}] ${pr_title}`,
+                  text: `PR #${pr_number}: ${pr_title}`,
                   blocks: [
+                    {
+                      type: 'header',
+                      text: {
+                        type: 'plain_text',
+                        text: `PR #${pr_number}`,
+                        emoji: true
+                      }
+                    },
                     {
                       type: 'section',
                       text: {
                         type: 'mrkdwn',
-                        text: `*[${repoName}][#${pr_number}]* ${pr_title}\n<${pr_url}|View PR>`
+                        text: `*${pr_title}*`
                       }
+                    },
+                    {
+                      type: 'context',
+                      elements: [
+                        {
+                          type: 'image',
+                          image_url: author_avatar,
+                          alt_text: pr_author
+                        },
+                        {
+                          type: 'mrkdwn',
+                          text: `*Author:* ${pr_author} • *Repository:* ${repoName}`
+                        }
+                      ]
+                    },
+                    {
+                      type: 'divider'
+                    },
+                    {
+                      type: 'actions',
+                      elements: [
+                        {
+                          type: 'button',
+                          text: {
+                            type: 'plain_text',
+                            text: '👀 View PR',
+                            emoji: true
+                          },
+                          url: pr_url,
+                          style: 'primary'
+                        }
+                      ]
                     }
                   ]
                 });
@@ -1346,16 +1522,60 @@ jobs:
             try {
               if (!slackTs) {
                 // Send new message
+                // Get PR author info
+                const pr_author = `${{ github.event.pull_request.user.login }}`;
+                const author_avatar = `${{ github.event.pull_request.user.avatar_url }}`;
+                
                 const result = await slackAPI('chat.postMessage', {
                   channel: process.env.SLACK_CHANNEL_ID,
-                  text: `[${repoName}][#${pr_number}] ${pr_title}`,
+                  text: `PR #${pr_number}: ${pr_title}`,
                   blocks: [
+                    {
+                      type: 'header',
+                      text: {
+                        type: 'plain_text',
+                        text: `PR #${pr_number}`,
+                        emoji: true
+                      }
+                    },
                     {
                       type: 'section',
                       text: {
                         type: 'mrkdwn',
-                        text: `*[${repoName}][#${pr_number}]* ${pr_title}\n<${pr_url}|View PR>`
+                        text: `*${pr_title}*`
                       }
+                    },
+                    {
+                      type: 'context',
+                      elements: [
+                        {
+                          type: 'image',
+                          image_url: author_avatar,
+                          alt_text: pr_author
+                        },
+                        {
+                          type: 'mrkdwn',
+                          text: `*Author:* ${pr_author} • *Repository:* ${repoName}`
+                        }
+                      ]
+                    },
+                    {
+                      type: 'divider'
+                    },
+                    {
+                      type: 'actions',
+                      elements: [
+                        {
+                          type: 'button',
+                          text: {
+                            type: 'plain_text',
+                            text: '👀 View PR',
+                            emoji: true
+                          },
+                          url: pr_url,
+                          style: 'primary'
+                        }
+                      ]
                     }
                   ]
                 });
