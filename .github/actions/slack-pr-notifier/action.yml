@@ -89,9 +89,28 @@ runs:
 
           // Get current status labels
           console.log('Current PR labels:', labels.map(l => l.name));
-          const currentStatuses = labels
-            .filter(label => Object.keys(statusReactions).includes(label.name))
-            .map(label => statusReactions[label.name]);
+          
+          // Filter labels and determine appropriate reactions
+          const qaLabels = labels.filter(l => l.name.startsWith('qa:'));
+          const statusLabels = labels.filter(l => l.name.startsWith('status:'));
+          
+          let currentStatuses = [];
+          
+          // Add QA reaction if present
+          const qaLabel = qaLabels.find(l => Object.keys(statusReactions).includes(l.name));
+          if (qaLabel) {
+            currentStatuses.push(statusReactions[qaLabel.name]);
+          }
+          
+          // Only add status reaction if QA is not running or pending
+          const qaRunning = qaLabels.some(l => l.name === 'qa:running' || l.name === 'qa:pending');
+          if (!qaRunning) {
+            const statusLabel = statusLabels.find(l => Object.keys(statusReactions).includes(l.name));
+            if (statusLabel) {
+              currentStatuses.push(statusReactions[statusLabel.name]);
+            }
+          }
+          
           console.log('Reactions to add:', currentStatuses);
 
           // Check if there's an existing Slack message
@@ -247,7 +266,8 @@ runs:
                 }
               }
               
-              // For each exclusive group, find reactions that need to be removed
+              // Determine what needs to be removed
+              // 1. Remove reactions from same exclusive group
               for (const desiredReaction of currentStatuses) {
                 for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
                   if (groupReactions.includes(desiredReaction)) {
@@ -258,6 +278,26 @@ runs:
                       }
                     }
                   }
+                }
+              }
+              
+              // 2. If QA is running/pending, remove any status reactions
+              const hasQaReaction = currentStatuses.some(r => exclusiveGroups.qa.includes(r));
+              const qaInProgress = currentStatuses.includes('runner') || currentStatuses.includes('hourglass_flowing_sand');
+              if (qaInProgress) {
+                for (const statusReaction of exclusiveGroups.status) {
+                  if (existingReactions.includes(statusReaction) && !reactionsToRemove.includes(statusReaction)) {
+                    reactionsToRemove.push(statusReaction);
+                  }
+                }
+              }
+              
+              // 3. Remove any reactions that shouldn't be there anymore
+              for (const existingReaction of existingReactions) {
+                if (allStatusReactions.includes(existingReaction) && 
+                    !currentStatuses.includes(existingReaction) && 
+                    !reactionsToRemove.includes(existingReaction)) {
+                  reactionsToRemove.push(existingReaction);
                 }
               }
               

@@ -93,10 +93,29 @@ jobs:
           github.event_name == 'pull_request_review'
         uses: ./.github/actions/setup-dependencies
         with:
-          harbor_user: ${{ env.HARBOR_USER }}
-          harbor_pass: ${{ env.HARBOR_PASS }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           npm_token: ${{ env.NPM_TOKEN }}
+
+      # Login to Docker registries (only when running QA)
+      - name: Login to GitHub Container Registry
+        if: |
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Harbor
+        if: |
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        uses: docker/login-action@v3
+        with:
+          registry: harbor.settlemint.com
+          username: ${{ env.HARBOR_USER }}
+          password: ${{ env.HARBOR_PASS }}
 
       - name: Connect to SettleMint
         if: |
@@ -293,22 +312,3 @@ jobs:
           qa_status: ${{ steps.pr-review-check.outputs.qa_status }}
           is_draft: ${{ github.event.pull_request.draft }}
           merge_method: 'squash'
-
-  # CodeQL Analysis (main branch only)
-  codeql:
-    name: CodeQL Analysis
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: namespace-profile-atk-services
-    permissions:
-      security-events: write
-      actions: read
-      contents: read
-    steps:
-      - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v7
-        
-      - name: Run CodeQL Analysis
-        uses: ./.github/actions/codeql
-        with:
-          language: 'javascript-typescript'
-          build_mode: 'none'

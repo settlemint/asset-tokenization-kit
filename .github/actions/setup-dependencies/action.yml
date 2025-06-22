@@ -1,12 +1,6 @@
 name: 'Setup Dependencies'
 description: 'Setup all common dependencies and tools for the project'
 inputs:
-  harbor_user:
-    description: 'Harbor username'
-    required: true
-  harbor_pass:
-    description: 'Harbor password'
-    required: true
   github_token:
     description: 'GitHub token'
     required: true
@@ -22,8 +16,6 @@ runs:
 
     - name: Set up turbo caching
       uses: namespace-actions/setup-turbocache@v0
-      with:
-        cache: turbo
 
     - name: Setup bun caches
       uses: namespacelabs/nscloud-cache-action@v1
@@ -37,20 +29,6 @@ runs:
           ~/.cache/bun
           ~/.cache/foundry
           ~/.cache/helm
-
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ inputs.github_token }}
-
-    - name: Login to Harbor
-      uses: docker/login-action@v3
-      with:
-        registry: harbor.settlemint.com
-        username: ${{ inputs.harbor_user }}
-        password: ${{ inputs.harbor_pass }}
 
     - name: Login to npm
       shell: bash
