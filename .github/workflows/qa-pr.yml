@@ -39,6 +39,25 @@ jobs:
       is_draft: ${{ github.event.pull_request.draft }}
       runs-on: namespace-profile-atk-services
 
+  # Send Slack notification after PR status labeling
+  slack-notify-pr-status:
+    name: Slack Notify - PR Status
+    needs: [label-pr-status]
+    if: |
+      always() &&
+      needs.label-pr-status.result == 'success' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]')
+    uses: ./.github/workflows/reusable-slack-pr-notifier.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      pr_title: ${{ github.event.pull_request.title }}
+      pr_url: ${{ github.event.pull_request.html_url }}
+      pr_author: ${{ github.event.pull_request.user.login }}
+      repo_name: ${{ github.repository }}
+      runs-on: namespace-profile-atk-services
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
   # Label PR as QA running when workflow starts (skip pending label)
   label-qa-start:
     name: Label QA Start
@@ -51,6 +70,25 @@ jobs:
       pr_number: ${{ github.event.pull_request.number }}
       workflow_status: 'running'
       runs-on: namespace-profile-atk-services
+
+  # Send Slack notification for QA start
+  slack-notify-qa-start:
+    name: Slack Notify - QA Running
+    needs: [label-qa-start]
+    if: |
+      always() &&
+      needs.label-qa-start.result == 'success' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]')
+    uses: ./.github/workflows/reusable-slack-pr-notifier.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      pr_title: ${{ github.event.pull_request.title }}
+      pr_url: ${{ github.event.pull_request.html_url }}
+      pr_author: ${{ github.event.pull_request.user.login }}
+      repo_name: ${{ github.repository }}
+      runs-on: namespace-profile-atk-services
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
   qa:
     name: QA
     needs: label-qa-start
@@ -69,7 +107,7 @@ jobs:
     name: PR Labels
     if: |
       github.event_name == 'pull_request' &&
-      (github.event.action == 'opened' || 
+      (github.event.action == 'opened' ||
        github.event.action == 'synchronize' ||
        github.event.action == 'edited')
     uses: ./.github/workflows/reusable-pr-labeler.yml
@@ -118,6 +156,25 @@ jobs:
       workflow_status: ${{ (needs.qa.result == 'success' && needs.secret-scanning.result == 'success') && 'success' || 'failure' }}
       runs-on: namespace-profile-atk-services
 
+  # Send Slack notification for QA completion
+  slack-notify-qa-end:
+    name: Slack Notify - QA Complete
+    needs: [label-qa-end, qa, secret-scanning]
+    if: |
+      always() &&
+      needs.label-qa-end.result == 'success' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]')
+    uses: ./.github/workflows/reusable-slack-pr-notifier.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      pr_title: ${{ github.event.pull_request.title }}
+      pr_url: ${{ github.event.pull_request.html_url }}
+      pr_author: ${{ github.event.pull_request.user.login }}
+      repo_name: ${{ github.repository }}
+      runs-on: namespace-profile-atk-services
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
   # Update PR status with review and QA information
   update-pr-status:
     name: Update PR Status
@@ -125,7 +182,7 @@ jobs:
     if: |
       always() &&
       !endsWith(github.event.pull_request.user.login, '[bot]') &&
-      (github.event.action == 'synchronize' || github.event.action == 'opened' || 
+      (github.event.action == 'synchronize' || github.event.action == 'opened' ||
        github.event.action == 'ready_for_review' || github.event.action == 'converted_to_draft' ||
        github.event.action == 'submitted' || github.event.action == 'dismissed')
     runs-on: namespace-profile-atk-services
@@ -136,30 +193,30 @@ jobs:
         with:
           script: |
             const pr_number = ${{ github.event.pull_request.number }};
-            
+
             // Get reviews
             const reviews = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: pr_number
             });
-            
+
             // Check if PR has approval (excluding the PR author)
             const pr_author = `${{ github.event.pull_request.user.login }}`;
-            const has_approval = reviews.data.some(review => 
-              review.state === 'APPROVED' && 
+            const has_approval = reviews.data.some(review =>
+              review.state === 'APPROVED' &&
               review.user.login !== pr_author
             );
-            
+
             core.setOutput('has_approval', has_approval);
-            
+
       - name: Determine QA status
         id: qa_status
         uses: actions/github-script@v7
         with:
           script: |
             const pr_number = ${{ github.event.pull_request.number }};
-            
+
             // For review events, we need to check labels since qa job doesn't run
             if ('${{ github.event_name }}' === 'pull_request_review') {
               // Get current labels
@@ -168,10 +225,10 @@ jobs:
                 repo: context.repo.repo,
                 pull_number: pr_number
               });
-              
+
               const labels = pr.labels.map(l => l.name);
               let qa_status = '';
-              
+
               if (labels.includes('qa:success')) {
                 qa_status = 'success';
               } else if (labels.includes('qa:failed')) {
@@ -181,7 +238,7 @@ jobs:
               } else if (labels.includes('qa:pending')) {
                 qa_status = 'pending';
               }
-              
+
               core.setOutput('qa_status', qa_status);
             } else {
               // For PR events, use the job results
@@ -210,6 +267,25 @@ jobs:
       qa_status: ${{ needs.update-pr-status.outputs.qa_status }}
       runs-on: namespace-profile-atk-services
 
+  # Send Slack notification for final PR status
+  slack-notify-final-status:
+    name: Slack Notify - Final Status
+    needs: [label-pr-final-status, update-pr-status]
+    if: |
+      always() &&
+      needs.label-pr-final-status.result == 'success' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]')
+    uses: ./.github/workflows/reusable-slack-pr-notifier.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      pr_title: ${{ github.event.pull_request.title }}
+      pr_url: ${{ github.event.pull_request.html_url }}
+      pr_author: ${{ github.event.pull_request.user.login }}
+      repo_name: ${{ github.repository }}
+      runs-on: namespace-profile-atk-services
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
   # Handle PR closed/merged
   label-pr-closed:
     name: Label PR Closed
@@ -224,10 +300,30 @@ jobs:
       is_merged: ${{ github.event.pull_request.merged }}
       runs-on: namespace-profile-atk-services
 
+  # Send Slack notification for PR closed/merged
+  slack-notify-pr-closed:
+    name: Slack Notify - PR Closed
+    needs: [label-pr-closed]
+    if: |
+      always() &&
+      needs.label-pr-closed.result == 'success' &&
+      github.event.action == 'closed' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]')
+    uses: ./.github/workflows/reusable-slack-pr-notifier.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      pr_title: ${{ github.event.pull_request.title }}
+      pr_url: ${{ github.event.pull_request.html_url }}
+      pr_author: ${{ github.event.pull_request.user.login }}
+      repo_name: ${{ github.repository }}
+      runs-on: namespace-profile-atk-services
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
   # Manage auto-merge based on PR state
   manage-auto-merge:
     name: Manage Auto-Merge
-    needs: [update-pr-status, label-pr-final-status]
+    needs: [update-pr-status, label-pr-final-status, slack-notify-final-status]
     if: |
       always() &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
@@ -241,10 +337,10 @@ jobs:
             const has_approval = '${{ needs.update-pr-status.outputs.has_approval }}' === 'true';
             const qa_status = '${{ needs.update-pr-status.outputs.qa_status }}';
             const is_draft = ${{ github.event.pull_request.draft }};
-            
+
             // Check if PR is mergeable
             const is_mergeable = has_approval && qa_status === 'success' && !is_draft;
-            
+
             try {
               if (is_mergeable) {
                 // Enable auto-merge
