@@ -1,17 +1,20 @@
 # Quick Reference Guide
 
 ## Purpose
+
 Essential Claude Code commands and shortcuts for efficient development workflow.
 
 ## Interactive Mode Commands
 
 ### Essential Shortcuts
+
 - **Tab** - Command completion
 - **↑/↓** - Navigate command history
 - **Ctrl+C** - Cancel current operation
 - **Ctrl+D** - Exit Claude Code
 
 ### Slash Commands
+
 - `/help` - Show all available commands
 - `/memory` - Open memory files in system editor
 - `/init` - Bootstrap project memory file
@@ -19,7 +22,9 @@ Essential Claude Code commands and shortcuts for efficient development workflow.
 - `/exit` - Exit Claude Code
 
 ### Quick Memory Addition
+
 Use `#` prefix to quickly add a memory:
+
 ```
 # Always use Bun instead of npm for this project
 # Prefer functional components over class components
@@ -29,6 +34,7 @@ Use `#` prefix to quickly add a memory:
 ## Command Line Usage
 
 ### Basic Commands
+
 ```bash
 # Start interactive mode
 claude
@@ -47,6 +53,7 @@ claude --help
 ```
 
 ### Advanced Options
+
 ```bash
 # Skip API key setup
 claude --no-check-api-key
@@ -67,25 +74,30 @@ claude --dangerously-skip-permissions
 ## Effective Prompting Patterns
 
 ### Be Specific
-❌ "Fix the bug"
-✅ "Fix the login bug where users see a blank screen after entering wrong credentials"
+
+❌ "Fix the bug" ✅ "Fix the login bug where users see a blank screen after
+entering wrong credentials"
 
 ### Use Step-by-Step
+
 Instead of: "Add user management"
 
 Use:
+
 1. Create a new API endpoint for user CRUD operations
 2. Add validation for required fields
 3. Write tests for the endpoint
 4. Update the frontend to use the new API
 
 ### Let Claude Explore
-Before: "Add caching to improve performance"
-Better: First "analyze the current performance bottlenecks", then "add caching where it would be most effective"
+
+Before: "Add caching to improve performance" Better: First "analyze the current
+performance bottlenecks", then "add caching where it would be most effective"
 
 ## Common Workflows
 
 ### Bug Fixing
+
 ```bash
 # Understand the issue
 claude "analyze the error in logs/error.log"
@@ -101,6 +113,7 @@ claude "run tests for UserService"
 ```
 
 ### Feature Development
+
 ```bash
 # Explore existing patterns
 claude "show me how forms are implemented in this project"
@@ -117,6 +130,7 @@ claude "create a PR for the contact form feature"
 ```
 
 ### Code Review
+
 ```bash
 # Analyze changes
 claude "review the changes in my current branch"
@@ -133,24 +147,26 @@ claude "suggest improvements for code readability"
 If MCP servers are configured:
 
 ### Linear
+
 - "Show my assigned Linear issues"
 - "Create a Linear issue for this bug"
 - "Update Linear issue LIN-123 with progress"
 
-### GitHub
-- "Search for similar issues in our repo"
-- "Show recent PRs by me"
-- "Check if issue #456 has been fixed"
+### Context7
 
-### Database
-- "Show database schema"
-- "Query users created today"
-- "Explain the relationships in the orders table"
+- "Get React hooks documentation"
+- "Show me Next.js 14 app router examples"
+- "Find Prisma query documentation"
 
-### Filesystem
-- "Find all TODO comments"
-- "Search for deprecated functions"
-- "List all test files"
+### DeepWiki
+
+- "Deep dive into React Server Components"
+- "Explain WebAssembly memory model"
+- "Research distributed systems consensus"
+
+### Setup MCP Servers
+
+If servers are missing, run: `/setup-mcp`
 
 ## Pro Tips
 
@@ -178,4 +194,6 @@ claude --endpoint https://api.anthropic.com/v1 --check-api-key
 
 ## Remember
 
-Claude Code is designed to be your AI pair programmer. Describe what you want to achieve, and it will help you get there. The more specific you are, the better the results.
+Claude Code is designed to be your AI pair programmer. Describe what you want to
+achieve, and it will help you get there. The more specific you are, the better
+the results.
