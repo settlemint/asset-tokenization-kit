@@ -32,6 +32,7 @@ jobs:
       issues: write
       security-events: write
       actions: read
+      packages: read
     env:
       SLACK_BOT_TOKEN: ""
       SLACK_CHANNEL_ID: ""
