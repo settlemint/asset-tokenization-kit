@@ -5,13 +5,14 @@ on:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, closed]
   pull_request_review:
     types: [submitted, dismissed]
 
 permissions:
   contents: read
   pull-requests: write
+  packages: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -22,7 +23,7 @@ jobs:
     name: QA
     if: |
       github.event_name == 'push' ||
-      github.event_name == 'pull_request' ||
+      (github.event_name == 'pull_request' && !(github.event.action == 'closed' && github.event.pull_request.merged == true)) ||
       github.event_name == 'pull_request_review'
     runs-on: namespace-profile-atk
     timeout-minutes: 30
@@ -32,7 +33,7 @@ jobs:
       issues: write
       security-events: write
       actions: read
-      packages: read
+      packages: write
     env:
       SLACK_BOT_TOKEN: ""
       SLACK_CHANNEL_ID: ""
@@ -164,7 +165,6 @@ jobs:
         uses: namespace-actions/upload-artifact@v0
         with:
           name: predeployed-output
-          retention-days: 1
           path: |
             kit/contracts/.generated/portal/*.json
             kit/contracts/.generated/genesis.json
@@ -314,3 +314,51 @@ jobs:
           qa_status: ${{ steps.pr-review-check.outputs.qa_status }}
           is_draft: ${{ github.event.pull_request.draft }}
           merge_method: 'squash'
+
+  # Handle merged PR notifications
+  merged:
+    name: Handle Merged PR
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    env:
+      SLACK_BOT_TOKEN: ""
+      SLACK_CHANNEL_ID: ""
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup 1Password
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load Slack secrets
+        uses: 1password/load-secrets-action@v2
+        env:
+          SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
+          SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
+
+      - name: Label PR as merged
+        uses: ./.github/actions/pr-status-labeler
+        with:
+          pr_number: ${{ github.event.pull_request.number }}
+          is_draft: false
+          is_merged: true
+
+      - name: Update Slack notification for merged PR
+        uses: ./.github/actions/slack-pr-notifier
+        with:
+          pr_number: ${{ github.event.pull_request.number }}
+          pr_title: ${{ github.event.pull_request.title }}
+          pr_url: ${{ github.event.pull_request.html_url }}
+          pr_author: ${{ github.event.pull_request.user.login }}
+          pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
+          slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
+          slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
