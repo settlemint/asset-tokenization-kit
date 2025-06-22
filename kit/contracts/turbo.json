@@ -3,7 +3,7 @@
   "tasks": {
     "dependencies": {
       "outputs": ["dependencies/**"],
-      "inputs": ["soldeer.lock"]
+      "inputs": ["soldeer.lock", "tools/dependencies.ts"]
     },
     "compile": {
       "dependsOn": ["compile:forge", "compile:hardhat"]
@@ -26,7 +26,7 @@
     "codegen:types": {
       "dependsOn": ["compile:hardhat"],
       "outputs": ["scripts/hardhat/abi/**"],
-      "inputs": ["contracts/**"]
+      "inputs": ["contracts/**", "tools/codegen-types.ts"]
     },
     "artifacts": {
       "dependsOn": ["artifacts:genesis", "artifacts:abi"]
@@ -36,12 +36,12 @@
         ".generated/genesis.json",
         ".generated/genesis-allocations.json"
       ],
-      "inputs": ["contracts/**"]
+      "inputs": ["contracts/**", "tools/artifacts-genesis.ts"]
     },
     "artifacts:abi": {
       "dependsOn": ["compile"],
       "outputs": [".generated/portal/**"],
-      "inputs": ["contracts/**"]
+      "inputs": ["contracts/**", "tools/artifacts-abi.ts"]
     },
     "format": {
       "dependsOn": ["format:forge", "format:prettier"]

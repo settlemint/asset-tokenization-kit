@@ -111,7 +111,8 @@ const handleUnauthorizedError = (error: unknown) => {
   if (
     (queryError.code === "UNAUTHORIZED" || queryError.status === 401) &&
     typeof window !== "undefined" &&
-    !window.location.pathname.startsWith("/auth/")
+    !window.location.pathname.startsWith("/auth/") &&
+    !window.location.pathname.startsWith("/api/auth")
   ) {
     window.location.href = "/auth/sign-in";
   }
