@@ -1,0 +1,92 @@
+name: PR Status Labeler (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      pr_number:
+        description: 'Pull request number'
+        required: true
+        type: number
+      is_draft:
+        description: 'Whether the PR is a draft'
+        required: true
+        type: boolean
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  label-pr-status:
+    name: Update PR Status Label
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check and create labels if needed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = [
+              { name: 'draft', color: '6F7379', description: 'Pull request is in draft status' },
+              { name: 'ready-for-review', color: '2EA44F', description: 'Pull request is ready for review' }
+            ];
+
+            // Get all existing labels
+            const existingLabels = await github.paginate(github.rest.issues.listLabelsForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+
+            const existingLabelNames = new Set(existingLabels.map(l => l.name));
+
+            // Create missing labels
+            for (const label of labels) {
+              if (!existingLabelNames.has(label.name)) {
+                try {
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label.name,
+                    color: label.color,
+                    description: label.description
+                  });
+                  console.log(`Created label: ${label.name}`);
+                } catch (error) {
+                  console.log(`Failed to create label ${label.name}: ${error.message}`);
+                }
+              }
+            }
+
+      - name: Remove all PR status labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = ['draft', 'ready-for-review'];
+            const pr_number = ${{ inputs.pr_number }};
+
+            for (const label of labels) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr_number,
+                  name: label
+                });
+              } catch (error) {
+                console.log(`Label ${label} not found on PR, skipping removal`);
+              }
+            }
+
+      - name: Add appropriate PR status label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr_number = ${{ inputs.pr_number }};
+            const is_draft = ${{ inputs.is_draft }};
+            const label = is_draft ? 'draft' : 'ready-for-review';
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr_number,
+              labels: [label]
+            });
