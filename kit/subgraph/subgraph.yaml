@@ -681,7 +681,7 @@ templates:
           handler: handleOwnershipTransferred
         - event: TokensWithdrawn(indexed address,uint256)
           handler: handleTokensWithdrawn
-      file: ./src/addons/airdrop/airdrop.ts
+      file: ./src/system-addons/addons/airdrop/airdrop.ts
   - kind: ethereum
     name: PushAirdropFactory
     network: settlemint
@@ -703,7 +703,7 @@ templates:
       eventHandlers:
         - event: ATKPushAirdropCreated(indexed address,indexed address)
           handler: handleATKPushAirdropCreated
-      file: ./src/addons/airdrop/push-airdrop-factory.ts
+      file: ./src/system-addons/addons/airdrop/push-airdrop-factory.ts
   - kind: ethereum
     name: PushAirdrop
     network: settlemint
@@ -725,7 +725,7 @@ templates:
       eventHandlers:
         - event: DistributionCapUpdated(uint256,uint256)
           handler: handleDistributionCapUpdated
-      file: ./src/addons/airdrop/push-airdrop.ts
+      file: ./src/system-addons/addons/airdrop/push-airdrop.ts
   - kind: ethereum
     name: VestingAirdropFactory
     network: settlemint
@@ -752,7 +752,7 @@ templates:
         - event: ATKVestingAirdropCreated(indexed
             address,string,address,bytes32,address,address,uint256,address)
           handler: handleATKVestingAirdropCreated
-      file: ./src/addons/airdrop/vesting-airdrop-factory.ts
+      file: ./src/system-addons/addons/airdrop/vesting-airdrop-factory.ts
   - kind: ethereum
     name: VestingAirdrop
     network: settlemint
@@ -782,7 +782,7 @@ templates:
           handler: handleBatchVestingInitialized
         - event: VestingStrategyUpdated(indexed address,indexed address)
           handler: handleVestingStrategyUpdated
-      file: ./src/addons/airdrop/vesting-airdrop.ts
+      file: ./src/system-addons/addons/airdrop/vesting-airdrop.ts
   - kind: ethereum
     name: TokenFactoryRegistry
     network: settlemint
