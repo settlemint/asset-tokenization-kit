@@ -40,7 +40,7 @@ export type PredeployedContractName = keyof Pick<
   | "fixedYieldScheduleFactory"
   | "vestingAirdropFactory"
   | "pushAirdropFactory"
-  | "timeboundAirdropFactory"
+  | "timeBoundAirdropFactory"
 >;
 
 // Helper type for Viem contract instances
@@ -343,10 +343,10 @@ export class ATKDeployer {
     return this.getContract("pushAirdropFactory", walletClient);
   }
 
-  public getTimeboundAirdropFactoryContract(
+  public getTimeBoundAirdropFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["timeboundAirdropFactory"] {
-    return this.getContract("timeboundAirdropFactory", walletClient);
+  ): ATKOnboardingContracts["timeBoundAirdropFactory"] {
+    return this.getContract("timeBoundAirdropFactory", walletClient);
   }
 }
 

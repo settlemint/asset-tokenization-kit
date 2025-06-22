@@ -59,7 +59,7 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     ATKOnboardingPushAirdropFactoryModule
   );
 
-  const { timeboundAirdropFactory } = m.useModule(
+  const { timeBoundAirdropFactory } = m.useModule(
     ATKOnboardingTimeboundAirdropFactoryModule
   );
 
@@ -98,7 +98,7 @@ const ATKOnboardingModule = buildModule("ATKOnboardingModule", (m) => {
     xvpSettlementFactory,
     vestingAirdropFactory,
     pushAirdropFactory,
-    timeboundAirdropFactory,
+    timeBoundAirdropFactory,
   };
 });
 

@@ -1,18 +1,18 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import ForwarderModule from "../../forwarder";
 
-const TimeboundAirdropFactoryModule = buildModule(
-  "TimeboundAirdropFactoryModule",
+const TimeBoundAirdropFactoryModule = buildModule(
+  "TimeBoundAirdropFactoryModule",
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
-    const timeboundAirdropFactoryImplementation = m.contract(
-      "ATKTimeboundAirdropFactoryImplementation",
+    const timeBoundAirdropFactoryImplementation = m.contract(
+      "ATKTimeBoundAirdropFactoryImplementation",
       [forwarder]
     );
 
-    return { timeboundAirdropFactoryImplementation };
+    return { timeBoundAirdropFactoryImplementation };
   }
 );
 
-export default TimeboundAirdropFactoryModule;
+export default TimeBoundAirdropFactoryModule;

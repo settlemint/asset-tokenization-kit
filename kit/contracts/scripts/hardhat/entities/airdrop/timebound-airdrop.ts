@@ -3,7 +3,7 @@ import { ATKOnboardingContracts } from "../../services/deployer";
 import { waitForEvent } from "../../utils/wait-for-event";
 import { Asset } from "../asset";
 
-export class TimeboundAirdrop {
+export class TimeBoundAirdrop {
   public address!: Address;
 
   constructor(
@@ -13,7 +13,7 @@ export class TimeboundAirdrop {
     public readonly owner: Address,
     public readonly startTime: bigint,
     public readonly endTime: bigint,
-    public readonly contract: ATKOnboardingContracts["timeboundAirdropFactory"]
+    public readonly contract: ATKOnboardingContracts["timeBoundAirdropFactory"]
   ) {}
 
   public async waitUntilDeployed(transactionHash: Hex) {
@@ -30,13 +30,13 @@ export class TimeboundAirdrop {
 
     this.address = airdropAddress;
 
-    console.log(`[TimeboundAirdrop] ${this.name} created`);
-    console.log(`[TimeboundAirdrop] ${this.name} address: ${this.address}`);
-    console.log(`[TimeboundAirdrop] ${this.name} token: ${this.token.address}`);
-    console.log(`[TimeboundAirdrop] ${this.name} root: ${this.root}`);
-    console.log(`[TimeboundAirdrop] ${this.name} owner: ${this.owner}`);
-    console.log(`[TimeboundAirdrop] ${this.name} startTime: ${this.startTime}`);
-    console.log(`[TimeboundAirdrop] ${this.name} endTime: ${this.endTime}`);
-    console.log(`[TimeboundAirdrop] ${this.name} creator: ${creator}`);
+    console.log(`[TimeBoundAirdrop] ${this.name} created`);
+    console.log(`[TimeBoundAirdrop] ${this.name} address: ${this.address}`);
+    console.log(`[TimeBoundAirdrop] ${this.name} token: ${this.token.address}`);
+    console.log(`[TimeBoundAirdrop] ${this.name} root: ${this.root}`);
+    console.log(`[TimeBoundAirdrop] ${this.name} owner: ${this.owner}`);
+    console.log(`[TimeBoundAirdrop] ${this.name} startTime: ${this.startTime}`);
+    console.log(`[TimeBoundAirdrop] ${this.name} endTime: ${this.endTime}`);
+    console.log(`[TimeBoundAirdrop] ${this.name} creator: ${creator}`);
   }
 }

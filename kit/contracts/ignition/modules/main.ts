@@ -46,7 +46,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
   const { pushAirdropFactoryImplementation } = m.useModule(
     PushAirdropFactoryModule
   );
-  const { timeboundAirdropFactoryImplementation } = m.useModule(
+  const { timeBoundAirdropFactoryImplementation } = m.useModule(
     TimeboundAirdropFactoryModule
   );
   const { vaultFactoryImplementation } = m.useModule(VaultFactoryModule);
@@ -75,7 +75,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
     xvpSettlementFactoryImplementation,
     vestingAirdropFactoryImplementation,
     pushAirdropFactoryImplementation,
-    timeboundAirdropFactoryImplementation,
+    timeBoundAirdropFactoryImplementation,
     vaultFactoryImplementation,
     atkVaultImplementation,
     // compliancemodules

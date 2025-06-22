@@ -2,49 +2,49 @@ import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import ATKModule from "../../../main";
 import ATKOnboardingSystemModule from "../../system";
 
-const ATKOnboardingTimeboundAirdropFactoryModule = buildModule(
-  "ATKOnboardingTimeboundAirdropFactoryModule",
+const ATKOnboardingTimeBoundAirdropFactoryModule = buildModule(
+  "ATKOnboardingTimeBoundAirdropFactoryModule",
   (m) => {
     const { system, systemAddonRegistry } = m.useModule(
       ATKOnboardingSystemModule
     );
-    const { timeboundAirdropFactoryImplementation } = m.useModule(ATKModule);
+    const { timeBoundAirdropFactoryImplementation } = m.useModule(ATKModule);
 
     const platformAdmin = m.getAccount(0);
 
     const encodedInitializationData = m.encodeFunctionCall(
-      timeboundAirdropFactoryImplementation,
+      timeBoundAirdropFactoryImplementation,
       "initialize",
       [system.address, platformAdmin]
     );
 
-    const createTimeboundAirdropFactoryAddon = m.call(
+    const createTimeBoundAirdropFactoryAddon = m.call(
       systemAddonRegistry,
       "registerSystemAddon",
       [
-        "timebound-airdrop-factory",
-        timeboundAirdropFactoryImplementation,
+        "timeBound-airdrop-factory",
+        timeBoundAirdropFactoryImplementation,
         encodedInitializationData,
       ]
     );
-    const timeboundAirdropFactoryAddress = m.readEventArgument(
-      createTimeboundAirdropFactoryAddon,
+    const timeBoundAirdropFactoryAddress = m.readEventArgument(
+      createTimeBoundAirdropFactoryAddon,
       "SystemAddonRegistered",
       "proxyAddress",
-      { id: "timeboundAirdropFactoryAddress" }
+      { id: "timeBoundAirdropFactoryAddress" }
     );
-    const timeboundAirdropFactoryProxy = m.contractAt(
-      "IATKTimeboundAirdropFactory",
-      timeboundAirdropFactoryAddress,
+    const timeBoundAirdropFactoryProxy = m.contractAt(
+      "IATKTimeBoundAirdropFactory",
+      timeBoundAirdropFactoryAddress,
       {
-        id: "timeboundAirdropFactory",
+        id: "timeBoundAirdropFactory",
       }
     );
 
     return {
-      timeboundAirdropFactory: timeboundAirdropFactoryProxy,
+      timeBoundAirdropFactory: timeBoundAirdropFactoryProxy,
     };
   }
 );
 
-export default ATKOnboardingTimeboundAirdropFactoryModule;
+export default ATKOnboardingTimeBoundAirdropFactoryModule;
