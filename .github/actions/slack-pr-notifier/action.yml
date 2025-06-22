@@ -98,47 +98,55 @@ runs:
           console.log('Current PR labels:', labels.map(l => l.name));
           console.log('QA labels found:', labels.filter(l => l.name.startsWith('qa:')).map(l => l.name));
 
-          // Filter labels and determine appropriate reactions
-          const qaLabels = labels.filter(l => l.name.startsWith('qa:'));
-          const statusLabels = labels.filter(l => l.name.startsWith('status:'));
-
-          let currentStatuses = [];
-
-          // Priority order for QA labels (if multiple exist due to race conditions)
-          const qaPriority = ['qa:failed', 'qa:success', 'qa:running', 'qa:pending'];
-
-          // Find the highest priority QA label
-          let selectedQaLabel = null;
-          for (const priorityLabel of qaPriority) {
-            if (qaLabels.some(l => l.name === priorityLabel)) {
-              selectedQaLabel = priorityLabel;
-              break;
+          // STRICT LABEL-TO-REACTION MAPPING
+          // Only show reactions that have exact corresponding labels
+          const currentStatuses = [];
+          
+          // Map each label to its reaction
+          for (const label of labels) {
+            if (statusReactions[label.name]) {
+              currentStatuses.push(statusReactions[label.name]);
+              console.log(`Label "${label.name}" maps to reaction "${statusReactions[label.name]}"`);
             }
           }
-
-          // Add only the selected QA reaction
-          if (selectedQaLabel && statusReactions[selectedQaLabel]) {
-            currentStatuses.push(statusReactions[selectedQaLabel]);
-            console.log(`Selected QA reaction: ${selectedQaLabel} -> ${statusReactions[selectedQaLabel]}`);
-          }
-
-          // Only add status reaction if QA is not running or pending
-          const qaRunning = selectedQaLabel === 'qa:running' || selectedQaLabel === 'qa:pending';
-          if (!qaRunning) {
-            const statusLabel = statusLabels.find(l => Object.keys(statusReactions).includes(l.name));
-            if (statusLabel) {
-              currentStatuses.push(statusReactions[statusLabel.name]);
+          
+          // Apply exclusive group rules
+          const finalStatuses = [];
+          const usedGroups = new Set();
+          
+          // Priority order for exclusive groups
+          const groupPriority = {
+            'qa': ['qa:failed', 'qa:success', 'qa:running', 'qa:pending'],
+            'status': ['status:merged', 'status:mergeable', 'status:approved', 'status:ready-for-review']
+          };
+          
+          // For each group, pick only the highest priority reaction
+          for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+            const priorityOrder = groupPriority[groupName] || [];
+            
+            // Find the highest priority label from this group
+            let selectedReaction = null;
+            for (const priorityLabel of priorityOrder) {
+              if (labels.some(l => l.name === priorityLabel) && statusReactions[priorityLabel]) {
+                selectedReaction = statusReactions[priorityLabel];
+                break;
+              }
+            }
+            
+            if (selectedReaction && currentStatuses.includes(selectedReaction)) {
+              finalStatuses.push(selectedReaction);
+              usedGroups.add(groupName);
             }
           }
-
-          console.log('Reactions to add:', currentStatuses);
-
-          // Debug: Check if we have multiple QA reactions (should never happen)
-          const qaReactionsToAdd = currentStatuses.filter(r => exclusiveGroups.qa.includes(r));
-          if (qaReactionsToAdd.length > 1) {
-            console.error('ERROR: Multiple QA reactions detected:', qaReactionsToAdd);
-            console.error('This should not happen! QA labels:', qaLabels.map(l => l.name));
-          }
+          
+          // If QA is running or pending, don't show status reactions
+          const hasQaInProgress = labels.some(l => l.name === 'qa:running' || l.name === 'qa:pending');
+          const filteredStatuses = hasQaInProgress 
+            ? finalStatuses.filter(r => exclusiveGroups.qa.includes(r))
+            : finalStatuses;
+          
+          console.log('All label names:', labels.map(l => l.name));
+          console.log('Final reactions (strict sync with labels):', filteredStatuses);
 
           // Check if there's an existing Slack message
           const { data: comments } = await github.rest.issues.listComments({
@@ -268,82 +276,31 @@ runs:
                 // Continue anyway - we'll handle errors when adding/removing
               }
 
-              // Smart reaction management
-              const reactionsToAdd = [];
-              let reactionsToRemove = [];
-
-              // SPECIAL CASE: When QA is starting (running), clear ALL managed reactions first
-              if (selectedQaLabel === 'qa:running') {
-                console.log('QA is starting - clearing ALL managed reactions');
-                // Remove all reactions that we manage
-                reactionsToRemove = existingReactions.filter(r => allStatusReactions.includes(r));
-              } else {
-                // Normal case: selective removal
-                // For each desired reaction, check if we need to add it
-                for (const desiredReaction of currentStatuses) {
-                  if (!existingReactions.includes(desiredReaction)) {
-                    reactionsToAdd.push(desiredReaction);
-                  }
+              // STRICT SYNC: Only show reactions that have corresponding labels
+              // This ensures 100% sync between labels and reactions
+              
+              // Step 1: Determine ALL reactions that should be removed
+              // Remove any reaction that doesn't have a corresponding label
+              const reactionsToRemove = existingReactions.filter(reaction => {
+                // Check if this is a managed reaction
+                if (!allStatusReactions.includes(reaction)) {
+                  return false; // Don't remove reactions we don't manage
                 }
-
-                // Aggressive cleanup: Remove ALL reactions from exclusive groups first
-                // This ensures we don't have multiple QA reactions showing
-                for (const existingReaction of existingReactions) {
-                  // Check if this reaction belongs to any exclusive group
-                  for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
-                    if (groupReactions.includes(existingReaction)) {
-                      // If we want a reaction from this group, only remove if it's different
-                      const desiredFromGroup = currentStatuses.find(r => groupReactions.includes(r));
-                      if (!desiredFromGroup || existingReaction !== desiredFromGroup) {
-                        if (!reactionsToRemove.includes(existingReaction)) {
-                          reactionsToRemove.push(existingReaction);
-                        }
-                      }
-                    }
-                  }
-                }
-
-                // Special handling: If QA is pending, ensure no status reactions
-                const qaInProgress = selectedQaLabel === 'qa:pending';
-                if (qaInProgress) {
-                  for (const statusReaction of exclusiveGroups.status) {
-                    if (existingReactions.includes(statusReaction) && !reactionsToRemove.includes(statusReaction)) {
-                      reactionsToRemove.push(statusReaction);
-                    }
-                  }
-                }
-              }
-
-              // If QA is running and we're clearing all, we still need to add the runner
-              if (selectedQaLabel === 'qa:running') {
-                reactionsToAdd.push('runner');
-              }
-
-              console.log('Reactions to remove:', reactionsToRemove);
-              console.log('Reactions to add:', reactionsToAdd);
-
-              // Final sanity check: ensure we're not adding multiple reactions from same group
-              const finalReactionsToAdd = [];
-              const addedGroups = new Set();
-
-              for (const reaction of reactionsToAdd) {
-                let reactionGroup = null;
-                for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
-                  if (groupReactions.includes(reaction)) {
-                    reactionGroup = groupName;
-                    break;
-                  }
-                }
-
-                if (!reactionGroup || !addedGroups.has(reactionGroup)) {
-                  finalReactionsToAdd.push(reaction);
-                  if (reactionGroup) addedGroups.add(reactionGroup);
-                } else {
-                  console.log(`WARNING: Skipping duplicate ${reactionGroup} reaction: ${reaction}`);
-                }
-              }
-
-              console.log('Final reactions to add after sanity check:', finalReactionsToAdd);
+                
+                // Check if this reaction has a corresponding current label
+                return !filteredStatuses.includes(reaction);
+              });
+              
+              // Step 2: Determine what reactions need to be added
+              // Only add reactions that correspond to current labels and aren't already present
+              const reactionsToAdd = filteredStatuses.filter(reaction => 
+                !existingReactions.includes(reaction)
+              );
+              
+              console.log('Current label-based reactions:', filteredStatuses);
+              console.log('Existing reactions:', existingReactions);
+              console.log('Reactions to remove (not in labels):', reactionsToRemove);
+              console.log('Reactions to add (from labels):', reactionsToAdd);
 
               // Remove outdated reactions first (with proper synchronization)
               for (const reactionName of reactionsToRemove) {
@@ -374,7 +331,7 @@ runs:
               }
 
               // Add new reactions
-              for (const reaction of finalReactionsToAdd) {
+              for (const reaction of reactionsToAdd) {
                 try {
                   console.log(`Adding reaction: ${reaction}`);
                   await slackAPI('reactions.add', {
