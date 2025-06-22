@@ -1,10 +1,11 @@
 import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
-
 import {
   BondFactory as BondFactoryTemplate,
   FixedYieldScheduleFactory as FixedYieldScheduleFactoryTemplate,
   FundFactory as FundFactoryTemplate,
+  PushAirdropFactory as PushAirdropFactoryTemplate,
   VaultFactory as VaultFactoryTemplate,
+  VestingAirdropFactory as VestingAirdropFactoryTemplate,
   XvPSettlementFactory as XvPSettlementFactoryTemplate,
 } from "../../generated/templates";
 import {
