@@ -35,6 +35,9 @@ labels:
   - label: "revert"
     matcher:
       title: "^revert(\\(.+\\))?:.*"
+  - label: "revert"
+    matcher:
+      title: "^Revert \".*\".*"
 
   # Special case for dependencies
   - label: "dependencies"
