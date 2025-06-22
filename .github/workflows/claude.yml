@@ -9,6 +9,8 @@ on:
     types: [opened, assigned]
   pull_request_review:
     types: [submitted]
+  pull_request:
+    types: [labeled]
 
 jobs:
   claude:
@@ -16,44 +18,150 @@ jobs:
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
       (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
       (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
-    runs-on: ubuntu-latest
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude'))) ||
+      (github.event_name == 'pull_request' && github.event.label.name == 'claude-help')
+    runs-on: namespace-profile-atk
     permissions:
-      contents: read
-      pull-requests: read
-      issues: read
+      contents: write
+      pull-requests: write
+      issues: write
       id-token: write
+      actions: write
+      checks: write
+      packages: write
+      deployments: write
+      repository-projects: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: namespacelabs/nscloud-checkout-action@v7
         with:
-          fetch-depth: 1
+          fetch-depth: 0  # Full history for better context
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.16
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
 
       - name: Run Claude Code
         id: claude
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          
-          # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4)
-          # model: "claude-opus-4-20250514"
-          
-          # Optional: Customize the trigger phrase (default: @claude)
-          # trigger_phrase: "/claude"
-          
-          # Optional: Trigger when specific user is assigned to an issue
-          # assignee_trigger: "claude-bot"
-          
-          # Optional: Allow Claude to run specific commands
-          # allowed_tools: "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
-          
-          # Optional: Add custom instructions for Claude to customize its behavior for your project
-          # custom_instructions: |
-          #   Follow our coding standards
-          #   Ensure all new code has tests
-          #   Use TypeScript for new files
-          
-          # Optional: Custom environment variables for Claude
-          # claude_env: |
-          #   NODE_ENV: test
+
+          # Custom trigger phrases
+          trigger_phrase: "@claude"
+
+          # Trigger when assigned to claude-bot user
+          assignee_trigger: "claude-bot"
+
+          # Comprehensive tool permissions for full functionality
+          allowed_tools: |
+            Bash(bun install),
+            Bash(bun run *),
+            Bash(bun test *),
+            Bash(bun add *),
+            Bash(bun remove *),
+            Bash(bunx *),
+            Bash(git *),
+            Bash(gh *),
+            Bash(docker *),
+            Bash(turbo *),
+            Bash(settlemint *),
+            Edit,
+            MultiEdit,
+            Write,
+            Read,
+            Grep,
+            LS,
+            NotebookRead,
+            NotebookEdit,
+            TodoRead,
+            TodoWrite,
+            WebFetch,
+            WebSearch,
+            Task
+
+          # Comprehensive custom instructions from CLAUDE.md
+          custom_instructions: |
+            # SettleMint Asset Tokenization Kit Guidelines
+
+            ## Project Overview
+            You are working on the SettleMint Asset Tokenization Kit - a full-stack solution for tokenized assets including:
+            - Smart contracts (bonds, equity, stablecoins, funds, deposits)
+            - Next.js dApp with TypeScript
+            - TheGraph subgraph for indexing
+            - Kubernetes/Helm deployment
+            - Playwright E2E tests
+
+            ## CRITICAL: Package Management & Runtime Rules
+            **ALWAYS use Bun, NEVER use npm/yarn/pnpm:**
+            - `bun install` (NOT npm install)
+            - `bun run <script>` (NOT npm run)
+            - `bun <file>` (NOT node <file>)
+            - `bun test` (NOT jest/vitest)
+            - `bun add/remove` (NOT npm add/remove)
+
+            ## Bun-specific APIs (prefer these):
+            - Bun.serve() for servers (not express)
+            - bun:sqlite for SQLite (not better-sqlite3)
+            - Bun.$ for shell commands (not execa)
+            - Bun.File() for file operations
+            - Built-in WebSocket support
+            - .env loads automatically (no dotenv)
+
+            ## Commit Message Format (from .github/labeler.yml)
+            Use conventional commits:
+            - feat, fix, chore, docs, style, refactor, perf, test, build, ci, revert
+            - Optional scope: type(scope): description
+            - Dependencies: chore(deps), fix(deps), build(deps)
+            - Breaking: type! or BREAKING CHANGE in body
+
+            ## Project-Specific Rules
+            1. **NEVER** push to main branch
+            2. **ALWAYS** run `bun run ci` before marking PR ready
+            3. **NEVER** use barrel files (index.ts exports)
+            4. **ALWAYS** use bun:test for testing (not vitest)
+            5. **PREFER** ?? over || operator
+            6. **IGNORE** dapp-v1 folder completely (deprecated)
+            7. Token factory requires system bootstrapping first
+            8. Asset types in zod validator (no cryptocurrency)
+            9. Follow Solidity guidelines in kit/contracts
+            10. Check latest docs via context7 before coding
+
+            ## CI/CD Commands
+            - `bun run ci` - Run all checks
+            - `bun run lint` - Lint code
+            - `bun run format` - Format code
+            - `bun run test` - Run tests
+            - `bun run compile` - Compile contracts
+            - `bun run build` - Build project
+            - `bun run codegen` - Generate code
+
+            ## When Helping with Issues/PRs
+            1. Read CLAUDE.md first
+            2. Check .cursor/rules/*.mdc for latest guidelines
+            3. Use context7 for latest library docs
+            4. Create detailed todo lists for complex tasks
+            5. Run CI checks before suggesting completion
+            6. Follow existing code patterns
+            7. Add tests for new features
+            8. Update docs if needed
+
+            ## Response Style
+            - Be concise and direct
+            - Explain shell commands briefly
+            - Focus on the specific task
+            - Show progress with TodoWrite
+            - Report CI check results
+
+          # Environment variables for Claude
+          claude_env: |
+            NODE_ENV: development
+            CI: true
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            BUN_VERSION: 1.2.16
 

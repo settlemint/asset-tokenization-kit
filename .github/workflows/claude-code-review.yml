@@ -3,73 +3,119 @@ name: Claude Code Review
 on:
   pull_request:
     types: [opened, synchronize]
-    # Optional: Only run on specific file changes
-    # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
+    # Only run on code changes, skip docs-only PRs
+    paths:
+      - "kit/**/*.ts"
+      - "kit/**/*.tsx"
+      - "kit/**/*.js"
+      - "kit/**/*.jsx"
+      - "kit/**/*.sol"
+      - "kit/**/*.json"
+      - "package.json"
+      - "turbo.json"
+      - "CLAUDE.md"
 
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
-    
-    runs-on: ubuntu-latest
+    # Skip draft PRs and WIP
+    if: |
+      !github.event.pull_request.draft &&
+      !contains(github.event.pull_request.title, '[WIP]') &&
+      !contains(github.event.pull_request.title, '[skip-review]')
+
+    runs-on: namespace-profile-atk
     permissions:
-      contents: read
-      pull-requests: read
-      issues: read
+      contents: write
+      pull-requests: write
+      issues: write
       id-token: write
-    
+      actions: write
+      checks: write
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: namespacelabs/nscloud-checkout-action@v7
         with:
-          fetch-depth: 1
+          fetch-depth: 0  # Full history for better context
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.16
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
 
       - name: Run Claude Code Review
         id: claude-review
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          
-          # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4)
-          # model: "claude-opus-4-20250514"
-          
-          # Direct prompt for automated review (no @claude mention needed)
+
+          # Direct prompt for automated review incorporating CLAUDE.md guidelines
           direct_prompt: |
-            Please review this pull request and provide feedback on:
-            - Code quality and best practices
-            - Potential bugs or issues
-            - Performance considerations
-            - Security concerns
-            - Test coverage
-            
-            Be constructive and helpful in your feedback.
-          
-          # Optional: Customize review based on file types
-          # direct_prompt: |
-          #   Review this PR focusing on:
-          #   - For TypeScript files: Type safety and proper interface usage
-          #   - For API endpoints: Security, input validation, and error handling
-          #   - For React components: Performance, accessibility, and best practices
-          #   - For tests: Coverage, edge cases, and test quality
-          
-          # Optional: Different prompts for different authors
-          # direct_prompt: |
-          #   ${{ github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR' && 
-          #   'Welcome! Please review this PR from a first-time contributor. Be encouraging and provide detailed explanations for any suggestions.' ||
-          #   'Please provide a thorough code review focusing on our coding standards and best practices.' }}
-          
-          # Optional: Add specific tools for running tests or linting
-          # allowed_tools: "Bash(npm run test),Bash(npm run lint),Bash(npm run typecheck)"
-          
-          # Optional: Skip review for certain conditions
-          # if: |
-          #   !contains(github.event.pull_request.title, '[skip-review]') &&
-          #   !contains(github.event.pull_request.title, '[WIP]')
+            Please review this pull request following the project's CLAUDE.md guidelines.
+
+            Key project standards to enforce:
+            - Use Bun (not npm/yarn/pnpm) for all package management and runtime
+            - Follow conventional commit format (feat, fix, chore, docs, etc.)
+            - Use bun:test for testing (not vitest)
+            - Never use barrel files
+            - Prefer nullish coalescing (??) over logical OR (||)
+            - Ignore dapp-v1 folder (deprecated)
+
+            Review checklist:
+            1. **Code Quality**: TypeScript best practices, proper types, no any types
+            2. **Security**: No exposed secrets, secure coding practices
+            3. **Performance**: Efficient algorithms, no unnecessary re-renders
+            4. **Testing**: Adequate test coverage using bun:test
+            5. **Documentation**: Clear code comments where needed
+            6. **Solidity** (if applicable): Follow kit/contracts guidelines
+            7. **Dependencies**: Check for security vulnerabilities
+
+            For first-time contributors, be encouraging and educational.
+            Be constructive and suggest specific improvements.
+            If the PR looks good, say so!
+
+          # Allow Claude to run validation commands
+          allowed_tools: |
+            Bash(bun run ci),
+            Bash(bun run lint),
+            Bash(bun run format --check),
+            Bash(bun run test),
+            Bash(bun run compile),
+            Bash(bun run build),
+            Bash(bunx audit),
+            Grep,
+            Read,
+            LS
+
+          # Custom instructions from CLAUDE.md
+          custom_instructions: |
+            # Project Context
+            This is the SettleMint Asset Tokenization Kit - a full-stack solution for tokenized assets.
+
+            # Key Rules (from CLAUDE.md):
+            - Always use Bun instead of npm/yarn/pnpm
+            - Use bun run <script> for all scripts
+            - Use bun:test for testing, not vitest
+            - Never create barrel files (index.ts exports)
+            - Always run 'bun run ci' before approving
+            - Token factory requires system bootstrapping first
+            - Asset types are in zod validator (no cryptocurrency)
+            - For Solidity: follow kit/contracts guidelines
+            - Prefer ?? over || operator
+            - Completely ignore dapp-v1 folder
+
+            # Bun-specific APIs to encourage:
+            - Bun.serve() instead of express
+            - bun:sqlite instead of better-sqlite3
+            - Bun.$ instead of execa
+            - Built-in WebSocket support
+            - Bun.File() for file operations
+
+          # Environment variables for Claude
+          claude_env: |
+            NODE_ENV: test
+            CI: true
 
