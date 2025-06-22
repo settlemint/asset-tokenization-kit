@@ -32,7 +32,7 @@ runs:
   steps:
     - name: Wait for labels to be applied
       shell: bash
-      run: sleep 2
+      run: sleep 3
 
     - name: Get PR labels and send Slack notification
       uses: actions/github-script@v7
@@ -231,9 +231,9 @@ runs:
                 slackTs = result.ts;
                 console.log('Successfully stored Slack timestamp');
               }
-            } else if (update_message) {
-              // Update the message if requested
-              console.log('Updating Slack message format');
+            } else {
+              // Always update the message to ensure latest title and content
+              console.log('Updating Slack message with latest content');
               await slackAPI('chat.update', {
                 channel: process.env.SLACK_CHANNEL_ID,
                 ts: slackTs,
@@ -243,6 +243,9 @@ runs:
             }
 
             if (slackTs) {
+              // Small delay to ensure previous operations have completed
+              await new Promise(resolve => setTimeout(resolve, 500));
+              
               // Get existing reactions
               let existingReactions = [];
               try {
@@ -311,7 +314,7 @@ runs:
               console.log('Reactions to remove:', reactionsToRemove);
               console.log('Reactions to add:', reactionsToAdd);
               
-              // Remove outdated reactions first
+              // Remove outdated reactions first (with proper synchronization)
               for (const reactionName of reactionsToRemove) {
                 try {
                   console.log(`Removing outdated reaction: ${reactionName}`);
@@ -320,8 +323,8 @@ runs:
                     timestamp: slackTs,
                     name: reactionName
                   });
-                  // Small delay to avoid rate limits
-                  await new Promise(resolve => setTimeout(resolve, 100));
+                  // Increased delay to ensure proper synchronization
+                  await new Promise(resolve => setTimeout(resolve, 200));
                 } catch (e) {
                   if (e.message.includes('missing_scope')) {
                     console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
@@ -344,8 +347,8 @@ runs:
                     name: reaction
                   });
                   console.log(`Successfully added reaction: ${reaction}`);
-                  // Small delay to avoid rate limits
-                  await new Promise(resolve => setTimeout(resolve, 100));
+                  // Increased delay to ensure proper synchronization
+                  await new Promise(resolve => setTimeout(resolve, 200));
                 } catch (e) {
                   if (e.message.includes('missing_scope')) {
                     console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);

@@ -29,17 +29,26 @@ runs:
       run: |
         echo "Current directory: $(pwd)"
         echo "Files in workspace:"
-        find . -type f -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.sh" -o -name "*.yml" -o -name "*.yaml" -o -name "*.json" -o -name "*.env*" | grep -v node_modules | grep -v .git | head -20
-        echo "Total files (excluding node_modules and .git): $(find . -type f | grep -v node_modules | grep -v .git | wc -l)"
+        find . -type f \( -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.sh" -o -name "*.yml" -o -name "*.yaml" -o -name "*.json" -o -name "*.env*" \) -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null | head -20 || true
+        echo "Total files (excluding node_modules and .git): $(find . -type f -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null | wc -l || echo "0")"
 
+    - name: Setup Trivy
+      uses: aquasecurity/setup-trivy@ff1b8b060f23b650436d419b5e13f67f5d4c3087
+      
     - name: Secret Scanning (Trivy)
-      uses: aquasecurity/trivy-action@0.31.0
-      with:
-        scan-type: 'fs'
-        scan-ref: '${{ github.workspace }}'
-        trivy-config: ${{ inputs.trivy_config }}
-        severity: ${{ inputs.severity }}
-        format: 'table'
-        exit-code: ${{ inputs.exit_code }}
-        scanners: 'secret'
-        skip-dirs: 'node_modules,dist,build,.git,.github,coverage,.turbo,.next,out,.cache,tmp,temp,vendor,target,.venv,__pycache__,.pytest_cache,.mypy_cache,.tox,.eggs,*.egg-info,.generated,typechain,typechain-types,generated,.eslintcache,.npm,.tanstack,.nitro,.output,paraglide,dependencies,jspm_packages,ignition/deployments,.idea,logs'
+      shell: bash
+      run: |
+        echo "Starting Trivy secret scan..."
+        trivy fs . \
+          --scanners secret \
+          --severity ${{ inputs.severity }} \
+          --format table \
+          --exit-code ${{ inputs.exit_code }} \
+          --skip-dirs "node_modules,dist,build,.git,.github,coverage,.turbo,.next,out,.cache,tmp,temp,vendor,target,.venv,__pycache__,.pytest_cache,.mypy_cache,.tox,.eggs,*.egg-info,.generated,typechain,typechain-types,generated,.eslintcache,.npm,.tanstack,.nitro,.output,paraglide,dependencies,jspm_packages,ignition/deployments,.idea,logs" \
+          || exit_code=$?
+        
+        if [ "${exit_code:-0}" -ne 0 ]; then
+          echo "Trivy found secrets or encountered an error (exit code: ${exit_code})"
+          exit ${exit_code}
+        fi
+        echo "No secrets found."
