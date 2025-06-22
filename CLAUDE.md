@@ -48,6 +48,23 @@ Default to using Bun instead of Node.js.
 For more information, read the Bun API docs in
 `node_modules/bun-types/docs/**.md`.
 
+## Commit Messages and PR Titles
+
+When creating commits or pull requests, always check `.github/labeler.yml` for the accepted conventional commit types and format. The labeler configuration defines:
+
+- Accepted commit types (feat, fix, chore, docs, style, refactor, perf, test, build, ci, revert)
+- Support for optional scopes: `type(scope): description`
+- Special formatting for dependencies: `chore(deps):`, `fix(deps):`, `build(deps):`
+- Breaking changes: append `!` to the type or include `BREAKING CHANGE:` in the body
+
+Examples:
+- `feat: add user authentication`
+- `fix(api): resolve timeout issue`
+- `chore(deps): update dependencies`
+- `feat!: redesign API endpoints`
+
+Pull requests that don't match these patterns will be labeled as "chore" by default.
+
 [... rest of the existing content ...]
 
 ## Memories
