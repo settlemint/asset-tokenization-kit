@@ -200,6 +200,16 @@ runs:
                 text: {
                   type: 'mrkdwn',
                   text: `:tada: ${pr_title}`
+                },
+                accessory: {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'View PR',
+                    emoji: false
+                  },
+                  url: pr_url,
+                  style: 'primary'
                 }
               }
             ];
@@ -337,23 +347,33 @@ runs:
               // STRICT SYNC: Only show reactions that have corresponding labels
               // This ensures 100% sync between labels and reactions
               
-              // Step 1: Determine ALL reactions that should be removed
-              // Remove any reaction that doesn't have a corresponding label
-              const reactionsToRemove = existingReactions.filter(reaction => {
-                // Check if this is a managed reaction
-                if (!allStatusReactions.includes(reaction)) {
-                  return false; // Don't remove reactions we don't manage
-                }
-                
-                // Check if this reaction has a corresponding current label
-                return !filteredStatuses.includes(reaction);
-              });
+              let reactionsToRemove, reactionsToAdd;
               
-              // Step 2: Determine what reactions need to be added
-              // Only add reactions that correspond to current labels and aren't already present
-              const reactionsToAdd = filteredStatuses.filter(reaction => 
-                !existingReactions.includes(reaction)
-              );
+              if (isMerged) {
+                // For merged PRs, remove ALL managed reactions
+                reactionsToRemove = existingReactions.filter(reaction => 
+                  allStatusReactions.includes(reaction)
+                );
+                reactionsToAdd = [];
+              } else {
+                // Step 1: Determine ALL reactions that should be removed
+                // Remove any reaction that doesn't have a corresponding label
+                reactionsToRemove = existingReactions.filter(reaction => {
+                  // Check if this is a managed reaction
+                  if (!allStatusReactions.includes(reaction)) {
+                    return false; // Don't remove reactions we don't manage
+                  }
+                  
+                  // Check if this reaction has a corresponding current label
+                  return !filteredStatuses.includes(reaction);
+                });
+                
+                // Step 2: Determine what reactions need to be added
+                // Only add reactions that correspond to current labels and aren't already present
+                reactionsToAdd = filteredStatuses.filter(reaction => 
+                  !existingReactions.includes(reaction)
+                );
+              }
               
               console.log('Current label-based reactions:', filteredStatuses);
               console.log('Existing reactions:', existingReactions);
