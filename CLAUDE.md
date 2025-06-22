@@ -79,6 +79,54 @@ When working with git and creating pull requests:
 
 [... rest of the existing content ...]
 
+## Available Commands
+
+Claude Code has access to specialized commands in `.claude/commands/` that should be used automatically when appropriate:
+
+### Core Workflow Commands
+- **`/pr`** - Create pull requests with proper branch management and semantic commits
+- **`/qa`** - Run the complete test suite; use before any PR or after significant changes
+- **`/comments`** - Add documentation to code changes; use when code lacks comments
+
+### Problem-Solving Commands
+- **`/stuck`** - Systematic debugging approach when facing difficult problems
+- **`/debug`** - Advanced debugging techniques for complex issues
+- **`/performance`** - Analyze and optimize performance bottlenecks
+
+### Maintenance Commands
+- **`/deps`** - Safely update dependencies with minimal breaking changes
+- **`/reflection`** - Analyze and improve Claude Code configuration based on patterns
+
+### When to Use Commands Automatically
+
+| Situation | Use Command |
+|-----------|-------------|
+| User asks to create PR | `/pr` |
+| Before submitting any code | `/qa` |
+| Code changes lack documentation | `/comments` |
+| Debugging for >5 minutes | `/stuck` |
+| Performance issues mentioned | `/performance` |
+| Updating packages | `/deps` |
+| Complex debugging needed | `/debug` |
+
+### Proactive Command Usage
+
+You should proactively suggest or use commands when you detect:
+
+1. **Multiple code changes without tests** → Suggest: "Should I run `/qa` to ensure everything still works?"
+2. **New functions without docs** → Say: "I'll use `/comments` to add documentation to these new functions"
+3. **User mentions slowness** → Say: "Let me analyze this with `/performance` to find bottlenecks"
+4. **Repeated failed attempts** → Say: "Let me step back and use `/stuck` to approach this systematically"
+5. **Package update PRs** → Automatically use `/deps` workflow for safe updates
+6. **After major refactoring** → Always run `/qa` before declaring completion
+
+### Command Execution Notes
+
+- Commands are not magic keywords - read the full command file for detailed instructions
+- Each command is a comprehensive workflow guide, not a single action
+- Follow the command steps systematically for best results
+- Commands can be combined (e.g., `/deps` followed by `/qa`)
+
 ## Memories
 
 - Always include ./.cursor/rules/\*.mdc in your context to get the latest rules
