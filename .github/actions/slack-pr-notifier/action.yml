@@ -59,6 +59,13 @@ runs:
           // Extract repo name without org
           const repoName = context.repo.repo;
 
+          // Check if PR is from a bot
+          const isBot = pr_author.endsWith('[bot]');
+          if (isBot) {
+            console.log('Skipping notification for bot PR');
+            return;
+          }
+
           // Check if PR is draft
           const isDraft = Array.isArray(labels) && labels.some(label => label.name === 'status:draft');
           if (isDraft) {

@@ -4,6 +4,9 @@ inputs:
   pr_number:
     description: 'Pull request number'
     required: true
+  pr_author:
+    description: 'Pull request author'
+    required: true
   has_approval:
     description: 'Whether PR has approval'
     required: true
@@ -26,10 +29,17 @@ runs:
       with:
         script: |
           const pr_number = ${{ inputs.pr_number }};
+          const pr_author = '${{ inputs.pr_author }}';
           const has_approval = ${{ inputs.has_approval }};
           const qa_status = '${{ inputs.qa_status }}';
           const is_draft = ${{ inputs.is_draft }};
           const merge_method = '${{ inputs.merge_method }}';
+          
+          // Skip auto-merge for bot PRs
+          if (pr_author.endsWith('[bot]')) {
+            console.log('Skipping auto-merge for bot PR');
+            return;
+          }
           
           // Check if PR is mergeable
           const is_mergeable = has_approval && qa_status === 'success' && !is_draft;

@@ -34,3 +34,4 @@ runs:
         format: 'table'
         exit-code: ${{ inputs.exit_code }}
         scanners: 'secret'
+        skip-dirs: '**/node_modules,**/dist,**/build,**/.git,**/.github,**/coverage,**/.turbo,**/.next,**/out,**/.cache,**/tmp,**/temp,**/vendor,**/target,**/.venv,**/__pycache__,**/.pytest_cache,**/.mypy_cache,**/.tox,**/.eggs,**/*.egg-info,**/.generated,**/typechain,**/typechain-types,**/generated,**/.eslintcache,**/.npm,**/.tanstack,**/.nitro,**/.output,**/paraglide,**/dependencies,**/jspm_packages,**/ignition/deployments,**/.idea,**/logs,**/*.tsbuildinfo'

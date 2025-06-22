@@ -22,8 +22,8 @@ jobs:
     name: QA
     if: |
       github.event_name == 'push' ||
-      (github.event_name == 'pull_request' && !endsWith(github.event.pull_request.user.login, '[bot]')) ||
-      (github.event_name == 'pull_request_review' && !endsWith(github.event.pull_request.user.login, '[bot]'))
+      github.event_name == 'pull_request' ||
+      github.event_name == 'pull_request_review'
     runs-on: namespace-profile-atk-services
     timeout-minutes: 30
     permissions:
@@ -309,6 +309,7 @@ jobs:
         uses: ./.github/actions/auto-merge
         with:
           pr_number: ${{ github.event.pull_request.number }}
+          pr_author: ${{ github.event.pull_request.user.login }}
           has_approval: ${{ steps.pr-review-check.outputs.has_approval == 'true' }}
           qa_status: ${{ steps.pr-review-check.outputs.qa_status }}
           is_draft: ${{ github.event.pull_request.draft }}
