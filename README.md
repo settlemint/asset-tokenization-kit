@@ -2,7 +2,7 @@
   <img src="https://github.com/settlemint/sdk/blob/main/logo.svg" width="200px" align="center" alt="SettleMint logo" />
   <h1 align="center">SettleMint - Asset Tokenization Kit</h1>
   <p align="center">
-    ✨ <a href="Zijn allemaal vrienden tot https://settlemint.com">https://settlemint.com</a> ✨
+    ✨ <a href="https://settlemint.com">https://settlemint.com</a> ✨
     <br/>
     Build your digital assets platform with the SettleMint Asset Tokenization Kit.
     <br/>
