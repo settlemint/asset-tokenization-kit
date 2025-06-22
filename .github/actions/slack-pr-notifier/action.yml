@@ -187,73 +187,91 @@ runs:
             return data;
           }
 
-          // GitHub OG image URL construction with cache busting
-          // Use a combination of timestamp and QA state to force refresh when runs start
-          const qaRunning = labels.some(l => l.name === 'qa:running');
-          const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
-          const ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
+          // Check if PR is merged
+          const isMerged = labels.some(l => l.name === 'status:merged');
           
-          console.log(`Using OG image URL with cache key: ${cacheKey}`);
+          let messageBlocks;
           
-          // Message blocks using GitHub OG image
-          const messageBlocks = [
-            {
-              type: 'image',
-              image_url: ogImageUrl,
-              alt_text: `PR #${pr_number}: ${pr_title}`
-            },
-            {
-              type: 'actions',
-              elements: [
-                {
-                  type: 'button',
-                  text: {
-                    type: 'plain_text',
-                    text: 'View PR',
-                    emoji: false
-                  },
-                  url: pr_url,
-                  style: 'primary'
-                },
-                {
-                  type: 'button',
-                  text: {
-                    type: 'plain_text',
-                    text: 'Files',
-                    emoji: false
-                  },
-                  url: `${pr_url}/files`
-                },
-                {
-                  type: 'button',
-                  text: {
-                    type: 'plain_text',
-                    text: 'Checks',
-                    emoji: false
-                  },
-                  url: `${pr_url}/checks`
-                },
-                {
-                  type: 'button',
-                  text: {
-                    type: 'plain_text',
-                    text: 'Commits',
-                    emoji: false
-                  },
-                  url: `${pr_url}/commits`
-                },
-                {
-                  type: 'button',
-                  text: {
-                    type: 'plain_text',
-                    text: 'Review',
-                    emoji: false
-                  },
-                  url: `${pr_url}#pullrequestreview-new_comment_form`
+          if (isMerged) {
+            // Simplified message for merged PRs
+            messageBlocks = [
+              {
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: `:tada: ${pr_title}`
                 }
-              ]
-            }
-          ];
+              }
+            ];
+          } else {
+            // Full message for open PRs
+            // GitHub OG image URL construction with cache busting
+            // Use a combination of timestamp and QA state to force refresh when runs start
+            const qaRunning = labels.some(l => l.name === 'qa:running');
+            const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
+            const ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
+            
+            console.log(`Using OG image URL with cache key: ${cacheKey}`);
+            
+            messageBlocks = [
+              {
+                type: 'image',
+                image_url: ogImageUrl,
+                alt_text: `PR #${pr_number}: ${pr_title}`
+              },
+              {
+                type: 'actions',
+                elements: [
+                  {
+                    type: 'button',
+                    text: {
+                      type: 'plain_text',
+                      text: 'View PR',
+                      emoji: false
+                    },
+                    url: pr_url,
+                    style: 'primary'
+                  },
+                  {
+                    type: 'button',
+                    text: {
+                      type: 'plain_text',
+                      text: 'Files',
+                      emoji: false
+                    },
+                    url: `${pr_url}/files`
+                  },
+                  {
+                    type: 'button',
+                    text: {
+                      type: 'plain_text',
+                      text: 'Checks',
+                      emoji: false
+                    },
+                    url: `${pr_url}/checks`
+                  },
+                  {
+                    type: 'button',
+                    text: {
+                      type: 'plain_text',
+                      text: 'Commits',
+                      emoji: false
+                    },
+                    url: `${pr_url}/commits`
+                  },
+                  {
+                    type: 'button',
+                    text: {
+                      type: 'plain_text',
+                      text: 'Review',
+                      emoji: false
+                    },
+                    url: `${pr_url}#pullrequestreview-new_comment_form`
+                  }
+                ]
+              }
+            ];
+          }
 
           try {
             if (!slackTs) {
