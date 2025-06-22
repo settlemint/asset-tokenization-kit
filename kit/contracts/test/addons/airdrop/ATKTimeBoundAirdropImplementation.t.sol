@@ -47,7 +47,6 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
     AirdropUtils.TestUserData public testUserData;
 
     // Events
-    event TimeWindowSet(uint256 startTime, uint256 endTime);
     event Claimed(address indexed claimant, uint256 amount, uint256 index);
     event BatchClaimed(address indexed claimant, uint256 totalAmount, uint256[] indices, uint256[] amounts);
 
