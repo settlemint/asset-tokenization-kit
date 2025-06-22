@@ -41,21 +41,22 @@ Commands are workflow guides that Claude Code can follow to help with common dev
 
 The project includes `.mcp.json` which configures Model Context Protocol servers:
 
-- **Linear**: Project management integration
-- **GitHub**: Repository operations
-- **Postgres**: Database access
-- **Filesystem**: Enhanced file operations
+- **Sentry**: Error tracking and monitoring (HTTP transport)
+- **Linear**: Project management integration (SSE transport)
+- **Context7**: Library documentation access (SSE transport)
 
 ### Setup
 
-1. Set required environment variables:
-   ```bash
-   export LINEAR_API_KEY="your-key"
-   export GITHUB_PERSONAL_ACCESS_TOKEN="your-token"
-   export DATABASE_URL="postgresql://..."
-   ```
+1. The servers use different transport protocols:
+   - HTTP: Direct API communication (Sentry)
+   - SSE: Server-Sent Events for real-time updates (Linear, Context7)
 
-2. Servers are automatically available when running Claude Code
+2. Authentication varies by server:
+   - Linear: Browser-based SSE authentication
+   - Sentry: May require API key setup
+   - Context7: Public access
+
+3. Servers are automatically available when running Claude Code in the project directory
 
 ## Best Practices
 

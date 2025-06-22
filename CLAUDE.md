@@ -118,6 +118,7 @@ Claude Code has access to specialized commands in `.claude/commands/` that shoul
 - **`/comments`** - Add documentation to code changes; use when code lacks comments
 - **`/explore`** - Systematically understand project architecture before making changes
 - **`/quick`** - Quick reference for Claude Code commands and best practices
+- **`/mcp`** - Guide for using MCP servers (Sentry, Linear, Context7) effectively
 
 ### Problem-Solving Commands
 - **`/stuck`** - Systematic debugging approach when facing difficult problems
@@ -137,11 +138,13 @@ Claude Code has access to specialized commands in `.claude/commands/` that shoul
 | Code changes lack documentation | `/comments` |
 | Starting work on new codebase | `/explore` |
 | User asks "how do I..." | `/quick` |
+| Need to check errors or issues | `/mcp` |
 | Debugging for >5 minutes | `/stuck` |
 | Performance issues mentioned | `/performance` |
 | Updating packages | `/deps` |
 | Complex debugging needed | `/debug` |
 | Need to understand architecture | `/explore` |
+| Working with Linear/Sentry | `/mcp` |
 
 ### Proactive Command Usage
 
@@ -181,36 +184,55 @@ This project includes team-wide MCP server configurations in `.mcp.json`. These 
 
 ### Available MCP Servers
 
-1. **Linear** - Project management integration
-   - Access Linear issues, projects, and comments
-   - Requires: `LINEAR_API_KEY` environment variable
+1. **Sentry** - Error tracking and monitoring
+   - Transport: HTTP
+   - URL: `https://mcp.sentry.dev/mcp`
+   - Access error reports, performance data, and crash analytics
 
-2. **GitHub** - Repository operations
-   - Configured for `settlemint/asset-tokenization-kit`
-   - Requires: `GITHUB_PERSONAL_ACCESS_TOKEN` environment variable
+2. **Linear** - Project management integration  
+   - Transport: SSE (Server-Sent Events)
+   - URL: `https://mcp.linear.app/sse`
+   - Scope: User-level access
+   - Manage issues, projects, and workflows
 
-3. **Postgres Local** - Database access
-   - Connects to local development database
-   - Uses: `DATABASE_URL` environment variable
+3. **Context7** - Library documentation access
+   - Transport: SSE (Server-Sent Events)
+   - URL: `https://mcp.context7.com/sse`
+   - Search and retrieve up-to-date library documentation
 
-4. **Filesystem** - Enhanced file operations
-   - Writable access to `./kit` directory
-   - Use for bulk file operations
+### Adding MCP Servers Locally
 
-### Setting Up MCP Servers
+While the project includes `.mcp.json`, you can also add servers using Claude Code CLI:
 
-1. Install required environment variables:
-   ```bash
-   export LINEAR_API_KEY="your-linear-api-key"
-   export GITHUB_PERSONAL_ACCESS_TOKEN="your-github-token"
-   export DATABASE_URL="postgresql://user:pass@localhost:5432/dbname"
-   ```
-
-2. The servers will be automatically available when running Claude Code
+```bash
+# These are already configured in .mcp.json:
+claude mcp add --transport http sentry https://mcp.sentry.dev/mcp
+claude mcp add --transport sse linear https://mcp.linear.app/sse -s user
+claude mcp add --transport sse context7 https://mcp.context7.com/sse
+```
 
 ### Using MCP Servers
 
-- **Linear**: "Check Linear issues for this project" or "Create a Linear issue for this bug"
-- **GitHub**: "Search for similar issues in our repository" or "Check recent PRs"
-- **Postgres**: "Show me the database schema" or "Query the users table"
-- **Filesystem**: "Find all TypeScript files with 'TODO' comments"
+- **Sentry**: 
+  - "Show me recent errors in production"
+  - "What are the most common errors this week?"
+  - "Check performance issues in the API"
+
+- **Linear**: 
+  - "Show my assigned Linear issues"
+  - "Create a Linear issue for this bug"
+  - "What issues are in the current sprint?"
+
+- **Context7**: 
+  - "Get React hooks documentation"
+  - "Show me Next.js 14 app router examples"
+  - "Find Prisma query documentation"
+
+### Authentication
+
+Some MCP servers may require authentication:
+- Linear: Authenticated through your browser SSE connection
+- Sentry: May require API key configuration
+- Context7: Public access for documentation
+
+Check each server's documentation for specific authentication requirements.
