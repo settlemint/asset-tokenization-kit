@@ -179,13 +179,13 @@ should be used automatically when appropriate:
 You should proactively suggest or use commands when you detect:
 
 1. **Multiple code changes without tests** → Suggest: "Should I run `/qa` to
-   ensure everything still works?"
+  ensure everything still works?"
 2. **New functions without docs** → Say: "I'll use `/comments` to add
-   documentation to these new functions"
+  documentation to these new functions"
 3. **User mentions slowness** → Say: "Let me analyze this with `/performance` to
-   find bottlenecks"
+  find bottlenecks"
 4. **Repeated failed attempts** → Say: "Let me step back and use `/stuck` to
-   approach this systematically"
+  approach this systematically"
 5. **Package update PRs** → Automatically use `/deps` workflow for safe updates
 6. **After major refactoring** → Always run `/qa` before declaring completion
 
@@ -211,6 +211,7 @@ You should proactively suggest or use commands when you detect:
   Development Guidelines section
 - Prefer using nullish coalescing operator (`??`) instead of a logical or
   (`||`), as it is a safer operator
+- Never use any, we need to have everything fully typed end to end
 
 ## MCP (Model Context Protocol) Servers
 

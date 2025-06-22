@@ -146,6 +146,26 @@ export const FactoryCreateMessagesSchema =
       .default(
         "System needs to be bootstrapped first. Please wait for system initialization to complete."
       ),
+    transactionSubmitted: z
+      .string()
+      .optional()
+      .default("Transaction submitted. Waiting for confirmation..."),
+    factoryCreationCompleted: z
+      .string()
+      .optional()
+      .default("Factory creation completed."),
+    allFactoriesSucceeded: z
+      .string()
+      .optional()
+      .default("All {{count}} factories created successfully."),
+    someFactoriesFailed: z
+      .string()
+      .optional()
+      .default("{{success}} factories created, {{failed}} failed."),
+    allFactoriesFailed: z
+      .string()
+      .optional()
+      .default("All {{count}} factories failed to create."),
   });
 
 /**

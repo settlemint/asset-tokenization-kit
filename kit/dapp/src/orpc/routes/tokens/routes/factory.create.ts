@@ -15,20 +15,14 @@
  * @see {@link @/orpc/helpers/transactions} - Transaction tracking
  */
 
-import type { portalClient as PortalClientType } from "@/lib/settlemint/portal";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import type { theGraphClient as TheGraphClientType } from "@/lib/settlemint/the-graph";
-import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
-import { trackTransaction } from "@/orpc/helpers/transactions";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { withEventMeta } from "@orpc/server";
 import {
-  type FactoryCreateMessages,
   FactoryCreateMessagesSchema,
   type FactoryCreateOutput,
-  type SingleFactory,
   getDefaultImplementations,
 } from "./factory.create.schema";
 
@@ -66,155 +60,6 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
 `);
 
 /**
- * Process a single factory creation
- */
-async function* processSingleFactory(
-  factory: SingleFactory,
-  context: {
-    portalClient: typeof PortalClientType;
-    theGraphClient: typeof TheGraphClientType;
-    systemContract: string;
-    senderWallet: string;
-  },
-  messages: FactoryCreateMessages,
-  progress?: { current: number; total: number }
-): AsyncGenerator<FactoryCreateOutput> {
-  const { type, name } = factory;
-  const defaults = getDefaultImplementations(type);
-
-  const factoryImplementation =
-    factory.factoryImplementation ?? defaults.factoryImplementation;
-  const tokenImplementation =
-    factory.tokenImplementation ?? defaults.tokenImplementation;
-
-  // Yield starting message
-  const progressMessage = progress
-    ? messages.batchProgress
-        .replace("{{current}}", String(progress.current))
-        .replace("{{total}}", String(progress.total))
-    : messages.creatingFactory;
-
-  yield {
-    status: "pending",
-    message: progressMessage,
-    currentFactory: { type, name },
-    progress,
-  };
-
-  try {
-    // Execute the factory creation transaction
-    const txHashResult = await context.portalClient.request(
-      CREATE_TOKEN_FACTORY_MUTATION,
-      {
-        address: context.systemContract,
-        from: context.senderWallet,
-        factoryImplementation: factoryImplementation,
-        tokenImplementation: tokenImplementation,
-        name: name,
-      }
-    );
-
-    const transactionHash =
-      txHashResult.IATKTokenFactoryRegistryRegisterTokenFactory
-        ?.transactionHash;
-
-    if (!transactionHash) {
-      yield {
-        status: "failed",
-        message: messages.factoryCreationFailed,
-        currentFactory: {
-          type,
-          name,
-          error: messages.factoryCreationFailed,
-        },
-        progress,
-      };
-      return;
-    }
-
-    // Validate transaction hash
-    const validatedHash = ethereumHash.parse(transactionHash);
-
-    // Track transaction
-    for await (const event of trackTransaction(
-      validatedHash,
-      context.portalClient,
-      context.theGraphClient,
-      messages
-    )) {
-      if (event.status === "confirmed") {
-        // Transaction confirmed - factory will be available asynchronously elsewhere
-        yield {
-          status: "confirmed",
-          message: messages.factoryCreated,
-          currentFactory: {
-            type,
-            name,
-            transactionHash: validatedHash,
-          },
-          progress,
-        };
-        return;
-      } else if (event.status === "failed") {
-        // Check for SystemNotBootstrapped in the transaction error
-        let failureMessage = event.message;
-        if (event.message.includes("SystemNotBootstrapped")) {
-          failureMessage = messages.systemNotBootstrapped;
-        }
-
-        yield {
-          status: "failed",
-          message: failureMessage,
-          currentFactory: {
-            type,
-            name,
-            transactionHash: validatedHash,
-            error: event.message,
-          },
-          progress,
-        };
-        return;
-      } else {
-        // Pass through pending status
-        yield {
-          status: "pending",
-          message: event.message,
-          currentFactory: {
-            type,
-            name,
-            transactionHash: validatedHash,
-          },
-          progress,
-        };
-      }
-    }
-  } catch (error) {
-    // Check for specific error types
-    let errorMessage = messages.defaultError;
-    let errorDetail = messages.defaultError;
-
-    if (error instanceof Error) {
-      errorDetail = error.message;
-      // Check for SystemNotBootstrapped error
-      if (error.message.includes("SystemNotBootstrapped")) {
-        errorMessage = messages.systemNotBootstrapped;
-      }
-    }
-
-    yield {
-      status: "failed",
-      message: errorMessage,
-      currentFactory: {
-        type,
-        name,
-        error: errorDetail,
-      },
-      progress,
-    };
-  }
-}
-
-/**
  * Creates token factory contracts.
  *
  * @auth Required - User must be authenticated
@@ -227,35 +72,34 @@ async function* processSingleFactory(
  * @returns Stream of creation progress events
  *
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
- * @throws {ORPCError} INTERNAL_SERVER_ERROR - If Portal GraphQL request fails
+ * @throws {ORPCError} PORTAL_ERROR - If Portal GraphQL request fails
+ * @throws {ORPCError} INTERNAL_SERVER_ERROR - If transaction processing fails
  *
  * @example
  * ```typescript
- * // Create a single factory
- * for await (const event of client.tokens.factory.create({
+ * // Create a single bond factory
+ * const stream = client.tokens.factoryCreate({
+ *   contract: "0x123...",
  *   factories: {
  *     type: "bond",
- *     name: "Bond Token Factory"
+ *     name: "Corporate Bonds"
  *   }
- * })) {
- *   console.log(event.status, event.message);
- * }
+ * });
  *
  * // Create multiple factories
- * for await (const event of client.tokens.factory.create({
+ * const stream = client.tokens.factoryCreate({
+ *   contract: "0x123...",
  *   factories: [
- *     { type: "bond", name: "Bond Factory" },
- *     { type: "equity", name: "Equity Factory" }
+ *     { type: "bond", name: "Corporate Bonds" },
+ *     { type: "equity", name: "Common Stock" }
  *   ]
- * })) {
- *   console.log(event.progress?.current, "of", event.progress?.total);
- * }
+ * });
  * ```
  */
 export const factoryCreate = onboardedRouter.tokens.factoryCreate
-  .use(portalMiddleware)
   .use(theGraphMiddleware)
-  .handler(async function* ({ input, context }) {
+  .use(portalMiddleware)
+  .handler(async function* ({ input, context, errors }) {
     const { contract, factories } = input;
     const sender = context.auth.user;
 
@@ -277,59 +121,203 @@ export const factoryCreate = onboardedRouter.tokens.factoryCreate
     );
 
     const results: FactoryCreateOutput["results"] = [];
-    const processContext = {
-      portalClient: context.portalClient,
-      theGraphClient: context.theGraphClient,
-      systemContract: contract,
-      senderWallet: sender.wallet,
-    };
+
+    /**
+     * Checks if an error contains a specific pattern
+     */
+    function containsErrorPattern(error: unknown, pattern: string): boolean {
+      if (error instanceof Error) {
+        return (
+          error.message.includes(pattern) ||
+          (error.stack?.includes(pattern) ?? false)
+        );
+      }
+      if (typeof error === "string") {
+        return error.includes(pattern);
+      }
+      return false;
+    }
 
     // Process each factory
     for (const [index, factory] of factoryList.entries()) {
       const progress = { current: index + 1, total: totalFactories };
+      const { type, name } = factory;
+      const defaults = getDefaultImplementations(type);
 
-      // Process single factory and collect results
-      for await (const event of processSingleFactory(
-        factory,
-        processContext,
-        messages,
-        progress
-      )) {
-        // Update event metadata for proper streaming
-        yield withEventMeta(event, {
+      const factoryImplementation =
+        factory.factoryImplementation ?? defaults.factoryImplementation;
+      const tokenImplementation =
+        factory.tokenImplementation ?? defaults.tokenImplementation;
+
+      // Yield starting message
+      const progressMessage = messages.batchProgress
+        .replace("{{current}}", String(progress.current))
+        .replace("{{total}}", String(progress.total));
+
+      yield withEventMeta(
+        {
+          status: "pending" as const,
+          message: progressMessage,
+          currentFactory: { type, name },
+          progress,
+        },
+        { id: `factory-${factory.type}-${index}`, retry: 1000 }
+      );
+
+      try {
+        // Execute the factory creation transaction
+        const variables = {
+          address: contract,
+          from: sender.wallet,
+          factoryImplementation: factoryImplementation,
+          tokenImplementation: tokenImplementation,
+          name: name,
+        };
+
+        let validatedHash = "";
+
+        // Use the new mutate method that includes transaction tracking
+        for await (const event of context.portalClient.mutate(
+          CREATE_TOKEN_FACTORY_MUTATION,
+          variables,
+          messages.factoryCreationFailed,
+          messages
+        )) {
+          validatedHash = event.transactionHash;
+
+          // Handle different event statuses
+          if (event.status === "pending") {
+            yield withEventMeta(
+              {
+                status: "pending" as const,
+                message: event.message,
+                currentFactory: {
+                  type,
+                  name,
+                  transactionHash: validatedHash,
+                },
+                progress,
+              },
+              { id: `factory-${factory.type}-${index}`, retry: 1000 }
+            );
+          } else if (event.status === "confirmed") {
+            yield withEventMeta(
+              {
+                status: "confirmed" as const,
+                message: messages.factoryCreated,
+                currentFactory: {
+                  type,
+                  name,
+                  transactionHash: validatedHash,
+                },
+                progress,
+              },
+              { id: `factory-${factory.type}-${index}`, retry: 1000 }
+            );
+
+            results.push({
+              type,
+              name,
+              transactionHash: validatedHash,
+            });
+          } else {
+            // event.status === "failed"
+            yield withEventMeta(
+              {
+                status: "failed" as const,
+                message: event.message,
+                currentFactory: {
+                  type,
+                  name,
+                  transactionHash: validatedHash,
+                  error: event.message,
+                },
+                progress,
+              },
+              { id: `factory-${factory.type}-${index}`, retry: 1000 }
+            );
+
+            results.push({
+              type,
+              name,
+              transactionHash: validatedHash,
+              error: event.message,
+            });
+          }
+        }
+      } catch (error) {
+        // Check for specific error types
+        let errorMessage = messages.defaultError;
+        let errorDetail = messages.defaultError;
+
+        if (error instanceof Error) {
+          errorDetail = error.message;
+          // Check for SystemNotBootstrapped error
+          if (containsErrorPattern(error, "SystemNotBootstrapped")) {
+            errorMessage = messages.systemNotBootstrapped;
+            // For critical errors like system not bootstrapped, throw proper error
+            throw errors.INTERNAL_SERVER_ERROR({
+              message: errorMessage,
+              cause: new Error(errorDetail),
+            });
+          }
+        }
+
+        const errorResult = {
+          status: "failed" as const,
+          message: errorMessage,
+          currentFactory: {
+            type,
+            name,
+            error: errorDetail,
+          },
+          progress,
+        };
+
+        yield withEventMeta(errorResult, {
           id: `factory-${factory.type}-${index}`,
           retry: 1000,
         });
 
-        // Collect results for final summary
-        if (
-          event.currentFactory &&
-          (event.status === "confirmed" || event.status === "failed")
-        ) {
-          results.push({
-            type: event.currentFactory.type,
-            name: event.currentFactory.name,
-            transactionHash: event.currentFactory.transactionHash,
-            error: event.currentFactory.error,
-          });
-        }
+        results.push({
+          type,
+          name,
+          error: errorDetail,
+        });
       }
     }
 
-    // Yield final completion event
+    // Final completion message
     const successCount = results.filter((r) => !r.error).length;
-    const completionMessage = messages.batchCompleted.replace(
-      "{{count}}",
-      String(successCount)
-    );
+    const failureCount = results.filter((r) => r.error).length;
+
+    let completionMessage = messages.factoryCreationCompleted;
+    if (successCount > 0 && failureCount === 0) {
+      completionMessage = messages.allFactoriesSucceeded.replace(
+        "{{count}}",
+        String(successCount)
+      );
+    } else if (successCount > 0 && failureCount > 0) {
+      completionMessage = messages.someFactoriesFailed
+        .replace("{{success}}", String(successCount))
+        .replace("{{failed}}", String(failureCount));
+    } else if (failureCount > 0 && successCount === 0) {
+      completionMessage = messages.allFactoriesFailed.replace(
+        "{{count}}",
+        String(failureCount)
+      );
+    }
 
     yield withEventMeta(
       {
-        status: "completed",
+        status: "completed" as const,
         message: completionMessage,
         results,
-        result: results, // Add result field for useStreamingMutation hook
-        progress: { current: totalFactories, total: totalFactories },
+        resultSummary: {
+          total: totalFactories,
+          successful: successCount,
+          failed: failureCount,
+        },
       },
       { id: "factory-creation-complete", retry: 1000 }
     );

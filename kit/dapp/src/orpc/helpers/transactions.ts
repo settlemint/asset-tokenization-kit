@@ -1,11 +1,11 @@
-import type { portalClient as portalClientType } from "@/lib/settlemint/portal";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import type { theGraphClient as theGraphClientType } from "@/lib/settlemint/the-graph";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import {
   ethereumHash,
   type EthereumHash,
 } from "@/lib/zod/validators/ethereum-hash";
+import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.middleware";
+import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import {
   TransactionTrackingMessagesSchema,
   type TransactionTrackingMessages,
@@ -27,6 +27,37 @@ export const TransactionTrackOutputSchema = z.object({
   transactionHash: ethereumHash,
   message: z.string(),
   status: z.enum(["pending", "confirmed", "failed"]),
+});
+
+/**
+ * Schema for GetTransaction query response
+ */
+const GetTransactionResponseSchema = z.object({
+  getTransaction: z
+    .object({
+      receipt: z
+        .object({
+          status: z.enum(["Success", "Reverted"]),
+          revertReasonDecoded: z.string().nullable(),
+          revertReason: z.string().nullable(),
+          blockNumber: z.string(),
+        })
+        .optional(),
+    })
+    .nullable(),
+});
+
+/**
+ * Schema for GetIndexingStatus query response
+ */
+const GetIndexingStatusResponseSchema = z.object({
+  _meta: z
+    .object({
+      block: z.object({
+        number: z.number(),
+      }),
+    })
+    .nullable(),
 });
 
 /**
@@ -84,8 +115,8 @@ const STREAM_TIMEOUT_MS = 90_000; // Total timeout for the stream (90 seconds)
  */
 export async function* trackTransaction(
   transactionHash: EthereumHash,
-  portalClient: typeof portalClientType,
-  theGraphClient: typeof theGraphClientType,
+  portalClient: ValidatedPortalClient,
+  theGraphClient: ValidatedTheGraphClient,
   customMessages?: Partial<TransactionTrackingMessages>
 ) {
   // Parse messages with defaults using Zod schema
@@ -120,14 +151,16 @@ export async function* trackTransaction(
       );
       return; // Stream timeout
     }
-    const { getTransaction } = await portalClient.request(
+    const result = await portalClient.query(
       GET_TRANSACTION_QUERY,
       {
         transactionHash,
-      }
+      },
+      GetTransactionResponseSchema,
+      messages.waitingForMining
     );
 
-    receipt = getTransaction?.receipt ?? undefined;
+    receipt = result.getTransaction?.receipt ?? undefined;
 
     // Transaction not yet mined, continue polling
     if (!receipt) {
@@ -201,8 +234,13 @@ export async function* trackTransaction(
       );
       return; // Stream timeout
     }
-    const { _meta } = await theGraphClient.request(GET_INDEXING_STATUS_QUERY);
-    const indexedBlock = _meta?.block.number ?? 0;
+    const result = await theGraphClient.query(
+      GET_INDEXING_STATUS_QUERY,
+      {},
+      GetIndexingStatusResponseSchema,
+      messages.waitingForIndexing
+    );
+    const indexedBlock = result._meta?.block.number ?? 0;
 
     // Check if TheGraph has indexed up to or past the transaction block
     if (indexedBlock >= Number(receipt.blockNumber)) {

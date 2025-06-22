@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { z } from "zod/v4";
 
 /**
  * GraphQL query for retrieving SMART systems from TheGraph.
@@ -66,16 +67,27 @@ export const list = authRouter.system.list
       orderDirection: "asc",
     };
 
+    // Define response schema
+    const SystemsResponseSchema = z.object({
+      systems: z.array(
+        z.object({
+          id: z.string(),
+        })
+      ),
+    });
+
     // Execute TheGraph query with pagination and sorting parameters
-    const { systems } = await context.theGraphClient.request(
+    const result = await context.theGraphClient.query(
       LIST_SYSTEM_QUERY,
       {
         skip: offset,
         orderDirection,
         first: limit,
-      }
+      },
+      SystemsResponseSchema,
+      "Failed to retrieve systems"
     );
 
     // Return the array of system contracts
-    return systems;
+    return result.systems;
   });

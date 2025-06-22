@@ -2,8 +2,8 @@ import type { Session, SessionUser } from "@/lib/auth";
 import type { db } from "@/lib/db";
 import type { hasuraClient } from "@/lib/settlemint/hasura";
 import type { client as minioClient } from "@/lib/settlemint/minio";
-import type { portalClient } from "@/lib/settlemint/portal";
-import type { theGraphClient } from "@/lib/settlemint/the-graph";
+import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.middleware";
+import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import type { getHeaders } from "@tanstack/react-start/server";
 
 /**
@@ -66,19 +66,22 @@ export interface Context {
 
   /**
    * The Graph client instance for querying blockchain data.
-   * Injected by theGraphMiddleware for procedures that need to query indexed blockchain events.
+   * Injected by theGraphMiddleware with built-in validation for all queries.
+   * All queries require Zod schema validation.
    * @optional
-   * @see {@link @/lib/settlemint/the-graph} - The Graph client configuration
+   * @see {@link @/orpc/middlewares/services/the-graph.middleware} - The Graph middleware
    */
-  theGraphClient?: typeof theGraphClient;
+  theGraphClient?: ValidatedTheGraphClient;
 
   /**
    * Portal client instance for interacting with the SettleMint Portal API.
-   * Injected by portalMiddleware for procedures that need to interact with Portal services.
+   * Injected by portalMiddleware with built-in validation:
+   * - Mutations automatically extract and validate transaction hashes
+   * - Queries require Zod schema validation
    * @optional
-   * @see {@link @/lib/settlemint/portal} - Portal client configuration
+   * @see {@link @/orpc/middlewares/services/portal.middleware} - Portal middleware
    */
-  portalClient?: typeof portalClient;
+  portalClient?: ValidatedPortalClient;
 
   /**
    * MinIO client instance for object storage operations.

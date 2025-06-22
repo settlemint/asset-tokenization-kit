@@ -5,6 +5,7 @@ import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm";
+import { z } from "zod/v4";
 import { AccountCreateMessagesSchema } from "./account.create.schema";
 
 /**
@@ -41,6 +42,7 @@ export const create = authRouter.account.create
   .use(databaseMiddleware)
   .use(portalMiddleware)
   .handler(async ({ input, context, errors }) => {
+    // Auth is guaranteed by authRouter
     const sender = context.auth.user;
 
     // Parse messages with defaults using Zod schema
@@ -54,15 +56,27 @@ export const create = authRouter.account.create
     }
 
     // TODO JAN: i can call this twice for the same id, is that normal?
-    const { createWallet } = await context.portalClient.request(
+    // The mutate method returns the transaction hash directly, but we need the wallet address
+    // So we need to use a query instead with a schema
+    const CreateWalletResponseSchema = z.object({
+      createWallet: z
+        .object({
+          address: z.string(),
+        })
+        .nullable(),
+    });
+
+    const result = await context.portalClient.query(
       CREATE_ACCOUNT_MUTATION,
       {
         userId: sender.id,
         keyVaultId: env.SETTLEMINT_HD_PRIVATE_KEY,
-      }
+      },
+      CreateWalletResponseSchema,
+      messages.walletCreationFailed
     );
 
-    if (!createWallet?.address) {
+    if (!result.createWallet?.address) {
       throw errors.PORTAL_ERROR({
         message: messages.walletCreationFailed,
         data: {
@@ -76,9 +90,9 @@ export const create = authRouter.account.create
     await context.db
       .update(user)
       .set({
-        wallet: createWallet.address,
+        wallet: result.createWallet.address,
       })
       .where(eq(user.id, sender.id));
 
-    return createWallet.address;
+    return result.createWallet.address;
   });
