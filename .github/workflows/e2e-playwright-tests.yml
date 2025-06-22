@@ -32,12 +32,12 @@ jobs:
           bun-version: latest
 
       - name: Configure 1Password
-        uses: 1password/load-secrets-action/configure@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        uses: 1password/load-secrets-action/configure@v2
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Load secrets
-        uses: 1password/load-secrets-action@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        uses: 1password/load-secrets-action@v2
         env:
           SLACK_WEBHOOK_URL: op://platform/slack-webhooks/e2e-report
 
@@ -138,7 +138,7 @@ jobs:
 
       - name: Send Slack notification
         if: ${{ !cancelled() }}
-        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        uses: slackapi/slack-github-action@v2.1.0
         with:
           webhook: ${{ env.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook

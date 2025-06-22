@@ -12,7 +12,7 @@ declare module 'gql.tada' {
       TadaDocumentNode<{ systems: { id: string; }[]; }, { deployedInTransaction?: string | null | undefined; }, void>;
     "\n  query ListSystemQuery($skip: Int!, $orderDirection: OrderDirection = asc, $first: Int = 20) {\n    systems(\n        first: $first\n        orderDirection: $orderDirection\n        skip: $skip\n      ) {\n      id\n    }\n  }\n":
       TadaDocumentNode<{ systems: { id: string; }[]; }, { first?: number | null | undefined; orderDirection?: "asc" | "desc" | null | undefined; skip: number; }, void>;
-    "\n  query SystemDetails($id: ID!) {\n    system(id: $id) {\n      id\n      tokenFactories {\n        id\n        name\n        typeId\n      }\n    }\n  }\n":
-      TadaDocumentNode<{ system: { id: string; tokenFactories: unknown; } | null; }, { id: string; }, void>;
+    "\n  query SystemDetails($id: ID!) {\n    system(id: $id) {\n      id\n      tokenFactoryRegistry {\n        id\n        tokenFactories {\n          id\n          name\n          typeId\n        }\n      }\n    }\n  }\n":
+      TadaDocumentNode<{ system: { id: string; tokenFactoryRegistry: { id: string; tokenFactories: { id: string; name: string; typeId: string; }[]; } | null; } | null; }, { id: string; }, void>;
   }
 }

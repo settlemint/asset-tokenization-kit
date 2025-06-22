@@ -1,4 +1,7 @@
 {
   "appDescription": "In Minuten bereitstellen, einfach anpassen",
-  "appName": "Asset-Tokenisierungs-Kit"
+  "appName": "Asset-Tokenisierungs-Kit",
+  "generating": "Generiere...",
+  "deploying": "Bereitstellen...",
+  "continue": "Fortfahren"
 }

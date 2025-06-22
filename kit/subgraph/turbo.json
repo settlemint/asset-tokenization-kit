@@ -11,7 +11,7 @@
     "codegen:interfaceid": {
       "dependsOn": ["contracts#compile"],
       "outputs": ["src/erc165/utils/interfaceids.ts"],
-      "inputs": ["**/*.sol"]
+      "inputs": ["**/*.sol", "tools/interfaceid.ts"]
     },
     "codegen:gql-tada": {
       "dependsOn": ["publish"],

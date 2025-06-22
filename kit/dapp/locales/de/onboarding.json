@@ -2,16 +2,16 @@
   "card-description": "Sie benötigen eine Wallet und eine Identität auf der Blockchain, um diese Plattform zu nutzen.",
   "card-title": "Lassen Sie uns alles einrichten!",
   "platform": {
-    "title": "Plattform-Einrichtung",
-    "description": "Richten Sie Ihre digitale Asset-Plattform ein"
+    "title": "Plattformeinrichtung",
+    "description": "Lassen Sie uns Ihre digitale Vermögensplattform einrichten"
   },
   "issuer": {
-    "title": "Emittenten-Einrichtung",
-    "description": "Richten Sie Ihr Konto ein, um digitale Assets auszugeben"
+    "title": "Aussteller-Einrichtung",
+    "description": "Richten Sie Ihr Konto ein, um digitale Vermögenswerte auszugeben"
   },
   "investor": {
     "title": "Investoren-Einrichtung",
-    "description": "Richten Sie Ihr Konto ein, um in digitale Assets zu investieren"
+    "description": "Richten Sie Ihr Konto ein, um in digitale Vermögenswerte zu investieren"
   },
   "steps": {
     "wallet": {
@@ -20,76 +20,76 @@
     },
     "system": {
       "title": "System bereitstellen",
-      "description": "Initialisieren Sie die Kern-Smart-Contracts"
+      "description": "Initialisieren Sie die Kern-Smart Contracts"
     },
     "assets": {
-      "title": "Assets auswählen",
-      "description": "Wählen Sie unterstützte Asset-Typen"
+      "title": "Vermögenswerte auswählen",
+      "description": "Wählen Sie unterstützte Vermögensarten aus"
     },
     "identity": {
       "title": "Identität verifizieren",
-      "description": "Schließen Sie die KYC-Verifizierung ab",
-      "info": "Die Identitätsverifizierung gewährleistet die Einhaltung von Vorschriften und ermöglicht Ihnen, in digitale Assets zu investieren.",
-      "coming-soon": "Demnächst verfügbar",
+      "description": "Vervollständigen Sie die KYC-Verifizierung",
+      "info": "Die Identitätsverifizierung stellt die Einhaltung der Vorschriften sicher und ermöglicht es Ihnen, in digitale Vermögenswerte zu investieren.",
+      "coming-soon": "Demnächst",
       "coming-soon-description": "Die Identitätsverifizierung befindet sich derzeit in der Entwicklung. In der Zwischenzeit erstellen wir Ihre Wallet, damit Sie die Plattform erkunden können."
     }
   },
   "wallet": {
     "title": "Wallet generieren",
     "description": "Erstellen Sie Ihre Blockchain-Wallet für Transaktionen",
-    "info": "Ihre Wallet ist Ihr Zugang zur Blockchain. Sie ermöglicht es Ihnen, digitale Assets sicher zu halten und Transaktionen auszuführen.",
+    "info": "Ihre Wallet ist Ihr Zugang zur Blockchain. Sie ermöglicht es Ihnen, digitale Vermögenswerte zu halten und Transaktionen sicher auszuführen.",
     "generate": "Wallet generieren",
     "success": "Wallet erfolgreich erstellt!",
-    "generated": "Wallet erfolgreich erstellt",
+    "generated": "Wallet erfolgreich generiert",
     "already-exists": "Wallet existiert bereits für diesen Benutzer",
-    "creation-failed": "Die Erstellung der Wallet ist fehlgeschlagen. Bitte versuchen Sie es erneut."
+    "creation-failed": "Fehler beim Erstellen der Wallet. Bitte versuchen Sie es erneut."
   },
   "system": {
     "title": "SMART-System bereitstellen",
     "description": "Initialisieren Sie die Kerninfrastruktur für Ihre Plattform",
-    "info": "Das SMART-System ist die Grundlage Ihrer digitalen Asset-Plattform. Es verwaltet alle Token-Operationen und gewährleistet die Compliance.",
+    "info": "Das SMART-System ist die Grundlage Ihrer digitalen Vermögensplattform. Es verwaltet alle Token-Operationen und stellt die Einhaltung sicher.",
     "deploy": "System bereitstellen",
     "deployed": "System erfolgreich bereitgestellt",
     "success": "System erfolgreich bereitgestellt!",
     "messages": {
       "initial-loading": "Bereite die Bereitstellung Ihres SMART-Systems vor...",
-      "no-result-error": "Die Systembestellung wurde abgeschlossen, aber es wurde keine Adresse zurückgegeben",
-      "default-error": "Die Bereitstellung Ihres SMART-Systems ist fehlgeschlagen",
+      "no-result-error": "Bereitstellung des Systems abgeschlossen, aber keine Adresse wurde zurückgegeben",
+      "default-error": "Fehler beim Bereitstellen Ihres SMART-Systems",
       "created": "SMART-System erfolgreich erstellt",
       "creating": "Neues System wird erstellt...",
-      "creation-failed": "Die Erstellung des Systems ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "creation-failed": "Fehler beim Erstellen des Systems. Bitte versuchen Sie es erneut.",
       "pending": {
-        "mining": "Ihr SMART-System wird bereitgestellt...",
-        "indexing": "Das neue SMART-System wird indexiert..."
+        "mining": "Bereitstellung Ihres SMART-Systems...",
+        "indexing": "Indizierung des neuen SMART-Systems..."
       },
-      "error": "Bereitstellung Ihres SMART-Systems fehlgeschlagen",
-      "timeout": "Zeitüberschreitung bei der Transaktionsverfolgung"
+      "error": "Fehler beim Bereitstellen Ihres SMART-Systems",
+      "timeout": "Transaktionsverfolgung Zeitüberschreitung"
     },
     "transaction-tracking": {
-      "stream-timeout": "Die Verfolgung der Systembereitstellung hat nach 90 Sekunden abgelaufen",
+      "stream-timeout": "Die Verfolgung der Systembereitstellung hat nach 90 Sekunden Zeitüberschreitung",
       "waiting-for-mining": "Bereitstellung Ihres SMART-Systems auf der Blockchain...",
-      "transaction-failed": "Die Transaktion zur Bereitstellung des Systems ist fehlgeschlagen",
-      "transaction-dropped": "Die Transaktion zur Bereitstellung des Systems wurde nicht rechtzeitig on-chain bestätigt",
-      "waiting-for-indexing": "Warte darauf, dass das System indiziert wird...",
+      "transaction-failed": "Transaktion zur Bereitstellung des Systems fehlgeschlagen",
+      "transaction-dropped": "Transaktion zur Bereitstellung des Systems wurde nicht rechtzeitig on-chain bestätigt",
+      "waiting-for-indexing": "Warten auf die Indizierung des Systems...",
       "transaction-indexed": "System erfolgreich indiziert und bereit zur Nutzung",
-      "indexing-timeout": "Die Indizierung des Systems hat abgelaufen, bitte laden Sie die Seite neu"
+      "indexing-timeout": "Indizierung des Systems zeitlich überschritten, bitte aktualisieren Sie die Seite"
     }
   },
   "assets": {
-    "title": "Asset-Typen auswählen",
-    "description": "Wählen Sie, welche digitalen Asset-Typen auf Ihrer Plattform aktiviert werden sollen",
-    "info": "Wählen Sie die Typen digitaler Assets aus, die Ihre Plattform unterstützen wird. Sie können später weitere Asset-Typen hinzufügen.",
-    "select-label": "Verfügbare Asset-Typen",
-    "select-description": "Wählen Sie einen oder mehrere Asset-Typen aus, um deren Factory-Verträge bereitzustellen",
-    "deploy": "Ausgewählte Assets bereitstellen",
-    "deployed": "Asset-Fabriken erfolgreich bereitgestellt",
+    "title": "Vermögensarten auswählen",
+    "description": "Wählen Sie aus, welche Arten digitaler Vermögenswerte auf Ihrer Plattform aktiviert werden sollen",
+    "info": "Wählen Sie die Arten digitaler Vermögenswerte aus, die Ihre Plattform unterstützen wird. Sie können später weitere Vermögensarten hinzufügen.",
+    "select-label": "Verfügbare Vermögensarten",
+    "select-description": "Wählen Sie eine oder mehrere Vermögensarten aus, um deren Fabrikverträge bereitzustellen",
+    "deploy": "Ausgewählte Vermögenswerte bereitstellen",
+    "deployed": "Vermögensfabriken erfolgreich bereitgestellt",
     "no-system": "System nicht gefunden. Bitte stellen Sie zuerst das System bereit.",
     "descriptions": {
-      "bond": "Tokenisierte Schuldverschreibungen mit Festzinsmerkmalen",
-      "equity": "Digitale Aktien, die Unternehmenseigentum repräsentieren",
-      "fund": "Investment-Fonds-Token für gepoolte Investitionen",
-      "stablecoin": "Preisstabile digitale Währungen",
-      "deposit": "Tokenisierte Bankeinlagen und Zertifikate"
+      "bond": "Tokenisierte Schuldverschreibungen mit festen Einkommensmerkmalen",
+      "equity": "Digitale Aktien, die Eigentum an Unternehmen repräsentieren",
+      "fund": "Investmentfonds-Token für gebündelte Investitionen",
+      "stablecoin": "Preis-stabile digitale Währungen",
+      "deposit": "Tokenisierte Bankeinlagen und -zertifikate"
     }
   }
 }
