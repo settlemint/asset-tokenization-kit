@@ -11,6 +11,16 @@ on:
         description: 'Whether the PR is a draft'
         required: true
         type: boolean
+      has_approval:
+        description: 'Whether the PR has been approved'
+        required: false
+        type: boolean
+        default: false
+      qa_status:
+        description: 'The QA status (pending, running, success, failed)'
+        required: false
+        type: string
+        default: ''
       runs-on:
         description: 'Runner to use'
         required: true
@@ -30,8 +40,10 @@ jobs:
         with:
           script: |
             const labels = [
-              { name: 'draft', color: '6F7379', description: 'Pull request is in draft status' },
-              { name: 'ready-for-review', color: '2EA44F', description: 'Pull request is ready for review' }
+              { name: 'status:draft', color: '6F7379', description: 'Pull request is in draft status' },
+              { name: 'status:ready-for-review', color: 'FBCA04', description: 'Pull request is ready for review' },
+              { name: 'status:approved', color: '0E8A16', description: 'Pull request has been approved' },
+              { name: 'status:mergeable', color: '2EA44F', description: 'Pull request is approved, tests pass, and ready to merge' }
             ];
 
             // Get all existing labels
@@ -42,9 +54,12 @@ jobs:
 
             const existingLabelNames = new Set(existingLabels.map(l => l.name));
 
-            // Create missing labels
+            // Create or update labels
             for (const label of labels) {
-              if (!existingLabelNames.has(label.name)) {
+              const existingLabel = existingLabels.find(l => l.name === label.name);
+              
+              if (!existingLabel) {
+                // Create new label
                 try {
                   await github.rest.issues.createLabel({
                     owner: context.repo.owner,
@@ -57,6 +72,20 @@ jobs:
                 } catch (error) {
                   console.log(`Failed to create label ${label.name}: ${error.message}`);
                 }
+              } else if (existingLabel.color !== label.color || existingLabel.description !== label.description) {
+                // Update existing label if color or description changed
+                try {
+                  await github.rest.issues.updateLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label.name,
+                    color: label.color,
+                    description: label.description
+                  });
+                  console.log(`Updated label: ${label.name} (color: ${existingLabel.color} -> ${label.color}, desc: "${existingLabel.description}" -> "${label.description}")`);
+                } catch (error) {
+                  console.log(`Failed to update label ${label.name}: ${error.message}`);
+                }
               }
             }
 
@@ -64,7 +93,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const labels = ['draft', 'ready-for-review'];
+            const labels = ['status:draft', 'status:ready-for-review', 'status:approved', 'status:mergeable'];
             const pr_number = ${{ inputs.pr_number }};
 
             for (const label of labels) {
@@ -86,8 +115,21 @@ jobs:
           script: |
             const pr_number = ${{ inputs.pr_number }};
             const is_draft = ${{ inputs.is_draft }};
-            const label = is_draft ? 'draft' : 'ready-for-review';
-
+            const has_approval = ${{ inputs.has_approval }};
+            const qa_status = '${{ inputs.qa_status }}';
+            
+            let label = '';
+            
+            if (is_draft) {
+              label = 'status:draft';
+            } else if (has_approval && qa_status === 'success') {
+              label = 'status:mergeable';
+            } else if (has_approval) {
+              label = 'status:approved';
+            } else {
+              label = 'status:ready-for-review';
+            }
+            
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,

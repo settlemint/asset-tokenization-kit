@@ -11,6 +11,7 @@ on:
         converted_to_draft,
         closed,
         review_requested,
+        edited,
       ]
     branches:
       - main
@@ -70,8 +71,15 @@ jobs:
 
   pr-labels:
     name: PR Labels
-    uses: ./.github/workflows/reusable-pr-labels.yml
+    if: |
+      github.event.action == 'opened' || 
+      github.event.action == 'synchronize' ||
+      github.event.action == 'edited'
+    uses: ./.github/workflows/reusable-pr-labeler.yml
     with:
+      pr_number: ${{ github.event.pull_request.number }}
+      pr_title: ${{ github.event.pull_request.title }}
+      pr_body: ${{ github.event.pull_request.body }}
       runs-on: namespace-profile-atk-services
 
   secret-scanning:
@@ -105,4 +113,58 @@ jobs:
     with:
       pr_number: ${{ github.event.pull_request.number }}
       workflow_status: ${{ (needs.qa.result == 'success' && needs.secret-scanning.result != 'failure') && 'success' || 'failure' }}
+      runs-on: namespace-profile-atk-services
+
+  # Update PR status with review and QA information
+  update-pr-status:
+    name: Update PR Status
+    needs: [label-qa-end, qa, secret-scanning]
+    if: |
+      always() &&
+      (github.event.action == 'synchronize' || github.event.action == 'opened' || 
+       github.event.action == 'ready_for_review' || github.event.action == 'converted_to_draft')
+    runs-on: namespace-profile-atk-services
+    steps:
+      - name: Get PR reviews
+        id: check_approval
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr_number = ${{ github.event.pull_request.number }};
+            
+            // Get reviews
+            const reviews = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr_number
+            });
+            
+            // Check if PR has approval (excluding the PR author)
+            const has_approval = reviews.data.some(review => 
+              review.state === 'APPROVED' && 
+              review.user.login !== '${{ github.event.pull_request.user.login }}'
+            );
+            
+            // Determine QA status based on previous job results
+            const qa_success = '${{ needs.qa.result }}' === 'success' && 
+                              '${{ needs.secret-scanning.result }}' !== 'failure';
+            
+            core.setOutput('has_approval', has_approval);
+            core.setOutput('qa_status', qa_success ? 'success' : 'failed');
+            
+    outputs:
+      has_approval: ${{ steps.check_approval.outputs.has_approval }}
+      qa_status: ${{ steps.check_approval.outputs.qa_status }}
+
+  # Apply final PR status label
+  label-pr-final-status:
+    name: Label PR Final Status
+    needs: [update-pr-status]
+    if: always()
+    uses: ./.github/workflows/reusable-pr-status-labeler.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      is_draft: ${{ github.event.pull_request.draft }}
+      has_approval: ${{ fromJson(needs.update-pr-status.outputs.has_approval) }}
+      qa_status: ${{ needs.update-pr-status.outputs.qa_status }}
       runs-on: namespace-profile-atk-services
