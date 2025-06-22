@@ -24,14 +24,22 @@ runs:
           ~/.cache/trivy
           /tmp/trivy-cache
 
+    - name: Debug - List files to scan
+      shell: bash
+      run: |
+        echo "Current directory: $(pwd)"
+        echo "Files in workspace:"
+        find . -type f -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.sh" -o -name "*.yml" -o -name "*.yaml" -o -name "*.json" -o -name "*.env*" | grep -v node_modules | grep -v .git | head -20
+        echo "Total files (excluding node_modules and .git): $(find . -type f | grep -v node_modules | grep -v .git | wc -l)"
+
     - name: Secret Scanning (Trivy)
       uses: aquasecurity/trivy-action@0.31.0
       with:
         scan-type: 'fs'
-        scan-ref: '.'
+        scan-ref: '${{ github.workspace }}'
         trivy-config: ${{ inputs.trivy_config }}
         severity: ${{ inputs.severity }}
         format: 'table'
         exit-code: ${{ inputs.exit_code }}
         scanners: 'secret'
-        skip-dirs: '**/node_modules,**/dist,**/build,**/.git,**/.github,**/coverage,**/.turbo,**/.next,**/out,**/.cache,**/tmp,**/temp,**/vendor,**/target,**/.venv,**/__pycache__,**/.pytest_cache,**/.mypy_cache,**/.tox,**/.eggs,**/*.egg-info,**/.generated,**/typechain,**/typechain-types,**/generated,**/.eslintcache,**/.npm,**/.tanstack,**/.nitro,**/.output,**/paraglide,**/dependencies,**/jspm_packages,**/ignition/deployments,**/.idea,**/logs,**/*.tsbuildinfo'
+        skip-dirs: 'node_modules,dist,build,.git,.github,coverage,.turbo,.next,out,.cache,tmp,temp,vendor,target,.venv,__pycache__,.pytest_cache,.mypy_cache,.tox,.eggs,*.egg-info,.generated,typechain,typechain-types,generated,.eslintcache,.npm,.tanstack,.nitro,.output,paraglide,dependencies,jspm_packages,ignition/deployments,.idea,logs'
