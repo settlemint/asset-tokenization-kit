@@ -12,16 +12,8 @@ export function trackEventStats(
   eventName: string,
   timestamp: BigInt
 ): void {
-  // Create a unique ID for this timeseries entry
-  // Using timestamp + account + eventName to ensure uniqueness
-  const id = timestamp
-    .toString()
-    .concat("-")
-    .concat(emitterAccountId.toHexString())
-    .concat("-")
-    .concat(eventName);
-
-  let eventStats = new EventStatsData(id);
+  // Create timeseries entry - ID is auto-generated for timeseries entities
+  let eventStats = new EventStatsData();
   eventStats.timestamp = timestamp;
   eventStats.account = emitterAccountId;
   eventStats.eventName = eventName;

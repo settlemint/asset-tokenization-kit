@@ -185,8 +185,8 @@ describe("EventStats", () => {
     // Verify cumulative nature - counts should be non-decreasing
     Object.values(groupedStats).forEach((stats) => {
       if (stats.length > 1) {
-        // Sort by timestamp
-        stats.sort((a, b) => a.timestamp - b.timestamp);
+        // Sort by timestamp (parse strings to numbers for proper sorting)
+        stats.sort((a, b) => parseInt(a.timestamp) - parseInt(b.timestamp));
         
         for (let i = 1; i < stats.length; i++) {
           expect(stats[i].eventsCount).toBeGreaterThanOrEqual(
