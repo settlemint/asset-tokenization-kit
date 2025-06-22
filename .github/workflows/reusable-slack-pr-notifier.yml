@@ -1,0 +1,324 @@
+name: Slack PR Notifier (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      pr_number:
+        description: 'Pull request number'
+        required: true
+        type: number
+      pr_title:
+        description: 'Pull request title'
+        required: true
+        type: string
+      pr_url:
+        description: 'Pull request URL'
+        required: true
+        type: string
+      pr_author:
+        description: 'Pull request author'
+        required: true
+        type: string
+      pr_author_avatar:
+        description: 'Pull request author avatar URL'
+        required: true
+        type: string
+      runs-on:
+        description: 'Runner to use'
+        required: true
+        type: string
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN:
+        required: true
+
+permissions:
+  pull-requests: read
+  issues: write  # For creating/reading comments with Slack timestamp
+
+jobs:
+  slack-notify:
+    name: Send Slack Notification
+    runs-on: ${{ inputs.runs-on }}
+    steps:
+      - name: Setup 1Password
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load secrets
+        uses: 1password/load-secrets-action@v2
+        env:
+          SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
+          SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
+
+      - name: Wait for labels to be applied
+        run: sleep 2
+
+      - name: Get PR labels and send Slack notification
+        uses: actions/github-script@v7
+        env:
+          SLACK_BOT_TOKEN: ${{ env.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ env.SLACK_CHANNEL_ID }}
+        with:
+          script: |
+            // Get PR labels
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: ${{ inputs.pr_number }}
+            });
+            
+            const labels = pr.labels || [];
+            const pr_title = ${{ toJSON(inputs.pr_title) }};
+            const pr_url = ${{ toJSON(inputs.pr_url) }};
+            const pr_number = ${{ inputs.pr_number }};
+            const pr_author = ${{ toJSON(inputs.pr_author) }};
+            const author_avatar = ${{ toJSON(inputs.pr_author_avatar) }};
+            
+            // Extract repo name without org
+            const repoName = context.repo.repo;
+
+            // Check if PR is draft
+            const isDraft = Array.isArray(labels) && labels.some(label => label.name === 'status:draft');
+            if (isDraft) {
+              console.log('Skipping notification for draft PR');
+              return;
+            }
+
+            // Define status reactions mapping
+            const statusReactions = {
+              'qa:pending': 'hourglass_flowing_sand',
+              'qa:running': 'runner',
+              'qa:success': 'white_check_mark',
+              'qa:failed': 'x',
+              'status:ready-for-review': 'eyes',
+              'status:approved': 'thumbsup',
+              'status:mergeable': 'rocket',
+              'status:merged': 'tada'
+            };
+            
+            // Define mutually exclusive groups (only one can be active at a time)
+            const exclusiveGroups = {
+              'qa': ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
+              'status': ['eyes', 'thumbsup', 'rocket', 'tada']
+            };
+            
+            // All possible status reactions we manage
+            const allStatusReactions = Object.values(statusReactions);
+
+            // Get current status labels
+            console.log('Current PR labels:', labels.map(l => l.name));
+            const currentStatuses = labels
+              .filter(label => Object.keys(statusReactions).includes(label.name))
+              .map(label => statusReactions[label.name]);
+            console.log('Reactions to add:', currentStatuses);
+
+            // Check if there's an existing Slack message
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr_number
+            });
+
+            console.log(`Found ${comments.length} comments on PR`);
+            const slackComment = comments.find(c => c.body && c.body.includes('<!-- slack-ts:'));
+            let slackTs = null;
+
+            if (slackComment) {
+              const match = slackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);
+              if (match) {
+                slackTs = match[1];
+                console.log(`Found existing Slack message timestamp: ${slackTs}`);
+              }
+            } else {
+              console.log('No existing Slack message found');
+            }
+
+            // Helper function to make Slack API calls
+            async function slackAPI(method, body = {}) {
+              const response = await fetch(`https://slack.com/api/${method}`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${process.env.SLACK_BOT_TOKEN}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+              });
+
+              const data = await response.json();
+              if (!data.ok) {
+                throw new Error(`Slack API error: ${data.error}`);
+              }
+              return data;
+            }
+
+            try {
+              if (!slackTs) {
+                // Send new message
+                const result = await slackAPI('chat.postMessage', {
+                  channel: process.env.SLACK_CHANNEL_ID,
+                  text: `PR #${pr_number}: ${pr_title}`,
+                  blocks: [
+                    {
+                      type: 'header',
+                      text: {
+                        type: 'plain_text',
+                        text: `PR #${pr_number}`,
+                        emoji: true
+                      }
+                    },
+                    {
+                      type: 'section',
+                      text: {
+                        type: 'mrkdwn',
+                        text: `*${pr_title}*`
+                      }
+                    },
+                    {
+                      type: 'context',
+                      elements: [
+                        {
+                          type: 'image',
+                          image_url: author_avatar,
+                          alt_text: pr_author
+                        },
+                        {
+                          type: 'mrkdwn',
+                          text: `*Author:* ${pr_author} • *Repository:* ${repoName}`
+                        }
+                      ]
+                    },
+                    {
+                      type: 'divider'
+                    },
+                    {
+                      type: 'actions',
+                      elements: [
+                        {
+                          type: 'button',
+                          text: {
+                            type: 'plain_text',
+                            text: '👀 View PR',
+                            emoji: true
+                          },
+                          url: pr_url,
+                          style: 'primary'
+                        }
+                      ]
+                    }
+                  ]
+                });
+
+                // Store timestamp
+                if (result.ts) {
+                  console.log(`Storing Slack timestamp ${result.ts} as PR comment`);
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: pr_number,
+                    body: `<!-- slack-ts:${result.ts} -->`
+                  });
+                  slackTs = result.ts;
+                  console.log('Successfully stored Slack timestamp');
+                }
+              }
+
+              if (slackTs) {
+                // Get existing reactions
+                let existingReactions = [];
+                try {
+                  const reactions = await slackAPI('reactions.get', {
+                    channel: process.env.SLACK_CHANNEL_ID,
+                    timestamp: slackTs,
+                    full: true
+                  });
+                  
+                  if (reactions.message && reactions.message.reactions) {
+                    existingReactions = reactions.message.reactions.map(r => r.name);
+                    console.log('Existing reactions on message:', existingReactions);
+                  }
+                } catch (e) {
+                  console.log('Could not get existing reactions:', e.message);
+                  // Continue anyway - we'll handle errors when adding/removing
+                }
+
+                // Smart reaction management to avoid flickering
+                // First, determine what needs to change
+                const reactionsToAdd = [];
+                const reactionsToRemove = [];
+                
+                // For each desired reaction, check if we need to add it
+                for (const desiredReaction of currentStatuses) {
+                  if (!existingReactions.includes(desiredReaction)) {
+                    reactionsToAdd.push(desiredReaction);
+                  }
+                }
+                
+                // For each exclusive group, find reactions that need to be removed
+                for (const desiredReaction of currentStatuses) {
+                  for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                    if (groupReactions.includes(desiredReaction)) {
+                      // Remove other reactions in this group that currently exist
+                      for (const groupReaction of groupReactions) {
+                        if (groupReaction !== desiredReaction && existingReactions.includes(groupReaction)) {
+                          reactionsToRemove.push(groupReaction);
+                        }
+                      }
+                    }
+                  }
+                }
+                
+                console.log('Reactions to remove:', reactionsToRemove);
+                console.log('Reactions to add:', reactionsToAdd);
+                
+                // Remove outdated reactions first
+                for (const reactionName of reactionsToRemove) {
+                  try {
+                    console.log(`Removing outdated reaction: ${reactionName}`);
+                    await slackAPI('reactions.remove', {
+                      channel: process.env.SLACK_CHANNEL_ID,
+                      timestamp: slackTs,
+                      name: reactionName
+                    });
+                    // Small delay to avoid rate limits
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                  } catch (e) {
+                    if (e.message.includes('missing_scope')) {
+                      console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
+                      break;
+                    } else if (e.message.includes('no_reaction')) {
+                      console.log(`Reaction ${reactionName} was already removed`);
+                    } else {
+                      console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+                    }
+                  }
+                }
+
+                // Add new reactions
+                for (const reaction of reactionsToAdd) {
+                  try {
+                    console.log(`Adding reaction: ${reaction}`);
+                    await slackAPI('reactions.add', {
+                      channel: process.env.SLACK_CHANNEL_ID,
+                      timestamp: slackTs,
+                      name: reaction
+                    });
+                    console.log(`Successfully added reaction: ${reaction}`);
+                    // Small delay to avoid rate limits
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                  } catch (e) {
+                    if (e.message.includes('missing_scope')) {
+                      console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                      break;
+                    } else if (e.message.includes('already_reacted')) {
+                      console.log(`Reaction ${reaction} already exists (race condition)`);
+                    } else {
+                      console.log(`Could not add reaction ${reaction}: ${e.message}`);
+                    }
+                  }
+                }
+              }
+            } catch (error) {
+              console.error('Slack notification error:', error);
+              // Don't fail the workflow for Slack errors
+            }
