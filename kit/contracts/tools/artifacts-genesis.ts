@@ -113,8 +113,7 @@ const CONTRACT_ADDRESSES = {
   // Addon factory implementations
   ATKFixedYieldScheduleFactoryImplementation:
     "0x5e771e1417100000000000000000000000020030",
-  ATKXvPSettlementImplementation:
-    "0x5e771e1417100000000000000000000000020031",
+  ATKXvPSettlementImplementation: "0x5e771e1417100000000000000000000000020031",
   ATKXvPSettlementFactoryImplementation:
     "0x5e771e1417100000000000000000000000020032",
   ATKVestingAirdropFactoryImplementation:
