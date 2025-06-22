@@ -65,6 +65,18 @@ Examples:
 
 Pull requests that don't match these patterns will be labeled as "chore" by default.
 
+## Git Workflow and Pull Requests
+
+When working with git and creating pull requests:
+
+- **DO NOT** create a new branch if you're already on a feature branch (not on main/master)
+- When the `/pr` command is used or a PR is requested:
+  - First check the current branch with `git branch --show-current`
+  - If already on a feature branch, commit and push to the current branch
+  - Only create a new branch if currently on main/master
+- When updating an existing PR, amend commits or add new commits to the same branch
+- Always check branch status before creating new branches
+
 [... rest of the existing content ...]
 
 ## Memories
