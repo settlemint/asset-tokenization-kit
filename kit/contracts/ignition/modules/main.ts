@@ -1,5 +1,6 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import PushAirdropFactoryModule from "./predeployed/addons/airdrop/push-airdrop-factory";
+import TimeboundAirdropFactoryModule from "./predeployed/addons/airdrop/time-bound-airdrop.factory";
 import VestingAirdropFactoryModule from "./predeployed/addons/airdrop/vesting-airdrop-factory";
 import FixedYieldScheduleFactoryModule from "./predeployed/addons/fixed-yield-schedule-factory";
 import VaultModule from "./predeployed/addons/vault/vault";
@@ -45,6 +46,9 @@ const ATKModule = buildModule("ATKModule", (m) => {
   const { pushAirdropFactoryImplementation } = m.useModule(
     PushAirdropFactoryModule
   );
+  const { timeboundAirdropFactoryImplementation } = m.useModule(
+    TimeboundAirdropFactoryModule
+  );
   const { vaultFactoryImplementation } = m.useModule(VaultFactoryModule);
   const { atkVaultImplementation } = m.useModule(VaultModule);
 
@@ -71,6 +75,7 @@ const ATKModule = buildModule("ATKModule", (m) => {
     xvpSettlementFactoryImplementation,
     vestingAirdropFactoryImplementation,
     pushAirdropFactoryImplementation,
+    timeboundAirdropFactoryImplementation,
     vaultFactoryImplementation,
     atkVaultImplementation,
     // compliancemodules
