@@ -96,6 +96,7 @@ runs:
 
           // Get current status labels
           console.log('Current PR labels:', labels.map(l => l.name));
+          console.log('QA labels found:', labels.filter(l => l.name.startsWith('qa:')).map(l => l.name));
           
           // Filter labels and determine appropriate reactions
           const qaLabels = labels.filter(l => l.name.startsWith('qa:'));
@@ -131,6 +132,13 @@ runs:
           }
           
           console.log('Reactions to add:', currentStatuses);
+          
+          // Debug: Check if we have multiple QA reactions (should never happen)
+          const qaReactionsToAdd = currentStatuses.filter(r => exclusiveGroups.qa.includes(r));
+          if (qaReactionsToAdd.length > 1) {
+            console.error('ERROR: Multiple QA reactions detected:', qaReactionsToAdd);
+            console.error('This should not happen! QA labels:', qaLabels.map(l => l.name));
+          }
 
           // Check if there's an existing Slack message
           const { data: comments } = await github.rest.issues.listComments({
@@ -272,24 +280,25 @@ runs:
                 }
               }
               
-              // Determine what needs to be removed
-              // 1. Remove reactions from same exclusive group
-              for (const desiredReaction of currentStatuses) {
+              // Aggressive cleanup: Remove ALL reactions from exclusive groups first
+              // This ensures we don't have multiple QA reactions showing
+              for (const existingReaction of existingReactions) {
+                // Check if this reaction belongs to any exclusive group
                 for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
-                  if (groupReactions.includes(desiredReaction)) {
-                    // Remove other reactions in this group that currently exist
-                    for (const groupReaction of groupReactions) {
-                      if (groupReaction !== desiredReaction && existingReactions.includes(groupReaction)) {
-                        reactionsToRemove.push(groupReaction);
+                  if (groupReactions.includes(existingReaction)) {
+                    // If we want a reaction from this group, only remove if it's different
+                    const desiredFromGroup = currentStatuses.find(r => groupReactions.includes(r));
+                    if (!desiredFromGroup || existingReaction !== desiredFromGroup) {
+                      if (!reactionsToRemove.includes(existingReaction)) {
+                        reactionsToRemove.push(existingReaction);
                       }
                     }
                   }
                 }
               }
               
-              // 2. If QA is running/pending, remove any status reactions
-              const hasQaReaction = currentStatuses.some(r => exclusiveGroups.qa.includes(r));
-              const qaInProgress = currentStatuses.includes('runner') || currentStatuses.includes('hourglass_flowing_sand');
+              // Special handling: If QA is running/pending, ensure no status reactions
+              const qaInProgress = selectedQaLabel === 'qa:running' || selectedQaLabel === 'qa:pending';
               if (qaInProgress) {
                 for (const statusReaction of exclusiveGroups.status) {
                   if (existingReactions.includes(statusReaction) && !reactionsToRemove.includes(statusReaction)) {
@@ -298,17 +307,31 @@ runs:
                 }
               }
               
-              // 3. Remove any reactions that shouldn't be there anymore
-              for (const existingReaction of existingReactions) {
-                if (allStatusReactions.includes(existingReaction) && 
-                    !currentStatuses.includes(existingReaction) && 
-                    !reactionsToRemove.includes(existingReaction)) {
-                  reactionsToRemove.push(existingReaction);
+              console.log('Reactions to remove:', reactionsToRemove);
+              console.log('Reactions to add:', reactionsToAdd);
+              
+              // Final sanity check: ensure we're not adding multiple reactions from same group
+              const finalReactionsToAdd = [];
+              const addedGroups = new Set();
+              
+              for (const reaction of reactionsToAdd) {
+                let reactionGroup = null;
+                for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                  if (groupReactions.includes(reaction)) {
+                    reactionGroup = groupName;
+                    break;
+                  }
+                }
+                
+                if (!reactionGroup || !addedGroups.has(reactionGroup)) {
+                  finalReactionsToAdd.push(reaction);
+                  if (reactionGroup) addedGroups.add(reactionGroup);
+                } else {
+                  console.log(`WARNING: Skipping duplicate ${reactionGroup} reaction: ${reaction}`);
                 }
               }
               
-              console.log('Reactions to remove:', reactionsToRemove);
-              console.log('Reactions to add:', reactionsToAdd);
+              console.log('Final reactions to add after sanity check:', finalReactionsToAdd);
               
               // Remove outdated reactions first (with proper synchronization)
               for (const reactionName of reactionsToRemove) {
@@ -332,9 +355,14 @@ runs:
                   }
                 }
               }
+              
+              // Wait a bit after removals to ensure Slack has processed them
+              if (reactionsToRemove.length > 0) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+              }
 
               // Add new reactions
-              for (const reaction of reactionsToAdd) {
+              for (const reaction of finalReactionsToAdd) {
                 try {
                   console.log(`Adding reaction: ${reaction}`);
                   await slackAPI('reactions.add', {
