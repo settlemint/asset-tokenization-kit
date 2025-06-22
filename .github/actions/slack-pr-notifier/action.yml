@@ -45,6 +45,10 @@ runs:
         SLACK_CHANNEL_ID: ${{ inputs.slack_channel_id }}
       with:
         script: |
+          // Add random jitter to prevent race conditions when multiple steps run in parallel
+          const jitter = Math.floor(Math.random() * 3000);
+          console.log(`Waiting ${jitter}ms to prevent race conditions...`);
+          await new Promise(resolve => setTimeout(resolve, jitter));
           // Get PR labels
           const { data: pr } = await github.rest.pulls.get({
             owner: context.repo.owner,
@@ -152,7 +156,7 @@ runs:
           console.log('All label names:', labels.map(l => l.name));
           console.log('Final reactions (strict sync with labels):', filteredStatuses);
 
-          // Check if there's an existing Slack message
+          // Check if there's an existing Slack message or a lock
           const { data: comments } = await github.rest.issues.listComments({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -160,6 +164,48 @@ runs:
           });
 
           console.log(`Found ${comments.length} comments on PR`);
+          
+          // Check for a creation lock first
+          const lockComment = comments.find(c => c.body && c.body.includes('<!-- slack-creating-lock -->'));
+          if (lockComment) {
+            // Check if lock is recent (within 30 seconds)
+            const lockAge = Date.now() - new Date(lockComment.created_at).getTime();
+            if (lockAge < 30000) {
+              console.log(`Found recent creation lock (${lockAge}ms old), waiting for other process to complete...`);
+              // Wait and retry to find the created message
+              await new Promise(resolve => setTimeout(resolve, 5000));
+              
+              // Re-fetch comments
+              const { data: newComments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr_number
+              });
+              
+              const slackComment = newComments.find(c => c.body && c.body.includes('<!-- slack-ts:'));
+              if (slackComment) {
+                const match = slackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);
+                if (match) {
+                  slackTs = match[1];
+                  console.log(`Found Slack message created by another process: ${slackTs}`);
+                }
+              }
+            } else {
+              console.log(`Found stale creation lock (${lockAge}ms old), ignoring...`);
+              // Delete stale lock
+              try {
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: lockComment.id
+                });
+              } catch (e) {
+                console.log('Could not delete stale lock:', e.message);
+              }
+            }
+          }
+          
+          // Look for existing Slack message
           const slackComment = comments.find(c => c.body && c.body.includes('<!-- slack-ts:'));
           let slackTs = null;
 
@@ -289,15 +335,49 @@ runs:
 
           try {
             if (!slackTs) {
-              // Send new message
-              const result = await slackAPI('chat.postMessage', {
-                channel: process.env.SLACK_CHANNEL_ID,
-                text: `#${pr_number}: ${pr_title}`,
-                blocks: messageBlocks
+              // Create a lock to prevent race conditions
+              console.log('Creating lock to prevent duplicate messages...');
+              const lockComment = await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr_number,
+                body: '<!-- slack-creating-lock -->'
               });
 
-              // Store timestamp
-              if (result.ts) {
+              // Double-check that no other process created a message while we were creating the lock
+              const { data: checkComments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr_number
+              });
+              
+              const existingSlackComment = checkComments.find(c => 
+                c.body && c.body.includes('<!-- slack-ts:') && c.id !== lockComment.id
+              );
+              
+              if (existingSlackComment) {
+                console.log('Another process created a Slack message while we were locking, using that instead');
+                // Delete our lock
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: lockComment.id
+                });
+                
+                const match = existingSlackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);
+                if (match) {
+                  slackTs = match[1];
+                }
+              } else {
+                // Send new message
+                const result = await slackAPI('chat.postMessage', {
+                  channel: process.env.SLACK_CHANNEL_ID,
+                  text: `#${pr_number}: ${pr_title}`,
+                  blocks: messageBlocks
+                });
+
+                // Store timestamp
+                if (result.ts) {
                 console.log(`Storing Slack timestamp ${result.ts} as PR comment`);
                 
                 // Get Slack workspace info for the permalink
@@ -333,9 +413,24 @@ runs:
                   issue_number: pr_number,
                   body: commentBody
                 });
+                
+                // Delete the lock comment
+                try {
+                  await github.rest.issues.deleteComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: lockComment.id
+                  });
+                  console.log('Deleted creation lock');
+                } catch (e) {
+                  console.log('Could not delete lock comment:', e.message);
+                }
+                
                 slackTs = result.ts;
                 console.log('Successfully stored Slack timestamp');
               }
+              }
+            }
             } else {
               // Always update the message to ensure latest title and content
               console.log('Updating Slack message with latest content');

@@ -73,7 +73,8 @@ jobs:
           pr_number: ${{ github.event.pull_request.number }}
           workflow_status: 'running'
 
-      - name: Send Slack notification for QA running
+      # Initial Slack notification - creates or updates message
+      - name: Send Slack notification for QA starting
         if: |
           github.event_name == 'pull_request' &&
           github.event.pull_request.draft == false
@@ -185,21 +186,7 @@ jobs:
           pr_number: ${{ github.event.pull_request.number }}
           workflow_status: ${{ steps.qa-tests.outcome == 'success' && 'success' || 'failure' }}
 
-      - name: Send Slack notification for QA status
-        if: |
-          always() &&
-          github.event_name == 'pull_request' &&
-          steps.qa-tests.conclusion != 'skipped'
-        uses: ./.github/actions/slack-pr-notifier
-        with:
-          pr_number: ${{ github.event.pull_request.number }}
-          pr_title: ${{ github.event.pull_request.title }}
-          pr_url: ${{ github.event.pull_request.html_url }}
-          pr_author: ${{ github.event.pull_request.user.login }}
-          pr_author_type: ${{ github.event.pull_request.user.type }}
-          pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
-          slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
-          slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
+      # Skip redundant notification - handled by consolidated step at the end
 
       # Label PR based on title/branch (PR only)
       - name: Label PR based on convention
@@ -213,21 +200,7 @@ jobs:
           pr_title: ${{ github.event.pull_request.title }}
           pr_body: ${{ github.event.pull_request.body || '' }}
 
-      - name: Send Slack notification for PR labels
-        if: |
-          always() &&
-          steps.label-pr.conclusion == 'success' &&
-          github.event_name == 'pull_request'
-        uses: ./.github/actions/slack-pr-notifier
-        with:
-          pr_number: ${{ github.event.pull_request.number }}
-          pr_title: ${{ github.event.pull_request.title }}
-          pr_url: ${{ github.event.pull_request.html_url }}
-          pr_author: ${{ github.event.pull_request.user.login }}
-          pr_author_type: ${{ github.event.pull_request.user.type }}
-          pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
-          slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
-          slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
+      # Skip redundant notification - handled by consolidated step at the end
 
       # Run secret scanning (PR only)
       - name: Run secret scanning
@@ -247,22 +220,7 @@ jobs:
           pr_number: ${{ github.event.pull_request.number }}
           workflow_status: ${{ steps.secret-scan.outcome == 'success' && 'success' || 'failure' }}
 
-      - name: Send Slack notification for secret scanning
-        if: |
-          always() &&
-          github.event_name == 'pull_request' &&
-          steps.secret-scan.conclusion != 'skipped' &&
-          github.event.pull_request.user.type != 'Bot'
-        uses: ./.github/actions/slack-pr-notifier
-        with:
-          pr_number: ${{ github.event.pull_request.number }}
-          pr_title: ${{ github.event.pull_request.title }}
-          pr_url: ${{ github.event.pull_request.html_url }}
-          pr_author: ${{ github.event.pull_request.user.login }}
-          pr_author_type: ${{ github.event.pull_request.user.type }}
-          pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
-          slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
-          slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
+      # Skip redundant notification - handled by consolidated step at the end
 
       # Check PR review status (PR and PR review events only)
       - name: Check PR review status
@@ -291,11 +249,12 @@ jobs:
           has_approval: ${{ steps.pr-review-check.outputs.has_approval == 'true' }}
           qa_status: ${{ steps.pr-review-check.outputs.qa_status }}
 
-      - name: Send Slack notification for final status
+      # Consolidated Slack notification - updates existing message or creates one if needed
+      - name: Update Slack notification with final status
         if: |
           always() &&
-          steps.label-final-status.conclusion == 'success' &&
-          (github.event_name == 'pull_request' || github.event_name == 'pull_request_review')
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.draft == false
         uses: ./.github/actions/slack-pr-notifier
         with:
           pr_number: ${{ github.event.pull_request.number }}
