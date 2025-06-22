@@ -82,9 +82,24 @@ runs:
             core.setOutput('qa_status', qa_status);
           } else {
             // For PR events, use the job results
-            if ('${{ inputs.qa_result }}' === 'success' && '${{ inputs.secret_scanning_result }}' === 'success') {
+            const qa_result = '${{ inputs.qa_result }}';
+            const secret_result = '${{ inputs.secret_scanning_result }}';
+            
+            console.log(`QA Result: ${qa_result}, Secret Scanning Result: ${secret_result}`);
+            
+            // Determine overall QA status
+            // QA tests are the primary indicator
+            if (qa_result === 'success') {
+              // QA passed - secret scanning is non-blocking (continue-on-error: true)
               core.setOutput('qa_status', 'success');
+            } else if (qa_result === 'failure' || qa_result === 'cancelled') {
+              // QA actually failed
+              core.setOutput('qa_status', 'failed');
+            } else if (qa_result === 'skipped' || !qa_result) {
+              // QA was skipped (e.g., draft PR) or not run yet
+              core.setOutput('qa_status', 'pending');
             } else {
+              // Default to failed for unknown states
               core.setOutput('qa_status', 'failed');
             }
           }
