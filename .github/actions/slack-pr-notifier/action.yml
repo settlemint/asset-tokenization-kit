@@ -215,6 +215,11 @@ runs:
             
             messageBlocks = [
               {
+                type: 'image',
+                image_url: ogImageUrl,
+                alt_text: `PR #${pr_number}: ${pr_title}`
+              },
+              {
                 type: 'actions',
                 elements: [
                   {
@@ -274,21 +279,7 @@ runs:
               const result = await slackAPI('chat.postMessage', {
                 channel: process.env.SLACK_CHANNEL_ID,
                 text: `#${pr_number}: ${pr_title}`,
-                blocks: messageBlocks,
-                attachments: [
-                  {
-                    fallback: `PR #${pr_number}: ${pr_title}`,
-                    color: '#0366d6', // GitHub blue
-                    author_name: pr_author,
-                    author_icon: author_avatar,
-                    title: `#${pr_number}: ${pr_title}`,
-                    title_link: pr_url,
-                    thumb_url: ogImageUrl,
-                    footer: repoName,
-                    footer_icon: `https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png`,
-                    ts: Math.floor(Date.now() / 1000)
-                  }
-                ]
+                blocks: messageBlocks
               });
 
               // Store timestamp
@@ -310,21 +301,7 @@ runs:
                 channel: process.env.SLACK_CHANNEL_ID,
                 ts: slackTs,
                 text: `#${pr_number}: ${pr_title}`,
-                blocks: messageBlocks,
-                attachments: [
-                  {
-                    fallback: `PR #${pr_number}: ${pr_title}`,
-                    color: '#0366d6', // GitHub blue
-                    author_name: pr_author,
-                    author_icon: author_avatar,
-                    title: `#${pr_number}: ${pr_title}`,
-                    title_link: pr_url,
-                    thumb_url: ogImageUrl,
-                    footer: repoName,
-                    footer_icon: `https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png`,
-                    ts: Math.floor(Date.now() / 1000)
-                  }
-                ]
+                blocks: messageBlocks
               });
             }
 
