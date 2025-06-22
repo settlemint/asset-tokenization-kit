@@ -19,8 +19,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Label PR as QA running when workflow starts
+  label-qa-start:
+    name: Label QA Start
+    if: |
+      github.event.action == 'synchronize' || github.event.action == 'opened'
+    uses: ./.github/workflows/reusable-build-status-labeler.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      workflow_status: 'running'
   qa:
     name: QA
+    needs: label-qa-start
     if: |
       github.event.action == 'synchronize' || github.event.action == 'opened'
     uses: ./.github/workflows/reusable-qa.yml
@@ -52,3 +62,20 @@ jobs:
       language: 'javascript-typescript'
       build-mode: 'none'
       runs-on: 'namespace-profile-atk'
+
+  # Label PR with final QA status
+  label-qa-end:
+    name: Label QA End
+    needs: [qa, secret-scanning, codeql]
+    if: |
+      always() &&
+      (github.event.action == 'synchronize' || github.event.action == 'opened')
+    uses: ./.github/workflows/reusable-build-status-labeler.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      workflow_status: |
+        ${{ 
+          (needs.qa.result == 'success' && 
+           needs.secret-scanning.result != 'failure' && 
+           needs.codeql.result != 'failure') && 'success' || 'failure' 
+        }}
