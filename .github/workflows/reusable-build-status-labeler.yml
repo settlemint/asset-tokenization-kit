@@ -26,6 +26,7 @@ jobs:
         with:
           script: |
             const labels = [
+              { name: 'qa-pending', color: 'D4C5F9', description: 'QA workflow needs to run' },
               { name: 'qa-running', color: 'FBCA04', description: 'QA workflow is currently running' },
               { name: 'qa-success', color: '0E8A16', description: 'QA workflow passed successfully' },
               { name: 'qa-failed', color: 'D93F0B', description: 'QA workflow failed' }
@@ -61,7 +62,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const labels = ['qa-running', 'qa-success', 'qa-failed'];
+            const labels = ['qa-pending', 'qa-running', 'qa-success', 'qa-failed'];
             const pr_number = ${{ inputs.pr_number }};
 
             for (const label of labels) {
@@ -87,6 +88,9 @@ jobs:
             let label = '';
 
             switch(status) {
+              case 'pending':
+                label = 'qa-pending';
+                break;
               case 'running':
                 label = 'qa-running';
                 break;
