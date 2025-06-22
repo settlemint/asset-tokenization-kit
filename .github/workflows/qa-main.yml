@@ -18,3 +18,11 @@ jobs:
       fetch-depth: 2
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+  codeql:
+    name: CodeQL Analysis
+    uses: ./.github/workflows/reusable-codeql.yml
+    with:
+      language: 'javascript-typescript'
+      build-mode: 'none'
+      runs-on: 'namespace-profile-atk'
