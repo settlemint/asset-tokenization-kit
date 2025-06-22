@@ -41,9 +41,8 @@ on:
         default: "none"
       runs-on:
         description: "Runner to use for the job"
-        required: false
+        required: true
         type: string
-        default: "ubuntu-latest"
 
 permissions:
   security-events: write

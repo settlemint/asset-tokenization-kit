@@ -25,4 +25,4 @@ jobs:
     with:
       language: 'javascript-typescript'
       build-mode: 'none'
-      runs-on: 'namespace-profile-atk'
+      runs-on: 'namespace-profile-atk-services'

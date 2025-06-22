@@ -5,9 +5,8 @@ on:
     inputs:
       runs-on:
         description: 'Runner to use'
-        required: false
+        required: true
         type: string
-        default: 'namespace-profile-atk'
       fetch-depth:
         description: 'Number of commits to fetch'
         required: false

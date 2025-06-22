@@ -11,6 +11,10 @@ on:
         description: 'Status of the workflow (running, success, failure)'
         required: true
         type: string
+      runs-on:
+        description: 'Runner to use'
+        required: true
+        type: string
 
 permissions:
   pull-requests: write
@@ -19,7 +23,7 @@ permissions:
 jobs:
   label-build-status:
     name: Update Build Status Label
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     steps:
       - name: Check and create labels if needed
         uses: actions/github-script@v7

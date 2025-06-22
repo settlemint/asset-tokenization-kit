@@ -32,6 +32,7 @@ jobs:
     with:
       pr_number: ${{ github.event.pull_request.number }}
       is_draft: ${{ github.event.pull_request.draft }}
+      runs-on: namespace-profile-atk-services
 
   # Label PR as QA pending when code is pushed
   label-qa-pending:
@@ -41,6 +42,7 @@ jobs:
     with:
       pr_number: ${{ github.event.pull_request.number }}
       workflow_status: 'pending'
+      runs-on: namespace-profile-atk-services
 
   # Label PR as QA running when workflow starts
   label-qa-start:
@@ -53,6 +55,7 @@ jobs:
     with:
       pr_number: ${{ github.event.pull_request.number }}
       workflow_status: 'running'
+      runs-on: namespace-profile-atk-services
   qa:
     name: QA
     needs: label-qa-start
@@ -68,6 +71,8 @@ jobs:
   pr-labels:
     name: PR Labels
     uses: ./.github/workflows/reusable-pr-labels.yml
+    with:
+      runs-on: namespace-profile-atk-services
 
   secret-scanning:
     name: Secret Scanning
@@ -75,6 +80,7 @@ jobs:
       github.event.action == 'synchronize' || github.event.action == 'opened'
     uses: ./.github/workflows/reusable-secret-scanning.yml
     with:
+      runs-on: namespace-profile-atk-services
       trivy-config: trivy-secret.yaml
       severity: "HIGH,CRITICAL"
 
@@ -86,7 +92,7 @@ jobs:
     with:
       language: 'javascript-typescript'
       build-mode: 'none'
-      runs-on: 'namespace-profile-atk'
+      runs-on: 'namespace-profile-atk-services'
 
   # Label PR with final QA status
   label-qa-end:
@@ -99,3 +105,4 @@ jobs:
     with:
       pr_number: ${{ github.event.pull_request.number }}
       workflow_status: ${{ (needs.qa.result == 'success' && needs.secret-scanning.result != 'failure') && 'success' || 'failure' }}
+      runs-on: namespace-profile-atk-services

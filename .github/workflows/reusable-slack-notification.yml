@@ -42,9 +42,8 @@ on:
         default: "running"
       runs-on:
         description: "Runner to use for the job"
-        required: false
+        required: true
         type: string
-        default: "ubuntu-latest"
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN:
         required: true
