@@ -161,7 +161,7 @@ jobs:
         if: |
           github.event_name == 'push' ||
           (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
-        uses: namespace-actions/upload-artifact@v0
+        uses: namespace-actions/upload-artifact@v1
         with:
           name: predeployed-output
           retention-days: 1
