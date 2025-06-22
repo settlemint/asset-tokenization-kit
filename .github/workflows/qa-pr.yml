@@ -74,7 +74,7 @@ jobs:
               pull_number: ${{ github.event.pull_request.number }}
             });
             
-            const labels = pr.labels;
+            const labels = pr.labels || [];
             const pr_title = ${{ toJSON(github.event.pull_request.title) }};
             const pr_url = ${{ toJSON(github.event.pull_request.html_url) }};
             const pr_number = ${{ github.event.pull_request.number }};
@@ -83,7 +83,7 @@ jobs:
             const repoName = context.repo.repo;
 
             // Check if PR is draft
-            const isDraft = labels.some(label => label.name === 'status:draft');
+            const isDraft = Array.isArray(labels) && labels.some(label => label.name === 'status:draft');
             if (isDraft) {
               console.log('Skipping notification for draft PR');
               return;
@@ -273,7 +273,7 @@ jobs:
               pull_number: ${{ github.event.pull_request.number }}
             });
             
-            const labels = pr.labels;
+            const labels = pr.labels || [];
             const pr_title = ${{ toJSON(github.event.pull_request.title) }};
             const pr_url = ${{ toJSON(github.event.pull_request.html_url) }};
             const pr_number = ${{ github.event.pull_request.number }};
@@ -282,7 +282,7 @@ jobs:
             const repoName = context.repo.repo;
 
             // Check if PR is draft
-            const isDraft = labels.some(label => label.name === 'status:draft');
+            const isDraft = Array.isArray(labels) && labels.some(label => label.name === 'status:draft');
             if (isDraft) {
               console.log('Skipping notification for draft PR');
               return;
@@ -525,7 +525,7 @@ jobs:
               pull_number: ${{ github.event.pull_request.number }}
             });
             
-            const labels = pr.labels;
+            const labels = pr.labels || [];
             const pr_title = ${{ toJSON(github.event.pull_request.title) }};
             const pr_url = ${{ toJSON(github.event.pull_request.html_url) }};
             const pr_number = ${{ github.event.pull_request.number }};
@@ -534,7 +534,7 @@ jobs:
             const repoName = context.repo.repo;
 
             // Check if PR is draft
-            const isDraft = labels.some(label => label.name === 'status:draft');
+            const isDraft = Array.isArray(labels) && labels.some(label => label.name === 'status:draft');
             if (isDraft) {
               console.log('Skipping notification for draft PR');
               return;
@@ -803,7 +803,7 @@ jobs:
               pull_number: ${{ github.event.pull_request.number }}
             });
             
-            const labels = pr.labels;
+            const labels = pr.labels || [];
             const pr_title = ${{ toJSON(github.event.pull_request.title) }};
             const pr_url = ${{ toJSON(github.event.pull_request.html_url) }};
             const pr_number = ${{ github.event.pull_request.number }};
@@ -812,7 +812,7 @@ jobs:
             const repoName = context.repo.repo;
 
             // Check if PR is draft
-            const isDraft = labels.some(label => label.name === 'status:draft');
+            const isDraft = Array.isArray(labels) && labels.some(label => label.name === 'status:draft');
             if (isDraft) {
               console.log('Skipping notification for draft PR');
               return;
@@ -1004,7 +1004,7 @@ jobs:
               pull_number: ${{ github.event.pull_request.number }}
             });
             
-            const labels = pr.labels;
+            const labels = pr.labels || [];
             const pr_title = ${{ toJSON(github.event.pull_request.title) }};
             const pr_url = ${{ toJSON(github.event.pull_request.html_url) }};
             const pr_number = ${{ github.event.pull_request.number }};
@@ -1013,7 +1013,7 @@ jobs:
             const repoName = context.repo.repo;
 
             // Check if PR is draft
-            const isDraft = labels.some(label => label.name === 'status:draft');
+            const isDraft = Array.isArray(labels) && labels.some(label => label.name === 'status:draft');
             if (isDraft) {
               console.log('Skipping notification for draft PR');
               return;
