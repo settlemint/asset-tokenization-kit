@@ -1,18 +1,55 @@
 version: v1
 
 labels:
+  # Type labels - handles both "type:" and "type(scope):" formats
   - label: "feat"
     matcher:
-      title: "^feat:.*"
+      title: "^feat(\\(.+\\))?:.*"
   - label: "fix"
     matcher:
-      title: "^fix:.*"
+      title: "^fix(\\(.+\\))?:.*"
   - label: "chore"
     matcher:
-      title: "^chore:.*"
+      title: "^chore(\\(.+\\))?:.*"
   - label: "docs"
     matcher:
-      title: "^docs:.*"
+      title: "^docs(\\(.+\\))?:.*"
+  - label: "style"
+    matcher:
+      title: "^style(\\(.+\\))?:.*"
+  - label: "refactor"
+    matcher:
+      title: "^refactor(\\(.+\\))?:.*"
+  - label: "perf"
+    matcher:
+      title: "^perf(\\(.+\\))?:.*"
+  - label: "test"
+    matcher:
+      title: "^test(\\(.+\\))?:.*"
+  - label: "build"
+    matcher:
+      title: "^build(\\(.+\\))?:.*"
+  - label: "ci"
+    matcher:
+      title: "^ci(\\(.+\\))?:.*"
+  - label: "revert"
+    matcher:
+      title: "^revert(\\(.+\\))?:.*"
+
+  # Special case for dependencies
   - label: "dependencies"
     matcher:
-      title: "^chore(deps):.*"
+      title: "^(chore|fix|build)\\(deps\\):.*"
+
+  # Breaking changes
+  - label: "breaking"
+    matcher:
+      title: "^(feat|fix|perf|refactor|revert)\\(.+\\)?!:.*"
+  - label: "breaking"
+    matcher:
+      body: "BREAKING CHANGE:"
+
+  # Catch-all for anything else
+  - label: "chore"
+    matcher:
+      title: "^(?!(feat|fix|docs|style|refactor|perf|test|build|ci|revert)(\\(.+\\))?:).*"
