@@ -187,38 +187,73 @@ runs:
             return data;
           }
 
-          // Message blocks
+          // GitHub OG image URL construction
+          // Format: https://opengraph.githubassets.com/{hash}/{owner}/{repo}/pull/{number}
+          // We need to generate a hash to make this work
+          const ogImageUrl = `https://opengraph.githubassets.com/${Date.now()}/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
+          
+          // Message blocks using GitHub OG image
           const messageBlocks = [
             {
-              type: 'header',
-              text: {
-                type: 'plain_text',
-                text: `[#${pr_number}] ${pr_title}`,
-                emoji: false
-              }
+              type: 'image',
+              image_url: ogImageUrl,
+              alt_text: `PR #${pr_number}: ${pr_title}`
             },
             {
-              type: 'section',
-              fields: [
+              type: 'actions',
+              elements: [
                 {
-                  type: 'mrkdwn',
-                  text: `*Author*\n${pr_author}`
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'View PR',
+                    emoji: false
+                  },
+                  url: pr_url,
+                  style: 'primary'
                 },
                 {
-                  type: 'mrkdwn',
-                  text: `*Repository*\n${repoName}`
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'Files Changed',
+                    emoji: false
+                  },
+                  url: `${pr_url}/files`
+                },
+                {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'Checks',
+                    emoji: false
+                  },
+                  url: `${pr_url}/checks`
                 }
-              ],
-              accessory: {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: 'View PR',
-                  emoji: false
+              ]
+            },
+            {
+              type: 'actions',
+              elements: [
+                {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'Commits',
+                    emoji: false
+                  },
+                  url: `${pr_url}/commits`
                 },
-                url: pr_url,
-                style: 'primary'
-              }
+                {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'Add Review',
+                    emoji: false
+                  },
+                  url: `${pr_url}#pullrequestreview-new_comment_form`
+                }
+              ]
             }
           ];
 
