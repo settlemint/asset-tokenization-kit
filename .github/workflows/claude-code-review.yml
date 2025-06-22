@@ -17,11 +17,12 @@ on:
 
 jobs:
   claude-review:
-    # Skip draft PRs and WIP
+    # Skip draft PRs, WIP, and bot users
     if: |
       !github.event.pull_request.draft &&
       !contains(github.event.pull_request.title, '[WIP]') &&
-      !contains(github.event.pull_request.title, '[skip-review]')
+      !contains(github.event.pull_request.title, '[skip-review]') &&
+      github.event.pull_request.user.type != 'Bot'
 
     runs-on: namespace-profile-atk
     permissions:

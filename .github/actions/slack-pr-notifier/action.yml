@@ -13,6 +13,10 @@ inputs:
   pr_author:
     description: "Pull request author"
     required: true
+  pr_author_type:
+    description: "Pull request author type (User or Bot)"
+    required: false
+    default: "User"
   pr_author_avatar:
     description: "Pull request author avatar URL"
     required: true
@@ -53,6 +57,7 @@ runs:
           const pr_url = ${{ toJSON(inputs.pr_url) }};
           const pr_number = ${{ inputs.pr_number }};
           const pr_author = ${{ toJSON(inputs.pr_author) }};
+          const pr_author_type = '${{ inputs.pr_author_type }}';
           const author_avatar = ${{ toJSON(inputs.pr_author_avatar) }};
           const update_message = '${{ inputs.update_message }}' === 'true';
 
@@ -60,9 +65,8 @@ runs:
           const repoName = context.repo.repo;
 
           // Check if PR is from a bot
-          const isBot = pr_author.endsWith('[bot]');
-          if (isBot) {
-            console.log('Skipping notification for bot PR');
+          if (pr_author_type === 'Bot') {
+            console.log(`Skipping notification for bot PR from ${pr_author}`);
             return;
           }
 
