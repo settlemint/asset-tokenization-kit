@@ -187,10 +187,13 @@ runs:
             return data;
           }
 
-          // GitHub OG image URL construction
-          // Format: https://opengraph.githubassets.com/{hash}/{owner}/{repo}/pull/{number}
-          // We need to generate a hash to make this work
-          const ogImageUrl = `https://opengraph.githubassets.com/${Date.now()}/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
+          // GitHub OG image URL construction with cache busting
+          // Use a combination of timestamp and QA state to force refresh when runs start
+          const qaRunning = labels.some(l => l.name === 'qa:running');
+          const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
+          const ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
+          
+          console.log(`Using OG image URL with cache key: ${cacheKey}`);
           
           // Message blocks using GitHub OG image
           const messageBlocks = [
@@ -216,7 +219,7 @@ runs:
                   type: 'button',
                   text: {
                     type: 'plain_text',
-                    text: 'Files Changed',
+                    text: 'Files',
                     emoji: false
                   },
                   url: `${pr_url}/files`
@@ -229,12 +232,7 @@ runs:
                     emoji: false
                   },
                   url: `${pr_url}/checks`
-                }
-              ]
-            },
-            {
-              type: 'actions',
-              elements: [
+                },
                 {
                   type: 'button',
                   text: {
@@ -248,7 +246,7 @@ runs:
                   type: 'button',
                   text: {
                     type: 'plain_text',
-                    text: 'Add Review',
+                    text: 'Review',
                     emoji: false
                   },
                   url: `${pr_url}#pullrequestreview-new_comment_form`
