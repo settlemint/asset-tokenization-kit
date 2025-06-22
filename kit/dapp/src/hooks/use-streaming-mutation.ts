@@ -135,7 +135,8 @@ export function useStreamingMutation<
             case "failed":
               toast.error(message || "Failed", {
                 id: toastIdRef.current,
-                duration: 5000,
+                duration: 10000, // Longer duration for failed operations
+                description: "Check browser console for error details"
               });
               throw new Error(message || "Operation failed");
           }
@@ -149,8 +150,28 @@ export function useStreamingMutation<
 
         return finalResult;
       } catch (error) {
-        const errorMessage = formatValidationError(error);
-        toast.error(errorMessage, { id: toastIdRef.current });
+        let errorMessage = formatValidationError(error);
+        
+        // Extract detailed error information from ORPC errors
+        if (error instanceof Error && 'cause' in error && error.cause instanceof Error) {
+          errorMessage = `${errorMessage}\n\nDetails: ${error.cause.message}`;
+        }
+        
+        // Show error with longer duration for debugging
+        toast.error(errorMessage, { 
+          id: toastIdRef.current,
+          duration: 10000, // 10 seconds to allow time to read detailed errors
+          description: "Check browser console for full error details"
+        });
+        
+        // Log full error details to console for debugging
+        console.error("Streaming mutation error:", {
+          message: errorMessage,
+          error,
+          cause: error instanceof Error ? error.cause : undefined,
+          stack: error instanceof Error ? error.stack : undefined
+        });
+        
         throw error;
       } finally {
         setIsTracking(false);

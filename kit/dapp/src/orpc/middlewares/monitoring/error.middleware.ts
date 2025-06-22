@@ -226,12 +226,14 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
 
     // Handle other ORPC errors
     if (error instanceof ORPCError) {
-      // Log the error for debugging
+      // Log the error for debugging with full context
       logger.error("ORPC error", {
         code: error.code,
         status: error.status,
         message: error.message || `Request failed with status ${error.code}`,
         cause: error.cause instanceof Error ? error.cause.message : error.cause,
+        stack: error.cause instanceof Error ? error.cause.stack : undefined,
+        data: error.data,
       });
 
       // Ensure the error has a meaningful message
@@ -240,6 +242,17 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
           status: error.status,
           message: `Request failed with status ${error.code}`,
           cause: error.cause ?? error,
+          data: error.data,
+        });
+      }
+
+      // Include cause information in the error for debugging
+      if (error.cause instanceof Error) {
+        throw new ORPCError(error.code, {
+          status: error.status,
+          message: error.message,
+          cause: error.cause,
+          data: error.data,
         });
       }
 
