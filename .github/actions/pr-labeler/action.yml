@@ -114,18 +114,18 @@ runs:
           
           const labelsToAdd = [];
           
-          // Check conventional commit type from title
-          const typeMatch = pr_title.match(/^(feat|fix|docs|style|refactor|perf|test|build|ci|revert)(\(.+\))?:/);
-          if (typeMatch) {
-            labelsToAdd.push(typeMatch[1]);
-          } else {
-            // If no conventional commit format, add chore
-            labelsToAdd.push('chore');
-          }
-          
-          // Check for dependencies
+          // Check for dependencies first (takes precedence)
           if (pr_title.match(/^(chore|fix|build)\(deps\):/)) {
             labelsToAdd.push('dependencies');
+          } else {
+            // Check conventional commit type from title
+            const typeMatch = pr_title.match(/^(feat|fix|docs|style|refactor|perf|test|build|ci|revert)(\(.+\))?:/);
+            if (typeMatch) {
+              labelsToAdd.push(typeMatch[1]);
+            } else {
+              // If no conventional commit format, add chore
+              labelsToAdd.push('chore');
+            }
           }
           
           // Check for breaking changes
