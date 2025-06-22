@@ -200,6 +200,16 @@ runs:
                 text: {
                   type: 'mrkdwn',
                   text: `:tada: ${pr_title}`
+                },
+                accessory: {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'View PR',
+                    emoji: false
+                  },
+                  url: pr_url,
+                  style: 'primary'
                 }
               }
             ];
@@ -285,11 +295,39 @@ runs:
               // Store timestamp
               if (result.ts) {
                 console.log(`Storing Slack timestamp ${result.ts} as PR comment`);
+                
+                // Get Slack workspace info for the permalink
+                let permalink = '';
+                try {
+                  const messageTs = result.ts.replace('.', '');
+                  // Note: This requires the Slack workspace URL to be configured
+                  // For now, we'll include instructions on how to find the message
+                  permalink = `To view this PR in Slack, search for message timestamp: ${result.ts}`;
+                } catch (e) {
+                  console.log('Could not generate Slack permalink:', e.message);
+                }
+                
+                const commentBody = [
+                  `<!-- slack-ts:${result.ts} -->`,
+                  `This pull request is being tracked in Slack.`,
+                  ``,
+                  permalink,
+                  ``,
+                  `<details>`,
+                  `<summary>Slack Message Details</summary>`,
+                  ``,
+                  `- **Channel ID**: ${process.env.SLACK_CHANNEL_ID}`,
+                  `- **Message Timestamp**: ${result.ts}`,
+                  `- **PR Number**: #${pr_number}`,
+                  ``,
+                  `</details>`
+                ].join('\n');
+                
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: pr_number,
-                  body: `<!-- slack-ts:${result.ts} -->`
+                  body: commentBody
                 });
                 slackTs = result.ts;
                 console.log('Successfully stored Slack timestamp');
@@ -337,23 +375,33 @@ runs:
               // STRICT SYNC: Only show reactions that have corresponding labels
               // This ensures 100% sync between labels and reactions
               
-              // Step 1: Determine ALL reactions that should be removed
-              // Remove any reaction that doesn't have a corresponding label
-              const reactionsToRemove = existingReactions.filter(reaction => {
-                // Check if this is a managed reaction
-                if (!allStatusReactions.includes(reaction)) {
-                  return false; // Don't remove reactions we don't manage
-                }
-                
-                // Check if this reaction has a corresponding current label
-                return !filteredStatuses.includes(reaction);
-              });
+              let reactionsToRemove, reactionsToAdd;
               
-              // Step 2: Determine what reactions need to be added
-              // Only add reactions that correspond to current labels and aren't already present
-              const reactionsToAdd = filteredStatuses.filter(reaction => 
-                !existingReactions.includes(reaction)
-              );
+              if (isMerged) {
+                // For merged PRs, remove ALL managed reactions
+                reactionsToRemove = existingReactions.filter(reaction => 
+                  allStatusReactions.includes(reaction)
+                );
+                reactionsToAdd = [];
+              } else {
+                // Step 1: Determine ALL reactions that should be removed
+                // Remove any reaction that doesn't have a corresponding label
+                reactionsToRemove = existingReactions.filter(reaction => {
+                  // Check if this is a managed reaction
+                  if (!allStatusReactions.includes(reaction)) {
+                    return false; // Don't remove reactions we don't manage
+                  }
+                  
+                  // Check if this reaction has a corresponding current label
+                  return !filteredStatuses.includes(reaction);
+                });
+                
+                // Step 2: Determine what reactions need to be added
+                // Only add reactions that correspond to current labels and aren't already present
+                reactionsToAdd = filteredStatuses.filter(reaction => 
+                  !existingReactions.includes(reaction)
+                );
+              }
               
               console.log('Current label-based reactions:', filteredStatuses);
               console.log('Existing reactions:', existingReactions);
