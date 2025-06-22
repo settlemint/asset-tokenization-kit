@@ -1,56 +1,139 @@
-You are an expert in prompt engineering, specializing in optimizing AI code assistant instructions. Your task is to analyze and improve the instructions for Claude Code.
-Follow these steps carefully:
+# Reflection: Analyze and Improve Claude Code Configuration
 
-1. Analysis Phase:
-Review the chat history in your context window.
+## Purpose
+Systematically analyze recent interactions and improve Claude Code's configuration, commands, and instructions based on observed patterns and issues.
 
-Then, examine the current Claude instructions, commands and config
-<claude_instructions>
-/CLAUDE.md
-/.claude/commands/*
-**/CLAUDE.md
-.claude/settings.json
-.claude/settings.local.json
-</claude_instructions>
+## Analysis Framework
 
-Analyze the chat history, instructions, commands and config to identify areas that could be improved. Look for:
-- Inconsistencies in Claude's responses
-- Misunderstandings of user requests
-- Areas where Claude could provide more detailed or accurate information
-- Opportunities to enhance Claude's ability to handle specific types of queries or tasks
-- New commands or improvements to a commands name, function or response
-- Permissions and MCPs we've approved locally that we should add to the config, especially if we've added new tools or require them for the command to work
+### Phase 1: Data Collection
+Review these sources in order:
+1. **Recent Chat History** - Identify patterns, mistakes, misunderstandings
+2. **Configuration Files**:
+   ```
+   CLAUDE.md                    # Project-specific instructions
+   .claude/commands/*           # Command definitions
+   .claude/settings.json        # Global settings
+   .claude/settings.local.json  # Local overrides
+   .cursor/rules/*.mdc          # Cursor-specific rules
+   ```
 
-2. Interaction Phase:
-Present your findings and improvement ideas to the human. For each suggestion:
-a) Explain the current issue you've identified
-b) Propose a specific change or addition to the instructions
-c) Describe how this change would improve Claude's performance
+### Phase 2: Pattern Recognition
+Look for these improvement opportunities:
 
-Wait for feedback from the human on each suggestion before proceeding. If the human approves a change, move it to the implementation phase. If not, refine your suggestion or move on to the next idea.
+#### Response Quality Issues
+- [ ] Overly verbose responses when brevity needed
+- [ ] Missing important context or details
+- [ ] Incorrect tool usage patterns
+- [ ] Repeated mistakes or misunderstandings
 
-3. Implementation Phase:
-For each approved change:
-a) Clearly state the section of the instructions you're modifying
-b) Present the new or modified text for that section
-c) Explain how this change addresses the issue identified in the analysis phase
+#### Configuration Gaps
+- [ ] Missing MCP (Model Context Protocol) tools that were needed
+- [ ] Commands that could be more efficient
+- [ ] Instructions that contradict each other
+- [ ] Missing project-specific guidance
 
-4. Output Format:
-Present your final output in the following structure:
+#### Workflow Inefficiencies
+- [ ] Repetitive tasks that could be automated
+- [ ] Multi-step processes that could be streamlined
+- [ ] Common errors that could be prevented
 
-<analysis>
-[List the issues identified and potential improvements]
-</analysis>
+### Phase 3: Solution Design
 
-<improvements>
-[For each approved improvement:
-1. Section being modified
-2. New or modified instruction text
-3. Explanation of how this addresses the identified issue]
-</improvements>
+For each identified issue, create an improvement proposal:
 
-<final_instructions>
-[Present the complete, updated set of instructions for Claude, incorporating all approved changes]
-</final_instructions>
+```markdown
+## Issue: [Brief description]
+**Observed**: What happened that was suboptimal
+**Root Cause**: Why this occurred
+**Proposed Fix**: Specific change to make
+**Expected Outcome**: How this improves performance
+```
 
-Remember, your goal is to enhance Claude's performance and consistency while maintaining the core functionality and purpose of the AI assistant. Be thorough in your analysis, clear in your explanations, and precise in your implementations.
+### Phase 4: Implementation Plan
+
+Prioritize changes by impact and ease:
+1. **Quick Wins** - Simple config updates, clarifications
+2. **New Commands** - Add commands for common workflows
+3. **Structural Changes** - Reorganize instructions for clarity
+4. **Tool Additions** - New MCP tools or permissions
+
+### Phase 5: User Collaboration
+
+Present findings in this format:
+
+```markdown
+# Configuration Improvement Report
+
+## Executive Summary
+[2-3 sentences on main findings]
+
+## Identified Issues
+1. **[Issue Name]**
+   - Current behavior: ...
+   - Proposed improvement: ...
+   - Files to modify: ...
+
+## Recommended Changes
+### High Priority
+- [ ] Change 1: [description]
+- [ ] Change 2: [description]
+
+### Medium Priority
+- [ ] Change 3: [description]
+
+### Nice to Have
+- [ ] Change 4: [description]
+
+## Implementation Order
+1. First implement: [change] because [reason]
+2. Then: [change] to build on previous
+3. Finally: [change] for polish
+```
+
+## Example Improvements
+
+### Better Brevity Control
+```markdown
+// In CLAUDE.md, add:
+## Response Length Guidelines
+- For simple questions: 1-3 sentences max
+- For code generation: Code + 1 line explanation
+- For debugging: Problem + solution + verification step
+- Use bullet points over paragraphs
+```
+
+### New Utility Command
+```markdown
+// In .claude/commands/deps.md:
+# Update Dependencies Safely
+1. Check for outdated: `bunx npm-check-updates`
+2. Update minor/patch: `bun update`
+3. Test thoroughly: `bun run ci`
+4. Update major versions individually with testing
+```
+
+### MCP Tool Addition
+```json
+// In .claude/settings.json:
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "token"
+      }
+    }
+  }
+}
+```
+
+## Success Metrics
+- Fewer clarifying questions needed
+- Reduced error rates in common tasks
+- Faster task completion
+- More consistent responses
+- Better adherence to project standards
+
+## Remember
+The goal is continuous improvement. Small, incremental changes are better than large overhauls. Always test changes in isolation before applying broadly.
