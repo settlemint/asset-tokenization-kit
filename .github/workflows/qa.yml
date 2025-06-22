@@ -63,20 +63,42 @@ jobs:
           PAT_TOKEN: op://platform/github-commit-pat/credential
           NPM_TOKEN: op://platform/npmjs/credential
 
-      # Label QA as running and notify Slack (only for non-draft PRs)
-      - name: Label QA as running
+      # Initial labeling and QA status update
+      - name: Initial PR labeling
         if: |
           github.event_name == 'pull_request' &&
-          github.event.pull_request.draft == false
-        uses: ./.github/actions/build-status-labeler
+          (github.event.action == 'opened' || github.event.action == 'reopened')
+        uses: ./.github/actions/unified-pr-labeler
         with:
           pr_number: ${{ github.event.pull_request.number }}
-          workflow_status: 'running'
+          pr_title: ${{ github.event.pull_request.title }}
+          pr_body: ${{ github.event.pull_request.body || '' }}
+          pr_author: ${{ github.event.pull_request.user.login }}
+          pr_author_type: ${{ github.event.pull_request.user.type }}
+          is_draft: ${{ github.event.pull_request.draft }}
+          qa_status: 'running'
+          update_type: 'initial'
 
-      - name: Send Slack notification for QA running
+      - name: Update QA status to running
         if: |
           github.event_name == 'pull_request' &&
-          github.event.pull_request.draft == false
+          github.event.pull_request.draft == false &&
+          !(github.event.action == 'opened' || github.event.action == 'reopened')
+        uses: ./.github/actions/unified-pr-labeler
+        with:
+          pr_number: ${{ github.event.pull_request.number }}
+          pr_title: ${{ github.event.pull_request.title }}
+          pr_author: ${{ github.event.pull_request.user.login }}
+          is_draft: ${{ github.event.pull_request.draft }}
+          qa_status: 'running'
+          update_type: 'qa-status'
+
+      # Create initial Slack notification only on PR open/reopen
+      - name: Send initial Slack notification
+        if: |
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.draft == false &&
+          (github.event.action == 'opened' || github.event.action == 'reopened')
         uses: ./.github/actions/slack-pr-notifier
         with:
           pr_number: ${{ github.event.pull_request.number }}
@@ -174,60 +196,26 @@ jobs:
             kit/subgraph/.generated/subgraph-env
             kit/dapp/.generated/database-export.sql
 
-      # Label QA results (PR only)
-      - name: Label QA build status
+      # Update QA results
+      - name: Update QA status
         if: |
           always() &&
           github.event_name == 'pull_request' &&
           steps.qa-tests.conclusion != 'skipped'
-        uses: ./.github/actions/build-status-labeler
-        with:
-          pr_number: ${{ github.event.pull_request.number }}
-          workflow_status: ${{ steps.qa-tests.outcome == 'success' && 'success' || 'failure' }}
-
-      - name: Send Slack notification for QA status
-        if: |
-          always() &&
-          github.event_name == 'pull_request' &&
-          steps.qa-tests.conclusion != 'skipped'
-        uses: ./.github/actions/slack-pr-notifier
+        uses: ./.github/actions/unified-pr-labeler
         with:
           pr_number: ${{ github.event.pull_request.number }}
           pr_title: ${{ github.event.pull_request.title }}
-          pr_url: ${{ github.event.pull_request.html_url }}
           pr_author: ${{ github.event.pull_request.user.login }}
-          pr_author_type: ${{ github.event.pull_request.user.type }}
-          pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
-          slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
-          slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
+          is_draft: ${{ github.event.pull_request.draft }}
+          qa_status: ${{ steps.qa-tests.outcome == 'success' && 'success' || 'failed' }}
+          update_type: 'qa-status'
 
-      # Label PR based on title/branch (PR only)
-      - name: Label PR based on convention
-        id: label-pr
-        if: |
-          github.event_name == 'pull_request' &&
-          (github.event.action == 'opened' || github.event.action == 'synchronize')
-        uses: ./.github/actions/pr-labeler
-        with:
-          pr_number: ${{ github.event.pull_request.number }}
-          pr_title: ${{ github.event.pull_request.title }}
-          pr_body: ${{ github.event.pull_request.body || '' }}
+      # Slack notification is handled by the initial notification which updates automatically
 
-      - name: Send Slack notification for PR labels
-        if: |
-          always() &&
-          steps.label-pr.conclusion == 'success' &&
-          github.event_name == 'pull_request'
-        uses: ./.github/actions/slack-pr-notifier
-        with:
-          pr_number: ${{ github.event.pull_request.number }}
-          pr_title: ${{ github.event.pull_request.title }}
-          pr_url: ${{ github.event.pull_request.html_url }}
-          pr_author: ${{ github.event.pull_request.user.login }}
-          pr_author_type: ${{ github.event.pull_request.user.type }}
-          pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
-          slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
-          slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
+      # Conventional commit labels are handled by initial labeling
+
+      # PR label notifications handled by the initial notification
 
       # Run secret scanning (PR only)
       - name: Run secret scanning
@@ -236,33 +224,9 @@ jobs:
         uses: ./.github/actions/secret-scanner
         continue-on-error: true
 
-      # Label secret scanning results (PR only)
-      - name: Label secret scanning status
-        if: |
-          always() &&
-          github.event_name == 'pull_request' &&
-          steps.secret-scan.conclusion != 'skipped'
-        uses: ./.github/actions/build-status-labeler
-        with:
-          pr_number: ${{ github.event.pull_request.number }}
-          workflow_status: ${{ steps.secret-scan.outcome == 'success' && 'success' || 'failure' }}
+      # Secret scanning status is tracked separately, not in labels
 
-      - name: Send Slack notification for secret scanning
-        if: |
-          always() &&
-          github.event_name == 'pull_request' &&
-          steps.secret-scan.conclusion != 'skipped' &&
-          github.event.pull_request.user.type != 'Bot'
-        uses: ./.github/actions/slack-pr-notifier
-        with:
-          pr_number: ${{ github.event.pull_request.number }}
-          pr_title: ${{ github.event.pull_request.title }}
-          pr_url: ${{ github.event.pull_request.html_url }}
-          pr_author: ${{ github.event.pull_request.user.login }}
-          pr_author_type: ${{ github.event.pull_request.user.type }}
-          pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
-          slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
-          slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
+      # Secret scanning notifications handled by the initial notification
 
       # Check PR review status (PR and PR review events only)
       - name: Check PR review status
@@ -278,34 +242,23 @@ jobs:
           qa_result: ${{ steps.qa-tests.outcome }}
           secret_scanning_result: ${{ steps.secret-scan.outcome }}
 
-      # Apply final PR status label (PR and PR review events only)
-      - name: Label PR final status
-        id: label-final-status
+      # Update final PR status
+      - name: Update PR status
+        id: update-pr-status
         if: |
           always() &&
           (github.event_name == 'pull_request' || github.event_name == 'pull_request_review')
-        uses: ./.github/actions/pr-status-labeler
-        with:
-          pr_number: ${{ github.event.pull_request.number }}
-          is_draft: ${{ github.event.pull_request.draft }}
-          has_approval: ${{ steps.pr-review-check.outputs.has_approval == 'true' }}
-          qa_status: ${{ steps.pr-review-check.outputs.qa_status }}
-
-      - name: Send Slack notification for final status
-        if: |
-          always() &&
-          steps.label-final-status.conclusion == 'success' &&
-          (github.event_name == 'pull_request' || github.event_name == 'pull_request_review')
-        uses: ./.github/actions/slack-pr-notifier
+        uses: ./.github/actions/unified-pr-labeler
         with:
           pr_number: ${{ github.event.pull_request.number }}
           pr_title: ${{ github.event.pull_request.title }}
-          pr_url: ${{ github.event.pull_request.html_url }}
           pr_author: ${{ github.event.pull_request.user.login }}
-          pr_author_type: ${{ github.event.pull_request.user.type }}
-          pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
-          slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
-          slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
+          is_draft: ${{ github.event.pull_request.draft }}
+          qa_status: ${{ steps.pr-review-check.outputs.qa_status }}
+          has_approval: ${{ steps.pr-review-check.outputs.has_approval == 'true' }}
+          update_type: 'review-status'
+
+      # Final status update handled automatically when labels change
 
       # Manage auto-merge (PR and PR review events only)
       - name: Manage auto-merge
@@ -353,11 +306,13 @@ jobs:
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
 
       - name: Label PR as merged
-        uses: ./.github/actions/pr-status-labeler
+        uses: ./.github/actions/unified-pr-labeler
         with:
           pr_number: ${{ github.event.pull_request.number }}
-          is_draft: false
+          pr_title: ${{ github.event.pull_request.title }}
+          pr_author: ${{ github.event.pull_request.user.login }}
           is_merged: true
+          update_type: 'merged'
 
       - name: Update Slack notification for merged PR
         uses: ./.github/actions/slack-pr-notifier
