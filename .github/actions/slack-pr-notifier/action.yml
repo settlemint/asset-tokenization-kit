@@ -268,43 +268,55 @@ runs:
                 // Continue anyway - we'll handle errors when adding/removing
               }
 
-              // Smart reaction management to avoid flickering
-              // First, determine what needs to change
+              // Smart reaction management
               const reactionsToAdd = [];
-              const reactionsToRemove = [];
+              let reactionsToRemove = [];
               
-              // For each desired reaction, check if we need to add it
-              for (const desiredReaction of currentStatuses) {
-                if (!existingReactions.includes(desiredReaction)) {
-                  reactionsToAdd.push(desiredReaction);
+              // SPECIAL CASE: When QA is starting (running), clear ALL managed reactions first
+              if (selectedQaLabel === 'qa:running') {
+                console.log('QA is starting - clearing ALL managed reactions');
+                // Remove all reactions that we manage
+                reactionsToRemove = existingReactions.filter(r => allStatusReactions.includes(r));
+              } else {
+                // Normal case: selective removal
+                // For each desired reaction, check if we need to add it
+                for (const desiredReaction of currentStatuses) {
+                  if (!existingReactions.includes(desiredReaction)) {
+                    reactionsToAdd.push(desiredReaction);
+                  }
                 }
-              }
-              
-              // Aggressive cleanup: Remove ALL reactions from exclusive groups first
-              // This ensures we don't have multiple QA reactions showing
-              for (const existingReaction of existingReactions) {
-                // Check if this reaction belongs to any exclusive group
-                for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
-                  if (groupReactions.includes(existingReaction)) {
-                    // If we want a reaction from this group, only remove if it's different
-                    const desiredFromGroup = currentStatuses.find(r => groupReactions.includes(r));
-                    if (!desiredFromGroup || existingReaction !== desiredFromGroup) {
-                      if (!reactionsToRemove.includes(existingReaction)) {
-                        reactionsToRemove.push(existingReaction);
+                
+                // Aggressive cleanup: Remove ALL reactions from exclusive groups first
+                // This ensures we don't have multiple QA reactions showing
+                for (const existingReaction of existingReactions) {
+                  // Check if this reaction belongs to any exclusive group
+                  for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                    if (groupReactions.includes(existingReaction)) {
+                      // If we want a reaction from this group, only remove if it's different
+                      const desiredFromGroup = currentStatuses.find(r => groupReactions.includes(r));
+                      if (!desiredFromGroup || existingReaction !== desiredFromGroup) {
+                        if (!reactionsToRemove.includes(existingReaction)) {
+                          reactionsToRemove.push(existingReaction);
+                        }
                       }
+                    }
+                  }
+                }
+                
+                // Special handling: If QA is pending, ensure no status reactions
+                const qaInProgress = selectedQaLabel === 'qa:pending';
+                if (qaInProgress) {
+                  for (const statusReaction of exclusiveGroups.status) {
+                    if (existingReactions.includes(statusReaction) && !reactionsToRemove.includes(statusReaction)) {
+                      reactionsToRemove.push(statusReaction);
                     }
                   }
                 }
               }
               
-              // Special handling: If QA is running/pending, ensure no status reactions
-              const qaInProgress = selectedQaLabel === 'qa:running' || selectedQaLabel === 'qa:pending';
-              if (qaInProgress) {
-                for (const statusReaction of exclusiveGroups.status) {
-                  if (existingReactions.includes(statusReaction) && !reactionsToRemove.includes(statusReaction)) {
-                    reactionsToRemove.push(statusReaction);
-                  }
-                }
+              // If QA is running and we're clearing all, we still need to add the runner
+              if (selectedQaLabel === 'qa:running') {
+                reactionsToAdd.push('runner');
               }
               
               console.log('Reactions to remove:', reactionsToRemove);
