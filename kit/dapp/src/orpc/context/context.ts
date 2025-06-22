@@ -66,20 +66,43 @@ export interface Context {
 
   /**
    * The Graph client instance for querying blockchain data.
-   * Injected by theGraphMiddleware with built-in validation for all queries.
-   * All queries require Zod schema validation.
-   * @optional
-   * @see {@link @/orpc/middlewares/services/the-graph.middleware} - The Graph middleware
+   * 
+   * This is a validated wrapper around the base The Graph client that enforces
+   * runtime type safety through Zod schema validation. The ValidatedTheGraphClient
+   * type ensures that:
+   * - All query results are validated against provided Zod schemas
+   * - Type inference works seamlessly from schema to result type
+   * - Runtime errors are caught early with descriptive validation messages
+   * - The client maintains full compatibility with the underlying GraphQL operations
+   * 
+   * Injected by theGraphMiddleware when a procedure requires blockchain data access.
+   * 
+   * @optional - Only available in procedures that use theGraphMiddleware
+   * @see {@link @/orpc/middlewares/services/the-graph.middleware} - The Graph middleware implementation
+   * @see {@link ValidatedTheGraphClient} - Type definition with validation methods
    */
   theGraphClient?: ValidatedTheGraphClient;
 
   /**
    * Portal client instance for interacting with the SettleMint Portal API.
-   * Injected by portalMiddleware with built-in validation:
-   * - Mutations automatically extract and validate transaction hashes
-   * - Queries require Zod schema validation
-   * @optional
-   * @see {@link @/orpc/middlewares/services/portal.middleware} - Portal middleware
+   * 
+   * This validated client wrapper enhances the base Portal client with automatic
+   * validation and type safety features. The ValidatedPortalClient type provides:
+   * - Automatic transaction hash extraction and validation for mutations
+   * - Required Zod schema validation for all query operations
+   * - Type-safe error handling with descriptive validation messages
+   * - Seamless integration with the Portal GraphQL schema
+   * 
+   * The validation layer ensures that:
+   * - Mutation results containing transaction hashes are properly typed
+   * - Query results match expected schemas at runtime
+   * - Invalid API responses are caught before they can cause downstream errors
+   * 
+   * Injected by portalMiddleware when a procedure needs Portal API access.
+   * 
+   * @optional - Only available in procedures that use portalMiddleware
+   * @see {@link @/orpc/middlewares/services/portal.middleware} - Portal middleware implementation
+   * @see {@link ValidatedPortalClient} - Type definition with validation methods
    */
   portalClient?: ValidatedPortalClient;
 

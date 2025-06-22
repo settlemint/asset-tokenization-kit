@@ -57,7 +57,9 @@ export const read = onboardedRouter.account.read
   .handler(async ({ input, context, errors }) => {
     const { wallet } = input;
 
-    // Define response schema
+    // Define response schema for type-safe GraphQL validation
+    // Using Zod for runtime validation with automatic TypeScript type inference
+    // The nullable modifier handles cases where the account doesn't exist
     const AccountResponseSchema = z.object({
       account: z
         .object({
@@ -66,7 +68,8 @@ export const read = onboardedRouter.account.read
         .nullable(),
     });
 
-    // Execute TheGraph query with pagination and sorting parameters
+    // Execute TheGraph query with type-safe parameters
+    // The Zod schema ensures type safety at both compile-time and runtime
     const result = await context.theGraphClient.query(
       READ_ACCOUNT_QUERY,
       {
@@ -84,6 +87,7 @@ export const read = onboardedRouter.account.read
 
     // Return the account with basic information only
     // Country and claims data not available in current subgraph schema
+    // TypeScript ensures the return type matches AccountReadOutput interface
     return {
       id: result.account.id,
       country: undefined,

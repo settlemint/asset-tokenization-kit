@@ -59,15 +59,18 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
 export const list = authRouter.system.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    // TODO: Not happy about this
+    // TODO: Not happy about this - would prefer input validation at schema level
     // Extract and validate pagination parameters from the request
+    // Using nullish coalescing for type-safe default values
     const { offset, limit, orderDirection } = input ?? {
       offset: 0,
       limit: 20,
       orderDirection: "asc",
     };
 
-    // Define response schema
+    // Define response schema for type-safe GraphQL response validation
+    // Zod schema provides both runtime validation and TypeScript type inference
+    // This ensures the data structure matches our expectations before usage
     const SystemsResponseSchema = z.object({
       systems: z.array(
         z.object({
@@ -76,7 +79,9 @@ export const list = authRouter.system.list
       ),
     });
 
-    // Execute TheGraph query with pagination and sorting parameters
+    // Execute TheGraph query with type-safe pagination and sorting parameters
+    // The Zod schema validates the response and provides proper TypeScript types
+    // This eliminates the need for manual type assertions or runtime errors from malformed data
     const result = await context.theGraphClient.query(
       LIST_SYSTEM_QUERY,
       {

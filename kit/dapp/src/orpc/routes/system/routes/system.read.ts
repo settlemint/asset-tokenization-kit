@@ -74,7 +74,9 @@ export const read = onboardedRouter.system.read
   .handler(async ({ input, context, errors }) => {
     const { id } = input;
 
-    // Define response schema
+    // Define response schema for type-safe validation
+    // This Zod schema ensures the GraphQL response matches our expected structure
+    // and provides compile-time type inference for the validated data
     const SystemResponseSchema = z.object({
       system: z
         .object({
@@ -95,7 +97,8 @@ export const read = onboardedRouter.system.read
         .nullable(),
     });
 
-    // Query system details from TheGraph
+    // Query system details from TheGraph with type-safe validation
+    // The Zod schema validates the response at runtime and infers the TypeScript type
     const result = await context.theGraphClient.query(
       SYSTEM_DETAILS_QUERY,
       {
@@ -112,14 +115,16 @@ export const read = onboardedRouter.system.read
       });
     }
 
-    // Transform and return the data
+    // Transform and return the data with proper type casting
+    // The EthereumAddress type assertions ensure type safety for blockchain addresses
+    // The factory mapping no longer needs explicit type annotations thanks to Zod inference
     const output: SystemReadOutput = {
       id: result.system.id as EthereumAddress,
       tokenFactoryRegistry: result.system.tokenFactoryRegistry
         ?.id as EthereumAddress,
       tokenFactories:
         result.system.tokenFactoryRegistry?.tokenFactories.map(
-          (factory: { id: string; name: string; typeId: string }) => ({
+          (factory) => ({
             id: factory.id as EthereumAddress,
             name: factory.name,
             typeId: factory.typeId,

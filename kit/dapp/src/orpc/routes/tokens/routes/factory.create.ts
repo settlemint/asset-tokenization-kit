@@ -1,18 +1,21 @@
 /**
  * Token Factory Creation Handler
  *
- * This handler creates token factory contracts through the ATKSystemImplementation.
+ * This handler creates token factory contracts through the ATKSystemImplementation
+ * using an async generator pattern for real-time transaction tracking and batch progress.
  * It supports creating factories for different asset types (bond, equity, fund,
- * stablecoin, deposit) either individually or in batch.
+ * stablecoin, deposit) either individually or in batch with live progress updates.
  *
  * The handler performs the following operations:
  * 1. Validates user authentication and authorization
  * 2. Processes factory creation requests (single or batch)
- * 3. Executes transactions via Portal GraphQL
- * 4. Tracks transaction status and returns factory addresses
+ * 3. Executes transactions via Portal GraphQL with real-time tracking
+ * 4. Yields progress events for each factory creation
+ * 5. Returns a summary of all created factories
  *
+ * @generator Yields progress events during factory creation
  * @see {@link ./factory.create.schema} - Input validation schema
- * @see {@link @/orpc/helpers/transactions} - Transaction tracking
+ * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
@@ -60,40 +63,57 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
 `);
 
 /**
- * Creates token factory contracts.
+ * Creates token factory contracts using async iteration for progress tracking.
+ *
+ * This handler uses a generator pattern to yield real-time progress updates during
+ * factory creation, supporting both single and batch operations with detailed status
+ * for each factory being created.
  *
  * @auth Required - User must be authenticated
- * @middleware portalMiddleware - Provides Portal GraphQL client
+ * @middleware portalMiddleware - Provides Portal GraphQL client with transaction tracking
+ * @middleware theGraphMiddleware - Provides TheGraph client
  *
  * @param input.contract - The system contract address (defaults to standard address)
  * @param input.factories - Single factory or array of factories to create
  * @param input.messages - Optional custom messages for localization
  *
- * @returns Stream of creation progress events
+ * @yields {FactoryCreationEvent} Progress events with status, message, and current factory info
+ * @returns {AsyncGenerator} Generator that yields events and completes with creation summary
  *
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
- * @throws {ORPCError} PORTAL_ERROR - If Portal GraphQL request fails
- * @throws {ORPCError} INTERNAL_SERVER_ERROR - If transaction processing fails
+ * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system not bootstrapped or transaction fails
  *
  * @example
  * ```typescript
- * // Create a single bond factory
- * const stream = client.tokens.factoryCreate({
+ * // Create a single bond factory with progress tracking
+ * for await (const event of client.tokens.factoryCreate({
  *   contract: "0x123...",
  *   factories: {
  *     type: "bond",
  *     name: "Corporate Bonds"
  *   }
- * });
+ * })) {
+ *   console.log(`${event.status}: ${event.message}`);
+ *   if (event.currentFactory) {
+ *     console.log(`Creating ${event.currentFactory.type}: ${event.currentFactory.name}`);
+ *   }
+ * }
  *
- * // Create multiple factories
- * const stream = client.tokens.factoryCreate({
+ * // Create multiple factories with batch progress
+ * for await (const event of client.tokens.factoryCreate({
  *   contract: "0x123...",
  *   factories: [
  *     { type: "bond", name: "Corporate Bonds" },
  *     { type: "equity", name: "Common Stock" }
  *   ]
- * });
+ * })) {
+ *   if (event.progress) {
+ *     console.log(`Progress: ${event.progress.current}/${event.progress.total}`);
+ *   }
+ *   if (event.status === "completed") {
+ *     console.log(`Created ${event.resultSummary.successful} factories`);
+ *   }
+ * }
  * ```
  */
 export const factoryCreate = onboardedRouter.tokens.factoryCreate
@@ -138,18 +158,19 @@ export const factoryCreate = onboardedRouter.tokens.factoryCreate
       return false;
     }
 
-    // Process each factory
+    // Process each factory using a generator pattern for batch operations
     for (const [index, factory] of factoryList.entries()) {
       const progress = { current: index + 1, total: totalFactories };
       const { type, name } = factory;
       const defaults = getDefaultImplementations(type);
 
+      // Use provided implementations or fall back to defaults for asset type
       const factoryImplementation =
         factory.factoryImplementation ?? defaults.factoryImplementation;
       const tokenImplementation =
         factory.tokenImplementation ?? defaults.tokenImplementation;
 
-      // Yield starting message
+      // Yield initial progress message for this factory
       const progressMessage = messages.batchProgress
         .replace("{{current}}", String(progress.current))
         .replace("{{total}}", String(progress.total));
@@ -176,17 +197,20 @@ export const factoryCreate = onboardedRouter.tokens.factoryCreate
 
         let validatedHash = "";
 
-        // Use the new mutate method that includes transaction tracking
+        // Use the Portal client's mutate method that returns an async generator
+        // This enables real-time transaction tracking for each factory creation
         for await (const event of context.portalClient.mutate(
           CREATE_TOKEN_FACTORY_MUTATION,
           variables,
           messages.factoryCreationFailed,
           messages
         )) {
+          // Store transaction hash from the first event
           validatedHash = event.transactionHash;
 
-          // Handle different event statuses
+          // Handle different event statuses and yield appropriate progress updates
           if (event.status === "pending") {
+            // Yield pending events to show transaction progress
             yield withEventMeta(
               {
                 status: "pending" as const,
