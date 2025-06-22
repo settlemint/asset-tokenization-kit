@@ -296,15 +296,22 @@ runs:
               // Get existing reactions
               let existingReactions = [];
               try {
-                const reactions = await slackAPI('reactions.get', {
+                // Use conversations.history instead of reactions.get
+                const history = await slackAPI('conversations.history', {
                   channel: process.env.SLACK_CHANNEL_ID,
-                  timestamp: slackTs,
-                  full: true
+                  latest: slackTs,
+                  inclusive: true,
+                  limit: 1
                 });
 
-                if (reactions.message && reactions.message.reactions) {
-                  existingReactions = reactions.message.reactions.map(r => r.name);
-                  console.log('Existing reactions on message:', existingReactions);
+                if (history.messages && history.messages.length > 0) {
+                  const message = history.messages[0];
+                  if (message.reactions) {
+                    existingReactions = message.reactions
+                      .filter(r => r.users && r.users.length > 0) // Only reactions that have users
+                      .map(r => r.name);
+                    console.log('Existing reactions on message:', existingReactions);
+                  }
                 }
               } catch (e) {
                 console.log('Could not get existing reactions:', e.message);
