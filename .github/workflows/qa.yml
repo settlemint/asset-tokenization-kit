@@ -253,7 +253,8 @@ jobs:
       - name: Update Slack notification with final status
         if: |
           always() &&
-          github.event_name == 'pull_request' &&
+          steps.label-final-status.conclusion == 'success' &&
+          (github.event_name == 'pull_request' || github.event_name == 'pull_request_review') &&
           github.event.pull_request.draft == false
         uses: ./.github/actions/slack-pr-notifier
         with:
