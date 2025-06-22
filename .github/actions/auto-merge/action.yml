@@ -7,6 +7,10 @@ inputs:
   pr_author:
     description: 'Pull request author'
     required: true
+  pr_author_type:
+    description: 'Pull request author type (User or Bot)'
+    required: false
+    default: 'User'
   has_approval:
     description: 'Whether PR has approval'
     required: true
@@ -30,14 +34,15 @@ runs:
         script: |
           const pr_number = ${{ inputs.pr_number }};
           const pr_author = '${{ inputs.pr_author }}';
+          const pr_author_type = '${{ inputs.pr_author_type }}';
           const has_approval = ${{ inputs.has_approval }};
           const qa_status = '${{ inputs.qa_status }}';
           const is_draft = ${{ inputs.is_draft }};
           const merge_method = '${{ inputs.merge_method }}';
           
           // Skip auto-merge for bot PRs
-          if (pr_author.endsWith('[bot]')) {
-            console.log('Skipping auto-merge for bot PR');
+          if (pr_author_type === 'Bot') {
+            console.log(`Skipping auto-merge for bot PR from ${pr_author}`);
             return;
           }
           
