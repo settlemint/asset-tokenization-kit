@@ -41,20 +41,24 @@ Commands are workflow guides that Claude Code can follow to help with common dev
 
 The project includes `.mcp.json` which configures Model Context Protocol servers:
 
-- **Sentry**: Error tracking and monitoring (HTTP transport)
+- **Sentry**: Error tracking and monitoring (SSE transport)
 - **Linear**: Project management integration (SSE transport)
 - **Context7**: Library documentation access (SSE transport)
+- **GitHub**: Repository operations (HTTP transport)
+- **DeepWiki**: Advanced documentation search (SSE transport)
 
 ### Setup
 
 1. The servers use different transport protocols:
-   - HTTP: Direct API communication (Sentry)
-   - SSE: Server-Sent Events for real-time updates (Linear, Context7)
+   - HTTP: Direct API communication (GitHub)
+   - SSE: Server-Sent Events for real-time updates (Sentry, Linear, Context7, DeepWiki)
 
-2. Authentication varies by server:
-   - Linear: Browser-based SSE authentication
-   - Sentry: May require API key setup
+2. Authentication (all OAuth-based, no environment variables needed):
+   - Sentry: OAuth via browser
+   - Linear: OAuth via browser
    - Context7: Public access
+   - GitHub: OAuth via browser
+   - DeepWiki: OAuth via browser
 
 3. Servers are automatically available when running Claude Code in the project directory
 

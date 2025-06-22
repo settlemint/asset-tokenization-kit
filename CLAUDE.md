@@ -185,20 +185,34 @@ This project includes team-wide MCP server configurations in `.mcp.json`. These 
 ### Available MCP Servers
 
 1. **Sentry** - Error tracking and monitoring
-   - Transport: HTTP
-   - URL: `https://mcp.sentry.dev/mcp`
+   - Transport: SSE
+   - URL: `https://mcp.sentry.io/sse`
    - Access error reports, performance data, and crash analytics
+   - OAuth authentication via browser
 
 2. **Linear** - Project management integration  
-   - Transport: SSE (Server-Sent Events)
+   - Transport: SSE
    - URL: `https://mcp.linear.app/sse`
-   - Scope: User-level access
    - Manage issues, projects, and workflows
+   - OAuth authentication via browser
 
 3. **Context7** - Library documentation access
-   - Transport: SSE (Server-Sent Events)
+   - Transport: SSE
    - URL: `https://mcp.context7.com/sse`
    - Search and retrieve up-to-date library documentation
+   - Public access (no auth required)
+
+4. **GitHub** - Repository operations
+   - Transport: HTTP
+   - URL: `https://api.githubcopilot.com/mcp/`
+   - Full GitHub API access: issues, PRs, code search, releases
+   - OAuth authentication via browser
+
+5. **DeepWiki** - Advanced documentation search
+   - Transport: SSE
+   - URL: `https://api.devin.ai/mcp/deepwiki/sse`
+   - Deep technical documentation search and analysis
+   - OAuth authentication via browser
 
 ### Adding MCP Servers Locally
 
@@ -209,6 +223,8 @@ While the project includes `.mcp.json`, you can also add servers using Claude Co
 claude mcp add --transport http sentry https://mcp.sentry.dev/mcp
 claude mcp add --transport sse linear https://mcp.linear.app/sse -s user
 claude mcp add --transport sse context7 https://mcp.context7.com/sse
+claude mcp add --transport sse github https://api.github.com/mcp/sse --auth oauth
+claude mcp add --transport sse deepwiki https://api.devin.ai/mcp/deepwiki/sse --auth oauth
 ```
 
 ### Using MCP Servers
@@ -228,11 +244,25 @@ claude mcp add --transport sse context7 https://mcp.context7.com/sse
   - "Show me Next.js 14 app router examples"
   - "Find Prisma query documentation"
 
+- **GitHub**:
+  - "Search for issues mentioning authentication"
+  - "Show recent PRs by roderik"
+  - "Get the latest release notes"
+  - "Find code using deprecated APIs"
+
+- **DeepWiki**:
+  - "Deep dive into React Server Components architecture"
+  - "Explain WebAssembly memory model"
+  - "Find advanced TypeScript type manipulation techniques"
+  - "Research distributed systems consensus algorithms"
+
 ### Authentication
 
-Some MCP servers may require authentication:
-- Linear: Authenticated through your browser SSE connection
-- Sentry: May require API key configuration
-- Context7: Public access for documentation
+MCP servers use different authentication methods:
+- **Sentry**: API key configuration (if required)
+- **Linear**: Browser-based SSE authentication
+- **Context7**: Public access
+- **GitHub**: OAuth authentication (browser flow)
+- **DeepWiki**: OAuth authentication (browser flow)
 
-Check each server's documentation for specific authentication requirements.
+OAuth servers will prompt for authentication in your browser on first use.

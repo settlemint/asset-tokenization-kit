@@ -18,12 +18,6 @@ Guide for leveraging Model Context Protocol (MCP) servers to enhance Claude Code
 "What's the error rate trend this week?"
 ```
 
-#### Debugging Workflow
-1. Check for recent errors related to current issue
-2. Analyze error patterns and frequency
-3. Review stack traces and affected users
-4. Correlate with recent deployments
-
 ### 2. Linear - Project Management
 **Transport**: SSE  
 **URL**: `https://mcp.linear.app/sse`  
@@ -38,12 +32,6 @@ Guide for leveraging Model Context Protocol (MCP) servers to enhance Claude Code
 "Show high-priority bugs"
 ```
 
-#### Issue Management Workflow
-1. Check existing issues before creating duplicates
-2. Link code changes to Linear issues
-3. Update issue status as work progresses
-4. Add implementation notes to issues
-
 ### 3. Context7 - Documentation
 **Transport**: SSE  
 **URL**: `https://mcp.context7.com/sse`
@@ -57,11 +45,46 @@ Guide for leveraging Model Context Protocol (MCP) servers to enhance Claude Code
 "Show Tailwind CSS animation classes"
 ```
 
-#### Documentation Lookup Workflow
-1. Search for official documentation first
-2. Look for code examples and best practices
-3. Check version-specific information
-4. Find migration guides when updating
+### 4. GitHub - Repository Operations
+**Transport**: SSE with OAuth  
+**URL**: `https://api.github.com/mcp/sse`  
+**Auth**: OAuth (browser flow)
+
+#### Common Use Cases
+```
+"Search for open issues with 'bug' label"
+"Show my recent pull requests"
+"Find all mentions of deprecated functions"
+"Get contributors statistics"
+"List recent releases and their notes"
+"Search code for TODO comments"
+```
+
+#### GitHub Workflow
+1. Search existing issues before creating new ones
+2. Review related PRs for context
+3. Check code history for changes
+4. Monitor CI/CD status
+
+### 5. DeepWiki - Advanced Documentation
+**Transport**: SSE with OAuth  
+**URL**: `https://api.devin.ai/mcp/deepwiki/sse`  
+**Auth**: OAuth (browser flow)
+
+#### Common Use Cases
+```
+"Explain React fiber architecture in detail"
+"Deep dive into V8 JavaScript engine optimizations"
+"Research CAP theorem and its implications"
+"Advanced TypeScript conditional types patterns"
+"Kubernetes networking model explained"
+```
+
+#### DeepWiki Research Workflow
+1. Use for complex technical concepts
+2. Get architectural deep dives
+3. Understand implementation details
+4. Research computer science fundamentals
 
 ## Integration Patterns
 
@@ -128,15 +151,50 @@ Before creating PR:
 
 # 2. Check for existing issues
 "Search Linear for authentication bug issues"
+"Search GitHub issues for similar authentication errors"
 
 # 3. Get documentation
 "Find Next-Auth.js error handling documentation from Context7"
+"DeepWiki: explain OAuth 2.0 PKCE flow in detail"
 
-# 4. Create tracking issue
+# 4. Review code history
+"GitHub: show recent PRs that modified authentication code"
+"GitHub: search for TODOs in auth-related files"
+
+# 5. Create tracking issue
 "Create a Linear issue for the authentication error spike"
 
-# 5. After fixing
+# 6. After fixing
 "Update Linear issue LIN-456 as completed with the fix details"
+"GitHub: create PR with fix referencing the Linear issue"
+```
+
+## Advanced Integration Examples
+
+### Research & Implementation
+```bash
+# Deep technical research
+"DeepWiki: explain event loop and microtasks in JavaScript"
+"Context7: show me Bun.js performance optimization docs"
+"GitHub: find examples of WebSocket implementations in our codebase"
+
+# Error investigation
+"Sentry: show errors grouped by release"
+"GitHub: check if error was introduced in recent PR"
+"Linear: find related bug reports"
+```
+
+### Documentation-Driven Development
+```bash
+# Before implementing
+"Context7: React 19 new features and migration guide"
+"DeepWiki: compare Virtual DOM vs Signals performance"
+"GitHub: search for existing React 19 migration PRs"
+
+# During implementation
+"Context7: useOptimistic hook examples"
+"GitHub: how did we handle similar migrations before?"
+"Linear: update migration task with progress"
 ```
 
 ## Troubleshooting MCP Servers
