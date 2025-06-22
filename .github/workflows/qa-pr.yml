@@ -60,6 +60,9 @@ jobs:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
 
+      - name: Wait for labels to be applied
+        run: sleep 2
+
       - name: Get PR labels and send Slack notification
         uses: actions/github-script@v7
         env:
@@ -102,9 +105,11 @@ jobs:
             };
 
             // Get current status labels
+            console.log('Current PR labels:', labels.map(l => l.name));
             const currentStatuses = labels
               .filter(label => Object.keys(statusReactions).includes(label.name))
               .map(label => statusReactions[label.name]);
+            console.log('Reactions to add:', currentStatuses);
 
             // Check if there's an existing Slack message
             const { data: comments } = await github.rest.issues.listComments({
@@ -210,11 +215,13 @@ jobs:
                 // Add new status reactions
                 for (const reaction of currentStatuses) {
                   try {
+                    console.log(`Adding reaction: ${reaction}`);
                     await slackAPI('reactions.add', {
                       channel: process.env.SLACK_CHANNEL_ID,
                       timestamp: slackTs,
                       name: reaction
                     });
+                    console.log(`Successfully added reaction: ${reaction}`);
                   } catch (e) {
                     console.log(`Could not add reaction ${reaction}: ${e.message}`);
                   }
@@ -259,6 +266,9 @@ jobs:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
 
+      - name: Wait for labels to be applied
+        run: sleep 2
+
       - name: Get PR labels and send Slack notification
         uses: actions/github-script@v7
         env:
@@ -301,9 +311,11 @@ jobs:
             };
 
             // Get current status labels
+            console.log('Current PR labels:', labels.map(l => l.name));
             const currentStatuses = labels
               .filter(label => Object.keys(statusReactions).includes(label.name))
               .map(label => statusReactions[label.name]);
+            console.log('Reactions to add:', currentStatuses);
 
             // Check if there's an existing Slack message
             const { data: comments } = await github.rest.issues.listComments({
@@ -409,11 +421,13 @@ jobs:
                 // Add new status reactions
                 for (const reaction of currentStatuses) {
                   try {
+                    console.log(`Adding reaction: ${reaction}`);
                     await slackAPI('reactions.add', {
                       channel: process.env.SLACK_CHANNEL_ID,
                       timestamp: slackTs,
                       name: reaction
                     });
+                    console.log(`Successfully added reaction: ${reaction}`);
                   } catch (e) {
                     console.log(`Could not add reaction ${reaction}: ${e.message}`);
                   }
@@ -511,6 +525,9 @@ jobs:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
 
+      - name: Wait for labels to be applied
+        run: sleep 2
+
       - name: Get PR labels and send Slack notification
         uses: actions/github-script@v7
         env:
@@ -553,9 +570,11 @@ jobs:
             };
 
             // Get current status labels
+            console.log('Current PR labels:', labels.map(l => l.name));
             const currentStatuses = labels
               .filter(label => Object.keys(statusReactions).includes(label.name))
               .map(label => statusReactions[label.name]);
+            console.log('Reactions to add:', currentStatuses);
 
             // Check if there's an existing Slack message
             const { data: comments } = await github.rest.issues.listComments({
@@ -661,11 +680,13 @@ jobs:
                 // Add new status reactions
                 for (const reaction of currentStatuses) {
                   try {
+                    console.log(`Adding reaction: ${reaction}`);
                     await slackAPI('reactions.add', {
                       channel: process.env.SLACK_CHANNEL_ID,
                       timestamp: slackTs,
                       name: reaction
                     });
+                    console.log(`Successfully added reaction: ${reaction}`);
                   } catch (e) {
                     console.log(`Could not add reaction ${reaction}: ${e.message}`);
                   }
@@ -789,6 +810,9 @@ jobs:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
 
+      - name: Wait for labels to be applied
+        run: sleep 2
+
       - name: Get PR labels and send Slack notification
         uses: actions/github-script@v7
         env:
@@ -831,9 +855,11 @@ jobs:
             };
 
             // Get current status labels
+            console.log('Current PR labels:', labels.map(l => l.name));
             const currentStatuses = labels
               .filter(label => Object.keys(statusReactions).includes(label.name))
               .map(label => statusReactions[label.name]);
+            console.log('Reactions to add:', currentStatuses);
 
             // Check if there's an existing Slack message
             const { data: comments } = await github.rest.issues.listComments({
@@ -939,11 +965,13 @@ jobs:
                 // Add new status reactions
                 for (const reaction of currentStatuses) {
                   try {
+                    console.log(`Adding reaction: ${reaction}`);
                     await slackAPI('reactions.add', {
                       channel: process.env.SLACK_CHANNEL_ID,
                       timestamp: slackTs,
                       name: reaction
                     });
+                    console.log(`Successfully added reaction: ${reaction}`);
                   } catch (e) {
                     console.log(`Could not add reaction ${reaction}: ${e.message}`);
                   }
@@ -990,6 +1018,9 @@ jobs:
           SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
           SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
 
+      - name: Wait for labels to be applied
+        run: sleep 2
+
       - name: Get PR labels and send Slack notification
         uses: actions/github-script@v7
         env:
@@ -1032,9 +1063,11 @@ jobs:
             };
 
             // Get current status labels
+            console.log('Current PR labels:', labels.map(l => l.name));
             const currentStatuses = labels
               .filter(label => Object.keys(statusReactions).includes(label.name))
               .map(label => statusReactions[label.name]);
+            console.log('Reactions to add:', currentStatuses);
 
             // Check if there's an existing Slack message
             const { data: comments } = await github.rest.issues.listComments({
@@ -1140,11 +1173,13 @@ jobs:
                 // Add new status reactions
                 for (const reaction of currentStatuses) {
                   try {
+                    console.log(`Adding reaction: ${reaction}`);
                     await slackAPI('reactions.add', {
                       channel: process.env.SLACK_CHANNEL_ID,
                       timestamp: slackTs,
                       name: reaction
                     });
+                    console.log(`Successfully added reaction: ${reaction}`);
                   } catch (e) {
                     console.log(`Could not add reaction ${reaction}: ${e.message}`);
                   }
