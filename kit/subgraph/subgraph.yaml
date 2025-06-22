@@ -692,8 +692,12 @@ templates:
       entities:
         - ATKPushAirdropCreated
       abis:
+        - name: Airdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
         - name: PushAirdropFactory
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol/IATKPushAirdropFactory.json
+        - name: PushAirdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/push-airdrop/ATKPushAirdropImplementation.sol/ATKPushAirdropImplementation.json
       eventHandlers:
         - event: ATKPushAirdropCreated(indexed address,indexed address)
           handler: handleATKPushAirdropCreated
@@ -712,6 +716,8 @@ templates:
         - BatchTokensDistributed
         - DistributionCapUpdated
       abis:
+        - name: Airdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
         - name: PushAirdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/push-airdrop/ATKPushAirdropImplementation.sol/ATKPushAirdropImplementation.json
       eventHandlers:
@@ -732,8 +738,14 @@ templates:
       abis:
         - name: VestingAirdropFactory
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol/IATKVestingAirdropFactory.json
+        - name: VestingAirdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol/ATKVestingAirdropImplementation.json
+        - name: VestingStrategy
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol/IATKVestingStrategy.json
         - name: LinearVestingStrategy
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/ATKLinearVestingStrategy.sol/ATKLinearVestingStrategy.json
+        - name: Airdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
       eventHandlers:
         - event: ATKVestingAirdropCreated(indexed
             address,string,address,bytes32,address,address,uint256,address)
@@ -759,6 +771,8 @@ templates:
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol/IATKVestingStrategy.json
         - name: LinearVestingStrategy
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKLinearVestingStrategy.sol/IATKLinearVestingStrategy.json
+        - name: Airdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
       eventHandlers:
         - event: VestingInitialized(indexed address,uint256,uint256)
           handler: handleVestingInitialized
