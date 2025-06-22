@@ -206,69 +206,64 @@ jobs:
                     console.log('Existing reactions on message:', existingReactions);
                   }
 
-                  // Determine which reactions to remove based on exclusive groups
-                  const reactionsToRemove = new Set();
+                  // Smart reaction management to avoid flickering
+                  // First, determine what needs to change
+                  const reactionsToAdd = [];
+                  const reactionsToRemove = [];
                   
-                  // For each reaction we want to add, find its group and mark all other reactions in that group for removal
-                  for (const reactionToAdd of currentStatuses) {
-                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
-                      if (groupReactions.includes(reactionToAdd)) {
-                        // Add all other reactions in this group to removal set
-                        groupReactions.forEach(r => {
-                          if (r !== reactionToAdd) {
-                            reactionsToRemove.add(r);
-                          }
-                        });
-                      }
+                  // For each desired reaction, check if we need to add it
+                  for (const desiredReaction of currentStatuses) {
+                    if (!existingReactions.includes(desiredReaction)) {
+                      reactionsToAdd.push(desiredReaction);
                     }
                   }
                   
-                  // Remove outdated reactions from exclusive groups
-                  for (const reactionName of reactionsToRemove) {
-                    if (existingReactions.includes(reactionName)) {
-                      try {
-                        console.log(`Removing outdated reaction: ${reactionName}`);
-                        await slackAPI('reactions.remove', {
-                          channel: process.env.SLACK_CHANNEL_ID,
-                          timestamp: slackTs,
-                          name: reactionName
-                        });
-                      } catch (e) {
-                        if (e.message.includes('missing_scope')) {
-                          console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
-                        } else if (e.message.includes('no_reaction')) {
-                          console.log(`Reaction ${reactionName} was already removed`);
-                        } else {
-                          console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+                  // For each exclusive group, find reactions that need to be removed
+                  for (const desiredReaction of currentStatuses) {
+                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                      if (groupReactions.includes(desiredReaction)) {
+                        // Remove other reactions in this group that currently exist
+                        for (const groupReaction of groupReactions) {
+                          if (groupReaction !== desiredReaction && existingReactions.includes(groupReaction)) {
+                            reactionsToRemove.push(groupReaction);
+                          }
                         }
                       }
                     }
                   }
-                } catch (e) {
-                  console.log('Could not get existing reactions:', e.message);
-                  // If we can't get reactions, try a simpler approach: remove all known reactions
-                  console.log('Falling back to removing all managed reactions');
-                  for (const reactionName of allStatusReactions) {
+                  
+                  console.log('Reactions to remove:', reactionsToRemove);
+                  console.log('Reactions to add:', reactionsToAdd);
+                  
+                  // Remove outdated reactions first
+                  for (const reactionName of reactionsToRemove) {
                     try {
+                      console.log(`Removing outdated reaction: ${reactionName}`);
                       await slackAPI('reactions.remove', {
                         channel: process.env.SLACK_CHANNEL_ID,
                         timestamp: slackTs,
                         name: reactionName
                       });
+                      // Small delay to avoid rate limits
+                      await new Promise(resolve => setTimeout(resolve, 100));
                     } catch (e) {
-                      // Ignore errors - reaction might not exist
+                      if (e.message.includes('missing_scope')) {
+                        console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
+                        break;
+                      } else if (e.message.includes('no_reaction')) {
+                        console.log(`Reaction ${reactionName} was already removed`);
+                      } else {
+                        console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+                      }
                     }
                   }
-                  existingReactions = [];
+                } catch (e) {
+                  console.log('Could not get existing reactions:', e.message);
+                  // Continue anyway - we'll handle errors when adding/removing
                 }
 
-                // Add new status reactions (skip if already exists)
-                for (const reaction of currentStatuses) {
-                  if (existingReactions.includes(reaction)) {
-                    console.log(`Reaction ${reaction} already exists, skipping`);
-                    continue;
-                  }
-                  
+                // Add new reactions
+                for (const reaction of reactionsToAdd) {
                   try {
                     console.log(`Adding reaction: ${reaction}`);
                     await slackAPI('reactions.add', {
@@ -277,9 +272,12 @@ jobs:
                       name: reaction
                     });
                     console.log(`Successfully added reaction: ${reaction}`);
+                    // Small delay to avoid rate limits
+                    await new Promise(resolve => setTimeout(resolve, 100));
                   } catch (e) {
                     if (e.message.includes('missing_scope')) {
                       console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                      break;
                     } else if (e.message.includes('already_reacted')) {
                       console.log(`Reaction ${reaction} already exists (race condition)`);
                     } else {
@@ -473,69 +471,64 @@ jobs:
                     console.log('Existing reactions on message:', existingReactions);
                   }
 
-                  // Determine which reactions to remove based on exclusive groups
-                  const reactionsToRemove = new Set();
+                  // Smart reaction management to avoid flickering
+                  // First, determine what needs to change
+                  const reactionsToAdd = [];
+                  const reactionsToRemove = [];
                   
-                  // For each reaction we want to add, find its group and mark all other reactions in that group for removal
-                  for (const reactionToAdd of currentStatuses) {
-                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
-                      if (groupReactions.includes(reactionToAdd)) {
-                        // Add all other reactions in this group to removal set
-                        groupReactions.forEach(r => {
-                          if (r !== reactionToAdd) {
-                            reactionsToRemove.add(r);
-                          }
-                        });
-                      }
+                  // For each desired reaction, check if we need to add it
+                  for (const desiredReaction of currentStatuses) {
+                    if (!existingReactions.includes(desiredReaction)) {
+                      reactionsToAdd.push(desiredReaction);
                     }
                   }
                   
-                  // Remove outdated reactions from exclusive groups
-                  for (const reactionName of reactionsToRemove) {
-                    if (existingReactions.includes(reactionName)) {
-                      try {
-                        console.log(`Removing outdated reaction: ${reactionName}`);
-                        await slackAPI('reactions.remove', {
-                          channel: process.env.SLACK_CHANNEL_ID,
-                          timestamp: slackTs,
-                          name: reactionName
-                        });
-                      } catch (e) {
-                        if (e.message.includes('missing_scope')) {
-                          console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
-                        } else if (e.message.includes('no_reaction')) {
-                          console.log(`Reaction ${reactionName} was already removed`);
-                        } else {
-                          console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+                  // For each exclusive group, find reactions that need to be removed
+                  for (const desiredReaction of currentStatuses) {
+                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                      if (groupReactions.includes(desiredReaction)) {
+                        // Remove other reactions in this group that currently exist
+                        for (const groupReaction of groupReactions) {
+                          if (groupReaction !== desiredReaction && existingReactions.includes(groupReaction)) {
+                            reactionsToRemove.push(groupReaction);
+                          }
                         }
                       }
                     }
                   }
-                } catch (e) {
-                  console.log('Could not get existing reactions:', e.message);
-                  // If we can't get reactions, try a simpler approach: remove all known reactions
-                  console.log('Falling back to removing all managed reactions');
-                  for (const reactionName of allStatusReactions) {
+                  
+                  console.log('Reactions to remove:', reactionsToRemove);
+                  console.log('Reactions to add:', reactionsToAdd);
+                  
+                  // Remove outdated reactions first
+                  for (const reactionName of reactionsToRemove) {
                     try {
+                      console.log(`Removing outdated reaction: ${reactionName}`);
                       await slackAPI('reactions.remove', {
                         channel: process.env.SLACK_CHANNEL_ID,
                         timestamp: slackTs,
                         name: reactionName
                       });
+                      // Small delay to avoid rate limits
+                      await new Promise(resolve => setTimeout(resolve, 100));
                     } catch (e) {
-                      // Ignore errors - reaction might not exist
+                      if (e.message.includes('missing_scope')) {
+                        console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
+                        break;
+                      } else if (e.message.includes('no_reaction')) {
+                        console.log(`Reaction ${reactionName} was already removed`);
+                      } else {
+                        console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+                      }
                     }
                   }
-                  existingReactions = [];
+                } catch (e) {
+                  console.log('Could not get existing reactions:', e.message);
+                  // Continue anyway - we'll handle errors when adding/removing
                 }
 
-                // Add new status reactions (skip if already exists)
-                for (const reaction of currentStatuses) {
-                  if (existingReactions.includes(reaction)) {
-                    console.log(`Reaction ${reaction} already exists, skipping`);
-                    continue;
-                  }
-                  
+                // Add new reactions
+                for (const reaction of reactionsToAdd) {
                   try {
                     console.log(`Adding reaction: ${reaction}`);
                     await slackAPI('reactions.add', {
@@ -544,9 +537,12 @@ jobs:
                       name: reaction
                     });
                     console.log(`Successfully added reaction: ${reaction}`);
+                    // Small delay to avoid rate limits
+                    await new Promise(resolve => setTimeout(resolve, 100));
                   } catch (e) {
                     if (e.message.includes('missing_scope')) {
                       console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                      break;
                     } else if (e.message.includes('already_reacted')) {
                       console.log(`Reaction ${reaction} already exists (race condition)`);
                     } else {
@@ -599,17 +595,6 @@ jobs:
       trivy-config: trivy-secret.yaml
       severity: "HIGH,CRITICAL"
 
-  codeql:
-    name: CodeQL Analysis
-    if: |
-      github.event_name == 'pull_request' &&
-      !endsWith(github.event.pull_request.user.login, '[bot]') &&
-      (github.event.action == 'synchronize' || github.event.action == 'opened')
-    uses: ./.github/workflows/reusable-codeql.yml
-    with:
-      language: 'javascript-typescript'
-      build-mode: 'none'
-      runs-on: 'namespace-profile-atk-services'
 
   # Label PR with final QA status
   label-qa-end:
@@ -793,69 +778,64 @@ jobs:
                     console.log('Existing reactions on message:', existingReactions);
                   }
 
-                  // Determine which reactions to remove based on exclusive groups
-                  const reactionsToRemove = new Set();
+                  // Smart reaction management to avoid flickering
+                  // First, determine what needs to change
+                  const reactionsToAdd = [];
+                  const reactionsToRemove = [];
                   
-                  // For each reaction we want to add, find its group and mark all other reactions in that group for removal
-                  for (const reactionToAdd of currentStatuses) {
-                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
-                      if (groupReactions.includes(reactionToAdd)) {
-                        // Add all other reactions in this group to removal set
-                        groupReactions.forEach(r => {
-                          if (r !== reactionToAdd) {
-                            reactionsToRemove.add(r);
-                          }
-                        });
-                      }
+                  // For each desired reaction, check if we need to add it
+                  for (const desiredReaction of currentStatuses) {
+                    if (!existingReactions.includes(desiredReaction)) {
+                      reactionsToAdd.push(desiredReaction);
                     }
                   }
                   
-                  // Remove outdated reactions from exclusive groups
-                  for (const reactionName of reactionsToRemove) {
-                    if (existingReactions.includes(reactionName)) {
-                      try {
-                        console.log(`Removing outdated reaction: ${reactionName}`);
-                        await slackAPI('reactions.remove', {
-                          channel: process.env.SLACK_CHANNEL_ID,
-                          timestamp: slackTs,
-                          name: reactionName
-                        });
-                      } catch (e) {
-                        if (e.message.includes('missing_scope')) {
-                          console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
-                        } else if (e.message.includes('no_reaction')) {
-                          console.log(`Reaction ${reactionName} was already removed`);
-                        } else {
-                          console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+                  // For each exclusive group, find reactions that need to be removed
+                  for (const desiredReaction of currentStatuses) {
+                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                      if (groupReactions.includes(desiredReaction)) {
+                        // Remove other reactions in this group that currently exist
+                        for (const groupReaction of groupReactions) {
+                          if (groupReaction !== desiredReaction && existingReactions.includes(groupReaction)) {
+                            reactionsToRemove.push(groupReaction);
+                          }
                         }
                       }
                     }
                   }
-                } catch (e) {
-                  console.log('Could not get existing reactions:', e.message);
-                  // If we can't get reactions, try a simpler approach: remove all known reactions
-                  console.log('Falling back to removing all managed reactions');
-                  for (const reactionName of allStatusReactions) {
+                  
+                  console.log('Reactions to remove:', reactionsToRemove);
+                  console.log('Reactions to add:', reactionsToAdd);
+                  
+                  // Remove outdated reactions first
+                  for (const reactionName of reactionsToRemove) {
                     try {
+                      console.log(`Removing outdated reaction: ${reactionName}`);
                       await slackAPI('reactions.remove', {
                         channel: process.env.SLACK_CHANNEL_ID,
                         timestamp: slackTs,
                         name: reactionName
                       });
+                      // Small delay to avoid rate limits
+                      await new Promise(resolve => setTimeout(resolve, 100));
                     } catch (e) {
-                      // Ignore errors - reaction might not exist
+                      if (e.message.includes('missing_scope')) {
+                        console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
+                        break;
+                      } else if (e.message.includes('no_reaction')) {
+                        console.log(`Reaction ${reactionName} was already removed`);
+                      } else {
+                        console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+                      }
                     }
                   }
-                  existingReactions = [];
+                } catch (e) {
+                  console.log('Could not get existing reactions:', e.message);
+                  // Continue anyway - we'll handle errors when adding/removing
                 }
 
-                // Add new status reactions (skip if already exists)
-                for (const reaction of currentStatuses) {
-                  if (existingReactions.includes(reaction)) {
-                    console.log(`Reaction ${reaction} already exists, skipping`);
-                    continue;
-                  }
-                  
+                // Add new reactions
+                for (const reaction of reactionsToAdd) {
                   try {
                     console.log(`Adding reaction: ${reaction}`);
                     await slackAPI('reactions.add', {
@@ -864,9 +844,12 @@ jobs:
                       name: reaction
                     });
                     console.log(`Successfully added reaction: ${reaction}`);
+                    // Small delay to avoid rate limits
+                    await new Promise(resolve => setTimeout(resolve, 100));
                   } catch (e) {
                     if (e.message.includes('missing_scope')) {
                       console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                      break;
                     } else if (e.message.includes('already_reacted')) {
                       console.log(`Reaction ${reaction} already exists (race condition)`);
                     } else {
@@ -1140,69 +1123,64 @@ jobs:
                     console.log('Existing reactions on message:', existingReactions);
                   }
 
-                  // Determine which reactions to remove based on exclusive groups
-                  const reactionsToRemove = new Set();
+                  // Smart reaction management to avoid flickering
+                  // First, determine what needs to change
+                  const reactionsToAdd = [];
+                  const reactionsToRemove = [];
                   
-                  // For each reaction we want to add, find its group and mark all other reactions in that group for removal
-                  for (const reactionToAdd of currentStatuses) {
-                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
-                      if (groupReactions.includes(reactionToAdd)) {
-                        // Add all other reactions in this group to removal set
-                        groupReactions.forEach(r => {
-                          if (r !== reactionToAdd) {
-                            reactionsToRemove.add(r);
-                          }
-                        });
-                      }
+                  // For each desired reaction, check if we need to add it
+                  for (const desiredReaction of currentStatuses) {
+                    if (!existingReactions.includes(desiredReaction)) {
+                      reactionsToAdd.push(desiredReaction);
                     }
                   }
                   
-                  // Remove outdated reactions from exclusive groups
-                  for (const reactionName of reactionsToRemove) {
-                    if (existingReactions.includes(reactionName)) {
-                      try {
-                        console.log(`Removing outdated reaction: ${reactionName}`);
-                        await slackAPI('reactions.remove', {
-                          channel: process.env.SLACK_CHANNEL_ID,
-                          timestamp: slackTs,
-                          name: reactionName
-                        });
-                      } catch (e) {
-                        if (e.message.includes('missing_scope')) {
-                          console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
-                        } else if (e.message.includes('no_reaction')) {
-                          console.log(`Reaction ${reactionName} was already removed`);
-                        } else {
-                          console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+                  // For each exclusive group, find reactions that need to be removed
+                  for (const desiredReaction of currentStatuses) {
+                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                      if (groupReactions.includes(desiredReaction)) {
+                        // Remove other reactions in this group that currently exist
+                        for (const groupReaction of groupReactions) {
+                          if (groupReaction !== desiredReaction && existingReactions.includes(groupReaction)) {
+                            reactionsToRemove.push(groupReaction);
+                          }
                         }
                       }
                     }
                   }
-                } catch (e) {
-                  console.log('Could not get existing reactions:', e.message);
-                  // If we can't get reactions, try a simpler approach: remove all known reactions
-                  console.log('Falling back to removing all managed reactions');
-                  for (const reactionName of allStatusReactions) {
+                  
+                  console.log('Reactions to remove:', reactionsToRemove);
+                  console.log('Reactions to add:', reactionsToAdd);
+                  
+                  // Remove outdated reactions first
+                  for (const reactionName of reactionsToRemove) {
                     try {
+                      console.log(`Removing outdated reaction: ${reactionName}`);
                       await slackAPI('reactions.remove', {
                         channel: process.env.SLACK_CHANNEL_ID,
                         timestamp: slackTs,
                         name: reactionName
                       });
+                      // Small delay to avoid rate limits
+                      await new Promise(resolve => setTimeout(resolve, 100));
                     } catch (e) {
-                      // Ignore errors - reaction might not exist
+                      if (e.message.includes('missing_scope')) {
+                        console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
+                        break;
+                      } else if (e.message.includes('no_reaction')) {
+                        console.log(`Reaction ${reactionName} was already removed`);
+                      } else {
+                        console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+                      }
                     }
                   }
-                  existingReactions = [];
+                } catch (e) {
+                  console.log('Could not get existing reactions:', e.message);
+                  // Continue anyway - we'll handle errors when adding/removing
                 }
 
-                // Add new status reactions (skip if already exists)
-                for (const reaction of currentStatuses) {
-                  if (existingReactions.includes(reaction)) {
-                    console.log(`Reaction ${reaction} already exists, skipping`);
-                    continue;
-                  }
-                  
+                // Add new reactions
+                for (const reaction of reactionsToAdd) {
                   try {
                     console.log(`Adding reaction: ${reaction}`);
                     await slackAPI('reactions.add', {
@@ -1211,9 +1189,12 @@ jobs:
                       name: reaction
                     });
                     console.log(`Successfully added reaction: ${reaction}`);
+                    // Small delay to avoid rate limits
+                    await new Promise(resolve => setTimeout(resolve, 100));
                   } catch (e) {
                     if (e.message.includes('missing_scope')) {
                       console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                      break;
                     } else if (e.message.includes('already_reacted')) {
                       console.log(`Reaction ${reaction} already exists (race condition)`);
                     } else {
@@ -1408,69 +1389,64 @@ jobs:
                     console.log('Existing reactions on message:', existingReactions);
                   }
 
-                  // Determine which reactions to remove based on exclusive groups
-                  const reactionsToRemove = new Set();
+                  // Smart reaction management to avoid flickering
+                  // First, determine what needs to change
+                  const reactionsToAdd = [];
+                  const reactionsToRemove = [];
                   
-                  // For each reaction we want to add, find its group and mark all other reactions in that group for removal
-                  for (const reactionToAdd of currentStatuses) {
-                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
-                      if (groupReactions.includes(reactionToAdd)) {
-                        // Add all other reactions in this group to removal set
-                        groupReactions.forEach(r => {
-                          if (r !== reactionToAdd) {
-                            reactionsToRemove.add(r);
-                          }
-                        });
-                      }
+                  // For each desired reaction, check if we need to add it
+                  for (const desiredReaction of currentStatuses) {
+                    if (!existingReactions.includes(desiredReaction)) {
+                      reactionsToAdd.push(desiredReaction);
                     }
                   }
                   
-                  // Remove outdated reactions from exclusive groups
-                  for (const reactionName of reactionsToRemove) {
-                    if (existingReactions.includes(reactionName)) {
-                      try {
-                        console.log(`Removing outdated reaction: ${reactionName}`);
-                        await slackAPI('reactions.remove', {
-                          channel: process.env.SLACK_CHANNEL_ID,
-                          timestamp: slackTs,
-                          name: reactionName
-                        });
-                      } catch (e) {
-                        if (e.message.includes('missing_scope')) {
-                          console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
-                        } else if (e.message.includes('no_reaction')) {
-                          console.log(`Reaction ${reactionName} was already removed`);
-                        } else {
-                          console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+                  // For each exclusive group, find reactions that need to be removed
+                  for (const desiredReaction of currentStatuses) {
+                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                      if (groupReactions.includes(desiredReaction)) {
+                        // Remove other reactions in this group that currently exist
+                        for (const groupReaction of groupReactions) {
+                          if (groupReaction !== desiredReaction && existingReactions.includes(groupReaction)) {
+                            reactionsToRemove.push(groupReaction);
+                          }
                         }
                       }
                     }
                   }
-                } catch (e) {
-                  console.log('Could not get existing reactions:', e.message);
-                  // If we can't get reactions, try a simpler approach: remove all known reactions
-                  console.log('Falling back to removing all managed reactions');
-                  for (const reactionName of allStatusReactions) {
+                  
+                  console.log('Reactions to remove:', reactionsToRemove);
+                  console.log('Reactions to add:', reactionsToAdd);
+                  
+                  // Remove outdated reactions first
+                  for (const reactionName of reactionsToRemove) {
                     try {
+                      console.log(`Removing outdated reaction: ${reactionName}`);
                       await slackAPI('reactions.remove', {
                         channel: process.env.SLACK_CHANNEL_ID,
                         timestamp: slackTs,
                         name: reactionName
                       });
+                      // Small delay to avoid rate limits
+                      await new Promise(resolve => setTimeout(resolve, 100));
                     } catch (e) {
-                      // Ignore errors - reaction might not exist
+                      if (e.message.includes('missing_scope')) {
+                        console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
+                        break;
+                      } else if (e.message.includes('no_reaction')) {
+                        console.log(`Reaction ${reactionName} was already removed`);
+                      } else {
+                        console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+                      }
                     }
                   }
-                  existingReactions = [];
+                } catch (e) {
+                  console.log('Could not get existing reactions:', e.message);
+                  // Continue anyway - we'll handle errors when adding/removing
                 }
 
-                // Add new status reactions (skip if already exists)
-                for (const reaction of currentStatuses) {
-                  if (existingReactions.includes(reaction)) {
-                    console.log(`Reaction ${reaction} already exists, skipping`);
-                    continue;
-                  }
-                  
+                // Add new reactions
+                for (const reaction of reactionsToAdd) {
                   try {
                     console.log(`Adding reaction: ${reaction}`);
                     await slackAPI('reactions.add', {
@@ -1479,9 +1455,12 @@ jobs:
                       name: reaction
                     });
                     console.log(`Successfully added reaction: ${reaction}`);
+                    // Small delay to avoid rate limits
+                    await new Promise(resolve => setTimeout(resolve, 100));
                   } catch (e) {
                     if (e.message.includes('missing_scope')) {
                       console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                      break;
                     } else if (e.message.includes('already_reacted')) {
                       console.log(`Reaction ${reaction} already exists (race condition)`);
                     } else {
