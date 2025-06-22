@@ -1,0 +1,21 @@
+name: QA - Tag
+
+on:
+  push:
+    tags:
+      - 'v2.*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qa:
+    name: QA
+    uses: ./.github/workflows/reusable-qa.yml
+    with:
+      runs-on: namespace-profile-atk
+      fetch-depth: 0  # Full history for tags
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

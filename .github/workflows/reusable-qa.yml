@@ -1,34 +1,28 @@
-name: qa
+name: QA Workflow (Reusable)
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types:
-      [
-        opened,
-        synchronize,
-        reopened,
-        ready_for_review,
-        closed,
-        review_requested,
-      ]
-    branches:
-      - main
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  workflow_call:
+    inputs:
+      runs-on:
+        description: 'Runner to use'
+        required: false
+        type: string
+        default: 'namespace-profile-atk'
+      fetch-depth:
+        description: 'Number of commits to fetch'
+        required: false
+        type: number
+        default: 2
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN:
+        required: true
+      GITHUB_TOKEN:
+        required: true
 
 jobs:
   qa:
     name: QA
-    runs-on: namespace-profile-atk
-    if: |
-      github.event_name == 'push' ||
-      (github.event_name == 'pull_request' &&
-       (github.event.action == 'synchronize' || github.event.action == 'opened'))
+    runs-on: ${{ inputs.runs-on }}
     steps:
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
@@ -45,7 +39,7 @@ jobs:
       - name: Checkout repository (with PAT)
         uses: namespacelabs/nscloud-checkout-action@v7
         with:
-          fetch-depth: 2
+          fetch-depth: ${{ inputs.fetch-depth }}
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
@@ -129,7 +123,6 @@ jobs:
           THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
 
       - name: Store predeployed output
-        if: github.event_name == 'pull_request' && always()
         uses: actions/upload-artifact@v4
         with:
           name: predeployed-output
@@ -140,41 +133,3 @@ jobs:
             kit/subgraph/subgraph-output.txt
             kit/subgraph/.generated/subgraph-env
             kit/dapp/.generated/database-export.sql
-
-  pr-labels:
-    name: PR Labels
-    if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/reusable-pr-labels.yml
-
-  secret-scanning:
-    name: Secret Scanning
-    if: |
-      github.event_name == 'push' ||
-      (github.event_name == 'pull_request' &&
-       (github.event.action == 'synchronize' || github.event.action == 'opened'))
-    uses: ./.github/workflows/reusable-secret-scanning.yml
-    with:
-      trivy-config: trivy-secret.yaml
-      severity: "HIGH,CRITICAL"
-
-  slack-notification-start:
-    name: Slack Notification (Start)
-    if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/reusable-slack-notification.yml
-    with:
-      workflow_conclusion: "running"
-    secrets:
-      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
-  slack-notification-end:
-    name: Slack Notification (End)
-    needs: [qa, secret-scanning, pr-labels]
-    if: always() && github.event_name == 'pull_request'
-    uses: ./.github/workflows/reusable-slack-notification.yml
-    with:
-      workflow_conclusion:
-        ${{ needs.qa.result == 'success' && needs.secret-scanning.result !=
-        'failure' && needs.pr-labels.result != 'failure' && 'success' ||
-        'failure' }}
-    secrets:
-      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}

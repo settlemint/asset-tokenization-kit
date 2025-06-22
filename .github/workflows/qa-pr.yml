@@ -1,0 +1,55 @@
+name: QA - Pull Request
+
+on:
+  pull_request:
+    types:
+      [
+        opened,
+        synchronize,
+        reopened,
+        ready_for_review,
+        closed,
+        review_requested,
+      ]
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qa:
+    name: QA
+    if: |
+      github.event.action == 'synchronize' || github.event.action == 'opened'
+    uses: ./.github/workflows/reusable-qa.yml
+    with:
+      runs-on: namespace-profile-atk
+      fetch-depth: 2
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  pr-labels:
+    name: PR Labels
+    uses: ./.github/workflows/reusable-pr-labels.yml
+
+  secret-scanning:
+    name: Secret Scanning
+    if: |
+      github.event.action == 'synchronize' || github.event.action == 'opened'
+    uses: ./.github/workflows/reusable-secret-scanning.yml
+    with:
+      trivy-config: trivy-secret.yaml
+      severity: "HIGH,CRITICAL"
+
+  codeql:
+    name: CodeQL Analysis
+    if: |
+      github.event.action == 'synchronize' || github.event.action == 'opened'
+    uses: ./.github/workflows/reusable-codeql.yml
+    with:
+      language: 'javascript-typescript'
+      build-mode: 'none'
+      runs-on: 'namespace-profile-atk'
