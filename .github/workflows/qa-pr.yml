@@ -161,16 +161,7 @@ jobs:
                       type: 'section',
                       text: {
                         type: 'mrkdwn',
-                        text: `*[${repoName}][#${pr_number}]* ${pr_title}`
-                      },
-                      accessory: {
-                        type: 'button',
-                        text: {
-                          type: 'plain_text',
-                          text: 'View PR'
-                        },
-                        url: pr_url,
-                        action_id: 'view_pr'
+                        text: `*[${repoName}][#${pr_number}]* ${pr_title}\n<${pr_url}|View PR>`
                       }
                     }
                   ]
@@ -229,7 +220,11 @@ jobs:
                     });
                     console.log(`Successfully added reaction: ${reaction}`);
                   } catch (e) {
-                    console.log(`Could not add reaction ${reaction}: ${e.message}`);
+                    if (e.message.includes('missing_scope')) {
+                      console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                    } else {
+                      console.log(`Could not add reaction ${reaction}: ${e.message}`);
+                    }
                   }
                 }
               }
@@ -373,16 +368,7 @@ jobs:
                       type: 'section',
                       text: {
                         type: 'mrkdwn',
-                        text: `*[${repoName}][#${pr_number}]* ${pr_title}`
-                      },
-                      accessory: {
-                        type: 'button',
-                        text: {
-                          type: 'plain_text',
-                          text: 'View PR'
-                        },
-                        url: pr_url,
-                        action_id: 'view_pr'
+                        text: `*[${repoName}][#${pr_number}]* ${pr_title}\n<${pr_url}|View PR>`
                       }
                     }
                   ]
@@ -441,7 +427,11 @@ jobs:
                     });
                     console.log(`Successfully added reaction: ${reaction}`);
                   } catch (e) {
-                    console.log(`Could not add reaction ${reaction}: ${e.message}`);
+                    if (e.message.includes('missing_scope')) {
+                      console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                    } else {
+                      console.log(`Could not add reaction ${reaction}: ${e.message}`);
+                    }
                   }
                 }
               }
@@ -638,16 +628,7 @@ jobs:
                       type: 'section',
                       text: {
                         type: 'mrkdwn',
-                        text: `*[${repoName}][#${pr_number}]* ${pr_title}`
-                      },
-                      accessory: {
-                        type: 'button',
-                        text: {
-                          type: 'plain_text',
-                          text: 'View PR'
-                        },
-                        url: pr_url,
-                        action_id: 'view_pr'
+                        text: `*[${repoName}][#${pr_number}]* ${pr_title}\n<${pr_url}|View PR>`
                       }
                     }
                   ]
@@ -706,7 +687,11 @@ jobs:
                     });
                     console.log(`Successfully added reaction: ${reaction}`);
                   } catch (e) {
-                    console.log(`Could not add reaction ${reaction}: ${e.message}`);
+                    if (e.message.includes('missing_scope')) {
+                      console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                    } else {
+                      console.log(`Could not add reaction ${reaction}: ${e.message}`);
+                    }
                   }
                 }
               }
@@ -929,16 +914,7 @@ jobs:
                       type: 'section',
                       text: {
                         type: 'mrkdwn',
-                        text: `*[${repoName}][#${pr_number}]* ${pr_title}`
-                      },
-                      accessory: {
-                        type: 'button',
-                        text: {
-                          type: 'plain_text',
-                          text: 'View PR'
-                        },
-                        url: pr_url,
-                        action_id: 'view_pr'
+                        text: `*[${repoName}][#${pr_number}]* ${pr_title}\n<${pr_url}|View PR>`
                       }
                     }
                   ]
@@ -997,7 +973,11 @@ jobs:
                     });
                     console.log(`Successfully added reaction: ${reaction}`);
                   } catch (e) {
-                    console.log(`Could not add reaction ${reaction}: ${e.message}`);
+                    if (e.message.includes('missing_scope')) {
+                      console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                    } else {
+                      console.log(`Could not add reaction ${reaction}: ${e.message}`);
+                    }
                   }
                 }
               }
@@ -1143,16 +1123,7 @@ jobs:
                       type: 'section',
                       text: {
                         type: 'mrkdwn',
-                        text: `*[${repoName}][#${pr_number}]* ${pr_title}`
-                      },
-                      accessory: {
-                        type: 'button',
-                        text: {
-                          type: 'plain_text',
-                          text: 'View PR'
-                        },
-                        url: pr_url,
-                        action_id: 'view_pr'
+                        text: `*[${repoName}][#${pr_number}]* ${pr_title}\n<${pr_url}|View PR>`
                       }
                     }
                   ]
@@ -1211,7 +1182,11 @@ jobs:
                     });
                     console.log(`Successfully added reaction: ${reaction}`);
                   } catch (e) {
-                    console.log(`Could not add reaction ${reaction}: ${e.message}`);
+                    if (e.message.includes('missing_scope')) {
+                      console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                    } else {
+                      console.log(`Could not add reaction ${reaction}: ${e.message}`);
+                    }
                   }
                 }
               }
