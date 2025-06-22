@@ -29,7 +29,6 @@ jobs:
       fetch-depth: 2
     secrets:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   pr-labels:
     name: PR Labels
