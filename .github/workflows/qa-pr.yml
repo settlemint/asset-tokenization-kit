@@ -19,8 +19,8 @@ on:
     types: [submitted, dismissed]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.action }}
+  cancel-in-progress: ${{ github.event.action == 'synchronize' }}
 
 jobs:
   # Label PR based on draft/ready status
