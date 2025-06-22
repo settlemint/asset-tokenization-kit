@@ -103,14 +103,26 @@ runs:
           
           let currentStatuses = [];
           
-          // Add QA reaction if present
-          const qaLabel = qaLabels.find(l => Object.keys(statusReactions).includes(l.name));
-          if (qaLabel) {
-            currentStatuses.push(statusReactions[qaLabel.name]);
+          // Priority order for QA labels (if multiple exist due to race conditions)
+          const qaPriority = ['qa:failed', 'qa:success', 'qa:running', 'qa:pending'];
+          
+          // Find the highest priority QA label
+          let selectedQaLabel = null;
+          for (const priorityLabel of qaPriority) {
+            if (qaLabels.some(l => l.name === priorityLabel)) {
+              selectedQaLabel = priorityLabel;
+              break;
+            }
+          }
+          
+          // Add only the selected QA reaction
+          if (selectedQaLabel && statusReactions[selectedQaLabel]) {
+            currentStatuses.push(statusReactions[selectedQaLabel]);
+            console.log(`Selected QA reaction: ${selectedQaLabel} -> ${statusReactions[selectedQaLabel]}`);
           }
           
           // Only add status reaction if QA is not running or pending
-          const qaRunning = qaLabels.some(l => l.name === 'qa:running' || l.name === 'qa:pending');
+          const qaRunning = selectedQaLabel === 'qa:running' || selectedQaLabel === 'qa:pending';
           if (!qaRunning) {
             const statusLabel = statusLabels.find(l => Object.keys(statusReactions).includes(l.name));
             if (statusLabel) {
@@ -165,48 +177,32 @@ runs:
               type: 'header',
               text: {
                 type: 'plain_text',
-                text: `PR #${pr_number}`,
-                emoji: true
+                text: `#${pr_number}: ${pr_title}`,
+                emoji: false
               }
             },
             {
               type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: `*${pr_title}*`
-              }
-            },
-            {
-              type: 'context',
-              elements: [
+              fields: [
                 {
-                  type: 'image',
-                  image_url: author_avatar,
-                  alt_text: pr_author
+                  type: 'mrkdwn',
+                  text: `*Author*\n${pr_author}`
                 },
                 {
                   type: 'mrkdwn',
-                  text: `*Author:* ${pr_author} • *Repository:* ${repoName}`
+                  text: `*Repository*\n${repoName}`
                 }
-              ]
-            },
-            {
-              type: 'divider'
-            },
-            {
-              type: 'actions',
-              elements: [
-                {
-                  type: 'button',
-                  text: {
-                    type: 'plain_text',
-                    text: '👀 View PR',
-                    emoji: true
-                  },
-                  url: pr_url,
-                  style: 'primary'
-                }
-              ]
+              ],
+              accessory: {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'View PR',
+                  emoji: false
+                },
+                url: pr_url,
+                style: 'primary'
+              }
             }
           ];
 
@@ -215,7 +211,7 @@ runs:
               // Send new message
               const result = await slackAPI('chat.postMessage', {
                 channel: process.env.SLACK_CHANNEL_ID,
-                text: `PR #${pr_number}: ${pr_title}`,
+                text: `#${pr_number}: ${pr_title}`,
                 blocks: messageBlocks
               });
 
@@ -237,7 +233,7 @@ runs:
               await slackAPI('chat.update', {
                 channel: process.env.SLACK_CHANNEL_ID,
                 ts: slackTs,
-                text: `PR #${pr_number}: ${pr_title}`,
+                text: `#${pr_number}: ${pr_title}`,
                 blocks: messageBlocks
               });
             }
