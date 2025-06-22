@@ -15,6 +15,8 @@ on:
       ]
     branches:
       - main
+  pull_request_review:
+    types: [submitted, dismissed]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,6 +28,7 @@ jobs:
     name: Label PR Status
     if: |
       !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      github.event_name == 'pull_request' &&
       (github.event.action == 'opened' ||
        github.event.action == 'ready_for_review' ||
        github.event.action == 'converted_to_draft' ||
@@ -41,6 +44,7 @@ jobs:
     name: Label QA Start
     if: |
       !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      github.event_name == 'pull_request' &&
       (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-build-status-labeler.yml
     with:
@@ -52,6 +56,7 @@ jobs:
     needs: label-qa-start
     if: |
       !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      github.event_name == 'pull_request' &&
       (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-qa.yml
     with:
@@ -63,9 +68,10 @@ jobs:
   pr-labels:
     name: PR Labels
     if: |
-      github.event.action == 'opened' || 
-      github.event.action == 'synchronize' ||
-      github.event.action == 'edited'
+      github.event_name == 'pull_request' &&
+      (github.event.action == 'opened' || 
+       github.event.action == 'synchronize' ||
+       github.event.action == 'edited')
     uses: ./.github/workflows/reusable-pr-labeler.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
@@ -77,6 +83,7 @@ jobs:
     name: Secret Scanning
     if: |
       !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      github.event_name == 'pull_request' &&
       (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-secret-scanning.yml
     with:
@@ -88,6 +95,7 @@ jobs:
     name: CodeQL Analysis
     if: |
       !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      github.event_name == 'pull_request' &&
       (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-codeql.yml
     with:
@@ -102,11 +110,12 @@ jobs:
     if: |
       always() &&
       !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      github.event_name == 'pull_request' &&
       (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-build-status-labeler.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
-      workflow_status: ${{ (needs.qa.result == 'success' && needs.secret-scanning.result != 'failure') && 'success' || 'failure' }}
+      workflow_status: ${{ (needs.qa.result == 'success' && needs.secret-scanning.result == 'success') && 'success' || 'failure' }}
       runs-on: namespace-profile-atk-services
 
   # Update PR status with review and QA information
@@ -117,7 +126,8 @@ jobs:
       always() &&
       !endsWith(github.event.pull_request.user.login, '[bot]') &&
       (github.event.action == 'synchronize' || github.event.action == 'opened' || 
-       github.event.action == 'ready_for_review' || github.event.action == 'converted_to_draft')
+       github.event.action == 'ready_for_review' || github.event.action == 'converted_to_draft' ||
+       github.event.action == 'submitted' || github.event.action == 'dismissed')
     runs-on: namespace-profile-atk-services
     steps:
       - name: Get PR reviews
@@ -145,12 +155,42 @@ jobs:
             
       - name: Determine QA status
         id: qa_status
-        run: |
-          if [[ "${{ needs.qa.result }}" == "success" && "${{ needs.secret-scanning.result }}" != "failure" ]]; then
-            echo "qa_status=success" >> $GITHUB_OUTPUT
-          else
-            echo "qa_status=failed" >> $GITHUB_OUTPUT
-          fi
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr_number = ${{ github.event.pull_request.number }};
+            
+            // For review events, we need to check labels since qa job doesn't run
+            if ('${{ github.event_name }}' === 'pull_request_review') {
+              // Get current labels
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr_number
+              });
+              
+              const labels = pr.labels.map(l => l.name);
+              let qa_status = '';
+              
+              if (labels.includes('qa:success')) {
+                qa_status = 'success';
+              } else if (labels.includes('qa:failed')) {
+                qa_status = 'failed';
+              } else if (labels.includes('qa:running')) {
+                qa_status = 'running';
+              } else if (labels.includes('qa:pending')) {
+                qa_status = 'pending';
+              }
+              
+              core.setOutput('qa_status', qa_status);
+            } else {
+              // For PR events, use the job results
+              if ('${{ needs.qa.result }}' === 'success' && '${{ needs.secret-scanning.result }}' === 'success') {
+                core.setOutput('qa_status', 'success');
+              } else {
+                core.setOutput('qa_status', 'failed');
+              }
+            }
     outputs:
       has_approval: ${{ steps.check_approval.outputs.has_approval }}
       qa_status: ${{ steps.qa_status.outputs.qa_status }}
@@ -166,7 +206,7 @@ jobs:
     with:
       pr_number: ${{ github.event.pull_request.number }}
       is_draft: ${{ github.event.pull_request.draft }}
-      has_approval: ${{ fromJson(needs.update-pr-status.outputs.has_approval) }}
+      has_approval: ${{ needs.update-pr-status.outputs.has_approval == 'true' }}
       qa_status: ${{ needs.update-pr-status.outputs.qa_status }}
       runs-on: namespace-profile-atk-services
 
@@ -174,6 +214,7 @@ jobs:
   label-pr-closed:
     name: Label PR Closed
     if: |
+      github.event_name == 'pull_request' &&
       github.event.action == 'closed' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     uses: ./.github/workflows/reusable-pr-status-labeler.yml
@@ -183,41 +224,54 @@ jobs:
       is_merged: ${{ github.event.pull_request.merged }}
       runs-on: namespace-profile-atk-services
 
-  # Enable auto-merge if PR is mergeable
-  enable-auto-merge:
-    name: Enable Auto-Merge
+  # Manage auto-merge based on PR state
+  manage-auto-merge:
+    name: Manage Auto-Merge
     needs: [update-pr-status, label-pr-final-status]
     if: |
       always() &&
-      !endsWith(github.event.pull_request.user.login, '[bot]') &&
-      needs.update-pr-status.outputs.has_approval == 'true' &&
-      needs.update-pr-status.outputs.qa_status == 'success' &&
-      github.event.pull_request.draft == false
+      !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
     steps:
-      - name: Enable auto-merge for PR
+      - name: Manage auto-merge for PR
         uses: actions/github-script@v7
         with:
           script: |
             const pr_number = ${{ github.event.pull_request.number }};
+            const has_approval = '${{ needs.update-pr-status.outputs.has_approval }}' === 'true';
+            const qa_status = '${{ needs.update-pr-status.outputs.qa_status }}';
+            const is_draft = ${{ github.event.pull_request.draft }};
+            
+            // Check if PR is mergeable
+            const is_mergeable = has_approval && qa_status === 'success' && !is_draft;
             
             try {
-              // Enable auto-merge
-              const result = await github.rest.pulls.enableAutoMerge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: pr_number,
-                merge_method: 'squash' // or 'merge' or 'rebase' based on your preference
-              });
-              
-              console.log(`Auto-merge enabled for PR #${pr_number}`);
+              if (is_mergeable) {
+                // Enable auto-merge
+                await github.rest.pulls.enableAutoMerge({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr_number,
+                  merge_method: 'squash'
+                });
+                console.log(`Auto-merge enabled for PR #${pr_number}`);
+              } else {
+                // Disable auto-merge if it was enabled
+                await github.rest.pulls.disableAutoMerge({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr_number
+                });
+                console.log(`Auto-merge disabled for PR #${pr_number} - no longer mergeable`);
+              }
             } catch (error) {
-              console.log(`Failed to enable auto-merge: ${error.message}`);
-              
-              // Check if it's because auto-merge is already enabled
-              if (error.message.includes('already enabled')) {
-                console.log('Auto-merge is already enabled for this PR');
+              if (error.message.includes('Auto-merge is not enabled')) {
+                console.log('Auto-merge is already disabled');
+              } else if (error.message.includes('already enabled')) {
+                console.log('Auto-merge is already enabled');
               } else if (error.message.includes('Auto-merge is not allowed')) {
                 console.log('Auto-merge is not allowed for this repository. Please enable it in repository settings.');
+              } else {
+                console.log(`Error managing auto-merge: ${error.message}`);
               }
             }
