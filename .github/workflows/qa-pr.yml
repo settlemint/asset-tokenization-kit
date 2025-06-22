@@ -36,19 +36,7 @@ jobs:
       is_draft: ${{ github.event.pull_request.draft }}
       runs-on: namespace-profile-atk-services
 
-  # Label PR as QA pending when code is pushed
-  label-qa-pending:
-    name: Label QA Pending
-    if: |
-      !endsWith(github.event.pull_request.user.login, '[bot]') &&
-      github.event.action == 'synchronize'
-    uses: ./.github/workflows/reusable-build-status-labeler.yml
-    with:
-      pr_number: ${{ github.event.pull_request.number }}
-      workflow_status: 'pending'
-      runs-on: namespace-profile-atk-services
-
-  # Label PR as QA running when workflow starts
+  # Label PR as QA running when workflow starts (skip pending label)
   label-qa-start:
     name: Label QA Start
     if: |
@@ -181,3 +169,42 @@ jobs:
       has_approval: ${{ fromJson(needs.update-pr-status.outputs.has_approval) }}
       qa_status: ${{ needs.update-pr-status.outputs.qa_status }}
       runs-on: namespace-profile-atk-services
+
+  # Enable auto-merge if PR is mergeable
+  enable-auto-merge:
+    name: Enable Auto-Merge
+    needs: [update-pr-status, label-pr-final-status]
+    if: |
+      always() &&
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      needs.update-pr-status.outputs.has_approval == 'true' &&
+      needs.update-pr-status.outputs.qa_status == 'success' &&
+      github.event.pull_request.draft == false
+    runs-on: namespace-profile-atk-services
+    steps:
+      - name: Enable auto-merge for PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr_number = ${{ github.event.pull_request.number }};
+            
+            try {
+              // Enable auto-merge
+              const result = await github.rest.pulls.enableAutoMerge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr_number,
+                merge_method: 'squash' // or 'merge' or 'rebase' based on your preference
+              });
+              
+              console.log(`Auto-merge enabled for PR #${pr_number}`);
+            } catch (error) {
+              console.log(`Failed to enable auto-merge: ${error.message}`);
+              
+              // Check if it's because auto-merge is already enabled
+              if (error.message.includes('already enabled')) {
+                console.log('Auto-merge is already enabled for this PR');
+              } else if (error.message.includes('Auto-merge is not allowed')) {
+                console.log('Auto-merge is not allowed for this repository. Please enable it in repository settings.');
+              }
+            }
