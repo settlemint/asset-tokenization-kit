@@ -27,8 +27,8 @@ jobs:
   label-pr-status:
     name: Label PR Status
     if: |
-      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       github.event_name == 'pull_request' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       (github.event.action == 'opened' ||
        github.event.action == 'ready_for_review' ||
        github.event.action == 'converted_to_draft' ||
@@ -46,6 +46,7 @@ jobs:
     if: |
       always() &&
       needs.label-pr-status.result == 'success' &&
+      github.event_name == 'pull_request' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
     steps:
@@ -237,8 +238,8 @@ jobs:
   label-qa-start:
     name: Label QA Start
     if: |
-      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       github.event_name == 'pull_request' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-build-status-labeler.yml
     with:
@@ -253,6 +254,7 @@ jobs:
     if: |
       always() &&
       needs.label-qa-start.result == 'success' &&
+      github.event_name == 'pull_request' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
     steps:
@@ -443,8 +445,8 @@ jobs:
     name: QA
     needs: [label-qa-start, slack-notify-qa-start]
     if: |
-      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       github.event_name == 'pull_request' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-qa.yml
     with:
@@ -470,8 +472,8 @@ jobs:
   secret-scanning:
     name: Secret Scanning
     if: |
-      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       github.event_name == 'pull_request' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-secret-scanning.yml
     with:
@@ -482,8 +484,8 @@ jobs:
   codeql:
     name: CodeQL Analysis
     if: |
-      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       github.event_name == 'pull_request' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-codeql.yml
     with:
@@ -497,8 +499,8 @@ jobs:
     needs: [qa, secret-scanning]
     if: |
       always() &&
-      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       github.event_name == 'pull_request' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-build-status-labeler.yml
     with:
@@ -513,6 +515,7 @@ jobs:
     if: |
       always() &&
       needs.label-qa-end.result == 'success' &&
+      github.event_name == 'pull_request' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
     steps:
@@ -783,6 +786,7 @@ jobs:
     needs: [update-pr-status]
     if: |
       always() &&
+      (github.event_name == 'pull_request' || github.event_name == 'pull_request_review') &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     uses: ./.github/workflows/reusable-pr-status-labeler.yml
     with:
@@ -799,6 +803,7 @@ jobs:
     if: |
       always() &&
       needs.label-pr-final-status.result == 'success' &&
+      (github.event_name == 'pull_request' || github.event_name == 'pull_request_review') &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
     steps:
@@ -996,8 +1001,8 @@ jobs:
     uses: ./.github/workflows/reusable-pr-status-labeler.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
-      is_draft: ${{ github.event.pull_request.draft }}
-      is_merged: ${{ github.event.pull_request.merged }}
+      is_draft: ${{ github.event.pull_request.draft || false }}
+      is_merged: ${{ github.event.pull_request.merged || false }}
       runs-on: namespace-profile-atk-services
 
   # Send Slack notification for PR closed/merged
@@ -1201,6 +1206,7 @@ jobs:
     needs: [update-pr-status, label-pr-final-status, slack-notify-final-status]
     if: |
       always() &&
+      (github.event_name == 'pull_request' || github.event_name == 'pull_request_review') &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
     steps:
