@@ -49,6 +49,9 @@ jobs:
       github.event_name == 'pull_request' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
+    permissions:
+      pull-requests: read
+      issues: write  # For creating comments with Slack timestamp
     steps:
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
@@ -358,6 +361,9 @@ jobs:
       github.event_name == 'pull_request' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
+    permissions:
+      pull-requests: read
+      issues: write  # For creating comments with Slack timestamp
     steps:
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
@@ -709,6 +715,9 @@ jobs:
       github.event_name == 'pull_request' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
+    permissions:
+      pull-requests: read
+      issues: write  # For creating comments with Slack timestamp
     steps:
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
@@ -1006,6 +1015,8 @@ jobs:
        github.event.action == 'ready_for_review' || github.event.action == 'converted_to_draft' ||
        github.event.action == 'submitted' || github.event.action == 'dismissed')
     runs-on: namespace-profile-atk-services
+    permissions:
+      pull-requests: read  # For reading PR reviews
     steps:
       - name: Get PR reviews
         id: check_approval
@@ -1098,6 +1109,9 @@ jobs:
       (github.event_name == 'pull_request' || github.event_name == 'pull_request_review') &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
+    permissions:
+      pull-requests: read
+      issues: write  # For creating comments with Slack timestamp
     steps:
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
@@ -1408,6 +1422,9 @@ jobs:
       github.event.action == 'closed' &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
+    permissions:
+      pull-requests: read
+      issues: write  # For creating comments with Slack timestamp
     steps:
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
@@ -1703,6 +1720,8 @@ jobs:
       (github.event_name == 'pull_request' || github.event_name == 'pull_request_review') &&
       !endsWith(github.event.pull_request.user.login, '[bot]')
     runs-on: namespace-profile-atk-services
+    permissions:
+      pull-requests: write  # For enabling/disabling auto-merge
     steps:
       - name: Manage auto-merge for PR
         uses: actions/github-script@v7
