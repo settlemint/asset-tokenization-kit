@@ -1,0 +1,30 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/specification/main/schema/mcp-config.schema.json",
+  "servers": {
+    "linear": {
+      "command": "bunx",
+      "args": ["@modelcontextprotocol/server-linear"],
+      "env": {
+        "LINEAR_API_KEY": "${LINEAR_API_KEY}"
+      }
+    },
+    "github": {
+      "command": "bunx",
+      "args": ["@modelcontextprotocol/server-github", "--owner", "settlemint", "--repo", "asset-tokenization-kit"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "postgres-local": {
+      "command": "bunx",
+      "args": ["@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "${DATABASE_URL}"
+      }
+    },
+    "filesystem": {
+      "command": "bunx",
+      "args": ["@modelcontextprotocol/server-filesystem", "--paths", "./kit", "--writable"]
+    }
+  }
+}

@@ -1,7 +1,36 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with
-code in this repository.
+This file provides project-specific guidance to Claude Code when working with this repository. Claude Code reads this file automatically at startup to understand project conventions, architecture, and workflows.
+
+## Memory Management Notes
+- This file is for team-shared project instructions
+- Use clear, specific instructions (e.g., "Use 2-space indentation" not "format nicely")
+- Organize with descriptive headings and bullet points
+- Review and update regularly as the project evolves
+- Can import other files with `@path/to/file` syntax
+
+## Claude Code Best Practices
+
+### Be Specific with Requests
+- ❌ "Fix the bug" 
+- ✅ "Fix the login bug where users see a blank screen after entering wrong credentials"
+
+### Use Step-by-Step Instructions
+Break complex tasks into clear steps:
+1. First, analyze the current implementation
+2. Then, make specific changes
+3. Finally, verify with tests
+
+### Let Claude Explore First
+Before making changes:
+- "Analyze the database schema"
+- "How does authentication work in this app?"
+- "Show me the API structure"
+
+### Effective Communication
+- Treat Claude Code as an AI pair programmer
+- Provide context about what you're trying to achieve
+- Iterate based on results - start simple, then refine
 
 ## Project Overview
 
@@ -87,6 +116,8 @@ Claude Code has access to specialized commands in `.claude/commands/` that shoul
 - **`/pr`** - Create pull requests with proper branch management and semantic commits
 - **`/qa`** - Run the complete test suite; use before any PR or after significant changes
 - **`/comments`** - Add documentation to code changes; use when code lacks comments
+- **`/explore`** - Systematically understand project architecture before making changes
+- **`/quick`** - Quick reference for Claude Code commands and best practices
 
 ### Problem-Solving Commands
 - **`/stuck`** - Systematic debugging approach when facing difficult problems
@@ -104,10 +135,13 @@ Claude Code has access to specialized commands in `.claude/commands/` that shoul
 | User asks to create PR | `/pr` |
 | Before submitting any code | `/qa` |
 | Code changes lack documentation | `/comments` |
+| Starting work on new codebase | `/explore` |
+| User asks "how do I..." | `/quick` |
 | Debugging for >5 minutes | `/stuck` |
 | Performance issues mentioned | `/performance` |
 | Updating packages | `/deps` |
 | Complex debugging needed | `/debug` |
+| Need to understand architecture | `/explore` |
 
 ### Proactive Command Usage
 
@@ -140,3 +174,43 @@ You should proactively suggest or use commands when you detect:
 - For Solidity development in kit/contracts, always follow the Solidity
   Development Guidelines section
 - Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator
+
+## MCP (Model Context Protocol) Servers
+
+This project includes team-wide MCP server configurations in `.mcp.json`. These servers extend Claude Code's capabilities:
+
+### Available MCP Servers
+
+1. **Linear** - Project management integration
+   - Access Linear issues, projects, and comments
+   - Requires: `LINEAR_API_KEY` environment variable
+
+2. **GitHub** - Repository operations
+   - Configured for `settlemint/asset-tokenization-kit`
+   - Requires: `GITHUB_PERSONAL_ACCESS_TOKEN` environment variable
+
+3. **Postgres Local** - Database access
+   - Connects to local development database
+   - Uses: `DATABASE_URL` environment variable
+
+4. **Filesystem** - Enhanced file operations
+   - Writable access to `./kit` directory
+   - Use for bulk file operations
+
+### Setting Up MCP Servers
+
+1. Install required environment variables:
+   ```bash
+   export LINEAR_API_KEY="your-linear-api-key"
+   export GITHUB_PERSONAL_ACCESS_TOKEN="your-github-token"
+   export DATABASE_URL="postgresql://user:pass@localhost:5432/dbname"
+   ```
+
+2. The servers will be automatically available when running Claude Code
+
+### Using MCP Servers
+
+- **Linear**: "Check Linear issues for this project" or "Create a Linear issue for this bug"
+- **GitHub**: "Search for similar issues in our repository" or "Check recent PRs"
+- **Postgres**: "Show me the database schema" or "Query the users table"
+- **Filesystem**: "Find all TypeScript files with 'TODO' comments"
