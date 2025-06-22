@@ -8,6 +8,7 @@ jobs:
   # Get current QA status from labels
   get-qa-status:
     name: Get QA Status
+    if: ${{ !endsWith(github.event.pull_request.user.login, '[bot]') }}
     runs-on: namespace-profile-atk-services
     outputs:
       qa_status: ${{ steps.check_labels.outputs.qa_status }}
@@ -69,6 +70,7 @@ jobs:
   update-pr-status:
     name: Update PR Status
     needs: [get-qa-status]
+    if: ${{ !endsWith(github.event.pull_request.user.login, '[bot]') }}
     uses: ./.github/workflows/reusable-pr-status-labeler.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}

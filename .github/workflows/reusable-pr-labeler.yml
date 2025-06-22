@@ -123,8 +123,8 @@ jobs:
         with:
           script: |
             const pr_number = ${{ inputs.pr_number }};
-            const pr_title = `${{ inputs.pr_title }}`;
-            const pr_body = `${{ inputs.pr_body }}`;
+            const pr_title = ${{ toJSON(inputs.pr_title) }};
+            const pr_body = ${{ toJSON(inputs.pr_body) }};
             
             const labelsToAdd = [];
             

@@ -25,10 +25,11 @@ jobs:
   label-pr-status:
     name: Label PR Status
     if: |
-      github.event.action == 'opened' ||
-      github.event.action == 'ready_for_review' ||
-      github.event.action == 'converted_to_draft' ||
-      github.event.action == 'synchronize'
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      (github.event.action == 'opened' ||
+       github.event.action == 'ready_for_review' ||
+       github.event.action == 'converted_to_draft' ||
+       github.event.action == 'synchronize')
     uses: ./.github/workflows/reusable-pr-status-labeler.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
@@ -38,7 +39,9 @@ jobs:
   # Label PR as QA pending when code is pushed
   label-qa-pending:
     name: Label QA Pending
-    if: github.event.action == 'synchronize'
+    if: |
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      github.event.action == 'synchronize'
     uses: ./.github/workflows/reusable-build-status-labeler.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
@@ -49,7 +52,8 @@ jobs:
   label-qa-start:
     name: Label QA Start
     if: |
-      github.event.action == 'synchronize' || github.event.action == 'opened'
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-build-status-labeler.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
@@ -59,7 +63,8 @@ jobs:
     name: QA
     needs: label-qa-start
     if: |
-      github.event.action == 'synchronize' || github.event.action == 'opened'
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-qa.yml
     with:
       runs-on: namespace-profile-atk
@@ -83,7 +88,8 @@ jobs:
   secret-scanning:
     name: Secret Scanning
     if: |
-      github.event.action == 'synchronize' || github.event.action == 'opened'
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-secret-scanning.yml
     with:
       runs-on: namespace-profile-atk-services
@@ -93,7 +99,8 @@ jobs:
   codeql:
     name: CodeQL Analysis
     if: |
-      github.event.action == 'synchronize' || github.event.action == 'opened'
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
+      (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-codeql.yml
     with:
       language: 'javascript-typescript'
@@ -106,6 +113,7 @@ jobs:
     needs: [qa, secret-scanning]
     if: |
       always() &&
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       (github.event.action == 'synchronize' || github.event.action == 'opened')
     uses: ./.github/workflows/reusable-build-status-labeler.yml
     with:
@@ -119,6 +127,7 @@ jobs:
     needs: [label-qa-end, qa, secret-scanning]
     if: |
       always() &&
+      !endsWith(github.event.pull_request.user.login, '[bot]') &&
       (github.event.action == 'synchronize' || github.event.action == 'opened' || 
        github.event.action == 'ready_for_review' || github.event.action == 'converted_to_draft')
     runs-on: namespace-profile-atk-services
@@ -162,7 +171,9 @@ jobs:
   label-pr-final-status:
     name: Label PR Final Status
     needs: [update-pr-status]
-    if: always()
+    if: |
+      always() &&
+      !endsWith(github.event.pull_request.user.login, '[bot]')
     uses: ./.github/workflows/reusable-pr-status-labeler.yml
     with:
       pr_number: ${{ github.event.pull_request.number }}
