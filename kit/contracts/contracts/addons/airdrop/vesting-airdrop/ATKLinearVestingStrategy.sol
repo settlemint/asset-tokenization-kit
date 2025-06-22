@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.28;
 
-import { IATKVestingStrategy } from "./IATKVestingStrategy.sol";
+import { IATKLinearVestingStrategy } from "./IATKLinearVestingStrategy.sol";
 
 /// @title ATK Linear Vesting Strategy
 /// @author SettleMint Tokenization Services
