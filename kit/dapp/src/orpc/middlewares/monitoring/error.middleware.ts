@@ -246,16 +246,6 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
         });
       }
 
-      // Include cause information in the error for debugging
-      if (error.cause instanceof Error) {
-        throw new ORPCError(error.code, {
-          status: error.status,
-          message: error.message,
-          cause: error.cause,
-          data: error.data,
-        });
-      }
-
       throw error;
     }
 
