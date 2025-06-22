@@ -104,6 +104,12 @@ jobs:
               'status:mergeable': 'rocket',
               'status:merged': 'tada'
             };
+            
+            // Define mutually exclusive groups (only one can be active at a time)
+            const exclusiveGroups = {
+              'qa': ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
+              'status': ['eyes', 'thumbsup', 'rocket', 'tada']
+            };
 
             // Get current status labels
             console.log('Current PR labels:', labels.map(l => l.name));
@@ -190,11 +196,29 @@ jobs:
                     timestamp: slackTs
                   });
 
-                  // Remove old status reactions
+                  // Determine which reactions to remove based on exclusive groups
+                  const reactionsToRemove = new Set();
+                  
+                  // For each reaction we want to add, find its group and mark all other reactions in that group for removal
+                  for (const reactionToAdd of currentStatuses) {
+                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                      if (groupReactions.includes(reactionToAdd)) {
+                        // Add all other reactions in this group to removal set
+                        groupReactions.forEach(r => {
+                          if (r !== reactionToAdd) {
+                            reactionsToRemove.add(r);
+                          }
+                        });
+                      }
+                    }
+                  }
+                  
+                  // Remove old reactions
                   if (reactions.message && reactions.message.reactions) {
                     for (const reaction of reactions.message.reactions) {
-                      if (Object.values(statusReactions).includes(reaction.name)) {
+                      if (reactionsToRemove.has(reaction.name)) {
                         try {
+                          console.log(`Removing outdated reaction: ${reaction.name}`);
                           await slackAPI('reactions.remove', {
                             channel: process.env.SLACK_CHANNEL_ID,
                             timestamp: slackTs,
@@ -312,6 +336,12 @@ jobs:
               'status:mergeable': 'rocket',
               'status:merged': 'tada'
             };
+            
+            // Define mutually exclusive groups (only one can be active at a time)
+            const exclusiveGroups = {
+              'qa': ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
+              'status': ['eyes', 'thumbsup', 'rocket', 'tada']
+            };
 
             // Get current status labels
             console.log('Current PR labels:', labels.map(l => l.name));
@@ -398,11 +428,29 @@ jobs:
                     timestamp: slackTs
                   });
 
-                  // Remove old status reactions
+                  // Determine which reactions to remove based on exclusive groups
+                  const reactionsToRemove = new Set();
+                  
+                  // For each reaction we want to add, find its group and mark all other reactions in that group for removal
+                  for (const reactionToAdd of currentStatuses) {
+                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                      if (groupReactions.includes(reactionToAdd)) {
+                        // Add all other reactions in this group to removal set
+                        groupReactions.forEach(r => {
+                          if (r !== reactionToAdd) {
+                            reactionsToRemove.add(r);
+                          }
+                        });
+                      }
+                    }
+                  }
+                  
+                  // Remove old reactions
                   if (reactions.message && reactions.message.reactions) {
                     for (const reaction of reactions.message.reactions) {
-                      if (Object.values(statusReactions).includes(reaction.name)) {
+                      if (reactionsToRemove.has(reaction.name)) {
                         try {
+                          console.log(`Removing outdated reaction: ${reaction.name}`);
                           await slackAPI('reactions.remove', {
                             channel: process.env.SLACK_CHANNEL_ID,
                             timestamp: slackTs,
@@ -573,6 +621,12 @@ jobs:
               'status:mergeable': 'rocket',
               'status:merged': 'tada'
             };
+            
+            // Define mutually exclusive groups (only one can be active at a time)
+            const exclusiveGroups = {
+              'qa': ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
+              'status': ['eyes', 'thumbsup', 'rocket', 'tada']
+            };
 
             // Get current status labels
             console.log('Current PR labels:', labels.map(l => l.name));
@@ -659,11 +713,29 @@ jobs:
                     timestamp: slackTs
                   });
 
-                  // Remove old status reactions
+                  // Determine which reactions to remove based on exclusive groups
+                  const reactionsToRemove = new Set();
+                  
+                  // For each reaction we want to add, find its group and mark all other reactions in that group for removal
+                  for (const reactionToAdd of currentStatuses) {
+                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                      if (groupReactions.includes(reactionToAdd)) {
+                        // Add all other reactions in this group to removal set
+                        groupReactions.forEach(r => {
+                          if (r !== reactionToAdd) {
+                            reactionsToRemove.add(r);
+                          }
+                        });
+                      }
+                    }
+                  }
+                  
+                  // Remove old reactions
                   if (reactions.message && reactions.message.reactions) {
                     for (const reaction of reactions.message.reactions) {
-                      if (Object.values(statusReactions).includes(reaction.name)) {
+                      if (reactionsToRemove.has(reaction.name)) {
                         try {
+                          console.log(`Removing outdated reaction: ${reaction.name}`);
                           await slackAPI('reactions.remove', {
                             channel: process.env.SLACK_CHANNEL_ID,
                             timestamp: slackTs,
@@ -861,6 +933,12 @@ jobs:
               'status:mergeable': 'rocket',
               'status:merged': 'tada'
             };
+            
+            // Define mutually exclusive groups (only one can be active at a time)
+            const exclusiveGroups = {
+              'qa': ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
+              'status': ['eyes', 'thumbsup', 'rocket', 'tada']
+            };
 
             // Get current status labels
             console.log('Current PR labels:', labels.map(l => l.name));
@@ -947,11 +1025,29 @@ jobs:
                     timestamp: slackTs
                   });
 
-                  // Remove old status reactions
+                  // Determine which reactions to remove based on exclusive groups
+                  const reactionsToRemove = new Set();
+                  
+                  // For each reaction we want to add, find its group and mark all other reactions in that group for removal
+                  for (const reactionToAdd of currentStatuses) {
+                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                      if (groupReactions.includes(reactionToAdd)) {
+                        // Add all other reactions in this group to removal set
+                        groupReactions.forEach(r => {
+                          if (r !== reactionToAdd) {
+                            reactionsToRemove.add(r);
+                          }
+                        });
+                      }
+                    }
+                  }
+                  
+                  // Remove old reactions
                   if (reactions.message && reactions.message.reactions) {
                     for (const reaction of reactions.message.reactions) {
-                      if (Object.values(statusReactions).includes(reaction.name)) {
+                      if (reactionsToRemove.has(reaction.name)) {
                         try {
+                          console.log(`Removing outdated reaction: ${reaction.name}`);
                           await slackAPI('reactions.remove', {
                             channel: process.env.SLACK_CHANNEL_ID,
                             timestamp: slackTs,
@@ -1070,6 +1166,12 @@ jobs:
               'status:mergeable': 'rocket',
               'status:merged': 'tada'
             };
+            
+            // Define mutually exclusive groups (only one can be active at a time)
+            const exclusiveGroups = {
+              'qa': ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
+              'status': ['eyes', 'thumbsup', 'rocket', 'tada']
+            };
 
             // Get current status labels
             console.log('Current PR labels:', labels.map(l => l.name));
@@ -1156,11 +1258,29 @@ jobs:
                     timestamp: slackTs
                   });
 
-                  // Remove old status reactions
+                  // Determine which reactions to remove based on exclusive groups
+                  const reactionsToRemove = new Set();
+                  
+                  // For each reaction we want to add, find its group and mark all other reactions in that group for removal
+                  for (const reactionToAdd of currentStatuses) {
+                    for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+                      if (groupReactions.includes(reactionToAdd)) {
+                        // Add all other reactions in this group to removal set
+                        groupReactions.forEach(r => {
+                          if (r !== reactionToAdd) {
+                            reactionsToRemove.add(r);
+                          }
+                        });
+                      }
+                    }
+                  }
+                  
+                  // Remove old reactions
                   if (reactions.message && reactions.message.reactions) {
                     for (const reaction of reactions.message.reactions) {
-                      if (Object.values(statusReactions).includes(reaction.name)) {
+                      if (reactionsToRemove.has(reaction.name)) {
                         try {
+                          console.log(`Removing outdated reaction: ${reaction.name}`);
                           await slackAPI('reactions.remove', {
                             channel: process.env.SLACK_CHANNEL_ID,
                             timestamp: slackTs,
