@@ -170,6 +170,19 @@ jobs:
       qa_status: ${{ needs.update-pr-status.outputs.qa_status }}
       runs-on: namespace-profile-atk-services
 
+  # Handle PR closed/merged
+  label-pr-closed:
+    name: Label PR Closed
+    if: |
+      github.event.action == 'closed' &&
+      !endsWith(github.event.pull_request.user.login, '[bot]')
+    uses: ./.github/workflows/reusable-pr-status-labeler.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      is_draft: ${{ github.event.pull_request.draft }}
+      is_merged: ${{ github.event.pull_request.merged }}
+      runs-on: namespace-profile-atk-services
+
   # Enable auto-merge if PR is mergeable
   enable-auto-merge:
     name: Enable Auto-Merge

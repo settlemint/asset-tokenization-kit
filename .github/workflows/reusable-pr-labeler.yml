@@ -38,33 +38,34 @@ jobs:
             // Define all labels with colors and descriptions
             const labelDefinitions = {
               // Conventional commit types
-              'feat': { color: '0E8A16', description: 'New feature' },
-              'fix': { color: 'D93F0B', description: 'Bug fix' },
-              'docs': { color: '0052CC', description: 'Documentation changes' },
-              'style': { color: 'C5DEF5', description: 'Code style changes (formatting, etc)' },
-              'refactor': { color: 'FEF2C0', description: 'Code refactoring' },
-              'perf': { color: 'FBCA04', description: 'Performance improvements' },
-              'test': { color: '1D76DB', description: 'Test additions or modifications' },
-              'build': { color: 'BFD4F2', description: 'Build system changes' },
-              'ci': { color: '000000', description: 'CI/CD configuration changes' },
-              'revert': { color: 'B60205', description: 'Revert previous commits' },
-              'chore': { color: 'F9D0C4', description: 'Maintenance tasks' },
+              'feat': { color: '0E8A16', description: 'New feature' },  // Green
+              'fix': { color: 'B60205', description: 'Bug fix' },  // Dark red
+              'docs': { color: '0075CA', description: 'Documentation changes' },  // Blue
+              'style': { color: 'C5DEF5', description: 'Code style changes (formatting, etc)' },  // Light blue
+              'refactor': { color: 'FBF2C4', description: 'Code refactoring' },  // Light yellow
+              'perf': { color: 'FF6B6B', description: 'Performance improvements' },  // Coral red
+              'test': { color: '795AA0', description: 'Test additions or modifications' },  // Purple
+              'build': { color: '727272', description: 'Build system changes' },  // Gray
+              'ci': { color: '4A5568', description: 'CI/CD configuration changes' },  // Dark gray
+              'revert': { color: 'CF222E', description: 'Revert previous commits' },  // Bright red
+              'chore': { color: 'F9C0C7', description: 'Maintenance tasks' },  // Pink
               
               // Special labels
-              'dependencies': { color: 'FBCA04', description: 'Dependency updates' },
-              'breaking': { color: 'D93F0B', description: 'Breaking changes' },
+              'dependencies': { color: 'FF9500', description: 'Dependency updates' },  // Orange
+              'breaking': { color: 'D93F0B', description: 'Breaking changes' },  // Red-orange
               
               // Status labels (managed by other workflows)
-              'status:draft': { color: '6F7379', description: 'Pull request is in draft status' },
-              'status:ready-for-review': { color: 'FBCA04', description: 'Pull request is ready for review' },
-              'status:approved': { color: '0E8A16', description: 'Pull request has been approved' },
-              'status:mergeable': { color: '2EA44F', description: 'Pull request is approved, tests pass, and ready to merge' },
+              'status:draft': { color: '848484', description: 'Pull request is in draft status' },  // Medium gray
+              'status:ready-for-review': { color: 'FBCA04', description: 'Pull request is ready for review' },  // Yellow
+              'status:approved': { color: '28A745', description: 'Pull request has been approved' },  // Bright green
+              'status:mergeable': { color: '0E8A16', description: 'Pull request is approved, tests pass, and ready to merge' },  // Dark green
+              'status:merged': { color: '6F42C1', description: 'Pull request has been merged' },  // Purple
               
               // QA labels (managed by other workflows)
-              'qa:pending': { color: 'D4C5F9', description: 'QA workflow needs to run' },
-              'qa:running': { color: 'FBCA04', description: 'QA workflow is currently running' },
-              'qa:success': { color: '0E8A16', description: 'QA workflow passed successfully' },
-              'qa:failed': { color: 'D93F0B', description: 'QA workflow failed' }
+              'qa:pending': { color: 'CEE0F5', description: 'QA workflow needs to run' },  // Light purple
+              'qa:running': { color: 'FFA500', description: 'QA workflow is currently running' },  // Orange
+              'qa:success': { color: '22863A', description: 'QA workflow passed successfully' },  // Forest green
+              'qa:failed': { color: 'CB2431', description: 'QA workflow failed' }
             };
             
             core.setOutput('label_definitions', JSON.stringify(labelDefinitions));

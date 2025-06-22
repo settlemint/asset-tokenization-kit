@@ -30,10 +30,10 @@ jobs:
         with:
           script: |
             const labels = [
-              { name: 'qa:pending', color: 'D4C5F9', description: 'QA workflow needs to run' },
-              { name: 'qa:running', color: 'FBCA04', description: 'QA workflow is currently running' },
-              { name: 'qa:success', color: '0E8A16', description: 'QA workflow passed successfully' },
-              { name: 'qa:failed', color: 'D93F0B', description: 'QA workflow failed' }
+              { name: 'qa:pending', color: 'CEE0F5', description: 'QA workflow needs to run' },  // Light purple
+              { name: 'qa:running', color: 'FFA500', description: 'QA workflow is currently running' },  // Orange
+              { name: 'qa:success', color: '22863A', description: 'QA workflow passed successfully' },  // Forest green
+              { name: 'qa:failed', color: 'CB2431', description: 'QA workflow failed' }  // Red
             ];
             
             // Get all existing labels
