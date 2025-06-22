@@ -87,6 +87,13 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}  # Add this to fix the permissions issue
+          allowed_tools: >-
+            Bash(bun:*)
+            Bash(git:*)
+            Bash(docker:*)
+            Bash(docker-compose:*)
+            Bash(helm:*)
+            Bash(kubectl:*)
           custom_instructions: |
             # Environment Setup
             You have access to a full Linux environment with:

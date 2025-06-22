@@ -81,12 +81,21 @@ jobs:
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Add this to fix the permissions issue
 
           # Custom trigger phrases
           trigger_phrase: "@claude"
 
           # Trigger when assigned to claude-bot user
           assignee_trigger: "claude-bot"
+
+          allowed_tools: >-
+            Bash(bun:*)
+            Bash(git:*)
+            Bash(docker:*)
+            Bash(docker-compose:*)
+            Bash(helm:*)
+            Bash(kubectl:*)
 
           # Comprehensive custom instructions from CLAUDE.md
           custom_instructions: |
