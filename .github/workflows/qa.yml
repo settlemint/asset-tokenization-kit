@@ -165,7 +165,6 @@ jobs:
         uses: namespace-actions/upload-artifact@v0
         with:
           name: predeployed-output
-          retention-days: 1
           path: |
             kit/contracts/.generated/portal/*.json
             kit/contracts/.generated/genesis.json
