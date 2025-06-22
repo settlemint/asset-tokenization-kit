@@ -1,0 +1,66 @@
+name: 'Auto-Merge Management'
+description: 'Manage auto-merge for pull requests'
+inputs:
+  pr_number:
+    description: 'Pull request number'
+    required: true
+  has_approval:
+    description: 'Whether PR has approval'
+    required: true
+  qa_status:
+    description: 'QA status (success, failed, running, pending)'
+    required: true
+  is_draft:
+    description: 'Whether PR is a draft'
+    required: true
+  merge_method:
+    description: 'Merge method (merge, squash, rebase)'
+    required: false
+    default: 'squash'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Manage auto-merge for PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const pr_number = ${{ inputs.pr_number }};
+          const has_approval = ${{ inputs.has_approval }};
+          const qa_status = '${{ inputs.qa_status }}';
+          const is_draft = ${{ inputs.is_draft }};
+          const merge_method = '${{ inputs.merge_method }}';
+          
+          // Check if PR is mergeable
+          const is_mergeable = has_approval && qa_status === 'success' && !is_draft;
+          
+          try {
+            if (is_mergeable) {
+              // Enable auto-merge
+              await github.rest.pulls.enableAutoMerge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr_number,
+                merge_method: merge_method
+              });
+              console.log(`Auto-merge enabled for PR #${pr_number}`);
+            } else {
+              // Disable auto-merge if it was enabled
+              await github.rest.pulls.disableAutoMerge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr_number
+              });
+              console.log(`Auto-merge disabled for PR #${pr_number} - no longer mergeable`);
+            }
+          } catch (error) {
+            if (error.message.includes('Auto-merge is not enabled')) {
+              console.log('Auto-merge is already disabled');
+            } else if (error.message.includes('already enabled')) {
+              console.log('Auto-merge is already enabled');
+            } else if (error.message.includes('Auto-merge is not allowed')) {
+              console.log('Auto-merge is not allowed for this repository. Please enable it in repository settings.');
+            } else {
+              console.log(`Error managing auto-merge: ${error.message}`);
+            }
+          }

@@ -1,0 +1,159 @@
+name: 'PR Labeler'
+description: 'Label PR based on conventional commit format'
+inputs:
+  pr_number:
+    description: 'Pull request number'
+    required: true
+  pr_title:
+    description: 'Pull request title'
+    required: true
+  pr_body:
+    description: 'Pull request body'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Define all labels
+      id: define_labels
+      uses: actions/github-script@v7
+      with:
+        script: |
+          // Define all labels with colors and descriptions
+          const labelDefinitions = {
+            // Conventional commit types
+            'feat': { color: '0E8A16', description: 'New feature' },  // Green
+            'fix': { color: 'B60205', description: 'Bug fix' },  // Dark red
+            'docs': { color: '0075CA', description: 'Documentation changes' },  // Blue
+            'style': { color: 'C5DEF5', description: 'Code style changes (formatting, etc)' },  // Light blue
+            'refactor': { color: 'FBF2C4', description: 'Code refactoring' },  // Light yellow
+            'perf': { color: 'FF6B6B', description: 'Performance improvements' },  // Coral red
+            'test': { color: '795AA0', description: 'Test additions or modifications' },  // Purple
+            'build': { color: '727272', description: 'Build system changes' },  // Gray
+            'ci': { color: '4A5568', description: 'CI/CD configuration changes' },  // Dark gray
+            'revert': { color: 'CF222E', description: 'Revert previous commits' },  // Bright red
+            'chore': { color: 'F9C0C7', description: 'Maintenance tasks' },  // Pink
+            
+            // Special labels
+            'dependencies': { color: 'FF9500', description: 'Dependency updates' },  // Orange
+            'breaking': { color: 'D93F0B', description: 'Breaking changes' },  // Red-orange
+            
+            // Status labels (managed by other workflows)
+            'status:draft': { color: '848484', description: 'Pull request is in draft status' },  // Medium gray
+            'status:ready-for-review': { color: 'FBCA04', description: 'Pull request is ready for review' },  // Yellow
+            'status:approved': { color: '28A745', description: 'Pull request has been approved' },  // Bright green
+            'status:mergeable': { color: '0E8A16', description: 'Pull request is approved, tests pass, and ready to merge' },  // Dark green
+            'status:merged': { color: '6F42C1', description: 'Pull request has been merged' },  // Purple
+            
+            // QA labels (managed by other workflows)
+            'qa:pending': { color: 'CEE0F5', description: 'QA workflow needs to run' },  // Light purple
+            'qa:running': { color: 'FFA500', description: 'QA workflow is currently running' },  // Orange
+            'qa:success': { color: '22863A', description: 'QA workflow passed successfully' },  // Forest green
+            'qa:failed': { color: 'CB2431', description: 'QA workflow failed' }
+          };
+          
+          core.setOutput('label_definitions', JSON.stringify(labelDefinitions));
+
+    - name: Ensure all labels exist
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const labelDefinitions = JSON.parse('${{ steps.define_labels.outputs.label_definitions }}');
+          
+          // Get existing labels
+          const existingLabels = await github.paginate(github.rest.issues.listLabelsForRepo, {
+            owner: context.repo.owner,
+            repo: context.repo.repo
+          });
+          
+          const existingLabelNames = new Set(existingLabels.map(l => l.name));
+          
+          // Create or update labels
+          for (const [name, config] of Object.entries(labelDefinitions)) {
+            const existingLabel = existingLabels.find(l => l.name === name);
+            
+            if (!existingLabel) {
+              // Create new label
+              try {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: name,
+                  color: config.color,
+                  description: config.description
+                });
+                console.log(`Created label: ${name}`);
+              } catch (error) {
+                console.log(`Failed to create label ${name}: ${error.message}`);
+              }
+            } else if (existingLabel.color !== config.color || existingLabel.description !== config.description) {
+              // Update existing label if color or description changed
+              try {
+                await github.rest.issues.updateLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: name,
+                  color: config.color,
+                  description: config.description
+                });
+                console.log(`Updated label: ${name} (color: ${existingLabel.color} -> ${config.color}, desc: "${existingLabel.description}" -> "${config.description}")`);
+              } catch (error) {
+                console.log(`Failed to update label ${name}: ${error.message}`);
+              }
+            }
+          }
+
+    - name: Analyze PR and apply labels
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const pr_number = ${{ inputs.pr_number }};
+          const pr_title = ${{ toJSON(inputs.pr_title) }};
+          const pr_body = ${{ toJSON(inputs.pr_body) }};
+          
+          const labelsToAdd = [];
+          
+          // Check conventional commit type from title
+          const typeMatch = pr_title.match(/^(feat|fix|docs|style|refactor|perf|test|build|ci|revert)(\(.+\))?:/);
+          if (typeMatch) {
+            labelsToAdd.push(typeMatch[1]);
+          } else {
+            // If no conventional commit format, add chore
+            labelsToAdd.push('chore');
+          }
+          
+          // Check for dependencies
+          if (pr_title.match(/^(chore|fix|build)\(deps\):/)) {
+            labelsToAdd.push('dependencies');
+          }
+          
+          // Check for breaking changes
+          if (pr_title.match(/^(feat|fix|docs|style|refactor|perf|test|build|ci|revert)(\(.+\))?!:/) || 
+              pr_body.includes('BREAKING CHANGE:')) {
+            labelsToAdd.push('breaking');
+          }
+          
+          // Check PR draft status
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: pr_number
+          });
+          
+          if (pr.draft) {
+            labelsToAdd.push('status:draft');
+          } else {
+            labelsToAdd.push('status:ready-for-review');
+          }
+          
+          // Add labels to PR
+          if (labelsToAdd.length > 0) {
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr_number,
+              labels: labelsToAdd
+            });
+            console.log(`Added labels: ${labelsToAdd.join(', ')}`);
+          }

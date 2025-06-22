@@ -1,0 +1,90 @@
+name: 'PR Review Check'
+description: 'Check PR approval status and QA status'
+inputs:
+  pr_number:
+    description: 'Pull request number'
+    required: true
+  pr_author:
+    description: 'Pull request author login'
+    required: true
+  event_name:
+    description: 'GitHub event name'
+    required: true
+  qa_result:
+    description: 'QA job result (for pull_request events)'
+    required: false
+  secret_scanning_result:
+    description: 'Secret scanning job result (for pull_request events)'
+    required: false
+outputs:
+  has_approval:
+    description: 'Whether PR has approval'
+    value: ${{ steps.check_approval.outputs.has_approval }}
+  qa_status:
+    description: 'QA status (success, failed, running, pending)'
+    value: ${{ steps.qa_status.outputs.qa_status }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Get PR reviews
+      id: check_approval
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const pr_number = ${{ inputs.pr_number }};
+          
+          // Get reviews
+          const reviews = await github.rest.pulls.listReviews({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: pr_number
+          });
+          
+          // Check if PR has approval (excluding the PR author)
+          const pr_author = '${{ inputs.pr_author }}';
+          const has_approval = reviews.data.some(review => 
+            review.state === 'APPROVED' && 
+            review.user.login !== pr_author
+          );
+          
+          core.setOutput('has_approval', has_approval);
+
+    - name: Determine QA status
+      id: qa_status
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const pr_number = ${{ inputs.pr_number }};
+          
+          // For review events, we need to check labels since qa job doesn't run
+          if ('${{ inputs.event_name }}' === 'pull_request_review') {
+            // Get current labels
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr_number
+            });
+            
+            const labels = pr.labels.map(l => l.name);
+            let qa_status = '';
+            
+            if (labels.includes('qa:success')) {
+              qa_status = 'success';
+            } else if (labels.includes('qa:failed')) {
+              qa_status = 'failed';
+            } else if (labels.includes('qa:running')) {
+              qa_status = 'running';
+            } else if (labels.includes('qa:pending')) {
+              qa_status = 'pending';
+            }
+            
+            core.setOutput('qa_status', qa_status);
+          } else {
+            // For PR events, use the job results
+            if ('${{ inputs.qa_result }}' === 'success' && '${{ inputs.secret_scanning_result }}' === 'success') {
+              core.setOutput('qa_status', 'success');
+            } else {
+              core.setOutput('qa_status', 'failed');
+            }
+          }

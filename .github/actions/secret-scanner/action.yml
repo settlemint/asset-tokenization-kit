@@ -1,0 +1,36 @@
+name: 'Secret Scanner'
+description: 'Scan for secrets in the codebase'
+inputs:
+  trivy_config:
+    description: 'Path to Trivy configuration file'
+    required: false
+    default: ''
+  severity:
+    description: 'Severity levels to check (comma-separated)'
+    required: false
+    default: 'HIGH,CRITICAL'
+  exit_code:
+    description: 'Exit code when secrets are found'
+    required: false
+    default: '1'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Cache Trivy DB
+      uses: namespacelabs/nscloud-cache-action@v1
+      with:
+        path: |
+          ~/.cache/trivy
+          /tmp/trivy-cache
+
+    - name: Secret Scanning (Trivy)
+      uses: aquasecurity/trivy-action@0.31.0
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        trivy-config: ${{ inputs.trivy_config }}
+        severity: ${{ inputs.severity }}
+        format: 'table'
+        exit-code: ${{ inputs.exit_code }}
+        scanners: 'secret'
