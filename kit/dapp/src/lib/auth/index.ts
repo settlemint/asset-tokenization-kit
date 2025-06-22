@@ -29,6 +29,7 @@ import type { UserRole } from "@/lib/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { APIError } from "better-auth/api";
 import { admin, apiKey, openAPI } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
@@ -144,6 +145,29 @@ const getAuthConfig = serverOnly(() =>
     rateLimit: {
       window: 10, // time window in seconds
       max: 100, // max requests in the window
+    },
+
+    databaseHooks: {
+      user: {
+        create: {
+          before: async (user) => {
+            try {
+              const firstUser = await db.query.user.findFirst();
+              return {
+                data: {
+                  ...user,
+                  role: firstUser ? "investor" : "admin",
+                },
+              };
+            } catch (error) {
+              throw new APIError("BAD_REQUEST", {
+                message: "Failed to set the user role",
+                cause: error instanceof Error ? error : undefined,
+              });
+            }
+          },
+        },
+      },
     },
 
     /**

@@ -232,11 +232,12 @@ describe("type checking", () => {
 
     it("should handle safeParse", () => {
       const result = assetTypeSet().safeParse(
-        new Set(["stablecoin", "deposit"])
+        new Set(["stablecoin", "equity"])
       );
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.has("stablecoin")).toBe(true);
+        expect(result.data.has("equity")).toBe(true);
       }
     });
   });
