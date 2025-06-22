@@ -110,8 +110,9 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  *   if (event.progress) {
  *     console.log(`Progress: ${event.progress.current}/${event.progress.total}`);
  *   }
- *   if (event.status === "completed") {
- *     console.log(`Created ${event.resultSummary.successful} factories`);
+ *   if (event.status === "completed" && event.result) {
+ *     const successful = event.result.filter(r => !r.error).length;
+ *     console.log(`Created ${successful} factories`);
  *   }
  * }
  * ```
@@ -337,10 +338,10 @@ export const factoryCreate = onboardedRouter.tokens.factoryCreate
         status: "completed" as const,
         message: completionMessage,
         results,
-        resultSummary: {
+        result: results, // Added for useStreamingMutation hook compatibility
+        progress: {
+          current: totalFactories,
           total: totalFactories,
-          successful: successCount,
-          failed: failureCount,
         },
       },
       { id: "factory-creation-complete", retry: 1000 }
