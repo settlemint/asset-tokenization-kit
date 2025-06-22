@@ -17,6 +17,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { z } from "zod/v4";
 import type { SystemReadOutput } from "./system.read.schema";
 
 /**
@@ -73,10 +74,39 @@ export const read = onboardedRouter.system.read
   .handler(async ({ input, context, errors }) => {
     const { id } = input;
 
-    // Query system details from TheGraph
-    const result = await context.theGraphClient.request(SYSTEM_DETAILS_QUERY, {
-      id: id.toLowerCase(), // TheGraph stores addresses in lowercase
+    // Define response schema for type-safe validation
+    // This Zod schema ensures the GraphQL response matches our expected structure
+    // and provides compile-time type inference for the validated data
+    const SystemResponseSchema = z.object({
+      system: z
+        .object({
+          id: z.string(),
+          tokenFactoryRegistry: z
+            .object({
+              id: z.string(),
+              tokenFactories: z.array(
+                z.object({
+                  id: z.string(),
+                  name: z.string(),
+                  typeId: z.string(),
+                })
+              ),
+            })
+            .nullable(),
+        })
+        .nullable(),
     });
+
+    // Query system details from TheGraph with type-safe validation
+    // The Zod schema validates the response at runtime and infers the TypeScript type
+    const result = await context.theGraphClient.query(
+      SYSTEM_DETAILS_QUERY,
+      {
+        id: id.toLowerCase(), // TheGraph stores addresses in lowercase
+      },
+      SystemResponseSchema,
+      `Failed to retrieve system: ${id}`
+    );
 
     // Check if system exists
     if (!result.system) {
@@ -85,17 +115,21 @@ export const read = onboardedRouter.system.read
       });
     }
 
-    // Transform and return the data
+    // Transform and return the data with proper type casting
+    // The EthereumAddress type assertions ensure type safety for blockchain addresses
+    // The factory mapping no longer needs explicit type annotations thanks to Zod inference
     const output: SystemReadOutput = {
       id: result.system.id as EthereumAddress,
       tokenFactoryRegistry: result.system.tokenFactoryRegistry
         ?.id as EthereumAddress,
       tokenFactories:
-        result.system.tokenFactoryRegistry?.tokenFactories.map((factory) => ({
-          id: factory.id as EthereumAddress,
-          name: factory.name,
-          typeId: factory.typeId,
-        })) ?? [],
+        result.system.tokenFactoryRegistry?.tokenFactories.map(
+          (factory) => ({
+            id: factory.id as EthereumAddress,
+            name: factory.name,
+            typeId: factory.typeId,
+          })
+        ) ?? [],
     };
 
     return output;
