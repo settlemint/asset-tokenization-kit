@@ -30,6 +30,10 @@ inputs:
     description: "Whether to update the message format"
     required: false
     default: "false"
+  is_abandoned:
+    description: "Whether the PR was abandoned (closed without merging)"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -237,8 +241,9 @@ runs:
             return data;
           }
 
-          // Check if PR is merged
+          // Check if PR is merged or abandoned
           const isMerged = labels.some(l => l.name === 'status:merged');
+          const isAbandoned = '${{ inputs.is_abandoned }}' === 'true';
           
           let messageBlocks;
           
@@ -260,6 +265,26 @@ runs:
                   },
                   url: pr_url,
                   style: 'primary'
+                }
+              }
+            ];
+          } else if (isAbandoned) {
+            // Message for abandoned PRs with a gentler emoji
+            messageBlocks = [
+              {
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: `:file_folder: ${pr_title}`
+                },
+                accessory: {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'View PR',
+                    emoji: false
+                  },
+                  url: pr_url
                 }
               }
             ];
