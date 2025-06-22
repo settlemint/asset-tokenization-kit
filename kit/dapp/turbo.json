@@ -5,7 +5,6 @@
       "dependsOn": ["codegen:settlemint", "codegen:gql-tada"]
     },
     "codegen:settlemint": {
-      "dependsOn": ["//#setup:connect"],
       "inputs": [".env.local", ".env"],
       "outputs": [
         "*-env-*.d.ts",
@@ -24,7 +23,7 @@
       "dependsOn": ["build"]
     },
     "db:export": {
-      "inputs": ["src/lib/db/**"],
+      "inputs": ["src/lib/db/**", "tools/export-database.ts"],
       "outputs": [".generated/database-export.sql"]
     },
     "artifacts": {

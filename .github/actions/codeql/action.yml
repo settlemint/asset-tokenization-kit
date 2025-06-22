@@ -1,0 +1,32 @@
+name: 'CodeQL Analysis'
+description: 'Run CodeQL security analysis'
+inputs:
+  language:
+    description: 'Language to analyze (e.g., javascript-typescript, python, java)'
+    required: true
+  build_mode:
+    description: 'Build mode for CodeQL (none, autobuild, manual)'
+    required: false
+    default: 'autobuild'
+  queries:
+    description: 'CodeQL query suites to use'
+    required: false
+    default: 'security-extended,security-and-quality'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ inputs.language }}
+        queries: ${{ inputs.queries }}
+
+    - name: Autobuild
+      if: inputs.build_mode == 'autobuild'
+      uses: github/codeql-action/autobuild@v3
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{ inputs.language }}"

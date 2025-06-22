@@ -12,6 +12,7 @@ import type {
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
+import { formatValidationError } from "@/lib/utils/format-validation-error";
 
 /**
  * Extract the result type from an async iterator of events
@@ -29,12 +30,7 @@ type ExtractResultType<T> =
 /**
  * Streaming mutation options that transform callbacks to work with extracted result
  */
-interface StreamingMutationOptions<
-  TData,
-  TError,
-  TVariables,
-  TContext,
-> {
+interface StreamingMutationOptions<TData, TError, TVariables, TContext> {
   mutationOptions: UseMutationOptions<TData, TError, TVariables, TContext>;
   onSuccess?: (
     data: ExtractResultType<TData>,
@@ -55,7 +51,7 @@ interface StreamingMutationOptions<
  *     console.log("System created:", data);
  *   }
  * });
- * 
+ *
  * // Call mutation with all messages
  * mutate({
  *   messages: {
@@ -72,12 +68,7 @@ export function useStreamingMutation<
   TVariables = void,
   TContext = unknown,
 >(
-  options: StreamingMutationOptions<
-    TData,
-    TError,
-    TVariables,
-    TContext
-  >
+  options: StreamingMutationOptions<TData, TError, TVariables, TContext>
 ): UseMutationResult<ExtractResultType<TData>, TError, TVariables, TContext> & {
   isTracking: boolean;
   latestMessage: string | null;
@@ -130,10 +121,22 @@ export function useStreamingMutation<
               });
               break;
 
+            case "completed":
+              // Handle batch completion status
+              if (event.result !== undefined) {
+                finalResult = event.result;
+              }
+              toast.success(message || "Completed", {
+                id: toastIdRef.current,
+                duration: meta?.retry ?? 5000,
+              });
+              break;
+
             case "failed":
               toast.error(message || "Failed", {
                 id: toastIdRef.current,
-                duration: 5000,
+                duration: 10000, // Longer duration for failed operations
+                description: "Check browser console for error details"
               });
               throw new Error(message || "Operation failed");
           }
@@ -147,11 +150,28 @@ export function useStreamingMutation<
 
         return finalResult;
       } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "An error occurred";
-        toast.error(errorMessage, { id: toastIdRef.current });
+        let errorMessage = formatValidationError(error);
+        
+        // Extract detailed error information from ORPC errors
+        if (error instanceof Error && 'cause' in error && error.cause instanceof Error) {
+          errorMessage = `${errorMessage}\n\nDetails: ${error.cause.message}`;
+        }
+        
+        // Show error with longer duration for debugging
+        toast.error(errorMessage, { 
+          id: toastIdRef.current,
+          duration: 10000, // 10 seconds to allow time to read detailed errors
+          description: "Check browser console for full error details"
+        });
+        
+        // Log full error details to console for debugging
+        console.error("Streaming mutation error:", {
+          message: errorMessage,
+          error,
+          cause: error instanceof Error ? error.cause : undefined,
+          stack: error instanceof Error ? error.stack : undefined
+        });
+        
         throw error;
       } finally {
         setIsTracking(false);

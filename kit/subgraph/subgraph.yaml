@@ -72,7 +72,7 @@ templates:
           file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
         - event: Bootstrapped(indexed address,indexed address,indexed
-            address,address,address,address,address,address)
+            address,address,address,address,address,address,address,address,address)
           handler: handleBootstrapped
         - event: ComplianceImplementationUpdated(indexed address,indexed address)
           handler: handleComplianceImplementationUpdated
@@ -87,12 +87,6 @@ templates:
           handler: handleIdentityRegistryStorageImplementationUpdated
         - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
           handler: handleTokenAccessManagerImplementationUpdated
-        - event: TokenFactoryCreated(indexed
-            address,string,bytes32,address,address,uint256)
-          handler: handleTokenFactoryCreated
-        - event: SystemAddonCreated(indexed
-            address,string,bytes32,address,address,bytes,uint256)
-          handler: handleSystemAddonCreated
         - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
           handler: handleTokenIdentityImplementationUpdated
         - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
@@ -100,6 +94,14 @@ templates:
           handler: handleTrustedIssuersRegistryImplementationUpdated
         - event: TopicSchemeRegistryImplementationUpdated(indexed address,indexed address)
           handler: handleTopicSchemeRegistryImplementationUpdated
+        - event: TokenFactoryRegistryImplementationUpdated(indexed address,indexed
+            address)
+          handler: handleTokenFactoryRegistryImplementationUpdated
+        - event: ComplianceModuleRegistryImplementationUpdated(indexed address,indexed
+            address)
+          handler: handleComplianceModuleRegistryImplementationUpdated
+        - event: SystemAddonRegistryImplementationUpdated(indexed address,indexed address)
+          handler: handleSystemAddonRegistryImplementationUpdated
       file: ./src/system/system.ts
   - kind: ethereum
     name: TokenFactory
@@ -547,7 +549,7 @@ templates:
       eventHandlers:
         - event: ATKVaultCreated(indexed address,indexed address)
           handler: handleATKVaultCreated
-      file: ./src/addons/vault/vault-factory.ts
+      file: ./src/system-addons/addons/vault/vault-factory.ts
   - kind: ethereum
     name: Vault
     network: settlemint
@@ -589,7 +591,7 @@ templates:
           handler: handleRequirementChanged
         - event: TransactionExecutionFailed(indexed uint256,address,bytes)
           handler: handleTransactionExecutionFailed
-      file: ./src/addons/vault/vault.ts
+      file: ./src/system-addons/addons/vault/vault.ts
   - kind: ethereum
     name: GenericERC165
     network: settlemint
@@ -625,7 +627,7 @@ templates:
       eventHandlers:
         - event: ATKXvPSettlementCreated(indexed address,indexed address)
           handler: handleATKXvPSettlementCreated
-      file: ./src/addons/xvp/xvp-settlement-factory.ts
+      file: ./src/system-addons/addons/xvp/xvp-settlement-factory.ts
   - kind: ethereum
     name: XvPSettlement
     network: settlemint
@@ -652,132 +654,110 @@ templates:
           handler: handleXvPSettlementExecuted
         - event: XvPSettlementCancelled(indexed address)
           handler: handleXvPSettlementCancelled
-      file: ./src/addons/xvp/xvp-settlement.ts
+      file: ./src/system-addons/addons/xvp/xvp-settlement.ts
   - kind: ethereum
-    name: Airdrop
+    name: TokenFactoryRegistry
     network: settlemint
     source:
-      abi: Airdrop
+      abi: TokenFactoryRegistry
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - AirdropTokensTransferred
-        - AirdropBatchTokensTransferred
-        - OwnershipTransferred
-        - TokensWithdrawn
+        - Address
+        - Event
       abis:
-        - name: Airdrop
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
+        - name: TokenFactoryRegistry
+          file: ../contracts/.generated/artifacts/contracts/system/token-factory/IATKTokenFactoryRegistry.sol/IATKTokenFactoryRegistry.json
+        - name: BondFactory
+          file: ../contracts/.generated/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
       eventHandlers:
-        - event: AirdropTokensTransferred(indexed address,indexed uint256,uint256)
-          handler: handleAirdropTokensTransferred
-        - event: AirdropBatchTokensTransferred(address[],uint256[],uint256[])
-          handler: handleAirdropBatchTokensTransferred
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
-        - event: TokensWithdrawn(indexed address,uint256)
-          handler: handleTokensWithdrawn
-      file: ./src/addons/airdrop/airdrop.ts
+        - event: TokenFactoryImplementationUpdated(indexed address,indexed bytes32,indexed
+            address)
+          handler: handleTokenFactoryImplementationUpdated
+        - event: TokenFactoryRegistered(indexed
+            address,string,bytes32,address,address,uint256)
+          handler: handleTokenFactoryRegistered
+      file: ./src/token-factory/token-factory-registry.ts
   - kind: ethereum
-    name: PushAirdropFactory
+    name: SystemAddonRegistry
     network: settlemint
     source:
-      abi: PushAirdropFactory
+      abi: SystemAddonRegistry
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - ATKPushAirdropCreated
+        - Address
+        - Event
       abis:
-        - name: Airdrop
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
-        - name: PushAirdropFactory
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol/IATKPushAirdropFactory.json
-        - name: PushAirdrop
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/push-airdrop/ATKPushAirdropImplementation.sol/ATKPushAirdropImplementation.json
+        - name: SystemAddonRegistry
+          file: ../contracts/.generated/artifacts/contracts/system/addons/IATKSystemAddonRegistry.sol/IATKSystemAddonRegistry.json
       eventHandlers:
-        - event: ATKPushAirdropCreated(indexed address,indexed address)
-          handler: handleATKPushAirdropCreated
-      file: ./src/addons/airdrop/push-airdrop-factory.ts
+        - event: AddonImplementationUpdated(indexed address,indexed bytes32,indexed
+            address)
+          handler: handleAddonImplementationUpdated
+        - event: SystemAddonRegistered(indexed
+            address,string,bytes32,address,address,bytes,uint256)
+          handler: handleSystemAddonRegistered
+      file: ./src/system-addons/system-addon-registry.ts
   - kind: ethereum
-    name: PushAirdrop
+    name: ComplianceModuleRegistry
     network: settlemint
     source:
-      abi: PushAirdrop
+      abi: ComplianceModuleRegistry
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - TokensDistributed
-        - BatchTokensDistributed
-        - DistributionCapUpdated
+        - Address
+        - Event
       abis:
-        - name: Airdrop
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
-        - name: PushAirdrop
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/push-airdrop/ATKPushAirdropImplementation.sol/ATKPushAirdropImplementation.json
+        - name: ComplianceModuleRegistry
+          file: ../contracts/.generated/artifacts/contracts/system/compliance/IATKComplianceModuleRegistry.sol/IATKComplianceModuleRegistry.json
       eventHandlers:
-        - event: DistributionCapUpdated(uint256,uint256)
-          handler: handleDistributionCapUpdated
-      file: ./src/addons/airdrop/push-airdrop.ts
+        - event: ComplianceModuleRegistered(indexed address,string,bytes32,indexed
+            address,uint256)
+          handler: handleComplianceModuleRegistered
+      file: ./src/compliance/compliance-module-registry.ts
   - kind: ethereum
-    name: VestingAirdropFactory
+    name: AbstractAddressListComplianceModule
     network: settlemint
     source:
-      abi: VestingAirdropFactory
+      abi: AbstractAddressListComplianceModule
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - ATKVestingAirdropCreated
+        - Address
+        - Event
       abis:
-        - name: VestingAirdropFactory
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol/IATKVestingAirdropFactory.json
-        - name: VestingAirdrop
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol/ATKVestingAirdropImplementation.json
-        - name: VestingStrategy
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol/IATKVestingStrategy.json
-        - name: LinearVestingStrategy
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/ATKLinearVestingStrategy.sol/ATKLinearVestingStrategy.json
-        - name: Airdrop
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
+        - name: AbstractAddressListComplianceModule
+          file: ../contracts/.generated/artifacts/contracts/smart/modules/AbstractAddressListComplianceModule.sol/AbstractAddressListComplianceModule.json
       eventHandlers:
-        - event: ATKVestingAirdropCreated(indexed
-            address,string,address,bytes32,address,address,uint256,address)
-          handler: handleATKVestingAirdropCreated
-      file: ./src/addons/airdrop/vesting-airdrop-factory.ts
+        - event: GlobalAddressListChange(indexed address,bool)
+          handler: handleGlobalAddressListChange
+      file: ./src/compliance/modules/address-list-compliance-module.ts
   - kind: ethereum
-    name: VestingAirdrop
+    name: AbstractCountryComplianceModule
     network: settlemint
     source:
-      abi: VestingAirdrop
+      abi: AbstractCountryComplianceModule
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - VestingInitialized
-        - BatchVestingInitialized
-        - VestingStrategyUpdated
+        - Address
+        - Event
       abis:
-        - name: VestingAirdrop
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol/ATKVestingAirdropImplementation.json
-        - name: VestingStrategy
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol/IATKVestingStrategy.json
-        - name: LinearVestingStrategy
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKLinearVestingStrategy.sol/IATKLinearVestingStrategy.json
-        - name: Airdrop
-          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
+        - name: AbstractCountryComplianceModule
+          file: ../contracts/.generated/artifacts/contracts/smart/modules/AbstractCountryComplianceModule.sol/AbstractCountryComplianceModule.json
       eventHandlers:
-        - event: VestingInitialized(indexed address,uint256,uint256)
-          handler: handleVestingInitialized
-        - event: BatchVestingInitialized(indexed address,uint256[],uint256[])
-          handler: handleBatchVestingInitialized
-        - event: VestingStrategyUpdated(indexed address,indexed address)
-          handler: handleVestingStrategyUpdated
-      file: ./src/addons/airdrop/vesting-airdrop.ts
+        - event: GlobalCountryListChange(indexed uint16,bool)
+          handler: handleGlobalCountryListChange
+      file: ./src/compliance/modules/country-list-compliance-module.ts

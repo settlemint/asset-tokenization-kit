@@ -1,4 +1,7 @@
 {
   "appDescription": "数分で展開し、簡単にカスタマイズ",
-  "appName": "アセットトークン化キット"
+  "appName": "アセットトークン化キット",
+  "generating": "生成中...",
+  "deploying": "デプロイ中...",
+  "continue": "続ける"
 }

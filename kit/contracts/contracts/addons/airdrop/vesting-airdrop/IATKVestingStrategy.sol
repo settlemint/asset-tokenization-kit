@@ -9,7 +9,13 @@ import { IWithTypeIdentifier } from "../../../system/IWithTypeIdentifier.sol";
 /// @notice Interface for vesting strategy implementations in ATK vesting airdrop contracts.
 /// @dev This interface allows for different vesting calculation strategies (e.g., linear, cliff-based).
 ///      Implementations should be stateless and calculate claimable amounts based on provided parameters.
-interface IATKVestingStrategy is IWithTypeIdentifier {
+interface IATKVestingStrategy {
+    /// @notice Error indicating that an invalid vesting duration was provided.
+    error InvalidVestingDuration();
+
+    /// @notice Error indicating that the cliff duration exceeds the vesting duration.
+    error CliffExceedsVestingDuration();
+
     // --- External Functions ---
 
     /// @notice Calculates the amount claimable based on the strategy's vesting parameters.

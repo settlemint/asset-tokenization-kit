@@ -11,7 +11,7 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 
 // Interface imports
 import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
-import { IATKComplianceBypassList } from "./IATKComplianceBypassList.sol";
+import { IATKCompliance } from "./IATKCompliance.sol";
 import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
@@ -36,8 +36,7 @@ contract ATKComplianceImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
-    ISMARTCompliance,
-    IATKComplianceBypassList
+    IATKCompliance
 {
     // --- Storage ---
     /// @notice Mapping of addresses that are on the bypass list to bypass compliance checks
@@ -67,13 +66,26 @@ contract ATKComplianceImplementation is
     /// the ERC165 interface detection capability and sets up AccessControl with the deployer as the default admin.
     /// For upgradeable contracts, initializers replace constructors for setup logic.
     /// The `initializer` modifier ensures this function can only be called once.
-    /// @param initialAdmins The addresses of the initial admins.
-    function initialize(address[] memory initialAdmins) public virtual initializer {
+    /// @param initialAdmin The address of the initial admin.
+    /// @param initialBypassListManagerAdmins The addresses of the initial bypass list manager admins.
+    function initialize(
+        address initialAdmin,
+        address[] memory initialBypassListManagerAdmins
+    )
+        public
+        virtual
+        initializer
+    {
         __ERC165_init_unchained(); // Initializes ERC165 announcing which interfaces this contract supports
         __AccessControl_init_unchained(); // Initializes AccessControl with msg.sender as default admin
 
-        for (uint256 i = 0; i < initialAdmins.length; i++) {
-            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
+        _setRoleAdmin(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, ATKSystemRoles.BYPASS_LIST_MANAGER_ADMIN_ROLE);
+
+        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+
+        for (uint256 i = 0; i < initialBypassListManagerAdmins.length; i++) {
+            _grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, initialBypassListManagerAdmins[i]);
+            _grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ADMIN_ROLE, initialBypassListManagerAdmins[i]);
         }
     }
 
@@ -356,7 +368,7 @@ contract ATKComplianceImplementation is
     // --- Overrides for ERC2771ContextUpgradeable ---
 
     /// @notice Override supportsInterface to support ERC165 interface detection
-    /// @dev Announces support for ISMARTCompliance and IATKComplianceBypassList interfaces
+    /// @dev Announces support for ISMARTCompliance and IATKCompliance interfaces
     /// @param interfaceId The interface identifier to check
     /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
@@ -366,8 +378,8 @@ contract ATKComplianceImplementation is
         override(AccessControlUpgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(ISMARTCompliance).interfaceId
-            || interfaceId == type(IATKComplianceBypassList).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(ISMARTCompliance).interfaceId || interfaceId == type(IATKCompliance).interfaceId
+            || super.supportsInterface(interfaceId);
     }
 
     /// @notice Override _msgSender to support meta-transactions via ERC2771

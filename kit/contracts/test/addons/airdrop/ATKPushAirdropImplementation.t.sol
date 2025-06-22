@@ -15,13 +15,6 @@ import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { AirdropUtils } from "../../utils/AirdropUtils.sol";
 import {
-    PushAirdropClaimNotAllowed,
-    InvalidDistributionAddress,
-    AlreadyDistributed,
-    DistributionCapExceeded,
-    ZeroAmountToDistribute
-} from "../../../contracts/addons/airdrop/push-airdrop/ATKPushAirdropErrors.sol";
-import {
     InvalidMerkleProof,
     InvalidInputArrayLengths,
     BatchSizeExceedsLimit
@@ -86,7 +79,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
 
         // Create system addon for push airdrop factory
         pushAirdropFactory = IATKPushAirdropFactory(
-            systemUtils.system().createSystemAddon(
+            systemUtils.systemAddonRegistry().registerSystemAddon(
                 "push-airdrop-factory", address(pushAirdropFactoryImpl), encodedInitializationData
             )
         );
@@ -171,7 +164,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         uint256 amount = testUserData.allocations[user1];
         bytes32[] memory proof = testUserData.proofs[user1];
 
-        vm.expectRevert(InvalidDistributionAddress.selector);
+        vm.expectRevert(IATKPushAirdrop.InvalidDistributionAddress.selector);
         vm.prank(owner);
         pushAirdrop.distribute(index, address(0), amount, proof);
     }
@@ -180,7 +173,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         uint256 index = testUserData.indices[user1];
         bytes32[] memory proof = testUserData.proofs[user1];
 
-        vm.expectRevert(ZeroAmountToDistribute.selector);
+        vm.expectRevert(IATKPushAirdrop.ZeroAmountToDistribute.selector);
         vm.prank(owner);
         pushAirdrop.distribute(index, user1, 0, proof);
     }
@@ -195,7 +188,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         pushAirdrop.distribute(index, user1, amount, proof);
 
         // Second distribution should fail
-        vm.expectRevert(AlreadyDistributed.selector);
+        vm.expectRevert(IATKPushAirdrop.AlreadyDistributed.selector);
         vm.prank(owner);
         pushAirdrop.distribute(index, user1, amount, proof);
     }
@@ -220,7 +213,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         uint256 amount = testUserData.allocations[user1]; // 100 ether, exceeds 50 ether cap
         bytes32[] memory proof = testUserData.proofs[user1];
 
-        vm.expectRevert(DistributionCapExceeded.selector);
+        vm.expectRevert(IATKPushAirdrop.DistributionCapExceeded.selector);
         vm.prank(owner);
         lowCapAirdrop.distribute(index, user1, amount, proof);
     }
@@ -329,7 +322,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         amounts[1] = testUserData.allocations[user2]; // 200 ether, total 300 ether > 250 ether cap
         proofs_[1] = testUserData.proofs[user2];
 
-        vm.expectRevert(DistributionCapExceeded.selector);
+        vm.expectRevert(IATKPushAirdrop.DistributionCapExceeded.selector);
         vm.prank(owner);
         lowCapAirdrop.batchDistribute(indices_, recipients, amounts, proofs_);
     }
@@ -360,7 +353,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         uint256 amount = testUserData.allocations[user1];
         bytes32[] memory proof = testUserData.proofs[user1];
 
-        vm.expectRevert(PushAirdropClaimNotAllowed.selector);
+        vm.expectRevert(IATKPushAirdrop.PushAirdropClaimNotAllowed.selector);
         vm.prank(user1);
         pushAirdrop.claim(index, amount, proof);
     }
@@ -374,7 +367,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         amounts[0] = testUserData.allocations[user1];
         proofs_[0] = testUserData.proofs[user1];
 
-        vm.expectRevert(PushAirdropClaimNotAllowed.selector);
+        vm.expectRevert(IATKPushAirdrop.PushAirdropClaimNotAllowed.selector);
         vm.prank(user1);
         pushAirdrop.batchClaim(indices_, amounts, proofs_);
     }
@@ -472,7 +465,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
 
         // Batch distribute should revert because user1 index is already distributed
         vm.prank(owner);
-        vm.expectRevert(AlreadyDistributed.selector);
+        vm.expectRevert(IATKPushAirdrop.AlreadyDistributed.selector);
         pushAirdrop.batchDistribute(indices_, recipients, amounts, proofs_);
     }
 }

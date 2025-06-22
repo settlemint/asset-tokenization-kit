@@ -57,4 +57,16 @@ export const router = baseRouter.router({
    * querying and managing user-related resources.
    */
   user: baseRouter.user.lazy(() => import("./user/user.router")),
+
+  /**
+   * Token-related API procedures.
+   *
+   * Lazy-loaded module containing token factory management operations.
+   * Token factories are contracts that deploy and manage tokenized assets
+   * of various types (bonds, equity, funds, stablecoins, deposits). This module
+   * provides endpoints for creating token factories and managing their lifecycle.
+   *
+   * @see {@link ./tokens/tokens.router} - Tokens router implementation
+   */
+  tokens: baseRouter.tokens.lazy(() => import("./tokens/tokens.router")),
 });

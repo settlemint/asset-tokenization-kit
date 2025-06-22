@@ -9,13 +9,6 @@ import { ATKAirdrop } from "../ATKAirdrop.sol";
 import { ATKBitmapClaimTracker } from "../claim-tracker/ATKBitmapClaimTracker.sol";
 import { IATKPushAirdrop } from "./IATKPushAirdrop.sol";
 import { IATKAirdrop } from "../IATKAirdrop.sol";
-import {
-    PushAirdropClaimNotAllowed,
-    InvalidDistributionAddress,
-    AlreadyDistributed,
-    DistributionCapExceeded,
-    ZeroAmountToDistribute
-} from "./ATKPushAirdropErrors.sol";
 import { InvalidInputArrayLengths, InvalidMerkleProof, BatchSizeExceedsLimit } from "../ATKAirdropErrors.sol";
 
 /// @title ATK Push Airdrop Implementation

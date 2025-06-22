@@ -126,7 +126,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         vm.startPrank(platformAdmin);
         bondFactory = IATKBondFactory(
-            systemUtils.system().createTokenFactory("Bond", address(bondFactoryImpl), address(bondImpl))
+            systemUtils.tokenFactoryRegistry().registerTokenFactory("Bond", address(bondFactoryImpl), address(bondImpl))
         );
 
         IAccessControl(address(bondFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);

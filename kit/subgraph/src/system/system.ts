@@ -1,36 +1,30 @@
-import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
-import {
-  BondFactory as BondFactoryTemplate,
-  FixedYieldScheduleFactory as FixedYieldScheduleFactoryTemplate,
-  FundFactory as FundFactoryTemplate,
-  PushAirdropFactory as PushAirdropFactoryTemplate,
-  VaultFactory as VaultFactoryTemplate,
-  VestingAirdropFactory as VestingAirdropFactoryTemplate,
-  XvPSettlementFactory as XvPSettlementFactoryTemplate,
-} from "../../generated/templates";
+import { Bytes } from "@graphprotocol/graph-ts";
+
 import {
   Bootstrapped,
   ComplianceImplementationUpdated,
+  ComplianceModuleRegistryImplementationUpdated,
   IdentityFactoryImplementationUpdated,
   IdentityImplementationUpdated,
   IdentityRegistryImplementationUpdated,
   IdentityRegistryStorageImplementationUpdated,
-  SystemAddonCreated,
+  SystemAddonRegistryImplementationUpdated,
   TokenAccessManagerImplementationUpdated,
-  TokenFactoryCreated,
+  TokenFactoryRegistryImplementationUpdated,
   TokenIdentityImplementationUpdated,
   TopicSchemeRegistryImplementationUpdated,
   TrustedIssuersRegistryImplementationUpdated,
 } from "../../generated/templates/System/System";
+import { fetchComplianceModuleRegistry } from "../compliance/fetch/compliance-module-registry";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
 import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
 import { fetchIdentityRegistryStorage } from "../identity-registry/fetch/identity-registry-storage";
-import { fetchTokenFactory } from "../token-factory/fetch/token-factory";
+import { fetchSystemAddonRegistry } from "../system-addons/fetch/system-addon-registry";
+import { fetchTokenFactoryRegistry } from "../token-factory/fetch/token-factory-registry";
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
 import { fetchCompliance } from "./fetch/compliance";
 import { fetchSystem } from "./fetch/system";
-import { fetchSystemAddon } from "./fetch/system-addon";
 import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 
 export function handleBootstrapped(event: Bootstrapped): void {
@@ -78,12 +72,39 @@ export function handleBootstrapped(event: Bootstrapped): void {
   }
   topicSchemeRegistry.save();
 
+  const tokenFactoryRegistry = fetchTokenFactoryRegistry(
+    event.params.tokenFactoryRegistryProxy
+  );
+  if (tokenFactoryRegistry.deployedInTransaction.equals(Bytes.empty())) {
+    tokenFactoryRegistry.deployedInTransaction = event.transaction.hash;
+  }
+  tokenFactoryRegistry.save();
+
+  const complianceModuleRegistry = fetchComplianceModuleRegistry(
+    event.params.complianceModuleRegistryProxy
+  );
+  if (complianceModuleRegistry.deployedInTransaction.equals(Bytes.empty())) {
+    complianceModuleRegistry.deployedInTransaction = event.transaction.hash;
+  }
+  complianceModuleRegistry.save();
+
+  const systemAddonRegistry = fetchSystemAddonRegistry(
+    event.params.systemAddonRegistryProxy
+  );
+  if (systemAddonRegistry.deployedInTransaction.equals(Bytes.empty())) {
+    systemAddonRegistry.deployedInTransaction = event.transaction.hash;
+  }
+  systemAddonRegistry.save();
+
   system.compliance = fetchCompliance(event.params.complianceProxy).id;
   system.identityRegistry = identityRegistry.id;
   system.identityRegistryStorage = identityRegistryStorage.id;
   system.trustedIssuersRegistry = trustedIssuersRegistry.id;
   system.identityFactory = identityFactory.id;
   system.topicSchemeRegistry = topicSchemeRegistry.id;
+  system.tokenFactoryRegistry = tokenFactoryRegistry.id;
+  system.complianceModuleRegistry = complianceModuleRegistry.id;
+  system.systemAddonRegistry = systemAddonRegistry.id;
   system.save();
 }
 
@@ -123,71 +144,6 @@ export function handleTokenAccessManagerImplementationUpdated(
   fetchEvent(event, "TokenAccessManagerImplementationUpdated");
 }
 
-export function handleTokenFactoryCreated(event: TokenFactoryCreated): void {
-  fetchEvent(event, "TokenFactoryCreated");
-  const tokenFactory = fetchTokenFactory(event.params.proxyAddress);
-  tokenFactory.name = event.params.name;
-  tokenFactory.typeId = event.params.typeId;
-
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKBondFactory"))
-  ) {
-    BondFactoryTemplate.create(event.params.proxyAddress);
-  }
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKFundFactory"))
-  ) {
-    FundFactoryTemplate.create(event.params.proxyAddress);
-  }
-
-  tokenFactory.system = fetchSystem(event.address).id;
-  tokenFactory.save();
-}
-
-export function handleSystemAddonCreated(event: SystemAddonCreated): void {
-  fetchEvent(event, "SystemAddonCreated");
-  const systemAddon = fetchSystemAddon(event.params.proxyAddress);
-  if (systemAddon.deployedInTransaction.equals(Bytes.empty())) {
-    systemAddon.deployedInTransaction = event.transaction.hash;
-  }
-  systemAddon.name = event.params.name;
-  systemAddon.typeId = event.params.typeId;
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKFixedYieldScheduleFactory"))
-  ) {
-    FixedYieldScheduleFactoryTemplate.create(event.params.proxyAddress);
-  }
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKXvPSettlementFactory"))
-  ) {
-    XvPSettlementFactoryTemplate.create(event.params.proxyAddress);
-  }
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKVaultFactory"))
-  ) {
-    VaultFactoryTemplate.create(event.params.proxyAddress);
-  }
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKVestingAirdropFactory"))
-  ) {
-    VestingAirdropFactoryTemplate.create(event.params.proxyAddress);
-  }
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKPushAirdropFactory"))
-  ) {
-    PushAirdropFactoryTemplate.create(event.params.proxyAddress);
-  }
-  systemAddon.system = fetchSystem(event.address).id;
-  systemAddon.save();
-}
-
 export function handleTokenIdentityImplementationUpdated(
   event: TokenIdentityImplementationUpdated
 ): void {
@@ -204,4 +160,22 @@ export function handleTopicSchemeRegistryImplementationUpdated(
   event: TopicSchemeRegistryImplementationUpdated
 ): void {
   fetchEvent(event, "TopicSchemeRegistryImplementationUpdated");
+}
+
+export function handleTokenFactoryRegistryImplementationUpdated(
+  event: TokenFactoryRegistryImplementationUpdated
+): void {
+  fetchEvent(event, "TokenFactoryRegistryImplementationUpdated");
+}
+
+export function handleComplianceModuleRegistryImplementationUpdated(
+  event: ComplianceModuleRegistryImplementationUpdated
+): void {
+  fetchEvent(event, "ComplianceModuleRegistryImplementationUpdated");
+}
+
+export function handleSystemAddonRegistryImplementationUpdated(
+  event: SystemAddonRegistryImplementationUpdated
+): void {
+  fetchEvent(event, "SystemAddonRegistryImplementationUpdated");
 }

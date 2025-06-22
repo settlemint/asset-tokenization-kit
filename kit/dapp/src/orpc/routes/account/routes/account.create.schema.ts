@@ -5,10 +5,7 @@ import { z } from "zod/v4";
  * Provides typed, localized messages with English defaults
  */
 export const AccountCreateMessagesSchema = z.object({
-  walletCreated: z
-    .string()
-    .optional()
-    .default("Wallet successfully created."),
+  walletCreated: z.string().optional().default("Wallet successfully created."),
   walletAlreadyExists: z
     .string()
     .optional()
@@ -21,7 +18,7 @@ export const AccountCreateMessagesSchema = z.object({
 
 /**
  * Schema for account creation request parameters.
- * 
+ *
  * Validates the input for creating a new blockchain wallet account:
  * - userId: The unique identifier of the user who will own the account
  * - messages: Optional custom status messages for localization

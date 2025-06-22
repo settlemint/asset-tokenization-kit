@@ -3,7 +3,7 @@
   "tasks": {
     "dependencies": {
       "outputs": ["**/Chart.lock", "**/charts/**/*.tgz"],
-      "inputs": ["**/Chart.yaml"]
+      "inputs": ["**/Chart.yaml", "tools/dependencies.ts"]
     },
     "compile": {
       "outputs": ["dist/**"]

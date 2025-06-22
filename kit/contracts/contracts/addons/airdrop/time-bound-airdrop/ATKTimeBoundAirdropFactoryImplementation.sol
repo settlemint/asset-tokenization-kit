@@ -10,7 +10,7 @@ import { IATKTimeBoundAirdrop } from "./IATKTimeBoundAirdrop.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
-    "../../../system/AbstractATKSystemAddonFactoryImplementation.sol";
+    "../../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKTimeBoundAirdropImplementation } from "./ATKTimeBoundAirdropImplementation.sol";
 import { ATKTimeBoundAirdropProxy } from "./ATKTimeBoundAirdropProxy.sol";
 

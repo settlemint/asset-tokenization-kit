@@ -1,45 +1,95 @@
 {
-  "card-description": "このプラットフォームを使用するには、ウォレットとブロックチェーン上のアイデンティティが必要です。 ",
+  "card-description": "このプラットフォームを使用するには、ウォレットとブロックチェーン上のアイデンティティが必要です。",
   "card-title": "設定を始めましょう！",
-  "messages": {
-    "pending": {
-      "mining": "あなたのSMARTシステムを展開しています...",
-      "indexing": "新しいSMARTシステムをインデックスしています..."
-    },
-    "success": "あなたのSMARTシステムが展開されました！",
-    "error": "あなたのSMARTシステムの展開に失敗しました",
-    "timeout": "取引追跡のタイムアウト"
+  "platform": {
+    "title": "プラットフォームのセットアップ",
+    "description": "デジタル資産プラットフォームをセットアップしましょう"
   },
-  "create-system-messages": {
-    "initial-loading": "SMARTシステムのデプロイを準備中...",
-    "no-result-error": "システムのデプロイが完了しましたが、アドレスが返されませんでした",
-    "default-error": "SMARTシステムのデプロイに失敗しました",
-    "system-created": "SMARTシステムが正常に作成されました",
-    "creating-system": "新しいシステムを作成中...",
-    "system-creation-failed": "システムの作成に失敗しました。もう一度お試しください。",
+  "issuer": {
+    "title": "発行者のセットアップ",
+    "description": "デジタル資産を発行するためにアカウントを設定します"
+  },
+  "investor": {
+    "title": "投資家のセットアップ",
+    "description": "デジタル資産に投資を始めるためにアカウントを設定します"
+  },
+  "steps": {
+    "wallet": {
+      "title": "ウォレットを作成",
+      "description": "ブロックチェーンウォレットを生成します"
+    },
+    "system": {
+      "title": "システムを展開",
+      "description": "コアスマートコントラクトを初期化します"
+    },
+    "assets": {
+      "title": "資産を選択",
+      "description": "サポートされている資産タイプを選択します"
+    },
+    "identity": {
+      "title": "アイデンティティを確認",
+      "description": "KYC認証を完了します",
+      "info": "アイデンティティの確認は、規制の遵守を確保し、デジタル資産に投資できるようにします。",
+      "coming-soon": "近日公開",
+      "coming-soon-description": "アイデンティティの確認は現在開発中です。その間に、プラットフォームを探索できるようにウォレットを作成します。"
+    }
+  },
+  "wallet": {
+    "title": "ウォレットを生成",
+    "description": "取引のためにブロックチェーンウォレットを作成します",
+    "info": "あなたのウォレットはブロックチェーンへのゲートウェイです。デジタル資産を保有し、安全に取引を実行することができます。",
+    "generate": "ウォレットを生成",
+    "success": "ウォレットが正常に作成されました！",
+    "generated": "ウォレットが正常に生成されました",
+    "already-exists": "このユーザーのウォレットはすでに存在します",
+    "creation-failed": "ウォレットの作成に失敗しました。もう一度お試しください。"
+  },
+  "system": {
+    "title": "SMARTシステムを展開",
+    "description": "プラットフォームのコアインフラを初期化します",
+    "info": "SMARTシステムはデジタル資産プラットフォームの基盤です。すべてのトークン操作を管理し、遵守を確保します。",
+    "deploy": "システムを展開",
+    "deployed": "システムが正常に展開されました",
+    "success": "システムが正常に展開されました！",
+    "messages": {
+      "initial-loading": "SMARTシステムを展開する準備をしています...",
+      "no-result-error": "システム展開が完了しましたが、アドレスが返されませんでした",
+      "default-error": "SMARTシステムの展開に失敗しました",
+      "created": "SMARTシステムが正常に作成されました",
+      "creating": "新しいシステムを作成しています...",
+      "creation-failed": "システムの作成に失敗しました。もう一度お試しください。",
+      "pending": {
+        "mining": "SMARTシステムを展開しています...",
+        "indexing": "新しいSMARTシステムをインデックスしています..."
+      },
+      "error": "SMARTシステムの展開に失敗しました",
+      "timeout": "取引追跡のタイムアウト"
+    },
     "transaction-tracking": {
-      "stream-timeout": "システムデプロイの追跡が90秒後にタイムアウトしました",
-      "waiting-for-mining": "チェーン上でSMARTシステムをデプロイ中...",
-      "transaction-failed": "システムデプロイのトランザクションが失敗しました",
-      "transaction-dropped": "システムデプロイのトランザクションが時間内にオンチェーンで確認されませんでした",
+      "stream-timeout": "システム展開の追跡が90秒後にタイムアウトしました",
+      "waiting-for-mining": "チェーン上でSMARTシステムを展開しています...",
+      "transaction-failed": "システム展開の取引に失敗しました",
+      "transaction-dropped": "システム展開の取引が時間内にオンチェーンで確認されませんでした",
       "waiting-for-indexing": "システムがインデックスされるのを待っています...",
-      "transaction-indexed": "システムが正常にインデックスされ、使用準備が整いました",
+      "transaction-indexed": "システムが正常にインデックスされ、使用可能です",
       "indexing-timeout": "システムのインデックス作成がタイムアウトしました。ページを更新してください"
     }
   },
-  "wallet-generated": "ウォレットが正常に生成されました",
-  "wallet-already-exists": "このユーザーのウォレットは既に存在します",
-  "wallet-creation-failed": "ウォレットの作成に失敗しました。もう一度お試しください。",
   "assets": {
-    "bond": "債券",
-    "equity": "株式",
-    "fund": "ファンド",
-    "stablecoin": "ステーブルコイン",
-    "deposit": "預金"
-  },
-  "asset-selection": {
-    "title": "資産タイプ",
-    "description": "プラットフォームでサポートしたい資産タイプを選択してください",
-    "continue": "続ける"
+    "title": "資産タイプを選択",
+    "description": "プラットフォームで有効にするデジタル資産タイプを選択します",
+    "info": "プラットフォームがサポートするデジタル資産の種類を選択します。後でさらに資産タイプを追加できます。",
+    "select-label": "利用可能な資産タイプ",
+    "select-description": "ファクトリーコントラクトを展開するために1つ以上の資産タイプを選択します",
+    "deploy": "選択した資産を展開",
+    "deployed": "資産ファクトリーが正常に展開されました",
+    "no-system": "システムが見つかりません。最初にシステムを展開してください。",
+    "descriptions": {
+      "bond": "固定収入機能を持つトークン化された債務証券",
+      "equity": "企業の所有権を表すデジタル株式",
+      "fund": "プール投資のための投資ファンドトークン",
+      "stablecoin": "価格が安定したデジタル通貨",
+      "deposit": "トークン化された銀行預金および証明書"
+    }
   }
 }

@@ -29,6 +29,12 @@ import { ATKTokenAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
+import { ATKTokenFactoryRegistryImplementation } from
+    "../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
+import { ATKComplianceModuleRegistryImplementation } from
+    "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
+import { ATKSystemAddonRegistryImplementation } from
+    "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
 
 // Proxies
 import { ATKTokenAccessManagerProxy } from "../../contracts/system/access-manager/ATKTokenAccessManagerProxy.sol";
@@ -42,6 +48,9 @@ import { IERC3643TrustedIssuersRegistry } from
 import { ISMARTIdentityRegistryStorage } from "../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
+import { IATKComplianceModuleRegistry } from "../../contracts/system/compliance/IATKComplianceModuleRegistry.sol";
+import { IATKSystemAddonRegistry } from "../../contracts/system/addons/IATKSystemAddonRegistry.sol";
+import { IATKTokenFactoryRegistry } from "../../contracts/system/token-factory/IATKTokenFactoryRegistry.sol";
 
 // Compliance Modules
 import { CountryAllowListComplianceModule } from "../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
@@ -61,6 +70,10 @@ contract SystemUtils is Test {
     ISMARTCompliance public compliance; // Proxy
     IATKIdentityFactory public identityFactory; // Proxy
     ISMARTTopicSchemeRegistry public topicSchemeRegistry; // Proxy
+    IATKComplianceModuleRegistry public complianceModuleRegistry; // Proxy
+    IATKSystemAddonRegistry public systemAddonRegistry; // Proxy
+    IATKTokenFactoryRegistry public tokenFactoryRegistry; // Proxy
+
     // Compliance Modules
     MockedComplianceModule public mockedComplianceModule;
     CountryAllowListComplianceModule public countryAllowListComplianceModule;
@@ -86,6 +99,14 @@ contract SystemUtils is Test {
         ATKTopicSchemeRegistryImplementation topicSchemeRegistryImpl =
             new ATKTopicSchemeRegistryImplementation(forwarder);
 
+        ATKTokenFactoryRegistryImplementation tokenFactoryRegistryImpl =
+            new ATKTokenFactoryRegistryImplementation(forwarder);
+
+        ATKComplianceModuleRegistryImplementation complianceModuleRegistryImpl =
+            new ATKComplianceModuleRegistryImplementation(forwarder);
+        ATKSystemAddonRegistryImplementation systemAddonRegistryImpl =
+            new ATKSystemAddonRegistryImplementation(forwarder);
+
         identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
         vm.label(address(identityVerificationModule), "Identity Verification Module");
 
@@ -101,6 +122,9 @@ contract SystemUtils is Test {
             address(tokenIdentityImpl),
             address(accessManagerImpl),
             address(identityVerificationModule),
+            address(tokenFactoryRegistryImpl),
+            address(complianceModuleRegistryImpl),
+            address(systemAddonRegistryImpl),
             forwarder
         );
         vm.label(address(systemFactory), "System Factory");
@@ -111,18 +135,25 @@ contract SystemUtils is Test {
         vm.label(address(system), "System");
         system.bootstrap();
 
-        compliance = ISMARTCompliance(system.complianceProxy());
+        compliance = ISMARTCompliance(system.compliance());
         vm.label(address(compliance), "Compliance");
-        identityRegistry = ISMARTIdentityRegistry(system.identityRegistryProxy());
+        identityRegistry = ISMARTIdentityRegistry(system.identityRegistry());
         vm.label(address(identityRegistry), "Identity Registry");
-        identityRegistryStorage = ISMARTIdentityRegistryStorage(system.identityRegistryStorageProxy());
+        identityRegistryStorage = ISMARTIdentityRegistryStorage(system.identityRegistryStorage());
         vm.label(address(identityRegistryStorage), "Identity Registry Storage");
-        trustedIssuersRegistry = IERC3643TrustedIssuersRegistry(system.trustedIssuersRegistryProxy());
+        trustedIssuersRegistry = IERC3643TrustedIssuersRegistry(system.trustedIssuersRegistry());
         vm.label(address(trustedIssuersRegistry), "Trusted Issuers Registry");
-        topicSchemeRegistry = ISMARTTopicSchemeRegistry(system.topicSchemeRegistryProxy());
+        topicSchemeRegistry = ISMARTTopicSchemeRegistry(system.topicSchemeRegistry());
         vm.label(address(topicSchemeRegistry), "Topic Scheme Registry");
-        identityFactory = IATKIdentityFactory(system.identityFactoryProxy());
+        identityFactory = IATKIdentityFactory(system.identityFactory());
         vm.label(address(identityFactory), "Identity Factory");
+
+        complianceModuleRegistry = IATKComplianceModuleRegistry(system.complianceModuleRegistry());
+        vm.label(address(complianceModuleRegistry), "Compliance Module Registry");
+        systemAddonRegistry = IATKSystemAddonRegistry(system.systemAddonRegistry());
+        vm.label(address(systemAddonRegistry), "System Addon Registry");
+        tokenFactoryRegistry = IATKTokenFactoryRegistry(system.tokenFactoryRegistry());
+        vm.label(address(tokenFactoryRegistry), "Token Factory Registry");
 
         // --- Deploy Other Contracts ---
         mockedComplianceModule = new MockedComplianceModule();

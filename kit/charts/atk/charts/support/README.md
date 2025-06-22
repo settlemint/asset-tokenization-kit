@@ -130,8 +130,15 @@ A Helm chart for the supporting components
 | ingress-nginx.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
 | minio.auth.rootPassword | string | `"atk-password"` |  |
 | minio.auth.rootUser | string | `"admin"` |  |
+| minio.console.image.registry | string | `"docker.io"` |  |
+| minio.defaultInitContainers.image.registry | string | `"docker.io"` |  |
 | minio.enabled | bool | `true` |  |
 | minio.fullnameOverride | string | `"minio"` |  |
+| minio.global.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
+| minio.global.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
+| minio.global.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
+| minio.global.security.allowInsecureImages | bool | `true` |  |
+| minio.image.registry | string | `"docker.io"` |  |
 | minio.provisioning.config[0].name | string | `"region"` |  |
 | minio.provisioning.config[0].options.name | string | `"eu-central-1"` |  |
 | minio.provisioning.enabled | bool | `true` |  |

@@ -5,7 +5,9 @@ import ATKOnboardingSystemModule from "../system";
 const ATKOnboardingFixedYieldScheduleFactoryModule = buildModule(
   "ATKOnboardingFixedYieldScheduleFactoryModule",
   (m) => {
-    const { system } = m.useModule(ATKOnboardingSystemModule);
+    const { system, systemAddonRegistry } = m.useModule(
+      ATKOnboardingSystemModule
+    );
     const { fixedYieldScheduleFactoryImplementation } = m.useModule(ATKModule);
 
     const platformAdmin = m.getAccount(0);
@@ -17,8 +19,8 @@ const ATKOnboardingFixedYieldScheduleFactoryModule = buildModule(
     );
 
     const createFixedYieldScheduleFactoryAddon = m.call(
-      system,
-      "createSystemAddon",
+      systemAddonRegistry,
+      "registerSystemAddon",
       [
         "fixed-yield-schedule-factory",
         fixedYieldScheduleFactoryImplementation,
@@ -27,7 +29,7 @@ const ATKOnboardingFixedYieldScheduleFactoryModule = buildModule(
     );
     const fixedYieldScheduleFactoryAddress = m.readEventArgument(
       createFixedYieldScheduleFactoryAddon,
-      "SystemAddonCreated",
+      "SystemAddonRegistered",
       "proxyAddress",
       { id: "fixedYieldScheduleFactoryAddress" }
     );

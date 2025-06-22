@@ -9,6 +9,22 @@ import { IATKAirdrop } from "../IATKAirdrop.sol";
 /// @notice Interface for push airdrop contracts in the ATK Protocol.
 /// @dev Defines the functions specific to push airdrops where only admins can distribute tokens.
 interface IATKPushAirdrop is IATKAirdrop {
+    /// @notice Thrown when attempting to claim tokens from a push airdrop.
+    /// @dev Push airdrops only allow admin-initiated distributions, not user claims.
+    error PushAirdropClaimNotAllowed();
+
+    /// @notice Thrown when attempting to distribute to an invalid address.
+    error InvalidDistributionAddress();
+
+    /// @notice Thrown when tokens have already been distributed to a specific index.
+    error AlreadyDistributed();
+
+    /// @notice Thrown when a distribution would exceed the configured distribution cap.
+    error DistributionCapExceeded();
+
+    /// @notice Thrown when attempting to distribute zero tokens.
+    error ZeroAmountToDistribute();
+
     // --- View Functions ---
 
     /// @notice Returns the total amount of tokens distributed so far.

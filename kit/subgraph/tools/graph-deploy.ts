@@ -97,12 +97,14 @@ const logger = createLogger({
 // ============================================================================
 
 let originalAddresses: DeployedAddresses | null = null;
+let originalSubgraphYaml: string | null = null;
 let graphPaths: GraphPaths | null = null;
 
 /**
  * Cleanup function to restore original addresses on exit
  */
 async function cleanup(): Promise<void> {
+  // Restore subgraph.json
   if (originalAddresses && graphPaths?.subgraphConfig) {
     try {
       logger.info("Restoring original subgraph configuration...");
@@ -113,6 +115,17 @@ async function cleanup(): Promise<void> {
       logger.info("Original configuration restored");
     } catch (error) {
       logger.error("Failed to restore original configuration:", error);
+    }
+  }
+
+  // Restore subgraph.yaml
+  if (originalSubgraphYaml && graphPaths?.subgraphYaml) {
+    try {
+      logger.info("Restoring original subgraph.yaml...");
+      await Bun.write(graphPaths.subgraphYaml, originalSubgraphYaml);
+      logger.info("Original subgraph.yaml restored");
+    } catch (error) {
+      logger.error("Failed to restore original subgraph.yaml:", error);
     }
   }
 }
@@ -454,9 +467,14 @@ async function updateSubgraphYaml(addresses: DeployedAddresses): Promise<void> {
       throw new Error("Missing subgraph yaml");
     }
 
-    const subgraphYamlConfig = (await parse(
-      await subgraphYaml.text()
-    )) as SubgraphYamlConfig;
+    // Backup original subgraph.yaml content if not already backed up
+    const yamlContent = await subgraphYaml.text();
+    if (!originalSubgraphYaml) {
+      originalSubgraphYaml = yamlContent;
+      logger.debug("Backed up original subgraph.yaml");
+    }
+
+    const subgraphYamlConfig = (await parse(yamlContent)) as SubgraphYamlConfig;
 
     // Update contract addresses
     const updatedSubgraphYamlConfig: typeof subgraphYamlConfig = {

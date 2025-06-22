@@ -22,7 +22,12 @@ import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware"
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { withEventMeta } from "@orpc/server";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { SystemCreateMessagesSchema } from "./system.create.schema";
+
+const logger = createLogger({
+  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
+});
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -37,6 +42,25 @@ import { SystemCreateMessagesSchema } from "./system.create.schema";
 const CREATE_SYSTEM_MUTATION = portalGraphql(`
   mutation CreateSystemMutation($address: String!, $from: String!) {
     ATKSystemFactoryCreateSystem(
+      address: $address
+      from: $from
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+/**
+ * GraphQL mutation for bootstrapping a system contract.
+ *
+ * @param address - The system contract address to bootstrap
+ * @param from - The wallet address initiating the transaction
+ *
+ * @returns transactionHash - The blockchain transaction hash for tracking
+ */
+const BOOTSTRAP_SYSTEM_MUTATION = portalGraphql(`
+  mutation BootstrapSystemMutation($address: String!, $from: String!) {
+    IATKSystemBootstrap(
       address: $address
       from: $from
     ) {
@@ -106,22 +130,57 @@ export const create = onboardedRouter.system.create
     const messages = SystemCreateMessagesSchema.parse(input.messages ?? {});
 
     // Execute the system creation transaction
-    const txHashResult = await context.portalClient.request(
-      CREATE_SYSTEM_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        // ...(await handleChallenge(sender, verification)),
-      }
-    );
+    let txHashResult;
+    try {
+      txHashResult = await context.portalClient.request(
+        CREATE_SYSTEM_MUTATION,
+        {
+          address: contract,
+          from: sender.wallet,
+          // ...(await handleChallenge(sender, verification)),
+        }
+      );
+    } catch (error) {
+      const errorDetails = {
+        operation: "CREATE_SYSTEM_MUTATION",
+        factory: contract,
+        sender: sender.wallet,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      };
+      logger.error("System creation GraphQL mutation failed", errorDetails);
+      
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.systemCreationFailed,
+        cause: new Error(
+          `GraphQL mutation failed: ${error instanceof Error ? error.message : String(error)}. Factory: ${contract}, Sender: ${sender.wallet}`
+        ),
+      });
+    }
 
     const transactionHash =
       txHashResult.ATKSystemFactoryCreateSystem?.transactionHash ?? null;
+    
+    if (transactionHash) {
+      logger.info("System creation transaction submitted", {
+        transactionHash,
+        factory: contract,
+        sender: sender.wallet,
+      });
+    }
 
     // Validate transaction hash
     if (!transactionHash) {
+      logger.error("System creation failed: No transaction hash returned", {
+        operation: "CREATE_SYSTEM_MUTATION",
+        factory: contract,
+        sender: sender.wallet,
+        result: txHashResult,
+      });
+      
       throw errors.INTERNAL_SERVER_ERROR({
         message: messages.systemCreationFailed,
+        cause: new Error("No transaction hash returned from ATKSystemFactoryCreateSystem mutation"),
       });
     }
 
@@ -154,36 +213,192 @@ export const create = onboardedRouter.system.create
     }
 
     // Query for the deployed system contract
-    const { systems } = await context.theGraphClient.request(
-      FIND_SYSTEM_FOR_TRANSACTION_QUERY,
-      {
-        deployedInTransaction: transactionHash,
-      }
-    );
-
-    if (systems.length === 0) {
+    let systems;
+    try {
+      const result = await context.theGraphClient.request(
+        FIND_SYSTEM_FOR_TRANSACTION_QUERY,
+        {
+          deployedInTransaction: transactionHash,
+        }
+      );
+      systems = result.systems;
+    } catch (error) {
+      const errorDetails = {
+        operation: "FIND_SYSTEM_FOR_TRANSACTION_QUERY",
+        transactionHash,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      };
+      logger.error("Failed to query deployed system contract", errorDetails);
+      
       throw errors.INTERNAL_SERVER_ERROR({
         message: messages.systemCreationFailed,
+        cause: new Error(
+          `TheGraph query failed: ${error instanceof Error ? error.message : String(error)}. Transaction: ${transactionHash}`
+        ),
+      });
+    }
+
+    if (systems.length === 0) {
+      logger.error("No system contracts found after deployment", {
+        operation: "FIND_SYSTEM_FOR_TRANSACTION_QUERY",
+        transactionHash,
+        systemsFound: systems.length,
+      });
+      
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.systemCreationFailed,
+        cause: new Error(`System contract not found in transaction ${transactionHash} after deployment`),
       });
     }
 
     const system = systems[0];
-
-    if (!system) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.systemCreationFailed,
+    
+    if (system) {
+      logger.info("System contract deployed successfully", {
+        systemAddress: system.id,
+        deploymentTransaction: transactionHash,
       });
     }
 
-    // Yield the final confirmed event with the system ID
+    if (!system) {
+      logger.error("System object is null after query", {
+        operation: "FIND_SYSTEM_FOR_TRANSACTION_QUERY",
+        transactionHash,
+        systems,
+      });
+      
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.systemCreationFailed,
+        cause: new Error(`System object is null for transaction ${transactionHash}`),
+      });
+    }
+
+    // Now bootstrap the system
     yield withEventMeta(
       {
-        status: "confirmed",
-        message: messages.systemCreated,
-        result: system.id,
+        status: "pending",
+        message: messages.bootstrappingSystem,
+        result: undefined,
       },
-      { id: transactionHash, retry: 1000 }
+      { id: `${transactionHash}-bootstrap`, retry: 1000 }
     );
+
+    // Execute the bootstrap transaction
+    let bootstrapTxHashResult;
+    try {
+      bootstrapTxHashResult = await context.portalClient.request(
+        BOOTSTRAP_SYSTEM_MUTATION,
+        {
+          address: system.id,
+          from: sender.wallet,
+        }
+      );
+    } catch (error) {
+      const errorDetails = {
+        operation: "BOOTSTRAP_SYSTEM_MUTATION",
+        systemAddress: system.id,
+        sender: sender.wallet,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      };
+      logger.error("System bootstrap GraphQL mutation failed", errorDetails);
+      
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.bootstrapFailed,
+        cause: new Error(
+          `Bootstrap GraphQL mutation failed: ${error instanceof Error ? error.message : String(error)}. System: ${system.id}, Sender: ${sender.wallet}`
+        ),
+      });
+    }
+
+    const bootstrapTransactionHash =
+      bootstrapTxHashResult.IATKSystemBootstrap?.transactionHash ?? null;
+    
+    if (bootstrapTransactionHash) {
+      logger.info("System bootstrap transaction submitted", {
+        bootstrapTransactionHash,
+        systemAddress: system.id,
+        sender: sender.wallet,
+      });
+    }
+
+    // Validate bootstrap transaction hash
+    if (!bootstrapTransactionHash) {
+      logger.error("Bootstrap failed: No transaction hash returned", {
+        operation: "BOOTSTRAP_SYSTEM_MUTATION",
+        systemAddress: system.id,
+        sender: sender.wallet,
+        result: bootstrapTxHashResult,
+      });
+      
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.bootstrapFailed,
+        cause: new Error(`No transaction hash returned from IATKSystemBootstrap mutation for system ${system.id}`),
+      });
+    }
+
+    // Track bootstrap transaction
+    let bootstrapSucceeded = false;
+    for await (const event of trackTransaction(
+      bootstrapTransactionHash,
+      context.portalClient,
+      context.theGraphClient,
+      {
+        ...messages,
+        waitingForMining: messages.bootstrappingSystem,
+      }
+    )) {
+      // Yield all bootstrap events
+      yield withEventMeta(
+        {
+          status: event.status,
+          message: event.message,
+          result: undefined,
+        },
+        { id: `${bootstrapTransactionHash}-bootstrap`, retry: 1000 }
+      );
+
+      // Track bootstrap success/failure
+      if (event.status === "confirmed") {
+        bootstrapSucceeded = true;
+        logger.info("System bootstrap completed successfully", {
+          systemAddress: system.id,
+          bootstrapTransaction: bootstrapTransactionHash,
+        });
+      } else if (event.status === "failed") {
+        bootstrapSucceeded = false;
+        logger.error("System bootstrap failed", {
+          systemAddress: system.id,
+          bootstrapTransaction: bootstrapTransactionHash,
+          failureMessage: event.message,
+        });
+        // Don't return early - we still need to report the system ID
+        break;
+      }
+    }
+
+    // Always yield the final event with the system ID
+    // If bootstrap failed, we still return the system ID but with failed status
+    if (!bootstrapSucceeded) {
+      yield withEventMeta(
+        {
+          status: "failed",
+          message: `${messages.systemCreatedBootstrapFailed} System address: ${system.id}`,
+          result: system.id,
+        },
+        { id: transactionHash, retry: 1000 }
+      );
+    } else {
+      yield withEventMeta(
+        {
+          status: "confirmed",
+          message: messages.systemCreated,
+          result: system.id,
+        },
+        { id: transactionHash, retry: 1000 }
+      );
+    }
 
     return;
   });
