@@ -23,14 +23,10 @@ jobs:
     runs-on: namespace-profile-atk
     permissions:
       contents: write
-      pull-requests: write
+      discussions: write
       issues: write
-      id-token: write
-      actions: write
-      checks: write
       packages: write
-      deployments: write
-      repository-projects: write
+      pull-requests: write
     env:
       HARBOR_USER: ""
       HARBOR_PASS: ""
@@ -92,33 +88,6 @@ jobs:
           # Trigger when assigned to claude-bot user
           assignee_trigger: "claude-bot"
 
-          # Comprehensive tool permissions for full functionality
-          allowed_tools: |
-            Bash(bun install),
-            Bash(bun run *),
-            Bash(bun test *),
-            Bash(bun add *),
-            Bash(bun remove *),
-            Bash(bunx *),
-            Bash(git *),
-            Bash(gh *),
-            Bash(docker *),
-            Bash(turbo *),
-            Bash(settlemint *),
-            Edit,
-            MultiEdit,
-            Write,
-            Read,
-            Grep,
-            LS,
-            NotebookRead,
-            NotebookEdit,
-            TodoRead,
-            TodoWrite,
-            WebFetch,
-            WebSearch,
-            Task
-
           # Comprehensive custom instructions from CLAUDE.md
           custom_instructions: |
             # SettleMint Asset Tokenization Kit Guidelines
@@ -176,22 +145,20 @@ jobs:
             - `bun run codegen` - Generate code
 
             ## CRITICAL: MANDATORY FIRST STEPS
-            **YOU MUST RUN THESE COMMANDS IMMEDIATELY BEFORE ANY CODE WORK:**
+            **YOU MUST RUN THESE COMMANDS IMMEDIATELY BEFORE WRITING ANY CODE:**
             1. `bunx turbo run artifacts --concurrency=100%` - REQUIRED: Generates contract artifacts
-            2. `bun dev:up` - REQUIRED: Starts backend services
-            3. `bun codegen` - REQUIRED: Generates TypeScript types and GraphQL code
-            
+
             **FAILURE TO RUN THESE WILL CAUSE:**
             - Missing type definitions
             - Import errors
             - Contract artifact not found errors
             - GraphQL schema mismatches
-            
-            **NO EXCEPTIONS** - Run all three commands at the start of EVERY session.
-            
+
+            **NO EXCEPTIONS** - Run all these commands at the start of EVERY session.
+
             ## When Helping with Issues/PRs
             1. FIRST: Run the three mandatory setup commands above
-            2. Read CLAUDE.md 
+            2. Read CLAUDE.md
             3. Check .cursor/rules/*.mdc for latest guidelines
             4. Use context7 for latest library docs
             5. Create detailed todo lists for complex tasks
@@ -206,16 +173,3 @@ jobs:
             - Focus on the specific task
             - Show progress with TodoWrite
             - Report CI check results
-
-          # Environment variables for Claude
-          claude_env: |
-            NODE_ENV: development
-            CI: true
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            BUN_VERSION: 1.2.16
-            THE_GRAPH_PORT_LOCAL_DEPLOY: 8120
-            THE_GRAPH_PORT_LOCAL_QUERY: 8100
-            HARBOR_USER: ${{ env.HARBOR_USER }}
-            HARBOR_PASS: ${{ env.HARBOR_PASS }}
-            NPM_TOKEN: ${{ env.NPM_TOKEN }}
-

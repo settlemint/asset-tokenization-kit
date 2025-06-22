@@ -27,11 +27,10 @@ jobs:
     runs-on: namespace-profile-atk
     permissions:
       contents: write
-      pull-requests: write
+      discussions: write
       issues: write
-      id-token: write
-      actions: write
-      checks: write
+      packages: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -77,52 +76,45 @@ jobs:
         with:
           instance: local
 
-      - name: Run Claude Code Review
-        id: claude-review
+      - name: Setup Git Config
+        run: |
+          git config --global user.name "Claude Code Review"
+          git config --global user.email "claude@anthropic.com"
+          git config --global safe.directory "${{ github.workspace }}"
+
+      - name: Claude Code Review
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-
-          # Direct prompt for automated review incorporating CLAUDE.md guidelines
-          direct_prompt: |
-            Please review this pull request following the project's CLAUDE.md guidelines.
-
-            Key project standards to enforce:
-            - Use Bun (not npm/yarn/pnpm) for all package management and runtime
-            - Follow conventional commit format (feat, fix, chore, docs, etc.)
-            - Use bun:test for testing (not vitest)
-            - Never use barrel files
-            - Prefer nullish coalescing (??) over logical OR (||)
-            - Ignore dapp-v1 folder (deprecated)
-
-            Review checklist:
-            1. **Code Quality**: TypeScript best practices, proper types, no any types
-            2. **Security**: No exposed secrets, secure coding practices
-            3. **Performance**: Efficient algorithms, no unnecessary re-renders
-            4. **Testing**: Adequate test coverage using bun:test
-            5. **Documentation**: Clear code comments where needed
-            6. **Solidity** (if applicable): Follow kit/contracts guidelines
-            7. **Dependencies**: Check for security vulnerabilities
-
-            For first-time contributors, be encouraging and educational.
-            Be constructive and suggest specific improvements.
-            If the PR looks good, say so!
-
-          # Allow Claude to run validation commands
-          allowed_tools: |
-            Bash(bun run ci),
-            Bash(bun run lint),
-            Bash(bun run format --check),
-            Bash(bun run test),
-            Bash(bun run compile),
-            Bash(bun run build),
-            Bash(bunx audit),
-            Grep,
-            Read,
-            LS
-
-          # Custom instructions from CLAUDE.md
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Add this to fix the permissions issue
           custom_instructions: |
+            # Environment Setup
+            You have access to a full Linux environment with:
+            - Git (use 'git' commands freely)
+            - Bash shell (use any bash commands)
+            - Bun runtime and package manager
+            - All standard Unix tools
+
+            # Git Access
+            - The repository is already cloned and checked out at: ${{ github.workspace }}
+            - You can run any git commands: git diff, git log, git show, git status, etc.
+            - To see PR changes: git diff origin/${{ github.base_ref }}...HEAD
+            - Current branch: ${{ github.head_ref }}
+            - Base branch: ${{ github.base_ref }}
+
+            # Bash Usage
+            - Use Bash tool for any command execution
+            - Commands like: ls, find, grep, awk, sed, etc. are all available
+            - Can navigate directories with cd
+            - Can set environment variables
+            - Can pipe commands and use shell features
+
+            # File System
+            - Working directory: ${{ github.workspace }}
+            - You have full read access to all files
+            - Use Read/Write/Edit tools for file operations
+            - Use Bash for complex file operations
+
             # Project Context
             This is the SettleMint Asset Tokenization Kit - a full-stack solution for tokenized assets.
 
@@ -144,9 +136,24 @@ jobs:
             - Bun.$ instead of execa
             - Built-in WebSocket support
             - Bun.File() for file operations
+          direct_prompt: |
+            Please review this pull request following the project's CLAUDE.md guidelines.
 
-          # Environment variables for Claude
-          claude_env: |
-            NODE_ENV: test
-            CI: true
+            First, use git commands to understand what changed:
+            - Run: git diff origin/${{ github.base_ref }}...HEAD --stat
+            - Run: git log origin/${{ github.base_ref }}..HEAD --oneline
 
+            Then review the changes focusing on:
+            1. **Code Quality**: TypeScript best practices, proper types, no any types
+            2. **Security**: No exposed secrets, secure coding practices
+            3. **Performance**: Efficient algorithms, no unnecessary re-renders
+            4. **Testing**: Adequate test coverage using bun:test
+            5. **Documentation**: Clear code comments where needed
+            6. **Solidity** (if applicable): Follow kit/contracts guidelines
+            7. **Dependencies**: Check for security vulnerabilities
+
+            Use bash and git commands freely to explore the codebase and understand context.
+
+            For first-time contributors, be encouraging and educational.
+            Be constructive and suggest specific improvements.
+            If the PR looks good, say so!
