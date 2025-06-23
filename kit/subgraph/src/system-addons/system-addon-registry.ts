@@ -1,7 +1,9 @@
 import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
 import {
   FixedYieldScheduleFactory as FixedYieldScheduleFactoryTemplate,
+  PushAirdropFactory as PushAirdropFactoryTemplate,
   VaultFactory as VaultFactoryTemplate,
+  VestingAirdropFactory as VestingAirdropFactoryTemplate,
   XvPSettlementFactory as XvPSettlementFactoryTemplate,
 } from "../../generated/templates";
 import {
@@ -46,6 +48,19 @@ export function handleSystemAddonRegistered(
   ) {
     VaultFactoryTemplate.create(event.params.proxyAddress);
   }
+  if (
+    event.params.typeId ==
+    crypto.keccak256(ByteArray.fromUTF8("ATKPushAirdropFactory"))
+  ) {
+    PushAirdropFactoryTemplate.create(event.params.proxyAddress);
+  }
+  if (
+    event.params.typeId ==
+    crypto.keccak256(ByteArray.fromUTF8("ATKVestingAirdropFactory"))
+  ) {
+    VestingAirdropFactoryTemplate.create(event.params.proxyAddress);
+  }
+
   systemAddon.system = fetchSystem(event.address).id;
   systemAddon.save();
 }
