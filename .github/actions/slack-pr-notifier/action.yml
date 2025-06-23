@@ -313,11 +313,9 @@ runs:
 
             messageBlocks = [
               {
-                type: 'section',
-                text: {
-                  type: 'mrkdwn',
-                  text: `*<${pr_url}|#${pr_number}: ${escapedTitle}>*\n_by ${pr_author}_`
-                }
+                type: 'image',
+                image_url: ogImageUrl,
+                alt_text: `PR #${pr_number}: ${escapedTitle}`
               },
               {
                 type: 'actions',
@@ -410,11 +408,38 @@ runs:
                 }
               } else {
                 // Send new message
-                const result = await slackAPI('chat.postMessage', {
-                  channel: process.env.SLACK_CHANNEL_ID,
-                  text: `#${pr_number}: ${escapedTitle}`,
-                  blocks: messageBlocks
-                });
+                let result;
+                try {
+                  // First try with the image block
+                  result = await slackAPI('chat.postMessage', {
+                    channel: process.env.SLACK_CHANNEL_ID,
+                    text: `#${pr_number}: ${escapedTitle}`,
+                    blocks: messageBlocks
+                  });
+                } catch (e) {
+                  if (e.message.includes('invalid_blocks')) {
+                    console.log('Image block failed, trying with fallback text format...');
+                    // Fallback: Create text-only blocks without the image
+                    const fallbackBlocks = messageBlocks.filter(block => block.type !== 'image');
+
+                    // Add a section block with PR info if we removed the image
+                    fallbackBlocks.unshift({
+                      type: 'section',
+                      text: {
+                        type: 'mrkdwn',
+                        text: `*<${pr_url}|#${pr_number}: ${escapedTitle}>*\n_by ${pr_author}_`
+                      }
+                    });
+
+                    result = await slackAPI('chat.postMessage', {
+                      channel: process.env.SLACK_CHANNEL_ID,
+                      text: `#${pr_number}: ${escapedTitle}`,
+                      blocks: fallbackBlocks
+                    });
+                  } else {
+                    throw e;
+                  }
+                }
 
                 // Store timestamp
                 if (result.ts) {
@@ -473,12 +498,41 @@ runs:
             } else {
               // Always update the message to ensure latest title and content
               console.log('Updating Slack message with latest content');
-              await slackAPI('chat.update', {
-                channel: process.env.SLACK_CHANNEL_ID,
-                ts: slackTs,
-                text: `#${pr_number}: ${escapedTitle}`,
-                blocks: messageBlocks
-              });
+              try {
+                // First try with the image block
+                await slackAPI('chat.update', {
+                  channel: process.env.SLACK_CHANNEL_ID,
+                  ts: slackTs,
+                  text: `#${pr_number}: ${escapedTitle}`,
+                  blocks: messageBlocks
+                });
+              } catch (e) {
+                if (e.message.includes('invalid_blocks')) {
+                  console.log('Image block failed on update, trying with fallback text format...');
+                  // Fallback: Create text-only blocks without the image
+                  const fallbackBlocks = messageBlocks.filter(block => block.type !== 'image');
+
+                  // Add a section block with PR info if we removed the image
+                  if (!isMerged && !isAbandoned) {
+                    fallbackBlocks.unshift({
+                      type: 'section',
+                      text: {
+                        type: 'mrkdwn',
+                        text: `*<${pr_url}|#${pr_number}: ${escapedTitle}>*\n_by ${pr_author}_`
+                      }
+                    });
+                  }
+
+                  await slackAPI('chat.update', {
+                    channel: process.env.SLACK_CHANNEL_ID,
+                    ts: slackTs,
+                    text: `#${pr_number}: ${escapedTitle}`,
+                    blocks: fallbackBlocks
+                  });
+                } else {
+                  throw e;
+                }
+              }
             }
 
             if (slackTs) {
