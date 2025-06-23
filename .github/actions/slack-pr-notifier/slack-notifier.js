@@ -1,9 +1,25 @@
 /**
- * Slack PR Notifier Script
+ * Slack PR Notifier Script - Efficient Version
  * 
- * This script handles sending and updating Slack notifications for PR events.
- * It manages message formatting, reactions, and maintains state through GitHub comments.
+ * Key improvements:
+ * - Delta-based updates: Only changes what's necessary
+ * - Sanity checks: Verifies final state and recovers if needed
+ * - Better error handling: slackTs is properly scoped
+ * - Comprehensive debugging
  */
+
+/**
+ * Calculate the delta between two sets
+ */
+function calculateDelta(current, desired) {
+  const currentSet = new Set(current);
+  const desiredSet = new Set(desired);
+  
+  const toAdd = desired.filter(item => !currentSet.has(item));
+  const toRemove = current.filter(item => !desiredSet.has(item));
+  
+  return { add: toAdd, remove: toRemove };
+}
 
 module.exports = async ({ github, context, core }) => {
   // Get environment variables
@@ -31,6 +47,9 @@ module.exports = async ({ github, context, core }) => {
     SLACK_BOT_TOKEN: SLACK_BOT_TOKEN ? 'Set' : 'Not set'
   });
 
+  // Initialize slackTs at the top level to avoid reference errors
+  let slackTs = null;
+
   try {
     // Get PR labels
     let { data: labels } = await github.rest.issues.listLabelsOnIssue({
@@ -55,7 +74,6 @@ module.exports = async ({ github, context, core }) => {
     });
 
     // Look for existing Slack timestamp in comments
-    let slackTs = null;
     const slackComment = comments.find(c => c.body && c.body.includes('<!-- slack-ts:'));
     if (slackComment) {
       const match = slackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);
@@ -93,7 +111,7 @@ module.exports = async ({ github, context, core }) => {
       { label: 'status:in-review', text: ':eyes: In Review' },
       { label: 'qa:running', text: ':hourglass_flowing_sand: QA Running' },
       { label: 'qa:failed', text: ':x: QA Failed' },
-      { label: 'qa:passed', text: ':white_check_mark: QA Passed' },
+      { label: 'qa:success', text: ':white_check_mark: QA Passed' },
       { label: 'status:changes-requested', text: ':warning: Changes Requested' },
       { label: 'status:approved', text: ':white_check_mark: Approved' },
       { label: 'status:on-hold', text: ':pause_button: On Hold' },
@@ -431,246 +449,9 @@ module.exports = async ({ github, context, core }) => {
       await sendMessage(false);
     }
 
-    // Add/remove reactions based on labels
+    // EFFICIENT REACTION MANAGEMENT
     if (slackTs) {
-      // Wait a bit for message to be fully processed
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Define reaction mappings from the ORIGINAL working version
-      const statusReactions = {
-        'qa:pending': 'hourglass_flowing_sand',
-        'qa:running': 'runner',
-        'qa:success': 'white_check_mark',
-        'qa:failed': 'x',
-        'status:ready-for-review': 'eyes',
-        'status:approved': 'thumbsup',
-        'status:mergeable': 'rocket',
-        'status:merged': 'tada'
-      };
-
-      // Define mutually exclusive groups (only one can be active at a time)
-      const exclusiveGroups = {
-        'qa': ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
-        'status': ['eyes', 'thumbsup', 'rocket', 'tada']
-      };
-
-      // All possible status reactions we manage
-      const allStatusReactions = Object.values(statusReactions);
-
-      try {
-        // Get message to ensure it exists
-        const messages = await slackApi('conversations.history', {
-          channel: SLACK_CHANNEL_ID,
-          latest: slackTs,
-          limit: 1,
-          inclusive: true
-        });
-
-        if (messages.messages && messages.messages.length > 0) {
-          console.log('Message found, processing reactions...');
-          
-          // Get reactions from the message we already fetched
-          const message = messages.messages[0];
-          console.log('Message details:', {
-            ts: message.ts,
-            text: message.text,
-            reactions: message.reactions
-          });
-          
-          const existingReactions = (message.reactions || [])
-            .filter(r => r.users && r.users.length > 0) // Only reactions that have users
-            .map(r => r.name);
-            
-          console.log(`Found ${existingReactions.length} existing reactions:`, existingReactions);
-          
-          // Debug: Show all available labels and their potential reactions
-          console.log('\n=== REACTION MAPPING DEBUG ===');
-          console.log('Available status reactions:', statusReactions);
-          console.log('Current PR labels:', labels.map(l => l.name));
-          console.log('Labels that map to reactions:');
-          for (const label of labels) {
-            if (statusReactions[label.name]) {
-              console.log(`  "${label.name}" → "${statusReactions[label.name]}"`);
-            }
-          }
-
-          // STRICT LABEL-TO-REACTION MAPPING
-          // Only show reactions that have exact corresponding labels
-          const currentStatuses = [];
-
-          // Map each label to its reaction
-          for (const label of labels) {
-            if (statusReactions[label.name]) {
-              currentStatuses.push(statusReactions[label.name]);
-              console.log(`Label "${label.name}" maps to reaction "${statusReactions[label.name]}"`);
-            }
-          }
-
-          // Apply exclusive group rules
-          console.log('\n=== EXCLUSIVE GROUPS PROCESSING ===');
-          const finalStatuses = [];
-          const usedGroups = new Set();
-
-          // Priority order for exclusive groups
-          const groupPriority = {
-            'qa': ['qa:failed', 'qa:success', 'qa:running', 'qa:pending'],
-            'status': ['status:merged', 'status:mergeable', 'status:approved', 'status:ready-for-review']
-          };
-
-          console.log('Exclusive groups:', exclusiveGroups);
-          console.log('Group priorities:', groupPriority);
-
-          // For each group, pick only the highest priority reaction
-          for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
-            const priorityOrder = groupPriority[groupName] || [];
-            console.log(`\nProcessing group "${groupName}" with priorities:`, priorityOrder);
-
-            // Find the highest priority label from this group
-            let selectedReaction = null;
-            for (const priorityLabel of priorityOrder) {
-              const hasLabel = labels.some(l => l.name === priorityLabel);
-              const hasMappedReaction = statusReactions[priorityLabel];
-              console.log(`  Checking "${priorityLabel}": hasLabel=${hasLabel}, hasMappedReaction=${!!hasMappedReaction}`);
-              
-              if (hasLabel && hasMappedReaction) {
-                selectedReaction = statusReactions[priorityLabel];
-                console.log(`  ✓ Selected reaction "${selectedReaction}" for group "${groupName}"`);
-                break;
-              }
-            }
-
-            if (selectedReaction && currentStatuses.includes(selectedReaction)) {
-              finalStatuses.push(selectedReaction);
-              usedGroups.add(groupName);
-              console.log(`  Added "${selectedReaction}" to final statuses`);
-            } else if (selectedReaction) {
-              console.log(`  ✗ Reaction "${selectedReaction}" not in current statuses`);
-            } else {
-              console.log(`  No reaction selected for group "${groupName}"`);
-            }
-          }
-
-          // If QA is running or pending, don't show status reactions
-          const hasQaInProgress = labels.some(l => l.name === 'qa:running' || l.name === 'qa:pending');
-          console.log(`\nQA in progress: ${hasQaInProgress}`);
-          
-          const filteredStatuses = hasQaInProgress
-            ? finalStatuses.filter(r => exclusiveGroups.qa.includes(r))
-            : finalStatuses;
-
-          console.log('\n=== FINAL REACTION DECISIONS ===');
-          console.log('Current statuses from labels:', currentStatuses);
-          console.log('Final statuses after exclusive groups:', finalStatuses);
-          console.log('Filtered statuses (after QA check):', filteredStatuses);
-          console.log('Used exclusive groups:', Array.from(usedGroups));
-
-          // Determine what reactions to remove and add
-          let reactionsToRemove, reactionsToAdd;
-
-          const isMerged = labels.some(l => l.name === 'status:merged');
-          
-          if (isMerged) {
-            // For merged PRs, remove ALL managed reactions
-            reactionsToRemove = existingReactions.filter(reaction =>
-              allStatusReactions.includes(reaction)
-            );
-            reactionsToAdd = [];
-          } else {
-            // Remove any reaction that doesn't have a corresponding label
-            reactionsToRemove = existingReactions.filter(reaction => {
-              // Check if this is a managed reaction
-              if (!allStatusReactions.includes(reaction)) {
-                return false; // Don't remove reactions we don't manage
-              }
-
-              // Check if this reaction has a corresponding current label
-              return !filteredStatuses.includes(reaction);
-            });
-
-            // Only add reactions that correspond to current labels and aren't already present
-            reactionsToAdd = filteredStatuses.filter(reaction =>
-              !existingReactions.includes(reaction)
-            );
-          }
-
-          console.log('\n=== REACTION SYNC PLAN ===');
-          console.log(`Existing reactions on message: [${existingReactions.join(', ')}]`);
-          console.log(`Reactions to remove: [${reactionsToRemove.join(', ')}]`);
-          console.log(`Reactions to add: [${reactionsToAdd.join(', ')}]`);
-          console.log(`Is merged PR: ${isMerged}`);
-
-          // Remove outdated reactions first
-          for (const reactionName of reactionsToRemove) {
-            try {
-              console.log(`Removing outdated reaction: ${reactionName}`);
-              await slackApi('reactions.remove', {
-                channel: SLACK_CHANNEL_ID,
-                timestamp: slackTs,
-                name: reactionName
-              });
-              await new Promise(resolve => setTimeout(resolve, 200));
-            } catch (e) {
-              if (e.message.includes('missing_scope')) {
-                console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
-                break;
-              } else if (e.message.includes('no_reaction')) {
-                console.log(`Reaction ${reactionName} was already removed`);
-              } else {
-                console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
-              }
-            }
-          }
-
-          // Wait a bit after removals
-          if (reactionsToRemove.length > 0) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-          }
-
-          // Add new reactions
-          for (const reaction of reactionsToAdd) {
-            try {
-              console.log(`Adding reaction: ${reaction}`);
-              await slackApi('reactions.add', {
-                channel: SLACK_CHANNEL_ID,
-                timestamp: slackTs,
-                name: reaction
-              });
-              console.log(`Successfully added reaction: ${reaction}`);
-              await new Promise(resolve => setTimeout(resolve, 200));
-            } catch (e) {
-              if (e.message.includes('missing_scope')) {
-                console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
-                break;
-              } else if (e.message.includes('already_reacted')) {
-                console.log(`Reaction ${reaction} already exists (race condition)`);
-              } else {
-                console.log(`Could not add reaction ${reaction}: ${e.message}`);
-              }
-            }
-          }
-        } else {
-          console.warn('⚠️ No message found in Slack for timestamp:', slackTs);
-          console.warn('This could mean:');
-          console.warn('  1. The message was deleted');
-          console.warn('  2. The bot lost access to the channel');
-          console.warn('  3. The timestamp is invalid');
-          console.warn('  4. The message is in a different channel');
-        }
-      } catch (error) {
-        console.error('Failed to process reactions:', error.message);
-        console.error('Stack trace:', error.stack);
-        
-        // Log specific error types
-        if (error.message.includes('not_in_channel')) {
-          console.error('⚠️ Bot is not in the channel. Please invite the bot to the channel.');
-        }
-        if (error.message.includes('channel_not_found')) {
-          console.error('⚠️ Channel not found. Check SLACK_CHANNEL_ID is correct.');
-        }
-        if (error.message.includes('invalid_auth')) {
-          console.error('⚠️ Invalid authentication. Check SLACK_BOT_TOKEN.');
-        }
-      }
+      await manageReactionsEfficiently(slackTs, labels, slackApi, SLACK_CHANNEL_ID);
     }
 
   } catch (error) {
@@ -683,6 +464,7 @@ module.exports = async ({ github, context, core }) => {
     console.error('Author Type:', PR_AUTHOR_TYPE);
     console.error('Channel ID:', SLACK_CHANNEL_ID ? 'Set' : 'Not set');
     console.error('Bot Token:', SLACK_BOT_TOKEN ? 'Set' : 'Not set');
+    console.error('Slack Timestamp:', slackTs || 'Not set');
     throw error;
   }
 
@@ -690,3 +472,271 @@ module.exports = async ({ github, context, core }) => {
   console.log(`PR #${PR_NUMBER} processed`);
   console.log(`Slack timestamp: ${slackTs || 'New message created'}`);
 };
+
+/**
+ * Efficiently manage reactions - only add/remove what's necessary
+ */
+async function manageReactionsEfficiently(slackTs, labels, slackApi, SLACK_CHANNEL_ID) {
+  // Wait a bit for message to be fully processed
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  // Define reaction mappings from the ORIGINAL working version
+  const statusReactions = {
+    'qa:pending': 'hourglass_flowing_sand',
+    'qa:running': 'runner',
+    'qa:success': 'white_check_mark',
+    'qa:failed': 'x',
+    'status:ready-for-review': 'eyes',
+    'status:approved': 'thumbsup',
+    'status:mergeable': 'rocket',
+    'status:merged': 'tada'
+  };
+
+  // Define mutually exclusive groups (only one can be active at a time)
+  const exclusiveGroups = {
+    'qa': ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
+    'status': ['eyes', 'thumbsup', 'rocket', 'tada']
+  };
+
+  // All possible status reactions we manage
+  const allStatusReactions = new Set(Object.values(statusReactions));
+
+  try {
+    // Get message to ensure it exists
+    const messages = await slackApi('conversations.history', {
+      channel: SLACK_CHANNEL_ID,
+      latest: slackTs,
+      limit: 1,
+      inclusive: true
+    });
+
+    if (!messages.messages || messages.messages.length === 0) {
+      console.warn('⚠️ No message found in Slack for timestamp:', slackTs);
+      return;
+    }
+
+    const message = messages.messages[0];
+    console.log('Message found for reaction management');
+
+    // Get current reactions
+    const currentReactions = (message.reactions || [])
+      .filter(r => r.users && r.users.length > 0)
+      .map(r => r.name);
+
+    console.log(`Current reactions: [${currentReactions.join(', ')}]`);
+
+    // Calculate desired reactions based on labels
+    const desiredReactions = calculateDesiredReactions(labels, statusReactions, exclusiveGroups);
+    
+    console.log(`Desired reactions: [${desiredReactions.join(', ')}]`);
+
+    // Calculate delta (what to add/remove) - only for reactions we manage
+    const currentManagedReactions = currentReactions.filter(r => allStatusReactions.has(r));
+    const delta = calculateDelta(currentManagedReactions, desiredReactions);
+
+    console.log('\n=== EFFICIENT REACTION UPDATE PLAN ===');
+    console.log(`Reactions to add: [${delta.add.join(', ')}]`);
+    console.log(`Reactions to remove: [${delta.remove.join(', ')}]`);
+
+    // Apply changes
+    let changesMade = 0;
+    const errors = [];
+
+    // Remove reactions first
+    for (const reaction of delta.remove) {
+      try {
+        console.log(`Removing reaction: ${reaction}`);
+        await slackApi('reactions.remove', {
+          channel: SLACK_CHANNEL_ID,
+          timestamp: slackTs,
+          name: reaction
+        });
+        changesMade++;
+        await new Promise(resolve => setTimeout(resolve, 100)); // Small delay between operations
+      } catch (error) {
+        if (error.message.includes('no_reaction')) {
+          console.log(`Reaction ${reaction} was already removed (race condition)`);
+        } else {
+          errors.push(`Failed to remove ${reaction}: ${error.message}`);
+          console.error(`Failed to remove reaction ${reaction}:`, error.message);
+        }
+      }
+    }
+
+    // Add reactions
+    for (const reaction of delta.add) {
+      try {
+        console.log(`Adding reaction: ${reaction}`);
+        await slackApi('reactions.add', {
+          channel: SLACK_CHANNEL_ID,
+          timestamp: slackTs,
+          name: reaction
+        });
+        changesMade++;
+        await new Promise(resolve => setTimeout(resolve, 100)); // Small delay between operations
+      } catch (error) {
+        if (error.message.includes('already_reacted')) {
+          console.log(`Reaction ${reaction} already exists (race condition)`);
+        } else {
+          errors.push(`Failed to add ${reaction}: ${error.message}`);
+          console.error(`Failed to add reaction ${reaction}:`, error.message);
+        }
+      }
+    }
+
+    console.log(`\n✓ Applied ${changesMade} reaction changes`);
+
+    // SANITY CHECK: Verify final state if we made changes
+    if (changesMade > 0 || errors.length > 0) {
+      await verifySanity(slackTs, desiredReactions, allStatusReactions, slackApi, SLACK_CHANNEL_ID);
+    }
+
+  } catch (error) {
+    console.error('Failed to manage reactions:', error.message);
+    console.error('Stack trace:', error.stack);
+  }
+}
+
+/**
+ * Calculate desired reactions based on labels and rules
+ */
+function calculateDesiredReactions(labels, statusReactions, exclusiveGroups) {
+  console.log('\n=== CALCULATING DESIRED REACTIONS ===');
+  
+  // Map labels to reactions
+  const mappedReactions = [];
+  for (const label of labels) {
+    if (statusReactions[label.name]) {
+      mappedReactions.push(statusReactions[label.name]);
+      console.log(`Label "${label.name}" → reaction "${statusReactions[label.name]}"`);
+    }
+  }
+
+  // Apply exclusive group rules
+  const finalReactions = [];
+  const groupPriority = {
+    'qa': ['qa:failed', 'qa:success', 'qa:running', 'qa:pending'],
+    'status': ['status:merged', 'status:mergeable', 'status:approved', 'status:ready-for-review']
+  };
+
+  // For each group, pick only the highest priority reaction
+  for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+    const priorityOrder = groupPriority[groupName] || [];
+    
+    // Find the highest priority label from this group
+    let selectedReaction = null;
+    for (const priorityLabel of priorityOrder) {
+      if (labels.some(l => l.name === priorityLabel) && statusReactions[priorityLabel]) {
+        selectedReaction = statusReactions[priorityLabel];
+        console.log(`Selected reaction "${selectedReaction}" for group "${groupName}"`);
+        break;
+      }
+    }
+
+    if (selectedReaction && mappedReactions.includes(selectedReaction)) {
+      finalReactions.push(selectedReaction);
+    }
+  }
+
+  // If QA is running or pending, only show QA reactions
+  const hasQaInProgress = labels.some(l => l.name === 'qa:running' || l.name === 'qa:pending');
+  if (hasQaInProgress) {
+    console.log('QA in progress - filtering to only QA reactions');
+    return finalReactions.filter(r => exclusiveGroups.qa.includes(r));
+  }
+
+  return finalReactions;
+}
+
+/**
+ * Verify the final state matches our expectations
+ */
+async function verifySanity(slackTs, desiredReactions, allStatusReactions, slackApi, SLACK_CHANNEL_ID) {
+  console.log('\n=== SANITY CHECK ===');
+  
+  // Wait a bit for Slack to process our changes
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  try {
+    // Re-fetch the message
+    const messages = await slackApi('conversations.history', {
+      channel: SLACK_CHANNEL_ID,
+      latest: slackTs,
+      limit: 1,
+      inclusive: true
+    });
+
+    if (!messages.messages || messages.messages.length === 0) {
+      console.error('❌ SANITY CHECK FAILED: Message disappeared!');
+      return;
+    }
+
+    const message = messages.messages[0];
+    const actualReactions = (message.reactions || [])
+      .filter(r => r.users && r.users.length > 0)
+      .map(r => r.name);
+
+    // Get only managed reactions
+    const actualManagedReactions = actualReactions.filter(r => allStatusReactions.has(r));
+
+    // Compare
+    const desiredArray = desiredReactions.sort();
+    const actualArray = actualManagedReactions.sort();
+    
+    console.log(`Expected reactions: [${desiredArray.join(', ')}]`);
+    console.log(`Actual reactions:   [${actualArray.join(', ')}]`);
+
+    if (JSON.stringify(desiredArray) === JSON.stringify(actualArray)) {
+      console.log('✅ SANITY CHECK PASSED: Reactions are correct');
+    } else {
+      console.error('❌ SANITY CHECK FAILED: Reactions mismatch!');
+      
+      // Calculate what's wrong
+      const missing = desiredArray.filter(r => !actualArray.includes(r));
+      const extra = actualArray.filter(r => !desiredArray.includes(r));
+      
+      if (missing.length > 0) {
+        console.error(`Missing reactions: [${missing.join(', ')}]`);
+      }
+      if (extra.length > 0) {
+        console.error(`Extra reactions: [${extra.join(', ')}]`);
+      }
+
+      // Attempt recovery
+      console.log('\n🔧 ATTEMPTING FULL RESET...');
+      
+      // Remove all managed reactions
+      for (const reaction of actualManagedReactions) {
+        try {
+          await slackApi('reactions.remove', {
+            channel: SLACK_CHANNEL_ID,
+            timestamp: slackTs,
+            name: reaction
+          });
+          await new Promise(resolve => setTimeout(resolve, 200));
+        } catch (e) {
+          console.error(`Failed to remove ${reaction} during reset:`, e.message);
+        }
+      }
+
+      // Add all desired reactions
+      for (const reaction of desiredReactions) {
+        try {
+          await slackApi('reactions.add', {
+            channel: SLACK_CHANNEL_ID,
+            timestamp: slackTs,
+            name: reaction
+          });
+          await new Promise(resolve => setTimeout(resolve, 200));
+        } catch (e) {
+          console.error(`Failed to add ${reaction} during reset:`, e.message);
+        }
+      }
+
+      console.log('Full reset completed');
+    }
+
+  } catch (error) {
+    console.error('Failed to perform sanity check:', error.message);
+  }
+}
