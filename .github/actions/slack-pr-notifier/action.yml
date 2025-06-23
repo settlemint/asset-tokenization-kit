@@ -113,7 +113,7 @@ runs:
           // STRICT LABEL-TO-REACTION MAPPING
           // Only show reactions that have exact corresponding labels
           const currentStatuses = [];
-          
+
           // Map each label to its reaction
           for (const label of labels) {
             if (statusReactions[label.name]) {
@@ -121,21 +121,21 @@ runs:
               console.log(`Label "${label.name}" maps to reaction "${statusReactions[label.name]}"`);
             }
           }
-          
+
           // Apply exclusive group rules
           const finalStatuses = [];
           const usedGroups = new Set();
-          
+
           // Priority order for exclusive groups
           const groupPriority = {
             'qa': ['qa:failed', 'qa:success', 'qa:running', 'qa:pending'],
             'status': ['status:merged', 'status:mergeable', 'status:approved', 'status:ready-for-review']
           };
-          
+
           // For each group, pick only the highest priority reaction
           for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
             const priorityOrder = groupPriority[groupName] || [];
-            
+
             // Find the highest priority label from this group
             let selectedReaction = null;
             for (const priorityLabel of priorityOrder) {
@@ -144,19 +144,19 @@ runs:
                 break;
               }
             }
-            
+
             if (selectedReaction && currentStatuses.includes(selectedReaction)) {
               finalStatuses.push(selectedReaction);
               usedGroups.add(groupName);
             }
           }
-          
+
           // If QA is running or pending, don't show status reactions
           const hasQaInProgress = labels.some(l => l.name === 'qa:running' || l.name === 'qa:pending');
-          const filteredStatuses = hasQaInProgress 
+          const filteredStatuses = hasQaInProgress
             ? finalStatuses.filter(r => exclusiveGroups.qa.includes(r))
             : finalStatuses;
-          
+
           console.log('All label names:', labels.map(l => l.name));
           console.log('Final reactions (strict sync with labels):', filteredStatuses);
 
@@ -168,7 +168,7 @@ runs:
           });
 
           console.log(`Found ${comments.length} comments on PR`);
-          
+
           // Check for a creation lock first
           const lockComment = comments.find(c => c.body && c.body.includes('<!-- slack-creating-lock -->'));
           if (lockComment) {
@@ -178,14 +178,14 @@ runs:
               console.log(`Found recent creation lock (${lockAge}ms old), waiting for other process to complete...`);
               // Wait and retry to find the created message
               await new Promise(resolve => setTimeout(resolve, 5000));
-              
+
               // Re-fetch comments
               const { data: newComments } = await github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: pr_number
               });
-              
+
               const slackComment = newComments.find(c => c.body && c.body.includes('<!-- slack-ts:'));
               if (slackComment) {
                 const match = slackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);
@@ -208,7 +208,7 @@ runs:
               }
             }
           }
-          
+
           // Look for existing Slack message
           const slackComment = comments.find(c => c.body && c.body.includes('<!-- slack-ts:'));
           let slackTs = null;
@@ -236,17 +236,30 @@ runs:
 
             const data = await response.json();
             if (!data.ok) {
+              console.error(`Slack API error details:`, JSON.stringify(data, null, 2));
               throw new Error(`Slack API error: ${data.error}`);
             }
             return data;
           }
 
+          // Helper function to escape text for Slack
+          function escapeSlackText(text) {
+            // Slack requires escaping &, <, and > in plain text
+            return text
+              .replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;');
+          }
+
           // Check if PR is merged or abandoned
           const isMerged = labels.some(l => l.name === 'status:merged');
           const isAbandoned = '${{ inputs.is_abandoned }}' === 'true';
-          
+
+          // Escape the PR title for use in Slack messages
+          const escapedTitle = escapeSlackText(pr_title);
+
           let messageBlocks;
-          
+
           if (isMerged) {
             // Simplified message for merged PRs
             messageBlocks = [
@@ -254,7 +267,7 @@ runs:
                 type: 'section',
                 text: {
                   type: 'mrkdwn',
-                  text: `:tada: ${pr_title}`
+                  text: `:tada: ${escapedTitle}`
                 },
                 accessory: {
                   type: 'button',
@@ -275,7 +288,7 @@ runs:
                 type: 'section',
                 text: {
                   type: 'mrkdwn',
-                  text: `:file_folder: ${pr_title}`
+                  text: `:file_folder: ${escapedTitle}`
                 },
                 accessory: {
                   type: 'button',
@@ -295,14 +308,16 @@ runs:
             const qaRunning = labels.some(l => l.name === 'qa:running');
             const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
             const ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
-            
+
             console.log(`Using OG image URL with cache key: ${cacheKey}`);
-            
+
             messageBlocks = [
               {
-                type: 'image',
-                image_url: ogImageUrl,
-                alt_text: `PR #${pr_number}: ${pr_title}`
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: `*<${pr_url}|#${pr_number}: ${escapedTitle}>*\n_by ${pr_author}_`
+                }
               },
               {
                 type: 'actions',
@@ -351,7 +366,7 @@ runs:
                       text: 'Review',
                       emoji: false
                     },
-                    url: `${pr_url}#pullrequestreview-new_comment_form`
+                    url: `${pr_url}/files?w=1#review-changes-modal`
                   }
                 ]
               }
@@ -375,11 +390,11 @@ runs:
                 repo: context.repo.repo,
                 issue_number: pr_number
               });
-              
-              const existingSlackComment = checkComments.find(c => 
+
+              const existingSlackComment = checkComments.find(c =>
                 c.body && c.body.includes('<!-- slack-ts:') && c.id !== lockComment.id
               );
-              
+
               if (existingSlackComment) {
                 console.log('Another process created a Slack message while we were locking, using that instead');
                 // Delete our lock
@@ -388,7 +403,7 @@ runs:
                   repo: context.repo.repo,
                   comment_id: lockComment.id
                 });
-                
+
                 const match = existingSlackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);
                 if (match) {
                   slackTs = match[1];
@@ -397,14 +412,14 @@ runs:
                 // Send new message
                 const result = await slackAPI('chat.postMessage', {
                   channel: process.env.SLACK_CHANNEL_ID,
-                  text: `#${pr_number}: ${pr_title}`,
+                  text: `#${pr_number}: ${escapedTitle}`,
                   blocks: messageBlocks
                 });
 
                 // Store timestamp
                 if (result.ts) {
                 console.log(`Storing Slack timestamp ${result.ts} as PR comment`);
-                
+
                 // Get Slack workspace info for the permalink
                 let permalink = '';
                 try {
@@ -415,7 +430,7 @@ runs:
                 } catch (e) {
                   console.log('Could not generate Slack permalink:', e.message);
                 }
-                
+
                 const commentBody = [
                   `<!-- slack-ts:${result.ts} -->`,
                   `This pull request is being tracked in Slack.`,
@@ -431,14 +446,14 @@ runs:
                   ``,
                   `</details>`
                 ].join('\n');
-                
+
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: pr_number,
                   body: commentBody
                 });
-                
+
                 // Delete the lock comment
                 try {
                   await github.rest.issues.deleteComment({
@@ -450,7 +465,7 @@ runs:
                 } catch (e) {
                   console.log('Could not delete lock comment:', e.message);
                 }
-                
+
                 slackTs = result.ts;
                 console.log('Successfully stored Slack timestamp');
               }
@@ -461,7 +476,7 @@ runs:
               await slackAPI('chat.update', {
                 channel: process.env.SLACK_CHANNEL_ID,
                 ts: slackTs,
-                text: `#${pr_number}: ${pr_title}`,
+                text: `#${pr_number}: ${escapedTitle}`,
                 blocks: messageBlocks
               });
             }
@@ -497,12 +512,12 @@ runs:
 
               // STRICT SYNC: Only show reactions that have corresponding labels
               // This ensures 100% sync between labels and reactions
-              
+
               let reactionsToRemove, reactionsToAdd;
-              
+
               if (isMerged) {
                 // For merged PRs, remove ALL managed reactions
-                reactionsToRemove = existingReactions.filter(reaction => 
+                reactionsToRemove = existingReactions.filter(reaction =>
                   allStatusReactions.includes(reaction)
                 );
                 reactionsToAdd = [];
@@ -514,18 +529,18 @@ runs:
                   if (!allStatusReactions.includes(reaction)) {
                     return false; // Don't remove reactions we don't manage
                   }
-                  
+
                   // Check if this reaction has a corresponding current label
                   return !filteredStatuses.includes(reaction);
                 });
-                
+
                 // Step 2: Determine what reactions need to be added
                 // Only add reactions that correspond to current labels and aren't already present
-                reactionsToAdd = filteredStatuses.filter(reaction => 
+                reactionsToAdd = filteredStatuses.filter(reaction =>
                   !existingReactions.includes(reaction)
                 );
               }
-              
+
               console.log('Current label-based reactions:', filteredStatuses);
               console.log('Existing reactions:', existingReactions);
               console.log('Reactions to remove (not in labels):', reactionsToRemove);
