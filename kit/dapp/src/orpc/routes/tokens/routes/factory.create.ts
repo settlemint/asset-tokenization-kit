@@ -382,22 +382,54 @@ export const factoryCreate = onboardedRouter.tokens.factoryCreate
     ).length;
 
     let completionMessage = messages.factoryCreationCompleted;
+
+    // All succeeded
     if (successCount > 0 && failureCount === 0 && skippedCount === 0) {
       completionMessage = messages.allFactoriesSucceeded.replace(
         "{{count}}",
         String(successCount)
       );
-    } else if (successCount > 0 && (failureCount > 0 || skippedCount > 0)) {
-      completionMessage = messages.someFactoriesFailed
-        .replace("{{success}}", String(successCount))
-        .replace("{{failed}}", String(failureCount + skippedCount));
-    } else if (failureCount > 0 && successCount === 0) {
+    }
+    // All skipped
+    else if (skippedCount > 0 && successCount === 0 && failureCount === 0) {
+      completionMessage = messages.allFactoriesSkipped.replace(
+        "{{count}}",
+        String(skippedCount)
+      );
+    }
+    // All failed
+    else if (failureCount > 0 && successCount === 0 && skippedCount === 0) {
       completionMessage = messages.allFactoriesFailed.replace(
         "{{count}}",
         String(failureCount)
       );
-    } else if (skippedCount > 0 && successCount === 0 && failureCount === 0) {
-      completionMessage = `All ${skippedCount} factories already exist`;
+    }
+    // Mixed results with all three types
+    else if (successCount > 0 && skippedCount > 0 && failureCount > 0) {
+      completionMessage = messages.someFactoriesSkipped
+        .replace("{{success}}", String(successCount))
+        .replace("{{skipped}}", String(skippedCount))
+        .replace("{{failed}}", String(failureCount));
+    }
+    // Success and skipped only
+    else if (successCount > 0 && skippedCount > 0 && failureCount === 0) {
+      completionMessage = messages.someFactoriesSkipped
+        .replace("{{success}}", String(successCount))
+        .replace("{{skipped}}", String(skippedCount))
+        .replace("{{failed}}", "0");
+    }
+    // Success and failed only
+    else if (successCount > 0 && failureCount > 0 && skippedCount === 0) {
+      completionMessage = messages.someFactoriesFailed
+        .replace("{{success}}", String(successCount))
+        .replace("{{failed}}", String(failureCount));
+    }
+    // Skipped and failed only
+    else if (skippedCount > 0 && failureCount > 0 && successCount === 0) {
+      completionMessage = messages.someFactoriesSkipped
+        .replace("{{success}}", "0")
+        .replace("{{skipped}}", String(skippedCount))
+        .replace("{{failed}}", String(failureCount));
     }
 
     yield withEventMeta(

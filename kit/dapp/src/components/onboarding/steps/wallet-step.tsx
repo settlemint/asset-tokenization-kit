@@ -91,6 +91,7 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
         style={{ minHeight: "450px", maxHeight: "550px" }}
       >
         <div className="max-w-3xl space-y-6 pr-2">
+          <p>TODO: add wallet protection here</p>
           {/* Wallet display or generation */}
           {hasWallet ? (
             <div className="space-y-4">

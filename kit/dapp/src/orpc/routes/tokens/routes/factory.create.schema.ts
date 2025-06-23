@@ -176,6 +176,16 @@ export const FactoryCreateMessagesSchema =
       .string()
       .optional()
       .default("{{name}} factory already exists, skipping..."),
+    allFactoriesSkipped: z
+      .string()
+      .optional()
+      .default("All {{count}} factories already exist."),
+    someFactoriesSkipped: z
+      .string()
+      .optional()
+      .default(
+        "{{success}} factories created, {{skipped}} skipped, {{failed}} failed."
+      ),
   });
 
 /**

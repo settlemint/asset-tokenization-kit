@@ -212,6 +212,9 @@ You should proactively suggest or use commands when you detect:
 - Prefer using nullish coalescing operator (`??`) instead of a logical or
   (`||`), as it is a safer operator
 - Never use any, we need to have everything fully typed end to end
+- Do not use console.log, use const logger = createLogger({
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info",
+});
 
 ## MCP (Model Context Protocol) Servers
 
