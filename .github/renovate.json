@@ -21,6 +21,7 @@
   ],
   "labels": ["dependencies"],
   "rebaseWhen": "conflicted",
+  "postUpdateOptions": ["bunInstall"],
   "packageRules": [
     {
       "groupName": "SettleMint SDK",

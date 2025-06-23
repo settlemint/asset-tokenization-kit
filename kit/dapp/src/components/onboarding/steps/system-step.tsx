@@ -7,6 +7,7 @@ import { orpc } from "@/orpc";
 import { Check } from "lucide-react";
 import { forwardRef, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 interface SystemStepProps {
   onSuccess?: () => void;
@@ -16,6 +17,7 @@ interface SystemStepProps {
 export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
   const [systemAddress, setSystemAddress] = useSettings("SYSTEM_ADDRESS");
   const queryClient = useQueryClient();
+  const { t } = useTranslation(["onboarding", "general"]);
 
   // Refs for animated beams
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,7 +36,6 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
   } = useStreamingMutation({
     mutationOptions: orpc.system.create.mutationOptions(),
     onSuccess: async (data) => {
-      console.log("System deployment success:", data);
       setSystemAddress(data);
       // Invalidate the settings query so the parent component gets the updated system address
       await queryClient.invalidateQueries({
@@ -52,7 +53,38 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
   // Handle deploy system when button is clicked
   const handleDeploySystem = () => {
     if (!hasSystem && !isDeploying) {
-      createSystem({});
+      createSystem({
+        messages: {
+          // Transaction tracking messages
+          streamTimeout: t("system.transaction-tracking.stream-timeout"),
+          waitingForMining: t("system.transaction-tracking.waiting-for-mining"),
+          transactionFailed: t(
+            "system.transaction-tracking.transaction-failed"
+          ),
+          transactionDropped: t(
+            "system.transaction-tracking.transaction-dropped"
+          ),
+          waitingForIndexing: t(
+            "system.transaction-tracking.waiting-for-indexing"
+          ),
+          transactionIndexed: t(
+            "system.transaction-tracking.transaction-indexed"
+          ),
+          indexingTimeout: t("system.transaction-tracking.indexing-timeout"),
+          // System-specific messages
+          systemCreated: t("system.messages.created"),
+          creatingSystem: t("system.messages.creating"),
+          systemCreationFailed: t("system.messages.creation-failed"),
+          bootstrappingSystem: t("system.messages.bootstrapping-system"),
+          bootstrapFailed: t("system.messages.bootstrap-failed"),
+          systemCreatedBootstrapFailed: t(
+            "system.messages.system-created-bootstrap-failed"
+          ),
+          initialLoading: t("system.messages.initial-loading"),
+          noResultError: t("system.messages.no-result-error"),
+          defaultError: t("system.messages.default-error"),
+        },
+      });
     }
   };
 
@@ -86,12 +118,14 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
     <div className="h-full flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
-          {hasSystem ? "System Deployed" : "Deploy SMART System"}
+          {hasSystem
+            ? t("system.system-deployed")
+            : t("system.deploy-smart-system")}
         </h2>
         <p className="text-sm text-muted-foreground pt-2">
           {hasSystem
-            ? "Your blockchain infrastructure is ready"
-            : "Deploy your blockchain infrastructure for asset tokenization"}
+            ? t("system.your-blockchain-infrastructure-ready")
+            : t("system.deploy-blockchain-infrastructure")}
         </p>
       </div>
       <div
@@ -259,12 +293,12 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
                     />
                   </svg>
                   <span className="font-medium text-green-800 dark:text-green-300">
-                    System Deployed Successfully
+                    {t("system.system-deployed-successfully")}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                    Contract Address
+                    {t("system.contract-address")}
                   </p>
                   <p className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all">
                     {systemAddress}
@@ -295,12 +329,10 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
                     </div>
                     <div className="flex-1">
                       <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-                        What is a SMART system?
+                        {t("system.what-is-smart-system")}
                       </h3>
                       <p className="text-sm text-blue-800 dark:text-blue-200">
-                        SMART System is SettleMint's comprehensive blockchain
-                        system that enables compliant asset tokenization with
-                        built-in identity management and regulatory compliance.
+                        {t("system.smart-system-description")}
                       </p>
                     </div>
                   </div>
@@ -322,10 +354,10 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
                   </svg>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                      System deployment
+                      {t("system.system-deployment")}
                     </p>
                     <p className="text-sm text-amber-600 dark:text-amber-400">
-                      This process may take 2-3 minutes to complete
+                      {t("system.deployment-time-notice")}
                     </p>
                   </div>
                 </div>

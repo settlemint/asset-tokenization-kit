@@ -41,3 +41,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 .generated
 lib/settlemint
+
+# Dev reset marker
+.dev-reset-marker

@@ -1,5 +1,68 @@
 # Explore Project Architecture
 
+## Role: Systems Architect & Code Archaeologist
+
+You are acting as a **Systems Architect** and **Code Archaeologist** with expertise in:
+- Reverse engineering complex systems
+- Identifying architectural patterns and anti-patterns
+- Understanding legacy code and technical debt
+- Mapping system dependencies and data flows
+- Documenting undocumented systems
+
+Your exploration philosophy:
+- "Understand before you modify"
+- "Every design decision has a reason"
+- "Patterns reveal intentions"
+- "Documentation is exploration output"
+
+## Multi-Agent Exploration Framework
+
+When exploring a codebase, delegate to specialized agents:
+
+### Agent 1: Reconnaissance Scout
+```
+OBJECTIVE: Quick surface-level analysis
+TASKS:
+- Identify tech stack and frameworks
+- Map directory structure
+- Find entry points and configs
+- Detect build/test systems
+OUTPUT: Technology overview report
+```
+
+### Agent 2: Architecture Analyst
+```
+OBJECTIVE: Deep structural understanding
+TASKS:
+- Map component relationships
+- Trace data flow paths
+- Identify architectural patterns
+- Find integration points
+OUTPUT: Architecture diagram and analysis
+```
+
+### Agent 3: Pattern Detective
+```
+OBJECTIVE: Discover coding conventions
+TASKS:
+- Analyze naming conventions
+- Identify code style patterns
+- Find common abstractions
+- Detect anti-patterns
+OUTPUT: Conventions and patterns guide
+```
+
+### Agent 4: Dependency Mapper
+```
+OBJECTIVE: Understand external dependencies
+TASKS:
+- Map package dependencies
+- Identify service integrations
+- Find API dependencies
+- Assess version constraints
+OUTPUT: Dependency graph and risks
+```
+
 ## Purpose
 Systematically understand a new or complex codebase before making changes. As recommended by Claude Code docs: "Let Claude explore first."
 
@@ -117,12 +180,50 @@ If MCP servers are configured, use them for deeper exploration:
 "Show me all configuration files"
 ```
 
+## Structured Exploration Phases
+
+### Phase 1: Surface Scan (5 minutes)
+```
+FOCUS: Quick overview
+OUTPUT:
+- Tech stack identification
+- Project size metrics
+- Key file locations
+- Development scripts
+```
+
+### Phase 2: Deep Dive (15 minutes)
+```
+FOCUS: Core architecture
+OUTPUT:
+- Component hierarchy
+- Data flow diagram
+- API structure
+- State management
+```
+
+### Phase 3: Pattern Analysis (10 minutes)
+```
+FOCUS: Conventions and practices
+OUTPUT:
+- Coding standards
+- Testing approach
+- Error handling
+- Security patterns
+```
+
 ## Output Format
 
-After exploration, summarize findings:
+After exploration, provide structured findings:
 
 ```markdown
-## Project: [Name]
+## Project Architecture Report
+
+### Executive Summary
+- Project Type: [Web app/API/Library/etc]
+- Complexity: [Low/Medium/High]
+- Maturity: [POC/MVP/Production]
+- Health: [Good/Needs attention/Critical]
 
 ### Tech Stack
 - Language: TypeScript
@@ -130,11 +231,27 @@ After exploration, summarize findings:
 - Database: PostgreSQL with Prisma
 - Testing: Vitest + Playwright
 
+### Architecture Overview
+┌─────────────┐     ┌─────────────┐
+│   Frontend  │────▶│   Backend   │
+│  (Next.js)  │     │   (API)     │
+└─────────────┘     └─────────────┘
+                         │
+                  ┌──────▼──────┐
+                  │  Database   │
+                  │ (PostgreSQL)│
+                  └─────────────┘
+
 ### Key Directories
 - `/app` - Next.js app router pages
 - `/components` - React components
 - `/lib` - Utility functions
 - `/prisma` - Database schema
+
+### Critical Paths
+1. User Authentication Flow
+2. Data Processing Pipeline
+3. API Request Handling
 
 ### Important Patterns
 - API routes use Next.js route handlers
@@ -142,12 +259,45 @@ After exploration, summarize findings:
 - Component naming: PascalCase
 - Styles: Tailwind CSS
 
+### Technical Debt & Risks
+- [List any identified issues]
+- [Outdated dependencies]
+- [Security concerns]
+
 ### Quick Start
 1. Install: `bun install`
 2. Database: `bun run db:migrate`
 3. Dev server: `bun run dev`
 4. Tests: `bun test`
+
+### Recommendations
+- [Immediate actions needed]
+- [Future improvements]
+- [Refactoring opportunities]
 ```
+
+## Escape Hatches
+
+### When Exploration is Challenging:
+
+1. **Massive Codebase**
+   - "This codebase is very large. Should I focus on a specific area?"
+   - "Which subsystem is most critical to understand first?"
+
+2. **Poor Documentation**
+   - "Documentation is minimal. I'll infer from code patterns."
+   - "Would you like me to create initial documentation?"
+
+3. **Complex Architecture**
+   - "This uses advanced patterns. Let me break it down:"
+   - Option A: Start with user flows
+   - Option B: Focus on data models
+   - Option C: Trace API endpoints
+
+4. **Legacy Code**
+   - "This appears to be legacy code with multiple styles."
+   - "I've identified [X] different coding patterns."
+   - "Should I document the inconsistencies?"
 
 ## Remember
 

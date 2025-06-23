@@ -42,13 +42,14 @@
  * @see {@link ../orpc} - ORPC client integration
  */
 
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { QueryClient, QueryCache, MutationCache } from "@tanstack/react-query";
-import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimental";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
+import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import superjson from "superjson";
 import {
   checkAndClearStaleCache,
+  checkDevResetMarker,
   setupDevCacheManagement,
 } from "./utils/clear-cache";
 
@@ -256,8 +257,14 @@ const persister = createSyncStoragePersister({
  */
 if (typeof window !== "undefined") {
   // Check and clear stale cache based on build ID
-  const buildId = process.env.BUILD_ID ?? "dev";
+  // In development, use a stable build ID to avoid unnecessary cache busting
+  const buildId = process.env.BUILD_ID ?? (process.env.NODE_ENV === "development" ? "dev" : new Date().toISOString());
   checkAndClearStaleCache(buildId);
+
+  // In development, also check for dev reset marker
+  if (process.env.NODE_ENV === "development") {
+    void checkDevResetMarker();
+  }
 
   // Set up development cache management utilities
   setupDevCacheManagement();
