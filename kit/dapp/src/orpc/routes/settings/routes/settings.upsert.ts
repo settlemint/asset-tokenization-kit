@@ -15,7 +15,7 @@ import { authRouter } from "@/orpc/procedures/auth.router";
  *
  * @param input - Update parameters containing the setting key and new value
  * @param context - Request context with database connection and authenticated user
- * @returns Promise<Setting> - The updated or newly created setting object
+ * @returns Promise<string> - The updated or newly created setting value
  *
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws FORBIDDEN - If user lacks required update permissions
@@ -24,11 +24,11 @@ import { authRouter } from "@/orpc/procedures/auth.router";
  * @example
  * ```typescript
  * // Client usage:
- * const setting = await orpc.settings.update.mutate({
- *   key: 'baseCurrency',
- *   value: 'USD'
+ * const value = await orpc.settings.upsert.mutate({
+ *   key: 'SYSTEM_ADDRESS',
+ *   value: '0x1234...'
  * });
- * // This will either update the existing setting or create a new one
+ * console.log(value); // "0x1234..."
  * ```
  */
 export const upsert = authRouter.settings.upsert
@@ -59,5 +59,5 @@ export const upsert = authRouter.settings.upsert
       });
     }
 
-    return upsertedSetting;
+    return upsertedSetting.value;
   });

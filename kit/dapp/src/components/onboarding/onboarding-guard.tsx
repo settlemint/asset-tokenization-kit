@@ -40,15 +40,15 @@ export function OnboardingGuard({
   // Fetch system details including token factories
   const { data: systemDetails } = useQuery({
     ...orpc.system.read.queryOptions({
-      input: { id: systemAddress?.value ?? "" },
+      input: { id: systemAddress ?? "" },
     }),
-    enabled: !!systemAddress?.value,
+    enabled: !!systemAddress,
   });
 
   // Determine platform onboarding requirements
   const platformRequirements: PlatformOnboardingRequirements = {
     hasWallet: !!user?.wallet,
-    hasSystem: !!systemAddress?.value,
+    hasSystem: !!systemAddress,
     hasTokenFactories: (systemDetails?.tokenFactories.length ?? 0) > 0,
   };
 

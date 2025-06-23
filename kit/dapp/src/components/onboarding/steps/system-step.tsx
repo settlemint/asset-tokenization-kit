@@ -1,12 +1,8 @@
-import { Logo } from "@/components/logo/logo";
-import { AnimatedBeam } from "@/components/magicui/animated-beam";
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
-import { Check } from "lucide-react";
-import { forwardRef, useEffect, useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { forwardRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 interface SystemStepProps {
@@ -15,19 +11,8 @@ interface SystemStepProps {
 }
 
 export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
-  const [systemAddress, setSystemAddress] = useSettings("SYSTEM_ADDRESS");
-  const queryClient = useQueryClient();
   const { t } = useTranslation(["onboarding", "general"]);
-
-  // Refs for animated beams
-  const containerRef = useRef<HTMLDivElement>(null);
-  const centerRef = useRef<HTMLDivElement>(null);
-  const div1Ref = useRef<HTMLDivElement>(null);
-  const div2Ref = useRef<HTMLDivElement>(null);
-  const div3Ref = useRef<HTMLDivElement>(null);
-  const div4Ref = useRef<HTMLDivElement>(null);
-  const div5Ref = useRef<HTMLDivElement>(null);
-  const div6Ref = useRef<HTMLDivElement>(null);
+  const [systemAddress, , invalidateSetting] = useSettings("SYSTEM_ADDRESS");
 
   const {
     mutate: createSystem,
@@ -35,14 +20,8 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
     isTracking,
   } = useStreamingMutation({
     mutationOptions: orpc.system.create.mutationOptions(),
-    onSuccess: async (data) => {
-      setSystemAddress(data);
-      // Invalidate the settings query so the parent component gets the updated system address
-      await queryClient.invalidateQueries({
-        queryKey: orpc.settings.read.queryOptions({
-          input: { key: "SYSTEM_ADDRESS" },
-        }).queryKey,
-      });
+    onSuccess: () => {
+      invalidateSetting();
       onSuccess?.();
     },
   });
@@ -134,145 +113,7 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
       >
         <div className="max-w-3xl space-y-6 pr-2">
           {/* Animated deployment visualization - show during deployment and after completion */}
-          {(isDeploying || hasSystem) && (
-            <div
-              className="relative flex h-[280px] w-full items-center justify-center overflow-hidden"
-              ref={containerRef}
-            >
-              <div className="flex size-full max-h-[200px] max-w-md flex-col items-stretch justify-between gap-10">
-                <div className="flex flex-row items-center justify-between">
-                  <Circle ref={div1Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                  <Circle ref={div5Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                </div>
-                <div className="flex flex-row items-center justify-between">
-                  <Circle ref={div2Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                  <Circle ref={centerRef} className="size-16">
-                    <Logo variant="icon" className="h-10 w-10" />
-                  </Circle>
-                  <Circle ref={div6Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                </div>
-                <div className="flex flex-row items-center justify-between">
-                  <Circle ref={div3Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                  <Circle ref={div4Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                </div>
-              </div>
-
-              {/* Animated Beams */}
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div1Ref}
-                toRef={centerRef}
-                curvature={-75}
-                endYOffset={-10}
-                gradientStartColor="oklch(var(--sm-graphics-primary))"
-                gradientStopColor="oklch(var(--sm-graphics-secondary))"
-              />
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div2Ref}
-                toRef={centerRef}
-                gradientStartColor="oklch(var(--sm-graphics-tertiary))"
-                gradientStopColor="oklch(var(--sm-graphics-quaternary))"
-              />
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div3Ref}
-                toRef={centerRef}
-                curvature={75}
-                endYOffset={10}
-                gradientStartColor="oklch(var(--sm-accent))"
-                gradientStopColor="oklch(var(--sm-graphics-primary))"
-              />
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div5Ref}
-                toRef={centerRef}
-                curvature={-75}
-                endYOffset={-10}
-                reverse
-                gradientStartColor="oklch(var(--sm-graphics-secondary))"
-                gradientStopColor="oklch(var(--sm-graphics-tertiary))"
-              />
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div6Ref}
-                toRef={centerRef}
-                reverse
-                gradientStartColor="oklch(var(--sm-graphics-quaternary))"
-                gradientStopColor="oklch(var(--sm-accent))"
-              />
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div4Ref}
-                toRef={centerRef}
-                curvature={75}
-                endYOffset={10}
-                reverse
-                gradientStartColor="oklch(var(--sm-graphics-primary))"
-                gradientStopColor="oklch(var(--sm-graphics-secondary))"
-              />
-            </div>
-          )}
+          {(isDeploying || hasSystem) && <p>Deploying...</p>}
 
           {/* Status display */}
           {hasSystem && !isDeploying ? (

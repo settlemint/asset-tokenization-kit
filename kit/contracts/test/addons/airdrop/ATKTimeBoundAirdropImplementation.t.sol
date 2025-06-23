@@ -47,9 +47,8 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
     AirdropUtils.TestUserData public testUserData;
 
     // Events
-    event TimeWindowSet(uint256 startTime, uint256 endTime);
-    event Claimed(address indexed claimant, uint256 amount, uint256 index);
-    event BatchClaimed(address indexed claimant, uint256 totalAmount, uint256[] indices, uint256[] amounts);
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
+    event AirdropBatchTokensTransferred(address[] recipients, uint256[] indices, uint256[] amounts);
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -240,7 +239,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
         uint256 balanceBefore = token.balanceOf(user1);
 
         vm.expectEmit(true, true, true, true);
-        emit Claimed(user1, amount, index);
+        emit AirdropTokensTransferred(user1, index, amount);
 
         vm.prank(user1);
         timeBoundAirdrop.claim(index, amount, proof);

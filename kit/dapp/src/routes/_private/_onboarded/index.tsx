@@ -16,7 +16,6 @@
  */
 
 import { orpc } from "@/orpc";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/")({
@@ -36,23 +35,15 @@ export const Route = createFileRoute("/_private/_onboarded/")({
     // User data is available from parent _private route
     // const user: User = context.user;
 
-    // Non-blocking prefetch - loads data in background
-    // Best for non-critical data that can load after initial render
-    void context.queryClient.prefetchQuery(
-      orpc.system.list.queryOptions({ input: {} })
-    );
+    // Ensure both user and systems data are loaded
+    const [user, systems] = await Promise.all([
+      context.queryClient.ensureQueryData(orpc.user.me.queryOptions()),
+      context.queryClient.ensureQueryData(
+        orpc.system.list.queryOptions({ input: {} })
+      ),
+    ]);
 
-    await context.queryClient.ensureQueryData(orpc.user.me.queryOptions());
-
-    // Alternative: Blocking data load - ensures data before render
-    // Best for critical data needed for initial render
-    // await context.queryClient.ensureQueryData(
-    //   orpc.system.list.queryOptions({ input: {} })
-    // );
-
-    // Alternative: Return data for component access
-    // return await something // Access via Route.useLoaderData()
-    // return promise // Use with <Suspense><Await> from @tanstack/react-router
+    return { user, systems };
   },
   component: Home,
 });
@@ -65,10 +56,7 @@ export const Route = createFileRoute("/_private/_onboarded/")({
  * React Suspense boundaries for loading states.
  */
 function Home() {
-  const { data: systems } = useSuspenseQuery(
-    orpc.system.list.queryOptions({ input: {} })
-  );
-  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+  const { user, systems } = Route.useLoaderData();
 
   return (
     <div className="p-2">
