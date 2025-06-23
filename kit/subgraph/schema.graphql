@@ -211,6 +211,7 @@ type TopicScheme @entity(immutable: false) {
   id: Bytes!
   registry: TopicSchemeRegistry!
   name: String!
+  topicId: BigInt!
   signature: String!
   enabled: Boolean!
   deployedInTransaction: Bytes!
@@ -319,7 +320,7 @@ type Token @entity(immutable: false) {
   basePriceClaim: IdentityClaim
   deployedInTransaction: Bytes!
   # The identity verification claim topics that are required for accounts to own tokens of this type
-  requiredClaimTopics: [BigInt!]!
+  requiredClaimTopics: [TopicScheme!]!
   # Compliance
   tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
 }

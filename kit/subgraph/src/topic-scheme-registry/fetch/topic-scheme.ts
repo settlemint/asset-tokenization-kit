@@ -9,6 +9,7 @@ export function fetchTopicScheme(topicId: BigInt): TopicScheme {
     topicScheme = new TopicScheme(id);
     topicScheme.registry = Address.zero();
     topicScheme.name = "";
+    topicScheme.topicId = BigInt.zero();
     topicScheme.signature = "";
     topicScheme.enabled = true;
     topicScheme.deployedInTransaction = Bytes.empty();

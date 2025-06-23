@@ -17,6 +17,7 @@ export function handleTopicSchemeRegistered(
     topicScheme.deployedInTransaction = event.transaction.hash;
   }
   topicScheme.name = event.params.name;
+  topicScheme.topicId = event.params.topicId;
   topicScheme.signature = event.params.signature;
   topicScheme.save();
 }
@@ -32,6 +33,7 @@ export function handleTopicSchemeUpdated(event: TopicSchemeUpdated): void {
   fetchEvent(event, "TopicSchemeUpdated");
   const topicScheme = fetchTopicScheme(event.params.topicId);
   topicScheme.name = event.params.name;
+  topicScheme.topicId = event.params.topicId;
   topicScheme.signature = event.params.newSignature;
   topicScheme.save();
 }
