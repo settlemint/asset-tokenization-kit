@@ -56,5 +56,5 @@ runs:
         IS_ABANDONED: ${{ inputs.is_abandoned }}
       with:
         script: |
-          const script = require('./.github/actions/slack-pr-notifier/slack-notifier.js');
+          const script = require('${{ github.action_path }}/slack-notifier.js');
           await script({ github, context, core });
