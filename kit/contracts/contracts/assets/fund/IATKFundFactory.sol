@@ -22,7 +22,7 @@ interface IATKFundFactory is IATKTokenFactory {
         string symbol,
         uint8 decimals,
         uint256[] requiredClaimTopics,
-        uint24 managementFeeBps
+        uint16 managementFeeBps
     );
 
     /// @notice Creates a new ATK Fund.

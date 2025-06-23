@@ -53,6 +53,7 @@ export function handleTopicSchemesBatchRegistered(
       topicScheme.deployedInTransaction = event.transaction.hash;
     }
     topicScheme.name = names[i];
+    topicScheme.topicId = topicIds[i];
     topicScheme.signature = signatures[i];
     topicScheme.save();
   }
