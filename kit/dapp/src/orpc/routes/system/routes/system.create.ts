@@ -111,7 +111,7 @@ const FIND_SYSTEM_FOR_TRANSACTION_QUERY = theGraphGraphql(`
  *   contract: "0x123..."
  * })) {
  *   console.log(`Status: ${event.status}, Message: ${event.message}`);
- *   
+ *
  *   if (event.status === "confirmed" && event.result) {
  *     console.log(`System created at: ${event.result}`);
  *   }

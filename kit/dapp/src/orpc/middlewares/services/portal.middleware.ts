@@ -16,7 +16,7 @@ const logger = createLogger({
 
 /**
  * Represents an event emitted during transaction processing.
- * 
+ *
  * @interface TransactionEvent
  * @property {("pending" | "confirmed" | "failed")} status - Current status of the transaction
  *   - `pending`: Transaction is submitted but not yet confirmed
@@ -33,30 +33,30 @@ interface TransactionEvent {
 
 /**
  * Creates a validated Portal client with built-in error handling and validation.
- * 
+ *
  * This function returns a client that wraps Portal GraphQL operations with:
  * - Automatic transaction hash extraction and validation for mutations
  * - Real-time transaction tracking with event streaming
  * - Zod schema validation for queries
  * - Consistent error handling and logging
  * - Integration with TheGraph for indexing status monitoring
- * 
+ *
  * @param {Object} errors - ORPC error constructors for consistent error handling
  * @param {ValidatedTheGraphClient} [theGraphClient] - Optional TheGraph client for indexing monitoring.
  *   If provided, mutations will track both blockchain confirmation and indexing status.
  *   If omitted, mutations will only track blockchain confirmation.
- * 
+ *
  * @returns {Object} A validated Portal client with `mutate` and `query` methods
- * 
+ *
  * @example
  * ```typescript
  * const client = createValidatedPortalClient(errors, theGraphClient);
- * 
+ *
  * // For mutations with transaction tracking
  * for await (const event of client.mutate(CREATE_TOKEN_MUTATION, variables, "Failed to create token")) {
  *   console.log(event.status, event.message);
  * }
- * 
+ *
  * // For queries with validation
  * const data = await client.query(GET_TOKEN_QUERY, variables, TokenSchema, "Token not found");
  * ```
@@ -68,15 +68,15 @@ function createValidatedPortalClient(
   const client = {
     /**
      * Executes a GraphQL mutation and tracks the resulting transaction through its lifecycle.
-     * 
+     *
      * This method uses an AsyncGenerator pattern to stream real-time transaction status updates.
      * It automatically extracts the transaction hash from the mutation response and monitors
      * the transaction through three phases:
-     * 
+     *
      * 1. **Submission Phase**: Mutation is sent to Portal and transaction hash is extracted
      * 2. **Mining Phase**: Transaction is monitored until mined and confirmed on-chain
      * 3. **Indexing Phase**: (Optional) Transaction is monitored until indexed by TheGraph
-     * 
+     *
      * @param {TadaDocumentNode} document - The GraphQL mutation document
      * @param {TVariables} variables - Variables for the GraphQL mutation
      * @param {string} userMessage - User-friendly error message to show if operation fails
@@ -88,13 +88,13 @@ function createValidatedPortalClient(
      * @param {string} [trackingMessages.waitingForIndexing] - Message while waiting for indexing
      * @param {string} [trackingMessages.transactionIndexed] - Message when indexing completes
      * @param {string} [trackingMessages.indexingTimeout] - Message when indexing times out
-     * 
+     *
      * @yields {TransactionEvent} Real-time transaction status updates
      * @returns {string} The transaction hash once tracking is complete
-     * 
+     *
      * @throws {PORTAL_ERROR} When Portal GraphQL operation fails
      * @throws {INTERNAL_SERVER_ERROR} When transaction fails, times out, or has invalid format
-     * 
+     *
      * @example
      * ```typescript
      * // Basic usage with default messages
@@ -106,7 +106,7 @@ function createValidatedPortalClient(
      *   // pending: Transaction confirmed. Waiting for indexing... (0x123...)
      *   // confirmed: Transaction successfully indexed. (0x123...)
      * }
-     * 
+     *
      * // Custom tracking messages
      * for await (const event of client.mutate(
      *   TRANSFER_MUTATION,
@@ -119,7 +119,7 @@ function createValidatedPortalClient(
      * )) {
      *   updateUI(event);
      * }
-     * 
+     *
      * // Error handling
      * try {
      *   for await (const event of client.mutate(RISKY_MUTATION, vars, "Operation failed")) {
@@ -475,22 +475,22 @@ function createValidatedPortalClient(
 
     /**
      * Executes a GraphQL query with automatic response validation.
-     * 
+     *
      * This method performs a GraphQL query operation and validates the response
      * against a provided Zod schema. This ensures type safety at runtime and
      * helps catch API response format changes early.
-     * 
+     *
      * @param {TadaDocumentNode} document - The GraphQL query document
      * @param {TVariables} variables - Variables for the GraphQL query
      * @param {z.ZodType} schema - Zod schema to validate the response against
      * @param {string} userMessage - User-friendly error message to show if operation fails
-     * 
+     *
      * @returns {Promise<TValidated>} The validated query response data
-     * 
+     *
      * @throws {PORTAL_ERROR} When the Portal service encounters an error
      * @throws {NOT_FOUND} When the requested resource is not found
      * @throws {INTERNAL_SERVER_ERROR} When the query fails or response validation fails
-     * 
+     *
      * @example
      * ```typescript
      * // Define the expected response schema
@@ -503,7 +503,7 @@ function createValidatedPortalClient(
      *     decimals: z.number()
      *   })
      * });
-     * 
+     *
      * // Execute query with validation
      * const tokenData = await client.query(
      *   GET_TOKEN_QUERY,
@@ -511,10 +511,10 @@ function createValidatedPortalClient(
      *   TokenSchema,
      *   "Failed to fetch token details"
      * );
-     * 
+     *
      * // TypeScript knows tokenData matches TokenSchema
      * console.log(tokenData.getToken.name); // Type-safe access
-     * 
+     *
      * // Complex nested schema example
      * const TransferHistorySchema = z.object({
      *   getTransfers: z.array(z.object({
@@ -529,7 +529,7 @@ function createValidatedPortalClient(
      *     })
      *   }))
      * });
-     * 
+     *
      * const transfers = await client.query(
      *   GET_TRANSFER_HISTORY_QUERY,
      *   { address: userAddress, limit: 10 },
@@ -621,25 +621,25 @@ function createValidatedPortalClient(
 
 /**
  * Recursively searches for a transactionHash field in a GraphQL response.
- * 
+ *
  * This helper function performs a depth-first search through an object structure
  * to locate a `transactionHash` field. This is necessary because different GraphQL
  * mutations may return the transaction hash at different nesting levels in the response.
- * 
+ *
  * @param {unknown} obj - The object to search through (typically a GraphQL response)
  * @param {string} [path=""] - The current path in the object tree (used for recursion and error reporting)
- * 
+ *
  * @returns {{ value: unknown; path: string } | null} An object containing the found value and its path,
  *   or null if no transactionHash field is found
- * 
+ *
  * @example
  * ```typescript
  * // Example mutation response structures this function handles:
- * 
+ *
  * // Direct response
  * const response1 = { transactionHash: "0x123..." };
  * findTransactionHash(response1); // { value: "0x123...", path: "transactionHash" }
- * 
+ *
  * // Nested in mutation result
  * const response2 = {
  *   createToken: {
@@ -648,7 +648,7 @@ function createValidatedPortalClient(
  *   }
  * };
  * findTransactionHash(response2); // { value: "0x456...", path: "createToken.transactionHash" }
- * 
+ *
  * // Deeply nested
  * const response3 = {
  *   data: {
@@ -660,7 +660,7 @@ function createValidatedPortalClient(
  *   }
  * };
  * findTransactionHash(response3); // { value: "0x789...", path: "data.result.transaction.transactionHash" }
- * 
+ *
  * // Not found
  * const response4 = { success: true, id: "123" };
  * findTransactionHash(response4); // null

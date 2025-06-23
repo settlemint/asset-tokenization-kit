@@ -123,13 +123,11 @@ export const read = onboardedRouter.system.read
       tokenFactoryRegistry: result.system.tokenFactoryRegistry
         ?.id as EthereumAddress,
       tokenFactories:
-        result.system.tokenFactoryRegistry?.tokenFactories.map(
-          (factory) => ({
-            id: factory.id as EthereumAddress,
-            name: factory.name,
-            typeId: factory.typeId,
-          })
-        ) ?? [],
+        result.system.tokenFactoryRegistry?.tokenFactories.map((factory) => ({
+          id: factory.id as EthereumAddress,
+          name: factory.name,
+          typeId: factory.typeId,
+        })) ?? [],
     };
 
     return output;

@@ -107,7 +107,7 @@ const SingleFactorySchema = z.object({
 /**
  * Combined messages schema for factory creation
  * Extends common transaction tracking messages with factory-specific messages
- * 
+ *
  * TypeScript improvements:
  * - Each message field has proper type inference from Zod schema
  * - Optional fields with default values ensure type safety without requiring all messages
@@ -214,7 +214,7 @@ const FactoryResultSchema = z.object({
 
 /**
  * Output schema for streaming events
- * 
+ *
  * TypeScript features:
  * - Discriminated union via status enum for type-safe event handling
  * - Optional fields allow progressive enhancement of event data
@@ -244,7 +244,7 @@ export type SingleFactory = z.infer<typeof SingleFactorySchema>;
 
 /**
  * Helper function to get default implementations for a token type
- * 
+ *
  * TypeScript benefits:
  * - Const assertion on DEFAULT_IMPLEMENTATIONS ensures literal types
  * - TokenType union ensures only valid token types are accepted
