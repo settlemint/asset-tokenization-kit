@@ -80,6 +80,7 @@ export function handleAirdropBatchTokensTransferred(
       amount.plus(airdropAllocation.amountTransferredExact),
       tokenDecimals
     );
+    airdropAllocation.recipient = airdropRecipient.id;
     airdropAllocation.save();
   }
 }
