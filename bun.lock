@@ -3,6 +3,9 @@
   "workspaces": {
     "": {
       "name": "@settlemint/asset-tokenization-kit",
+      "dependencies": {
+        "js-yaml": "4.1.0",
+      },
       "devDependencies": {
         "@prettier/plugin-oxc": "0.0.2",
         "@settlemint/sdk-cli": "2.4.0",

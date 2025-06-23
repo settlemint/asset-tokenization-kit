@@ -42,7 +42,26 @@
     "success": "تم إنشاء المحفظة بنجاح!",
     "generated": "تم إنشاء المحفظة بنجاح",
     "already-exists": "توجد محفظة بالفعل لهذا المستخدم",
-    "creation-failed": "فشل في إنشاء المحفظة. يرجى المحاولة مرة أخرى."
+    "creation-failed": "فشل في إنشاء المحفظة. يرجى المحاولة مرة أخرى.",
+    "your-wallet": "محفظتك",
+    "generate-your-wallet": "إنشاء محفظتك",
+    "blockchain-identity-ready": "هوية البلوكشين الخاصة بك جاهزة",
+    "create-secure-wallet": "قم بإنشاء محفظة بلوكشين آمنة للتفاعل مع المنصة",
+    "wallet-generated-successfully": "تم إنشاء المحفظة بنجاح",
+    "address-label": "العنوان",
+    "wallet-protection-todo": "TODO: إضافة حماية المحفظة هنا",
+    "what-is-wallet": "ما هي المحفظة؟",
+    "wallet-description": "محفظة البلوكشين هي هويتك الرقمية التي تتيح لك التفاعل مع العقود الذكية وإدارة الأصول الرقمية بأمان.",
+    "features": {
+      "secure": "آمن",
+      "secure-description": "محمي بمفاتيح تشفير",
+      "instant": "فوري",
+      "instant-description": "إنشاء والوصول على الفور",
+      "protected": "محمي",
+      "protected-description": "مفاتيحك، أصولك",
+      "global": "عالمي",
+      "global-description": "الوصول من أي مكان"
+    }
   },
   "system": {
     "title": "نشر نظام SMART",
@@ -55,7 +74,7 @@
       "initial-loading": "التحضير لنشر نظام SMART الخاص بك...",
       "no-result-error": "اكتمل نشر النظام ولكن لم يتم إرجاع عنوان",
       "default-error": "فشل في نشر نظام SMART الخاص بك",
-      "created": "تم إنشاء نظام SMART بنجاح",
+      "created": "تم إنشاء النظام بنجاح وبدء تشغيله.",
       "creating": "إنشاء نظام جديد...",
       "creation-failed": "فشل في إنشاء النظام. يرجى المحاولة مرة أخرى.",
       "pending": {
@@ -63,7 +82,10 @@
         "indexing": "فهرسة نظام SMART الجديد..."
       },
       "error": "فشل في نشر نظام SMART الخاص بك",
-      "timeout": "انتهاء مهلة تتبع المعاملات"
+      "timeout": "انتهاء مهلة تتبع المعاملات",
+      "bootstrapping-system": "جارٍ بدء تشغيل النظام...",
+      "bootstrap-failed": "فشل في بدء تشغيل النظام. يرجى المحاولة مرة أخرى.",
+      "system-created-bootstrap-failed": "تم إنشاء النظام ولكن فشل بدء التشغيل. قد تحتاج إلى بدء تشغيل النظام يدويًا."
     },
     "transaction-tracking": {
       "stream-timeout": "انتهت مهلة تتبع نشر النظام بعد 90 ثانية",
@@ -73,7 +95,17 @@
       "waiting-for-indexing": "انتظار فهرسة النظام...",
       "transaction-indexed": "تم فهرسة النظام بنجاح وجاهز للاستخدام",
       "indexing-timeout": "انتهت مهلة فهرسة النظام، يرجى تحديث الصفحة"
-    }
+    },
+    "system-deployed": "تم نشر النظام",
+    "deploy-smart-system": "نشر النظام الذكي",
+    "your-blockchain-infrastructure-ready": "البنية التحتية للبلوكشين الخاصة بك جاهزة",
+    "deploy-blockchain-infrastructure": "نشر البنية التحتية للبلوكشين الخاصة بك لتوكن الأصول",
+    "system-deployed-successfully": "تم نشر النظام بنجاح",
+    "contract-address": "عنوان العقد",
+    "what-is-smart-system": "ما هو النظام الذكي؟",
+    "smart-system-description": "النظام الذكي هو نظام شامل للبلوكشين من SettleMint يمكّنك من توكن الأصول المتوافقة مع إدارة الهوية المدمجة والامتثال التنظيمي.",
+    "system-deployment": "نشر النظام",
+    "deployment-time-notice": "قد تستغرق هذه العملية من 2-3 دقائق لإكمالها"
   },
   "assets": {
     "title": "اختيار أنواع الأصول",
@@ -90,6 +122,51 @@
       "fund": "رموز صناديق الاستثمار للاستثمارات المجمعة",
       "stablecoin": "عملات رقمية مستقرة السعر",
       "deposit": "ودائع مصرفية مرمزة وشهادات"
+    },
+    "asset-types-deployed": "أنواع الأصول المنشورة",
+    "select-asset-types": "اختر أنواع الأصول",
+    "your-asset-factories-ready": "مصانع الأصول الخاصة بك جاهزة للتوكن",
+    "choose-asset-types": "اختر أنواع الأصول التي تريد توكنها على منصتك",
+    "available-asset-types": "أنواع الأصول المتاحة",
+    "select-all-asset-types": "اختر جميع أنواع الأصول التي تخطط لتوكنها",
+    "asset-factories-deployed-successfully": "تم نشر مصانع الأصول بنجاح",
+    "deployed-factories": "المصانع المنشورة",
+    "what-are-asset-factories": "ما هي مصانع الأصول؟",
+    "asset-factories-description": "مصانع الأصول هي عقود ذكية تمكنك من إنشاء وإدارة أنواع مختلفة من الأصول المرمزة. كل مصنع يتعامل مع فئة أصول محددة مع ميزات ومتطلبات امتثال مخصصة.",
+    "factory-messages": {
+      "initial-loading": "التحضير لإنشاء مصانع التوكن...",
+      "factory-created": "تم إنشاء مصنع التوكن بنجاح.",
+      "creating-factory": "جارٍ إنشاء مصنع التوكن...",
+      "factory-creation-failed": "فشل في إنشاء مصنع التوكن. يرجى المحاولة مرة أخرى.",
+      "batch-progress": "جارٍ إنشاء المصنع {{current}} من {{total}}...",
+      "batch-completed": "تم إنشاء {{count}} مصنع توكن بنجاح.",
+      "no-result-error": "لم يتم استلام عنوان المصنع من المعاملة.",
+      "default-error": "فشل في إنشاء مصنع التوكن.",
+      "system-not-bootstrapped": "يجب بدء تشغيل النظام أولاً. يرجى الانتظار حتى تكتمل عملية تهيئة النظام.",
+      "transaction-submitted": "تم تقديم المعاملة. في انتظار التأكيد...",
+      "factory-creation-completed": "اكتمل إنشاء المصنع.",
+      "all-factories-succeeded": "تم إنشاء جميع {{count}} المصانع بنجاح.",
+      "some-factories-failed": "{{success}} مصنع تم إنشاؤه، {{failed}} فشل.",
+      "all-factories-failed": "فشلت جميع {{count}} المصانع في الإنشاء.",
+      "factory-already-exists": "{{name}} المصنع موجود بالفعل، تخطي...",
+      "all-factories-skipped": "جميع {{count}} المصانع موجودة بالفعل.",
+      "some-factories-skipped": "{{success}} مصنع تم إنشاؤه، {{skipped}} تم تخطيه، {{failed}} فشل.",
+      "waiting-for-mining": "في انتظار تأكيد المعاملة...",
+      "transaction-failed": "فشلت المعاملة",
+      "transaction-dropped": "لم يتم تأكيد المعاملة على السلسلة في الوقت المحدد",
+      "waiting-for-indexing": "في انتظار فهرسة المصنع...",
+      "transaction-indexed": "تم فهرسة المصنع بنجاح",
+      "stream-timeout": "انتهت مهلة تتبع المعاملة",
+      "indexing-timeout": "انتهت مهلة فهرسة المصنع"
     }
+  },
+  "ui": {
+    "next": "التالي",
+    "back": "رجوع",
+    "cancel": "إلغاء",
+    "complete": "اكتمال",
+    "error": "خطأ",
+    "step": "خطوة",
+    "settlemint": "SettleMint"
   }
 }

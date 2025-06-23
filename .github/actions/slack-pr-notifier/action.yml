@@ -303,13 +303,20 @@ runs:
             ];
           } else {
             // Full message for open PRs
-            // GitHub OG image URL construction with cache busting
-            // Use a combination of timestamp and QA state to force refresh when runs start
-            const qaRunning = labels.some(l => l.name === 'qa:running');
-            const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
-            const ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
-
-            console.log(`Using OG image URL with cache key: ${cacheKey}`);
+            // GitHub OG image URL construction
+            // Only use cache busting for the first message to avoid intermittent failures
+            let ogImageUrl;
+            if (!slackTs) {
+              // First message - use cache busting
+              const qaRunning = labels.some(l => l.name === 'qa:running');
+              const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
+              ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
+              console.log(`First message - using OG image URL with cache key: ${cacheKey}`);
+            } else {
+              // Update message - use stable URL without cache busting
+              ogImageUrl = `https://opengraph.githubassets.com/1/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
+              console.log(`Update message - using stable OG image URL`);
+            }
 
             messageBlocks = [
               {
@@ -409,35 +416,47 @@ runs:
               } else {
                 // Send new message
                 let result;
-                try {
-                  // First try with the image block
-                  result = await slackAPI('chat.postMessage', {
-                    channel: process.env.SLACK_CHANNEL_ID,
-                    text: `#${pr_number}: ${escapedTitle}`,
-                    blocks: messageBlocks
-                  });
-                } catch (e) {
-                  if (e.message.includes('invalid_blocks')) {
-                    console.log('Image block failed, trying with fallback text format...');
-                    // Fallback: Create text-only blocks without the image
-                    const fallbackBlocks = messageBlocks.filter(block => block.type !== 'image');
-
-                    // Add a section block with PR info if we removed the image
-                    fallbackBlocks.unshift({
-                      type: 'section',
-                      text: {
-                        type: 'mrkdwn',
-                        text: `*<${pr_url}|#${pr_number}: ${escapedTitle}>*\n_by ${pr_author}_`
-                      }
-                    });
-
+                let retryCount = 0;
+                const maxRetries = 2;
+                
+                while (retryCount <= maxRetries) {
+                  try {
+                    // Try with the image block
                     result = await slackAPI('chat.postMessage', {
                       channel: process.env.SLACK_CHANNEL_ID,
                       text: `#${pr_number}: ${escapedTitle}`,
-                      blocks: fallbackBlocks
+                      blocks: messageBlocks
                     });
-                  } else {
-                    throw e;
+                    break; // Success, exit the retry loop
+                  } catch (e) {
+                    if (e.message.includes('invalid_blocks') && retryCount < maxRetries) {
+                      retryCount++;
+                      console.log(`Image block failed (attempt ${retryCount}/${maxRetries}), retrying...`);
+                      // Wait a bit before retrying (exponential backoff)
+                      await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+                    } else if (e.message.includes('invalid_blocks')) {
+                      console.log('Image block failed after all retries, trying with fallback text format...');
+                      // Fallback: Create text-only blocks without the image
+                      const fallbackBlocks = messageBlocks.filter(block => block.type !== 'image');
+
+                      // Add a section block with PR info if we removed the image
+                      fallbackBlocks.unshift({
+                        type: 'section',
+                        text: {
+                          type: 'mrkdwn',
+                          text: `*<${pr_url}|#${pr_number}: ${escapedTitle}>*\n_by ${pr_author}_`
+                        }
+                      });
+
+                      result = await slackAPI('chat.postMessage', {
+                        channel: process.env.SLACK_CHANNEL_ID,
+                        text: `#${pr_number}: ${escapedTitle}`,
+                        blocks: fallbackBlocks
+                      });
+                      break; // Success with fallback, exit the retry loop
+                    } else {
+                      throw e;
+                    }
                   }
                 }
 
@@ -498,39 +517,51 @@ runs:
             } else {
               // Always update the message to ensure latest title and content
               console.log('Updating Slack message with latest content');
-              try {
-                // First try with the image block
-                await slackAPI('chat.update', {
-                  channel: process.env.SLACK_CHANNEL_ID,
-                  ts: slackTs,
-                  text: `#${pr_number}: ${escapedTitle}`,
-                  blocks: messageBlocks
-                });
-              } catch (e) {
-                if (e.message.includes('invalid_blocks')) {
-                  console.log('Image block failed on update, trying with fallback text format...');
-                  // Fallback: Create text-only blocks without the image
-                  const fallbackBlocks = messageBlocks.filter(block => block.type !== 'image');
-
-                  // Add a section block with PR info if we removed the image
-                  if (!isMerged && !isAbandoned) {
-                    fallbackBlocks.unshift({
-                      type: 'section',
-                      text: {
-                        type: 'mrkdwn',
-                        text: `*<${pr_url}|#${pr_number}: ${escapedTitle}>*\n_by ${pr_author}_`
-                      }
-                    });
-                  }
-
+              let retryCount = 0;
+              const maxRetries = 2;
+              
+              while (retryCount <= maxRetries) {
+                try {
+                  // Try with the image block
                   await slackAPI('chat.update', {
                     channel: process.env.SLACK_CHANNEL_ID,
                     ts: slackTs,
                     text: `#${pr_number}: ${escapedTitle}`,
-                    blocks: fallbackBlocks
+                    blocks: messageBlocks
                   });
-                } else {
-                  throw e;
+                  break; // Success, exit the retry loop
+                } catch (e) {
+                  if (e.message.includes('invalid_blocks') && retryCount < maxRetries) {
+                    retryCount++;
+                    console.log(`Image block failed on update (attempt ${retryCount}/${maxRetries}), retrying...`);
+                    // Wait a bit before retrying (exponential backoff)
+                    await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+                  } else if (e.message.includes('invalid_blocks')) {
+                    console.log('Image block failed on update after all retries, trying with fallback text format...');
+                    // Fallback: Create text-only blocks without the image
+                    const fallbackBlocks = messageBlocks.filter(block => block.type !== 'image');
+
+                    // Add a section block with PR info if we removed the image
+                    if (!isMerged && !isAbandoned) {
+                      fallbackBlocks.unshift({
+                        type: 'section',
+                        text: {
+                          type: 'mrkdwn',
+                          text: `*<${pr_url}|#${pr_number}: ${escapedTitle}>*\n_by ${pr_author}_`
+                        }
+                      });
+                    }
+
+                    await slackAPI('chat.update', {
+                      channel: process.env.SLACK_CHANNEL_ID,
+                      ts: slackTs,
+                      text: `#${pr_number}: ${escapedTitle}`,
+                      blocks: fallbackBlocks
+                    });
+                    break; // Success with fallback, exit the retry loop
+                  } else {
+                    throw e;
+                  }
                 }
               }
             }
