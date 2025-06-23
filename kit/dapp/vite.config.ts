@@ -2,15 +2,19 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import tsConfigPaths from "vite-tsconfig-paths";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
-// Generate a unique build ID
-// In development: changes on every restart to bust cache when Docker volumes change
+// Generate a build ID
+// In development: use stable "dev" to avoid unnecessary cache busting
 // In production: use CI/CD provided BUILD_ID or git commit hash
 const BUILD_ID =
-  process.env.BUILD_ID ||
-  process.env.GITHUB_SHA ||
-  process.env.GIT_COMMIT ||
-  Date.now().toString();
+  process.env.NODE_ENV === "development" 
+    ? "dev"
+    : (process.env.BUILD_ID ||
+       process.env.GITHUB_SHA ||
+       process.env.GIT_COMMIT ||
+       Date.now().toString());
 
 export default defineConfig({
   define: {
@@ -73,5 +77,31 @@ export default defineConfig({
     analyzer({
       enabled: process.env.ANALYZE === "true",
     }),
+    // Custom plugin to serve the dev reset marker file
+    {
+      name: "serve-dev-reset-marker",
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url === "/.dev-reset-marker") {
+            // Properly resolve the path using Node.js path utilities
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = dirname(__filename);
+            const markerPath = join(__dirname, ".dev-reset-marker");
+            
+            Bun.file(markerPath).text()
+              .then(content => {
+                res.setHeader("Content-Type", "text/plain");
+                res.end(content);
+              })
+              .catch(() => {
+                res.statusCode = 404;
+                res.end("Not found");
+              });
+          } else {
+            next();
+          }
+        });
+      },
+    },
   ],
 });

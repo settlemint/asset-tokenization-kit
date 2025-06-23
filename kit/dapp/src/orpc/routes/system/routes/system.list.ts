@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { z } from "zod/v4";
 
 /**
  * GraphQL query for retrieving SMART systems from TheGraph.
@@ -58,24 +59,40 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
 export const list = authRouter.system.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    // TODO: Not happy about this
+    // TODO: Not happy about this - would prefer input validation at schema level
     // Extract and validate pagination parameters from the request
+    // Using nullish coalescing for type-safe default values
     const { offset, limit, orderDirection } = input ?? {
       offset: 0,
       limit: 20,
       orderDirection: "asc",
     };
 
-    // Execute TheGraph query with pagination and sorting parameters
-    const { systems } = await context.theGraphClient.request(
+    // Define response schema for type-safe GraphQL response validation
+    // Zod schema provides both runtime validation and TypeScript type inference
+    // This ensures the data structure matches our expectations before usage
+    const SystemsResponseSchema = z.object({
+      systems: z.array(
+        z.object({
+          id: z.string(),
+        })
+      ),
+    });
+
+    // Execute TheGraph query with type-safe pagination and sorting parameters
+    // The Zod schema validates the response and provides proper TypeScript types
+    // This eliminates the need for manual type assertions or runtime errors from malformed data
+    const result = await context.theGraphClient.query(
       LIST_SYSTEM_QUERY,
       {
         skip: offset,
         orderDirection,
         first: limit,
-      }
+      },
+      SystemsResponseSchema,
+      "Failed to retrieve systems"
     );
 
     // Return the array of system contracts
-    return systems;
+    return result.systems;
   });

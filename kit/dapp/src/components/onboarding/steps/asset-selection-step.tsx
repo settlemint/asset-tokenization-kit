@@ -105,6 +105,46 @@ export function AssetSelectionStep({
     createFactories({
       contract: systemDetails.tokenFactoryRegistry,
       factories,
+      messages: {
+        initialLoading: t("assets.factory-messages.initial-loading"),
+        factoryCreated: t("assets.factory-messages.factory-created"),
+        creatingFactory: t("assets.factory-messages.creating-factory"),
+        factoryCreationFailed: t(
+          "assets.factory-messages.factory-creation-failed"
+        ),
+        batchProgress: t("assets.factory-messages.batch-progress"),
+        batchCompleted: t("assets.factory-messages.batch-completed"),
+        noResultError: t("assets.factory-messages.no-result-error"),
+        defaultError: t("assets.factory-messages.default-error"),
+        systemNotBootstrapped: t(
+          "assets.factory-messages.system-not-bootstrapped"
+        ),
+        transactionSubmitted: t(
+          "assets.factory-messages.transaction-submitted"
+        ),
+        factoryCreationCompleted: t(
+          "assets.factory-messages.factory-creation-completed"
+        ),
+        allFactoriesSucceeded: t(
+          "assets.factory-messages.all-factories-succeeded"
+        ),
+        someFactoriesFailed: t("assets.factory-messages.some-factories-failed"),
+        allFactoriesFailed: t("assets.factory-messages.all-factories-failed"),
+        factoryAlreadyExists: t(
+          "assets.factory-messages.factory-already-exists"
+        ),
+        allFactoriesSkipped: t("assets.factory-messages.all-factories-skipped"),
+        someFactoriesSkipped: t(
+          "assets.factory-messages.some-factories-skipped"
+        ),
+        waitingForMining: t("assets.factory-messages.waiting-for-mining"),
+        transactionFailed: t("assets.factory-messages.transaction-failed"),
+        transactionDropped: t("assets.factory-messages.transaction-dropped"),
+        waitingForIndexing: t("assets.factory-messages.waiting-for-indexing"),
+        transactionIndexed: t("assets.factory-messages.transaction-indexed"),
+        streamTimeout: t("assets.factory-messages.stream-timeout"),
+        indexingTimeout: t("assets.factory-messages.indexing-timeout"),
+      },
     });
   };
 
@@ -124,12 +164,14 @@ export function AssetSelectionStep({
     <div className="h-full flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
-          {hasDeployedAssets ? "Asset Types Deployed" : "Select Asset Types"}
+          {hasDeployedAssets
+            ? t("assets.asset-types-deployed")
+            : t("assets.select-asset-types")}
         </h2>
         <p className="text-sm text-muted-foreground pt-2">
           {hasDeployedAssets
-            ? "Your asset factories are ready for tokenization"
-            : "Choose the types of assets you want to tokenize on your platform"}
+            ? t("assets.your-asset-factories-ready")
+            : t("assets.choose-asset-types")}
         </p>
       </div>
       <div
@@ -155,12 +197,12 @@ export function AssetSelectionStep({
                     />
                   </svg>
                   <span className="font-medium text-green-800 dark:text-green-300">
-                    Asset Factories Deployed Successfully
+                    {t("assets.asset-factories-deployed-successfully")}
                   </span>
                 </div>
                 <div className="space-y-2">
                   <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                    Deployed Factories
+                    {t("assets.deployed-factories")}
                   </p>
                   <div className="grid gap-2">
                     {systemDetails?.tokenFactories.map((factory) => {
@@ -203,13 +245,10 @@ export function AssetSelectionStep({
                   </div>
                   <div className="flex-1">
                     <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-                      What are asset factories?
+                      {t("assets.what-are-asset-factories")}
                     </h3>
                     <p className="text-sm text-blue-800 dark:text-blue-200">
-                      Asset factories are smart contracts that enable you to
-                      create and manage different types of tokenized assets.
-                      Each factory handles a specific asset class with tailored
-                      features and compliance requirements.
+                      {t("assets.asset-factories-description")}
                     </p>
                   </div>
                 </div>
@@ -226,10 +265,10 @@ export function AssetSelectionStep({
                         <div className="space-y-4">
                           <div>
                             <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
-                              Available Asset Types
+                              {t("assets.available-asset-types")}
                             </h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                              Select all the asset types you plan to tokenize
+                              {t("assets.select-all-asset-types")}
                             </p>
                           </div>
                           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

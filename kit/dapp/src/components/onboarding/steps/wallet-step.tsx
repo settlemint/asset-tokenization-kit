@@ -1,4 +1,3 @@
-import { HyperText } from "@/components/magicui/hyper-text";
 import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { orpc } from "@/orpc";
@@ -78,12 +77,14 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
     <div className="h-full flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
-          {hasWallet ? "Your Wallet" : "Generate Your Wallet"}
+          {hasWallet
+            ? t("wallet.your-wallet")
+            : t("wallet.generate-your-wallet")}
         </h2>
         <p className="text-sm text-muted-foreground pt-2">
           {hasWallet
-            ? "Your blockchain identity is ready"
-            : "Create a secure blockchain wallet to interact with the platform"}
+            ? t("wallet.blockchain-identity-ready")
+            : t("wallet.create-secure-wallet")}
         </p>
       </div>
       <div
@@ -110,20 +111,17 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
                     />
                   </svg>
                   <span className="font-medium text-green-800 dark:text-green-300">
-                    Wallet Generated Successfully
+                    {t("wallet.wallet-generated-successfully")}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                    Address
+                    {t("wallet.address-label")}
                   </p>
                   {justGenerated ? (
-                    <HyperText
-                      duration={1500}
-                      className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all"
-                    >
-                      {user.wallet ?? ""}
-                    </HyperText>
+                    <p className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all">
+                      {user.wallet}
+                    </p>
                   ) : (
                     <p className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all">
                       {user.wallet}
@@ -154,12 +152,10 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
                   </div>
                   <div className="flex-1">
                     <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-                      What is a wallet?
+                      {t("wallet.what-is-wallet")}
                     </h3>
                     <p className="text-sm text-blue-800 dark:text-blue-200">
-                      A blockchain wallet is your digital identity that allows
-                      you to interact with smart contracts and manage digital
-                      assets securely.
+                      {t("wallet.wallet-description")}
                     </p>
                   </div>
                 </div>
@@ -181,7 +177,7 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
                       d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                     />
                   </svg>
-                  <span>Secure</span>
+                  <span>{t("wallet.features.secure")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <svg
@@ -197,7 +193,7 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
                       d="M13 10V3L4 14h7v7l9-11h-7z"
                     />
                   </svg>
-                  <span>Instant</span>
+                  <span>{t("wallet.features.instant")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <svg
@@ -213,7 +209,7 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
                       d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                     />
                   </svg>
-                  <span>Protected</span>
+                  <span>{t("wallet.features.protected")}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <svg
@@ -229,7 +225,7 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
                       d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span>Global</span>
+                  <span>{t("wallet.features.global")}</span>
                 </div>
               </div>
             </div>

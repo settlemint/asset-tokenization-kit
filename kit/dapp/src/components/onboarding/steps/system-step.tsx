@@ -1,12 +1,9 @@
-import { Logo } from "@/components/logo/logo";
-import { AnimatedBeam } from "@/components/magicui/animated-beam";
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
-import { Check } from "lucide-react";
-import { forwardRef, useEffect, useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { forwardRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface SystemStepProps {
   onSuccess?: () => void;
@@ -14,18 +11,8 @@ interface SystemStepProps {
 }
 
 export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
-  const [systemAddress, setSystemAddress] = useSettings("SYSTEM_ADDRESS");
-  const queryClient = useQueryClient();
-
-  // Refs for animated beams
-  const containerRef = useRef<HTMLDivElement>(null);
-  const centerRef = useRef<HTMLDivElement>(null);
-  const div1Ref = useRef<HTMLDivElement>(null);
-  const div2Ref = useRef<HTMLDivElement>(null);
-  const div3Ref = useRef<HTMLDivElement>(null);
-  const div4Ref = useRef<HTMLDivElement>(null);
-  const div5Ref = useRef<HTMLDivElement>(null);
-  const div6Ref = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation(["onboarding", "general"]);
+  const [systemAddress, , invalidateSetting] = useSettings("SYSTEM_ADDRESS");
 
   const {
     mutate: createSystem,
@@ -33,15 +20,8 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
     isTracking,
   } = useStreamingMutation({
     mutationOptions: orpc.system.create.mutationOptions(),
-    onSuccess: async (data) => {
-      console.log("System deployment success:", data);
-      setSystemAddress(data);
-      // Invalidate the settings query so the parent component gets the updated system address
-      await queryClient.invalidateQueries({
-        queryKey: orpc.settings.read.queryOptions({
-          input: { key: "SYSTEM_ADDRESS" },
-        }).queryKey,
-      });
+    onSuccess: () => {
+      invalidateSetting();
       onSuccess?.();
     },
   });
@@ -52,7 +32,38 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
   // Handle deploy system when button is clicked
   const handleDeploySystem = () => {
     if (!hasSystem && !isDeploying) {
-      createSystem({});
+      createSystem({
+        messages: {
+          // Transaction tracking messages
+          streamTimeout: t("system.transaction-tracking.stream-timeout"),
+          waitingForMining: t("system.transaction-tracking.waiting-for-mining"),
+          transactionFailed: t(
+            "system.transaction-tracking.transaction-failed"
+          ),
+          transactionDropped: t(
+            "system.transaction-tracking.transaction-dropped"
+          ),
+          waitingForIndexing: t(
+            "system.transaction-tracking.waiting-for-indexing"
+          ),
+          transactionIndexed: t(
+            "system.transaction-tracking.transaction-indexed"
+          ),
+          indexingTimeout: t("system.transaction-tracking.indexing-timeout"),
+          // System-specific messages
+          systemCreated: t("system.messages.created"),
+          creatingSystem: t("system.messages.creating"),
+          systemCreationFailed: t("system.messages.creation-failed"),
+          bootstrappingSystem: t("system.messages.bootstrapping-system"),
+          bootstrapFailed: t("system.messages.bootstrap-failed"),
+          systemCreatedBootstrapFailed: t(
+            "system.messages.system-created-bootstrap-failed"
+          ),
+          initialLoading: t("system.messages.initial-loading"),
+          noResultError: t("system.messages.no-result-error"),
+          defaultError: t("system.messages.default-error"),
+        },
+      });
     }
   };
 
@@ -86,12 +97,14 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
     <div className="h-full flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
-          {hasSystem ? "System Deployed" : "Deploy SMART System"}
+          {hasSystem
+            ? t("system.system-deployed")
+            : t("system.deploy-smart-system")}
         </h2>
         <p className="text-sm text-muted-foreground pt-2">
           {hasSystem
-            ? "Your blockchain infrastructure is ready"
-            : "Deploy your blockchain infrastructure for asset tokenization"}
+            ? t("system.your-blockchain-infrastructure-ready")
+            : t("system.deploy-blockchain-infrastructure")}
         </p>
       </div>
       <div
@@ -100,145 +113,7 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
       >
         <div className="max-w-3xl space-y-6 pr-2">
           {/* Animated deployment visualization - show during deployment and after completion */}
-          {(isDeploying || hasSystem) && (
-            <div
-              className="relative flex h-[280px] w-full items-center justify-center overflow-hidden"
-              ref={containerRef}
-            >
-              <div className="flex size-full max-h-[200px] max-w-md flex-col items-stretch justify-between gap-10">
-                <div className="flex flex-row items-center justify-between">
-                  <Circle ref={div1Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                  <Circle ref={div5Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                </div>
-                <div className="flex flex-row items-center justify-between">
-                  <Circle ref={div2Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                  <Circle ref={centerRef} className="size-16">
-                    <Logo variant="icon" className="h-10 w-10" />
-                  </Circle>
-                  <Circle ref={div6Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                </div>
-                <div className="flex flex-row items-center justify-between">
-                  <Circle ref={div3Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                  <Circle ref={div4Ref}>
-                    {hasSystem ? (
-                      <Check className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <img
-                        src="/illustrations/solidity_logo.svg"
-                        alt="Solidity"
-                        className="h-6 w-6 dark:invert"
-                      />
-                    )}
-                  </Circle>
-                </div>
-              </div>
-
-              {/* Animated Beams */}
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div1Ref}
-                toRef={centerRef}
-                curvature={-75}
-                endYOffset={-10}
-                gradientStartColor="oklch(var(--sm-graphics-primary))"
-                gradientStopColor="oklch(var(--sm-graphics-secondary))"
-              />
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div2Ref}
-                toRef={centerRef}
-                gradientStartColor="oklch(var(--sm-graphics-tertiary))"
-                gradientStopColor="oklch(var(--sm-graphics-quaternary))"
-              />
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div3Ref}
-                toRef={centerRef}
-                curvature={75}
-                endYOffset={10}
-                gradientStartColor="oklch(var(--sm-accent))"
-                gradientStopColor="oklch(var(--sm-graphics-primary))"
-              />
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div5Ref}
-                toRef={centerRef}
-                curvature={-75}
-                endYOffset={-10}
-                reverse
-                gradientStartColor="oklch(var(--sm-graphics-secondary))"
-                gradientStopColor="oklch(var(--sm-graphics-tertiary))"
-              />
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div6Ref}
-                toRef={centerRef}
-                reverse
-                gradientStartColor="oklch(var(--sm-graphics-quaternary))"
-                gradientStopColor="oklch(var(--sm-accent))"
-              />
-              <AnimatedBeam
-                containerRef={containerRef}
-                fromRef={div4Ref}
-                toRef={centerRef}
-                curvature={75}
-                endYOffset={10}
-                reverse
-                gradientStartColor="oklch(var(--sm-graphics-primary))"
-                gradientStopColor="oklch(var(--sm-graphics-secondary))"
-              />
-            </div>
-          )}
+          {(isDeploying || hasSystem) && <p>Deploying...</p>}
 
           {/* Status display */}
           {hasSystem && !isDeploying ? (
@@ -259,12 +134,12 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
                     />
                   </svg>
                   <span className="font-medium text-green-800 dark:text-green-300">
-                    System Deployed Successfully
+                    {t("system.system-deployed-successfully")}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                    Contract Address
+                    {t("system.contract-address")}
                   </p>
                   <p className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all">
                     {systemAddress}
@@ -295,12 +170,10 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
                     </div>
                     <div className="flex-1">
                       <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-                        What is a SMART system?
+                        {t("system.what-is-smart-system")}
                       </h3>
                       <p className="text-sm text-blue-800 dark:text-blue-200">
-                        SMART System is SettleMint's comprehensive blockchain
-                        system that enables compliant asset tokenization with
-                        built-in identity management and regulatory compliance.
+                        {t("system.smart-system-description")}
                       </p>
                     </div>
                   </div>
@@ -322,10 +195,10 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
                   </svg>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                      System deployment
+                      {t("system.system-deployment")}
                     </p>
                     <p className="text-sm text-amber-600 dark:text-amber-400">
-                      This process may take 2-3 minutes to complete
+                      {t("system.deployment-time-notice")}
                     </p>
                   </div>
                 </div>

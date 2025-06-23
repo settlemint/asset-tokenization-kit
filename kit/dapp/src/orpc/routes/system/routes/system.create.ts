@@ -1,33 +1,32 @@
 /**
  * System Creation Handler
  *
- * This handler creates a new system contract instance through the ATKSystemFactory.
+ * This handler creates a new system contract instance through the ATKSystemFactory
+ * using an async generator pattern for real-time transaction tracking and progress updates.
  * System contracts are fundamental infrastructure components in the SettleMint
  * platform that manage various system-level operations and configurations.
  *
  * The handler performs the following operations:
  * 1. Validates user authentication and authorization
- * 2. Processes multi-factor authentication challenge
- * 3. Executes the system creation transaction via Portal GraphQL
- * 4. Returns the transaction hash for tracking
+ * 2. Creates the system contract via Portal GraphQL with transaction tracking
+ * 3. Queries TheGraph to get the deployed system contract address
+ * 4. Bootstraps the system contract to initialize its state
+ * 5. Yields progress events throughout the process
  *
+ * @generator Yields progress events during system creation and bootstrapping
  * @see {@link ../system.create.schema} - Input validation schema
- * @see {@link @/orpc/helpers/challenge-response} - MFA challenge handling
+ * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { trackTransaction } from "@/orpc/helpers/transactions";
+import { orpc } from "@/orpc";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { withEventMeta } from "@orpc/server";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { z } from "zod/v4";
 import { SystemCreateMessagesSchema } from "./system.create.schema";
-
-const logger = createLogger({
-  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
-});
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -88,40 +87,48 @@ const FIND_SYSTEM_FOR_TRANSACTION_QUERY = theGraphGraphql(`
 `);
 
 /**
- * Creates a new system contract instance.
+ * Creates a new system contract instance using async iteration for real-time progress tracking.
+ *
+ * This handler uses a generator pattern to yield progress updates during the multi-step
+ * system creation process, including contract deployment and bootstrapping.
  *
  * @auth Required - User must be authenticated
- * @middleware portalMiddleware - Provides Portal GraphQL client
+ * @middleware portalMiddleware - Provides Portal GraphQL client with transaction tracking
+ * @middleware theGraphMiddleware - Provides TheGraph client for querying deployed contracts
  *
  * @param input.contract - The system factory contract address (defaults to standard address)
- * @param input.verification - MFA credentials for transaction authorization
+ * @param input.messages - Optional custom messages for localization
  *
- * @returns The transaction hash of the system creation transaction
+ * @yields {TransactionEvent} Progress events during system creation and bootstrapping
+ * @returns {AsyncGenerator} Generator that yields events and completes with the system contract address
  *
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
- * @throws {ORPCError} VERIFICATION_ID_NOT_FOUND - If MFA verification ID is missing
- * @throws {ORPCError} CHALLENGE_FAILED - If MFA challenge verification fails
- * @throws {ORPCError} INTERNAL_SERVER_ERROR - If Portal GraphQL request fails
+ * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system creation or bootstrapping fails
  *
  * @example
  * ```typescript
- * const txHash = await client.system.create({
- *   verification: {
- *     code: "123456",
- *     type: "pincode"
- *   }
- * });
+ * // Create system with async iteration for progress tracking
+ * for await (const event of client.system.create({
+ *   contract: "0x123..."
+ * })) {
+ *   console.log(`Status: ${event.status}, Message: ${event.message}`);
  *
- * // Track the transaction
- * await client.transaction.track({
- *   operation: "system-create",
- *   transactionId: txHash
+ *   if (event.status === "confirmed" && event.result) {
+ *     console.log(`System created at: ${event.result}`);
+ *   }
+ * }
+ *
+ * // Or use with React hooks
+ * const { mutate } = client.system.create.useMutation({
+ *   onProgress: (event) => {
+ *     // Update UI with progress
+ *   }
  * });
  * ```
  */
 export const create = onboardedRouter.system.create
-  .use(portalMiddleware)
   .use(theGraphMiddleware)
+  .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
     const { contract } = input;
     const sender = context.auth.user;
@@ -129,83 +136,53 @@ export const create = onboardedRouter.system.create
     // Parse messages with defaults using Zod schema
     const messages = SystemCreateMessagesSchema.parse(input.messages ?? {});
 
+    // Check if system already exists using orpc
+    const existingSystem = await orpc.settings.read.call({
+      key: "SYSTEM_ADDRESS",
+    });
+
+    if (existingSystem?.value) {
+      throw errors.BAD_REQUEST({
+        message: "System already exists. Only one system is allowed per platform.",
+        cause: new Error(`System already deployed at address: ${existingSystem.value}`),
+      });
+    }
+
     // Execute the system creation transaction
-    let txHashResult;
-    try {
-      txHashResult = await context.portalClient.request(
-        CREATE_SYSTEM_MUTATION,
-        {
-          address: contract,
-          from: sender.wallet,
-          // ...(await handleChallenge(sender, verification)),
-        }
-      );
-    } catch (error) {
-      const errorDetails = {
-        operation: "CREATE_SYSTEM_MUTATION",
-        factory: contract,
-        sender: sender.wallet,
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-      };
-      logger.error("System creation GraphQL mutation failed", errorDetails);
-      
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.systemCreationFailed,
-        cause: new Error(
-          `GraphQL mutation failed: ${error instanceof Error ? error.message : String(error)}. Factory: ${contract}, Sender: ${sender.wallet}`
-        ),
-      });
-    }
+    const createSystemVariables = {
+      address: contract,
+      from: sender.wallet,
+      // ...(await handleChallenge(sender, verification)),
+    };
 
-    const transactionHash =
-      txHashResult.ATKSystemFactoryCreateSystem?.transactionHash ?? null;
-    
-    if (transactionHash) {
-      logger.info("System creation transaction submitted", {
-        transactionHash,
-        factory: contract,
-        sender: sender.wallet,
-      });
-    }
+    // Use the Portal client's mutate method that returns an async generator
+    // This enables real-time transaction tracking with automatic status updates
+    let transactionHash = "";
 
-    // Validate transaction hash
-    if (!transactionHash) {
-      logger.error("System creation failed: No transaction hash returned", {
-        operation: "CREATE_SYSTEM_MUTATION",
-        factory: contract,
-        sender: sender.wallet,
-        result: txHashResult,
-      });
-      
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.systemCreationFailed,
-        cause: new Error("No transaction hash returned from ATKSystemFactoryCreateSystem mutation"),
-      });
-    }
-
-    // Track transaction, yielding only pending/failed events
-    // The confirmed event will be yielded at the end with the system ID
-    for await (const event of trackTransaction(
-      transactionHash,
-      context.portalClient,
-      context.theGraphClient,
+    // Iterate through transaction events as they occur
+    for await (const event of context.portalClient.mutate(
+      CREATE_SYSTEM_MUTATION,
+      createSystemVariables,
+      messages.systemCreationFailed,
       messages
     )) {
-      // Only yield pending and failed events, skip confirmed
+      // Store the transaction hash from the first event
+      transactionHash = event.transactionHash;
+
+      // Only yield pending and failed events during creation phase
+      // Confirmed events are handled after we query for the system address
       if (event.status === "pending" || event.status === "failed") {
-        // Transform the event to match SystemCreateOutputSchema
-        // by removing transactionHash and adding optional result
+        // Transform Portal event to ORPC event format with metadata
         yield withEventMeta(
           {
             status: event.status,
             message: event.message,
-            result: undefined, // No result yet for pending/failed events
+            result: undefined,
           },
           { id: transactionHash, retry: 1000 }
         );
 
-        // If failed, stop processing
+        // If transaction failed, stop the entire process
         if (event.status === "failed") {
           return;
         }
@@ -213,64 +190,38 @@ export const create = onboardedRouter.system.create
     }
 
     // Query for the deployed system contract
-    let systems;
-    try {
-      const result = await context.theGraphClient.request(
-        FIND_SYSTEM_FOR_TRANSACTION_QUERY,
-        {
-          deployedInTransaction: transactionHash,
-        }
-      );
-      systems = result.systems;
-    } catch (error) {
-      const errorDetails = {
-        operation: "FIND_SYSTEM_FOR_TRANSACTION_QUERY",
-        transactionHash,
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-      };
-      logger.error("Failed to query deployed system contract", errorDetails);
-      
+    const queryVariables = {
+      deployedInTransaction: transactionHash,
+    };
+
+    // Define the schema for the query result
+    const SystemQueryResultSchema = z.object({
+      systems: z
+        .array(
+          z.object({
+            id: z.string(),
+          })
+        )
+        .min(1),
+    });
+
+    const result = await context.theGraphClient.query(
+      FIND_SYSTEM_FOR_TRANSACTION_QUERY,
+      queryVariables,
+      SystemQueryResultSchema,
+      messages.systemCreationFailed
+    );
+
+    const systems = result.systems;
+
+    const system = systems[0];
+
+    if (!system) {
       throw errors.INTERNAL_SERVER_ERROR({
         message: messages.systemCreationFailed,
         cause: new Error(
-          `TheGraph query failed: ${error instanceof Error ? error.message : String(error)}. Transaction: ${transactionHash}`
+          `System object is null for transaction ${transactionHash}`
         ),
-      });
-    }
-
-    if (systems.length === 0) {
-      logger.error("No system contracts found after deployment", {
-        operation: "FIND_SYSTEM_FOR_TRANSACTION_QUERY",
-        transactionHash,
-        systemsFound: systems.length,
-      });
-      
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.systemCreationFailed,
-        cause: new Error(`System contract not found in transaction ${transactionHash} after deployment`),
-      });
-    }
-
-    const system = systems[0];
-    
-    if (system) {
-      logger.info("System contract deployed successfully", {
-        systemAddress: system.id,
-        deploymentTransaction: transactionHash,
-      });
-    }
-
-    if (!system) {
-      logger.error("System object is null after query", {
-        operation: "FIND_SYSTEM_FOR_TRANSACTION_QUERY",
-        transactionHash,
-        systems,
-      });
-      
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.systemCreationFailed,
-        cause: new Error(`System object is null for transaction ${transactionHash}`),
       });
     }
 
@@ -285,71 +236,29 @@ export const create = onboardedRouter.system.create
     );
 
     // Execute the bootstrap transaction
-    let bootstrapTxHashResult;
-    try {
-      bootstrapTxHashResult = await context.portalClient.request(
-        BOOTSTRAP_SYSTEM_MUTATION,
-        {
-          address: system.id,
-          from: sender.wallet,
-        }
-      );
-    } catch (error) {
-      const errorDetails = {
-        operation: "BOOTSTRAP_SYSTEM_MUTATION",
-        systemAddress: system.id,
-        sender: sender.wallet,
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-      };
-      logger.error("System bootstrap GraphQL mutation failed", errorDetails);
-      
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.bootstrapFailed,
-        cause: new Error(
-          `Bootstrap GraphQL mutation failed: ${error instanceof Error ? error.message : String(error)}. System: ${system.id}, Sender: ${sender.wallet}`
-        ),
-      });
-    }
+    const bootstrapVariables = {
+      address: system.id,
+      from: sender.wallet,
+    };
 
-    const bootstrapTransactionHash =
-      bootstrapTxHashResult.IATKSystemBootstrap?.transactionHash ?? null;
-    
-    if (bootstrapTransactionHash) {
-      logger.info("System bootstrap transaction submitted", {
-        bootstrapTransactionHash,
-        systemAddress: system.id,
-        sender: sender.wallet,
-      });
-    }
-
-    // Validate bootstrap transaction hash
-    if (!bootstrapTransactionHash) {
-      logger.error("Bootstrap failed: No transaction hash returned", {
-        operation: "BOOTSTRAP_SYSTEM_MUTATION",
-        systemAddress: system.id,
-        sender: sender.wallet,
-        result: bootstrapTxHashResult,
-      });
-      
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.bootstrapFailed,
-        cause: new Error(`No transaction hash returned from IATKSystemBootstrap mutation for system ${system.id}`),
-      });
-    }
-
-    // Track bootstrap transaction
+    // Track bootstrap transaction using the same async generator pattern
     let bootstrapSucceeded = false;
-    for await (const event of trackTransaction(
-      bootstrapTransactionHash,
-      context.portalClient,
-      context.theGraphClient,
+    let bootstrapTransactionHash = "";
+
+    // Iterate through bootstrap transaction events
+    for await (const event of context.portalClient.mutate(
+      BOOTSTRAP_SYSTEM_MUTATION,
+      bootstrapVariables,
+      messages.bootstrapFailed,
       {
         ...messages,
         waitingForMining: messages.bootstrappingSystem,
       }
     )) {
-      // Yield all bootstrap events
+      // Store the bootstrap transaction hash
+      bootstrapTransactionHash = event.transactionHash;
+
+      // Yield all bootstrap events with a unique ID to distinguish from creation events
       yield withEventMeta(
         {
           status: event.status,
@@ -359,24 +268,22 @@ export const create = onboardedRouter.system.create
         { id: `${bootstrapTransactionHash}-bootstrap`, retry: 1000 }
       );
 
-      // Track bootstrap success/failure
+      // Track final bootstrap status for the completion event
       if (event.status === "confirmed") {
         bootstrapSucceeded = true;
-        logger.info("System bootstrap completed successfully", {
-          systemAddress: system.id,
-          bootstrapTransaction: bootstrapTransactionHash,
-        });
       } else if (event.status === "failed") {
         bootstrapSucceeded = false;
-        logger.error("System bootstrap failed", {
-          systemAddress: system.id,
-          bootstrapTransaction: bootstrapTransactionHash,
-          failureMessage: event.message,
-        });
         // Don't return early - we still need to report the system ID
+        // even if bootstrap failed, as the system was created successfully
         break;
       }
     }
+
+    // Save the system address to settings using orpc
+    await orpc.settings.upsert.call({
+      key: "SYSTEM_ADDRESS",
+      value: system.id,
+    });
 
     // Always yield the final event with the system ID
     // If bootstrap failed, we still return the system ID but with failed status
