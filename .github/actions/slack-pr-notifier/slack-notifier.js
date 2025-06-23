@@ -393,15 +393,39 @@ module.exports = async ({ github, context, core }) => {
             retryCount++;
             await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
           } else if (error.message.includes('invalid_blocks')) {
-            // Fallback to text-only blocks
-            const fallbackBlocks = messageBlocks.filter(b => b.type !== 'image');
-            if (!isMerged && !isAbandoned && !isPrivateRepo) {
-              fallbackBlocks.unshift({
-                type: 'section',
-                text: {
-                  type: 'mrkdwn',
-                  text: `*<${PR_URL}|#${PR_NUMBER}: ${escapedTitle}>*\n_by ${PR_AUTHOR}_`
+            // Fallback to simpler text-only blocks
+            let fallbackBlocks;
+            
+            if (isMerged || isAbandoned) {
+              // For merged/abandoned, keep the simple format
+              fallbackBlocks = messageBlocks;
+            } else {
+              // For active PRs, create a simplified block structure
+              fallbackBlocks = [
+                {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `${statusString}*<${PR_URL}|#${PR_NUMBER}: ${escapedTitle}>*\n_by ${PR_AUTHOR}_`
+                  }
                 }
+              ];
+              
+              // Add a simple button to view the PR
+              fallbackBlocks.push({
+                type: 'actions',
+                elements: [
+                  {
+                    type: 'button',
+                    text: {
+                      type: 'plain_text',
+                      text: 'View PR',
+                      emoji: false
+                    },
+                    url: PR_URL,
+                    style: 'primary'
+                  }
+                ]
               });
             }
 
