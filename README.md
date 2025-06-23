@@ -62,24 +62,20 @@ bun run ci
 This command (`bun run ci`) executes the following tasks in order:
 
 1. **Format Check** (`bun run format`)
-
    - Validates code formatting using Prettier
    - Ensures consistent code style across the project
 
 2. **Compilation** (`bun run compile`)
-
    - Compiles smart contracts using Foundry and Hardhat
    - Generates TypeScript types from contracts
    - Validates contract syntax and dependencies
 
 3. **Code Generation** (`bun run codegen`)
-
    - Generates GraphQL types from schemas
    - Creates TypeScript bindings for smart contracts
    - Updates SDK types for Portal, TheGraph, and Hasura
 
 4. **Linting** (`bun run lint`)
-
    - Runs ESLint on TypeScript/JavaScript code
    - Checks for code quality issues and potential bugs
    - Enforces coding standards and best practices
@@ -103,6 +99,17 @@ bun run dev:up
 bun run dev:reset
 ```
 
+### Running the dApp locally
+
+```bash
+# Start the docker compose setup
+bun run dev:up
+# Connect to the local network
+bunx settlemint connect
+# Start the dApp in development mode
+bun run dev
+```
+
 ### Testing the contracts / subgraph
 
 To test the contracts and subgraph locally using an Anvil node and a subgraph
@@ -117,16 +124,15 @@ bun run dev:up
 
 #### Test contracts
 
+Run the following command to deploy the contracts to the local network. This
+will run the script at `kit/contracts/scripts/hardhat/main.ts`.
+
 ```bash
-bun run publish
+bunx turbo contracts#publish
 ```
 
-### Test subgraph
-
-The subgraph can only be tested after you have executed the tests of the
-contracts. The subgraph tests will index the transactions created by the
-contracts ignition script.
+#### Test subgraph
 
 ```bash
-bun run test:integration
+THE_GRAPH_PORT_LOCAL_DEPLOY=8120 THE_GRAPH_PORT_LOCAL_QUERY=8100 bunx turbo subgraph#test:integration
 ```

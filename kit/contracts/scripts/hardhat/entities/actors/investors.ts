@@ -53,3 +53,8 @@ export const investorA = new Investor("Investor A", Countries.BE, 1);
 export const investorANew = new Investor("Investor A New", Countries.BE, 2);
 export const investorB = new Investor("Investor B", Countries.NL, 3);
 export const frozenInvestor = new Investor("Frozen Investor", Countries.NL, 4);
+export const maliciousInvestor = new Investor(
+  "Malicious Investor",
+  Countries.ES,
+  5
+);
