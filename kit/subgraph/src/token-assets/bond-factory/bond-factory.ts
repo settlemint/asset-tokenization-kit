@@ -1,4 +1,4 @@
-import type { Bytes } from "@graphprotocol/graph-ts";
+import { Bytes } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
