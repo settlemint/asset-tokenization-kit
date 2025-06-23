@@ -1,8 +1,13 @@
-import { Address, Bytes, log } from "@graphprotocol/graph-ts";
-import { VestingAirdrop } from "../../../../generated/schema";
-import { VestingAirdrop as VestingAirdropContract } from "../../../../generated/templates/VestingAirdrop/VestingAirdrop";
-import { VestingStrategy as VestingStrategyContract } from "../../../../generated/templates/VestingAirdrop/VestingStrategy";
-import { InterfaceIds } from "../../../erc165/utils/interfaceids";
+import {
+  Address,
+  ByteArray,
+  Bytes,
+  crypto,
+  log,
+} from "@graphprotocol/graph-ts";
+import { VestingAirdrop } from "../../../../../generated/schema";
+import { VestingAirdrop as VestingAirdropContract } from "../../../../../generated/templates/VestingAirdrop/VestingAirdrop";
+import { VestingStrategy as VestingStrategyContract } from "../../../../../generated/templates/VestingAirdrop/VestingStrategy";
 import { fetchLinearVestingStrategy } from "../fetch/linear-vesting-strategy";
 
 export function updateVestingAirdropStrategy(entity: VestingAirdrop): void {
@@ -32,9 +37,18 @@ export function updateVestingAirdropStrategy(entity: VestingAirdrop): void {
   const typeId = typeIdResult.value;
   entity.strategyId = typeId;
 
-  if (typeId.equals(InterfaceIds.IATKLinearVestingStrategy)) {
+  if (
+    typeId.equals(
+      crypto.keccak256(ByteArray.fromUTF8("ATKLinearVestingStrategy"))
+    )
+  ) {
     const linearVestingStrategy = fetchLinearVestingStrategy(strategyAddress);
     entity.linearVestingStrategy = linearVestingStrategy.id;
+  } else {
+    log.warning("TypeId {} does not match any strategy for airdrop {}", [
+      typeId.toHexString(),
+      entity.id.toHexString(),
+    ]);
   }
 
   entity.save();
