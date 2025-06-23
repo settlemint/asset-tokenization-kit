@@ -40,7 +40,7 @@ export function handleAirdropTokensTransferred(
   const airdropAllocation = fetchAirdropAllocation(
     event.address,
     event.params.index,
-    event.params.recipient
+    airdropRecipient.id
   );
   setBigNumber(
     airdropAllocation,
@@ -76,7 +76,7 @@ export function handleAirdropBatchTokensTransferred(
     const airdropAllocation = fetchAirdropAllocation(
       airdrop.id,
       index,
-      recipient
+      airdropRecipient.id
     );
     setBigNumber(
       airdropAllocation,
