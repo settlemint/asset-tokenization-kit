@@ -484,8 +484,24 @@ async function calculateInterfaceIds(
     }
 
     return output;
-  } catch (error) {
-    throw new Error(`Failed to calculate interface IDs: ${error}`);
+  } catch (error: any) {
+    logger.error("Forge script execution failed:");
+
+    // If it's a ShellError from Bun, extract detailed error information
+    if (error.stderr) {
+      logger.error("STDERR:", error.stderr.toString());
+    }
+    if (error.stdout) {
+      logger.error("STDOUT:", error.stdout.toString());
+    }
+    if (error.exitCode) {
+      logger.error("Exit code:", error.exitCode);
+    }
+
+    // Log the full error object for debugging
+    logger.debug("Full error object:", error);
+
+    throw new Error(`Failed to calculate interface IDs: ${error.message || error}`);
   }
 }
 
