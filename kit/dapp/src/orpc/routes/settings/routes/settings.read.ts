@@ -16,19 +16,18 @@ import { eq } from "drizzle-orm";
  *
  * @param input - Read parameters containing the setting key
  * @param context - Request context with database connection and authenticated user
- * @returns Promise<Setting> - The setting object with key, value, and lastUpdated
+ * @returns Promise<string | null> - The setting value, or null if not found
  *
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws FORBIDDEN - If user lacks required read permissions
- * @throws NOT_FOUND - If the setting key does not exist
  *
  * @example
  * ```typescript
  * // Client usage:
- * const setting = await orpc.settings.read.query({
- *   key: 'baseCurrency'
+ * const systemAddress = await orpc.settings.read.query({
+ *   key: 'SYSTEM_ADDRESS'
  * });
- * console.log(setting.value); // "EUR"
+ * console.log(systemAddress); // "0x1234..."
  * ```
  */
 export const read = authRouter.settings.read
@@ -48,5 +47,5 @@ export const read = authRouter.settings.read
       return null;
     }
 
-    return setting;
+    return setting.value;
   });

@@ -7,12 +7,32 @@ import { WalletStep } from "@/components/onboarding/steps/wallet-step";
 import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { orpc } from "@/orpc";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/platform")({
+  loader: async ({ context }) => {
+    // Load user and system address in parallel
+    const [user, systemAddress] = await Promise.all([
+      context.queryClient.ensureQueryData(orpc.user.me.queryOptions()),
+      context.queryClient.ensureQueryData(
+        orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
+      ),
+    ]);
+
+    // If we have a system address, ensure system details are loaded
+    let systemDetails = null;
+    if (systemAddress) {
+      systemDetails = await context.queryClient.ensureQueryData(
+        orpc.system.read.queryOptions({
+          input: { id: systemAddress },
+        })
+      );
+    }
+
+    return { user, systemAddress, systemDetails };
+  },
   component: PlatformOnboarding,
 });
 
@@ -20,17 +40,8 @@ function PlatformOnboarding() {
   const { t } = useTranslation(["general", "onboarding"]);
   const navigate = useNavigate();
 
-  // Query user and system data to determine step statuses
-  const { data: user } = useQuery(orpc.user.me.queryOptions());
-  const { data: systemAddress } = useQuery(
-    orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
-  );
-  const { data: systemDetails } = useQuery({
-    ...orpc.system.read.queryOptions({
-      input: { id: systemAddress?.value ?? "" },
-    }),
-    enabled: !!systemAddress?.value,
-  });
+  // Get data from loader
+  const { user, systemAddress, systemDetails } = Route.useLoaderData();
 
   // Start with first step, will update when data loads
   const [currentStepId, setCurrentStepId] = useState("wallet");
@@ -38,8 +49,8 @@ function PlatformOnboarding() {
 
   // Determine initial step based on what's completed
   const getInitialStep = () => {
-    if (!user?.wallet) return "wallet";
-    if (!systemAddress?.value) return "system";
+    if (!user.wallet) return "wallet";
+    if (!systemAddress) return "system";
     if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
     return "assets"; // Default to last step if all complete
   };
@@ -47,7 +58,7 @@ function PlatformOnboarding() {
   // Set initial step once when data is loaded
   useEffect(() => {
     // Only set initial step once when we have user data
-    if (!hasInitialized && user !== undefined) {
+    if (!hasInitialized) {
       const initialStep = getInitialStep();
       setCurrentStepId(initialStep);
       setHasInitialized(true);
@@ -60,7 +71,7 @@ function PlatformOnboarding() {
       id: "wallet",
       title: "Generate Wallet",
       description: "Create your secure blockchain wallet",
-      status: user?.wallet
+      status: user.wallet
         ? "completed"
         : currentStepId === "wallet"
           ? "active"
@@ -70,7 +81,7 @@ function PlatformOnboarding() {
       id: "system",
       title: "Deploy System",
       description: "Deploy your SMART tokenization system",
-      status: systemAddress?.value
+      status: systemAddress
         ? "completed"
         : currentStepId === "system"
           ? "active"
@@ -116,18 +127,14 @@ function PlatformOnboarding() {
 
   const handleNext = () => {
     // Check if current step needs special action
-    if (
-      currentStepId === "wallet" &&
-      !user?.wallet &&
-      walletActionRef.current
-    ) {
+    if (currentStepId === "wallet" && !user.wallet && walletActionRef.current) {
       walletActionRef.current();
       return;
     }
 
     if (
       currentStepId === "system" &&
-      !systemAddress?.value &&
+      !systemAddress &&
       systemActionRef.current
     ) {
       systemActionRef.current();
@@ -170,12 +177,12 @@ function PlatformOnboarding() {
   // Determine if next button should be disabled
   const isNextDisabled = () => {
     // For wallet step, enable button if no wallet
-    if (currentStepId === "wallet" && !user?.wallet) {
+    if (currentStepId === "wallet" && !user.wallet) {
       return false; // Enable the "Generate Wallet" button
     }
 
     // For system step, enable button if no system
-    if (currentStepId === "system" && !systemAddress?.value) {
+    if (currentStepId === "system" && !systemAddress) {
       return false; // Enable the "Deploy System" button
     }
 
@@ -193,10 +200,10 @@ function PlatformOnboarding() {
 
   // Determine button labels
   const getNextLabel = () => {
-    if (currentStepId === "wallet" && !user?.wallet) {
+    if (currentStepId === "wallet" && !user.wallet) {
       return "Generate Wallet";
     }
-    if (currentStepId === "system" && !systemAddress?.value) {
+    if (currentStepId === "system" && !systemAddress) {
       return "Deploy System";
     }
     if (

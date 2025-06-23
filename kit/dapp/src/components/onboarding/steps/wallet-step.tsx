@@ -1,4 +1,3 @@
-import { HyperText } from "@/components/magicui/hyper-text";
 import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { orpc } from "@/orpc";
@@ -120,12 +119,9 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
                     {t("wallet.address-label")}
                   </p>
                   {justGenerated ? (
-                    <HyperText
-                      duration={1500}
-                      className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all"
-                    >
-                      {user.wallet ?? ""}
-                    </HyperText>
+                    <p className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all">
+                      {user.wallet}
+                    </p>
                   ) : (
                     <p className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all">
                       {user.wallet}

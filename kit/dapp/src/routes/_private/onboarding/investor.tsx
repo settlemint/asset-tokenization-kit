@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { orpc } from "@/orpc";
-import { useQuery } from "@tanstack/react-query";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { WalletStep } from "@/components/onboarding/steps/wallet-step";
@@ -17,6 +16,13 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, UserCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_private/onboarding/investor")({
+  loader: async ({ context }) => {
+    // User data is critical for determining step status
+    const user = await context.queryClient.ensureQueryData(
+      orpc.user.me.queryOptions()
+    );
+    return { user };
+  },
   component: InvestorOnboarding,
 });
 
@@ -67,8 +73,8 @@ function InvestorOnboarding() {
   const navigate = useNavigate();
   const [currentStepId, setCurrentStepId] = useState("wallet");
 
-  // Query user data to determine step status
-  const { data: user } = useQuery(orpc.user.me.queryOptions());
+  // Get user data from loader
+  const { user } = Route.useLoaderData();
 
   // Define steps with dynamic statuses
   const steps: Step[] = [
@@ -76,7 +82,7 @@ function InvestorOnboarding() {
       id: "wallet",
       title: t("steps.wallet.title"),
       description: t("steps.wallet.description"),
-      status: user?.wallet
+      status: user.wallet
         ? "completed"
         : currentStepId === "wallet"
           ? "active"
