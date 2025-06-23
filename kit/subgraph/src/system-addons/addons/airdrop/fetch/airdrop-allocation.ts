@@ -6,7 +6,8 @@ import { fetchAirdrop } from "./airdrop";
 
 export function fetchAirdropAllocation(
   airdrop: Bytes,
-  index: BigInt
+  index: BigInt,
+  recipient: Address
 ): AirdropAllocation {
   const indexBytes = Bytes.fromByteArray(Bytes.fromBigInt(index));
   const id = airdrop.concat(indexBytes);
@@ -22,7 +23,7 @@ export function fetchAirdropAllocation(
     setBigNumber(entity, "amountTransferred", BigInt.zero(), tokenDecimals);
     entity.index = index;
     entity.initialized = true;
-    entity.recipient = Address.zero();
+    entity.recipient = recipient;
 
     entity.save();
   }

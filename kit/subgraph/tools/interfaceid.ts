@@ -501,7 +501,9 @@ async function calculateInterfaceIds(
     // Log the full error object for debugging
     logger.debug("Full error object:", error);
 
-    throw new Error(`Failed to calculate interface IDs: ${error.message || error}`);
+    throw new Error(
+      `Failed to calculate interface IDs: ${error.message || error}`
+    );
   }
 }
 

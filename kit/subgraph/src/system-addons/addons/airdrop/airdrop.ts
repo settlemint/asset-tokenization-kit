@@ -39,9 +39,9 @@ export function handleAirdropTokensTransferred(
 
   const airdropAllocation = fetchAirdropAllocation(
     event.address,
-    event.params.index
+    event.params.index,
+    event.params.recipient
   );
-  airdropAllocation.recipient = airdropRecipient.id;
   setBigNumber(
     airdropAllocation,
     "amountTransferred",
@@ -73,14 +73,17 @@ export function handleAirdropBatchTokensTransferred(
     );
     airdropRecipient.save();
 
-    const airdropAllocation = fetchAirdropAllocation(airdrop.id, index);
+    const airdropAllocation = fetchAirdropAllocation(
+      airdrop.id,
+      index,
+      recipient
+    );
     setBigNumber(
       airdropAllocation,
       "amountTransferred",
       amount.plus(airdropAllocation.amountTransferredExact),
       tokenDecimals
     );
-    airdropAllocation.recipient = airdropRecipient.id;
     airdropAllocation.save();
   }
 }
