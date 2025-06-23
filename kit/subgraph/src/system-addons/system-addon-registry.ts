@@ -2,6 +2,7 @@ import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
 import {
   FixedYieldScheduleFactory as FixedYieldScheduleFactoryTemplate,
   PushAirdropFactory as PushAirdropFactoryTemplate,
+  TimeBoundAirdropFactory as TimeBoundAirdropFactoryTemplate,
   VaultFactory as VaultFactoryTemplate,
   VestingAirdropFactory as VestingAirdropFactoryTemplate,
   XvPSettlementFactory as XvPSettlementFactoryTemplate,
@@ -64,6 +65,13 @@ export function handleSystemAddonRegistered(
     )
   ) {
     VestingAirdropFactoryTemplate.create(event.params.proxyAddress);
+  }
+  if (
+    event.params.typeId.equals(
+      crypto.keccak256(ByteArray.fromUTF8("ATKTimeBoundAirdropFactory"))
+    )
+  ) {
+    TimeBoundAirdropFactoryTemplate.create(event.params.proxyAddress);
   }
 
   systemAddon.system = fetchSystem(event.address).id;

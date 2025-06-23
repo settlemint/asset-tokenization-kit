@@ -466,6 +466,7 @@ type Airdrop @entity(immutable: false) {
   # Type specific
   vestingAirdrop: VestingAirdrop
   pushAirdrop: PushAirdrop
+  timeBoundAirdrop: TimeBoundAirdrop
   deployedInTransaction: Bytes!
 }
 
@@ -504,6 +505,12 @@ type VestingAirdrop @entity(immutable: false) {
   strategyId: Bytes!
   # Strategy specific
   linearVestingStrategy: LinearVestingStrategy
+}
+
+type TimeBoundAirdrop @entity(immutable: false) {
+  id: Bytes!
+  startTime: BigInt!
+  endTime: BigInt!
 }
 
 # ==================================================

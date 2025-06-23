@@ -1,7 +1,6 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { Airdrop } from "../../../../../generated/schema";
 import { Airdrop as AirdropContract } from "../../../../../generated/templates/Airdrop/Airdrop";
-import { InterfaceIds } from "../../../../erc165/utils/interfaceids";
 import { setBigNumber } from "../../../../utils/bignumber";
 import { getTokenDecimals } from "../../../../utils/token-decimals";
 
@@ -19,7 +18,7 @@ export function fetchAirdrop(id: Bytes): Airdrop {
     entity.name = name.reverted ? "unknown" : name.value;
     entity.token = token.reverted ? Address.zero() : token.value;
     entity.merkleRoot = merkleRoot.reverted ? Bytes.empty() : merkleRoot.value;
-    entity.typeId = InterfaceIds.IATKAirdrop;
+    entity.typeId = Bytes.fromHexString("0x00");
     entity.deployedInTransaction = Bytes.empty();
     entity.factory = Address.zero();
 

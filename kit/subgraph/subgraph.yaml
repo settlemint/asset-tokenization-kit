@@ -784,6 +784,28 @@ templates:
           handler: handleVestingStrategyUpdated
       file: ./src/system-addons/addons/airdrop/vesting-airdrop.ts
   - kind: ethereum
+    name: TimeBoundAirdropFactory
+    network: settlemint
+    source:
+      abi: TimeBoundAirdropFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ATKTimeBoundAirdropCreated
+      abis:
+        - name: TimeBoundAirdropFactory
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdropFactory.sol/IATKTimeBoundAirdropFactory.json
+        - name: TimeBoundAirdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/time-bound-airdrop/ATKTimeBoundAirdropImplementation.sol/ATKTimeBoundAirdropImplementation.json
+        - name: Airdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
+      eventHandlers:
+        - event: ATKTimeBoundAirdropCreated(indexed address,indexed address)
+          handler: handleATKTimeBoundAirdropCreated
+      file: ./src/system-addons/addons/airdrop/time-bound-airdrop-factory.ts
+  - kind: ethereum
     name: TokenFactoryRegistry
     network: settlemint
     source:
