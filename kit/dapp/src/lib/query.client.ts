@@ -255,8 +255,9 @@ const persister = createSyncStoragePersister({
  * Persist queries for offline support and sync across tabs
  */
 if (typeof window !== "undefined") {
-  // Check and clear stale cache based on build ID
-  const buildId = process.env.BUILD_ID ?? new Date().toISOString();
+  // Check and clear stale cache based on build ID or dev reset
+  // In development, use a stable build ID to avoid unnecessary cache busting
+  const buildId = process.env.BUILD_ID ?? (process.env.NODE_ENV === "development" ? "dev" : new Date().toISOString());
   checkAndClearStaleCache(buildId);
 
   // Set up development cache management utilities
