@@ -13,7 +13,7 @@
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
     "publish:anvil": "bun run tools/graph-deploy.ts --local --port 8120:8100",
     "test:integration": "bun test --preload ./test/scripts/setup.ts",
-    "test:integration:local": "bun codegen:interfaceid && THE_GRAPH_PORT_LOCAL_DEPLOY=8120 bun run publish && THE_GRAPH_PORT_LOCAL_QUERY=8100 bun run codegen:gql-tada && bun run test:integration"
+    "test:integration:local": "bun codegen:interfaceid && THE_GRAPH_PORT_LOCAL_DEPLOY=8120:8100 bun run publish && THE_GRAPH_PORT_LOCAL_QUERY=8100 bun run codegen:gql-tada && bun run test:integration"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",
