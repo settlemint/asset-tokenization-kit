@@ -191,7 +191,7 @@ Options:
 Examples:
   # Deploy to local Graph node (default ports 8020:8000)
   bun run graph-deploy.ts --local
-  
+
   # Deploy to local Graph node with custom ports (e.g., for anvil)
   bun run graph-deploy.ts --local --port 8120:8100
 
@@ -222,7 +222,7 @@ function parseArguments(): DeploymentConfig {
         port: {
           type: "string",
           short: "p",
-          default: process.env.THE_GRAPH_PORT_LOCAL_DEPLOY || "8020:8000",
+          default: process.env.THE_GRAPH_PORT_LOCAL || "8020:8000",
         },
       },
       allowPositionals: false,
