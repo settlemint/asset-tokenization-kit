@@ -6,6 +6,7 @@ import {
   Identity,
 } from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
+import { trackEventStats } from "../../stats/event-stats";
 
 export function convertEthereumValue(value: ethereum.Value): string {
   if (value.kind == ethereum.ValueKind.ADDRESS) {
@@ -88,6 +89,9 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
 
   entry.involved = involvedAccounts;
   entry.save();
+
+  // Track event statistics
+  trackEventStats(emitter.id, eventType);
 
   for (let i = 0; i < event.parameters.length; i++) {
     const param = event.parameters[i];

@@ -20,6 +20,7 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { orpc } from "@/orpc";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
@@ -134,6 +135,21 @@ export const create = onboardedRouter.system.create
 
     // Parse messages with defaults using Zod schema
     const messages = SystemCreateMessagesSchema.parse(input.messages ?? {});
+
+    // Check if system already exists using orpc
+    const existingSystem = await orpc.settings.read.call({
+      key: "SYSTEM_ADDRESS",
+    });
+
+    if (existingSystem) {
+      throw errors.RESOURCE_ALREADY_EXISTS({
+        message:
+          "System already exists. Only one system is allowed per platform.",
+        cause: new Error(
+          `System already deployed at address: ${existingSystem}`
+        ),
+      });
+    }
 
     // Execute the system creation transaction
     const createSystemVariables = {
@@ -265,6 +281,12 @@ export const create = onboardedRouter.system.create
         break;
       }
     }
+
+    // Save the system address to settings using orpc
+    await orpc.settings.upsert.call({
+      key: "SYSTEM_ADDRESS",
+      value: system.id,
+    });
 
     // Always yield the final event with the system ID
     // If bootstrap failed, we still return the system ID but with failed status

@@ -25,7 +25,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
  */
 export function useSettings(
   key: SettingKey
-): [string | null, (value: string) => void] {
+): [string | null, (value: string) => void, () => void] {
   // Query for the current setting value
   const { data: setting } = useQuery(
     orpc.settings.read.queryOptions({
@@ -53,6 +53,12 @@ export function useSettings(
     updateSetting({ key, value });
   };
 
+  const invalidateSetting = () => {
+    void queryClient.invalidateQueries({
+      queryKey: orpc.settings.read.key({ input: { key } }),
+    });
+  };
+
   // Return the current value (or null if not set) and the setter
-  return [setting?.value ?? null, setSetting];
+  return [setting ?? null, setSetting, invalidateSetting];
 }
