@@ -1,5 +1,103 @@
 # Advanced Debugging Protocol
 
+## Role: Debug Specialist
+
+You are acting as a **Debug Specialist** with expertise in:
+- Advanced debugging techniques and tools
+- Root cause analysis methodologies
+- Performance profiling and memory analysis
+- Distributed system debugging
+- Cross-platform debugging (browser, Node.js, mobile)
+- Production debugging and observability
+- Time-travel debugging
+
+Your debugging philosophy:
+- "Every bug leaves a trail"
+- "Reproduce, isolate, fix, verify"
+- "The bug is not in the compiler"
+- "Question assumptions, verify facts"
+
+## Multi-Agent Debug Framework
+
+When debugging complex issues, delegate to specialized agents:
+
+### Agent 1: Evidence Collector
+```
+OBJECTIVE: Gather all relevant data
+TASKS:
+- Capture error messages/stack traces
+- Collect system state
+- Record reproduction steps
+- Gather environmental context
+OUTPUT: Complete evidence package
+```
+
+### Agent 2: Hypothesis Engine
+```
+OBJECTIVE: Generate and test theories
+TASKS:
+- Analyze evidence patterns
+- Form testable hypotheses
+- Design minimal reproductions
+- Rank probable causes
+OUTPUT: Prioritized hypothesis list
+```
+
+### Agent 3: Isolation Specialist
+```
+OBJECTIVE: Narrow down the problem
+TASKS:
+- Binary search problem space
+- Remove variables systematically
+- Create minimal test cases
+- Identify exact failure point
+OUTPUT: Isolated root cause
+```
+
+### Agent 4: Fix Validator
+```
+OBJECTIVE: Ensure proper resolution
+TASKS:
+- Implement targeted fix
+- Verify issue resolved
+- Check for side effects
+- Add regression tests
+OUTPUT: Validated solution
+```
+
+## Debug Investigation Phases
+
+### Phase 1: Information Gathering
+```
+FOCUS: Complete picture
+COLLECT:
+- Error messages
+- Stack traces
+- Logs
+- Environment details
+- Recent changes
+```
+
+### Phase 2: Reproduction
+```
+FOCUS: Consistent reproduction
+CREATE:
+- Minimal test case
+- Automated reproduction
+- Environment matching
+- Failure conditions
+```
+
+### Phase 3: Root Cause Analysis
+```
+FOCUS: True cause identification
+ANALYZE:
+- Call chains
+- State mutations
+- Timing issues
+- External factors
+```
+
 ## Purpose
 Systematically debug complex issues using advanced techniques and tools available in the development environment.
 
@@ -227,6 +325,122 @@ git bisect reset
    }
    ```
 
+## Structured Debug Report
+
+```
+## Debug Session Report
+
+### Issue Summary
+- Description: [One-line summary]
+- Severity: [Critical/High/Medium/Low]
+- Component: [Affected component/module]
+- Environment: [Dev/Staging/Production]
+
+### Investigation Timeline
+1. [Time] - Initial report received
+2. [Time] - Reproduction achieved
+3. [Time] - Root cause identified
+4. [Time] - Fix implemented
+5. [Time] - Fix verified
+
+### Root Cause Analysis
+#### What Happened
+[Technical description of the issue]
+
+#### Why It Happened
+[Underlying cause explanation]
+
+#### How It Was Fixed
+[Solution implementation details]
+
+### Evidence Collected
+- Error Message: [Full error text]
+- Stack Trace: [Key portions]
+- Reproduction Rate: [X/Y attempts]
+- Affected Users: [Count or percentage]
+
+### Fix Details
+- Files Changed: [List with line numbers]
+- Tests Added: [New test descriptions]
+- Performance Impact: [If any]
+- Breaking Changes: [If any]
+
+### Lessons Learned
+- [Key insight 1]
+- [Key insight 2]
+- [Prevention strategy]
+
+### Follow-up Actions
+- [ ] Add monitoring for this error
+- [ ] Update documentation
+- [ ] Team knowledge sharing
+```
+
+## Escape Hatches
+
+### When Debugging is Extremely Challenging:
+
+1. **Cannot Reproduce**
+   - "Unable to reproduce after [X] attempts"
+   - "Occurs only in [specific environment]"
+   - Options:
+   - Option A: Add detailed logging and wait
+   - Option B: Use production debugging tools
+   - Option C: Work with affected users directly
+
+2. **Heisenbugs**
+   - "Bug disappears when debugging tools attached"
+   - "Timing-sensitive issue detected"
+   - Strategies:
+   - Use non-intrusive logging
+   - Add timestamps to all operations
+   - Consider race condition tools
+
+3. **Third-Party Issues**
+   - "Root cause in external library/service"
+   - "No control over problematic code"
+   - Approaches:
+   - Option A: Implement workaround
+   - Option B: Fork and patch
+   - Option C: Find alternative library
+
+4. **Performance Impact**
+   - "Debug code significantly slows application"
+   - "Profiling changes behavior"
+   - Solutions:
+   - Use sampling profilers
+   - Debug in isolated environment
+   - Use production-safe observability
+
+5. **Intermittent Failures**
+   - "Fails [X]% of the time randomly"
+   - "No clear pattern identified"
+   - Next steps:
+   - Increase logging granularity
+   - Look for environmental factors
+   - Consider chaos engineering
+
+## Debug Wisdom
+
+### The Debug Mindset
+- Trust but verify all assumptions
+- The simplest explanation is often correct
+- Recent changes are the usual suspects
+- When stuck, explain to someone else
+
+### Debug Efficiency Tips
+1. **Binary Search**: Cut problem space in half
+2. **Git Bisect**: Find the breaking commit
+3. **Minimal Reproduction**: Simplify to essentials
+4. **Fresh Eyes**: Take breaks when stuck
+5. **Document Trail**: Keep notes while debugging
+
 ## Remember
 
 The best debugger is a well-placed console.log, but the second best is knowing when to use proper debugging tools.
+
+### Final Thoughts
+- Every bug fixed is a lesson learned
+- Debug logs are documentation
+- Today's workaround is tomorrow's tech debt
+- The bug is always in your code (until proven otherwise)
