@@ -8,7 +8,7 @@ import {
 } from "viem";
 import { ATKContracts } from "../constants/contracts";
 
-const ARTIFACTS_DIR = join(__dirname, "../../../artifacts");
+const ARTIFACTS_DIR = join(__dirname, "../../../.generated/artifacts");
 
 export const withDecodedRevertReason = async <ReturnType>(
   fn: () => Promise<ReturnType>
