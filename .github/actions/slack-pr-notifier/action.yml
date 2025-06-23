@@ -164,7 +164,7 @@ runs:
             const tA={'type:bug':':bug:','type:feature':':sparkles:','type:refactor':':recycle:','type:test':':test_tube:','type:docs':':books:','type:chore':':wrench:','type:style':':art:','type:perf':':zap:','type:security':':shield:','type:breaking':':boom:'};
             const cD={...rA,...pA,...tA};
             try{
-              const {data:m}=await sA('conversations.history',{channel:process.env.SLACK_CHANNEL_ID,latest:slackTs,limit:1,inclusive:true});
+              const m=await sA('conversations.history',{channel:process.env.SLACK_CHANNEL_ID,latest:slackTs,limit:1,inclusive:true});
               if(m.messages&&m.messages.length>0){
                 const cR=await sA('reactions.get',{channel:process.env.SLACK_CHANNEL_ID,timestamp:slackTs});
                 const eR=(cR.message.reactions||[]).map(r=>r.name);
@@ -172,12 +172,12 @@ runs:
                   const hL=labels.some(lbl=>lbl.name===l||lbl.name===`status:${l}`);
                   const hR=eR.includes(e.replace(/:/g,''));
                   if(hL&&!hR){
-                    try{await sA('reactions.add',{channel:process.env.SLACK_CHANNEL_ID,timestamp:slackTs,name:e.replace(/:/g,'')});}catch(e){}
+                    try{await sA('reactions.add',{channel:process.env.SLACK_CHANNEL_ID,timestamp:slackTs,name:e.replace(/:/g,'')});}catch(err){console.error(`Failed to add reaction ${e}:`,err);}
                   }else if(!hL&&hR){
-                    try{await sA('reactions.remove',{channel:process.env.SLACK_CHANNEL_ID,timestamp:slackTs,name:e.replace(/:/g,'')});}catch(e){}
+                    try{await sA('reactions.remove',{channel:process.env.SLACK_CHANNEL_ID,timestamp:slackTs,name:e.replace(/:/g,'')});}catch(err){console.error(`Failed to remove reaction ${e}:`,err);}
                   }
                 }
               }
-            }catch(e){}
+            }catch(e){console.error('Failed to process reactions:',e);}
           }
           }catch(e){console.error('Failed to send Slack notification:',e);throw e;}
