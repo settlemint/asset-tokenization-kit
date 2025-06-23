@@ -15,3 +15,4 @@ kit/subgraph/build/**
 kit/subgraph/src/erc165/utils/interfaceids.ts
 kit/subgraph/the-graph-env.d.ts
 kit/subgraph/the-graph-cache.d.ts
+kit/dapp/src/lib/settlemint/**

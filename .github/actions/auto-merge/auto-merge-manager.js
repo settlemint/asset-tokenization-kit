@@ -56,27 +56,46 @@ async function manageAutoMerge({
       // Enable auto-merge
       console.log(`Enabling auto-merge for PR #${prNumber} with method: ${mergeMethod}`);
       
-      await github.rest.pulls.enableAutoMerge({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        pull_number: prNumber,
-        merge_method: mergeMethod
-      });
-      
-      console.log(`✅ Auto-merge enabled for PR #${prNumber}`);
-    } else {
-      // Disable auto-merge if it was enabled
-      console.log(`Disabling auto-merge for PR #${prNumber}`);
-      
-      await github.rest.pulls.disableAutoMerge({
+      // First, get the PR node ID required for GraphQL
+      const { data: pr } = await github.rest.pulls.get({
         owner: context.repo.owner,
         repo: context.repo.repo,
         pull_number: prNumber
       });
       
-      console.log(`✅ Auto-merge disabled for PR #${prNumber} - no longer mergeable`);
+      // Use GraphQL to enable auto-merge
+      const mutation = `
+        mutation($pullRequestId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+          enablePullRequestAutoMerge(input: {
+            pullRequestId: $pullRequestId,
+            mergeMethod: $mergeMethod
+          }) {
+            pullRequest {
+              autoMergeRequest {
+                enabledAt
+                mergeMethod
+              }
+            }
+          }
+        }
+      `;
       
-      // Log why it's not mergeable
+      const mergeMethodMap = {
+        merge: 'MERGE',
+        squash: 'SQUASH',
+        rebase: 'REBASE'
+      };
+      
+      await github.graphql(mutation, {
+        pullRequestId: pr.node_id,
+        mergeMethod: mergeMethodMap[mergeMethod] || 'SQUASH'
+      });
+      
+      console.log(`✅ Auto-merge enabled for PR #${prNumber}`);
+    } else {
+      // Just log why it's not mergeable, don't disable auto-merge
+      console.log(`PR #${prNumber} is not ready for auto-merge`);
+      
       const reasons = [];
       if (!hasApproval) reasons.push('no approval');
       if (qaStatus !== 'success') reasons.push(`QA status is ${qaStatus}`);

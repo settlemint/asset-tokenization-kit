@@ -60,5 +60,5 @@ export function useSettings(
   };
 
   // Return the current value (or null if not set) and the setter
-  return [setting?.value ?? null, setSetting, invalidateSetting];
+  return [setting ?? null, setSetting, invalidateSetting];
 }
