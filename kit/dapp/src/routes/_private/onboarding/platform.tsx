@@ -8,7 +8,7 @@ import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/platform")({
@@ -49,21 +49,28 @@ function PlatformOnboarding() {
 
   // Determine initial step based on what's completed
   const getInitialStep = () => {
-    if (!user.wallet) return "wallet";
+    if (!user?.wallet) return "wallet";
     if (!systemAddress) return "system";
-    if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
+    if ((systemDetails?.tokenFactories?.length ?? 0) === 0) return "assets";
     return "assets"; // Default to last step if all complete
   };
 
   // Set initial step once when data is loaded
   useEffect(() => {
-    // Only set initial step once when we have user data
-    if (!hasInitialized) {
+    // Only set initial step once when we have all necessary data
+    if (!hasInitialized && user) {
       const initialStep = getInitialStep();
       setCurrentStepId(initialStep);
       setHasInitialized(true);
     }
   }, [user, systemAddress, systemDetails, hasInitialized]);
+
+  // Also update step if system gets deployed after initialization
+  useEffect(() => {
+    if (hasInitialized && systemAddress && currentStepId === "system") {
+      setCurrentStepId("assets");
+    }
+  }, [systemAddress, currentStepId, hasInitialized]);
 
   // Define steps with dynamic statuses
   const steps: Step[] = [
@@ -132,12 +139,30 @@ function PlatformOnboarding() {
       return;
     }
 
+    // If we're on wallet step and wallet already exists, move to next step
+    if (currentStepId === "wallet" && user.wallet) {
+      const nextStep = steps[currentStepIndex + 1];
+      if (nextStep) {
+        setCurrentStepId(nextStep.id);
+      }
+      return;
+    }
+
     if (
       currentStepId === "system" &&
       !systemAddress &&
       systemActionRef.current
     ) {
       systemActionRef.current();
+      return;
+    }
+
+    // If we're on system step and system already exists, move to next step
+    if (currentStepId === "system" && systemAddress) {
+      const nextStep = steps[currentStepIndex + 1];
+      if (nextStep) {
+        setCurrentStepId(nextStep.id);
+      }
       return;
     }
 
@@ -176,14 +201,14 @@ function PlatformOnboarding() {
 
   // Determine if next button should be disabled
   const isNextDisabled = () => {
-    // For wallet step, enable button if no wallet
-    if (currentStepId === "wallet" && !user.wallet) {
-      return false; // Enable the "Generate Wallet" button
+    // For wallet step, enable button if no wallet (for generation) or if wallet exists (for navigation)
+    if (currentStepId === "wallet") {
+      return false; // Always enable button on wallet step
     }
 
-    // For system step, enable button if no system
-    if (currentStepId === "system" && !systemAddress) {
-      return false; // Enable the "Deploy System" button
+    // For system step, enable button if no system (for deployment) or if system exists (for navigation)
+    if (currentStepId === "system") {
+      return false; // Always enable button on system step
     }
 
     // For assets step, enable button if no assets deployed
@@ -203,8 +228,14 @@ function PlatformOnboarding() {
     if (currentStepId === "wallet" && !user.wallet) {
       return "Generate Wallet";
     }
+    if (currentStepId === "wallet" && user.wallet) {
+      return t("onboarding:next", "Next");
+    }
     if (currentStepId === "system" && !systemAddress) {
       return "Deploy System";
+    }
+    if (currentStepId === "system" && systemAddress) {
+      return t("onboarding:next", "Next");
     }
     if (
       currentStepId === "assets" &&

@@ -21,8 +21,11 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
   } = useStreamingMutation({
     mutationOptions: orpc.system.create.mutationOptions(),
     onSuccess: () => {
-      invalidateSetting();
-      onSuccess?.();
+      // Wait a bit for the settings to be saved, then invalidate
+      setTimeout(() => {
+        invalidateSetting();
+        onSuccess?.();
+      }, 1000);
     },
   });
 
