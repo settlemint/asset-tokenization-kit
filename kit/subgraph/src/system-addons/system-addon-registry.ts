@@ -31,32 +31,37 @@ export function handleSystemAddonRegistered(
   systemAddon.name = event.params.name;
   systemAddon.typeId = event.params.typeId;
   if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKFixedYieldScheduleFactory"))
+    event.params.typeId.equals(
+      crypto.keccak256(ByteArray.fromUTF8("ATKFixedYieldScheduleFactory"))
+    )
   ) {
     FixedYieldScheduleFactoryTemplate.create(event.params.proxyAddress);
   }
   if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKXvPSettlementFactory"))
+    event.params.typeId.equals(
+      crypto.keccak256(ByteArray.fromUTF8("ATKXvPSettlementFactory"))
+    )
   ) {
     XvPSettlementFactoryTemplate.create(event.params.proxyAddress);
   }
   if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKVaultFactory"))
+    event.params.typeId.equals(
+      crypto.keccak256(ByteArray.fromUTF8("ATKVaultFactory"))
+    )
   ) {
     VaultFactoryTemplate.create(event.params.proxyAddress);
   }
   if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKPushAirdropFactory"))
+    event.params.typeId.equals(
+      crypto.keccak256(ByteArray.fromUTF8("ATKPushAirdropFactory"))
+    )
   ) {
     PushAirdropFactoryTemplate.create(event.params.proxyAddress);
   }
   if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKVestingAirdropFactory"))
+    event.params.typeId.equals(
+      crypto.keccak256(ByteArray.fromUTF8("ATKVestingAirdropFactory"))
+    )
   ) {
     VestingAirdropFactoryTemplate.create(event.params.proxyAddress);
   }
