@@ -7,7 +7,7 @@ import { fetchAirdrop } from "./airdrop";
 export function fetchAirdropAllocation(
   airdrop: Bytes,
   index: BigInt,
-  recipient: Address
+  recipient: Bytes
 ): AirdropAllocation {
   const indexBytes = Bytes.fromByteArray(Bytes.fromBigInt(index));
   const id = airdrop.concat(indexBytes);
