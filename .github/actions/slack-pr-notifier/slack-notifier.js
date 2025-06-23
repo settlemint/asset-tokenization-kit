@@ -452,18 +452,8 @@ module.exports = async ({ github, context, core }) => {
                   type: 'section',
                   text: {
                     type: 'mrkdwn',
-                    text: `*<${PR_URL}|#${PR_NUMBER} ${escapedTitle}>*`
-                  },
-                  fields: [
-                    {
-                      type: 'mrkdwn',
-                      text: `*Author:* ${PR_AUTHOR}`
-                    },
-                    {
-                      type: 'mrkdwn',
-                      text: `*Repo:* ${context.repo.owner}/${context.repo.repo}`
-                    }
-                  ]
+                    text: `*<${PR_URL}|#${PR_NUMBER} ${escapedTitle}>*\n_Author: ${PR_AUTHOR} • Repo: ${context.repo.owner}/${context.repo.repo}_`
+                  }
                 },
                 {
                   type: 'actions',
