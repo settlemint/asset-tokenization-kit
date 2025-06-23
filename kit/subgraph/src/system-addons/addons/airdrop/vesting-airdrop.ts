@@ -21,7 +21,7 @@ export function handleVestingStrategyUpdated(
 
 export function handleVestingInitialized(event: VestingInitialized): void {
   fetchEvent(event, "VestingInitialized");
-  fetchAirdropAllocation(event.address, event.params.index);
+  fetchAirdropAllocation(event.address, event.params.index, event.params.account);
 }
 
 export function handleBatchVestingInitialized(
@@ -31,6 +31,6 @@ export function handleBatchVestingInitialized(
 
   const indices = event.params.indices;
   for (let i = 0; i < indices.length; i++) {
-    fetchAirdropAllocation(event.address, indices[i]);
+    fetchAirdropAllocation(event.address, indices[i], event.params.account);
   }
 }
