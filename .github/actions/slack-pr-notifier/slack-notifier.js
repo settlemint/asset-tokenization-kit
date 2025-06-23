@@ -398,37 +398,37 @@ module.exports = async ({ github, context, core }) => {
       // Wait a bit for message to be fully processed
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Define reaction mappings
+      // Define reaction mappings - these match the minified version exactly
       const reactionMappings = {
-        // Status reactions
-        'draft': ':pencil2:',
-        'ready-for-review': ':mag:',
-        'in-review': ':eyes:',
-        'qa:running': ':hourglass_flowing_sand:',
-        'qa:failed': ':x:',
-        'qa:passed': ':white_check_mark:',
-        'changes-requested': ':warning:',
-        'approved': ':white_check_mark:',
-        'on-hold': ':pause_button:',
-        'blocked': ':octagonal_sign:',
-        'ready-to-merge': ':rocket:',
-        'merged': ':tada:',
+        // Status reactions - note the keys don't have 'status:' prefix
+        'draft': 'pencil2',
+        'ready-for-review': 'mag',
+        'in-review': 'eyes',
+        'qa:running': 'hourglass_flowing_sand',
+        'qa:failed': 'x',
+        'qa:passed': 'white_check_mark',
+        'changes-requested': 'warning',
+        'approved': 'white_check_mark',
+        'on-hold': 'pause_button',
+        'blocked': 'octagonal_sign',
+        'ready-to-merge': 'rocket',
+        'merged': 'tada',
         // Priority reactions
-        'priority:critical': ':rotating_light:',
-        'priority:high': ':arrow_up:',
-        'priority:medium': ':arrow_right:',
-        'priority:low': ':arrow_down:',
+        'priority:critical': 'rotating_light',
+        'priority:high': 'arrow_up',
+        'priority:medium': 'arrow_right',
+        'priority:low': 'arrow_down',
         // Type reactions
-        'type:bug': ':bug:',
-        'type:feature': ':sparkles:',
-        'type:refactor': ':recycle:',
-        'type:test': ':test_tube:',
-        'type:docs': ':books:',
-        'type:chore': ':wrench:',
-        'type:style': ':art:',
-        'type:perf': ':zap:',
-        'type:security': ':shield:',
-        'type:breaking': ':boom:'
+        'type:bug': 'bug',
+        'type:feature': 'sparkles',
+        'type:refactor': 'recycle',
+        'type:test': 'test_tube',
+        'type:docs': 'books',
+        'type:chore': 'wrench',
+        'type:style': 'art',
+        'type:perf': 'zap',
+        'type:security': 'shield',
+        'type:breaking': 'boom'
       };
 
       try {
@@ -455,16 +455,15 @@ module.exports = async ({ github, context, core }) => {
           console.log('Existing reactions:', existingReactions);
 
           // Process each reaction mapping
-          for (const [labelName, emoji] of Object.entries(reactionMappings)) {
+          for (const [labelName, reactionName] of Object.entries(reactionMappings)) {
             const hasLabel = labels.some(lbl => 
               lbl.name === labelName || lbl.name === `status:${labelName}`
             );
-            const reactionName = emoji.replace(/:/g, '');
             const hasReaction = existingReactions.includes(reactionName);
 
             if (hasLabel && !hasReaction) {
               // Add reaction
-              console.log(`Adding reaction ${emoji} for label ${labelName}`);
+              console.log(`Adding reaction :${reactionName}: for label ${labelName}`);
               try {
                 await slackApi('reactions.add', {
                   channel: SLACK_CHANNEL_ID,
@@ -472,11 +471,11 @@ module.exports = async ({ github, context, core }) => {
                   name: reactionName
                 });
               } catch (err) {
-                console.error(`Failed to add reaction ${emoji}:`, err.message);
+                console.error(`Failed to add reaction :${reactionName}::`, err.message);
               }
             } else if (!hasLabel && hasReaction) {
               // Remove reaction
-              console.log(`Removing reaction ${emoji} for label ${labelName}`);
+              console.log(`Removing reaction :${reactionName}: for label ${labelName}`);
               try {
                 await slackApi('reactions.remove', {
                   channel: SLACK_CHANNEL_ID,
@@ -484,7 +483,7 @@ module.exports = async ({ github, context, core }) => {
                   name: reactionName
                 });
               } catch (err) {
-                console.error(`Failed to remove reaction ${emoji}:`, err.message);
+                console.error(`Failed to remove reaction :${reactionName}::`, err.message);
               }
             }
           }
