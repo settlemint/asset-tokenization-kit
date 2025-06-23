@@ -95,6 +95,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
             name_,
             symbol_,
             decimals_,
+            requiredClaimTopics_,
             cap_,
             maturityDate_,
             faceValue_,

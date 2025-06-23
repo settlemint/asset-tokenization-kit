@@ -473,9 +473,47 @@ templates:
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
         - event: BondCreated(indexed address,indexed
-            address,string,string,uint8,uint256,uint256,uint256,address)
+            address,string,string,uint8,uint256[],uint256,uint256,uint256,address)
           handler: handleBondCreated
       file: ./src/token-assets/bond-factory/bond-factory.ts
+  - kind: ethereum
+    name: DepositFactory
+    network: settlemint
+    source:
+      abi: DepositFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - DepositCreated
+      abis:
+        - name: DepositFactory
+          file: ../contracts/.generated/artifacts/contracts/assets/deposit/IATKDepositFactory.sol/IATKDepositFactory.json
+      eventHandlers:
+        - event: DepositCreated(indexed address,indexed
+            address,string,string,uint8,uint256[])
+          handler: handleDepositCreated
+      file: ./src/token-assets/deposit-factory/deposit-factory.ts
+  - kind: ethereum
+    name: EquityFactory
+    network: settlemint
+    source:
+      abi: EquityFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - EquityCreated
+      abis:
+        - name: EquityFactory
+          file: ../contracts/.generated/artifacts/contracts/assets/equity/IATKEquityFactory.sol/IATKEquityFactory.json
+      eventHandlers:
+        - event: EquityCreated(indexed address,indexed
+            address,string,string,uint8,uint256[])
+          handler: handleEquityCreated
+      file: ./src/token-assets/equity-factory/equity-factory.ts
   - kind: ethereum
     name: Fund
     network: settlemint
@@ -509,9 +547,29 @@ templates:
         - name: FundFactory
           file: ../contracts/.generated/artifacts/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json
       eventHandlers:
-        - event: FundCreated(indexed address,indexed address,string,string,uint8,uint24)
+        - event: FundCreated(indexed address,indexed
+            address,string,string,uint8,uint256[],uint24)
           handler: handleFundCreated
       file: ./src/token-assets/fund-factory/fund-factory.ts
+  - kind: ethereum
+    name: StableCoinFactory
+    network: settlemint
+    source:
+      abi: StableCoinFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - StableCoinCreated
+      abis:
+        - name: StableCoinFactory
+          file: ../contracts/.generated/artifacts/contracts/assets/stable-coin/IATKStableCoinFactory.sol/IATKStableCoinFactory.json
+      eventHandlers:
+        - event: StableCoinCreated(indexed address,indexed
+            address,string,string,uint8,uint256[])
+          handler: handleStableCoinCreated
+      file: ./src/token-assets/stable-coin-factory/stable-coin-factory.ts
   - kind: ethereum
     name: FixedYieldScheduleFactory
     network: settlemint

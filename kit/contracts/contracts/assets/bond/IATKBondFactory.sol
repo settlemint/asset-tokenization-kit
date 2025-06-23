@@ -13,6 +13,7 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param name The name of the bond.
     /// @param symbol The symbol of the bond.
     /// @param decimals The number of decimals for the bond tokens.
+    /// @param requiredClaimTopics The claim topics required for interacting with the bond.
     /// @param cap The maximum total supply of the bond tokens.
     /// @param maturityDate The Unix timestamp representing the bond's maturity date.
     /// @param faceValue The face value of each bond token in the underlying asset's base units.
@@ -23,6 +24,7 @@ interface IATKBondFactory is IATKTokenFactory {
         string name,
         string symbol,
         uint8 decimals,
+        uint256[] requiredClaimTopics,
         uint256 cap,
         uint256 maturityDate,
         uint256 faceValue,

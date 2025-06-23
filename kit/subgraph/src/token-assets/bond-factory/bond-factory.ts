@@ -1,10 +1,19 @@
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
 import { fetchEvent } from "../../event/fetch/event";
+import { fetchToken } from "../../token/fetch/token";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchBond } from "../bond/fetch/bond";
 
 export function handleBondCreated(event: BondCreated): void {
   fetchEvent(event, "BondCreated");
+
+  const token = fetchToken(event.params.tokenAddress);
+  token.name = event.params.name;
+  token.symbol = event.params.symbol;
+  token.decimals = event.params.decimals;
+  token.requiredClaimTopics = event.params.requiredClaimTopics;
+  token.save();
+
   const bond = fetchBond(event.params.tokenAddress);
   setBigNumber(
     bond,

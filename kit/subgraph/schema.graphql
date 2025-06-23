@@ -318,6 +318,8 @@ type Token @entity(immutable: false) {
   # Price
   basePriceClaim: IdentityClaim
   deployedInTransaction: Bytes!
+  # The identity verification claim topics that are required for accounts to own tokens of this type
+  requiredClaimTopics: [BigInt!]!
   # Compliance
   tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
 }
