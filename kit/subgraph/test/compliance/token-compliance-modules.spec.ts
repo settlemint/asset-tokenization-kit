@@ -52,7 +52,11 @@ describe("Token Compliance Modules", () => {
       const countryBlockListModule = complianceModules.find(
         (m) => m.complianceModule.name === "Country BlockList Compliance Module"
       );
-      expect(countryBlockListModule).toBeUndefined();
+      if (token.name === "Euro Deposits") {
+        expect(countryBlockListModule).toBeDefined();
+      } else {
+        expect(countryBlockListModule).toBeUndefined();
+      }
     }
   });
 
