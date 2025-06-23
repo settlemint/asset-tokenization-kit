@@ -113,8 +113,8 @@ contract ATKIdentityImplementation is
 
     /// @dev Revokes a claim by its ID
     /// @param _claimId The ID of the claim to revoke
-    function revokeClaim(bytes32 _claimId) external virtual override onlyManager returns (bool) {
-        return _revokeClaim(_claimId);
+    function revokeClaim(bytes32 _claimId, address _identity) external virtual override onlyManager returns (bool) {
+        return _revokeClaim(_claimId, _identity);
     }
 
     // --- ERC734 (Key Holder) Functions - Overridden for Access Control & Specific Logic ---

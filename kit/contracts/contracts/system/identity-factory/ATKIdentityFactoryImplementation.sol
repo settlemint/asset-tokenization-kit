@@ -26,9 +26,6 @@ import { IATKSystem } from "../IATKSystem.sol";
 import { ATKIdentityProxy } from "./identities/ATKIdentityProxy.sol";
 import { ATKTokenIdentityProxy } from "./identities/ATKTokenIdentityProxy.sol";
 
-// Constants
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
-
 /// @title ATK Identity Factory Implementation
 /// @author SettleMint Tokenization Services
 /// @notice This contract is the upgradeable logic implementation for creating and managing on-chain identities
@@ -152,21 +149,8 @@ contract ATKIdentityFactoryImplementation is
     ///                      which identity logic implementation contracts the new identity proxies will point to.
     /// @param initialAdmin The address that will be granted initial administrative and registrar privileges over this
     /// factory.
-    /// @param initialIdentityIssuerAdmins The addresses that will be granted initial administrative and registrar
-    /// privileges over this factory for identity issuers.
-    /// @param initialTokenIdentityIssuerAdmins The addresses that will be granted initial administrative and registrar
-    /// privileges over this factory for token identity issuers.
     /// @dev The `initializer` modifier ensures this function can only be called once.
-    function initialize(
-        address systemAddress,
-        address initialAdmin,
-        address[] memory initialIdentityIssuerAdmins,
-        address[] memory initialTokenIdentityIssuerAdmins
-    )
-        public
-        virtual
-        initializer
-    {
+    function initialize(address systemAddress, address initialAdmin) public virtual initializer {
         if (systemAddress == address(0)) revert InvalidSystemAddress();
 
         __ERC165_init_unchained();
@@ -188,20 +172,7 @@ contract ATKIdentityFactoryImplementation is
             revert InvalidTokenIdentityImplementation();
         }
 
-        _setRoleAdmin(ATKSystemRoles.IDENTITY_ISSUER_ROLE, ATKSystemRoles.IDENTITY_ISSUER_ADMIN_ROLE);
-        _setRoleAdmin(ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ROLE, ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ADMIN_ROLE);
-
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-
-        for (uint256 i = 0; i < initialIdentityIssuerAdmins.length; i++) {
-            _grantRole(ATKSystemRoles.IDENTITY_ISSUER_ROLE, initialIdentityIssuerAdmins[i]);
-            _grantRole(ATKSystemRoles.IDENTITY_ISSUER_ADMIN_ROLE, initialIdentityIssuerAdmins[i]);
-        }
-
-        for (uint256 i = 0; i < initialTokenIdentityIssuerAdmins.length; i++) {
-            _grantRole(ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ROLE, initialTokenIdentityIssuerAdmins[i]);
-            _grantRole(ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ADMIN_ROLE, initialTokenIdentityIssuerAdmins[i]);
-        }
 
         _system = systemAddress;
     }
@@ -233,7 +204,6 @@ contract ATKIdentityFactoryImplementation is
         external
         virtual
         override
-        onlyRole(ATKSystemRoles.IDENTITY_ISSUER_ROLE)
         returns (
             address // Solidity style guide prefers no name for return in implementation if clear from Natspec
         )
@@ -279,16 +249,7 @@ contract ATKIdentityFactoryImplementation is
     /// @param _accessManager The address of the access manager contract that will be set as the initial owner/manager
     /// of the token's identity.
     /// @return address The address of the newly created and registered `ATKTokenIdentityProxy` contract.
-    function createTokenIdentity(
-        address _token,
-        address _accessManager
-    )
-        external
-        virtual
-        override
-        onlyRole(ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ROLE)
-        returns (address)
-    {
+    function createTokenIdentity(address _token, address _accessManager) external virtual override returns (address) {
         if (_token == address(0)) revert ZeroAddressNotAllowed();
         if (_accessManager == address(0)) revert ZeroAddressNotAllowed();
         if (_tokenIdentities[_token] != address(0)) revert TokenAlreadyLinked(_token);
