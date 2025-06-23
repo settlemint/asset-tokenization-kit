@@ -398,38 +398,26 @@ module.exports = async ({ github, context, core }) => {
       // Wait a bit for message to be fully processed
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Define reaction mappings - these match the minified version exactly
-      const reactionMappings = {
-        // Status reactions - note the keys don't have 'status:' prefix
-        'draft': 'pencil2',
-        'ready-for-review': 'mag',
-        'in-review': 'eyes',
-        'qa:running': 'hourglass_flowing_sand',
+      // Define reaction mappings from the ORIGINAL working version
+      const statusReactions = {
+        'qa:pending': 'hourglass_flowing_sand',
+        'qa:running': 'runner',
+        'qa:success': 'white_check_mark',
         'qa:failed': 'x',
-        'qa:passed': 'white_check_mark',
-        'changes-requested': 'warning',
-        'approved': 'white_check_mark',
-        'on-hold': 'pause_button',
-        'blocked': 'octagonal_sign',
-        'ready-to-merge': 'rocket',
-        'merged': 'tada',
-        // Priority reactions
-        'priority:critical': 'rotating_light',
-        'priority:high': 'arrow_up',
-        'priority:medium': 'arrow_right',
-        'priority:low': 'arrow_down',
-        // Type reactions
-        'type:bug': 'bug',
-        'type:feature': 'sparkles',
-        'type:refactor': 'recycle',
-        'type:test': 'test_tube',
-        'type:docs': 'books',
-        'type:chore': 'wrench',
-        'type:style': 'art',
-        'type:perf': 'zap',
-        'type:security': 'shield',
-        'type:breaking': 'boom'
+        'status:ready-for-review': 'eyes',
+        'status:approved': 'thumbsup',
+        'status:mergeable': 'rocket',
+        'status:merged': 'tada'
       };
+
+      // Define mutually exclusive groups (only one can be active at a time)
+      const exclusiveGroups = {
+        'qa': ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
+        'status': ['eyes', 'thumbsup', 'rocket', 'tada']
+      };
+
+      // All possible status reactions we manage
+      const allStatusReactions = Object.values(statusReactions);
 
       try {
         // Get message to ensure it exists
@@ -450,36 +438,133 @@ module.exports = async ({ github, context, core }) => {
             
           console.log('Existing reactions:', existingReactions);
 
-          // Process each reaction mapping
-          for (const [labelName, reactionName] of Object.entries(reactionMappings)) {
-            const hasLabel = labels.some(lbl => 
-              lbl.name === labelName || lbl.name === `status:${labelName}`
-            );
-            const hasReaction = existingReactions.includes(reactionName);
+          // STRICT LABEL-TO-REACTION MAPPING
+          // Only show reactions that have exact corresponding labels
+          const currentStatuses = [];
 
-            if (hasLabel && !hasReaction) {
-              // Add reaction
-              console.log(`Adding reaction :${reactionName}: for label ${labelName}`);
-              try {
-                await slackApi('reactions.add', {
-                  channel: SLACK_CHANNEL_ID,
-                  timestamp: slackTs,
-                  name: reactionName
-                });
-              } catch (err) {
-                console.error(`Failed to add reaction :${reactionName}::`, err.message);
+          // Map each label to its reaction
+          for (const label of labels) {
+            if (statusReactions[label.name]) {
+              currentStatuses.push(statusReactions[label.name]);
+              console.log(`Label "${label.name}" maps to reaction "${statusReactions[label.name]}"`);
+            }
+          }
+
+          // Apply exclusive group rules
+          const finalStatuses = [];
+          const usedGroups = new Set();
+
+          // Priority order for exclusive groups
+          const groupPriority = {
+            'qa': ['qa:failed', 'qa:success', 'qa:running', 'qa:pending'],
+            'status': ['status:merged', 'status:mergeable', 'status:approved', 'status:ready-for-review']
+          };
+
+          // For each group, pick only the highest priority reaction
+          for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
+            const priorityOrder = groupPriority[groupName] || [];
+
+            // Find the highest priority label from this group
+            let selectedReaction = null;
+            for (const priorityLabel of priorityOrder) {
+              if (labels.some(l => l.name === priorityLabel) && statusReactions[priorityLabel]) {
+                selectedReaction = statusReactions[priorityLabel];
+                break;
               }
-            } else if (!hasLabel && hasReaction) {
-              // Remove reaction
-              console.log(`Removing reaction :${reactionName}: for label ${labelName}`);
-              try {
-                await slackApi('reactions.remove', {
-                  channel: SLACK_CHANNEL_ID,
-                  timestamp: slackTs,
-                  name: reactionName
-                });
-              } catch (err) {
-                console.error(`Failed to remove reaction :${reactionName}::`, err.message);
+            }
+
+            if (selectedReaction && currentStatuses.includes(selectedReaction)) {
+              finalStatuses.push(selectedReaction);
+              usedGroups.add(groupName);
+            }
+          }
+
+          // If QA is running or pending, don't show status reactions
+          const hasQaInProgress = labels.some(l => l.name === 'qa:running' || l.name === 'qa:pending');
+          const filteredStatuses = hasQaInProgress
+            ? finalStatuses.filter(r => exclusiveGroups.qa.includes(r))
+            : finalStatuses;
+
+          console.log('Final reactions (strict sync with labels):', filteredStatuses);
+
+          // Determine what reactions to remove and add
+          let reactionsToRemove, reactionsToAdd;
+
+          const isMerged = labels.some(l => l.name === 'status:merged');
+          
+          if (isMerged) {
+            // For merged PRs, remove ALL managed reactions
+            reactionsToRemove = existingReactions.filter(reaction =>
+              allStatusReactions.includes(reaction)
+            );
+            reactionsToAdd = [];
+          } else {
+            // Remove any reaction that doesn't have a corresponding label
+            reactionsToRemove = existingReactions.filter(reaction => {
+              // Check if this is a managed reaction
+              if (!allStatusReactions.includes(reaction)) {
+                return false; // Don't remove reactions we don't manage
+              }
+
+              // Check if this reaction has a corresponding current label
+              return !filteredStatuses.includes(reaction);
+            });
+
+            // Only add reactions that correspond to current labels and aren't already present
+            reactionsToAdd = filteredStatuses.filter(reaction =>
+              !existingReactions.includes(reaction)
+            );
+          }
+
+          console.log('Reactions to remove:', reactionsToRemove);
+          console.log('Reactions to add:', reactionsToAdd);
+
+          // Remove outdated reactions first
+          for (const reactionName of reactionsToRemove) {
+            try {
+              console.log(`Removing outdated reaction: ${reactionName}`);
+              await slackApi('reactions.remove', {
+                channel: SLACK_CHANNEL_ID,
+                timestamp: slackTs,
+                name: reactionName
+              });
+              await new Promise(resolve => setTimeout(resolve, 200));
+            } catch (e) {
+              if (e.message.includes('missing_scope')) {
+                console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
+                break;
+              } else if (e.message.includes('no_reaction')) {
+                console.log(`Reaction ${reactionName} was already removed`);
+              } else {
+                console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
+              }
+            }
+          }
+
+          // Wait a bit after removals
+          if (reactionsToRemove.length > 0) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+
+          // Add new reactions
+          for (const reaction of reactionsToAdd) {
+            try {
+              console.log(`Adding reaction: ${reaction}`);
+              await slackApi('reactions.add', {
+                channel: SLACK_CHANNEL_ID,
+                timestamp: slackTs,
+                name: reaction
+              });
+              console.log(`Successfully added reaction: ${reaction}`);
+              await new Promise(resolve => setTimeout(resolve, 200));
+            } catch (e) {
+              if (e.message.includes('missing_scope')) {
+                console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
+                break;
+              } else if (e.message.includes('already_reacted')) {
+                console.log(`Reaction ${reaction} already exists (race condition)`);
+              } else {
+                console.log(`Could not add reaction ${reaction}: ${e.message}`);
               }
             }
           }
