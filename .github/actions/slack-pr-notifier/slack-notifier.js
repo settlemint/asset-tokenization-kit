@@ -443,13 +443,9 @@ module.exports = async ({ github, context, core }) => {
         if (messages.messages && messages.messages.length > 0) {
           console.log('Message found, processing reactions...');
           
-          // Get current reactions
-          const reactionsResponse = await slackApi('reactions.get', {
-            channel: SLACK_CHANNEL_ID,
-            timestamp: slackTs
-          });
-
-          const existingReactions = (reactionsResponse.message.reactions || [])
+          // Get reactions from the message we already fetched
+          const message = messages.messages[0];
+          const existingReactions = (message.reactions || [])
             .map(r => r.name);
             
           console.log('Existing reactions:', existingReactions);
