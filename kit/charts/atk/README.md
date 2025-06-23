@@ -234,12 +234,6 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | portal.image.pullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | portal.image.pullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | portal.image.pullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
-| portal.initContainers[0].command[0] | string | `"/usr/bin/wait-for-it"` |  |
-| portal.initContainers[0].command[1] | string | `"postgresql-pgpool:5432"` |  |
-| portal.initContainers[0].command[2] | string | `"-t"` |  |
-| portal.initContainers[0].command[3] | string | `"0"` |  |
-| portal.initContainers[0].image | string | `"ghcr.io/settlemint/btp-waitforit:v7.7.5"` |  |
-| portal.initContainers[0].name | string | `"wait-for-postgres"` |  |
 | portal.podAnnotations."prometheus.io/path" | string | `"/portal-metrics"` |  |
 | portal.podAnnotations."prometheus.io/port" | string | `"3000"` |  |
 | portal.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
@@ -328,6 +322,9 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.config.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.enabled | bool | `true` |  |
+| txsigner.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
+| txsigner.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
+| txsigner.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |

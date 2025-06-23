@@ -1,0 +1,184 @@
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+  pull_request:
+    types: [labeled]
+
+jobs:
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude'))) ||
+      (github.event_name == 'pull_request' && github.event.label.name == 'claude-help')
+    runs-on: namespace-profile-atk
+    permissions:
+      contents: write
+      discussions: write
+      issues: write
+      packages: write
+      pull-requests: write
+    env:
+      HARBOR_USER: ""
+      HARBOR_PASS: ""
+      NPM_TOKEN: ""
+    steps:
+      - name: Checkout repository
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          fetch-depth: 0  # Full history for better context
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup 1Password
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load all secrets
+        id: secrets
+        uses: 1password/load-secrets-action@v2
+        env:
+          HARBOR_USER: op://platform/harbor/username
+          HARBOR_PASS: op://platform/harbor/password
+          NPM_TOKEN: op://platform/npmjs/credential
+
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          npm_token: ${{ env.NPM_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Harbor
+        uses: docker/login-action@v3
+        with:
+          registry: harbor.settlemint.com
+          username: ${{ env.HARBOR_USER }}
+          password: ${{ env.HARBOR_PASS }}
+
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: local
+
+      - name: Run Claude Code
+        id: claude
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Add this to fix the permissions issue
+
+          # Custom trigger phrases
+          trigger_phrase: "@claude"
+
+          # Trigger when assigned to claude-bot user
+          assignee_trigger: "claude-bot"
+
+          allowed_tools: >-
+            Bash(bun:*)
+            Bash(git:*)
+            Bash(docker:*)
+            Bash(docker-compose:*)
+            Bash(helm:*)
+            Bash(kubectl:*)
+
+          # Comprehensive custom instructions from CLAUDE.md
+          custom_instructions: |
+            # SettleMint Asset Tokenization Kit Guidelines
+
+            ## Project Overview
+            You are working on the SettleMint Asset Tokenization Kit - a full-stack solution for tokenized assets including:
+            - Smart contracts (bonds, equity, stablecoins, funds, deposits)
+            - Next.js dApp with TypeScript
+            - TheGraph subgraph for indexing
+            - Kubernetes/Helm deployment
+            - Playwright E2E tests
+
+            ## CRITICAL: Package Management & Runtime Rules
+            **ALWAYS use Bun, NEVER use npm/yarn/pnpm:**
+            - `bun install` (NOT npm install)
+            - `bun run <script>` (NOT npm run)
+            - `bun <file>` (NOT node <file>)
+            - `bun test` (NOT jest/vitest)
+            - `bun add/remove` (NOT npm add/remove)
+
+            ## Bun-specific APIs (prefer these):
+            - Bun.serve() for servers (not express)
+            - bun:sqlite for SQLite (not better-sqlite3)
+            - Bun.$ for shell commands (not execa)
+            - Bun.File() for file operations
+            - Built-in WebSocket support
+            - .env loads automatically (no dotenv)
+
+            ## Commit Message Format (from .github/labeler.yml)
+            Use conventional commits:
+            - feat, fix, chore, docs, style, refactor, perf, test, build, ci, revert
+            - Optional scope: type(scope): description
+            - Dependencies: chore(deps), fix(deps), build(deps)
+            - Breaking: type! or BREAKING CHANGE in body
+
+            ## Project-Specific Rules
+            1. **NEVER** push to main branch
+            2. **ALWAYS** run `bun run ci` before marking PR ready
+            3. **NEVER** use barrel files (index.ts exports)
+            4. **ALWAYS** use bun:test for testing (not vitest)
+            5. **PREFER** ?? over || operator
+            6. **IGNORE** dapp-v1 folder completely (deprecated)
+            7. Token factory requires system bootstrapping first
+            8. Asset types in zod validator (no cryptocurrency)
+            9. Follow Solidity guidelines in kit/contracts
+            10. Check latest docs via context7 before coding
+
+            ## CI/CD Commands
+            - `bun run ci` - Run all checks
+            - `bun run lint` - Lint code
+            - `bun run format` - Format code
+            - `bun run test` - Run tests
+            - `bun run compile` - Compile contracts
+            - `bun run build` - Build project
+            - `bun run codegen` - Generate code
+
+            ## CRITICAL: MANDATORY FIRST STEP
+            **YOU MUST RUN THIS COMMAND IMMEDIATELY BEFORE WRITING ANY CODE:**
+            - `bunx turbo run artifacts --concurrency=100%` - REQUIRED: Generates contract artifacts
+
+            **FAILURE TO RUN THIS WILL CAUSE:**
+            - Missing type definitions
+            - Import errors
+            - Contract artifact not found errors
+            - GraphQL schema mismatches
+
+            **NO EXCEPTIONS** - Run this command at the start of EVERY session.
+
+            ## When Helping with Issues/PRs
+            1. FIRST: Run the mandatory setup command above
+            2. Read CLAUDE.md
+            3. Check .cursor/rules/*.mdc for latest guidelines
+            4. Use context7 for latest library docs
+            5. Create detailed todo lists for complex tasks
+            6. Run CI checks before suggesting completion
+            7. Follow existing code patterns
+            8. Add tests for new features
+            9. Update docs if needed
+
+            ## Response Style
+            - Be concise and direct
+            - Explain shell commands briefly
+            - Focus on the specific task
+            - Show progress with TodoWrite
+            - Report CI check results

@@ -7,7 +7,10 @@
     "FORCE_COLOR",
     "NO_COLOR",
     "TERM",
-    "CI"
+    "CI",
+    "BUILD_ID",
+    "GITHUB_SHA",
+    "GIT_COMMIT"
   ],
   "tasks": {
     "ci": {
@@ -17,13 +20,10 @@
       "dependsOn": ["compile", "codegen", "lint", "test"]
     },
     "ci:gha": {
-      "dependsOn": ["ci:base", "build", "//#setup:dev"]
+      "dependsOn": ["ci:base", "test:integration", "build"]
     },
     "ci:gha:main": {
-      "dependsOn": ["ci:gha", "publish"]
-    },
-    "ci:gha:nightly": {
-      "dependsOn": ["ci:gha:main", "test:integration"]
+      "dependsOn": ["publish", "ci:gha"]
     },
     "//#version": {
       "cache": false,
@@ -37,7 +37,7 @@
       "dependsOn": ["codegen"]
     },
     "codegen": {
-      "dependsOn": ["dependencies", "docs", "//#setup:dev"]
+      "dependsOn": ["dependencies", "docs"]
     },
     "compile": {
       "dependsOn": ["dependencies", "codegen", "^compile"]
@@ -52,13 +52,11 @@
     },
     "dependencies": {},
     "format": {},
-    "lint": {
-      "dependsOn": ["//#setup:dev", "codegen"]
-    },
+    "lint": {},
     "dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": ["compile"]
+      "dependsOn": ["codegen"]
     },
     "watch": {
       "cache": false,
@@ -74,26 +72,6 @@
     "db:studio": {
       "cache": false,
       "persistent": true
-    },
-    "db:export": {},
-    "db:push": {
-      "cache": false
-    },
-    "//#setup:connect": {
-      "cache": false,
-      "dependsOn": ["//#setup:start"]
-    },
-    "//#setup:dev": {
-      "cache": false,
-      "dependsOn": ["//#setup:start", "//#setup:connect"]
-    },
-    "//#setup:start": {
-      "cache": false,
-      "dependsOn": [
-        "contracts#artifacts",
-        "dapp#artifacts",
-        "subgraph#artifacts"
-      ]
     }
   }
 }

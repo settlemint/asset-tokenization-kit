@@ -1,3 +1,11 @@
+import {
+  type OnboardingType,
+  type PlatformOnboardingRequirements,
+  determineOnboardingType,
+  isInvestorOnboardingComplete,
+  isIssuerOnboardingComplete,
+  isPlatformOnboardingComplete,
+} from "@/lib/types/onboarding";
 import { useMounted } from "@/lib/utils/use-mounted";
 import { orpc } from "@/orpc";
 import { useQuery } from "@tanstack/react-query";
@@ -5,67 +13,180 @@ import { useNavigate } from "@tanstack/react-router";
 import { type PropsWithChildren, useEffect } from "react";
 
 type OnboardingGuardProps = PropsWithChildren<{
-  require: "onboarded" | "not-onboarded";
+  require: "onboarded" | "not-onboarded" | "platform-onboarded";
+  allowedTypes?: OnboardingType[];
 }>;
 
-export function OnboardingGuard({ children, require }: OnboardingGuardProps) {
+export function OnboardingGuard({
+  children,
+  require,
+  allowedTypes,
+}: OnboardingGuardProps) {
   const isMounted = useMounted();
   const navigate = useNavigate();
-  const { data: user, isError, error } = useQuery(orpc.user.me.queryOptions());
 
-  const {
-    data: account,
-    isSuccess,
-    isLoading,
-  } = useQuery({
-    ...orpc.account.me.queryOptions(),
-    enabled: !!user?.wallet,
+  // Fetch user data
+  const { data: user, isLoading } = useQuery(orpc.user.me.queryOptions());
+
+  // Check if user queries are still loading
+  const userLoading = isLoading;
+
+  // Fetch system address from settings
+  const { data: systemAddress } = useQuery({
+    ...orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } }),
+    enabled: !!user,
   });
 
-  // Handle authentication errors
-  useEffect(() => {
-    if (isError) {
-      // For ORPC errors, the error object will have a code property
-      const errorObj = error as { code?: string };
-      if (errorObj.code === "UNAUTHORIZED") {
-        void navigate({
-          to: "/auth/$pathname",
-          params: { pathname: "sign-in" },
-          replace: true,
+  // Fetch system details including token factories
+  const { data: systemDetails } = useQuery({
+    ...orpc.system.read.queryOptions({
+      input: { id: systemAddress?.value ?? "" },
+    }),
+    enabled: !!systemAddress?.value,
+  });
+
+  // Determine platform onboarding requirements
+  const platformRequirements: PlatformOnboardingRequirements = {
+    hasWallet: !!user?.wallet,
+    hasSystem: !!systemAddress?.value,
+    hasTokenFactories: (systemDetails?.tokenFactories.length ?? 0) > 0,
+  };
+
+  // Determine user's onboarding status
+  const userHasWallet = !!user?.wallet;
+  const userHasIdentity = false; // TODO: Implement identity check
+  const userRole = user?.role ?? "investor";
+
+  const onboardingType = user
+    ? determineOnboardingType(userRole, platformRequirements)
+    : null;
+
+  // Check if onboarding is complete based on type
+  const isOnboardingComplete = (() => {
+    if (!onboardingType || !user) return false;
+
+    switch (onboardingType) {
+      case "platform":
+        return isPlatformOnboardingComplete(platformRequirements);
+      case "issuer":
+        return isIssuerOnboardingComplete({
+          hasWallet: userHasWallet,
+          platformOnboardingComplete:
+            isPlatformOnboardingComplete(platformRequirements),
         });
-      }
+      case "investor":
+        return isInvestorOnboardingComplete({
+          hasWallet: userHasWallet,
+          hasIdentity: userHasIdentity,
+          platformOnboardingComplete:
+            isPlatformOnboardingComplete(platformRequirements),
+        });
     }
-  }, [isError, error, navigate]);
+  })();
 
-  const hasWallet = !!user?.wallet;
-  const hasCountry = isSuccess && account?.country !== undefined;
-  const isOnboarded = hasWallet && hasCountry;
-
-  const isCheckComplete = (!hasWallet || !isLoading) && !isError;
+  const isPlatformOnboarded =
+    isPlatformOnboardingComplete(platformRequirements);
+  const isCheckComplete = !userLoading && user !== undefined;
 
   useEffect(() => {
-    if (!isCheckComplete || !user) {
+    if (!isCheckComplete) {
       return;
     }
 
-    if (require === "onboarded" && !isOnboarded) {
-      void navigate({ to: "/onboarding" });
+    // Handle platform-onboarded requirement
+    if (require === "platform-onboarded" && !isPlatformOnboarded) {
+      // Only admin users can do platform onboarding
+      if (userRole === "admin") {
+        void navigate({ to: "/onboarding/platform" });
+      } else {
+        void navigate({ to: "/" });
+      }
+      return;
     }
-    if (require === "not-onboarded" && isOnboarded) {
+
+    // Handle onboarded requirement
+    if (require === "onboarded" && !isOnboardingComplete) {
+      // Navigate to specific onboarding route based on type
+      switch (onboardingType) {
+        case "platform":
+          void navigate({ to: "/onboarding/platform" });
+          break;
+        case "issuer":
+          void navigate({ to: "/onboarding/issuer" });
+          break;
+        case "investor":
+          void navigate({ to: "/onboarding/investor" });
+          break;
+        default:
+          // Fallback to generic onboarding route if type is unknown
+          void navigate({ to: "/onboarding" });
+      }
+      return;
+    }
+
+    // Handle not-onboarded requirement
+    if (require === "not-onboarded" && isOnboardingComplete) {
       void navigate({ to: "/" });
+      return;
     }
-  }, [isCheckComplete, isOnboarded, require, navigate, user]);
+
+    // Check if user is on the correct onboarding type
+    if (
+      require === "not-onboarded" &&
+      allowedTypes &&
+      onboardingType &&
+      !allowedTypes.includes(onboardingType)
+    ) {
+      // Navigate to specific onboarding route based on type
+      switch (onboardingType) {
+        case "platform":
+          void navigate({ to: "/onboarding/platform" });
+          break;
+        case "issuer":
+          void navigate({ to: "/onboarding/issuer" });
+          break;
+        case "investor":
+          void navigate({ to: "/onboarding/investor" });
+          break;
+        default:
+          // Fallback to generic onboarding route if type is unknown
+          void navigate({ to: "/onboarding" });
+      }
+    }
+  }, [
+    isCheckComplete,
+    isOnboardingComplete,
+    isPlatformOnboarded,
+    require,
+    navigate,
+    user,
+    onboardingType,
+    allowedTypes,
+    userRole,
+  ]);
 
   if (!isMounted || !isCheckComplete) {
     return null;
   }
 
-  if (require === "onboarded" && isOnboarded) {
+  // Render children if all checks pass
+  if (require === "platform-onboarded" && isPlatformOnboarded) {
     return <>{children}</>;
   }
 
-  if (require === "not-onboarded" && !isOnboarded) {
+  if (require === "onboarded" && isOnboardingComplete) {
     return <>{children}</>;
+  }
+
+  if (require === "not-onboarded" && !isOnboardingComplete) {
+    // Additional check for allowed types
+    if (
+      !allowedTypes ||
+      !onboardingType ||
+      allowedTypes.includes(onboardingType)
+    ) {
+      return <>{children}</>;
+    }
   }
 
   return null;

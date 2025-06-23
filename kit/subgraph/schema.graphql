@@ -319,7 +319,6 @@ type Token @entity(immutable: false) {
   # Claims
   basePriceClaim: IdentityClaim
   # Compliance
-  requiredClaimTopics: [String!]!
   tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
 }
 

@@ -21,7 +21,7 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { IWithTypeIdentifier } from "../IWithTypeIdentifier.sol";
+import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
 /// @notice This contract provides functionality for registering tokens and checking their registration status,
@@ -133,13 +133,13 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @notice Returns the identity registry contract.
     /// @return The identity registry contract.
     function _identityRegistry() internal view returns (ISMARTIdentityRegistry) {
-        return ISMARTIdentityRegistry(IATKSystem(_systemAddress).identityRegistryProxy());
+        return ISMARTIdentityRegistry(IATKSystem(_systemAddress).identityRegistry());
     }
 
     /// @notice Returns the compliance contract.
     /// @return The compliance contract.
     function _compliance() internal view returns (ISMARTCompliance) {
-        return ISMARTCompliance(IATKSystem(_systemAddress).complianceProxy());
+        return ISMARTCompliance(IATKSystem(_systemAddress).compliance());
     }
 
     /// @notice Creates a pair for the identity verification module.
@@ -266,7 +266,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
         view
         returns (address)
     {
-        return IATKIdentityFactory(IATKSystem(_systemAddress).identityFactoryProxy()).calculateTokenIdentityAddress(
+        return IATKIdentityFactory(IATKSystem(_systemAddress).identityFactory()).calculateTokenIdentityAddress(
             name, symbol, decimals, initialManager
         );
     }
@@ -379,7 +379,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param accessManagerAddress The address of the token's access manager.
     function _deployTokenIdentity(address tokenAddress, address accessManagerAddress) internal returns (address) {
         IATKSystem system_ = IATKSystem(_systemAddress);
-        IATKIdentityFactory identityFactory_ = IATKIdentityFactory(system_.identityFactoryProxy());
+        IATKIdentityFactory identityFactory_ = IATKIdentityFactory(system_.identityFactory());
         address tokenIdentity = identityFactory_.createTokenIdentity(tokenAddress, accessManagerAddress);
 
         return tokenIdentity;

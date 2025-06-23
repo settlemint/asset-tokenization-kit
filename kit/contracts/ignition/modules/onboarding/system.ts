@@ -95,6 +95,45 @@ const ATKOnboardingSystemModule = buildModule(
       { id: "identityFactory" }
     );
 
+    const tokenFactoryRegistryAddress = m.readEventArgument(
+      bootstrap,
+      "Bootstrapped",
+      "tokenFactoryRegistryProxy",
+      { id: "tokenFactoryRegistryAddress" }
+    );
+
+    const tokenFactoryRegistry = m.contractAt(
+      "IATKTokenFactoryRegistry",
+      tokenFactoryRegistryAddress,
+      { id: "tokenFactoryRegistry" }
+    );
+
+    const complianceModuleRegistryAddress = m.readEventArgument(
+      bootstrap,
+      "Bootstrapped",
+      "complianceModuleRegistryProxy",
+      { id: "complianceModuleRegistryAddress" }
+    );
+
+    const complianceModuleRegistry = m.contractAt(
+      "IATKComplianceModuleRegistry",
+      complianceModuleRegistryAddress,
+      { id: "complianceModuleRegistry" }
+    );
+
+    const systemAddonRegistryAddress = m.readEventArgument(
+      bootstrap,
+      "Bootstrapped",
+      "systemAddonRegistryProxy",
+      { id: "systemAddonRegistryAddress" }
+    );
+
+    const systemAddonRegistry = m.contractAt(
+      "IATKSystemAddonRegistry",
+      systemAddonRegistryAddress,
+      { id: "systemAddonRegistry" }
+    );
+
     return {
       system,
       compliance,
@@ -103,6 +142,9 @@ const ATKOnboardingSystemModule = buildModule(
       trustedIssuersRegistry,
       topicSchemeRegistry,
       identityFactory,
+      tokenFactoryRegistry,
+      complianceModuleRegistry,
+      systemAddonRegistry,
     };
   }
 );

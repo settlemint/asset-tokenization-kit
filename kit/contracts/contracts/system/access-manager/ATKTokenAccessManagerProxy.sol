@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { ATKSystemProxy } from "../ATKSystemProxy.sol";
+import { AbstractATKSystemProxy } from "../AbstractATKSystemProxy.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { ATKTokenAccessManagerImplementation } from "./ATKTokenAccessManagerImplementation.sol";
 import { TokenAccessManagerImplementationNotSet } from "../ATKSystemErrors.sol";
@@ -16,7 +16,7 @@ import { TokenAccessManagerImplementationNotSet } from "../ATKSystemErrors.sol";
 ///      This allows the underlying token access manager logic to be upgraded without changing the proxy's address or
 /// losing its state.
 ///      Inherits from `ATKSystemProxy`.
-contract ATKTokenAccessManagerProxy is ATKSystemProxy {
+contract ATKTokenAccessManagerProxy is AbstractATKSystemProxy {
     /// @notice Constructor for the `ATKTokenAccessManagerProxy`.
     /// @dev This function is called only once when the proxy contract is deployed.
     /// It performs critical setup steps:
@@ -28,7 +28,7 @@ contract ATKTokenAccessManagerProxy is ATKSystemProxy {
     ///    via `_performInitializationDelegatecall`.
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param initialAdmin The address that will be granted initial administrative privileges.
-    constructor(address systemAddress, address initialAdmin) ATKSystemProxy(systemAddress) {
+    constructor(address systemAddress, address initialAdmin) AbstractATKSystemProxy(systemAddress) {
         IATKSystem system_ = _getSystem();
 
         address implementation = _getSpecificImplementationAddress(system_);
@@ -42,7 +42,7 @@ contract ATKTokenAccessManagerProxy is ATKSystemProxy {
     /// @dev Reverts with `TokenAccessManagerImplementationNotSet` if the implementation address is zero.
     /// @param system The `IATKSystem` contract instance.
     /// @return The address of the `ATKTokenAccessManagerImplementation` contract.
-    /// @inheritdoc ATKSystemProxy
+    /// @inheritdoc AbstractATKSystemProxy
     function _getSpecificImplementationAddress(IATKSystem system) internal view override returns (address) {
         address implementation = system.tokenAccessManagerImplementation();
         if (implementation == address(0)) {

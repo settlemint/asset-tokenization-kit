@@ -33,6 +33,9 @@ accelerate the development of digital asset platforms. With built-in tools for
 smart contract deployment, asset tracking, and seamless blockchain interactions,
 the kit simplifies the creation of secure and scalable tokenization solutions.
 
+**Note**: The `dapp-v1` folder is deprecated and no longer used. All development
+should focus on the modern stack in `kit/dapp`.
+
 ## Local development
 
 ### Setting up
@@ -48,12 +51,45 @@ bun run dev:up # dev:reset will clean up and do up if you need to start fresh
 
 ### Quality Assurance
 
+The project uses a comprehensive QA suite to ensure code quality and
+functionality. The main command to run before creating a PR is:
+
 ```bash
-# Run all the common QA tasks
+# Run the complete QA suite
 bun run ci
 ```
 
-### Updating the artifacts
+This command (`bun run ci`) executes the following tasks in order:
+
+1. **Format Check** (`bun run format`)
+
+   - Validates code formatting using Prettier
+   - Ensures consistent code style across the project
+
+2. **Compilation** (`bun run compile`)
+
+   - Compiles smart contracts using Foundry and Hardhat
+   - Generates TypeScript types from contracts
+   - Validates contract syntax and dependencies
+
+3. **Code Generation** (`bun run codegen`)
+
+   - Generates GraphQL types from schemas
+   - Creates TypeScript bindings for smart contracts
+   - Updates SDK types for Portal, TheGraph, and Hasura
+
+4. **Linting** (`bun run lint`)
+
+   - Runs ESLint on TypeScript/JavaScript code
+   - Checks for code quality issues and potential bugs
+   - Enforces coding standards and best practices
+
+5. **Testing** (`bun run test`)
+   - Runs unit tests for smart contracts (Foundry)
+   - Executes component tests for the dApp
+   - Validates business logic and edge cases
+
+### Generating the artifacts
 
 This will change the genesis file, initial database and the portal ABIs that are
 deployed in docker compose.
@@ -61,7 +97,9 @@ deployed in docker compose.
 ```bash
 # Update the artifacts
 bun run artifacts
-# Restart the docker compose setup
+# Start the docker compose setup
+bun run dev:up
+# OR restart the docker compose setup
 bun run dev:reset
 ```
 

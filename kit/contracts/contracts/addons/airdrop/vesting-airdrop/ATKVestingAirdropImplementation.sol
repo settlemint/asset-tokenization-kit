@@ -10,16 +10,6 @@ import { ATKAmountClaimTracker } from "../claim-tracker/ATKAmountClaimTracker.so
 import { IATKVestingStrategy } from "./IATKVestingStrategy.sol";
 import { IATKVestingAirdrop } from "./IATKVestingAirdrop.sol";
 import { IATKAirdrop } from "../IATKAirdrop.sol";
-import {
-    InitializationDeadlinePassed,
-    ClaimNotEligible,
-    ZeroAmountToTransfer,
-    InvalidVestingStrategyAddress,
-    InvalidInitializationDeadline,
-    InvalidVestingStrategy,
-    VestingNotInitialized,
-    VestingAlreadyInitialized
-} from "./ATKVestingAirdropErrors.sol";
 import { InvalidInputArrayLengths, InvalidMerkleProof, BatchSizeExceedsLimit } from "../ATKAirdropErrors.sol";
 
 /// @title ATK Vesting Airdrop Implementation

@@ -12,6 +12,8 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 /// @author SettleMint Tokenization Services
 /// @notice This compliance module restricts token transfers *to* users if their identity is on a prohibited list.
 contract IdentityBlockListComplianceModule is AbstractIdentityComplianceModule {
+    bytes32 public constant override typeId = keccak256("IdentityBlockListComplianceModule");
+
     event GlobalBlockedIdentitiesUpdated(address[] identityAddresses, bool indexed blocked);
 
     constructor(address _trustedForwarder) AbstractIdentityComplianceModule(_trustedForwarder) { }

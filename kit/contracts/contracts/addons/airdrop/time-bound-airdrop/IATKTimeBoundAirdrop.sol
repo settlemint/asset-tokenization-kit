@@ -9,6 +9,21 @@ import { IATKAirdrop } from "../IATKAirdrop.sol";
 /// @notice Interface for time-bound airdrop contracts in the ATK Protocol.
 /// @dev Defines the functions specific to time-bound airdrops where claims are restricted to a specific time window.
 interface IATKTimeBoundAirdrop is IATKAirdrop {
+    /// @notice Thrown when attempting to claim before the airdrop has started.
+    error AirdropNotStarted();
+
+    /// @notice Thrown when attempting to claim after the airdrop has ended.
+    error AirdropEnded();
+
+    /// @notice Thrown when the provided start time is invalid (e.g., in the past).
+    error InvalidStartTime();
+
+    /// @notice Thrown when the provided end time is invalid (e.g., before start time).
+    error InvalidEndTime();
+
+    /// @notice Thrown when the time window configuration is invalid.
+    error InvalidTimeWindow();
+
     // --- View Functions ---
 
     /// @notice Returns the start time when claims become available.

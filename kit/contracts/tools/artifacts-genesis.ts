@@ -71,22 +71,30 @@ const CONTRACT_ADDRESSES = {
   ATKTokenAccessManagerImplementation:
     "0x5e771e1417100000000000000000000000020009",
 
+  // Registry implementations
+  ATKTokenFactoryRegistryImplementation:
+    "0x5e771e1417100000000000000000000000020010",
+  ATKComplianceModuleRegistryImplementation:
+    "0x5e771e1417100000000000000000000000020011",
+  ATKSystemAddonRegistryImplementation:
+    "0x5e771e1417100000000000000000000000020012",
+
   // System
   ATKSystemImplementation: "0x5e771e1417100000000000000000000000020087",
   ATKSystemFactory: "0x5e771e1417100000000000000000000000020088",
 
   // Asset implementations
-  ATKBondImplementation: "0x5e771e1417100000000000000000000000020010",
-  ATKBondFactoryImplementation: "0x5e771e1417100000000000000000000000020011",
-  ATKDepositImplementation: "0x5e771e1417100000000000000000000000020012",
-  ATKDepositFactoryImplementation: "0x5e771e1417100000000000000000000000020013",
-  ATKEquityImplementation: "0x5e771e1417100000000000000000000000020014",
-  ATKEquityFactoryImplementation: "0x5e771e1417100000000000000000000000020015",
-  ATKFundImplementation: "0x5e771e1417100000000000000000000000020016",
-  ATKFundFactoryImplementation: "0x5e771e1417100000000000000000000000020017",
-  ATKStableCoinImplementation: "0x5e771e1417100000000000000000000000020018",
+  ATKBondImplementation: "0x5e771e1417100000000000000000000000020020",
+  ATKBondFactoryImplementation: "0x5e771e1417100000000000000000000000020021",
+  ATKDepositImplementation: "0x5e771e1417100000000000000000000000020022",
+  ATKDepositFactoryImplementation: "0x5e771e1417100000000000000000000000020023",
+  ATKEquityImplementation: "0x5e771e1417100000000000000000000000020024",
+  ATKEquityFactoryImplementation: "0x5e771e1417100000000000000000000000020025",
+  ATKFundImplementation: "0x5e771e1417100000000000000000000000020026",
+  ATKFundFactoryImplementation: "0x5e771e1417100000000000000000000000020027",
+  ATKStableCoinImplementation: "0x5e771e1417100000000000000000000000020028",
   ATKStableCoinFactoryImplementation:
-    "0x5e771e1417100000000000000000000000020019",
+    "0x5e771e1417100000000000000000000000020029",
 
   // Compliance modules
   SMARTIdentityVerificationComplianceModule:
@@ -101,6 +109,19 @@ const CONTRACT_ADDRESSES = {
     "0x5e771e1417100000000000000000000000020104",
   IdentityAllowListComplianceModule:
     "0x5e771e1417100000000000000000000000020105",
+
+  // Addon factory implementations
+  ATKFixedYieldScheduleFactoryImplementation:
+    "0x5e771e1417100000000000000000000000020030",
+  ATKXvPSettlementImplementation: "0x5e771e1417100000000000000000000000020031",
+  ATKXvPSettlementFactoryImplementation:
+    "0x5e771e1417100000000000000000000000020032",
+  ATKVestingAirdropFactoryImplementation:
+    "0x5e771e1417100000000000000000000000020033",
+  ATKPushAirdropFactoryImplementation:
+    "0x5e771e1417100000000000000000000000020034",
+  // Note: ATKVault and ATKVaultFactoryImplementation removed per https://linear.app/settlemint/issue/SRT-697/implementation-vs-configured-instance
+  // These contracts should not be predeployed as implementations need proper configuration
 } as const;
 
 const CONTRACT_FILES = {
@@ -126,6 +147,12 @@ const CONTRACT_FILES = {
     "contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol",
   ATKTokenAccessManagerImplementation:
     "contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol",
+  ATKTokenFactoryRegistryImplementation:
+    "contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol",
+  ATKComplianceModuleRegistryImplementation:
+    "contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol",
+  ATKSystemAddonRegistryImplementation:
+    "contracts/system/addons/ATKSystemAddonRegistryImplementation.sol",
 
   // System
   ATKSystemImplementation: "contracts/system/ATKSystemImplementation.sol",
@@ -164,6 +191,19 @@ const CONTRACT_FILES = {
     "contracts/smart/modules/IdentityBlockListComplianceModule.sol",
   IdentityAllowListComplianceModule:
     "contracts/smart/modules/IdentityAllowListComplianceModule.sol",
+
+  // Addon factory implementations
+  ATKFixedYieldScheduleFactoryImplementation:
+    "contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol",
+  ATKXvPSettlementImplementation:
+    "contracts/addons/xvp/ATKXvPSettlementImplementation.sol",
+  ATKXvPSettlementFactoryImplementation:
+    "contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol",
+  ATKVestingAirdropFactoryImplementation:
+    "contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropFactoryImplementation.sol",
+  ATKPushAirdropFactoryImplementation:
+    "contracts/addons/airdrop/push-airdrop/ATKPushAirdropFactoryImplementation.sol",
+  // Note: ATKVault and ATKVaultFactoryImplementation removed per https://linear.app/settlemint/issue/SRT-697/implementation-vs-configured-instance
 } as const;
 
 // =============================================================================
@@ -452,6 +492,9 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKTokenIdentityImplementation,
           CONTRACT_ADDRESSES.ATKTokenAccessManagerImplementation,
           CONTRACT_ADDRESSES.SMARTIdentityVerificationComplianceModule,
+          CONTRACT_ADDRESSES.ATKTokenFactoryRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKComplianceModuleRegistryImplementation,
+          CONTRACT_ADDRESSES.ATKSystemAddonRegistryImplementation,
           forwarderAddress,
         ];
 

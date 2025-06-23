@@ -49,11 +49,11 @@ export const Route = createFileRoute("/_private")({
  * - Header with application controls (language switcher, theme toggle)
  * - Container for child route content
  *
- * The component uses Better Auth UI components to handle authentication:
- * - RedirectToSignIn: Redirects unauthenticated users to the sign-in page
- * - SignedIn: Only renders children when user is authenticated
+ * The component uses the useAuthenticate hook from Better Auth UI to handle
+ * authentication checks and automatic redirects in an SSR-safe way.
  */
 function LayoutComponent() {
+  // If we reach this point, the user is authenticated
   return (
     <>
       <RedirectToSignIn />

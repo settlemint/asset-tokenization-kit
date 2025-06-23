@@ -8,7 +8,6 @@ import { ATKXvPSettlementFactoryImplementation } from
 import { ATKXvPSettlementImplementation } from "../../../contracts/addons/xvp/ATKXvPSettlementImplementation.sol";
 import { IATKXvPSettlementFactory } from "../../../contracts/addons/xvp/IATKXvPSettlementFactory.sol";
 import { IATKXvPSettlement } from "../../../contracts/addons/xvp/IATKXvPSettlement.sol";
-import { ATKSystemAddonProxy } from "../../../contracts/system/ATKSystemAddonProxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ERC20Mock } from "../../mocks/ERC20Mock.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
@@ -70,7 +69,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Create system addon for XvP settlement factory
         factory = IATKXvPSettlementFactory(
-            systemUtils.system().createSystemAddon(
+            systemUtils.systemAddonRegistry().registerSystemAddon(
                 "xvp-settlement-factory", address(factoryImpl), encodedInitializationData
             )
         );

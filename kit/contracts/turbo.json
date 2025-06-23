@@ -3,20 +3,22 @@
   "tasks": {
     "dependencies": {
       "outputs": ["dependencies/**"],
-      "inputs": ["foundry.toml"]
+      "inputs": ["soldeer.lock", "tools/dependencies.ts"]
     },
     "compile": {
       "dependsOn": ["compile:forge", "compile:hardhat"]
     },
     "compile:forge": {
-      "dependsOn": ["dependencies"],
       "outputs": [".generated/out/**", ".generated/cache_forge/**"],
-      "inputs": ["contracts/**/*.sol"]
+      "inputs": ["**/*.sol"]
     },
     "compile:hardhat": {
-      "dependsOn": ["dependencies"],
       "outputs": [".generated/artifacts/**", ".generated/cache/**"],
-      "inputs": ["contracts/**/*.sol"]
+      "inputs": ["**/*.sol"]
+    },
+    "compile:typescript": {
+      "outputs": [".tsbuildinfo"],
+      "inputs": ["**/*.ts"]
     },
     "codegen": {
       "dependsOn": ["codegen:types"]
@@ -24,23 +26,22 @@
     "codegen:types": {
       "dependsOn": ["compile:hardhat"],
       "outputs": ["scripts/hardhat/abi/**"],
-      "inputs": ["contracts/**"]
+      "inputs": ["contracts/**", "tools/codegen-types.ts"]
     },
     "artifacts": {
       "dependsOn": ["artifacts:genesis", "artifacts:abi"]
     },
     "artifacts:genesis": {
-      "dependsOn": ["compile:forge"],
       "outputs": [
-        ".generated/genesis-allocations.json",
-        ".generated/genesis.json"
+        ".generated/genesis.json",
+        ".generated/genesis-allocations.json"
       ],
-      "inputs": ["contracts/**/*.sol"]
+      "inputs": ["contracts/**", "tools/artifacts-genesis.ts"]
     },
     "artifacts:abi": {
       "dependsOn": ["compile"],
-      "outputs": [".generated/portal/*.json"],
-      "inputs": ["contracts/**/*.sol"]
+      "outputs": [".generated/portal/**"],
+      "inputs": ["contracts/**", "tools/artifacts-abi.ts"]
     },
     "format": {
       "dependsOn": ["format:forge", "format:prettier"]
@@ -49,17 +50,7 @@
     "format:prettier": {},
     "publish": {
       "cache": false,
-      "dependsOn": [
-        "package",
-        "codegen",
-        "subgraph#codegen:interfaceid",
-        "//#setup:dev"
-      ]
-    },
-    "test": {
-      "dependsOn": ["compile:forge"],
-      "outputs": [],
-      "inputs": ["**/*.sol", "test/**", "!.generated/**"]
+      "dependsOn": ["package", "codegen"]
     }
   }
 }
