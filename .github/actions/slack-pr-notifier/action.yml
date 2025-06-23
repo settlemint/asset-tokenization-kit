@@ -140,19 +140,19 @@ runs:
           if(!slackTs){
             const lC=await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:process.env.PR_NUMBER,body:'<!-- slack-creating-lock -->'});
             const {data:cC}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:process.env.PR_NUMBER});
-            const eC=cC.find(c=>c.body&&c.body.includes('<!-- slack-ts:')&&c.id!==lC.id);
+            const eC=cC.find(c=>c.body&&c.body.includes('<!-- slack-ts:')&&c.id!==lC.data.id);
             if(eC){
-              await github.rest.issues.deleteComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:lC.id});
+              await github.rest.issues.deleteComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:lC.data.id});
               const m=eC.body.match(/<!-- slack-ts:([0-9.]+) -->/);
               if(m){slackTs=m[1];}
             }else{
               const r=await sM(true);
               if(r&&r.ts){
                 const cB=[`<!-- slack-ts:${r.ts} -->`,`To view in Slack, search for: ${r.ts}`].join('\n');
-                await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:lC.id,body:cB});
+                await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:lC.data.id,body:cB});
                 slackTs=r.ts;
               }
-              try{await github.rest.issues.deleteComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:lC.id});}catch(e){}
+              try{await github.rest.issues.deleteComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:lC.data.id});}catch(e){}
             }
           }else{
             await sM(false);
