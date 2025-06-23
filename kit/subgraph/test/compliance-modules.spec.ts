@@ -87,4 +87,54 @@ describe("Compliance Modules", () => {
       expect(countryBlockListModule).toBeUndefined();
     }
   });
+
+  it("should receive the required claim topics for the assets", async () => {
+    const query = theGraphGraphql(
+      `query {
+        tokens(orderBy: name) {
+          name
+          requiredClaimTopics {
+            name
+          }
+        }
+      }
+    `
+    );
+    const response = await theGraphClient.request(query, {});
+    expect(response.tokens.length).toBe(6);
+    expect(response.tokens).toEqual([
+      {
+        name: "Apple",
+        requiredClaimTopics: [],
+      },
+      {
+        name: "Bens Bugs",
+        requiredClaimTopics: [
+          {
+            name: "kyc",
+          },
+        ],
+      },
+      {
+        name: "Euro Bonds",
+        requiredClaimTopics: [
+          {
+            name: "kyc",
+          },
+        ],
+      },
+      {
+        name: "Euro Deposits",
+        requiredClaimTopics: [],
+      },
+      {
+        name: "Paused Stablecoin",
+        requiredClaimTopics: [],
+      },
+      {
+        name: "Tether",
+        requiredClaimTopics: [],
+      },
+    ]);
+  });
 });
