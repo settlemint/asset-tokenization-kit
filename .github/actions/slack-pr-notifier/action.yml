@@ -47,9 +47,10 @@ runs:
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
         SLACK_CHANNEL_ID: ${{ inputs.slack_channel_id }}
+        PR_TITLE: ${{ inputs.pr_title }}
       with:
         script: |
-          const pr_number='${{inputs.pr_number}}',pr_title=`${{inputs.pr_title}}`,pr_url='${{inputs.pr_url}}',pr_author='${{inputs.pr_author}}',pr_author_type='${{inputs.pr_author_type}}',pr_author_avatar='${{inputs.pr_author_avatar}}';
+          const pr_number='${{inputs.pr_number}}',pr_title=process.env.PR_TITLE,pr_url='${{inputs.pr_url}}',pr_author='${{inputs.pr_author}}',pr_author_type='${{inputs.pr_author_type}}',pr_author_avatar='${{inputs.pr_author_avatar}}';
           const {data:labels}=await github.rest.issues.listLabelsOnIssue({owner:context.repo.owner,repo:context.repo.repo,issue_number:pr_number});
           const {data:comments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:pr_number});
           let slackTs=null;
