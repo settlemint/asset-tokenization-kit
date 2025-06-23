@@ -72,6 +72,23 @@ module.exports = async ({ github, context, core }) => {
     }
     
     console.log(`Found ${labels.length} PR labels:`, labels.map(l => l.name));
+    
+    // Also check PR merged status directly from GitHub API
+    // This is more reliable than labels for recently merged PRs
+    let isPRMerged = false;
+    try {
+      const { data: pr } = await github.rest.pulls.get({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        pull_number: PR_NUMBER
+      });
+      isPRMerged = pr.merged === true;
+      if (isPRMerged) {
+        console.log('PR is merged according to GitHub API');
+      }
+    } catch (error) {
+      console.error('Failed to check PR merged status:', error.message);
+    }
 
     // Get PR comments to find existing Slack timestamp
     const { data: comments } = await github.rest.issues.listComments({
@@ -106,7 +123,7 @@ module.exports = async ({ github, context, core }) => {
     }
 
     // Skip if no existing message and PR is merged or abandoned
-    if (!slackTs && (labels.some(l => l.name === 'status:merged') || IS_ABANDONED === 'true')) {
+    if (!slackTs && (labels.some(l => l.name === 'status:merged') || isPRMerged || IS_ABANDONED === 'true')) {
       console.log('Skipping notification for merged/abandoned PR without existing message');
       return;
     }
@@ -223,7 +240,7 @@ module.exports = async ({ github, context, core }) => {
         .replace(/>/g, '&gt;');
     }
 
-    const isMerged = labels.some(l => l.name === 'status:merged');
+    const isMerged = labels.some(l => l.name === 'status:merged') || isPRMerged;
     const isAbandoned = IS_ABANDONED === 'true';
     const escapedTitle = escapeText(PR_TITLE);
 
@@ -269,46 +286,75 @@ module.exports = async ({ github, context, core }) => {
       if (isPrivateRepo) {
         messageBlocks = [
           {
-            type: 'section',
+            type: 'header',
             text: {
-              type: 'mrkdwn',
-              text: `${statusString}*<${PR_URL}|#${PR_NUMBER}: ${escapedTitle}>*\n_by ${PR_AUTHOR} • ${context.repo.owner}/${context.repo.repo}_`
+              type: 'plain_text',
+              text: `#${PR_NUMBER} ${escapedTitle}`,
+              emoji: false
             }
           },
           {
-            type: 'actions',
-            elements: [
+            type: 'section',
+            fields: [
               {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: 'View PR',
-                  emoji: false
-                },
-                url: PR_URL,
-                style: 'primary'
+                type: 'mrkdwn',
+                text: `*Repository:*\n${context.repo.owner}/${context.repo.repo}`
               },
               {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: 'Files',
-                  emoji: false
-                },
-                url: `${PR_URL}/files`
-              },
-              {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: 'Checks',
-                  emoji: false
-                },
-                url: `${PR_URL}/checks`
+                type: 'mrkdwn',
+                text: `*Author:*\n${PR_AUTHOR}`
               }
             ]
           }
         ];
+        
+        // Add status context if available
+        if (statusString.trim()) {
+          messageBlocks.push({
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: statusString.trim()
+              }
+            ]
+          });
+        }
+        
+        // Add action buttons
+        messageBlocks.push({
+          type: 'actions',
+          elements: [
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'View PR',
+                emoji: false
+              },
+              url: PR_URL,
+              style: 'primary'
+            },
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Files',
+                emoji: false
+              },
+              url: `${PR_URL}/files`
+            },
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Checks',
+                emoji: false
+              },
+              url: `${PR_URL}/checks`
+            }
+          ]
+        });
       } else {
         // Public repository - use OpenGraph image
         let ogImageUrl;
@@ -406,27 +452,25 @@ module.exports = async ({ github, context, core }) => {
                   type: 'section',
                   text: {
                     type: 'mrkdwn',
-                    text: `${statusString}*<${PR_URL}|#${PR_NUMBER}: ${escapedTitle}>*\n_by ${PR_AUTHOR}_`
+                    text: `*<${PR_URL}|#${PR_NUMBER} ${escapedTitle}>*\n_Author: ${PR_AUTHOR} • Repo: ${context.repo.owner}/${context.repo.repo}_`
                   }
+                },
+                {
+                  type: 'actions',
+                  elements: [
+                    {
+                      type: 'button',
+                      text: {
+                        type: 'plain_text',
+                        text: 'View PR',
+                        emoji: false
+                      },
+                      url: PR_URL,
+                      style: 'primary'
+                    }
+                  ]
                 }
               ];
-              
-              // Add a simple button to view the PR
-              fallbackBlocks.push({
-                type: 'actions',
-                elements: [
-                  {
-                    type: 'button',
-                    text: {
-                      type: 'plain_text',
-                      text: 'View PR',
-                      emoji: false
-                    },
-                    url: PR_URL,
-                    style: 'primary'
-                  }
-                ]
-              });
             }
 
             if (isNew) {
