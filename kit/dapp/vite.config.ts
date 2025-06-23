@@ -2,6 +2,8 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import tsConfigPaths from "vite-tsconfig-paths";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 // Generate a build ID
 // In development: use stable "dev" to avoid unnecessary cache busting
@@ -81,7 +83,11 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
           if (req.url === "/.dev-reset-marker") {
-            const markerPath = new URL(".dev-reset-marker", import.meta.url).pathname;
+            // Properly resolve the path using Node.js path utilities
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = dirname(__filename);
+            const markerPath = join(__dirname, ".dev-reset-marker");
+            
             Bun.file(markerPath).text()
               .then(content => {
                 res.setHeader("Content-Type", "text/plain");
