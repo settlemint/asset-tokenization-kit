@@ -8,7 +8,7 @@
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
     "codegen:gql-tada": "gql-tada generate-schema http://localhost:${THE_GRAPH_PORT_LOCAL_QUERY:-8000}/subgraphs/name/smart-protocol && gql-tada turbo && gql-tada generate-output",
     "format": "prettier -l --write .",
-    "compile": "mkdir -p .generated && bunx graph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 | tee .generated/subgraph-hash.txt | xargs -I {} echo 'SUBGRAPH=kit:{}' > .generated/subgraph-env",
+    "compile": "mkdir -p .generated && (test -f .generated/subgraph-env || echo 'SUBGRAPH=kit:' > .generated/subgraph-env) && bunx graph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 | tee .generated/subgraph-hash.txt | xargs -I {} echo 'SUBGRAPH=kit:{}' > .generated/subgraph-env",
     "publish": "bun run tools/graph-deploy.ts --local",
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
     "publish:anvil": "bun run tools/graph-deploy.ts --local --port 8120:8100",
