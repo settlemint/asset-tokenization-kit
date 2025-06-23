@@ -28,9 +28,5 @@ export const tokenFactoryPermissionMiddleware = (
       throw errors.FORBIDDEN();
     }
 
-    return next({
-      context: {
-        tokenFactory,
-      },
-    });
+    return next();
   });

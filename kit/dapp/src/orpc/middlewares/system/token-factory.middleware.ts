@@ -17,7 +17,9 @@ export const tokenFactoryMiddleware = (type: AssetType) =>
       (tokenFactory) => tokenFactory.type === type
     );
     if (!tokenFactory) {
-      throw errors.SYSTEM_NOT_CREATED();
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "Token factory context not set",
+      });
     }
 
     return next({
