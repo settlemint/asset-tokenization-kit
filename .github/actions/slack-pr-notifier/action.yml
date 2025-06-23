@@ -49,641 +49,129 @@ runs:
         SLACK_CHANNEL_ID: ${{ inputs.slack_channel_id }}
       with:
         script: |
-          // Add random jitter to prevent race conditions when multiple steps run in parallel
-          const jitter = Math.floor(Math.random() * 3000);
-          console.log(`Waiting ${jitter}ms to prevent race conditions...`);
-          await new Promise(resolve => setTimeout(resolve, jitter));
-          // Get PR labels
-          const { data: pr } = await github.rest.pulls.get({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: ${{ inputs.pr_number }}
-          });
-
-          const labels = pr.labels || [];
-          const pr_title = ${{ toJSON(inputs.pr_title) }};
-          const pr_url = ${{ toJSON(inputs.pr_url) }};
-          const pr_number = ${{ inputs.pr_number }};
-          const pr_author = ${{ toJSON(inputs.pr_author) }};
-          const pr_author_type = '${{ inputs.pr_author_type }}';
-          const author_avatar = ${{ toJSON(inputs.pr_author_avatar) }};
-          const update_message = '${{ inputs.update_message }}' === 'true';
-
-          // Extract repo name without org
-          const repoName = context.repo.repo;
-
-          // Check if PR is from a bot
-          if (pr_author_type === 'Bot') {
-            console.log(`Skipping notification for bot PR from ${pr_author}`);
-            return;
+          const pr_number='${{inputs.pr_number}}',pr_title=`${{inputs.pr_title}}`,pr_url='${{inputs.pr_url}}',pr_author='${{inputs.pr_author}}',pr_author_type='${{inputs.pr_author_type}}',pr_author_avatar='${{inputs.pr_author_avatar}}';
+          const {data:labels}=await github.rest.issues.listLabelsOnIssue({owner:context.repo.owner,repo:context.repo.repo,issue_number:pr_number});
+          const {data:comments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:pr_number});
+          let slackTs=null;
+          const slackComment=comments.find(c=>c.body&&c.body.includes('<!-- slack-ts:'));
+          if(slackComment){const m=slackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);if(m)slackTs=m[1];}
+          const allowedBots=['dependabot[bot]','renovate[bot]','github-actions[bot]'];
+          if(pr_author_type==='Bot'&&!allowedBots.includes(pr_author))return;
+          const isDraft=labels.some(l=>l.name==='status:draft');
+          if(isDraft&&pr_author_type!=='Bot')return;
+          if(!slackTs&&(labels.some(l=>l.name==='status:merged')||'${{inputs.is_abandoned}}'==='true'))return;
+          const sL=[{l:'status:draft',t:':pencil2: Draft'},{l:'status:ready-for-review',t:':mag: Ready for Review'},{l:'status:in-review',t:':eyes: In Review'},{l:'qa:running',t:':hourglass_flowing_sand: QA Running'},{l:'qa:failed',t:':x: QA Failed'},{l:'qa:passed',t:':white_check_mark: QA Passed'},{l:'status:changes-requested',t:':warning: Changes Requested'},{l:'status:approved',t:':white_check_mark: Approved'},{l:'status:on-hold',t:':pause_button: On Hold'},{l:'status:blocked',t:':octagonal_sign: Blocked'},{l:'status:ready-to-merge',t:':rocket: Ready to Merge'},{l:'status:merged',t:':tada: Merged'}];
+          const pL=[{l:'priority:critical',t:':rotating_light:'},{l:'priority:high',t:':arrow_up:'},{l:'priority:medium',t:':arrow_right:'},{l:'priority:low',t:':arrow_down:'}];
+          const cL=[{l:'type:bug',t:':bug:'},{l:'type:feature',t:':sparkles:'},{l:'type:refactor',t:':recycle:'},{l:'type:test',t:':test_tube:'},{l:'type:docs',t:':books:'},{l:'type:chore',t:':wrench:'},{l:'type:style',t:':art:'},{l:'type:perf',t:':zap:'},{l:'type:security',t:':shield:'},{l:'type:breaking',t:':boom:'}];
+          const sT=[];
+          const aS=sL.find(s=>labels.some(l=>l.name===s.l));
+          if(aS)sT.push(aS.t);
+          const aP=pL.find(p=>labels.some(l=>l.name===p.l));
+          if(aP)sT.push(aP.t);
+          const aC=cL.filter(c=>labels.some(l=>l.name===c.l));
+          sT.push(...aC.map(c=>c.t));
+          const sS=sT.length>0?sT.join(' ')+' ':'';
+          try{
+          async function sA(m,p){
+            const r=await fetch(`https://slack.com/api/${m}`,{method:'POST',headers:{'Authorization':`Bearer ${process.env.SLACK_BOT_TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify(p)});
+            const d=await r.json();
+            if(!d.ok)throw new Error(`Slack API error: ${d.error}`);
+            return d;
           }
-
-          // Check if PR is draft
-          const isDraft = Array.isArray(labels) && labels.some(label => label.name === 'status:draft');
-          if (isDraft) {
-            console.log('Skipping notification for draft PR');
-            return;
-          }
-
-          // Define status reactions mapping
-          const statusReactions = {
-            'qa:pending': 'hourglass_flowing_sand',
-            'qa:running': 'runner',
-            'qa:success': 'white_check_mark',
-            'qa:failed': 'x',
-            'status:ready-for-review': 'eyes',
-            'status:approved': 'thumbsup',
-            'status:mergeable': 'rocket',
-            'status:merged': 'tada'
-          };
-
-          // Define mutually exclusive groups (only one can be active at a time)
-          const exclusiveGroups = {
-            'qa': ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
-            'status': ['eyes', 'thumbsup', 'rocket', 'tada']
-          };
-
-          // All possible status reactions we manage
-          const allStatusReactions = Object.values(statusReactions);
-
-          // Get current status labels
-          console.log('Current PR labels:', labels.map(l => l.name));
-          console.log('QA labels found:', labels.filter(l => l.name.startsWith('qa:')).map(l => l.name));
-
-          // STRICT LABEL-TO-REACTION MAPPING
-          // Only show reactions that have exact corresponding labels
-          const currentStatuses = [];
-
-          // Map each label to its reaction
-          for (const label of labels) {
-            if (statusReactions[label.name]) {
-              currentStatuses.push(statusReactions[label.name]);
-              console.log(`Label "${label.name}" maps to reaction "${statusReactions[label.name]}"`);
+          function eT(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+          const iM=labels.some(l=>l.name==='status:merged');
+          const iA='${{inputs.is_abandoned}}'==='true';
+          const eTitle=eT(pr_title);
+          let mB;
+          if(iM){
+            mB=[{type:'section',text:{type:'mrkdwn',text:`:tada: ${eTitle}`},accessory:{type:'button',text:{type:'plain_text',text:'View PR',emoji:false},url:pr_url,style:'primary'}}];
+          }else if(iA){
+            mB=[{type:'section',text:{type:'mrkdwn',text:`:file_folder: ${eTitle}`},accessory:{type:'button',text:{type:'plain_text',text:'View PR',emoji:false},url:pr_url}}];
+          }else{
+            let oU;
+            if(!slackTs){
+              const qR=labels.some(l=>l.name==='qa:running');
+              const cK=qR?`qa-${Date.now()}`:Date.now();
+              oU=`https://opengraph.githubassets.com/${cK}/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
+            }else{
+              oU=`https://opengraph.githubassets.com/1/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
             }
+            mB=[{type:'image',image_url:oU,alt_text:`PR #${pr_number}: ${eTitle}`},{type:'actions',elements:[{type:'button',text:{type:'plain_text',text:'View PR',emoji:false},url:pr_url,style:'primary'},{type:'button',text:{type:'plain_text',text:'Files',emoji:false},url:`${pr_url}/files`},{type:'button',text:{type:'plain_text',text:'Checks',emoji:false},url:`${pr_url}/checks`}]},{type:'context',elements:[{type:'mrkdwn',text:`${sS}*#${pr_number}* by ${pr_author} in *${context.repo.repo}*`}]}];
           }
-
-          // Apply exclusive group rules
-          const finalStatuses = [];
-          const usedGroups = new Set();
-
-          // Priority order for exclusive groups
-          const groupPriority = {
-            'qa': ['qa:failed', 'qa:success', 'qa:running', 'qa:pending'],
-            'status': ['status:merged', 'status:mergeable', 'status:approved', 'status:ready-for-review']
-          };
-
-          // For each group, pick only the highest priority reaction
-          for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
-            const priorityOrder = groupPriority[groupName] || [];
-
-            // Find the highest priority label from this group
-            let selectedReaction = null;
-            for (const priorityLabel of priorityOrder) {
-              if (labels.some(l => l.name === priorityLabel) && statusReactions[priorityLabel]) {
-                selectedReaction = statusReactions[priorityLabel];
+          async function sM(isNew){
+            let r,rc=0;
+            const mR=2;
+            while(rc<=mR){
+              try{
+                if(isNew){
+                  r=await sA('chat.postMessage',{channel:process.env.SLACK_CHANNEL_ID,text:`#${pr_number}: ${eTitle}`,blocks:mB});
+                }else{
+                  await sA('chat.update',{channel:process.env.SLACK_CHANNEL_ID,ts:slackTs,text:`#${pr_number}: ${eTitle}`,blocks:mB});
+                }
                 break;
-              }
-            }
-
-            if (selectedReaction && currentStatuses.includes(selectedReaction)) {
-              finalStatuses.push(selectedReaction);
-              usedGroups.add(groupName);
-            }
-          }
-
-          // If QA is running or pending, don't show status reactions
-          const hasQaInProgress = labels.some(l => l.name === 'qa:running' || l.name === 'qa:pending');
-          const filteredStatuses = hasQaInProgress
-            ? finalStatuses.filter(r => exclusiveGroups.qa.includes(r))
-            : finalStatuses;
-
-          console.log('All label names:', labels.map(l => l.name));
-          console.log('Final reactions (strict sync with labels):', filteredStatuses);
-
-          // Check if there's an existing Slack message or a lock
-          const { data: comments } = await github.rest.issues.listComments({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: pr_number
-          });
-
-          console.log(`Found ${comments.length} comments on PR`);
-
-          // Check for a creation lock first
-          const lockComment = comments.find(c => c.body && c.body.includes('<!-- slack-creating-lock -->'));
-          if (lockComment) {
-            // Check if lock is recent (within 30 seconds)
-            const lockAge = Date.now() - new Date(lockComment.created_at).getTime();
-            if (lockAge < 30000) {
-              console.log(`Found recent creation lock (${lockAge}ms old), waiting for other process to complete...`);
-              // Wait and retry to find the created message
-              await new Promise(resolve => setTimeout(resolve, 5000));
-
-              // Re-fetch comments
-              const { data: newComments } = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: pr_number
-              });
-
-              const slackComment = newComments.find(c => c.body && c.body.includes('<!-- slack-ts:'));
-              if (slackComment) {
-                const match = slackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);
-                if (match) {
-                  slackTs = match[1];
-                  console.log(`Found Slack message created by another process: ${slackTs}`);
-                }
-              }
-            } else {
-              console.log(`Found stale creation lock (${lockAge}ms old), ignoring...`);
-              // Delete stale lock
-              try {
-                await github.rest.issues.deleteComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: lockComment.id
-                });
-              } catch (e) {
-                console.log('Could not delete stale lock:', e.message);
-              }
-            }
-          }
-
-          // Look for existing Slack message
-          const slackComment = comments.find(c => c.body && c.body.includes('<!-- slack-ts:'));
-          let slackTs = null;
-
-          if (slackComment) {
-            const match = slackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);
-            if (match) {
-              slackTs = match[1];
-              console.log(`Found existing Slack message timestamp: ${slackTs}`);
-            }
-          } else {
-            console.log('No existing Slack message found');
-          }
-
-          // Helper function to make Slack API calls
-          async function slackAPI(method, body = {}) {
-            const response = await fetch(`https://slack.com/api/${method}`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${process.env.SLACK_BOT_TOKEN}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(body)
-            });
-
-            const data = await response.json();
-            if (!data.ok) {
-              console.error(`Slack API error details:`, JSON.stringify(data, null, 2));
-              throw new Error(`Slack API error: ${data.error}`);
-            }
-            return data;
-          }
-
-          // Helper function to escape text for Slack
-          function escapeSlackText(text) {
-            // Slack requires escaping &, <, and > in plain text
-            return text
-              .replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;');
-          }
-
-          // Check if PR is merged or abandoned
-          const isMerged = labels.some(l => l.name === 'status:merged');
-          const isAbandoned = '${{ inputs.is_abandoned }}' === 'true';
-
-          // Escape the PR title for use in Slack messages
-          const escapedTitle = escapeSlackText(pr_title);
-
-          let messageBlocks;
-
-          if (isMerged) {
-            // Simplified message for merged PRs
-            messageBlocks = [
-              {
-                type: 'section',
-                text: {
-                  type: 'mrkdwn',
-                  text: `:tada: ${escapedTitle}`
-                },
-                accessory: {
-                  type: 'button',
-                  text: {
-                    type: 'plain_text',
-                    text: 'View PR',
-                    emoji: false
-                  },
-                  url: pr_url,
-                  style: 'primary'
-                }
-              }
-            ];
-          } else if (isAbandoned) {
-            // Message for abandoned PRs with a gentler emoji
-            messageBlocks = [
-              {
-                type: 'section',
-                text: {
-                  type: 'mrkdwn',
-                  text: `:file_folder: ${escapedTitle}`
-                },
-                accessory: {
-                  type: 'button',
-                  text: {
-                    type: 'plain_text',
-                    text: 'View PR',
-                    emoji: false
-                  },
-                  url: pr_url
-                }
-              }
-            ];
-          } else {
-            // Full message for open PRs
-            // GitHub OG image URL construction
-            // Only use cache busting for the first message to avoid intermittent failures
-            let ogImageUrl;
-            if (!slackTs) {
-              // First message - use cache busting
-              const qaRunning = labels.some(l => l.name === 'qa:running');
-              const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
-              ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
-              console.log(`First message - using OG image URL with cache key: ${cacheKey}`);
-            } else {
-              // Update message - use stable URL without cache busting
-              ogImageUrl = `https://opengraph.githubassets.com/1/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
-              console.log(`Update message - using stable OG image URL`);
-            }
-
-            messageBlocks = [
-              {
-                type: 'image',
-                image_url: ogImageUrl,
-                alt_text: `PR #${pr_number}: ${escapedTitle}`
-              },
-              {
-                type: 'actions',
-                elements: [
-                  {
-                    type: 'button',
-                    text: {
-                      type: 'plain_text',
-                      text: 'View PR',
-                      emoji: false
-                    },
-                    url: pr_url,
-                    style: 'primary'
-                  },
-                  {
-                    type: 'button',
-                    text: {
-                      type: 'plain_text',
-                      text: 'Files',
-                      emoji: false
-                    },
-                    url: `${pr_url}/files`
-                  },
-                  {
-                    type: 'button',
-                    text: {
-                      type: 'plain_text',
-                      text: 'Checks',
-                      emoji: false
-                    },
-                    url: `${pr_url}/checks`
-                  },
-                  {
-                    type: 'button',
-                    text: {
-                      type: 'plain_text',
-                      text: 'Commits',
-                      emoji: false
-                    },
-                    url: `${pr_url}/commits`
-                  },
-                  {
-                    type: 'button',
-                    text: {
-                      type: 'plain_text',
-                      text: 'Review',
-                      emoji: false
-                    },
-                    url: `${pr_url}/files?w=1#review-changes-modal`
+              }catch(e){
+                if(e.message.includes('invalid_blocks')&&rc<mR){
+                  rc++;
+                  await new Promise(rs=>setTimeout(rs,1000*rc));
+                }else if(e.message.includes('invalid_blocks')){
+                  const fB=mB.filter(b=>b.type!=='image');
+                  if(!iM&&!iA){
+                    fB.unshift({type:'section',text:{type:'mrkdwn',text:`*<${pr_url}|#${pr_number}: ${eTitle}>*\n_by ${pr_author}_`}});
                   }
-                ]
-              }
-            ];
-          }
-
-          try {
-            if (!slackTs) {
-              // Create a lock to prevent race conditions
-              console.log('Creating lock to prevent duplicate messages...');
-              const lockComment = await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: pr_number,
-                body: '<!-- slack-creating-lock -->'
-              });
-
-              // Double-check that no other process created a message while we were creating the lock
-              const { data: checkComments } = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: pr_number
-              });
-
-              const existingSlackComment = checkComments.find(c =>
-                c.body && c.body.includes('<!-- slack-ts:') && c.id !== lockComment.id
-              );
-
-              if (existingSlackComment) {
-                console.log('Another process created a Slack message while we were locking, using that instead');
-                // Delete our lock
-                await github.rest.issues.deleteComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: lockComment.id
-                });
-
-                const match = existingSlackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);
-                if (match) {
-                  slackTs = match[1];
-                }
-              } else {
-                // Send new message
-                let result;
-                let retryCount = 0;
-                const maxRetries = 2;
-                
-                while (retryCount <= maxRetries) {
-                  try {
-                    // Try with the image block
-                    result = await slackAPI('chat.postMessage', {
-                      channel: process.env.SLACK_CHANNEL_ID,
-                      text: `#${pr_number}: ${escapedTitle}`,
-                      blocks: messageBlocks
-                    });
-                    break; // Success, exit the retry loop
-                  } catch (e) {
-                    if (e.message.includes('invalid_blocks') && retryCount < maxRetries) {
-                      retryCount++;
-                      console.log(`Image block failed (attempt ${retryCount}/${maxRetries}), retrying...`);
-                      // Wait a bit before retrying (exponential backoff)
-                      await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-                    } else if (e.message.includes('invalid_blocks')) {
-                      console.log('Image block failed after all retries, trying with fallback text format...');
-                      // Fallback: Create text-only blocks without the image
-                      const fallbackBlocks = messageBlocks.filter(block => block.type !== 'image');
-
-                      // Add a section block with PR info if we removed the image
-                      fallbackBlocks.unshift({
-                        type: 'section',
-                        text: {
-                          type: 'mrkdwn',
-                          text: `*<${pr_url}|#${pr_number}: ${escapedTitle}>*\n_by ${pr_author}_`
-                        }
-                      });
-
-                      result = await slackAPI('chat.postMessage', {
-                        channel: process.env.SLACK_CHANNEL_ID,
-                        text: `#${pr_number}: ${escapedTitle}`,
-                        blocks: fallbackBlocks
-                      });
-                      break; // Success with fallback, exit the retry loop
-                    } else {
-                      throw e;
-                    }
+                  if(isNew){
+                    r=await sA('chat.postMessage',{channel:process.env.SLACK_CHANNEL_ID,text:`#${pr_number}: ${eTitle}`,blocks:fB});
+                  }else{
+                    await sA('chat.update',{channel:process.env.SLACK_CHANNEL_ID,ts:slackTs,text:`#${pr_number}: ${eTitle}`,blocks:fB});
                   }
+                  break;
+                }else{
+                  throw e;
                 }
-
-                // Store timestamp
-                if (result.ts) {
-                console.log(`Storing Slack timestamp ${result.ts} as PR comment`);
-
-                // Get Slack workspace info for the permalink
-                let permalink = '';
-                try {
-                  const messageTs = result.ts.replace('.', '');
-                  // Note: This requires the Slack workspace URL to be configured
-                  // For now, we'll include instructions on how to find the message
-                  permalink = `To view this PR in Slack, search for message timestamp: ${result.ts}`;
-                } catch (e) {
-                  console.log('Could not generate Slack permalink:', e.message);
-                }
-
-                const commentBody = [
-                  `<!-- slack-ts:${result.ts} -->`,
-                  `This pull request is being tracked in Slack.`,
-                  ``,
-                  permalink,
-                  ``,
-                  `<details>`,
-                  `<summary>Slack Message Details</summary>`,
-                  ``,
-                  `- **Channel ID**: ${process.env.SLACK_CHANNEL_ID}`,
-                  `- **Message Timestamp**: ${result.ts}`,
-                  `- **PR Number**: #${pr_number}`,
-                  ``,
-                  `</details>`
-                ].join('\n');
-
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: pr_number,
-                  body: commentBody
-                });
-
-                // Delete the lock comment
-                try {
-                  await github.rest.issues.deleteComment({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    comment_id: lockComment.id
-                  });
-                  console.log('Deleted creation lock');
-                } catch (e) {
-                  console.log('Could not delete lock comment:', e.message);
-                }
-
-                slackTs = result.ts;
-                console.log('Successfully stored Slack timestamp');
               }
+            }
+            return r;
+          }
+          if(!slackTs){
+            const lC=await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:pr_number,body:'<!-- slack-creating-lock -->'});
+            const {data:cC}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:pr_number});
+            const eC=cC.find(c=>c.body&&c.body.includes('<!-- slack-ts:')&&c.id!==lC.id);
+            if(eC){
+              await github.rest.issues.deleteComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:lC.id});
+              const m=eC.body.match(/<!-- slack-ts:([0-9.]+) -->/);
+              if(m){slackTs=m[1];}
+            }else{
+              const r=await sM(true);
+              if(r&&r.ts){
+                const cB=[`<!-- slack-ts:${r.ts} -->`,`To view in Slack, search for: ${r.ts}`].join('\n');
+                await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:lC.id,body:cB});
+                slackTs=r.ts;
               }
-            } else {
-              // Always update the message to ensure latest title and content
-              console.log('Updating Slack message with latest content');
-              let retryCount = 0;
-              const maxRetries = 2;
-              
-              while (retryCount <= maxRetries) {
-                try {
-                  // Try with the image block
-                  await slackAPI('chat.update', {
-                    channel: process.env.SLACK_CHANNEL_ID,
-                    ts: slackTs,
-                    text: `#${pr_number}: ${escapedTitle}`,
-                    blocks: messageBlocks
-                  });
-                  break; // Success, exit the retry loop
-                } catch (e) {
-                  if (e.message.includes('invalid_blocks') && retryCount < maxRetries) {
-                    retryCount++;
-                    console.log(`Image block failed on update (attempt ${retryCount}/${maxRetries}), retrying...`);
-                    // Wait a bit before retrying (exponential backoff)
-                    await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-                  } else if (e.message.includes('invalid_blocks')) {
-                    console.log('Image block failed on update after all retries, trying with fallback text format...');
-                    // Fallback: Create text-only blocks without the image
-                    const fallbackBlocks = messageBlocks.filter(block => block.type !== 'image');
-
-                    // Add a section block with PR info if we removed the image
-                    if (!isMerged && !isAbandoned) {
-                      fallbackBlocks.unshift({
-                        type: 'section',
-                        text: {
-                          type: 'mrkdwn',
-                          text: `*<${pr_url}|#${pr_number}: ${escapedTitle}>*\n_by ${pr_author}_`
-                        }
-                      });
-                    }
-
-                    await slackAPI('chat.update', {
-                      channel: process.env.SLACK_CHANNEL_ID,
-                      ts: slackTs,
-                      text: `#${pr_number}: ${escapedTitle}`,
-                      blocks: fallbackBlocks
-                    });
-                    break; // Success with fallback, exit the retry loop
-                  } else {
-                    throw e;
+              try{await github.rest.issues.deleteComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:lC.id});}catch(e){}
+            }
+          }else{
+            await sM(false);
+          }
+          if(slackTs){
+            await new Promise(rs=>setTimeout(rs,500));
+            const rA={draft:':pencil2:','ready-for-review':':mag:','in-review':':eyes:','qa:running':':hourglass_flowing_sand:','qa:failed':':x:','qa:passed':':white_check_mark:','changes-requested':':warning:',approved:':white_check_mark:','on-hold':':pause_button:',blocked:':octagonal_sign:','ready-to-merge':':rocket:',merged:':tada:'};
+            const pA={'priority:critical':':rotating_light:','priority:high':':arrow_up:','priority:medium':':arrow_right:','priority:low':':arrow_down:'};
+            const tA={'type:bug':':bug:','type:feature':':sparkles:','type:refactor':':recycle:','type:test':':test_tube:','type:docs':':books:','type:chore':':wrench:','type:style':':art:','type:perf':':zap:','type:security':':shield:','type:breaking':':boom:'};
+            const cD={...rA,...pA,...tA};
+            try{
+              const {data:m}=await sA('conversations.history',{channel:process.env.SLACK_CHANNEL_ID,latest:slackTs,limit:1,inclusive:true});
+              if(m.messages&&m.messages.length>0){
+                const cR=await sA('reactions.get',{channel:process.env.SLACK_CHANNEL_ID,timestamp:slackTs});
+                const eR=(cR.message.reactions||[]).map(r=>r.name);
+                for(const[l,e]of Object.entries(cD)){
+                  const hL=labels.some(lbl=>lbl.name===l||lbl.name===`status:${l}`);
+                  const hR=eR.includes(e.replace(/:/g,''));
+                  if(hL&&!hR){
+                    try{await sA('reactions.add',{channel:process.env.SLACK_CHANNEL_ID,timestamp:slackTs,name:e.replace(/:/g,'')});}catch(e){}
+                  }else if(!hL&&hR){
+                    try{await sA('reactions.remove',{channel:process.env.SLACK_CHANNEL_ID,timestamp:slackTs,name:e.replace(/:/g,'')});}catch(e){}
                   }
                 }
               }
-            }
-
-            if (slackTs) {
-              // Small delay to ensure previous operations have completed
-              await new Promise(resolve => setTimeout(resolve, 500));
-
-              // Get existing reactions
-              let existingReactions = [];
-              try {
-                // Use conversations.history instead of reactions.get
-                const history = await slackAPI('conversations.history', {
-                  channel: process.env.SLACK_CHANNEL_ID,
-                  latest: slackTs,
-                  inclusive: true,
-                  limit: 1
-                });
-
-                if (history.messages && history.messages.length > 0) {
-                  const message = history.messages[0];
-                  if (message.reactions) {
-                    existingReactions = message.reactions
-                      .filter(r => r.users && r.users.length > 0) // Only reactions that have users
-                      .map(r => r.name);
-                    console.log('Existing reactions on message:', existingReactions);
-                  }
-                }
-              } catch (e) {
-                console.log('Could not get existing reactions:', e.message);
-                // Continue anyway - we'll handle errors when adding/removing
-              }
-
-              // STRICT SYNC: Only show reactions that have corresponding labels
-              // This ensures 100% sync between labels and reactions
-
-              let reactionsToRemove, reactionsToAdd;
-
-              if (isMerged) {
-                // For merged PRs, remove ALL managed reactions
-                reactionsToRemove = existingReactions.filter(reaction =>
-                  allStatusReactions.includes(reaction)
-                );
-                reactionsToAdd = [];
-              } else {
-                // Step 1: Determine ALL reactions that should be removed
-                // Remove any reaction that doesn't have a corresponding label
-                reactionsToRemove = existingReactions.filter(reaction => {
-                  // Check if this is a managed reaction
-                  if (!allStatusReactions.includes(reaction)) {
-                    return false; // Don't remove reactions we don't manage
-                  }
-
-                  // Check if this reaction has a corresponding current label
-                  return !filteredStatuses.includes(reaction);
-                });
-
-                // Step 2: Determine what reactions need to be added
-                // Only add reactions that correspond to current labels and aren't already present
-                reactionsToAdd = filteredStatuses.filter(reaction =>
-                  !existingReactions.includes(reaction)
-                );
-              }
-
-              console.log('Current label-based reactions:', filteredStatuses);
-              console.log('Existing reactions:', existingReactions);
-              console.log('Reactions to remove (not in labels):', reactionsToRemove);
-              console.log('Reactions to add (from labels):', reactionsToAdd);
-
-              // Remove outdated reactions first (with proper synchronization)
-              for (const reactionName of reactionsToRemove) {
-                try {
-                  console.log(`Removing outdated reaction: ${reactionName}`);
-                  await slackAPI('reactions.remove', {
-                    channel: process.env.SLACK_CHANNEL_ID,
-                    timestamp: slackTs,
-                    name: reactionName
-                  });
-                  // Increased delay to ensure proper synchronization
-                  await new Promise(resolve => setTimeout(resolve, 200));
-                } catch (e) {
-                  if (e.message.includes('missing_scope')) {
-                    console.error(`ERROR: Slack bot missing permission to remove reactions. Please add 'reactions:write' scope to the Slack app.`);
-                    break;
-                  } else if (e.message.includes('no_reaction')) {
-                    console.log(`Reaction ${reactionName} was already removed`);
-                  } else {
-                    console.log(`Could not remove reaction ${reactionName}: ${e.message}`);
-                  }
-                }
-              }
-
-              // Wait a bit after removals to ensure Slack has processed them
-              if (reactionsToRemove.length > 0) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-              }
-
-              // Add new reactions
-              for (const reaction of reactionsToAdd) {
-                try {
-                  console.log(`Adding reaction: ${reaction}`);
-                  await slackAPI('reactions.add', {
-                    channel: process.env.SLACK_CHANNEL_ID,
-                    timestamp: slackTs,
-                    name: reaction
-                  });
-                  console.log(`Successfully added reaction: ${reaction}`);
-                  // Increased delay to ensure proper synchronization
-                  await new Promise(resolve => setTimeout(resolve, 200));
-                } catch (e) {
-                  if (e.message.includes('missing_scope')) {
-                    console.error(`ERROR: Slack bot missing permission to add reactions. Please add 'reactions:write' scope to the Slack app.`);
-                    break;
-                  } else if (e.message.includes('already_reacted')) {
-                    console.log(`Reaction ${reaction} already exists (race condition)`);
-                  } else {
-                    console.log(`Could not add reaction ${reaction}: ${e.message}`);
-                  }
-                }
-              }
-            }
-          } catch (error) {
-            console.error('Slack notification error:', error);
-            // Don't fail the workflow for Slack errors
+            }catch(e){}
           }
+          }catch(e){console.error('Failed to send Slack notification:',e);throw e;}
