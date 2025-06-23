@@ -6,8 +6,6 @@ import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedAddresses } from "./actions/set-global-blocked-addressess";
 import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
 import { setGlobalBlockedIdentities } from "./actions/set-global-blocked-identities";
-import { createAirdrops } from "./addons/airdrop";
-import { createDistribution } from "./addons/airdrop/distribution";
 import { grantRoles } from "./assets/actions/core/grant-roles";
 import { mint } from "./assets/actions/core/mint";
 import { recoverErc20Tokens } from "./assets/actions/core/recover-erc20-tokens";
@@ -35,6 +33,8 @@ import { owner } from "./entities/actors/owner";
 import { AirdropMerkleTree } from "./entities/airdrop/merkle-tree";
 import { atkDeployer } from "./services/deployer";
 import { topicManager } from "./services/topic-manager";
+import { createAirdrops } from "./system-addons/airdrop";
+import { createDistribution } from "./system-addons/airdrop/distribution";
 
 async function main() {
   console.log("\n=== Setting up smart protocol... ===\n");
