@@ -1,8 +1,8 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { DistributionCapUpdated } from "../../../generated/templates/PushAirdrop/PushAirdrop";
-import { fetchEvent } from "../../event/fetch/event";
-import { setBigNumber } from "../../utils/bignumber";
-import { getTokenDecimals } from "../../utils/token-decimals";
+import { DistributionCapUpdated } from "../../../../generated/templates/PushAirdrop/PushAirdrop";
+import { fetchEvent } from "../../../event/fetch/event";
+import { setBigNumber } from "../../../utils/bignumber";
+import { getTokenDecimals } from "../../../utils/token-decimals";
 import { fetchAirdrop } from "./fetch/airdrop";
 import { fetchPushAirdrop } from "./fetch/push-airdrop";
 

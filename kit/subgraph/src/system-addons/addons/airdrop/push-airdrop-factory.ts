@@ -1,6 +1,6 @@
-import { ATKPushAirdropCreated } from "../../../generated/templates/PushAirdropFactory/PushAirdropFactory";
-import { InterfaceIds } from "../../erc165/utils/interfaceids";
-import { fetchEvent } from "../../event/fetch/event";
+import { ATKPushAirdropCreated } from "../../../../generated/templates/PushAirdropFactory/PushAirdropFactory";
+import { InterfaceIds } from "../../../erc165/utils/interfaceids";
+import { fetchEvent } from "../../../event/fetch/event";
 import { fetchAirdrop } from "./fetch/airdrop";
 import { fetchPushAirdrop } from "./fetch/push-airdrop";
 

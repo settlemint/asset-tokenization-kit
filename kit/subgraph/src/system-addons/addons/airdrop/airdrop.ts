@@ -2,10 +2,10 @@ import { Address } from "@graphprotocol/graph-ts";
 import {
   AirdropBatchTokensTransferred,
   AirdropTokensTransferred,
-} from "../../../generated/templates/PushAirdrop/PushAirdrop";
-import { fetchEvent } from "../../event/fetch/event";
-import { setBigNumber } from "../../utils/bignumber";
-import { getTokenDecimals } from "../../utils/token-decimals";
+} from "../../../../generated/templates/PushAirdrop/PushAirdrop";
+import { fetchEvent } from "../../../event/fetch/event";
+import { setBigNumber } from "../../../utils/bignumber";
+import { getTokenDecimals } from "../../../utils/token-decimals";
 import { fetchAirdrop } from "./fetch/airdrop";
 import { fetchAirdropAllocation } from "./fetch/airdrop-allocation";
 import { fetchAirdropRecipient } from "./fetch/airdrop-recipient";

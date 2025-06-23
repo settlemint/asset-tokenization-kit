@@ -1,6 +1,6 @@
-import { ATKVestingAirdropCreated } from "../../../generated/templates/VestingAirdropFactory/VestingAirdropFactory";
-import { InterfaceIds } from "../../erc165/utils/interfaceids";
-import { fetchEvent } from "../../event/fetch/event";
+import { ATKVestingAirdropCreated } from "../../../../generated/templates/VestingAirdropFactory/VestingAirdropFactory";
+import { InterfaceIds } from "../../../erc165/utils/interfaceids";
+import { fetchEvent } from "../../../event/fetch/event";
 import { fetchAirdrop } from "./fetch/airdrop";
 import { fetchVestingAirdrop } from "./fetch/vesting-airdrop";
 

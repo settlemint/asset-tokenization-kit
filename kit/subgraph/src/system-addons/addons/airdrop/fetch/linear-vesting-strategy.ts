@@ -1,6 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { LinearVestingStrategy } from "../../../../generated/schema";
-import { LinearVestingStrategy as LinearVestingStrategyContract } from "../../../../generated/templates/VestingAirdrop/LinearVestingStrategy";
+import { LinearVestingStrategy } from "../../../../../generated/schema";
+import { LinearVestingStrategy as LinearVestingStrategyContract } from "../../../../../generated/templates/VestingAirdrop/LinearVestingStrategy";
 
 export function fetchLinearVestingStrategy(id: Address): LinearVestingStrategy {
   let entity = LinearVestingStrategy.load(id);

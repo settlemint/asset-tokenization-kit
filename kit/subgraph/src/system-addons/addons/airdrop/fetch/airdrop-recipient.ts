@@ -1,8 +1,8 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { AirdropRecipient } from "../../../../generated/schema";
-import { fetchAccount } from "../../../account/fetch/account";
-import { setBigNumber } from "../../../utils/bignumber";
-import { getTokenDecimals } from "../../../utils/token-decimals";
+import { AirdropRecipient } from "../../../../../generated/schema";
+import { fetchAccount } from "../../../../account/fetch/account";
+import { setBigNumber } from "../../../../utils/bignumber";
+import { getTokenDecimals } from "../../../../utils/token-decimals";
 import { fetchAirdrop } from "./airdrop";
 
 export function fetchAirdropRecipient(

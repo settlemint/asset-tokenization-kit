@@ -2,8 +2,8 @@ import {
   BatchVestingInitialized,
   VestingInitialized,
   VestingStrategyUpdated,
-} from "../../../generated/templates/VestingAirdrop/VestingAirdrop";
-import { fetchEvent } from "../../event/fetch/event";
+} from "../../../../generated/templates/VestingAirdrop/VestingAirdrop";
+import { fetchEvent } from "../../../event/fetch/event";
 import { fetchAirdropAllocation } from "./fetch/airdrop-allocation";
 import { fetchVestingAirdrop } from "./fetch/vesting-airdrop";
 import { updateVestingAirdropStrategy } from "./utils/vesting-airdrop-utils";

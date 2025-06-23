@@ -1,9 +1,9 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { PushAirdrop } from "../../../../generated/schema";
-import { PushAirdrop as PushAirdropTemplate } from "../../../../generated/templates";
-import { PushAirdrop as PushAirdropContract } from "../../../../generated/templates/PushAirdrop/PushAirdrop";
-import { setBigNumber } from "../../../utils/bignumber";
-import { getTokenDecimals } from "../../../utils/token-decimals";
+import { PushAirdrop } from "../../../../../generated/schema";
+import { PushAirdrop as PushAirdropTemplate } from "../../../../../generated/templates";
+import { PushAirdrop as PushAirdropContract } from "../../../../../generated/templates/PushAirdrop/PushAirdrop";
+import { setBigNumber } from "../../../../utils/bignumber";
+import { getTokenDecimals } from "../../../../utils/token-decimals";
 import { fetchAirdrop } from "./airdrop";
 
 export function fetchPushAirdrop(id: Address): PushAirdrop {

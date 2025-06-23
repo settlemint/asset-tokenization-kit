@@ -1,9 +1,9 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { Airdrop } from "../../../../generated/schema";
-import { Airdrop as AirdropContract } from "../../../../generated/templates/Airdrop/Airdrop";
-import { InterfaceIds } from "../../../erc165/utils/interfaceids";
-import { setBigNumber } from "../../../utils/bignumber";
-import { getTokenDecimals } from "../../../utils/token-decimals";
+import { Airdrop } from "../../../../../generated/schema";
+import { Airdrop as AirdropContract } from "../../../../../generated/templates/Airdrop/Airdrop";
+import { InterfaceIds } from "../../../../erc165/utils/interfaceids";
+import { setBigNumber } from "../../../../utils/bignumber";
+import { getTokenDecimals } from "../../../../utils/token-decimals";
 
 export function fetchAirdrop(id: Bytes): Airdrop {
   let entity = Airdrop.load(id);
