@@ -96,7 +96,7 @@ runs:
             }else{
               oU=`https://opengraph.githubassets.com/1/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
             }
-            mB=[{type:'image',image_url:oU,alt_text:`PR #${pr_number}: ${eTitle}`},{type:'actions',elements:[{type:'button',text:{type:'plain_text',text:'View PR',emoji:false},url:pr_url,style:'primary'},{type:'button',text:{type:'plain_text',text:'Files',emoji:false},url:`${pr_url}/files`},{type:'button',text:{type:'plain_text',text:'Checks',emoji:false},url:`${pr_url}/checks`}]},{type:'context',elements:[{type:'mrkdwn',text:`${sS}*#${pr_number}* by ${pr_author} in *${context.repo.repo}*`}]}];
+            mB=[{type:'image',image_url:oU,alt_text:`PR #${pr_number}: ${eTitle}`},{type:'actions',elements:[{type:'button',text:{type:'plain_text',text:'View PR',emoji:false},url:pr_url,style:'primary'},{type:'button',text:{type:'plain_text',text:'Files',emoji:false},url:`${pr_url}/files`},{type:'button',text:{type:'plain_text',text:'Checks',emoji:false},url:`${pr_url}/checks`}]}];
           }
           async function sM(isNew){
             let r,rc=0;
