@@ -458,10 +458,11 @@ observability:
 # Transaction Signer Configuration
 txsigner:
   enabled: true
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+  image:
+    pullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
   # Configuration for the txsigner subchart
   config:
     mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
