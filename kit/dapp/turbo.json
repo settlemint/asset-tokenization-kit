@@ -5,7 +5,7 @@
       "dependsOn": ["codegen:settlemint", "codegen:gql-tada"]
     },
     "codegen:settlemint": {
-      "inputs": [".env.local", ".env", ".dev-reset-marker"],
+      "inputs": [".env.local", ".env"],
       "outputs": [
         "*-env-*.d.ts",
         "*-schema.graphql",
@@ -14,7 +14,6 @@
       ]
     },
     "codegen:gql-tada": {
-      "inputs": [".dev-reset-marker"],
       "outputs": ["*-cache.d.ts"]
     },
     "build": {

@@ -123,7 +123,9 @@ export async function checkDevResetMarker(): Promise<boolean> {
         `[Cache] Cleared due to fresh dev environment at: ${trimmedTimestamp}`
       );
       // Schedule reload after a short delay to ensure all operations complete
-      setTimeout(() => window.location.reload(), 100);
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
       return true;
     }
   } catch {
