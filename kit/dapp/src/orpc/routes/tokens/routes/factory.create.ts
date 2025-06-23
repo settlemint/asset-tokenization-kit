@@ -18,16 +18,24 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
 
+import { env } from "@/lib/env";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { withEventMeta } from "@orpc/server";
+import { createRouterClient } from "@orpc/server";
+import { router } from "@/orpc/routes/router";
 import {
   FactoryCreateMessagesSchema,
   type FactoryCreateOutput,
   getDefaultImplementations,
 } from "./factory.create.schema";
+
+const logger = createLogger({
+  level: env.SETTLEMINT_LOG_LEVEL,
+});
 
 /**
  * GraphQL mutation for creating a token factory.
@@ -141,6 +149,27 @@ export const factoryCreate = onboardedRouter.tokens.factoryCreate
       { id: "factory-creation", retry: 1000 }
     );
 
+    // Query existing token factories using the ORPC client
+    let existingFactoryNames = new Set<string>();
+    try {
+      // Create a router client with the current context
+      const orpcClient = createRouterClient(router, {
+        context: () => context,
+      });
+
+      const systemData = await orpcClient.system.read({ id: contract });
+
+      if (systemData.tokenFactories.length > 0) {
+        existingFactoryNames = new Set(
+          systemData.tokenFactories.map((factory) => factory.name.toLowerCase())
+        );
+      }
+    } catch (error) {
+      // If we can't fetch existing factories, proceed anyway
+      // The contract will reject duplicates
+      logger.debug(`Could not fetch existing factories: ${error}`);
+    }
+
     const results: FactoryCreateOutput["results"] = [];
 
     /**
@@ -185,6 +214,37 @@ export const factoryCreate = onboardedRouter.tokens.factoryCreate
         },
         { id: `factory-${factory.type}-${index}`, retry: 1000 }
       );
+
+      // Check if factory already exists
+      if (existingFactoryNames.has(name.toLowerCase())) {
+        const skipMessage = messages.factoryAlreadyExists.replace(
+          "{{name}}",
+          name
+        );
+
+        yield withEventMeta(
+          {
+            status: "completed" as const,
+            message: skipMessage,
+            currentFactory: {
+              type,
+              name,
+              transactionHash: "",
+            },
+            progress,
+          },
+          { id: `factory-${factory.type}-${index}`, retry: 1000 }
+        );
+
+        results.push({
+          type,
+          name,
+          transactionHash: "",
+          error: "Factory already exists",
+        });
+
+        continue; // Skip to next factory
+      }
 
       try {
         // Execute the factory creation transaction
@@ -314,23 +374,62 @@ export const factoryCreate = onboardedRouter.tokens.factoryCreate
 
     // Final completion message
     const successCount = results.filter((r) => !r.error).length;
-    const failureCount = results.filter((r) => r.error).length;
+    const skippedCount = results.filter(
+      (r) => r.error === "Factory already exists"
+    ).length;
+    const failureCount = results.filter(
+      (r) => r.error && r.error !== "Factory already exists"
+    ).length;
 
     let completionMessage = messages.factoryCreationCompleted;
-    if (successCount > 0 && failureCount === 0) {
+
+    // All succeeded
+    if (successCount > 0 && failureCount === 0 && skippedCount === 0) {
       completionMessage = messages.allFactoriesSucceeded.replace(
         "{{count}}",
         String(successCount)
       );
-    } else if (successCount > 0 && failureCount > 0) {
-      completionMessage = messages.someFactoriesFailed
-        .replace("{{success}}", String(successCount))
-        .replace("{{failed}}", String(failureCount));
-    } else if (failureCount > 0 && successCount === 0) {
+    }
+    // All skipped
+    else if (skippedCount > 0 && successCount === 0 && failureCount === 0) {
+      completionMessage = messages.allFactoriesSkipped.replace(
+        "{{count}}",
+        String(skippedCount)
+      );
+    }
+    // All failed
+    else if (failureCount > 0 && successCount === 0 && skippedCount === 0) {
       completionMessage = messages.allFactoriesFailed.replace(
         "{{count}}",
         String(failureCount)
       );
+    }
+    // Mixed results with all three types
+    else if (successCount > 0 && skippedCount > 0 && failureCount > 0) {
+      completionMessage = messages.someFactoriesSkipped
+        .replace("{{success}}", String(successCount))
+        .replace("{{skipped}}", String(skippedCount))
+        .replace("{{failed}}", String(failureCount));
+    }
+    // Success and skipped only
+    else if (successCount > 0 && skippedCount > 0 && failureCount === 0) {
+      completionMessage = messages.someFactoriesSkipped
+        .replace("{{success}}", String(successCount))
+        .replace("{{skipped}}", String(skippedCount))
+        .replace("{{failed}}", "0");
+    }
+    // Success and failed only
+    else if (successCount > 0 && failureCount > 0 && skippedCount === 0) {
+      completionMessage = messages.someFactoriesFailed
+        .replace("{{success}}", String(successCount))
+        .replace("{{failed}}", String(failureCount));
+    }
+    // Skipped and failed only
+    else if (skippedCount > 0 && failureCount > 0 && successCount === 0) {
+      completionMessage = messages.someFactoriesSkipped
+        .replace("{{success}}", "0")
+        .replace("{{skipped}}", String(skippedCount))
+        .replace("{{failed}}", String(failureCount));
     }
 
     yield withEventMeta(

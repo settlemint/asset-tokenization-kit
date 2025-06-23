@@ -81,16 +81,56 @@ export function clearQueryCache() {
 export function checkAndClearStaleCache(currentBuildId: string): boolean {
   if (typeof window === "undefined") return false;
 
-  const STORAGE_KEY = "atk-build-id";
-  const storedBuildId = localStorage.getItem(STORAGE_KEY);
-
+  const BUILD_ID_KEY = "atk-build-id";
+  const storedBuildId = localStorage.getItem(BUILD_ID_KEY);
+  
+  // Check if build ID changed (for production deployments)
   if (storedBuildId !== currentBuildId) {
     clearAllCaches();
-    localStorage.setItem(STORAGE_KEY, currentBuildId);
+    localStorage.setItem(BUILD_ID_KEY, currentBuildId);
     console.log(
       `[Cache] Cleared due to build ID change: ${storedBuildId} -> ${currentBuildId}`
     );
     return true;
+  }
+
+  return false;
+}
+
+/**
+ * Checks for dev reset marker and clears cache if needed.
+ * This is separated from checkAndClearStaleCache to handle async operations properly.
+ * 
+ * @returns Promise that resolves to true if cache was cleared and page will reload
+ */
+export async function checkDevResetMarker(): Promise<boolean> {
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "development") {
+    return false;
+  }
+
+  const RESET_MARKER_KEY = "atk-last-reset";
+  const lastResetCheck = localStorage.getItem(RESET_MARKER_KEY);
+
+  try {
+    const response = await fetch("/.dev-reset-marker");
+    const resetTimestamp = await response.text();
+    const trimmedTimestamp = resetTimestamp.trim();
+    
+    if (trimmedTimestamp && trimmedTimestamp !== lastResetCheck) {
+      clearAllCaches();
+      localStorage.setItem(RESET_MARKER_KEY, trimmedTimestamp);
+      console.log(
+        `[Cache] Cleared due to fresh dev environment at: ${trimmedTimestamp}`
+      );
+      // Schedule reload after a short delay to ensure all operations complete
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+      return true;
+    }
+  } catch {
+    // Marker file doesn't exist or can't be read, which is fine
+    // This happens on first run or if the file hasn't been created yet
   }
 
   return false;

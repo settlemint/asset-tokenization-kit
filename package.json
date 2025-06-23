@@ -57,7 +57,7 @@
     "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
     "test:e2e:api:debug": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests --ui",
     "helm": "turbo run helm",
-    "dev:up": "docker compose -p atk up -d",
+    "dev:up": "docker compose -p atk up -d && bun run tools/mark-reset.ts",
     "postdev:up": "settlemint connect --instance local && settlemint hasura track -a",
     "dev:reset": "(docker compose -p atk down || true) && (docker volume ls -q --filter name=^atk | xargs -r docker volume rm || true)",
     "postdev:reset": "bun run dev:up",
@@ -65,7 +65,9 @@
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
-  "dependencies": {},
+  "dependencies": {
+    "js-yaml": "4.1.0"
+  },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.2",
     "@settlemint/sdk-cli": "2.4.0",
