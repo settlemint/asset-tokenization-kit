@@ -302,7 +302,12 @@ function createValidatedPortalClient(
       // - Reverted (status: "Reverted")
       // - Dropped from the mempool (no receipt after timeout)
       let receipt:
-        | { status: "Success" | "Reverted"; blockNumber: string }
+        | {
+            status: "Success" | "Reverted";
+            blockNumber: string;
+            revertReasonDecoded: string | null;
+            revertReason: string | null;
+          }
         | undefined;
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
@@ -334,14 +339,14 @@ function createValidatedPortalClient(
                     revertReason: z.string().nullable(),
                     blockNumber: z.string(),
                   })
-                  .optional(),
+                  .nullable(),
               })
               .nullable(),
           }),
           messages.waitingForMining
         );
 
-        receipt = result.getTransaction?.receipt;
+        receipt = result.getTransaction?.receipt ?? undefined;
 
         if (!receipt) {
           yield withEventMeta(
@@ -603,6 +608,14 @@ function createValidatedPortalClient(
           result,
           error: parseResult.error,
         });
+
+        // Check if this is a null response (common for queries that return no data)
+        if (result === null || result === undefined) {
+          throw errors.NOT_FOUND({
+            message: userMessage,
+            data: { operation, details: "Query returned no data" },
+          });
+        }
 
         throw errors.INTERNAL_SERVER_ERROR({
           message: userMessage,

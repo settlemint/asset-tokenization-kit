@@ -52,24 +52,24 @@ export type TokenType = z.infer<typeof TokenTypeEnum>;
  */
 const DEFAULT_IMPLEMENTATIONS = {
   bond: {
-    factoryImplementation: "0x5e771e1417100000000000000000000000020011",
-    tokenImplementation: "0x5e771e1417100000000000000000000000020010",
+    factoryImplementation: "0x5e771e1417100000000000000000000000020021",
+    tokenImplementation: "0x5e771e1417100000000000000000000000020020",
   },
   equity: {
-    factoryImplementation: "0x5e771e1417100000000000000000000000020015",
-    tokenImplementation: "0x5e771e1417100000000000000000000000020014",
+    factoryImplementation: "0x5e771e1417100000000000000000000000020025",
+    tokenImplementation: "0x5e771e1417100000000000000000000000020024",
   },
   fund: {
-    factoryImplementation: "0x5e771e1417100000000000000000000000020017",
-    tokenImplementation: "0x5e771e1417100000000000000000000000020016",
+    factoryImplementation: "0x5e771e1417100000000000000000000000020027",
+    tokenImplementation: "0x5e771e1417100000000000000000000000020026",
   },
   stablecoin: {
-    factoryImplementation: "0x5e771e1417100000000000000000000000020019",
-    tokenImplementation: "0x5e771e1417100000000000000000000000020018",
+    factoryImplementation: "0x5e771e1417100000000000000000000000020029",
+    tokenImplementation: "0x5e771e1417100000000000000000000000020028",
   },
   deposit: {
-    factoryImplementation: "0x5e771e1417100000000000000000000000020013",
-    tokenImplementation: "0x5e771e1417100000000000000000000000020012",
+    factoryImplementation: "0x5e771e1417100000000000000000000000020023",
+    tokenImplementation: "0x5e771e1417100000000000000000000000020022",
   },
 } as const;
 
@@ -172,6 +172,10 @@ export const FactoryCreateMessagesSchema =
       .string()
       .optional()
       .default("All {{count}} factories failed to create."),
+    factoryAlreadyExists: z
+      .string()
+      .optional()
+      .default("{{name}} factory already exists, skipping..."),
   });
 
 /**
