@@ -134,5 +134,5 @@ bunx turbo contracts#publish
 #### Test subgraph
 
 ```bash
-THE_GRAPH_PORT_LOCAL_DEPLOY=8120 THE_GRAPH_PORT_LOCAL_QUERY=8100 bunx turbo subgraph#test:integration
+THE_GRAPH_PORT_LOCAL_DEPLOY=8120:8100 bunx turbo subgraph#test:integration
 ```
