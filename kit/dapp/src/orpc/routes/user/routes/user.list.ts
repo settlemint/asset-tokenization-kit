@@ -1,4 +1,5 @@
 import { user } from "@/lib/db/schema";
+import { getUserRole } from "@/lib/zod/validators/user-roles";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
@@ -28,5 +29,8 @@ export const list = authRouter.user.list
       .limit(limit)
       .offset(offset);
 
-    return result;
+    return result.map((user) => ({
+      ...user,
+      role: getUserRole(user.role),
+    }));
   });
