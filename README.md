@@ -99,6 +99,17 @@ bun run dev:up
 bun run dev:reset
 ```
 
+### Running the dApp locally
+
+```bash
+# Start the docker compose setup
+bun run dev:up
+# Connect to the local network
+bunx settlemint connect
+# Start the dApp in development mode
+bun run dev
+```
+
 ### Testing the contracts / subgraph
 
 To test the contracts and subgraph locally using an Anvil node and a subgraph
