@@ -33,13 +33,19 @@ module.exports = async ({ github, context, core }) => {
 
   try {
     // Get PR labels
-    const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+    let { data: labels } = await github.rest.issues.listLabelsOnIssue({
       owner: context.repo.owner,
       repo: context.repo.repo,
       issue_number: PR_NUMBER
     });
     
-    console.log('PR labels:', labels.map(l => l.name));
+    // Ensure labels is always an array
+    if (!Array.isArray(labels)) {
+      console.error('WARNING: Labels response is not an array:', labels);
+      labels = [];
+    }
+    
+    console.log(`Found ${labels.length} PR labels:`, labels.map(l => l.name));
 
     // Get PR comments to find existing Slack timestamp
     const { data: comments } = await github.rest.issues.listComments({
@@ -61,17 +67,16 @@ module.exports = async ({ github, context, core }) => {
       console.log('No existing Slack timestamp found');
     }
 
-    // Filter for allowed bots
-    const allowedBots = ['dependabot[bot]', 'renovate[bot]', 'github-actions[bot]'];
-    if (PR_AUTHOR_TYPE === 'Bot' && !allowedBots.includes(PR_AUTHOR)) {
-      console.log('Skipping notification for non-allowed bot:', PR_AUTHOR);
+    // Check if PR is from a bot - SKIP ALL BOT PRS
+    if (PR_AUTHOR_TYPE === 'Bot') {
+      console.log(`Skipping notification for bot PR from ${PR_AUTHOR}`);
       return;
     }
 
-    // Skip draft PRs (unless from bot)
-    const isDraft = labels.some(l => l.name === 'status:draft');
-    if (isDraft && PR_AUTHOR_TYPE !== 'Bot') {
-      console.log('Skipping notification for draft PR from non-bot author');
+    // Check if PR is draft
+    const isDraft = Array.isArray(labels) && labels.some(label => label.name === 'status:draft');
+    if (isDraft) {
+      console.log('Skipping notification for draft PR');
       return;
     }
 
@@ -130,26 +135,59 @@ module.exports = async ({ github, context, core }) => {
     
     const statusString = statusTexts.length > 0 ? statusTexts.join(' ') + ' ' : '';
 
-    // Slack API helper
+    // Slack API helper with enhanced debugging
     async function slackApi(method, params) {
-      console.log(`Calling Slack API: ${method}`, JSON.stringify(params, null, 2));
+      const startTime = Date.now();
+      console.log(`[${new Date().toISOString()}] Calling Slack API: ${method}`);
+      console.log('Request params:', JSON.stringify(params, null, 2));
       
-      const response = await fetch(`https://slack.com/api/${method}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(params)
-      });
-      
-      const data = await response.json();
-      console.log(`Slack API response for ${method}:`, data.ok ? 'Success' : `Error: ${data.error}`);
-      
-      if (!data.ok) {
-        throw new Error(`Slack API error: ${data.error}`);
+      try {
+        const response = await fetch(`https://slack.com/api/${method}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${SLACK_BOT_TOKEN}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(params)
+        });
+        
+        const data = await response.json();
+        const duration = Date.now() - startTime;
+        
+        if (data.ok) {
+          console.log(`✓ Slack API ${method} succeeded in ${duration}ms`);
+          // Log specific useful response data
+          if (method === 'conversations.history' && data.messages) {
+            console.log(`  Found ${data.messages.length} messages`);
+          }
+          if (method === 'chat.postMessage' && data.ts) {
+            console.log(`  Message posted with timestamp: ${data.ts}`);
+          }
+        } else {
+          console.error(`✗ Slack API ${method} failed in ${duration}ms:`, data.error);
+          if (data.error === 'missing_scope') {
+            console.error(`  Required scope for ${method}: Check Slack app permissions`);
+          }
+          if (data.error === 'not_in_channel') {
+            console.error(`  Bot is not in channel ${SLACK_CHANNEL_ID}`);
+          }
+          if (data.error === 'channel_not_found') {
+            console.error(`  Channel ${SLACK_CHANNEL_ID} not found`);
+          }
+          if (data.error === 'rate_limited') {
+            console.error(`  Rate limited. Retry after: ${data.retry_after} seconds`);
+          }
+        }
+        
+        if (!data.ok) {
+          throw new Error(`Slack API error: ${data.error}`);
+        }
+        return data;
+      } catch (error) {
+        const duration = Date.now() - startTime;
+        console.error(`✗ Slack API ${method} failed with exception in ${duration}ms:`, error.message);
+        throw error;
       }
-      return data;
     }
 
     // Escape text for Slack
@@ -433,10 +471,28 @@ module.exports = async ({ github, context, core }) => {
           
           // Get reactions from the message we already fetched
           const message = messages.messages[0];
+          console.log('Message details:', {
+            ts: message.ts,
+            text: message.text,
+            reactions: message.reactions
+          });
+          
           const existingReactions = (message.reactions || [])
+            .filter(r => r.users && r.users.length > 0) // Only reactions that have users
             .map(r => r.name);
             
-          console.log('Existing reactions:', existingReactions);
+          console.log(`Found ${existingReactions.length} existing reactions:`, existingReactions);
+          
+          // Debug: Show all available labels and their potential reactions
+          console.log('\n=== REACTION MAPPING DEBUG ===');
+          console.log('Available status reactions:', statusReactions);
+          console.log('Current PR labels:', labels.map(l => l.name));
+          console.log('Labels that map to reactions:');
+          for (const label of labels) {
+            if (statusReactions[label.name]) {
+              console.log(`  "${label.name}" → "${statusReactions[label.name]}"`);
+            }
+          }
 
           // STRICT LABEL-TO-REACTION MAPPING
           // Only show reactions that have exact corresponding labels
@@ -451,6 +507,7 @@ module.exports = async ({ github, context, core }) => {
           }
 
           // Apply exclusive group rules
+          console.log('\n=== EXCLUSIVE GROUPS PROCESSING ===');
           const finalStatuses = [];
           const usedGroups = new Set();
 
@@ -460,15 +517,24 @@ module.exports = async ({ github, context, core }) => {
             'status': ['status:merged', 'status:mergeable', 'status:approved', 'status:ready-for-review']
           };
 
+          console.log('Exclusive groups:', exclusiveGroups);
+          console.log('Group priorities:', groupPriority);
+
           // For each group, pick only the highest priority reaction
           for (const [groupName, groupReactions] of Object.entries(exclusiveGroups)) {
             const priorityOrder = groupPriority[groupName] || [];
+            console.log(`\nProcessing group "${groupName}" with priorities:`, priorityOrder);
 
             // Find the highest priority label from this group
             let selectedReaction = null;
             for (const priorityLabel of priorityOrder) {
-              if (labels.some(l => l.name === priorityLabel) && statusReactions[priorityLabel]) {
+              const hasLabel = labels.some(l => l.name === priorityLabel);
+              const hasMappedReaction = statusReactions[priorityLabel];
+              console.log(`  Checking "${priorityLabel}": hasLabel=${hasLabel}, hasMappedReaction=${!!hasMappedReaction}`);
+              
+              if (hasLabel && hasMappedReaction) {
                 selectedReaction = statusReactions[priorityLabel];
+                console.log(`  ✓ Selected reaction "${selectedReaction}" for group "${groupName}"`);
                 break;
               }
             }
@@ -476,16 +542,27 @@ module.exports = async ({ github, context, core }) => {
             if (selectedReaction && currentStatuses.includes(selectedReaction)) {
               finalStatuses.push(selectedReaction);
               usedGroups.add(groupName);
+              console.log(`  Added "${selectedReaction}" to final statuses`);
+            } else if (selectedReaction) {
+              console.log(`  ✗ Reaction "${selectedReaction}" not in current statuses`);
+            } else {
+              console.log(`  No reaction selected for group "${groupName}"`);
             }
           }
 
           // If QA is running or pending, don't show status reactions
           const hasQaInProgress = labels.some(l => l.name === 'qa:running' || l.name === 'qa:pending');
+          console.log(`\nQA in progress: ${hasQaInProgress}`);
+          
           const filteredStatuses = hasQaInProgress
             ? finalStatuses.filter(r => exclusiveGroups.qa.includes(r))
             : finalStatuses;
 
-          console.log('Final reactions (strict sync with labels):', filteredStatuses);
+          console.log('\n=== FINAL REACTION DECISIONS ===');
+          console.log('Current statuses from labels:', currentStatuses);
+          console.log('Final statuses after exclusive groups:', finalStatuses);
+          console.log('Filtered statuses (after QA check):', filteredStatuses);
+          console.log('Used exclusive groups:', Array.from(usedGroups));
 
           // Determine what reactions to remove and add
           let reactionsToRemove, reactionsToAdd;
@@ -516,8 +593,11 @@ module.exports = async ({ github, context, core }) => {
             );
           }
 
-          console.log('Reactions to remove:', reactionsToRemove);
-          console.log('Reactions to add:', reactionsToAdd);
+          console.log('\n=== REACTION SYNC PLAN ===');
+          console.log(`Existing reactions on message: [${existingReactions.join(', ')}]`);
+          console.log(`Reactions to remove: [${reactionsToRemove.join(', ')}]`);
+          console.log(`Reactions to add: [${reactionsToAdd.join(', ')}]`);
+          console.log(`Is merged PR: ${isMerged}`);
 
           // Remove outdated reactions first
           for (const reactionName of reactionsToRemove) {
@@ -568,14 +648,45 @@ module.exports = async ({ github, context, core }) => {
               }
             }
           }
+        } else {
+          console.warn('⚠️ No message found in Slack for timestamp:', slackTs);
+          console.warn('This could mean:');
+          console.warn('  1. The message was deleted');
+          console.warn('  2. The bot lost access to the channel');
+          console.warn('  3. The timestamp is invalid');
+          console.warn('  4. The message is in a different channel');
         }
       } catch (error) {
         console.error('Failed to process reactions:', error.message);
+        console.error('Stack trace:', error.stack);
+        
+        // Log specific error types
+        if (error.message.includes('not_in_channel')) {
+          console.error('⚠️ Bot is not in the channel. Please invite the bot to the channel.');
+        }
+        if (error.message.includes('channel_not_found')) {
+          console.error('⚠️ Channel not found. Check SLACK_CHANNEL_ID is correct.');
+        }
+        if (error.message.includes('invalid_auth')) {
+          console.error('⚠️ Invalid authentication. Check SLACK_BOT_TOKEN.');
+        }
       }
     }
 
   } catch (error) {
-    console.error('Failed to send Slack notification:', error);
+    console.error('❌ CRITICAL ERROR in Slack notifier:', error.message);
+    console.error('Stack trace:', error.stack);
+    console.error('\n=== EXECUTION CONTEXT ===');
+    console.error('PR Number:', PR_NUMBER);
+    console.error('PR Title:', PR_TITLE);
+    console.error('PR Author:', PR_AUTHOR);
+    console.error('Author Type:', PR_AUTHOR_TYPE);
+    console.error('Channel ID:', SLACK_CHANNEL_ID ? 'Set' : 'Not set');
+    console.error('Bot Token:', SLACK_BOT_TOKEN ? 'Set' : 'Not set');
     throw error;
   }
+
+  console.log('\n=== SLACK NOTIFIER COMPLETED SUCCESSFULLY ===');
+  console.log(`PR #${PR_NUMBER} processed`);
+  console.log(`Slack timestamp: ${slackTs || 'New message created'}`);
 };
