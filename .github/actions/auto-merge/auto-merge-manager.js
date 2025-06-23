@@ -56,11 +56,39 @@ async function manageAutoMerge({
       // Enable auto-merge
       console.log(`Enabling auto-merge for PR #${prNumber} with method: ${mergeMethod}`);
       
-      await github.rest.pulls.enableAutoMerge({
+      // First, get the PR node ID required for GraphQL
+      const { data: pr } = await github.rest.pulls.get({
         owner: context.repo.owner,
         repo: context.repo.repo,
-        pull_number: prNumber,
-        merge_method: mergeMethod
+        pull_number: prNumber
+      });
+      
+      // Use GraphQL to enable auto-merge
+      const mutation = `
+        mutation($pullRequestId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+          enablePullRequestAutoMerge(input: {
+            pullRequestId: $pullRequestId,
+            mergeMethod: $mergeMethod
+          }) {
+            pullRequest {
+              autoMergeRequest {
+                enabledAt
+                mergeMethod
+              }
+            }
+          }
+        }
+      `;
+      
+      const mergeMethodMap = {
+        merge: 'MERGE',
+        squash: 'SQUASH',
+        rebase: 'REBASE'
+      };
+      
+      await github.graphql(mutation, {
+        pullRequestId: pr.node_id,
+        mergeMethod: mergeMethodMap[mergeMethod] || 'SQUASH'
       });
       
       console.log(`✅ Auto-merge enabled for PR #${prNumber}`);
