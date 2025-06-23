@@ -49,7 +49,6 @@
     "create-secure-wallet": "Erstellen Sie eine sichere Blockchain-Brieftasche, um mit der Plattform zu interagieren",
     "wallet-generated-successfully": "Brieftasche erfolgreich erstellt",
     "address-label": "Adresse",
-    "wallet-protection-todo": "TODO: Hier Schutz für die Brieftasche hinzufügen",
     "what-is-wallet": "Was ist eine Brieftasche?",
     "wallet-description": "Eine Blockchain-Brieftasche ist Ihre digitale Identität, die es Ihnen ermöglicht, mit Smart Contracts zu interagieren und digitale Vermögenswerte sicher zu verwalten.",
     "features": {

@@ -81,14 +81,13 @@ jobs:
         uses: ./.github/actions/slack-pr-notifier
         with:
           pr_number: ${{ github.event.pull_request.number }}
+          pr_title: ${{ github.event.pull_request.title }}
           pr_url: ${{ github.event.pull_request.html_url }}
           pr_author: ${{ github.event.pull_request.user.login }}
           pr_author_type: ${{ github.event.pull_request.user.type }}
           pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
           slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
           slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
-        env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
 
       # Setup dependencies for QA (skip for draft PRs)
       - name: Setup dependencies

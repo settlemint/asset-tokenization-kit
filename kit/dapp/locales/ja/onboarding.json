@@ -49,7 +49,6 @@
     "create-secure-wallet": "プラットフォームとやり取りするための安全なブロックチェーンウォレットを作成します",
     "wallet-generated-successfully": "ウォレットが正常に生成されました",
     "address-label": "アドレス",
-    "wallet-protection-todo": "TODO: ここにウォレット保護を追加",
     "what-is-wallet": "ウォレットとは何ですか？",
     "wallet-description": "ブロックチェーンウォレットは、スマートコントラクトと安全にデジタル資産を管理するためのあなたのデジタルIDです。",
     "features": {

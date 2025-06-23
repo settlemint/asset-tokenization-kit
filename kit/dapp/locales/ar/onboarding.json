@@ -49,7 +49,6 @@
     "create-secure-wallet": "قم بإنشاء محفظة بلوكشين آمنة للتفاعل مع المنصة",
     "wallet-generated-successfully": "تم إنشاء المحفظة بنجاح",
     "address-label": "العنوان",
-    "wallet-protection-todo": "TODO: إضافة حماية المحفظة هنا",
     "what-is-wallet": "ما هي المحفظة؟",
     "wallet-description": "محفظة البلوكشين هي هويتك الرقمية التي تتيح لك التفاعل مع العقود الذكية وإدارة الأصول الرقمية بأمان.",
     "features": {

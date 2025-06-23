@@ -58,7 +58,6 @@
     "already-exists": "Wallet already exists for this user",
     "creation-failed": "Failed to create wallet. Please try again.",
     "address-label": "Address",
-    "wallet-protection-todo": "TODO: add wallet protection here",
     "what-is-wallet": "What is a wallet?",
     "wallet-description": "A blockchain wallet is your digital identity that allows you to interact with smart contracts and manage digital assets securely.",
     "features": {
