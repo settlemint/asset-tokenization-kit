@@ -67,8 +67,9 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@prettier/plugin-oxc": "0.0.2",
     "@settlemint/sdk-cli": "2.4.0",
-    "prettier": "3.5.3",
+    "prettier": "3.6.0",
     "turbo": "2.5.4",
     "typescript": "5.8.3"
   },
@@ -96,7 +97,7 @@
     "ws": "8.18.2",
     "adm-zip": "0.5.16",
     "undici": "7.10.0",
-    "prettier": "3.5.3",
+    "prettier": "3.6.0",
     "zod": "3.25.67",
     "@tanstack/query-broadcast-client-experimental": "5.81.2",
     "@tanstack/query-sync-storage-persister": "5.81.2",

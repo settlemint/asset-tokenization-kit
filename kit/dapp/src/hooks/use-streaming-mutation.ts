@@ -17,7 +17,7 @@ import { formatValidationError } from "@/lib/utils/format-validation-error";
 /**
  * Extract the result type from an async iterator of events
  * Handles AsyncIteratorObject (used by ORPC), AsyncGenerator and AsyncIterable types
- * 
+ *
  * TypeScript improvements in this PR:
  * - Added support for AsyncIteratorObject type which ORPC uses
  * - Uses conditional types with infer to extract nested result types
@@ -34,7 +34,7 @@ type ExtractResultType<T> =
 
 /**
  * Streaming mutation options that transform callbacks to work with extracted result
- * 
+ *
  * TypeScript enhancements:
  * - The onSuccess callback receives the extracted result type, not the raw iterator
  * - This provides better developer experience with proper type hints

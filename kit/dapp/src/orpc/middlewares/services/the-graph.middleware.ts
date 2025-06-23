@@ -11,21 +11,21 @@ const logger = createLogger({
 
 /**
  * Creates a validated TheGraph client with built-in error handling and validation.
- * 
+ *
  * This function returns a client that wraps TheGraph GraphQL queries with:
  * - Automatic Zod schema validation for all responses
  * - Operation name extraction from GraphQL documents
  * - Comprehensive error logging and categorization
  * - User-friendly error messages
- * 
+ *
  * @param {Object} errors - ORPC error constructors for consistent error handling
- * 
+ *
  * @returns {Object} A validated TheGraph client with a `query` method
- * 
+ *
  * @example
  * ```typescript
  * const client = createValidatedTheGraphClient(errors);
- * 
+ *
  * // Query with validation
  * const data = await client.query(
  *   GET_TRANSFERS_QUERY,
@@ -41,30 +41,30 @@ function createValidatedTheGraphClient(
   return {
     /**
      * Executes a GraphQL query against TheGraph with automatic response validation.
-     * 
+     *
      * This method performs a GraphQL query operation against TheGraph's indexed blockchain data
      * and validates the response against a provided Zod schema. Unlike raw GraphQL queries,
      * this method ensures:
-     * 
+     *
      * 1. **Type Safety**: Response data is validated at runtime against the provided schema
      * 2. **Error Categorization**: Errors are automatically categorized (NOT_FOUND vs INTERNAL_SERVER_ERROR)
      * 3. **Operation Tracking**: Operation names are extracted for better logging and debugging
      * 4. **Consistent Error Messages**: User-friendly messages are shown while technical details are logged
-     * 
+     *
      * @param {TadaDocumentNode} document - The GraphQL query document with TypeScript types
      * @param {TVariables} variables - Variables for the GraphQL query
      * @param {z.ZodType} schema - Zod schema to validate the response against. This schema
      *   must match the expected response structure from TheGraph
      * @param {string} userMessage - User-friendly error message to show if the operation fails.
      *   This message is shown to end users, while technical details are logged separately
-     * 
+     *
      * @returns {Promise<TValidated>} The validated query response data matching the provided schema
-     * 
+     *
      * @throws {NOT_FOUND} When TheGraph returns a 404 error or "not found" message,
      *   typically indicating the subgraph doesn't exist or the entity wasn't found
      * @throws {INTERNAL_SERVER_ERROR} When the query fails for other reasons or when
      *   the response doesn't match the expected schema structure
-     * 
+     *
      * @example
      * ```typescript
      * // Define the expected response schema
@@ -78,11 +78,11 @@ function createValidatedTheGraphClient(
      *     transactionHash: z.string()
      *   }))
      * });
-     * 
+     *
      * // Execute query with validation
      * const transfers = await client.query(
      *   GET_TOKEN_TRANSFERS_QUERY,
-     *   { 
+     *   {
      *     tokenAddress: "0x123...",
      *     first: 100,
      *     orderBy: "timestamp",
@@ -91,12 +91,12 @@ function createValidatedTheGraphClient(
      *   TokenTransfersSchema,
      *   "Failed to fetch token transfer history"
      * );
-     * 
+     *
      * // TypeScript knows transfers matches TokenTransfersSchema
      * transfers.transfers.forEach(transfer => {
      *   console.log(`${transfer.from} → ${transfer.to}: ${transfer.value}`);
      * });
-     * 
+     *
      * // Complex aggregation query example
      * const StatsSchema = z.object({
      *   token: z.object({
@@ -110,7 +110,7 @@ function createValidatedTheGraphClient(
      *     priceUSD: z.string()
      *   }))
      * });
-     * 
+     *
      * const stats = await client.query(
      *   GET_TOKEN_ANALYTICS_QUERY,
      *   { tokenId: tokenAddress, days: 30 },
@@ -257,17 +257,17 @@ export const theGraphMiddleware = baseRouter.middleware((options) => {
 
 /**
  * Type representing a validated TheGraph client instance.
- * 
+ *
  * This type is inferred from the return type of `createValidatedTheGraphClient`
  * and provides TypeScript type information for the client's methods.
- * 
+ *
  * @example
  * ```typescript
  * // In a procedure that uses theGraphMiddleware
  * interface Context {
  *   theGraphClient: ValidatedTheGraphClient;
  * }
- * 
+ *
  * async function fetchTokenData(
  *   context: Context,
  *   tokenAddress: string

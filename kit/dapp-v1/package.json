@@ -8,7 +8,7 @@
     "xwatch": "tsc --noEmit --watch",
     "xcodegen:settlemint": "settlemint codegen",
     "xcodegen:gql-tada": "gql-tada turbo",
-    "xformat": "prettier -l --write .",
+    "xformat": "prettier --experimental-cli --write .",
     "xlint": "next lint",
     "xbuild": "next build --turbopack",
     "xdev": "next dev --turbopack",
