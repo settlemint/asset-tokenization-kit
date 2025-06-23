@@ -488,14 +488,14 @@ async function manageReactionsEfficiently(slackTs, labels, slackApi, SLACK_CHANN
     'qa:failed': 'x',
     'status:ready-for-review': 'eyes',
     'status:approved': 'thumbsup',
-    'status:mergeable': 'rocket',
-    'status:merged': 'tada'
+    'status:mergeable': 'rocket'
+    // Note: status:merged is intentionally not mapped - merged PRs should have no reactions
   };
 
   // Define mutually exclusive groups (only one can be active at a time)
   const exclusiveGroups = {
     'qa': ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
-    'status': ['eyes', 'thumbsup', 'rocket', 'tada']
+    'status': ['eyes', 'thumbsup', 'rocket']
   };
 
   // All possible status reactions we manage
@@ -602,6 +602,13 @@ async function manageReactionsEfficiently(slackTs, labels, slackApi, SLACK_CHANN
  */
 function calculateDesiredReactions(labels, statusReactions, exclusiveGroups) {
   console.log('\n=== CALCULATING DESIRED REACTIONS ===');
+  
+  // Check if PR is merged - if so, we want NO reactions
+  const isMerged = labels.some(l => l.name === 'status:merged');
+  if (isMerged) {
+    console.log('PR is merged - no reactions should be displayed');
+    return [];
+  }
   
   // Map labels to reactions
   const mappedReactions = [];
