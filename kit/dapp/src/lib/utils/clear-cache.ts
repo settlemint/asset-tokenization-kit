@@ -72,8 +72,8 @@ export function clearQueryCache() {
 }
 
 /**
- * Checks if the cache should be cleared based on build ID mismatch or dev reset.
- * This is useful for automatic cache busting on new deployments and after dev:reset.
+ * Checks if the cache should be cleared based on build ID mismatch.
+ * This is useful for automatic cache busting on new deployments.
  *
  * @param currentBuildId - The current build ID
  * @returns true if cache was cleared, false otherwise
@@ -82,10 +82,7 @@ export function checkAndClearStaleCache(currentBuildId: string): boolean {
   if (typeof window === "undefined") return false;
 
   const BUILD_ID_KEY = "atk-build-id";
-  const RESET_MARKER_KEY = "atk-last-reset";
-  
   const storedBuildId = localStorage.getItem(BUILD_ID_KEY);
-  const lastResetCheck = localStorage.getItem(RESET_MARKER_KEY);
   
   // Check if build ID changed (for production deployments)
   if (storedBuildId !== currentBuildId) {
@@ -96,28 +93,42 @@ export function checkAndClearStaleCache(currentBuildId: string): boolean {
     );
     return true;
   }
-  
-  // In development, check for dev:reset marker
-  if (process.env.NODE_ENV === "development") {
-    // Try to fetch the reset marker timestamp
-    fetch("/.dev-reset-marker")
-      .then(response => response.text())
-      .then(resetTimestamp => {
-        const trimmedTimestamp = resetTimestamp.trim();
-        if (trimmedTimestamp && trimmedTimestamp !== lastResetCheck) {
-          clearAllCaches();
-          localStorage.setItem(RESET_MARKER_KEY, trimmedTimestamp);
-          console.log(
-            `[Cache] Cleared due to fresh dev environment at: ${trimmedTimestamp}`
-          );
-          // Reload the page to ensure clean state
-          window.location.reload();
-        }
-      })
-      .catch(() => {
-        // Marker file doesn't exist or can't be read, which is fine
-        // This happens on first run or if the file hasn't been created yet
-      });
+
+  return false;
+}
+
+/**
+ * Checks for dev reset marker and clears cache if needed.
+ * This is separated from checkAndClearStaleCache to handle async operations properly.
+ * 
+ * @returns Promise that resolves to true if cache was cleared and page will reload
+ */
+export async function checkDevResetMarker(): Promise<boolean> {
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "development") {
+    return false;
+  }
+
+  const RESET_MARKER_KEY = "atk-last-reset";
+  const lastResetCheck = localStorage.getItem(RESET_MARKER_KEY);
+
+  try {
+    const response = await fetch("/.dev-reset-marker");
+    const resetTimestamp = await response.text();
+    const trimmedTimestamp = resetTimestamp.trim();
+    
+    if (trimmedTimestamp && trimmedTimestamp !== lastResetCheck) {
+      clearAllCaches();
+      localStorage.setItem(RESET_MARKER_KEY, trimmedTimestamp);
+      console.log(
+        `[Cache] Cleared due to fresh dev environment at: ${trimmedTimestamp}`
+      );
+      // Schedule reload after a short delay to ensure all operations complete
+      setTimeout(() => window.location.reload(), 100);
+      return true;
+    }
+  } catch {
+    // Marker file doesn't exist or can't be read, which is fine
+    // This happens on first run or if the file hasn't been created yet
   }
 
   return false;

@@ -49,6 +49,7 @@ import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import superjson from "superjson";
 import {
   checkAndClearStaleCache,
+  checkDevResetMarker,
   setupDevCacheManagement,
 } from "./utils/clear-cache";
 
@@ -255,10 +256,15 @@ const persister = createSyncStoragePersister({
  * Persist queries for offline support and sync across tabs
  */
 if (typeof window !== "undefined") {
-  // Check and clear stale cache based on build ID or dev reset
+  // Check and clear stale cache based on build ID
   // In development, use a stable build ID to avoid unnecessary cache busting
   const buildId = process.env.BUILD_ID ?? (process.env.NODE_ENV === "development" ? "dev" : new Date().toISOString());
   checkAndClearStaleCache(buildId);
+
+  // In development, also check for dev reset marker
+  if (process.env.NODE_ENV === "development") {
+    void checkDevResetMarker();
+  }
 
   // Set up development cache management utilities
   setupDevCacheManagement();
