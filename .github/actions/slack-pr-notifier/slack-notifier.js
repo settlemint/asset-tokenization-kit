@@ -72,6 +72,23 @@ module.exports = async ({ github, context, core }) => {
     }
     
     console.log(`Found ${labels.length} PR labels:`, labels.map(l => l.name));
+    
+    // Also check PR merged status directly from GitHub API
+    // This is more reliable than labels for recently merged PRs
+    let isPRMerged = false;
+    try {
+      const { data: pr } = await github.rest.pulls.get({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        pull_number: PR_NUMBER
+      });
+      isPRMerged = pr.merged === true;
+      if (isPRMerged) {
+        console.log('PR is merged according to GitHub API');
+      }
+    } catch (error) {
+      console.error('Failed to check PR merged status:', error.message);
+    }
 
     // Get PR comments to find existing Slack timestamp
     const { data: comments } = await github.rest.issues.listComments({
@@ -106,7 +123,7 @@ module.exports = async ({ github, context, core }) => {
     }
 
     // Skip if no existing message and PR is merged or abandoned
-    if (!slackTs && (labels.some(l => l.name === 'status:merged') || IS_ABANDONED === 'true')) {
+    if (!slackTs && (labels.some(l => l.name === 'status:merged') || isPRMerged || IS_ABANDONED === 'true')) {
       console.log('Skipping notification for merged/abandoned PR without existing message');
       return;
     }
@@ -223,7 +240,7 @@ module.exports = async ({ github, context, core }) => {
         .replace(/>/g, '&gt;');
     }
 
-    const isMerged = labels.some(l => l.name === 'status:merged');
+    const isMerged = labels.some(l => l.name === 'status:merged') || isPRMerged;
     const isAbandoned = IS_ABANDONED === 'true';
     const escapedTitle = escapeText(PR_TITLE);
 
