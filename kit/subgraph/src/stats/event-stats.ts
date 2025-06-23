@@ -5,7 +5,6 @@ import { EventStatsData } from "../../generated/schema";
  * Track event statistics for system activity monitoring
  * @param emitterAccountId - The account that emitted the event
  * @param eventName - The name of the event
- * @param timestamp - The timestamp of the event
  */
 export function trackEventStats(
   emitterAccountId: Bytes,
