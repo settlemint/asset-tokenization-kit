@@ -137,4 +137,46 @@ describe("Compliance Modules", () => {
       },
     ]);
   });
+
+  it("should receive the list of blocked countries", async () => {
+    const query = theGraphGraphql(
+      `query {
+        complianceModules(where: {countries_not: []}) {
+          name
+          countries
+        }
+      }
+    `
+    );
+    const response = await theGraphClient.request(query, {});
+    expect(response.complianceModules).toEqual([
+      {
+        name: "Country BlockList Compliance Module",
+        countries: [643],
+      },
+    ]);
+  });
+
+  it("should receive the list of blocked addresses and identities", async () => {
+    const query = theGraphGraphql(
+      `query {
+        complianceModules(where: {addresses_not: []}) {
+          name
+          addresses
+        }
+      }
+    `
+    );
+    const response = await theGraphClient.request(query, {});
+    expect(response.complianceModules).toEqual([
+      {
+        name: "Identity BlockList Compliance Module",
+        addresses: [expect.any(String)],
+      },
+      {
+        name: "Address BlockList Compliance Module",
+        addresses: [expect.any(String)],
+      },
+    ]);
+  });
 });
