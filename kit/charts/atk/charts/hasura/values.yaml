@@ -2,6 +2,8 @@
 graphql-engine:
   nameOverride: hasura
   replicas: 1
+  image:
+    repository: docker.io/hasura/graphql-engine
   labels:
     app.kubernetes.io/instance: atk
     kots.io/app-slug: settlemint-atk
