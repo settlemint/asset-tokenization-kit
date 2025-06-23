@@ -422,3 +422,15 @@ claude mcp add --transport sse deepwiki https://mcp.deepwiki.com/sse -s user
   - "Find advanced TypeScript type manipulation techniques"
   - "Research distributed systems consensus algorithms"
 
+### Authentication
+
+MCP servers use different authentication methods:
+
+- **Sentry**: API key configuration (if required)
+- **Linear**: Browser-based SSE authentication
+- **Context7**: Public access
+- **GitHub**: OAuth authentication (browser flow)
+- **DeepWiki**: OAuth authentication (browser flow)
+
+OAuth servers will prompt for authentication in your browser on first use.
+
