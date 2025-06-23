@@ -47,20 +47,25 @@ runs:
       env:
         SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
         SLACK_CHANNEL_ID: ${{ inputs.slack_channel_id }}
+        PR_NUMBER: ${{ inputs.pr_number }}
         PR_TITLE: ${{ inputs.pr_title }}
+        PR_URL: ${{ inputs.pr_url }}
+        PR_AUTHOR: ${{ inputs.pr_author }}
+        PR_AUTHOR_TYPE: ${{ inputs.pr_author_type }}
+        PR_AUTHOR_AVATAR: ${{ inputs.pr_author_avatar }}
+        IS_ABANDONED: ${{ inputs.is_abandoned }}
       with:
         script: |
-          const pr_number='${{inputs.pr_number}}',pr_title='${{inputs.pr_title}}',pr_url='${{inputs.pr_url}}',pr_author='${{inputs.pr_author}}',pr_author_type='${{inputs.pr_author_type}}',pr_author_avatar='${{inputs.pr_author_avatar}}';
-          const {data:labels}=await github.rest.issues.listLabelsOnIssue({owner:context.repo.owner,repo:context.repo.repo,issue_number:pr_number});
-          const {data:comments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:pr_number});
+          const {data:labels}=await github.rest.issues.listLabelsOnIssue({owner:context.repo.owner,repo:context.repo.repo,issue_number:process.env.PR_NUMBER});
+          const {data:comments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:process.env.PR_NUMBER});
           let slackTs=null;
           const slackComment=comments.find(c=>c.body&&c.body.includes('<!-- slack-ts:'));
           if(slackComment){const m=slackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);if(m)slackTs=m[1];}
           const allowedBots=['dependabot[bot]','renovate[bot]','github-actions[bot]'];
-          if(pr_author_type==='Bot'&&!allowedBots.includes(pr_author))return;
+          if(process.env.PR_AUTHOR_TYPE==='Bot'&&!allowedBots.includes(process.env.PR_AUTHOR))return;
           const isDraft=labels.some(l=>l.name==='status:draft');
-          if(isDraft&&pr_author_type!=='Bot')return;
-          if(!slackTs&&(labels.some(l=>l.name==='status:merged')||'${{inputs.is_abandoned}}'==='true'))return;
+          if(isDraft&&process.env.PR_AUTHOR_TYPE!=='Bot')return;
+          if(!slackTs&&(labels.some(l=>l.name==='status:merged')||process.env.IS_ABANDONED==='true'))return;
           const sL=[{l:'status:draft',t:':pencil2: Draft'},{l:'status:ready-for-review',t:':mag: Ready for Review'},{l:'status:in-review',t:':eyes: In Review'},{l:'qa:running',t:':hourglass_flowing_sand: QA Running'},{l:'qa:failed',t:':x: QA Failed'},{l:'qa:passed',t:':white_check_mark: QA Passed'},{l:'status:changes-requested',t:':warning: Changes Requested'},{l:'status:approved',t:':white_check_mark: Approved'},{l:'status:on-hold',t:':pause_button: On Hold'},{l:'status:blocked',t:':octagonal_sign: Blocked'},{l:'status:ready-to-merge',t:':rocket: Ready to Merge'},{l:'status:merged',t:':tada: Merged'}];
           const pL=[{l:'priority:critical',t:':rotating_light:'},{l:'priority:high',t:':arrow_up:'},{l:'priority:medium',t:':arrow_right:'},{l:'priority:low',t:':arrow_down:'}];
           const cL=[{l:'type:bug',t:':bug:'},{l:'type:feature',t:':sparkles:'},{l:'type:refactor',t:':recycle:'},{l:'type:test',t:':test_tube:'},{l:'type:docs',t:':books:'},{l:'type:chore',t:':wrench:'},{l:'type:style',t:':art:'},{l:'type:perf',t:':zap:'},{l:'type:security',t:':shield:'},{l:'type:breaking',t:':boom:'}];
@@ -81,23 +86,23 @@ runs:
           }
           function eT(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
           const iM=labels.some(l=>l.name==='status:merged');
-          const iA='${{inputs.is_abandoned}}'==='true';
-          const eTitle=eT(pr_title);
+          const iA=process.env.IS_ABANDONED==='true';
+          const eTitle=eT(process.env.PR_TITLE);
           let mB;
           if(iM){
-            mB=[{type:'section',text:{type:'mrkdwn',text:`:tada: ${eTitle}`},accessory:{type:'button',text:{type:'plain_text',text:'View PR',emoji:false},url:pr_url,style:'primary'}}];
+            mB=[{type:'section',text:{type:'mrkdwn',text:`:tada: ${eTitle}`},accessory:{type:'button',text:{type:'plain_text',text:'View PR',emoji:false},url:process.env.PR_URL,style:'primary'}}];
           }else if(iA){
-            mB=[{type:'section',text:{type:'mrkdwn',text:`:file_folder: ${eTitle}`},accessory:{type:'button',text:{type:'plain_text',text:'View PR',emoji:false},url:pr_url}}];
+            mB=[{type:'section',text:{type:'mrkdwn',text:`:file_folder: ${eTitle}`},accessory:{type:'button',text:{type:'plain_text',text:'View PR',emoji:false},url:process.env.PR_URL}}];
           }else{
             let oU;
             if(!slackTs){
               const qR=labels.some(l=>l.name==='qa:running');
               const cK=qR?`qa-${Date.now()}`:Date.now();
-              oU=`https://opengraph.githubassets.com/${cK}/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
+              oU=`https://opengraph.githubassets.com/${cK}/${context.repo.owner}/${context.repo.repo}/pull/${process.env.PR_NUMBER}`;
             }else{
-              oU=`https://opengraph.githubassets.com/1/${context.repo.owner}/${context.repo.repo}/pull/${pr_number}`;
+              oU=`https://opengraph.githubassets.com/1/${context.repo.owner}/${context.repo.repo}/pull/${process.env.PR_NUMBER}`;
             }
-            mB=[{type:'image',image_url:oU,alt_text:`PR #${pr_number}: ${eTitle}`},{type:'actions',elements:[{type:'button',text:{type:'plain_text',text:'View PR',emoji:false},url:pr_url,style:'primary'},{type:'button',text:{type:'plain_text',text:'Files',emoji:false},url:`${pr_url}/files`},{type:'button',text:{type:'plain_text',text:'Checks',emoji:false},url:`${pr_url}/checks`}]}];
+            mB=[{type:'image',image_url:oU,alt_text:`PR #${process.env.PR_NUMBER}: ${eTitle}`},{type:'actions',elements:[{type:'button',text:{type:'plain_text',text:'View PR',emoji:false},url:process.env.PR_URL,style:'primary'},{type:'button',text:{type:'plain_text',text:'Files',emoji:false},url:`${process.env.PR_URL}/files`},{type:'button',text:{type:'plain_text',text:'Checks',emoji:false},url:`${process.env.PR_URL}/checks`}]}];
           }
           async function sM(isNew){
             let r,rc=0;
@@ -105,9 +110,9 @@ runs:
             while(rc<=mR){
               try{
                 if(isNew){
-                  r=await sA('chat.postMessage',{channel:process.env.SLACK_CHANNEL_ID,text:`#${pr_number}: ${eTitle}`,blocks:mB});
+                  r=await sA('chat.postMessage',{channel:process.env.SLACK_CHANNEL_ID,text:`#${process.env.PR_NUMBER}: ${eTitle}`,blocks:mB});
                 }else{
-                  await sA('chat.update',{channel:process.env.SLACK_CHANNEL_ID,ts:slackTs,text:`#${pr_number}: ${eTitle}`,blocks:mB});
+                  await sA('chat.update',{channel:process.env.SLACK_CHANNEL_ID,ts:slackTs,text:`#${process.env.PR_NUMBER}: ${eTitle}`,blocks:mB});
                 }
                 break;
               }catch(e){
@@ -117,12 +122,12 @@ runs:
                 }else if(e.message.includes('invalid_blocks')){
                   const fB=mB.filter(b=>b.type!=='image');
                   if(!iM&&!iA){
-                    fB.unshift({type:'section',text:{type:'mrkdwn',text:`*<${pr_url}|#${pr_number}: ${eTitle}>*\n_by ${pr_author}_`}});
+                    fB.unshift({type:'section',text:{type:'mrkdwn',text:`*<${process.env.PR_URL}|#${process.env.PR_NUMBER}: ${eTitle}>*\n_by ${process.env.PR_AUTHOR}_`}});
                   }
                   if(isNew){
-                    r=await sA('chat.postMessage',{channel:process.env.SLACK_CHANNEL_ID,text:`#${pr_number}: ${eTitle}`,blocks:fB});
+                    r=await sA('chat.postMessage',{channel:process.env.SLACK_CHANNEL_ID,text:`#${process.env.PR_NUMBER}: ${eTitle}`,blocks:fB});
                   }else{
-                    await sA('chat.update',{channel:process.env.SLACK_CHANNEL_ID,ts:slackTs,text:`#${pr_number}: ${eTitle}`,blocks:fB});
+                    await sA('chat.update',{channel:process.env.SLACK_CHANNEL_ID,ts:slackTs,text:`#${process.env.PR_NUMBER}: ${eTitle}`,blocks:fB});
                   }
                   break;
                 }else{
@@ -133,8 +138,8 @@ runs:
             return r;
           }
           if(!slackTs){
-            const lC=await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:pr_number,body:'<!-- slack-creating-lock -->'});
-            const {data:cC}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:pr_number});
+            const lC=await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:process.env.PR_NUMBER,body:'<!-- slack-creating-lock -->'});
+            const {data:cC}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:process.env.PR_NUMBER});
             const eC=cC.find(c=>c.body&&c.body.includes('<!-- slack-ts:')&&c.id!==lC.id);
             if(eC){
               await github.rest.issues.deleteComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:lC.id});
