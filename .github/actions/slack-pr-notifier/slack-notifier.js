@@ -51,6 +51,13 @@ module.exports = async ({ github, context, core }) => {
   let slackTs = null;
 
   try {
+    // Check if repository is public
+    const { data: repo } = await github.rest.repos.get({
+      owner: context.repo.owner,
+      repo: context.repo.repo
+    });
+    const isPrivateRepo = repo.private;
+    console.log(`Repository is ${isPrivateRepo ? 'private' : 'public'}`);
     // Get PR labels
     let { data: labels } = await github.rest.issues.listLabelsOnIssue({
       owner: context.repo.owner,
@@ -258,58 +265,104 @@ module.exports = async ({ github, context, core }) => {
         }
       }];
     } else {
-      // Generate OpenGraph image URL
-      let ogImageUrl;
-      if (!slackTs) {
-        // New message - use timestamp-based cache busting for QA running
-        const qaRunning = labels.some(l => l.name === 'qa:running');
-        const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
-        ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${PR_NUMBER}`;
-      } else {
-        // Update - use stable URL
-        ogImageUrl = `https://opengraph.githubassets.com/1/${context.repo.owner}/${context.repo.repo}/pull/${PR_NUMBER}`;
-      }
-
-      messageBlocks = [
-        {
-          type: 'image',
-          image_url: ogImageUrl,
-          alt_text: `PR #${PR_NUMBER}: ${escapedTitle}`
-        },
-        {
-          type: 'actions',
-          elements: [
-            {
-              type: 'button',
-              text: {
-                type: 'plain_text',
-                text: 'View PR',
-                emoji: false
-              },
-              url: PR_URL,
-              style: 'primary'
-            },
-            {
-              type: 'button',
-              text: {
-                type: 'plain_text',
-                text: 'Files',
-                emoji: false
-              },
-              url: `${PR_URL}/files`
-            },
-            {
-              type: 'button',
-              text: {
-                type: 'plain_text',
-                text: 'Checks',
-                emoji: false
-              },
-              url: `${PR_URL}/checks`
+      // For private repositories, use blocks instead of OpenGraph image
+      if (isPrivateRepo) {
+        messageBlocks = [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `${statusString}*<${PR_URL}|#${PR_NUMBER}: ${escapedTitle}>*\n_by ${PR_AUTHOR} • ${context.repo.owner}/${context.repo.repo}_`
             }
-          ]
+          },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'View PR',
+                  emoji: false
+                },
+                url: PR_URL,
+                style: 'primary'
+              },
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Files',
+                  emoji: false
+                },
+                url: `${PR_URL}/files`
+              },
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Checks',
+                  emoji: false
+                },
+                url: `${PR_URL}/checks`
+              }
+            ]
+          }
+        ];
+      } else {
+        // Public repository - use OpenGraph image
+        let ogImageUrl;
+        if (!slackTs) {
+          // New message - use timestamp-based cache busting for QA running
+          const qaRunning = labels.some(l => l.name === 'qa:running');
+          const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
+          ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${PR_NUMBER}`;
+        } else {
+          // Update - use stable URL
+          ogImageUrl = `https://opengraph.githubassets.com/1/${context.repo.owner}/${context.repo.repo}/pull/${PR_NUMBER}`;
         }
-      ];
+
+        messageBlocks = [
+          {
+            type: 'image',
+            image_url: ogImageUrl,
+            alt_text: `PR #${PR_NUMBER}: ${escapedTitle}`
+          },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'View PR',
+                  emoji: false
+                },
+                url: PR_URL,
+                style: 'primary'
+              },
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Files',
+                  emoji: false
+                },
+                url: `${PR_URL}/files`
+              },
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Checks',
+                  emoji: false
+                },
+                url: `${PR_URL}/checks`
+              }
+            ]
+          }
+        ];
+      }
     }
 
     // Send or update message with retry logic
@@ -342,7 +395,7 @@ module.exports = async ({ github, context, core }) => {
           } else if (error.message.includes('invalid_blocks')) {
             // Fallback to text-only blocks
             const fallbackBlocks = messageBlocks.filter(b => b.type !== 'image');
-            if (!isMerged && !isAbandoned) {
+            if (!isMerged && !isAbandoned && !isPrivateRepo) {
               fallbackBlocks.unshift({
                 type: 'section',
                 text: {
