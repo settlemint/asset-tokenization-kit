@@ -141,10 +141,13 @@ export const create = onboardedRouter.system.create
       key: "SYSTEM_ADDRESS",
     });
 
-    if (existingSystem?.value) {
-      throw errors.BAD_REQUEST({
-        message: "System already exists. Only one system is allowed per platform.",
-        cause: new Error(`System already deployed at address: ${existingSystem.value}`),
+    if (existingSystem) {
+      throw errors.RESOURCE_ALREADY_EXISTS({
+        message:
+          "System already exists. Only one system is allowed per platform.",
+        cause: new Error(
+          `System already deployed at address: ${existingSystem}`
+        ),
       });
     }
 

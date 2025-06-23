@@ -47,11 +47,6 @@ import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persist
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import superjson from "superjson";
-import {
-  checkAndClearStaleCache,
-  checkDevResetMarker,
-  setupDevCacheManagement,
-} from "./utils/clear-cache";
 
 /**
  * Query cache configuration constants.
@@ -255,19 +250,10 @@ const persister = createSyncStoragePersister({
 /**
  * Persist queries for offline support and sync across tabs
  */
-if (typeof window !== "undefined") {
+if (typeof window !== "undefined" && process.env.NODE_ENV !== "development") {
   // Check and clear stale cache based on build ID
   // In development, use a stable build ID to avoid unnecessary cache busting
-  const buildId = process.env.BUILD_ID ?? (process.env.NODE_ENV === "development" ? "dev" : new Date().toISOString());
-  checkAndClearStaleCache(buildId);
-
-  // In development, also check for dev reset marker
-  if (process.env.NODE_ENV === "development") {
-    void checkDevResetMarker();
-  }
-
-  // Set up development cache management utilities
-  setupDevCacheManagement();
+  const buildId = process.env.BUILD_ID ?? new Date().toISOString();
 
   // Enable query persistence for offline support
   void persistQueryClient({
@@ -282,7 +268,9 @@ if (typeof window !== "undefined") {
       },
     },
   });
+}
 
+if (typeof window !== "undefined") {
   /**
    * Set up broadcast channel for cross-tab synchronization.
    *
@@ -299,6 +287,7 @@ if (typeof window !== "undefined") {
    * Note: Uses the experimental broadcast client plugin which
    * leverages the Broadcast Channel API for cross-tab communication.
    */
+
   broadcastQueryClient({
     queryClient,
     broadcastChannel: "atk-query-sync",

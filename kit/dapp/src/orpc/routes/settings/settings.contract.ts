@@ -5,10 +5,7 @@ import {
   SettingsListOutputSchema,
   SettingsListSchema,
 } from "./routes/settings.list.schema";
-import {
-  SettingSchema,
-  SettingsReadSchema,
-} from "./routes/settings.read.schema";
+import { SettingsReadSchema } from "./routes/settings.read.schema";
 import { SettingsUpsertSchema } from "./routes/settings.upsert.schema";
 
 /**
@@ -25,7 +22,7 @@ const read = baseContract
     tags: ["settings"],
   })
   .input(SettingsReadSchema)
-  .output(SettingSchema.nullable());
+  .output(z.string().nullable());
 
 /**
  * Contract definition for the settings list endpoint.
@@ -57,7 +54,7 @@ const upsert = baseContract
     tags: ["settings"],
   })
   .input(SettingsUpsertSchema)
-  .output(SettingSchema);
+  .output(z.string());
 
 /**
  * Contract definition for the settings delete endpoint.

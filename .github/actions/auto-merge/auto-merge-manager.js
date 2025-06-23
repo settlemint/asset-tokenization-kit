@@ -65,18 +65,9 @@ async function manageAutoMerge({
       
       console.log(`✅ Auto-merge enabled for PR #${prNumber}`);
     } else {
-      // Disable auto-merge if it was enabled
-      console.log(`Disabling auto-merge for PR #${prNumber}`);
+      // Just log why it's not mergeable, don't disable auto-merge
+      console.log(`PR #${prNumber} is not ready for auto-merge`);
       
-      await github.rest.pulls.disableAutoMerge({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        pull_number: prNumber
-      });
-      
-      console.log(`✅ Auto-merge disabled for PR #${prNumber} - no longer mergeable`);
-      
-      // Log why it's not mergeable
       const reasons = [];
       if (!hasApproval) reasons.push('no approval');
       if (qaStatus !== 'success') reasons.push(`QA status is ${qaStatus}`);
