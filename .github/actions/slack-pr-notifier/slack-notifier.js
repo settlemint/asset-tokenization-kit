@@ -269,46 +269,75 @@ module.exports = async ({ github, context, core }) => {
       if (isPrivateRepo) {
         messageBlocks = [
           {
-            type: 'section',
+            type: 'header',
             text: {
-              type: 'mrkdwn',
-              text: `${statusString}*<${PR_URL}|#${PR_NUMBER}: ${escapedTitle}>*\n_by ${PR_AUTHOR} • ${context.repo.owner}/${context.repo.repo}_`
+              type: 'plain_text',
+              text: `#${PR_NUMBER} ${escapedTitle}`,
+              emoji: false
             }
           },
           {
-            type: 'actions',
-            elements: [
+            type: 'section',
+            fields: [
               {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: 'View PR',
-                  emoji: false
-                },
-                url: PR_URL,
-                style: 'primary'
+                type: 'mrkdwn',
+                text: `*Repository:*\n${context.repo.owner}/${context.repo.repo}`
               },
               {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: 'Files',
-                  emoji: false
-                },
-                url: `${PR_URL}/files`
-              },
-              {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: 'Checks',
-                  emoji: false
-                },
-                url: `${PR_URL}/checks`
+                type: 'mrkdwn',
+                text: `*Author:*\n${PR_AUTHOR}`
               }
             ]
           }
         ];
+        
+        // Add status context if available
+        if (statusString.trim()) {
+          messageBlocks.push({
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: statusString.trim()
+              }
+            ]
+          });
+        }
+        
+        // Add action buttons
+        messageBlocks.push({
+          type: 'actions',
+          elements: [
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'View PR',
+                emoji: false
+              },
+              url: PR_URL,
+              style: 'primary'
+            },
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Files',
+                emoji: false
+              },
+              url: `${PR_URL}/files`
+            },
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Checks',
+                emoji: false
+              },
+              url: `${PR_URL}/checks`
+            }
+          ]
+        });
       } else {
         // Public repository - use OpenGraph image
         let ogImageUrl;
@@ -406,27 +435,35 @@ module.exports = async ({ github, context, core }) => {
                   type: 'section',
                   text: {
                     type: 'mrkdwn',
-                    text: `${statusString}*<${PR_URL}|#${PR_NUMBER}: ${escapedTitle}>*\n_by ${PR_AUTHOR}_`
-                  }
+                    text: `*<${PR_URL}|#${PR_NUMBER} ${escapedTitle}>*`
+                  },
+                  fields: [
+                    {
+                      type: 'mrkdwn',
+                      text: `*Author:* ${PR_AUTHOR}`
+                    },
+                    {
+                      type: 'mrkdwn',
+                      text: `*Repo:* ${context.repo.owner}/${context.repo.repo}`
+                    }
+                  ]
+                },
+                {
+                  type: 'actions',
+                  elements: [
+                    {
+                      type: 'button',
+                      text: {
+                        type: 'plain_text',
+                        text: 'View PR',
+                        emoji: false
+                      },
+                      url: PR_URL,
+                      style: 'primary'
+                    }
+                  ]
                 }
               ];
-              
-              // Add a simple button to view the PR
-              fallbackBlocks.push({
-                type: 'actions',
-                elements: [
-                  {
-                    type: 'button',
-                    text: {
-                      type: 'plain_text',
-                      text: 'View PR',
-                      emoji: false
-                    },
-                    url: PR_URL,
-                    style: 'primary'
-                  }
-                ]
-              });
             }
 
             if (isNew) {
