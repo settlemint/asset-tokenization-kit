@@ -43,8 +43,8 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
     AirdropUtils.TestUserData public testUserData;
 
     // Events
-    event TokensDistributed(address indexed recipient, uint256 amount, uint256 index);
-    event BatchTokensDistributed(uint256 recipientCount, uint256 totalAmount, uint256[] indices);
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
+    event AirdropBatchTokensTransferred(address[] recipients, uint256[] indices, uint256[] amounts);
     event DistributionCapUpdated(uint256 oldCap, uint256 newCap);
 
     function setUp() public {
@@ -139,7 +139,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         uint256 balanceBefore = token.balanceOf(user1);
 
         vm.expectEmit(true, true, true, true);
-        emit TokensDistributed(user1, amount, index);
+        emit AirdropTokensTransferred(user1, index, amount);
 
         vm.prank(owner);
         pushAirdrop.distribute(index, user1, amount, proof);
@@ -249,7 +249,7 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
         uint256 user2BalanceBefore = token.balanceOf(user2);
 
         vm.expectEmit(true, true, true, true);
-        emit BatchTokensDistributed(2, totalAmount, indices_);
+        emit AirdropBatchTokensTransferred(recipients, indices_, amounts);
 
         vm.prank(owner);
         pushAirdrop.batchDistribute(indices_, recipients, amounts, proofs_);

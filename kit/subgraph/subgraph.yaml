@@ -714,6 +714,156 @@ templates:
           handler: handleXvPSettlementCancelled
       file: ./src/system-addons/addons/xvp/xvp-settlement.ts
   - kind: ethereum
+    name: Airdrop
+    network: settlemint
+    source:
+      abi: Airdrop
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - AirdropTokensTransferred
+        - AirdropBatchTokensTransferred
+        - OwnershipTransferred
+        - TokensWithdrawn
+      abis:
+        - name: Airdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
+      eventHandlers:
+        - event: AirdropTokensTransferred(indexed address,indexed uint256,uint256)
+          handler: handleAirdropTokensTransferred
+        - event: AirdropBatchTokensTransferred(address[],uint256[],uint256[])
+          handler: handleAirdropBatchTokensTransferred
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: TokensWithdrawn(indexed address,uint256)
+          handler: handleTokensWithdrawn
+      file: ./src/system-addons/addons/airdrop/airdrop.ts
+  - kind: ethereum
+    name: PushAirdropFactory
+    network: settlemint
+    source:
+      abi: PushAirdropFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ATKPushAirdropCreated
+      abis:
+        - name: Airdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
+        - name: PushAirdropFactory
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol/IATKPushAirdropFactory.json
+        - name: PushAirdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/push-airdrop/ATKPushAirdropImplementation.sol/ATKPushAirdropImplementation.json
+      eventHandlers:
+        - event: ATKPushAirdropCreated(indexed address,indexed address)
+          handler: handleATKPushAirdropCreated
+      file: ./src/system-addons/addons/airdrop/push-airdrop-factory.ts
+  - kind: ethereum
+    name: PushAirdrop
+    network: settlemint
+    source:
+      abi: PushAirdrop
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - TokensDistributed
+        - BatchTokensDistributed
+        - DistributionCapUpdated
+      abis:
+        - name: Airdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
+        - name: PushAirdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/push-airdrop/ATKPushAirdropImplementation.sol/ATKPushAirdropImplementation.json
+      eventHandlers:
+        - event: DistributionCapUpdated(uint256,uint256)
+          handler: handleDistributionCapUpdated
+      file: ./src/system-addons/addons/airdrop/push-airdrop.ts
+  - kind: ethereum
+    name: VestingAirdropFactory
+    network: settlemint
+    source:
+      abi: VestingAirdropFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ATKVestingAirdropCreated
+      abis:
+        - name: VestingAirdropFactory
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol/IATKVestingAirdropFactory.json
+        - name: VestingAirdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol/ATKVestingAirdropImplementation.json
+        - name: VestingStrategy
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol/IATKVestingStrategy.json
+        - name: LinearVestingStrategy
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/ATKLinearVestingStrategy.sol/ATKLinearVestingStrategy.json
+        - name: Airdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
+      eventHandlers:
+        - event: ATKVestingAirdropCreated(indexed
+            address,string,address,bytes32,address,address,uint256,address)
+          handler: handleATKVestingAirdropCreated
+      file: ./src/system-addons/addons/airdrop/vesting-airdrop-factory.ts
+  - kind: ethereum
+    name: VestingAirdrop
+    network: settlemint
+    source:
+      abi: VestingAirdrop
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - VestingInitialized
+        - BatchVestingInitialized
+        - VestingStrategyUpdated
+      abis:
+        - name: VestingAirdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol/ATKVestingAirdropImplementation.json
+        - name: VestingStrategy
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol/IATKVestingStrategy.json
+        - name: LinearVestingStrategy
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/vesting-airdrop/IATKLinearVestingStrategy.sol/IATKLinearVestingStrategy.json
+        - name: Airdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
+      eventHandlers:
+        - event: VestingInitialized(indexed address,uint256,uint256)
+          handler: handleVestingInitialized
+        - event: BatchVestingInitialized(indexed address,uint256[],uint256[])
+          handler: handleBatchVestingInitialized
+        - event: VestingStrategyUpdated(indexed address,indexed address)
+          handler: handleVestingStrategyUpdated
+      file: ./src/system-addons/addons/airdrop/vesting-airdrop.ts
+  - kind: ethereum
+    name: TimeBoundAirdropFactory
+    network: settlemint
+    source:
+      abi: TimeBoundAirdropFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - ATKTimeBoundAirdropCreated
+      abis:
+        - name: TimeBoundAirdropFactory
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdropFactory.sol/IATKTimeBoundAirdropFactory.json
+        - name: TimeBoundAirdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/time-bound-airdrop/ATKTimeBoundAirdropImplementation.sol/ATKTimeBoundAirdropImplementation.json
+        - name: Airdrop
+          file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
+      eventHandlers:
+        - event: ATKTimeBoundAirdropCreated(indexed address,indexed address)
+          handler: handleATKTimeBoundAirdropCreated
+      file: ./src/system-addons/addons/airdrop/time-bound-airdrop-factory.ts
+  - kind: ethereum
     name: TokenFactoryRegistry
     network: settlemint
     source:

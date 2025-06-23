@@ -16,6 +16,27 @@ import { IATKClaimTracker } from "./claim-tracker/IATKClaimTracker.sol";
 ///      - Meta-transaction support
 ///      - Named airdrop identification
 interface IATKAirdrop {
+    // --- Events ---
+
+    /// @notice Emitted when tokens are transferred from the airdrop contract.
+    /// @dev Fired on user claims or admin-initiated push distributions.
+    /// @param index The allocation index from the Merkle tree.
+    /// @param recipient The address that received the tokens.
+    /// @param amount The amount transferred.
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
+
+    /// @notice Emitted when multiple token allocations are transferred in one transaction.
+    /// @dev Handles both batch claims by a single user and batch distributions to many.
+    /// @param recipients An array of addresses that received tokens.
+    /// @param indices The corresponding allocation indices from the Merkle tree.
+    /// @param amounts The corresponding amounts transferred for each allocation.
+    event AirdropBatchTokensTransferred(address[] recipients, uint256[] indices, uint256[] amounts);
+
+    /// @notice Emitted when the contract owner withdraws unclaimed tokens.
+    /// @param to The address receiving the withdrawn tokens.
+    /// @param amount The amount of tokens withdrawn.
+    event TokensWithdrawn(address indexed to, uint256 amount);
+
     // --- View Functions ---
 
     /// @notice Returns the name of this airdrop.

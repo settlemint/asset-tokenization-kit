@@ -157,7 +157,7 @@ jobs:
             bun run ci:gha:main --concurrency=100%
           fi
         env:
-          THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
+          THE_GRAPH_PORT_LOCAL_DEPLOY: 8120:8100 # For subgraph tests
           THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
 
       - name: Store predeployed output
