@@ -91,7 +91,7 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
   entry.save();
 
   // Track event statistics
-  trackEventStats(emitter.id, eventType, event.block.timestamp);
+  trackEventStats(emitter.id, eventType);
 
   for (let i = 0; i < event.parameters.length; i++) {
     const param = event.parameters[i];

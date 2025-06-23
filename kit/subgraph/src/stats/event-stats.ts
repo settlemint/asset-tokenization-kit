@@ -1,4 +1,4 @@
-import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Bytes } from "@graphprotocol/graph-ts";
 import { EventStatsData } from "../../generated/schema";
 
 /**
@@ -9,13 +9,13 @@ import { EventStatsData } from "../../generated/schema";
  */
 export function trackEventStats(
   emitterAccountId: Bytes,
-  eventName: string,
-  timestamp: BigInt
+  eventName: string
 ): void {
   // Create timeseries entry - ID is auto-generated for timeseries entities
-  let eventStats = new EventStatsData();
-  eventStats.timestamp = timestamp;
+  const eventStats = new EventStatsData(1);
+
   eventStats.account = emitterAccountId;
   eventStats.eventName = eventName;
+
   eventStats.save();
 }
