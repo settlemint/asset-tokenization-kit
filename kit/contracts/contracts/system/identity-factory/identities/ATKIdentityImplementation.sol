@@ -35,7 +35,6 @@ contract ATKIdentityImplementation is
 
     // --- Custom Errors for ATKIdentityImplementation ---
     error AlreadyInitialized();
-    error InvalidInitialManagementKey();
     error SenderLacksManagementKey();
     error SenderLacksActionKey();
     error SenderLacksClaimSignerKey();
@@ -86,22 +85,8 @@ contract ATKIdentityImplementation is
         if (_smartIdentityInitialized) revert AlreadyInitialized();
         _smartIdentityInitialized = true;
 
-        if (initialManagementKey == address(0)) revert InvalidInitialManagementKey();
-
         __ERC165_init_unchained(); // Initialize ERC165 storage
-
-        bytes32 keyHash = keccak256(abi.encode(initialManagementKey));
-
-        // Directly set up the first management key using storage from ERC734
-        // This mimics the behavior of OnchainID's __Identity_init
-        _keys[keyHash].key = keyHash;
-        _keys[keyHash].purposes = [MANAGEMENT_KEY_PURPOSE]; // Initialize dynamic array with one element
-        _keys[keyHash].keyType = 1; // Assuming KeyType 1 for ECDSA / standard Ethereum address key
-
-        _keysByPurpose[MANAGEMENT_KEY_PURPOSE].push(keyHash);
-
-        // Emit event defined in ERC734/IERC734
-        emit KeyAdded(keyHash, MANAGEMENT_KEY_PURPOSE, 1);
+        __ERC734_init_unchained(initialManagementKey);
     }
 
     // --- OnchainIdentityWithRevocation Functions ---

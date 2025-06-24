@@ -24,6 +24,7 @@ contract ERC734 is IERC734, ReentrancyGuard {
     error KeyDoesNotExist(bytes32 key);
     error KeyDoesNotHaveThisPurpose(bytes32 key, uint256 purpose);
     error CannotExecuteToZeroAddress();
+    error InvalidInitialManagementKey();
 
     struct Key {
         bytes32 key;
@@ -43,6 +44,23 @@ contract ERC734 is IERC734, ReentrancyGuard {
     mapping(uint256 => bytes32[]) internal _keysByPurpose;
     mapping(uint256 => Execution) internal _executions;
     uint256 internal _executionNonce;
+
+    function __ERC734_init_unchained(address initialManagementKey) internal {
+        if (initialManagementKey == address(0)) revert InvalidInitialManagementKey();
+
+        bytes32 keyHash = keccak256(abi.encode(initialManagementKey));
+
+        // Directly set up the first management key using storage from ERC734
+        // This mimics the behavior of OnchainID's __Identity_init
+        _keys[keyHash].key = keyHash;
+        _keys[keyHash].purposes = [MANAGEMENT_KEY_PURPOSE]; // Initialize dynamic array with one element
+        _keys[keyHash].keyType = 1; // Assuming KeyType 1 for ECDSA / standard Ethereum address key
+
+        _keysByPurpose[MANAGEMENT_KEY_PURPOSE].push(keyHash);
+
+        // Emit event defined in ERC734/IERC734
+        emit KeyAdded(keyHash, MANAGEMENT_KEY_PURPOSE, 1);
+    }
 
     /// @dev See {IERC734-addKey}.
     /// Adds a _key to the identity. The _purpose specifies the purpose of the key.
