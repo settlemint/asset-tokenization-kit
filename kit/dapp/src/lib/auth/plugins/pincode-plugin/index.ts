@@ -1,12 +1,21 @@
-import type { User } from "@/lib/auth/types";
-import { removePincodeFunction } from "@/lib/mutations/user/pincode/remove-pincode-function";
-import { setPincodeFunction } from "@/lib/mutations/user/pincode/set-pincode-function";
-import { updatePincodeFunction } from "@/lib/mutations/user/pincode/update-pincode-function";
-import type { BetterAuthPlugin } from "better-auth";
-import { APIError } from "better-auth";
+import {
+  removePincode,
+  setPincode,
+  updatePincode,
+} from "@/lib/auth/plugins/pincode-plugin/queries";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { APIError, type BetterAuthPlugin } from "better-auth";
 import { createAuthEndpoint, sessionMiddleware } from "better-auth/api";
 import { z } from "zod";
 import { revokeSession, validatePassword } from "../utils";
+
+export interface UserWithPincodeContext {
+  id: string;
+  initialOnboardingFinished?: boolean;
+  pincodeEnabled?: boolean;
+  pincodeVerificationId?: string;
+  wallet?: EthereumAddress;
+}
 
 export const pincode = () => {
   return {
@@ -55,8 +64,13 @@ export const pincode = () => {
           },
         },
         async (ctx) => {
-          const user = ctx.context.session.user as User;
+          const user = ctx.context.session.user as UserWithPincodeContext;
           const { password, pincode } = ctx.body;
+          if (user.pincodeEnabled && user.pincodeVerificationId) {
+            throw new APIError("BAD_REQUEST", {
+              message: "Pincode already set",
+            });
+          }
           if (user.initialOnboardingFinished) {
             if (!password) {
               throw new APIError("BAD_REQUEST", {
@@ -73,16 +87,13 @@ export const pincode = () => {
               });
             }
           }
-          const result = await setPincodeFunction({
-            parsedInput: { pincode },
-            ctx: { user },
-          });
+          const pincodeVerificationId = await setPincode(user, pincode);
           await revokeSession(ctx, {
             initialOnboardingFinished: true,
             pincodeEnabled: true,
-            pincodeVerificationId: result.verificationId,
+            pincodeVerificationId,
           });
-          return ctx.json({ success: result.success });
+          return ctx.json({ success: true });
         }
       ),
       disablePincode: createAuthEndpoint(
@@ -122,7 +133,13 @@ export const pincode = () => {
           },
         },
         async (ctx) => {
-          const user = ctx.context.session.user as User;
+          const user = ctx.context.session.user as UserWithPincodeContext;
+          const { pincodeEnabled, pincodeVerificationId } = user;
+          if (!pincodeEnabled || !pincodeVerificationId) {
+            throw new APIError("BAD_REQUEST", {
+              message: "Pincode already removed",
+            });
+          }
           const { password } = ctx.body;
           const isPasswordValid = await validatePassword(ctx, {
             password,
@@ -133,11 +150,13 @@ export const pincode = () => {
               message: "Invalid password",
             });
           }
-          const result = await removePincodeFunction({ ctx: { user } });
+          const success = await removePincode(user, pincodeVerificationId);
           await revokeSession(ctx, {
             pincodeEnabled: false,
           });
-          return ctx.json({ success: result.success });
+          return ctx.json({
+            success,
+          });
         }
       ),
       updatePincode: createAuthEndpoint(
@@ -180,7 +199,7 @@ export const pincode = () => {
           },
         },
         async (ctx) => {
-          const user = ctx.context.session.user as User;
+          const user = ctx.context.session.user as UserWithPincodeContext;
           const { password, newPincode } = ctx.body;
           const isPasswordValid = await validatePassword(ctx, {
             password,
@@ -191,14 +210,11 @@ export const pincode = () => {
               message: "Invalid password",
             });
           }
-          const result = await updatePincodeFunction({
-            parsedInput: { pincode: newPincode },
-            ctx: { user },
-          });
+          const pincodeVerificationId = await updatePincode(user, newPincode);
           await revokeSession(ctx, {
-            pincodeVerificationId: result.verificationId,
+            pincodeVerificationId,
           });
-          return ctx.json({ success: result.success });
+          return ctx.json({ success: true });
         }
       ),
     },

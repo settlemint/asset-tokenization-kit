@@ -1,0 +1,198 @@
+import {
+  disableTwoFactor,
+  enableTwoFactor,
+  verifyTwoFactorOTP,
+} from "@/lib/auth/plugins/two-factor/queries";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import type { GenericEndpointContext } from "better-auth";
+import {
+  APIError,
+  createAuthEndpoint,
+  sessionMiddleware,
+} from "better-auth/api";
+import z from "zod/v4";
+import { revokeSession, validatePassword } from "../utils";
+
+const OTP_DIGITS = 6;
+const OTP_PERIOD = 30;
+const OTP_ALGORITHM = "SHA256";
+
+export interface UserWithTwoFactorContext {
+  id: string;
+  initialOnboardingFinished?: boolean;
+  twoFactorEnabled?: boolean;
+  twoFactorVerificationId?: string;
+  wallet?: EthereumAddress;
+}
+
+export const twoFactor = () => {
+  return {
+    id: "two-factor",
+    endpoints: {
+      enableTwoFactor: createAuthEndpoint(
+        "/two-factor/enable",
+        {
+          method: "POST",
+          body: z.object({
+            password: z
+              .string()
+              .describe(
+                "User password, only required if the user has done the initial onboarding"
+              )
+              .optional(),
+            issuer: z
+              .string()
+              .describe("Custom issuer for the TOTP URI")
+              .optional(),
+          }),
+          use: [sessionMiddleware],
+          metadata: {
+            openapi: {
+              summary: "Enable two factor authentication",
+              description:
+                "Use this endpoint to enable two factor authentication. This will generate a TOTP URI and backup codes. Once the user verifies the TOTP URI, the two factor authentication will be enabled.",
+              responses: {
+                200: {
+                  description: "Successful response",
+                  content: {
+                    "application/json": {
+                      schema: {
+                        type: "object",
+                        properties: {
+                          totpURI: {
+                            type: "string",
+                            description: "TOTP URI",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        async (ctx) => {
+          const user = ctx.context.session.user as UserWithTwoFactorContext;
+          if (user.initialOnboardingFinished) {
+            await validatePassword(ctx, {
+              password: ctx.body.password ?? "",
+              userId: user.id,
+            });
+          }
+          const { totpURI, verificationId } = await enableTwoFactor(
+            {
+              algorithm: OTP_ALGORITHM,
+              digits: OTP_DIGITS,
+              period: OTP_PERIOD,
+            },
+            user
+          );
+          await revokeSession(ctx, {
+            twoFactorEnabled: true,
+            twoFactorVerificationId: verificationId,
+          });
+          return ctx.json({ totpURI });
+        }
+      ),
+      disableTwoFactor: createAuthEndpoint(
+        "/two-factor/disable",
+        {
+          method: "POST",
+          body: z.object({
+            password: z.string().describe("User password"),
+          }),
+          use: [sessionMiddleware],
+          metadata: {
+            openapi: {
+              summary: "Disable two factor authentication",
+              description:
+                "Use this endpoint to disable two factor authentication.",
+              responses: {
+                200: {
+                  description: "Successful response",
+                  content: {
+                    "application/json": {
+                      schema: {
+                        type: "object",
+                        properties: {
+                          status: {
+                            type: "boolean",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        async (ctx) => {
+          const user = ctx.context.session.user as UserWithTwoFactorContext;
+          await validatePassword(ctx, {
+            password: ctx.body.password,
+            userId: user.id,
+          });
+          await disableTwoFactor(user);
+          await revokeSession(ctx, {
+            twoFactorEnabled: false,
+            twoFactorVerificationId: null,
+          });
+
+          return ctx.json({ status: true });
+        }
+      ),
+      verifyTOTP: createAuthEndpoint(
+        "/two-factor/verify-totp",
+        {
+          method: "POST",
+          body: z.object({
+            code: z.string().describe("The otp code to verify"),
+          }),
+          use: [sessionMiddleware],
+          metadata: {
+            openapi: {
+              summary: "Verify two factor TOTP",
+              description: "Verify two factor TOTP",
+              responses: {
+                200: {
+                  description: "Successful response",
+                  content: {
+                    "application/json": {
+                      schema: {
+                        type: "object",
+                        properties: {
+                          status: {
+                            type: "boolean",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        async (ctx) => {
+          const user = ctx.context.session.user as UserWithTwoFactorContext;
+          const { code } = ctx.body;
+          const result = await verifyTwoFactorOTP(user, code);
+          if (!result.verified) {
+            throw new APIError("UNAUTHORIZED", {
+              message: "Invalid two factor code",
+            });
+          }
+          if (!user.twoFactorEnabled) {
+            await revokeSession(ctx as GenericEndpointContext, {
+              initialOnboardingFinished: true,
+              twoFactorEnabled: true,
+            });
+          }
+          return ctx.json({ status: true });
+        }
+      ),
+    },
+  };
+};

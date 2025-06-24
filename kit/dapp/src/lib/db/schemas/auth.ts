@@ -1,3 +1,4 @@
+import type { UserRole } from "@/lib/zod/validators/user-roles";
 import {
   boolean,
   integer,
@@ -21,16 +22,20 @@ export const user = pgTable("user", {
   updatedAt: timestamp("updated_at")
     .$defaultFn(() => new Date())
     .notNull(),
-  role: text("role"),
+  role: text("role").$type<UserRole>(),
   banned: boolean("banned"),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
   wallet: text("wallet").unique().$type<Address>(),
-  pincodeEnabled: boolean("pincode_enabled"),
-  pincodeVerificationId: text("pincode_verification_id").unique(),
-  twoFactorVerificationId: text("two_factor_verification_id").unique(),
-  secretCodeVerificationId: text("secret_code_verification_id").unique(),
-  initialOnboardingFinished: boolean("initial_onboarding_finished"),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  pincodeEnabled: boolean("pincode_enabled").notNull().default(false),
+  pincodeVerificationId: text("pincode_verification_id"),
+  twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
+  twoFactorVerificationId: text("two_factor_verification_id"),
+  secretCodeVerificationId: text("secret_code_verification_id"),
+  initialOnboardingFinished: boolean("initial_onboarding_finished")
+    .notNull()
+    .default(false),
 });
 
 export const session = pgTable("session", {
