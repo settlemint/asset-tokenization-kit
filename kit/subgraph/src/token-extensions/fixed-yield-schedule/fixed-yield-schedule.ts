@@ -6,10 +6,9 @@ import {
   UnderlyingAssetWithdrawn,
   YieldClaimed,
 } from "../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
-import { DEFAULT_TOKEN_DECIMALS } from "../../config/token";
 import { fetchEvent } from "../../event/fetch/event";
-import { fetchToken } from "../../token/fetch/token";
 import { setBigNumber } from "../../utils/bignumber";
+import { getTokenDecimals } from "../../utils/token-decimals";
 import { fetchFixedYieldSchedule } from "./fetch/fixed-yield-schedule";
 import { fetchFixedYieldSchedulePeriod } from "./fetch/fixed-yield-schedule-period";
 import {
@@ -203,10 +202,4 @@ export function handleYieldClaimed(event: YieldClaimed): void {
   );
   setBigNumber(fixedYieldSchedule, "totalYield", totalYield, tokenDecimals);
   fixedYieldSchedule.save();
-}
-
-function getTokenDecimals(tokenAddress: Address): i32 {
-  return tokenAddress.equals(Address.zero())
-    ? DEFAULT_TOKEN_DECIMALS
-    : fetchToken(tokenAddress).decimals;
 }

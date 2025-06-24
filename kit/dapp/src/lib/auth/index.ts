@@ -18,7 +18,14 @@
  */
 
 import { metadata } from "@/config/metadata";
+import {
+  accessControl,
+  adminRole,
+  investorRole,
+  issuerRole,
+} from "@/lib/auth/permissions";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import type { UserRole } from "@/lib/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -170,7 +177,14 @@ const getAuthConfig = serverOnly(() =>
       /**
        * Admin plugin for user management capabilities.
        */
-      admin(),
+      admin({
+        ac: accessControl,
+        roles: {
+          admin: adminRole,
+          user: investorRole,
+          issuer: issuerRole,
+        },
+      }),
 
       /**
        * API key plugin configuration for programmatic access.
@@ -185,6 +199,7 @@ const getAuthConfig = serverOnly(() =>
           maxRequests: 60, // 60 requests per minute
         },
         permissions: {
+          // TODO: assing a role to the api key when created
           defaultPermissions: {
             planets: ["read"], // Default read-only permissions
           },
@@ -237,5 +252,5 @@ export type Session = typeof auth.$Infer.Session;
  */
 export type SessionUser = Omit<Session["user"], "wallet" | "role"> & {
   wallet?: EthereumAddress | null;
-  role: "admin" | "investor" | "issuer";
+  role: UserRole;
 };

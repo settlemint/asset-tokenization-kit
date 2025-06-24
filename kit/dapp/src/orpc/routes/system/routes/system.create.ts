@@ -21,10 +21,12 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { orpc } from "@/orpc";
+import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { withEventMeta } from "@orpc/server";
+import type { VariablesOf } from "@settlemint/sdk-portal";
 import { z } from "zod/v4";
 import { SystemCreateMessagesSchema } from "./system.create.schema";
 
@@ -127,6 +129,7 @@ const FIND_SYSTEM_FOR_TRANSACTION_QUERY = theGraphGraphql(`
  * ```
  */
 export const create = onboardedRouter.system.create
+  .use(permissionsMiddleware({ system: ["create"] }))
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
@@ -152,9 +155,9 @@ export const create = onboardedRouter.system.create
     }
 
     // Execute the system creation transaction
-    const createSystemVariables = {
+    const createSystemVariables: VariablesOf<typeof CREATE_SYSTEM_MUTATION> = {
       address: contract,
-      from: sender.wallet,
+      from: sender.wallet ?? "",
       // ...(await handleChallenge(sender, verification)),
     };
 
@@ -193,7 +196,9 @@ export const create = onboardedRouter.system.create
     }
 
     // Query for the deployed system contract
-    const queryVariables = {
+    const queryVariables: VariablesOf<
+      typeof FIND_SYSTEM_FOR_TRANSACTION_QUERY
+    > = {
       deployedInTransaction: transactionHash,
     };
 
@@ -239,9 +244,9 @@ export const create = onboardedRouter.system.create
     );
 
     // Execute the bootstrap transaction
-    const bootstrapVariables = {
+    const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> = {
       address: system.id,
-      from: sender.wallet,
+      from: sender.wallet ?? "",
     };
 
     // Track bootstrap transaction using the same async generator pattern

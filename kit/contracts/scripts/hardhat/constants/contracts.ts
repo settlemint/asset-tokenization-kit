@@ -34,11 +34,13 @@ import {
   stablecoinFactoryAbi,
   systemAbi,
   systemAddonRegistryAbi,
+  timeBoundAirdropFactoryAbi,
   tokenFactoryRegistryAbi,
   tokenIdentityAbi,
   topicSchemeRegistryAbi,
   trustedIssuersRegistryAbi,
   vestingAirdropFactoryAbi,
+  xvpSettlementFactoryAbi,
 } from "../abi";
 
 export const ATKContracts = {
@@ -90,4 +92,6 @@ export const ATKContracts = {
   fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
   vestingAirdropFactory: vestingAirdropFactoryAbi,
   pushAirdropFactory: pushAirdropFactoryAbi,
+  timeBoundAirdropFactory: timeBoundAirdropFactoryAbi,
+  xvpSettlementFactory: xvpSettlementFactoryAbi
 } as const;

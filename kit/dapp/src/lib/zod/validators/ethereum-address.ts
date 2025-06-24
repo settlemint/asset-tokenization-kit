@@ -74,7 +74,7 @@ export const ethereumAddress = z
  * This type represents a validated and checksummed Ethereum address
  * using viem's Address type.
  */
-export type EthereumAddress = z.output<typeof ethereumAddress>;
+export type EthereumAddress = Address;
 
 export function isEthereumAddress(value: unknown): value is EthereumAddress {
   return ethereumAddress.safeParse(value).success;

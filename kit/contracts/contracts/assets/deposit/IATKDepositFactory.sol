@@ -7,6 +7,22 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 /// @title Interface for the ATK Deposit Factory
 /// @notice Defines the functions for creating and predicting addresses of ATK Deposit token instances.
 interface IATKDepositFactory is IATKTokenFactory {
+    /// @notice Emitted when a new deposit is created.
+    /// @param sender The address of the sender.
+    /// @param tokenAddress The address of the newly created token.
+    /// @param name The name of the deposit.
+    /// @param symbol The symbol of the deposit.
+    /// @param decimals The number of decimals for the deposit tokens.
+    /// @param requiredClaimTopics The claim topics required for interacting with the deposit.
+    event DepositCreated(
+        address indexed sender,
+        address indexed tokenAddress,
+        string name,
+        string symbol,
+        uint8 decimals,
+        uint256[] requiredClaimTopics
+    );
+
     /// @notice Creates a new ATK Deposit token.
     /// @param name_ The name of the deposit token.
     /// @param symbol_ The symbol of the deposit token.

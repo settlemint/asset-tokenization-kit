@@ -13,6 +13,7 @@ interface IATKFundFactory is IATKTokenFactory {
     /// @param name The name of the fund.
     /// @param symbol The symbol of the fund.
     /// @param decimals The number of decimals for the fund tokens.
+    /// @param requiredClaimTopics The claim topics required for interacting with the fund.
     /// @param managementFeeBps The management fee in basis points.
     event FundCreated(
         address indexed sender,
@@ -20,7 +21,8 @@ interface IATKFundFactory is IATKTokenFactory {
         string name,
         string symbol,
         uint8 decimals,
-        uint24 managementFeeBps
+        uint256[] requiredClaimTopics,
+        uint16 managementFeeBps
     );
 
     /// @notice Creates a new ATK Fund.

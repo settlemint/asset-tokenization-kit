@@ -51,7 +51,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
     // Events
     event VestingInitialized(address indexed account, uint256 totalAmount, uint256 index);
     event VestingStrategyUpdated(address indexed oldStrategy, address indexed newStrategy);
-    event Claimed(address indexed claimant, uint256 amount, uint256 index);
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -119,7 +119,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         assertEq(address(vestingAirdrop.token()), address(token));
         assertEq(vestingAirdrop.merkleRoot(), merkleRoot);
         assertEq(address(vestingAirdrop.vestingStrategy()), address(vestingStrategy));
-        assertEq(vestingAirdrop.claimPeriodEnd(), initializationDeadline);
+        assertEq(vestingAirdrop.initializationDeadline(), initializationDeadline);
     }
 
     function testFactoryCreateWithInvalidVestingStrategy() public {
@@ -242,7 +242,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         uint256 expectedClaimable = (amount * timeElapsed) / VESTING_DURATION;
 
         vm.expectEmit(true, true, true, true);
-        emit Claimed(user1, expectedClaimable, index);
+        emit AirdropTokensTransferred(user1, index, expectedClaimable);
 
         vm.prank(user1);
         vestingAirdrop.claim(index, amount, proof);
@@ -264,7 +264,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         vm.warp(block.timestamp + VESTING_DURATION + 1 days);
 
         vm.expectEmit(true, true, true, true);
-        emit Claimed(user1, amount, index);
+        emit AirdropTokensTransferred(user1, index, amount);
 
         vm.prank(user1);
         vestingAirdrop.claim(index, amount, proof);

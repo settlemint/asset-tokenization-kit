@@ -1,4 +1,4 @@
-import { auth, type Session, type SessionUser } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { baseRouter } from "../../procedures/base.router";
 
 /**
@@ -54,10 +54,8 @@ export const sessionMiddleware = baseRouter.middleware(
       context: {
         auth:
           context.auth ??
-          (session as unknown as {
-            user: SessionUser;
-            session: Session;
-          }),
+          (session as unknown as typeof context.auth) ??
+          undefined,
       },
     });
   }

@@ -1,3 +1,4 @@
+import { list } from "@/orpc/routes/user/routes/user.list";
 import { me } from "@/orpc/routes/user/routes/user.me";
 
 /**
@@ -18,6 +19,7 @@ import { me } from "@/orpc/routes/user/routes/user.me";
  */
 const routes = {
   me,
+  list,
 };
 
 export default routes;

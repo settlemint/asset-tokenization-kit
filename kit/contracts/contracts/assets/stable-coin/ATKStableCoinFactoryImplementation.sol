@@ -105,6 +105,8 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
             revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
         }
 
+        emit StableCoinCreated(_msgSender(), deployedStableCoinAddress, name_, symbol_, decimals_, requiredClaimTopics_);
+
         return deployedStableCoinAddress;
     }
 

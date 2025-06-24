@@ -60,15 +60,15 @@ interface IATKVestingAirdrop is IATKAirdrop {
     )
         external;
 
-    // --- View Functions (Vesting-specific) ---
+    // --- View Functions ---
 
     /// @notice Returns the current vesting strategy contract.
     /// @return The vesting strategy contract.
     function vestingStrategy() external view returns (IATKVestingStrategy);
 
-    /// @notice Returns the claim period end timestamp.
+    /// @notice Returns the initialization deadline timestamp.
     /// @return The timestamp after which no new vesting can be initialized.
-    function claimPeriodEnd() external view returns (uint256);
+    function initializationDeadline() external view returns (uint256);
 
     /// @notice Returns the initialization timestamp for a specific claim index.
     /// @param index The index to check.

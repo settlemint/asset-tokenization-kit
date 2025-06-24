@@ -1,12 +1,10 @@
 {
   "mcpServers": {
     "context7": {
-      "command": "bunx",
-      "args": ["-y", "@upstash/context7-mcp@latest"]
+      "url": "https://mcp.context7.com/sse"
     },
-    "mcp-deepwiki": {
-      "command": "bunx",
-      "args": ["-y", "mcp-deepwiki@latest"]
+    "deepwiki": {
+      "url": "https://mcp.deepwiki.com/sse"
     },
     "Linear": {
       "url": "https://mcp.linear.app/sse"
