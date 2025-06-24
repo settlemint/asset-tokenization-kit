@@ -422,7 +422,6 @@ type XvPSettlement @entity(immutable: false) {
   createdAt: BigInt!
   flows: [XvPSettlementFlow!]! @derivedFrom(field: "xvpSettlement")
   approvals: [XvPSettlementApproval!]! @derivedFrom(field: "xvpSettlement")
-  participants: [Account!]!
   deployedInTransaction: Bytes!
 }
 

@@ -8,6 +8,11 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 /// @notice Interface for the XvP Settlement Factory contract
 /// @dev Defines the core functionality that must be implemented by the XvP Settlement Factory
 interface IATKXvPSettlementFactory is IERC165 {
+    /// @notice Emitted when a new XvPSettlement contract is created
+    /// @param settlement The address of the newly created settlement contract
+    /// @param creator The address that created the settlement contract
+    event ATKXvPSettlementCreated(address indexed settlement, address indexed creator);
+
     /// @notice Returns a unique identifier for the type of this contract.
     function typeId() external pure returns (bytes32);
 

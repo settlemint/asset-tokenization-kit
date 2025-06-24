@@ -47,11 +47,6 @@ contract ATKXvPSettlementFactoryImplementation is
     /// proxy contracts created by this factory.
     IATKXvPSettlement[] private allSettlements;
 
-    /// @notice Emitted when a new XvPSettlement contract is created
-    /// @param settlement The address of the newly created settlement contract
-    /// @param creator The address that created the settlement contract
-    event ATKXvPSettlementCreated(address indexed settlement, address indexed creator);
-
     /// @notice Emitted when the implementation is updated
     /// @param oldImplementation The address of the previous implementation
     /// @param newImplementation The address of the new implementation
