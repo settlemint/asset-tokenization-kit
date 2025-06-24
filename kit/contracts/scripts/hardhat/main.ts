@@ -52,6 +52,7 @@ async function main() {
     owner.initialize(),
     claimIssuer.initialize(),
     investorA.initialize(),
+    investorANew.initialize(),
     investorB.initialize(),
     frozenInvestor.initialize(),
     maliciousInvestor.initialize(),
@@ -61,6 +62,7 @@ async function main() {
   await owner.printBalance();
   await claimIssuer.printBalance();
   await investorA.printBalance();
+  await investorANew.printBalance();
   await investorB.printBalance();
   await frozenInvestor.printBalance();
   await maliciousInvestor.printBalance();
@@ -69,6 +71,7 @@ async function main() {
   await batchAddToRegistry([
     owner,
     investorA,
+    investorANew,
     investorB,
     frozenInvestor,
     maliciousInvestor,
@@ -104,6 +107,7 @@ async function main() {
   await Promise.all([
     issueVerificationClaims(owner),
     issueVerificationClaims(investorA),
+    issueVerificationClaims(investorANew),
     issueVerificationClaims(investorB),
     issueVerificationClaims(frozenInvestor),
     issueVerificationClaims(maliciousInvestor),
@@ -140,7 +144,7 @@ async function main() {
 
   // Addon -XVP Settlement
   await createXvpSettlement(
-    investorANew, // fromActor
+    investorA, // fromActor
     investorB, // toActor
     stableCoin.address, // fromAssetAddress (stablecoin)
     equity.address, // toAssetAddress (equity)

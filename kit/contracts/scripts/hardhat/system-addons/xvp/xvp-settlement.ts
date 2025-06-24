@@ -1,8 +1,8 @@
 import { formatEther, type Abi, type Address } from "viem";
-import type { AbstractActor } from "../entities/actors/abstract-actor";
-import { atkDeployer } from "../services/deployer";
-import { getPublicClient } from "../utils/public-client";
-import { waitForEvent } from "../utils/wait-for-event";
+import type { AbstractActor } from "../../entities/actors/abstract-actor";
+import { atkDeployer } from "../../services/deployer";
+import { getPublicClient } from "../../utils/public-client";
+import { waitForEvent } from "../../utils/wait-for-event";
 
 // Define the Flow struct type for XVP settlements
 type FlowStruct = {
@@ -94,13 +94,15 @@ export async function createXvpSettlement(
       eventName: "ATKXvPSettlementCreated",
     });
 
-    if (!eventArgs || !eventArgs.settlement) {
+    const typedEventArgs = eventArgs as { settlement: Address };
+
+    if (!eventArgs || !typedEventArgs.settlement) {
       throw new Error(
         "Failed to extract settlement address from ATKXvPSettlementCreated event"
       );
     }
 
-    const settlementAddress = eventArgs.settlement as Address;
+    const settlementAddress = typedEventArgs.settlement;
 
     console.log(`✅ XVP Settlement created at: ${settlementAddress}`);
     console.log(
@@ -135,7 +137,7 @@ export async function approveAndExecuteXvpSettlement(
 
   try {
     // Get the ERC20 token contract
-    const { ismartAbi } = await import("../abi/ismart");
+    const { ismartAbi } = await import("../../abi/ismart");
     const tokenContract = actor.getContractInstance({
       address: assetAddress,
       abi: ismartAbi,
@@ -147,7 +149,7 @@ export async function approveAndExecuteXvpSettlement(
     console.log(`✅ Token approval successful`);
 
     // Get the XVP settlement contract
-    const { xvpSettlementAbi } = await import("../abi/xvpSettlement");
+    const { xvpSettlementAbi } = await import("../../abi/xvpSettlement");
     const settlementContract = actor.getContractInstance({
       address: settlementAddress,
       abi: xvpSettlementAbi as Abi,
