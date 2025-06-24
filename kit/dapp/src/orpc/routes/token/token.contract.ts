@@ -15,10 +15,10 @@ import z from "zod/v4";
 const factoryCreate = baseContract
   .route({
     method: "POST",
-    path: "/tokens/factory",
+    path: "/token/factory",
     description: "Create a new token factory",
     successDescription: "New token factory created",
-    tags: ["tokens"],
+    tags: ["token"],
   })
   .input(FactoryCreateSchema)
   .output(eventIterator(FactoryCreateOutputSchema));

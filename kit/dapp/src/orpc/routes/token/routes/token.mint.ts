@@ -5,8 +5,7 @@ import {
 } from "@/lib/zod/validators/ethereum-hash";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { tokenRouter } from "@/orpc/procedures/token.router";
 import z from "zod/v4";
 
 const MINT_TOKEN_MUTATION = portalGraphql(`
@@ -21,10 +20,9 @@ const MINT_TOKEN_MUTATION = portalGraphql(`
   }
 `);
 
-export const mint = authRouter.token.mint
-  .use(portalMiddleware)
-  .use(tokenMiddleware)
+export const mint = tokenRouter.token.mint
   .use(tokenPermissionMiddleware({ requiredRoles: ["supplyManagement"] }))
+  .use(portalMiddleware)
   .handler(async ({ input, context }) => {
     const { id, to, amount } = input;
 

@@ -151,4 +151,12 @@ export interface Context {
    * @see {@link @/orpc/middlewares/system/token.middleware} - Token middleware configuration
    */
   token?: Token;
+
+  /**
+   * User claim topics.
+   * Injected by userClaimsMiddleware for procedures that need to interact with the user's claims.
+   * @optional
+   * @see {@link @/orpc/middlewares/system/user-claims.middleware} - User claims middleware configuration
+   */
+  userClaimTopics?: string[];
 }

@@ -24,7 +24,6 @@ export const AccountCreateMessagesSchema = z.object({
  * - messages: Optional custom status messages for localization
  */
 export const AccountCreateSchema = z.object({
-  userId: z.string().describe("The id of the user to create an account for"),
   /**
    * Optional custom messages for the operation.
    * If not provided, default English messages will be used.

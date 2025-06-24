@@ -1,4 +1,4 @@
-import type { TokenRoles } from "@/orpc/middlewares/system/token.middleware";
+import { type TokenRoles } from "@/orpc/middlewares/system/token.middleware";
 import { baseRouter } from "@/orpc/procedures/base.router";
 
 /**
@@ -9,12 +9,12 @@ import { baseRouter } from "@/orpc/procedures/base.router";
  * @param requiredRoles - The roles required to interact with the token.
  * @returns The middleware function.
  */
-export const tokenPermissionMiddleware = ({
+export function tokenPermissionMiddleware({
   requiredRoles,
 }: {
   requiredRoles?: TokenRoles[];
-}) =>
-  baseRouter.middleware(async ({ context, next, errors }) => {
+}) {
+  return baseRouter.middleware(async ({ context, next, errors }) => {
     const { token } = context;
 
     if (!token) {
@@ -35,3 +35,4 @@ export const tokenPermissionMiddleware = ({
 
     return next();
   });
+}

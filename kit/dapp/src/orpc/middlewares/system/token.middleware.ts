@@ -36,6 +36,8 @@ export type Token = Omit<
     roles: Record<TokenRoles, boolean>;
     // User has the required claim topics to interact with the token
     isCompliant: boolean;
+    // User is allowed to interact with the token
+    isAllowed: boolean;
   };
 };
 
@@ -44,41 +46,52 @@ export type Token = Omit<
  * @returns The middleware function.
  */
 export const tokenMiddleware = baseRouter.middleware(
-  async ({ next, context }, input) => {
-    if (
-      typeof input === "object" &&
-      input !== null &&
-      "id" in input &&
-      typeof input.id === "string"
-    ) {
-      const { token } = await theGraphClient.request(READ_TOKEN_QUERY, {
-        id: input.id,
-      });
-      const userRoles = Object.entries(token?.accessControl ?? {}).reduce(
-        (acc, [role, accounts]) => {
-          const userHasRole = accounts.some(
-            (account) => account.id === context.auth?.user.wallet
-          );
-          acc[role as TokenRoles] = userHasRole;
-          return acc;
-        },
-        {} as Record<TokenRoles, boolean>
-      );
+  async ({ next, context, errors }, input) => {
+    const id =
+      typeof input === "object" && input !== null && "id" in input
+        ? input.id
+        : null;
+    if (typeof id !== "string") {
+      return next();
+    }
 
-      const tokenContext: Token = {
-        ...token,
-        userPermissions: {
-          roles: userRoles,
-          isCompliant: token?.requiredClaimTopics.length === 0,
-        },
-      };
-
-      return next({
-        context: {
-          token: tokenContext,
-        },
+    const { auth, userClaimTopics } = context;
+    if (!userClaimTopics) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "User claim context not set",
       });
     }
-    return next();
+
+    const { token } = await theGraphClient.request(READ_TOKEN_QUERY, {
+      id: id,
+    });
+    const userRoles = Object.entries(token?.accessControl ?? {}).reduce(
+      (acc, [role, accounts]) => {
+        const userHasRole = accounts.some(
+          (account) => account.id === auth?.user.wallet
+        );
+        acc[role as TokenRoles] = userHasRole;
+        return acc;
+      },
+      {} as Record<TokenRoles, boolean>
+    );
+
+    const tokenContext: Token = {
+      ...token,
+      userPermissions: {
+        roles: userRoles,
+        isCompliant:
+          token?.requiredClaimTopics.every(({ name }) =>
+            userClaimTopics.includes(name)
+          ) ?? true,
+        isAllowed: true,
+      },
+    };
+
+    return next({
+      context: {
+        token: tokenContext,
+      },
+    });
   }
 );
