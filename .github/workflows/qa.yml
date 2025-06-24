@@ -15,7 +15,7 @@ permissions:
   packages: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}-${{ github.event.action || 'default' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -157,7 +157,7 @@ jobs:
             bun run ci:gha:main --concurrency=100%
           fi
         env:
-          THE_GRAPH_PORT_LOCAL_DEPLOY: 8120:8100 # For subgraph tests
+          THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
           THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
 
       - name: Store predeployed output
@@ -289,7 +289,7 @@ jobs:
       github.event_name == 'pull_request' &&
       github.event.action == 'closed' &&
       github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-atk
     permissions:
       contents: read
       pull-requests: write
@@ -299,7 +299,9 @@ jobs:
       SLACK_CHANNEL_ID: ""
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          fetch-depth: ${{ github.event_name == 'push' && 2 || 0 }}
 
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
@@ -348,7 +350,9 @@ jobs:
       SLACK_CHANNEL_ID: ""
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          fetch-depth: ${{ github.event_name == 'push' && 2 || 0 }}
 
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2

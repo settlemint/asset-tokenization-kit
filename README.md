@@ -62,24 +62,20 @@ bun run ci
 This command (`bun run ci`) executes the following tasks in order:
 
 1. **Format Check** (`bun run format`)
-
    - Validates code formatting using Prettier
    - Ensures consistent code style across the project
 
 2. **Compilation** (`bun run compile`)
-
    - Compiles smart contracts using Foundry and Hardhat
    - Generates TypeScript types from contracts
    - Validates contract syntax and dependencies
 
 3. **Code Generation** (`bun run codegen`)
-
    - Generates GraphQL types from schemas
    - Creates TypeScript bindings for smart contracts
    - Updates SDK types for Portal, TheGraph, and Hasura
 
 4. **Linting** (`bun run lint`)
-
    - Runs ESLint on TypeScript/JavaScript code
    - Checks for code quality issues and potential bugs
    - Enforces coding standards and best practices
@@ -101,6 +97,17 @@ bun run artifacts
 bun run dev:up
 # OR restart the docker compose setup
 bun run dev:reset
+```
+
+### Running the dApp locally
+
+```bash
+# Start the docker compose setup
+bun run dev:up
+# Connect to the local network
+bunx settlemint connect
+# Start the dApp in development mode
+bun run dev
 ```
 
 ### Testing the contracts / subgraph

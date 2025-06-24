@@ -3,7 +3,9 @@ import { addTrustedIssuer } from "./actions/add-trusted-issuer";
 import { grantRole } from "./actions/grant-role";
 import { issueVerificationClaims } from "./actions/issue-verification-claims";
 import { recoverIdentity } from "./actions/recover-identity";
+import { setGlobalBlockedAddresses } from "./actions/set-global-blocked-addressess";
 import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
+import { setGlobalBlockedIdentities } from "./actions/set-global-blocked-identities";
 import { grantRoles } from "./assets/actions/core/grant-roles";
 import { mint } from "./assets/actions/core/mint";
 import { recoverErc20Tokens } from "./assets/actions/core/recover-erc20-tokens";
@@ -25,6 +27,7 @@ import {
   investorA,
   investorANew,
   investorB,
+  maliciousInvestor,
 } from "./entities/actors/investors";
 import { owner } from "./entities/actors/owner";
 import { AirdropMerkleTree } from "./entities/airdrop/merkle-tree";
@@ -50,6 +53,7 @@ async function main() {
     investorA.initialize(),
     investorB.initialize(),
     frozenInvestor.initialize(),
+    maliciousInvestor.initialize(),
   ]);
 
   // Print initial balances
@@ -58,9 +62,16 @@ async function main() {
   await investorA.printBalance();
   await investorB.printBalance();
   await frozenInvestor.printBalance();
+  await maliciousInvestor.printBalance();
 
   // Add the actors to the registry
-  await batchAddToRegistry([owner, investorA, investorB, frozenInvestor]);
+  await batchAddToRegistry([
+    owner,
+    investorA,
+    investorB,
+    frozenInvestor,
+    maliciousInvestor,
+  ]);
 
   // Grant fixed yield schedule factory to allow list manager
   // TODO: this is a temporary solution, will be fixed in the future
@@ -94,12 +105,17 @@ async function main() {
     issueVerificationClaims(investorA),
     issueVerificationClaims(investorB),
     issueVerificationClaims(frozenInvestor),
+    issueVerificationClaims(maliciousInvestor),
   ]);
 
   console.log("\n=== Setting up compliance modules... ===\n");
 
   // block RU in the country block list module
   await setGlobalBlockedCountries([Countries.RU]);
+
+  // Block malicious user
+  await setGlobalBlockedAddresses([maliciousInvestor.address]);
+  await setGlobalBlockedIdentities([await maliciousInvestor.getIdentity()]);
 
   // Create the assets
   const deposit = await createDeposit();

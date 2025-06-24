@@ -348,6 +348,18 @@ export class ATKDeployer {
   ): ATKOnboardingContracts["timeBoundAirdropFactory"] {
     return this.getContract("timeBoundAirdropFactory", walletClient);
   }
+
+  public getAddressBlockListModuleContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): ATKOnboardingContracts["addressBlockListModule"] {
+    return this.getContract("addressBlockListModule", walletClient);
+  }
+
+  public getIdentityBlockListModuleContract(
+    walletClient?: WalletClient<Transport, Chain, Account>
+  ): ATKOnboardingContracts["identityBlockListModule"] {
+    return this.getContract("identityBlockListModule", walletClient);
+  }
 }
 
 export const atkDeployer = new ATKDeployer();

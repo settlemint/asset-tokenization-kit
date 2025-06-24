@@ -7,6 +7,22 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 /// @title Interface for the ATK Equity Factory
 /// @notice Defines the functions for creating and predicting addresses of ATK Equity instances.
 interface IATKEquityFactory is IATKTokenFactory {
+    /// @notice Emitted when a new equity is created.
+    /// @param sender The address of the sender.
+    /// @param tokenAddress The address of the newly created token.
+    /// @param name The name of the equity.
+    /// @param symbol The symbol of the equity.
+    /// @param decimals The number of decimals for the equity tokens.
+    /// @param requiredClaimTopics The claim topics required for interacting with the equity.
+    event EquityCreated(
+        address indexed sender,
+        address indexed tokenAddress,
+        string name,
+        string symbol,
+        uint8 decimals,
+        uint256[] requiredClaimTopics
+    );
+
     /// @notice Creates a new ATK Equity token.
     /// @param name_ The name of the equity token.
     /// @param symbol_ The symbol of the equity token.

@@ -107,6 +107,8 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
             revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
         }
 
+        emit DepositCreated(_msgSender(), deployedDepositAddress, name_, symbol_, decimals_, requiredClaimTopics_);
+
         return deployedDepositAddress;
     }
 

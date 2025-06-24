@@ -51,6 +51,13 @@ module.exports = async ({ github, context, core }) => {
   let slackTs = null;
 
   try {
+    // Check if repository is public
+    const { data: repo } = await github.rest.repos.get({
+      owner: context.repo.owner,
+      repo: context.repo.repo
+    });
+    const isPrivateRepo = repo.private;
+    console.log(`Repository is ${isPrivateRepo ? 'private' : 'public'}`);
     // Get PR labels
     let { data: labels } = await github.rest.issues.listLabelsOnIssue({
       owner: context.repo.owner,
@@ -65,6 +72,23 @@ module.exports = async ({ github, context, core }) => {
     }
     
     console.log(`Found ${labels.length} PR labels:`, labels.map(l => l.name));
+    
+    // Also check PR merged status directly from GitHub API
+    // This is more reliable than labels for recently merged PRs
+    let isPRMerged = false;
+    try {
+      const { data: pr } = await github.rest.pulls.get({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        pull_number: PR_NUMBER
+      });
+      isPRMerged = pr.merged === true;
+      if (isPRMerged) {
+        console.log('PR is merged according to GitHub API');
+      }
+    } catch (error) {
+      console.error('Failed to check PR merged status:', error.message);
+    }
 
     // Get PR comments to find existing Slack timestamp
     const { data: comments } = await github.rest.issues.listComments({
@@ -99,7 +123,7 @@ module.exports = async ({ github, context, core }) => {
     }
 
     // Skip if no existing message and PR is merged or abandoned
-    if (!slackTs && (labels.some(l => l.name === 'status:merged') || IS_ABANDONED === 'true')) {
+    if (!slackTs && (labels.some(l => l.name === 'status:merged') || isPRMerged || IS_ABANDONED === 'true')) {
       console.log('Skipping notification for merged/abandoned PR without existing message');
       return;
     }
@@ -216,7 +240,7 @@ module.exports = async ({ github, context, core }) => {
         .replace(/>/g, '&gt;');
     }
 
-    const isMerged = labels.some(l => l.name === 'status:merged');
+    const isMerged = labels.some(l => l.name === 'status:merged') || isPRMerged;
     const isAbandoned = IS_ABANDONED === 'true';
     const escapedTitle = escapeText(PR_TITLE);
 
@@ -258,25 +282,47 @@ module.exports = async ({ github, context, core }) => {
         }
       }];
     } else {
-      // Generate OpenGraph image URL
-      let ogImageUrl;
-      if (!slackTs) {
-        // New message - use timestamp-based cache busting for QA running
-        const qaRunning = labels.some(l => l.name === 'qa:running');
-        const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
-        ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${PR_NUMBER}`;
-      } else {
-        // Update - use stable URL
-        ogImageUrl = `https://opengraph.githubassets.com/1/${context.repo.owner}/${context.repo.repo}/pull/${PR_NUMBER}`;
-      }
-
-      messageBlocks = [
-        {
-          type: 'image',
-          image_url: ogImageUrl,
-          alt_text: `PR #${PR_NUMBER}: ${escapedTitle}`
-        },
-        {
+      // For private repositories, use blocks instead of OpenGraph image
+      if (isPrivateRepo) {
+        messageBlocks = [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: `#${PR_NUMBER} ${escapedTitle}`,
+              emoji: false
+            }
+          },
+          {
+            type: 'section',
+            fields: [
+              {
+                type: 'mrkdwn',
+                text: `*Repository:*\n${context.repo.owner}/${context.repo.repo}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `*Author:*\n${PR_AUTHOR}`
+              }
+            ]
+          }
+        ];
+        
+        // Add status context if available
+        if (statusString.trim()) {
+          messageBlocks.push({
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: statusString.trim()
+              }
+            ]
+          });
+        }
+        
+        // Add action buttons
+        messageBlocks.push({
           type: 'actions',
           elements: [
             {
@@ -308,8 +354,61 @@ module.exports = async ({ github, context, core }) => {
               url: `${PR_URL}/checks`
             }
           ]
+        });
+      } else {
+        // Public repository - use OpenGraph image
+        let ogImageUrl;
+        if (!slackTs) {
+          // New message - use timestamp-based cache busting for QA running
+          const qaRunning = labels.some(l => l.name === 'qa:running');
+          const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
+          ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${PR_NUMBER}`;
+        } else {
+          // Update - use stable URL
+          ogImageUrl = `https://opengraph.githubassets.com/1/${context.repo.owner}/${context.repo.repo}/pull/${PR_NUMBER}`;
         }
-      ];
+
+        messageBlocks = [
+          {
+            type: 'image',
+            image_url: ogImageUrl,
+            alt_text: `PR #${PR_NUMBER}: ${escapedTitle}`
+          },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'View PR',
+                  emoji: false
+                },
+                url: PR_URL,
+                style: 'primary'
+              },
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Files',
+                  emoji: false
+                },
+                url: `${PR_URL}/files`
+              },
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Checks',
+                  emoji: false
+                },
+                url: `${PR_URL}/checks`
+              }
+            ]
+          }
+        ];
+      }
     }
 
     // Send or update message with retry logic
@@ -340,16 +439,38 @@ module.exports = async ({ github, context, core }) => {
             retryCount++;
             await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
           } else if (error.message.includes('invalid_blocks')) {
-            // Fallback to text-only blocks
-            const fallbackBlocks = messageBlocks.filter(b => b.type !== 'image');
-            if (!isMerged && !isAbandoned) {
-              fallbackBlocks.unshift({
-                type: 'section',
-                text: {
-                  type: 'mrkdwn',
-                  text: `*<${PR_URL}|#${PR_NUMBER}: ${escapedTitle}>*\n_by ${PR_AUTHOR}_`
+            // Fallback to simpler text-only blocks
+            let fallbackBlocks;
+            
+            if (isMerged || isAbandoned) {
+              // For merged/abandoned, keep the simple format
+              fallbackBlocks = messageBlocks;
+            } else {
+              // For active PRs, create a simplified block structure
+              fallbackBlocks = [
+                {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*<${PR_URL}|#${PR_NUMBER} ${escapedTitle}>*\n_Author: ${PR_AUTHOR} • Repo: ${context.repo.owner}/${context.repo.repo}_`
+                  }
+                },
+                {
+                  type: 'actions',
+                  elements: [
+                    {
+                      type: 'button',
+                      text: {
+                        type: 'plain_text',
+                        text: 'View PR',
+                        emoji: false
+                      },
+                      url: PR_URL,
+                      style: 'primary'
+                    }
+                  ]
                 }
-              });
+              ];
             }
 
             if (isNew) {

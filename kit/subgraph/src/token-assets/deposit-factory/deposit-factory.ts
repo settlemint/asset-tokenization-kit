@@ -1,13 +1,11 @@
 import { Bytes } from "@graphprotocol/graph-ts";
-import { FundCreated } from "../../../generated/templates/FundFactory/FundFactory";
+import { DepositCreated as DepositCreatedEvent } from "../../../generated/templates/DepositFactory/DepositFactory";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
-import { fetchFund } from "../fund/fetch/fund";
 
-export function handleFundCreated(event: FundCreated): void {
-  fetchEvent(event, "FundCreated");
-
+export function handleDepositCreated(event: DepositCreatedEvent): void {
+  fetchEvent(event, "DepositCreated");
   const token = fetchToken(event.params.tokenAddress);
   token.name = event.params.name;
   token.symbol = event.params.symbol;
@@ -19,8 +17,4 @@ export function handleFundCreated(event: FundCreated): void {
   }
   token.requiredClaimTopics = requiredClaimTopics;
   token.save();
-
-  const fund = fetchFund(event.params.tokenAddress);
-  fund.managementFeeBps = event.params.managementFeeBps;
-  fund.save();
 }

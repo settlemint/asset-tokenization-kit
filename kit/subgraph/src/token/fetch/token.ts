@@ -27,6 +27,7 @@ export function fetchToken(address: Address): Token {
       token.decimals
     );
     token.deployedInTransaction = Bytes.empty();
+    token.requiredClaimTopics = [];
 
     token.save();
     TokenTemplate.create(address);

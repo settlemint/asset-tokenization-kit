@@ -32,7 +32,7 @@ describe("Identity", () => {
       }`
     );
     const response = await theGraphClient.request(query);
-    expect(response.identities.length).toBe(12);
+    expect(response.identities.length).toBe(13);
 
     const identityIds = response.identities.map((identity) => identity.id);
     const accountIds = response.identities
