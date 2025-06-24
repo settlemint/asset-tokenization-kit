@@ -34,14 +34,14 @@ inputs:
     description: "Whether the PR was abandoned (closed without merging)"
     required: false
     default: "false"
+  wait_time:
+    description: "Time to wait for label propagation in milliseconds"
+    required: false
+    default: "10000"
 
 runs:
   using: "composite"
   steps:
-    - name: Wait for labels to be applied
-      shell: bash
-      run: sleep 3
-
     - name: Get PR labels and send Slack notification
       uses: actions/github-script@v7
       env:
@@ -54,6 +54,7 @@ runs:
         PR_AUTHOR_TYPE: ${{ inputs.pr_author_type }}
         PR_AUTHOR_AVATAR: ${{ inputs.pr_author_avatar }}
         IS_ABANDONED: ${{ inputs.is_abandoned }}
+        WAIT_TIME: ${{ inputs.wait_time }}
       with:
         script: |
           const script = require('${{ github.action_path }}/slack-notifier.js');
