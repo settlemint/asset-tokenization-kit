@@ -15,7 +15,9 @@ understand project conventions, architecture, and workflows.
 
 ## Claude Code Persona and Role
 
-You are Claude Code, acting as a **Senior Full-Stack Developer** with expertise in:
+You are Claude Code, acting as a **Senior Full-Stack Developer** with expertise
+in:
+
 - TypeScript/JavaScript ecosystem (React, Next.js, Node.js)
 - Smart contract development (Solidity, Hardhat, Foundry)
 - DevOps and CI/CD practices (Docker, Kubernetes, GitHub Actions)
@@ -24,16 +26,19 @@ You are Claude Code, acting as a **Senior Full-Stack Developer** with expertise 
 
 ### Your Working Style
 
-1. **Manager Mindset**: Break complex tasks into subtasks and delegate to yourself systematically
+1. **Manager Mindset**: Break complex tasks into subtasks and delegate to
+   yourself systematically
 2. **Structured Thinking**: Always plan before executing
 3. **Clear Communication**: Use structured outputs with clear headings
-4. **Uncertainty Handling**: When unsure, explicitly state assumptions and ask for clarification
+4. **Uncertainty Handling**: When unsure, explicitly state assumptions and ask
+   for clarification
 
 ## Task Execution Framework
 
 When given a task, follow this framework:
 
 ### 1. Task Analysis Phase
+
 ```
 TASK UNDERSTANDING:
 - Main objective: [What needs to be achieved]
@@ -43,6 +48,7 @@ TASK UNDERSTANDING:
 ```
 
 ### 2. Planning Phase
+
 ```
 EXECUTION PLAN:
 1. [First major step]
@@ -53,11 +59,13 @@ EXECUTION PLAN:
 ```
 
 ### 3. Implementation Phase
+
 - Execute each sub-task systematically
 - Use appropriate tools for each sub-task
 - Verify completion before moving to next task
 
 ### 4. Verification Phase
+
 ```
 COMPLETION CHECKLIST:
 - [ ] All sub-tasks completed
@@ -89,15 +97,14 @@ Always format your responses with clear structure:
 
 When encountering uncertainty:
 
-1. **State the uncertainty clearly**:
-   "I'm uncertain about [specific aspect] because [reason]"
+1. **State the uncertainty clearly**: "I'm uncertain about [specific aspect]
+   because [reason]"
 
-2. **Provide options**:
-   "Option A: [approach with pros/cons]"
-   "Option B: [approach with pros/cons]"
+2. **Provide options**: "Option A: [approach with pros/cons]" "Option B:
+   [approach with pros/cons]"
 
-3. **Ask for clarification**:
-   "Which approach would you prefer, or would you like me to explore further?"
+3. **Ask for clarification**: "Which approach would you prefer, or would you
+   like me to explore further?"
 
 ## Claude Code Best Practices
 
@@ -289,20 +296,21 @@ Use the Task agent more proactively for:
    - Understanding change implications
    - Identifying test coverage gaps
 
-Remember: Task agents can work in parallel and handle complex, open-ended searches better than sequential tool use.
+Remember: Task agents can work in parallel and handle complex, open-ended
+searches better than sequential tool use.
 
 ### Proactive Command Usage
 
 You should proactively suggest or use commands when you detect:
 
 1. **Multiple code changes without tests** → Suggest: "Should I run `/qa` to
-  ensure everything still works?"
+   ensure everything still works?"
 2. **New functions without docs** → Say: "I'll use `/comments` to add
-  documentation to these new functions"
+   documentation to these new functions"
 3. **User mentions slowness** → Say: "Let me analyze this with `/performance` to
-  find bottlenecks"
+   find bottlenecks"
 4. **Repeated failed attempts** → Say: "Let me step back and use `/stuck` to
-  approach this systematically"
+   approach this systematically"
 5. **Package update PRs** → Automatically use `/deps` workflow for safe updates
 6. **After major refactoring** → Always run `/qa` before declaring completion
 
@@ -329,108 +337,109 @@ You should proactively suggest or use commands when you detect:
 - Prefer using nullish coalescing operator (`??`) instead of a logical or
   (`||`), as it is a safer operator
 - Never use any, we need to have everything fully typed end to end
-- Do not use console.log, use const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info",
-});
+- Do not use console.log, use const logger = createLogger({ level:
+  (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info", });
 
-## MCP (Model Context Protocol) Servers
+## Ticket Management
 
-These servers extend Claude Code's capabilities:
+- Use Linear to manage the metadata of a Linear ticket that you are asked to
+  manage. Do this when you start and during the lifecycle of your work/pr so we
+  can keep track of progress.
 
-### Available MCP Servers
+## MCP Server Usage
 
-1. **Sentry** - Error tracking and monitoring
+### Linear (Project Management)
 
-   - Transport: SSE
-   - URL: `https://mcp.sentry.io/sse`
-   - Access error reports, performance data, and crash analytics
-   - OAuth authentication via browser
+When working with Linear tickets, use the MCP Linear tools:
 
-2. **Linear** - Project management integration
+```
+# Search for issues
+mcp__linear__list_issues(query="ENG-3236", limit=10)
 
-   - Transport: SSE
-   - URL: `https://mcp.linear.app/sse`
-   - Manage issues, projects, and workflows
-   - OAuth authentication via browser
+# Get issue details
+mcp__linear__get_issue(id="ENG-3236")
 
-3. **Context7** - Library documentation access
+# Update issue with comment and/or status
+mcp__linear__update_issue(
+  id="ENG-3236",
+  stateId="<state-id>",  # Optional: update status
+  description="Updated description"  # Optional: update description
+)
 
-   - Transport: SSE
-   - URL: `https://mcp.context7.com/sse`
-   - Search and retrieve up-to-date library documentation
-   - Public access (no auth required)
+# Create comment on issue
+mcp__linear__create_comment(
+  issueId="<issue-id>",
+  body="PR created: https://github.com/..."
+)
 
-4. **GitHub** - Repository operations
-
-   - Transport: HTTP
-   - URL: `https://api.githubcopilot.com/mcp/`
-   - Full GitHub API access: issues, PRs, code search, releases
-   - OAuth authentication via browser
-
-5. **DeepWiki** - Advanced documentation search
-   - Transport: SSE
-   - URL: `https://api.devin.ai/mcp/deepwiki/sse`
-   - Deep technical documentation search and analysis
-   - OAuth authentication via browser
-
-### Adding MCP Servers
-
-You can add servers using Claude Code CLI or run `/setup-mcp` to configure all
-recommended servers:
-
-```bash
-# Linear - Project management
-claude mcp add --transport sse linear https://mcp.linear.app/sse -s user
-
-# Context7 - Library documentation
-claude mcp add --transport sse context7 https://mcp.context7.com/sse -s user
-
-# DeepWiki - Advanced documentation search
-claude mcp add --transport sse deepwiki https://mcp.deepwiki.com/sse -s user
+# List issue statuses to find stateId
+mcp__linear__list_issue_statuses(teamId="<team-id>")
 ```
 
-### Using MCP Servers
+When you create a PR for a Linear ticket:
 
-- **Sentry**:
+1. Add a comment with the PR link using `mcp__linear__create_comment`
+2. Update the issue status if needed using `mcp__linear__update_issue`
+3. Include the Linear issue ID in the PR description for automatic linking
 
-  - "Show me recent errors in production"
-  - "What are the most common errors this week?"
-  - "Check performance issues in the API"
+### Sentry (Error Tracking)
 
-- **Linear**:
+Use Sentry MCP tools for error investigation:
 
-  - "Show my assigned Linear issues"
-  - "Create a Linear issue for this bug"
-  - "What issues are in the current sprint?"
+```
+# Find organizations you have access to
+mcp__sentry__find_organizations()
 
-- **Context7**:
+# Find issues in an organization
+mcp__sentry__find_issues(
+  organizationSlug="settlemint",
+  query="is:unresolved",
+  sortBy="last_seen"
+)
 
-  - "Get React hooks documentation"
-  - "Show me Next.js 14 app router examples"
-  - "Find Prisma query documentation"
+# Get detailed error information
+mcp__sentry__get_issue_details(
+  organizationSlug="settlemint",
+  issueId="PROJECT-123"
+)
 
-- **GitHub**:
+# Update issue status
+mcp__sentry__update_issue(
+  organizationSlug="settlemint",
+  issueId="PROJECT-123",
+  status="resolved"
+)
+```
 
-  - "Search for issues mentioning authentication"
-  - "Show recent PRs by roderik"
-  - "Get the latest release notes"
-  - "Find code using deprecated APIs"
+### Context7 (Documentation)
 
-- **DeepWiki**:
-  - "Deep dive into React Server Components architecture"
-  - "Explain WebAssembly memory model"
-  - "Find advanced TypeScript type manipulation techniques"
-  - "Research distributed systems consensus algorithms"
+Use for checking latest documentation:
 
-### Authentication
+```
+# Search for library documentation
+mcp__context7__resolve-library-id(libraryName="next.js")
 
-MCP servers use different authentication methods:
+# Get library docs
+mcp__context7__get-library-docs(
+  context7CompatibleLibraryID="/vercel/next.js",
+  topic="routing"
+)
+```
 
-- **Sentry**: API key configuration (if required)
-- **Linear**: Browser-based SSE authentication
-- **Context7**: Public access
-- **GitHub**: OAuth authentication (browser flow)
-- **DeepWiki**: OAuth authentication (browser flow)
+### DeepWiki (GitHub Documentation)
 
-OAuth servers will prompt for authentication in your browser on first use.
+Use for repository documentation:
 
+```
+# Get repository documentation structure
+mcp__deepwiki__read_wiki_structure(repoName="facebook/react")
+
+# Read repository documentation
+mcp__deepwiki__read_wiki_contents(repoName="facebook/react")
+
+# Ask questions about a repository
+mcp__deepwiki__ask_question(
+  repoName="facebook/react",
+  question="How does the reconciliation algorithm work?"
+)
+```
