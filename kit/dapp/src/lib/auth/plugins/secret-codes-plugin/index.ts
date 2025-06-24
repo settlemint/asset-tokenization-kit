@@ -85,14 +85,20 @@ export const secretCodes = () => {
         },
         async (ctx) => {
           const user = ctx.context.session.user as UserWithSecretCodesContext;
+          const { password } = ctx.body;
           if (!user.wallet) {
             throw new APIError("BAD_REQUEST", {
               message: "User wallet not found",
             });
           }
           if (user.initialOnboardingFinished) {
+            if (!password) {
+              throw new APIError("BAD_REQUEST", {
+                message: "Password is required",
+              });
+            }
             const isPasswordValid = await validatePassword(ctx, {
-              password: ctx.body.password ?? "",
+              password,
               userId: user.id,
             });
             if (!isPasswordValid) {

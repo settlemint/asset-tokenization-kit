@@ -74,9 +74,15 @@ export const twoFactor = () => {
         },
         async (ctx) => {
           const user = ctx.context.session.user as UserWithTwoFactorContext;
+          const { password } = ctx.body;
           if (user.initialOnboardingFinished) {
+            if (!password) {
+              throw new APIError("BAD_REQUEST", {
+                message: "Password is required",
+              });
+            }
             const isPasswordValid = await validatePassword(ctx, {
-              password: ctx.body.password ?? "",
+              password,
               userId: user.id,
             });
             if (!isPasswordValid) {
