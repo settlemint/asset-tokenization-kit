@@ -14,12 +14,13 @@ const MINT_BOND_MUTATION = portalGraphql(`
     $verificationId: String
     $challengeResponse: String
     $address: String!
+    $from: String!
     $to: String!
     $amount: String!
   ) {
     mint: IATKBondMint(
       address: $address
-      from: $to
+      from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: { _amount: $amount, _to: $to }
@@ -41,6 +42,7 @@ export const mint = tokenRouter.token.mint
       MINT_BOND_MUTATION,
       {
         address: id,
+        from: sender.wallet ?? "",
         to,
         amount: amount.toString(),
         ...(await handleChallenge(sender, {
