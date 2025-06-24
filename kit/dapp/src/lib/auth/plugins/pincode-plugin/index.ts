@@ -4,8 +4,12 @@ import {
   updatePincode,
 } from "@/lib/auth/plugins/pincode-plugin/queries";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { APIError, type BetterAuthPlugin } from "better-auth";
-import { createAuthEndpoint, sessionMiddleware } from "better-auth/api";
+import type { BetterAuthPlugin } from "better-auth";
+import {
+  APIError,
+  createAuthEndpoint,
+  sessionMiddleware,
+} from "better-auth/api";
 import { z } from "zod";
 import { revokeSession, validatePassword } from "../utils";
 

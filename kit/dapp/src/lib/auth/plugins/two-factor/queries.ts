@@ -2,7 +2,7 @@ import { metadata } from "@/config/metadata";
 import type { UserWithTwoFactorContext } from "@/lib/auth/plugins/two-factor/index";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { VariablesOf } from "@settlemint/sdk-portal";
-import { APIError } from "better-auth";
+import { APIError } from "better-auth/api";
 import { revalidateTag } from "next/cache";
 
 const DELETE_WALLET_VERIFICATION_MUTATION = portalGraphql(`

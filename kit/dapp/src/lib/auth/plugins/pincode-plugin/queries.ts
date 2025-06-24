@@ -1,6 +1,6 @@
 import type { UserWithPincodeContext } from "@/lib/auth/plugins/pincode-plugin";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { APIError } from "better-auth";
+import { APIError } from "better-auth/api";
 
 const SET_PINCODE_MUTATION = portalGraphql(`
   mutation SetPinCode($address: String!, $pincode: String!) {
