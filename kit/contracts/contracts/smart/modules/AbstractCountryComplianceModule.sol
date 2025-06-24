@@ -44,6 +44,11 @@ abstract contract AbstractCountryComplianceModule is AbstractComplianceModule {
     /// The role is `keccak256("GLOBAL_LIST_MANAGER_ROLE")`.
     bytes32 public constant GLOBAL_LIST_MANAGER_ROLE = keccak256("GLOBAL_LIST_MANAGER_ROLE");
 
+    /// @dev Emitted when a country is added to or removed from the global list.
+    /// @param country The country code being updated.
+    /// @param inList True if the country was added, false if it was removed.
+    event GlobalCountryListChange(uint16 indexed country, bool inList);
+
     // --- State Variables for Enumerable Country List Management ---
     /// @notice Stores the global country list for this specific module instance (meaning depends on concrete
     /// implementation).
@@ -57,7 +62,7 @@ abstract contract AbstractCountryComplianceModule is AbstractComplianceModule {
     /// @dev This array allows for iterating over all countries in the global list, which is useful for administrative
     /// tasks, data export, or informational queries. It is managed in conjunction with `_globalCountriesIndex`
     /// to allow for efficient addition and removal (O(1) for removal using the swap-and-pop technique).
-    uint16[] internal _globalCountriesList;
+    uint16[] public globalCountriesList;
 
     /// @notice Mapping from a country code to its index (plus one) in the `_globalCountriesList` array.
     /// @dev This mapping is a crucial optimization for removing a country from the `_globalCountriesList` array.
@@ -160,17 +165,21 @@ abstract contract AbstractCountryComplianceModule is AbstractComplianceModule {
     /// @param _inList True to add the country to the global list, false to remove it.
     function _setCountryInGlobalList(uint16 _country, bool _inList) internal {
         bool wasInList = _globalCountries[_country];
+        if (wasInList == _inList) {
+            return;
+        }
 
         _globalCountries[_country] = _inList;
 
-        if (_inList && !wasInList) {
+        if (_inList) {
             // Adding a new country to the list
-            _globalCountriesList.push(_country);
-            _globalCountriesIndex[_country] = _globalCountriesList.length; // Store index + 1
-        } else if (!_inList && wasInList) {
+            globalCountriesList.push(_country);
+            _globalCountriesIndex[_country] = globalCountriesList.length; // Store index + 1
+        } else {
             // Removing a country from the list
             _removeCountryFromGlobalArray(_country);
         }
+        emit GlobalCountryListChange(_country, _inList);
     }
 
     /// @notice Internal function to remove a country code from the `_globalCountriesList` array using the swap-and-pop
@@ -187,17 +196,17 @@ abstract contract AbstractCountryComplianceModule is AbstractComplianceModule {
         if (indexPlusOne == 0) return; // Country not in array, nothing to remove
 
         uint256 index = indexPlusOne - 1; // Convert to 0-based index
-        uint256 lastIndex = _globalCountriesList.length - 1;
+        uint256 lastIndex = globalCountriesList.length - 1;
 
         if (index != lastIndex) {
             // Move the last country to the position of the country being removed
-            uint16 lastCountry = _globalCountriesList[lastIndex];
-            _globalCountriesList[index] = lastCountry;
+            uint16 lastCountry = globalCountriesList[lastIndex];
+            globalCountriesList[index] = lastCountry;
             _globalCountriesIndex[lastCountry] = indexPlusOne; // Update index for moved country
         }
 
         // Remove the last element and clear the index mapping
-        _globalCountriesList.pop();
+        globalCountriesList.pop();
         delete _globalCountriesIndex[_country];
     }
 
@@ -211,6 +220,6 @@ abstract contract AbstractCountryComplianceModule is AbstractComplianceModule {
     /// @notice Internal view function to get all countries in the global list.
     /// @return An array of all country codes currently in the global list.
     function _getGlobalCountriesList() internal view returns (uint16[] memory) {
-        return _globalCountriesList;
+        return globalCountriesList;
     }
 }

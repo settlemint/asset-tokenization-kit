@@ -21,7 +21,6 @@ yarn-error.log*
 
 # dotenv environment variables file
 .env
-.env.subgraph
 
 # Testing
 coverage
@@ -41,4 +40,11 @@ the-graph-env.d.ts
 the-graph-cache.d.ts
 
 subgraph.json
-.generated/subgraph-hash.txt
+
+# Generated interface IDs
+src/erc165/utils/interfaceids.ts
+
+# Generated files - ignore everything except what's needed for docker-compose
+.generated/*
+
+scripts/hardhat/abi/**

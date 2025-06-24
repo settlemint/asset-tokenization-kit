@@ -17,17 +17,7 @@ import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { AirdropUtils } from "../../utils/AirdropUtils.sol";
-import {
-    InitializationDeadlinePassed,
-    ClaimNotEligible,
-    ZeroAmountToTransfer,
-    InvalidVestingStrategyAddress,
-    InvalidInitializationDeadline,
-    InvalidVestingStrategy,
-    VestingNotInitialized,
-    VestingAlreadyInitialized,
-    CliffExceedsVestingDuration
-} from "../../../contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropErrors.sol";
+
 import {
     InvalidMerkleProof,
     InvalidInputArrayLengths,
@@ -61,7 +51,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
     // Events
     event VestingInitialized(address indexed account, uint256 totalAmount, uint256 index);
     event VestingStrategyUpdated(address indexed oldStrategy, address indexed newStrategy);
-    event Claimed(address indexed claimant, uint256 amount, uint256 index);
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -94,7 +84,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
 
         // Create system addon for vesting airdrop factory
         vestingAirdropFactory = IATKVestingAirdropFactory(
-            systemUtils.system().createSystemAddon(
+            systemUtils.systemAddonRegistry().registerSystemAddon(
                 "vesting-airdrop-factory", address(vestingAirdropFactoryImpl), encodedInitializationData
             )
         );
@@ -129,12 +119,12 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         assertEq(address(vestingAirdrop.token()), address(token));
         assertEq(vestingAirdrop.merkleRoot(), merkleRoot);
         assertEq(address(vestingAirdrop.vestingStrategy()), address(vestingStrategy));
-        assertEq(vestingAirdrop.claimPeriodEnd(), initializationDeadline);
+        assertEq(vestingAirdrop.initializationDeadline(), initializationDeadline);
     }
 
     function testFactoryCreateWithInvalidVestingStrategy() public {
         vm.startPrank(owner);
-        vm.expectRevert(InvalidVestingStrategyAddress.selector);
+        vm.expectRevert(IATKVestingAirdrop.InvalidVestingStrategyAddress.selector);
         vestingAirdropFactory.create(
             "Test Airdrop", address(token), merkleRoot, owner, address(0), initializationDeadline
         );
@@ -143,7 +133,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
 
     function testFactoryCreateWithInvalidDeadline() public {
         vm.startPrank(owner);
-        vm.expectRevert(InvalidInitializationDeadline.selector);
+        vm.expectRevert(IATKVestingAirdrop.InvalidInitializationDeadline.selector);
         vestingAirdropFactory.create(
             "Test Airdrop", address(token), merkleRoot, owner, address(vestingStrategy), block.timestamp - 1
         );
@@ -151,7 +141,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
     }
 
     function testVestingStrategyWithCliffExceedsVestingDuration() public {
-        vm.expectRevert(CliffExceedsVestingDuration.selector);
+        vm.expectRevert(IATKVestingStrategy.CliffExceedsVestingDuration.selector);
         new ATKLinearVestingStrategy(CLIFF_DURATION, VESTING_DURATION); // cliff > vesting
     }
 
@@ -190,7 +180,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         vestingAirdrop.initializeVesting(index, amount, proof);
 
         // Second initialization should fail
-        vm.expectRevert(VestingAlreadyInitialized.selector);
+        vm.expectRevert(IATKVestingAirdrop.VestingAlreadyInitialized.selector);
         vm.prank(user1);
         vestingAirdrop.initializeVesting(index, amount, proof);
     }
@@ -203,7 +193,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         // Fast forward past deadline
         vm.warp(initializationDeadline + 1);
 
-        vm.expectRevert(InitializationDeadlinePassed.selector);
+        vm.expectRevert(IATKVestingAirdrop.InitializationDeadlinePassed.selector);
         vm.prank(user1);
         vestingAirdrop.initializeVesting(index, amount, proof);
     }
@@ -213,7 +203,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         uint256 amount = testUserData.allocations[user1];
         bytes32[] memory proof = testUserData.proofs[user1];
 
-        vm.expectRevert(VestingNotInitialized.selector);
+        vm.expectRevert(IATKVestingAirdrop.VestingNotInitialized.selector);
         vm.prank(user1);
         vestingAirdrop.claim(index, amount, proof);
     }
@@ -230,7 +220,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         // Fast forward to within cliff period
         vm.warp(block.timestamp + CLIFF_DURATION - 1 days);
 
-        vm.expectRevert(ZeroAmountToTransfer.selector);
+        vm.expectRevert(IATKVestingAirdrop.ZeroAmountToTransfer.selector);
         vm.prank(user1);
         vestingAirdrop.claim(index, amount, proof);
     }
@@ -252,7 +242,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         uint256 expectedClaimable = (amount * timeElapsed) / VESTING_DURATION;
 
         vm.expectEmit(true, true, true, true);
-        emit Claimed(user1, expectedClaimable, index);
+        emit AirdropTokensTransferred(user1, index, expectedClaimable);
 
         vm.prank(user1);
         vestingAirdrop.claim(index, amount, proof);
@@ -274,7 +264,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         vm.warp(block.timestamp + VESTING_DURATION + 1 days);
 
         vm.expectEmit(true, true, true, true);
-        emit Claimed(user1, amount, index);
+        emit AirdropTokensTransferred(user1, index, amount);
 
         vm.prank(user1);
         vestingAirdrop.claim(index, amount, proof);
@@ -297,7 +287,7 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
     }
 
     function testSetVestingStrategyWithInvalidStrategy() public {
-        vm.expectRevert(InvalidVestingStrategyAddress.selector);
+        vm.expectRevert(IATKVestingAirdrop.InvalidVestingStrategyAddress.selector);
         vm.prank(owner);
         vestingAirdrop.setVestingStrategy(address(0));
     }

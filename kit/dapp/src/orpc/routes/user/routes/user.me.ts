@@ -45,13 +45,11 @@ import { authRouter } from "@/orpc/procedures/auth.router";
 export const me = authRouter.user.me.handler(({ context }) => {
   const user = context.auth.user;
 
-  // Country and claims data not available in current subgraph schema
   return {
     id: user.id,
     name: user.name,
     email: user.email,
+    role: user.role,
     wallet: user.wallet ?? null,
-    country: undefined,
-    claims: undefined,
   };
 });

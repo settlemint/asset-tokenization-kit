@@ -1,4 +1,7 @@
 {
   "appDescription": "Deploy in minutes, customize easily",
-  "appName": "Asset Tokenization Kit"
+  "appName": "Asset Tokenization Kit",
+  "generating": "Generating...",
+  "deploying": "Deploying...",
+  "continue": "Continue"
 }

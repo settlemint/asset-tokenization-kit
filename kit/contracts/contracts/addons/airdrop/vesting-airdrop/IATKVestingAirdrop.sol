@@ -15,6 +15,34 @@ import { IATKAirdrop } from "../IATKAirdrop.sol";
 ///      1. `initializeVesting` or `batchInitializeVesting`: User proves their allocation and starts the vesting clock.
 ///      2. `claim` or `batchClaim`: User claims the vested portion of their tokens at any time after initialization.
 interface IATKVestingAirdrop is IATKAirdrop {
+    /// @notice Error indicating that the initialization deadline has passed and no new vesting can be initialized.
+    error InitializationDeadlinePassed();
+
+    /// @notice Error indicating that the user is not eligible to claim at this time.
+    error ClaimNotEligible();
+
+    /// @notice Error indicating that there are zero tokens available to transfer.
+    error ZeroAmountToTransfer();
+
+    /// @notice Error indicating that an invalid vesting strategy address was provided.
+    error InvalidVestingStrategyAddress();
+
+    /// @notice Error indicating that an invalid initialization deadline was provided.
+    error InvalidInitializationDeadline();
+
+    /// @notice Error indicating that the provided vesting strategy is invalid for this use case.
+    /// @param vestingStrategy The address of the invalid vesting strategy.
+    error InvalidVestingStrategy(address vestingStrategy);
+
+    /// @notice Error indicating that vesting has not been initialized for the specified index.
+    error VestingNotInitialized();
+
+    /// @notice Error indicating that vesting has already been initialized for the specified index.
+    error VestingAlreadyInitialized();
+
+    /// @notice Error indicating that the vesting airdrop implementation is not set or invalid.
+    error VestingAirdropImplementationNotSet();
+
     /// @notice Initializes the vesting airdrop contract with specified parameters.
     /// @param name_ The human-readable name for this airdrop.
     /// @param token_ The address of the ERC20 token to be distributed.
@@ -32,15 +60,15 @@ interface IATKVestingAirdrop is IATKAirdrop {
     )
         external;
 
-    // --- View Functions (Vesting-specific) ---
+    // --- View Functions ---
 
     /// @notice Returns the current vesting strategy contract.
     /// @return The vesting strategy contract.
     function vestingStrategy() external view returns (IATKVestingStrategy);
 
-    /// @notice Returns the claim period end timestamp.
+    /// @notice Returns the initialization deadline timestamp.
     /// @return The timestamp after which no new vesting can be initialized.
-    function claimPeriodEnd() external view returns (uint256);
+    function initializationDeadline() external view returns (uint256);
 
     /// @notice Returns the initialization timestamp for a specific claim index.
     /// @param index The index to check.

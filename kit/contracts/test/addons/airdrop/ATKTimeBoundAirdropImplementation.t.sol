@@ -16,13 +16,6 @@ import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {
-    AirdropNotStarted,
-    AirdropEnded,
-    InvalidStartTime,
-    InvalidEndTime,
-    InvalidTimeWindow
-} from "../../../contracts/addons/airdrop/time-bound-airdrop/ATKTimeBoundAirdropErrors.sol";
-import {
     InvalidMerkleProof,
     InvalidInputArrayLengths,
     BatchSizeExceedsLimit,
@@ -54,9 +47,8 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
     AirdropUtils.TestUserData public testUserData;
 
     // Events
-    event TimeWindowSet(uint256 startTime, uint256 endTime);
-    event Claimed(address indexed claimant, uint256 amount, uint256 index);
-    event BatchClaimed(address indexed claimant, uint256 totalAmount, uint256[] indices, uint256[] amounts);
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
+    event AirdropBatchTokensTransferred(address[] recipients, uint256[] indices, uint256[] amounts);
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -90,7 +82,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
 
         // Create system addon for time-bound airdrop factory
         timeBoundAirdropFactory = IATKTimeBoundAirdropFactory(
-            systemUtils.system().createSystemAddon(
+            systemUtils.systemAddonRegistry().registerSystemAddon(
                 "time-bound-airdrop-factory", address(timeBoundAirdropFactoryImpl), encodedInitializationData
             )
         );
@@ -155,7 +147,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
         uint256 futureEndTime = block.timestamp + CLAIM_WINDOW;
 
         vm.startPrank(owner);
-        vm.expectRevert(InvalidStartTime.selector);
+        vm.expectRevert(IATKTimeBoundAirdrop.InvalidStartTime.selector);
         timeBoundAirdropFactory.create(
             "Invalid Start Time Airdrop", address(token), merkleRoot, owner, pastStartTime, futureEndTime
         );
@@ -167,7 +159,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
         uint256 pastEndTime = futureStartTime - 1 hours; // End before start
 
         vm.startPrank(owner);
-        vm.expectRevert(InvalidEndTime.selector);
+        vm.expectRevert(IATKTimeBoundAirdrop.InvalidEndTime.selector);
         timeBoundAirdropFactory.create(
             "Invalid End Time Airdrop", address(token), merkleRoot, owner, futureStartTime, pastEndTime
         );
@@ -218,7 +210,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
         uint256 amount = testUserData.allocations[user1];
         bytes32[] memory proof = testUserData.proofs[user1];
 
-        vm.expectRevert(AirdropNotStarted.selector);
+        vm.expectRevert(IATKTimeBoundAirdrop.AirdropNotStarted.selector);
         vm.prank(user1);
         timeBoundAirdrop.claim(index, amount, proof);
     }
@@ -231,7 +223,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
         // Fast forward past end time
         vm.warp(endTime + 1);
 
-        vm.expectRevert(AirdropEnded.selector);
+        vm.expectRevert(IATKTimeBoundAirdrop.AirdropEnded.selector);
         vm.prank(user1);
         timeBoundAirdrop.claim(index, amount, proof);
     }
@@ -247,7 +239,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
         uint256 balanceBefore = token.balanceOf(user1);
 
         vm.expectEmit(true, true, true, true);
-        emit Claimed(user1, amount, index);
+        emit AirdropTokensTransferred(user1, index, amount);
 
         vm.prank(user1);
         timeBoundAirdrop.claim(index, amount, proof);
@@ -301,7 +293,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
         amounts[1] = testUserData.allocations[user2];
         proofs_[1] = testUserData.proofs[user2];
 
-        vm.expectRevert(AirdropNotStarted.selector);
+        vm.expectRevert(IATKTimeBoundAirdrop.AirdropNotStarted.selector);
         vm.prank(user1);
         timeBoundAirdrop.batchClaim(indices_, amounts, proofs_);
     }
@@ -322,7 +314,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
         // Fast forward past end time
         vm.warp(endTime + 1);
 
-        vm.expectRevert(AirdropEnded.selector);
+        vm.expectRevert(IATKTimeBoundAirdrop.AirdropEnded.selector);
         vm.prank(user1);
         timeBoundAirdrop.batchClaim(indices_, amounts, proofs_);
     }
@@ -447,7 +439,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
         bytes32[] memory proof = testUserData.proofs[user1];
 
         // Before start: should fail
-        vm.expectRevert(AirdropNotStarted.selector);
+        vm.expectRevert(IATKTimeBoundAirdrop.AirdropNotStarted.selector);
         vm.prank(user1);
         timeBoundAirdrop.claim(index, amount, proof);
 

@@ -1,5 +1,0 @@
-pre-commit:
-  parallel: true
-  jobs:
-    - name: docs-and-stage
-      run: bun run docs && git add "**/README.md" || true

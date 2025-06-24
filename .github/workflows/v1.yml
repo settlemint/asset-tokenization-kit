@@ -22,12 +22,12 @@ jobs:
         uses: rlespinasse/github-slug-action@v5
 
       - name: Configure 1Password
-        uses: 1password/load-secrets-action/configure@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        uses: 1password/load-secrets-action/configure@v2
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Load secrets
-        uses: 1password/load-secrets-action@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        uses: 1password/load-secrets-action@v2
         env:
           HARBOR_USER: op://platform/harbor/username
           HARBOR_PASS: op://platform/harbor/password
@@ -40,7 +40,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to Harbor
-        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+        uses: docker/login-action@v3
         with:
           registry: harbor.settlemint.com
           username: ${{ env.HARBOR_USER }}
@@ -73,7 +73,7 @@ jobs:
           version: stable
 
       - name: Install Helm
-        uses: azure/setup-helm@b9e51907a09c216f16ebe8536097933489208112 # v4
+        uses: azure/setup-helm@v4
 
       - name: Install YQ
         uses: alexellis/arkade-get@master

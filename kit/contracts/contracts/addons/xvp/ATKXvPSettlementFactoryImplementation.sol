@@ -10,13 +10,13 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKXvPSettlementFactory } from "./IATKXvPSettlementFactory.sol";
-import { IWithTypeIdentifier } from "../../system/IWithTypeIdentifier.sol";
+import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 import { AbstractATKSystemAddonFactoryImplementation } from
-    "../../system/AbstractATKSystemAddonFactoryImplementation.sol";
+    "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKXvPSettlementProxy } from "./ATKXvPSettlementProxy.sol";
 import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
 import { IATKSystem } from "../../system/IATKSystem.sol";
-import { IATKComplianceBypassList } from "../../system/compliance/IATKComplianceBypassList.sol";
+import { IATKCompliance } from "../../system/compliance/IATKCompliance.sol";
 
 /// @title XvPSettlementFactory - A factory contract for creating XvPSettlement contracts
 /// @notice This contract allows the creation of new XvPSettlement contracts with deterministic addresses using CREATE2.

@@ -42,6 +42,7 @@ export const Roles = [
   new RoleConfig("REGISTRAR_ROLE", "registrar"),
   new RoleConfig("CLAIM_MANAGER_ROLE", "claimManager"),
   new RoleConfig("IDENTITY_ISSUER_ROLE", "identityIssuer"),
+  new RoleConfig("IDENTITY_ISSUER_ADMIN_ROLE", "identityIssuerAdmin"),
   new RoleConfig("TOKEN_IDENTITY_ISSUER_ROLE", "tokenIdentityIssuer"),
   new RoleConfig(
     "TOKEN_IDENTITY_ISSUER_ADMIN_ROLE",
@@ -56,6 +57,7 @@ export const Roles = [
   new RoleConfig("EMERGENCY_ROLE", "emergency"),
   new RoleConfig("IMPLEMENTATION_MANAGER_ROLE", "implementationManager"),
   new RoleConfig("BYPASS_LIST_MANAGER_ROLE", "bypassListManager"),
+  new RoleConfig("BYPASS_LIST_MANAGER_ADMIN_ROLE", "bypassListManagerAdmin"),
 ];
 
 export function getRoleConfigFromBytes(bytes: Bytes): RoleConfig {

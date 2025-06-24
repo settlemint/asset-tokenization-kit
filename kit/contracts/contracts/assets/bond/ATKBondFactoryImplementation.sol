@@ -10,7 +10,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IATKBond } from "./IATKBond.sol";
 import { IATKBondFactory } from "./IATKBondFactory.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { IATKComplianceBypassList } from "../../system/compliance/IATKComplianceBypassList.sol";
+import { IATKCompliance } from "../../system/compliance/IATKCompliance.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 // Local imports
@@ -87,7 +87,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         }
 
         // Add the bond to the compliance allow list, because it needs to be able to hold other tokens
-        IATKComplianceBypassList(address(_compliance())).addToBypassList(deployedBondAddress);
+        IATKCompliance(address(_compliance())).addToBypassList(deployedBondAddress);
 
         emit BondCreated(
             _msgSender(),
@@ -95,6 +95,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
             name_,
             symbol_,
             decimals_,
+            requiredClaimTopics_,
             cap_,
             maturityDate_,
             faceValue_,

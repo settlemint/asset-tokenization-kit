@@ -1,45 +1,171 @@
 {
-  "card-description": "このプラットフォームを使用するには、ウォレットとブロックチェーン上のアイデンティティが必要です。 ",
+  "card-description": "このプラットフォームを使用するには、ウォレットとブロックチェーン上のアイデンティティが必要です。",
   "card-title": "設定を始めましょう！",
-  "messages": {
-    "pending": {
-      "mining": "あなたのSMARTシステムを展開しています...",
-      "indexing": "新しいSMARTシステムをインデックスしています..."
-    },
-    "success": "あなたのSMARTシステムが展開されました！",
-    "error": "あなたのSMARTシステムの展開に失敗しました",
-    "timeout": "取引追跡のタイムアウト"
+  "platform": {
+    "title": "プラットフォームのセットアップ",
+    "description": "デジタル資産プラットフォームをセットアップしましょう"
   },
-  "create-system-messages": {
-    "initial-loading": "SMARTシステムのデプロイを準備中...",
-    "no-result-error": "システムのデプロイが完了しましたが、アドレスが返されませんでした",
-    "default-error": "SMARTシステムのデプロイに失敗しました",
-    "system-created": "SMARTシステムが正常に作成されました",
-    "creating-system": "新しいシステムを作成中...",
-    "system-creation-failed": "システムの作成に失敗しました。もう一度お試しください。",
-    "transaction-tracking": {
-      "stream-timeout": "システムデプロイの追跡が90秒後にタイムアウトしました",
-      "waiting-for-mining": "チェーン上でSMARTシステムをデプロイ中...",
-      "transaction-failed": "システムデプロイのトランザクションが失敗しました",
-      "transaction-dropped": "システムデプロイのトランザクションが時間内にオンチェーンで確認されませんでした",
-      "waiting-for-indexing": "システムがインデックスされるのを待っています...",
-      "transaction-indexed": "システムが正常にインデックスされ、使用準備が整いました",
-      "indexing-timeout": "システムのインデックス作成がタイムアウトしました。ページを更新してください"
+  "issuer": {
+    "title": "発行者のセットアップ",
+    "description": "デジタル資産を発行するためにアカウントを設定します"
+  },
+  "investor": {
+    "title": "投資家のセットアップ",
+    "description": "デジタル資産に投資を始めるためにアカウントを設定します"
+  },
+  "steps": {
+    "wallet": {
+      "title": "ウォレットを作成",
+      "description": "ブロックチェーンウォレットを生成します"
+    },
+    "system": {
+      "title": "システムを展開",
+      "description": "コアスマートコントラクトを初期化します"
+    },
+    "assets": {
+      "title": "資産を選択",
+      "description": "サポートされている資産タイプを選択します"
+    },
+    "identity": {
+      "title": "アイデンティティを確認",
+      "description": "KYC認証を完了します",
+      "info": "アイデンティティの確認は、規制の遵守を確保し、デジタル資産に投資できるようにします。",
+      "coming-soon": "近日公開",
+      "coming-soon-description": "アイデンティティの確認は現在開発中です。その間に、プラットフォームを探索できるようにウォレットを作成します。"
     }
   },
-  "wallet-generated": "ウォレットが正常に生成されました",
-  "wallet-already-exists": "このユーザーのウォレットは既に存在します",
-  "wallet-creation-failed": "ウォレットの作成に失敗しました。もう一度お試しください。",
-  "assets": {
-    "bond": "債券",
-    "equity": "株式",
-    "fund": "ファンド",
-    "stablecoin": "ステーブルコイン",
-    "deposit": "預金"
+  "wallet": {
+    "title": "ウォレットを生成",
+    "description": "取引のためにブロックチェーンウォレットを作成します",
+    "info": "あなたのウォレットはブロックチェーンへのゲートウェイです。デジタル資産を保有し、安全に取引を実行することができます。",
+    "generate": "ウォレットを生成",
+    "success": "ウォレットが正常に作成されました！",
+    "generated": "ウォレットが正常に生成されました",
+    "already-exists": "このユーザーのウォレットはすでに存在します",
+    "creation-failed": "ウォレットの作成に失敗しました。もう一度お試しください。",
+    "your-wallet": "あなたのウォレット",
+    "generate-your-wallet": "ウォレットを生成する",
+    "blockchain-identity-ready": "あなたのブロックチェーンIDが準備できました",
+    "create-secure-wallet": "プラットフォームとやり取りするための安全なブロックチェーンウォレットを作成します",
+    "wallet-generated-successfully": "ウォレットが正常に生成されました",
+    "address-label": "アドレス",
+    "what-is-wallet": "ウォレットとは何ですか？",
+    "wallet-description": "ブロックチェーンウォレットは、スマートコントラクトと安全にデジタル資産を管理するためのあなたのデジタルIDです。",
+    "features": {
+      "secure": "安全",
+      "secure-description": "暗号鍵によって保護されています",
+      "instant": "即時",
+      "instant-description": "すぐに作成してアクセス",
+      "protected": "保護された",
+      "protected-description": "あなたの鍵、あなたの資産",
+      "global": "グローバル",
+      "global-description": "どこからでもアクセス可能"
+    }
   },
-  "asset-selection": {
-    "title": "資産タイプ",
-    "description": "プラットフォームでサポートしたい資産タイプを選択してください",
-    "continue": "続ける"
+  "system": {
+    "title": "SMARTシステムを展開",
+    "description": "プラットフォームのコアインフラを初期化します",
+    "info": "SMARTシステムはデジタル資産プラットフォームの基盤です。すべてのトークン操作を管理し、遵守を確保します。",
+    "deploy": "システムを展開",
+    "deployed": "システムが正常に展開されました",
+    "success": "システムが正常に展開されました！",
+    "messages": {
+      "initial-loading": "SMARTシステムを展開する準備をしています...",
+      "no-result-error": "システム展開が完了しましたが、アドレスが返されませんでした",
+      "default-error": "SMARTシステムの展開に失敗しました",
+      "created": "システムが正常に作成され、ブートストラップされました。",
+      "creating": "新しいシステムを作成しています...",
+      "creation-failed": "システムの作成に失敗しました。もう一度お試しください。",
+      "pending": {
+        "mining": "SMARTシステムを展開しています...",
+        "indexing": "新しいSMARTシステムをインデックスしています..."
+      },
+      "error": "SMARTシステムの展開に失敗しました",
+      "timeout": "取引追跡のタイムアウト",
+      "bootstrapping-system": "システムをブートストラップ中...",
+      "bootstrap-failed": "システムのブートストラップに失敗しました。再試行してください。",
+      "system-created-bootstrap-failed": "システムは作成されましたが、ブートストラップに失敗しました。手動でシステムをブートストラップする必要があるかもしれません。"
+    },
+    "transaction-tracking": {
+      "stream-timeout": "システム展開の追跡が90秒後にタイムアウトしました",
+      "waiting-for-mining": "チェーン上でSMARTシステムを展開しています...",
+      "transaction-failed": "システム展開の取引に失敗しました",
+      "transaction-dropped": "システム展開の取引が時間内にオンチェーンで確認されませんでした",
+      "waiting-for-indexing": "システムがインデックスされるのを待っています...",
+      "transaction-indexed": "システムが正常にインデックスされ、使用可能です",
+      "indexing-timeout": "システムのインデックス作成がタイムアウトしました。ページを更新してください"
+    },
+    "system-deployed": "システムが展開されました",
+    "deploy-smart-system": "SMARTシステムを展開",
+    "your-blockchain-infrastructure-ready": "あなたのブロックチェーンインフラが準備できました",
+    "deploy-blockchain-infrastructure": "資産トークン化のためにブロックチェーンインフラを展開します",
+    "system-deployed-successfully": "システムが正常に展開されました",
+    "contract-address": "契約アドレス",
+    "what-is-smart-system": "SMARTシステムとは何ですか？",
+    "smart-system-description": "SMARTシステムは、SettleMintの包括的なブロックチェーンシステムで、組み込みのID管理と規制遵守を備えたコンプライアントな資産トークン化を可能にします。",
+    "system-deployment": "システム展開",
+    "deployment-time-notice": "このプロセスは完了するまでに2〜3分かかる場合があります"
+  },
+  "assets": {
+    "title": "資産タイプを選択",
+    "description": "プラットフォームで有効にするデジタル資産タイプを選択します",
+    "info": "プラットフォームがサポートするデジタル資産の種類を選択します。後でさらに資産タイプを追加できます。",
+    "select-label": "利用可能な資産タイプ",
+    "select-description": "ファクトリーコントラクトを展開するために1つ以上の資産タイプを選択します",
+    "deploy": "選択した資産を展開",
+    "deployed": "資産ファクトリーが正常に展開されました",
+    "no-system": "システムが見つかりません。最初にシステムを展開してください。",
+    "descriptions": {
+      "bond": "固定収入機能を持つトークン化された債務証券",
+      "equity": "企業の所有権を表すデジタル株式",
+      "fund": "プール投資のための投資ファンドトークン",
+      "stablecoin": "価格が安定したデジタル通貨",
+      "deposit": "トークン化された銀行預金および証明書"
+    },
+    "asset-types-deployed": "資産タイプが展開されました",
+    "select-asset-types": "資産タイプを選択",
+    "your-asset-factories-ready": "あなたの資産工場はトークン化の準備ができました",
+    "choose-asset-types": "プラットフォームでトークン化したい資産の種類を選択してください",
+    "available-asset-types": "利用可能な資産タイプ",
+    "select-all-asset-types": "トークン化する予定のすべての資産タイプを選択してください",
+    "asset-factories-deployed-successfully": "資産工場が正常に展開されました",
+    "deployed-factories": "展開された工場",
+    "what-are-asset-factories": "資産工場とは何ですか？",
+    "asset-factories-description": "資産工場は、さまざまな種類のトークン化された資産を作成および管理するためのスマートコントラクトです。各工場は特定の資産クラスを扱い、特化した機能とコンプライアンス要件を持っています。",
+    "factory-messages": {
+      "initial-loading": "トークン工場を作成する準備中...",
+      "factory-created": "トークン工場が正常に作成されました。",
+      "creating-factory": "トークン工場を作成中...",
+      "factory-creation-failed": "トークン工場の作成に失敗しました。再試行してください。",
+      "batch-progress": "現在の{{current}}の{{total}}の工場を作成中...",
+      "batch-completed": "成功裏に{{count}}のトークン工場が作成されました。",
+      "no-result-error": "取引から工場アドレスが受信されませんでした。",
+      "default-error": "トークン工場の作成に失敗しました。",
+      "system-not-bootstrapped": "システムは最初にブートストラップする必要があります。システムの初期化が完了するまでお待ちください。",
+      "transaction-submitted": "取引が送信されました。確認を待っています...",
+      "factory-creation-completed": "工場の作成が完了しました。",
+      "all-factories-succeeded": "すべての{{count}}の工場が正常に作成されました。",
+      "some-factories-failed": "{{success}}の工場が作成され、{{failed}}が失敗しました。",
+      "all-factories-failed": "すべての{{count}}の工場の作成に失敗しました。",
+      "factory-already-exists": "{{name}}の工場はすでに存在します、スキップします...",
+      "all-factories-skipped": "すべての{{count}}の工場はすでに存在します。",
+      "some-factories-skipped": "{{success}}の工場が作成され、{{skipped}}がスキップされ、{{failed}}が失敗しました。",
+      "waiting-for-mining": "取引確認を待っています...",
+      "transaction-failed": "取引に失敗しました",
+      "transaction-dropped": "取引は時間内にオンチェーンで確認されませんでした",
+      "waiting-for-indexing": "工場がインデックスされるのを待っています...",
+      "transaction-indexed": "工場が正常にインデックスされました",
+      "stream-timeout": "取引追跡がタイムアウトしました",
+      "indexing-timeout": "工場インデックス作成がタイムアウトしました"
+    }
+  },
+  "ui": {
+    "next": "次",
+    "back": "戻る",
+    "cancel": "キャンセル",
+    "complete": "完了",
+    "error": "エラー",
+    "step": "ステップ",
+    "settlemint": "SettleMint"
   }
 }

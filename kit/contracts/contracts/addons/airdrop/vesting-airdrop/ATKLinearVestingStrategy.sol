@@ -2,8 +2,7 @@
 
 pragma solidity ^0.8.28;
 
-import { IATKVestingStrategy } from "./IATKVestingStrategy.sol";
-import { InvalidVestingDuration, CliffExceedsVestingDuration } from "./ATKVestingAirdropErrors.sol";
+import { IATKLinearVestingStrategy } from "./IATKLinearVestingStrategy.sol";
 
 /// @title ATK Linear Vesting Strategy
 /// @author SettleMint Tokenization Services
@@ -11,7 +10,9 @@ import { InvalidVestingDuration, CliffExceedsVestingDuration } from "./ATKVestin
 /// @dev This contract implements stateless linear vesting calculations with configurable duration and cliff.
 ///      The vesting parameters (duration, cliff) are set at deployment and cannot be changed.
 ///      It holds no state about users; all user-specific data is passed in during calculations.
-contract ATKLinearVestingStrategy is IATKVestingStrategy {
+contract ATKLinearVestingStrategy is IATKLinearVestingStrategy {
+    bytes32 public constant override typeId = keccak256("ATKLinearVestingStrategy");
+
     // --- Storage Variables ---
 
     /// @notice The total duration of the vesting period in seconds.

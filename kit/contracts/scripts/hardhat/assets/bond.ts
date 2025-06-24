@@ -43,11 +43,11 @@ export const createBond = async (depositToken: Asset<any>) => {
     bondFactory
   );
 
-  // Setup allowed identities for bond token
+  // Get allowed identities for the bond
   const bondAllowedIdentities = await Promise.all([
-    owner.getIdentity(),
     investorA.getIdentity(),
     investorB.getIdentity(),
+    owner.getIdentity(),
     frozenInvestor.getIdentity(),
   ]);
 

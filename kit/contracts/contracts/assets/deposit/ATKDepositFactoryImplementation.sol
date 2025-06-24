@@ -51,7 +51,7 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         super.initialize(systemAddress, tokenImplementation_, initialAdmin, identityVerificationModule_);
 
         ISMARTTopicSchemeRegistry topicSchemeRegistry =
-            ISMARTTopicSchemeRegistry(IATKSystem(_systemAddress).topicSchemeRegistryProxy());
+            ISMARTTopicSchemeRegistry(IATKSystem(_systemAddress).topicSchemeRegistry());
 
         _collateralClaimTopicId = topicSchemeRegistry.getTopicId(ATKTopics.TOPIC_COLLATERAL);
     }
@@ -106,6 +106,8 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         if (deployedTokenIdentityAddress != tokenIdentityAddress) {
             revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
         }
+
+        emit DepositCreated(_msgSender(), deployedDepositAddress, name_, symbol_, decimals_, requiredClaimTopics_);
 
         return deployedDepositAddress;
     }

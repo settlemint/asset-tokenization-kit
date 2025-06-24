@@ -37,7 +37,8 @@ import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
 
 interface DeploymentConfig {
   environment: "local" | "remote";
-  port: string;
+  deploymentPort: string;
+  queryPort: string;
   verbose: boolean;
   quiet: boolean;
   debug: boolean;
@@ -96,12 +97,14 @@ const logger = createLogger({
 // ============================================================================
 
 let originalAddresses: DeployedAddresses | null = null;
+let originalSubgraphYaml: string | null = null;
 let graphPaths: GraphPaths | null = null;
 
 /**
  * Cleanup function to restore original addresses on exit
  */
 async function cleanup(): Promise<void> {
+  // Restore subgraph.json
   if (originalAddresses && graphPaths?.subgraphConfig) {
     try {
       logger.info("Restoring original subgraph configuration...");
@@ -112,6 +115,17 @@ async function cleanup(): Promise<void> {
       logger.info("Original configuration restored");
     } catch (error) {
       logger.error("Failed to restore original configuration:", error);
+    }
+  }
+
+  // Restore subgraph.yaml
+  if (originalSubgraphYaml && graphPaths?.subgraphYaml) {
+    try {
+      logger.info("Restoring original subgraph.yaml...");
+      await Bun.write(graphPaths.subgraphYaml, originalSubgraphYaml);
+      logger.info("Original subgraph.yaml restored");
+    } catch (error) {
+      logger.error("Failed to restore original subgraph.yaml:", error);
     }
   }
 }
@@ -168,13 +182,18 @@ Arguments:
 
 Options:
   -h, --help      Show this help message
+  -p, --port      Graph node ports in format 'deployment:query' (default: 8020:8000)
+                  (deployment port used for deploying subgraph, query port for GraphQL queries)
   -v, --verbose   Enable verbose output
   -q, --quiet     Suppress informational output
   -d, --debug     Enable debug mode (implies verbose)
 
 Examples:
-  # Deploy to local Graph node
-  bun run graph-deploy.ts --local --port 8020
+  # Deploy to local Graph node (default ports 8020:8000)
+  bun run graph-deploy.ts --local
+
+  # Deploy to local Graph node with custom ports (e.g., for anvil)
+  bun run graph-deploy.ts --local --port 8120:8100
 
   # Deploy to SettleMint with verbose output
   bun run graph-deploy.ts --remote --verbose
@@ -203,7 +222,7 @@ function parseArguments(): DeploymentConfig {
         port: {
           type: "string",
           short: "p",
-          default: process.env.THE_GRAPH_PORT_LOCAL_DEPLOY || "8020",
+          default: `${process.env.THE_GRAPH_PORT_LOCAL_DEPLOY || "8020"}:${process.env.THE_GRAPH_PORT_LOCAL_QUERY || "8000"}`,
         },
       },
       allowPositionals: false,
@@ -241,9 +260,30 @@ function parseArguments(): DeploymentConfig {
       logger.debug(`Log level hint: ${levelHint} (set via env vars)`);
     }
 
+    // Parse port configuration
+    // Requires format: "deploymentPort:queryPort"
+    if (!values.port.includes(":")) {
+      logger.error(
+        "Port must be specified in format 'deployment:query' (e.g., '8120:8100')"
+      );
+      showUsage();
+      process.exit(EXIT_CODES.INVALID_ARGS);
+    }
+
+    const [deploymentPort, queryPort] = values.port.split(":");
+
+    if (!deploymentPort || !queryPort) {
+      logger.error(
+        "Both deployment and query ports must be specified (e.g., '8120:8100')"
+      );
+      showUsage();
+      process.exit(EXIT_CODES.INVALID_ARGS);
+    }
+
     return {
       environment: values.local ? "local" : "remote",
-      port: values.port,
+      deploymentPort,
+      queryPort,
       verbose: Boolean(values.verbose || values.debug),
       quiet: Boolean(values.quiet),
       debug: Boolean(values.debug),
@@ -314,7 +354,7 @@ async function validateEnvironment(config: DeploymentConfig): Promise<void> {
 
   // Validate deployment-specific requirements
   if (config.environment === "local") {
-    await validateLocalEnvironment(`http://localhost:${config.port}`);
+    await validateLocalEnvironment(`http://localhost:${config.deploymentPort}`);
   } else {
     await validateRemoteEnvironment();
   }
@@ -427,9 +467,14 @@ async function updateSubgraphYaml(addresses: DeployedAddresses): Promise<void> {
       throw new Error("Missing subgraph yaml");
     }
 
-    const subgraphYamlConfig = (await parse(
-      await subgraphYaml.text()
-    )) as SubgraphYamlConfig;
+    // Backup original subgraph.yaml content if not already backed up
+    const yamlContent = await subgraphYaml.text();
+    if (!originalSubgraphYaml) {
+      originalSubgraphYaml = yamlContent;
+      logger.debug("Backed up original subgraph.yaml");
+    }
+
+    const subgraphYamlConfig = (await parse(yamlContent)) as SubgraphYamlConfig;
 
     // Update contract addresses
     const updatedSubgraphYamlConfig: typeof subgraphYamlConfig = {
@@ -537,29 +582,31 @@ async function deployLocal(config: DeploymentConfig): Promise<void> {
   try {
     const graphName = GRAPH_NAME;
     const versionLabel = `${GRAPH_VERSION_PREFIX}.${Date.now()}`;
-    const node = `http://localhost:${config.port}`;
+    const deploymentNode = `http://localhost:${config.deploymentPort}`;
+    const queryNode = `http://localhost:${config.queryPort}`;
 
     logger.info("Deploying subgraph locally...");
     logger.info(`  Name: ${graphName}`);
     logger.info(`  Version: ${versionLabel}`);
-    logger.info(`  Graph Node: ${node}`);
+    logger.info(`  Deployment Node: ${deploymentNode}`);
+    logger.info(`  Query Node: ${queryNode}`);
     logger.info(`  IPFS: https://ipfs.console.settlemint.com`);
 
     // Remove existing subgraph first
-    await removeLocalSubgraph(node, graphName);
+    await removeLocalSubgraph(deploymentNode, graphName);
 
     // Create subgraph first
-    await createLocalSubgraph(node, graphName);
+    await createLocalSubgraph(deploymentNode, graphName);
 
     // Deploy subgraph
-    await Bun.$`bunx graph deploy --version-label ${versionLabel} --node ${node} --ipfs https://ipfs.console.settlemint.com ${graphName} ${graphPaths!.subgraphYaml}`.cwd(
+    await Bun.$`bunx graph deploy --version-label ${versionLabel} --node ${deploymentNode} --ipfs https://ipfs.console.settlemint.com ${graphName} ${graphPaths!.subgraphYaml}`.cwd(
       graphPaths!.subgraphRoot
     );
 
     logger.info("Subgraph deployed successfully!");
-    logger.info(
-      `  Access your subgraph at: ${node}/subgraphs/name/${graphName}`
-    );
+    logger.info(`  Deployment endpoint: ${deploymentNode}`);
+    logger.info(`  Query endpoint: ${queryNode}/subgraphs/name/${graphName}`);
+    logger.info(`  Note: Use POST requests to query the GraphQL endpoint`);
   } catch (error) {
     logger.error("Local deployment failed:", error);
     throw error;

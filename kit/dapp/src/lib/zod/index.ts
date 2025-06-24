@@ -28,6 +28,13 @@ const logger = createLogger({
  * Unlike direct schema.parse() which throws ZodError, this function
  * throws a generic Error with a safe message while logging details.
  *
+ * Note: This implementation differs from Zod's native safeParse by throwing
+ * errors on validation failure rather than returning a result object.
+ * This is intentional to provide consistent error handling with logging.
+ *
+ * For promise schemas, note that Zod requires async parsing methods.
+ * Using promise schemas with this synchronous method will throw an error.
+ *
  * @template T - The Zod schema type
  * @param schema - The Zod schema to validate against
  * @param value - The value to validate

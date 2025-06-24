@@ -71,6 +71,10 @@ const ABI_PATHS = {
   fund: `${ARTIFACTS_DIR}/contracts/assets/fund/IATKFund.sol/IATKFund.json`,
   stablecoin: `${ARTIFACTS_DIR}/contracts/assets/stable-coin/IATKStableCoin.sol/IATKStableCoin.json`,
   bond: `${ARTIFACTS_DIR}/contracts/assets/bond/IATKBond.sol/IATKBond.json`,
+  // registries
+  tokenFactoryRegistry: `${ARTIFACTS_DIR}/contracts/system/token-factory/IATKTokenFactoryRegistry.sol/IATKTokenFactoryRegistry.json`,
+  complianceModuleRegistry: `${ARTIFACTS_DIR}/contracts/system/compliance/IATKComplianceModuleRegistry.sol/IATKComplianceModuleRegistry.json`,
+  systemAddonRegistry: `${ARTIFACTS_DIR}/contracts/system/addons/IATKSystemAddonRegistry.sol/IATKSystemAddonRegistry.json`,
   // Open Zeppelin
   accessControl: `${ARTIFACTS_DIR}/@openzeppelin/contracts/access/IAccessControl.sol/IAccessControl.json`,
   // smart
@@ -91,9 +95,10 @@ const ABI_PATHS = {
   identityAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityAllowListComplianceModule.sol/IdentityAllowListComplianceModule.json`,
   // addons
   fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json`,
+  xvpSettlementFactory: `${ARTIFACTS_DIR}/contracts/addons/xvp/IATKXvPSettlementFactory.sol/IATKXvPSettlementFactory.json`,
   vestingAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol/IATKVestingAirdropFactory.json`,
   pushAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol/IATKPushAirdropFactory.json`,
-  xvpSettlementFactory: `${ARTIFACTS_DIR}/contracts/addons/xvp/IATKXvPSettlementFactory.sol/IATKXvPSettlementFactory.json`,
+  timeBoundAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdropFactory.sol/IATKTimeBoundAirdropFactory.json`,
 } as const;
 
 const AVAILABLE_ABIS = {
@@ -110,6 +115,9 @@ const AVAILABLE_ABIS = {
     "equityFactory",
     "fundFactory",
     "stablecoinFactory",
+    "tokenFactoryRegistry",
+    "complianceModuleRegistry",
+    "systemAddonRegistry",
   ],
   tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
@@ -134,9 +142,10 @@ const AVAILABLE_ABIS = {
   ],
   addons: [
     "fixedYieldScheduleFactory",
+    "xvpSettlementFactory",
     "vestingAirdropFactory",
     "pushAirdropFactory",
-    "xvpSettlementFactory",
+    "timeBoundAirdropFactory",
   ],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 

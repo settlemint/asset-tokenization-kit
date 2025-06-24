@@ -23,11 +23,13 @@ export const setupAsset = async (
     assetClass,
     assetCategory,
     basePrice,
+    removeBlockedCountriesComplianceModule = true,
   }: {
     collateral?: number | bigint;
     assetClass?: string;
     assetCategory?: string;
     basePrice?: number;
+    removeBlockedCountriesComplianceModule?: boolean;
   } = {}
 ) => {
   // needs to be done so that he can update the topics and compliance modules
@@ -48,11 +50,13 @@ export const setupAsset = async (
     [Countries.BE, Countries.NL, Countries.FR, Countries.DE]
   );
 
-  // remove country block list compliance module
-  await removeComplianceModule(
-    asset,
-    atkDeployer.getContractAddress("countryBlockListModule")
-  );
+  if (removeBlockedCountriesComplianceModule) {
+    // remove country block list compliance module
+    await removeComplianceModule(
+      asset,
+      atkDeployer.getContractAddress("countryBlockListModule")
+    );
+  }
 
   // needs to be done so that he can add the claims
   await grantRoles(asset, owner, [ATKRoles.claimManagerRole]);

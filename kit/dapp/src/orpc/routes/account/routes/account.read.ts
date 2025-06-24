@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { z } from "zod/v4";
 
 /**
  * GraphQL query for retrieving SMART systems from TheGraph.
@@ -56,15 +57,29 @@ export const read = onboardedRouter.account.read
   .handler(async ({ input, context, errors }) => {
     const { wallet } = input;
 
-    // Execute TheGraph query with pagination and sorting parameters
-    const { account } = await context.theGraphClient.request(
+    // Define response schema for type-safe GraphQL validation
+    // Using Zod for runtime validation with automatic TypeScript type inference
+    // The nullable modifier handles cases where the account doesn't exist
+    const AccountResponseSchema = z.object({
+      account: z
+        .object({
+          id: z.string(),
+        })
+        .nullable(),
+    });
+
+    // Execute TheGraph query with type-safe parameters
+    // The Zod schema ensures type safety at both compile-time and runtime
+    const result = await context.theGraphClient.query(
       READ_ACCOUNT_QUERY,
       {
         walletAddress: wallet,
-      }
+      },
+      AccountResponseSchema,
+      "Failed to retrieve account"
     );
 
-    if (!account) {
+    if (!result.account) {
       throw errors.NOT_FOUND({
         message: "Account not found",
       });
@@ -72,8 +87,9 @@ export const read = onboardedRouter.account.read
 
     // Return the account with basic information only
     // Country and claims data not available in current subgraph schema
+    // TypeScript ensures the return type matches AccountReadOutput interface
     return {
-      id: account.id,
+      id: result.account.id,
       country: undefined,
       claims: undefined,
     };

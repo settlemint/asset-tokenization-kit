@@ -218,6 +218,11 @@ loki:
   bloomGateway:
     replicas: 0
 
+  sidecar:
+    image:
+      # -- The Docker registry and image for the k8s sidecar
+      repository: docker.io/kiwigrid/k8s-sidecar
+
 
 # https://github.com/grafana/alloy/blob/main/operations/helm/charts/alloy/values.yaml
 alloy:

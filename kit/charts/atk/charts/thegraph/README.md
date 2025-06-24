@@ -38,12 +38,14 @@ A Helm chart for the blockscout components
 | graph-node.graphNodeDefaults.env.PRIMARY_SUBGRAPH_DATA_PGDATABASE | string | `"thegraph"` | Name of the primary shard database to use |
 | graph-node.graphNodeDefaults.env.PRIMARY_SUBGRAPH_DATA_PGHOST | string | `"postgresql-pgpool"` | Hostname of the primary shard PostgreSQL server |
 | graph-node.graphNodeDefaults.env.PRIMARY_SUBGRAPH_DATA_PGPORT | int | `5432` | Port for the primary shard PostgreSQL server |
-| graph-node.graphNodeDefaults.extraInitContainers[0].command[0] | string | `"/usr/bin/wait-for-it"` |  |
-| graph-node.graphNodeDefaults.extraInitContainers[0].command[1] | string | `"postgresql-pgpool:5432"` |  |
-| graph-node.graphNodeDefaults.extraInitContainers[0].command[2] | string | `"-t"` |  |
-| graph-node.graphNodeDefaults.extraInitContainers[0].command[3] | string | `"0"` |  |
-| graph-node.graphNodeDefaults.extraInitContainers[0].image | string | `"harbor.settlemint.com/ghcr.io/settlemint/btp-waitforit:v7.7.5"` |  |
-| graph-node.graphNodeDefaults.extraInitContainers[0].name | string | `"wait-for-postgresql"` |  |
+| graph-node.graphNodeDefaults.extraInitContainers[0].command[0] | string | `"/bin/sh"` |  |
+| graph-node.graphNodeDefaults.extraInitContainers[0].command[1] | string | `"-c"` |  |
+| graph-node.graphNodeDefaults.extraInitContainers[0].command[2] | string | `"set -e\necho \"Waiting for PostgreSQL to be ready...\"\n\n# Add random delay to prevent all nodes from connecting simultaneously\nRANDOM_DELAY=$((RANDOM % 30 + 5))\necho \"Adding random delay of ${RANDOM_DELAY} seconds to stagger connections...\"\nsleep $RANDOM_DELAY\n\n# Function to test PostgreSQL connection\ntest_postgres() {\n  pg_isready -h postgresql-pgpool -p 5432 -U thegraph && \\\n  psql -h postgresql-pgpool -p 5432 -U thegraph -d thegraph -c \"SELECT 1;\" > /dev/null 2>&1\n}\n\n# Wait with exponential backoff\nRETRY_COUNT=0\nMAX_RETRIES=30\nWAIT_TIME=2\n\nwhile [ $RETRY_COUNT -lt $MAX_RETRIES ]; do\n  if test_postgres; then\n    echo \"PostgreSQL is ready!\"\n    exit 0\n  fi\n\n  RETRY_COUNT=$((RETRY_COUNT + 1))\n  echo \"PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s...\"\n  sleep $WAIT_TIME\n\n  # Exponential backoff with max of 30 seconds\n  WAIT_TIME=$((WAIT_TIME * 2))\n  if [ $WAIT_TIME -gt 30 ]; then\n    WAIT_TIME=30\n  fi\ndone\n\necho \"PostgreSQL failed to become ready after $MAX_RETRIES attempts\"\nexit 1\n"` |  |
+| graph-node.graphNodeDefaults.extraInitContainers[0].env[0].name | string | `"PGPASSWORD"` |  |
+| graph-node.graphNodeDefaults.extraInitContainers[0].env[0].valueFrom.secretKeyRef.key | string | `"PGPASSWORD"` |  |
+| graph-node.graphNodeDefaults.extraInitContainers[0].env[0].valueFrom.secretKeyRef.name | string | `"thegraph-pg-secret"` |  |
+| graph-node.graphNodeDefaults.extraInitContainers[0].image | string | `"docker.io/postgres"` |  |
+| graph-node.graphNodeDefaults.extraInitContainers[0].name | string | `"wait-for-postgresql-ready"` |  |
 | graph-node.graphNodeDefaults.imagePullSecrets | list | `[]` |  |
 | graph-node.graphNodeDefaults.secretEnv.PRIMARY_SUBGRAPH_DATA_PGPASSWORD.key | string | `"PGPASSWORD"` | Name of the data key in the secret that contains your PG password |
 | graph-node.graphNodeDefaults.secretEnv.PRIMARY_SUBGRAPH_DATA_PGPASSWORD.secretName | string | `"thegraph-pg-secret"` | Name of the secret that contains your PG password |
@@ -81,21 +83,3 @@ A Helm chart for the blockscout components
 | graph-node.ingress.hosts[0].paths[4].port | int | `8050` |  |
 | graph-node.ingress.hosts[0].paths[4].serviceName | string | `"graph-node-index"` |  |
 | graph-node.ingress.tls | list | `[]` |  |
-| job.enabled | bool | `true` |  |
-| job.fullnameOverride | string | `"graph"` |  |
-| job.image.pullPolicy | string | `"IfNotPresent"` |  |
-| job.image.repository | string | `"harbor.settlemint.com/docker.io/node"` |  |
-| job.image.tag | string | `"23.11.1-slim"` |  |
-| job.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
-| job.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
-| job.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
-| job.initContainer.graphNodeCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
-| job.initContainer.graphNodeCheck.image.registry | string | `"harbor.settlemint.com/docker.io"` |  |
-| job.initContainer.graphNodeCheck.image.repository | string | `"busybox"` |  |
-| job.initContainer.graphNodeCheck.image.tag | string | `"1.37.0"` |  |
-| job.podAnnotations | object | `{}` |  |
-| job.podSecurityContext | object | `{}` |  |
-| job.resources | object | `{}` |  |
-| job.securityContext | object | `{}` |  |
-| job.workspace.size | string | `"1Gi"` |  |
-| job.workspace.storageClass | string | `""` |  |

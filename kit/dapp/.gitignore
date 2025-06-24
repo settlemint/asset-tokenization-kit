@@ -39,3 +39,8 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 ./paraglide/
 
 
+.generated
+lib/settlemint
+
+# Dev reset marker
+.dev-reset-marker

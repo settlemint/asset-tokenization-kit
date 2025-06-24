@@ -9,13 +9,6 @@ import { ATKAirdrop } from "../ATKAirdrop.sol";
 import { ATKBitmapClaimTracker } from "../claim-tracker/ATKBitmapClaimTracker.sol";
 import { IATKPushAirdrop } from "./IATKPushAirdrop.sol";
 import { IATKAirdrop } from "../IATKAirdrop.sol";
-import {
-    PushAirdropClaimNotAllowed,
-    InvalidDistributionAddress,
-    AlreadyDistributed,
-    DistributionCapExceeded,
-    ZeroAmountToDistribute
-} from "./ATKPushAirdropErrors.sol";
 import { InvalidInputArrayLengths, InvalidMerkleProof, BatchSizeExceedsLimit } from "../ATKAirdropErrors.sol";
 
 /// @title ATK Push Airdrop Implementation
@@ -45,18 +38,6 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     uint256 private _distributionCap;
 
     // --- Events ---
-
-    /// @notice Emitted when tokens are distributed to a recipient.
-    /// @param recipient The address that received the tokens.
-    /// @param amount The amount of tokens distributed.
-    /// @param index The index of the distribution in the Merkle tree.
-    event TokensDistributed(address indexed recipient, uint256 amount, uint256 index);
-
-    /// @notice Emitted when tokens are distributed to multiple recipients in a batch.
-    /// @param recipientCount The number of recipients in the batch.
-    /// @param totalAmount The total amount of tokens distributed in the batch.
-    /// @param indices The indices of the distributions in the Merkle tree.
-    event BatchTokensDistributed(uint256 recipientCount, uint256 totalAmount, uint256[] indices);
 
     /// @notice Emitted when the distribution cap is updated.
     /// @param oldCap The previous distribution cap.
@@ -170,7 +151,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
 
         // Transfer tokens
         _token.safeTransfer(recipient, amount);
-        emit TokensDistributed(recipient, amount, index);
+        emit AirdropTokensTransferred(recipient, index, amount);
     }
 
     /// @notice Distributes tokens to multiple recipients in a single transaction.
@@ -239,13 +220,12 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
 
             // Transfer tokens
             _token.safeTransfer(recipient, amount);
-            emit TokensDistributed(recipient, amount, index);
         }
 
         // Update total distributed
         _totalDistributed += batchTotal;
 
-        emit BatchTokensDistributed(distributedCount, batchTotal, indices);
+        emit AirdropBatchTokensTransferred(recipients, indices, amounts);
     }
 
     /// @notice Claims tokens for a recipient - NOT ALLOWED in push airdrops.

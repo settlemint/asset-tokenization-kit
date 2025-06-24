@@ -53,7 +53,9 @@ contract ATKEquityTest is AbstractATKAssetTest {
 
         vm.startPrank(platformAdmin);
         equityFactory = IATKEquityFactory(
-            systemUtils.system().createTokenFactory("Equity", address(equityFactoryImpl), address(equityImpl))
+            systemUtils.tokenFactoryRegistry().registerTokenFactory(
+                "Equity", address(equityFactoryImpl), address(equityImpl)
+            )
         );
 
         // Grant registrar role to owner so that he can create the equity

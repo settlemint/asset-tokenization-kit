@@ -44,6 +44,7 @@ type AccessControl @entity(immutable: false) {
   registrar: [Account!]!
   claimManager: [Account!]!
   identityIssuer: [Account!]!
+  identityIssuerAdmin: [Account!]!
   tokenIdentityIssuer: [Account!]!
   tokenIdentityIssuerAdmin: [Account!]!
   deployer: [Account!]!
@@ -55,6 +56,7 @@ type AccessControl @entity(immutable: false) {
   emergency: [Account!]!
   implementationManager: [Account!]!
   bypassListManager: [Account!]!
+  bypassListManagerAdmin: [Account!]!
 }
 
 type System @entity(immutable: false) {
@@ -68,7 +70,9 @@ type System @entity(immutable: false) {
   identityRegistry: IdentityRegistry
   trustedIssuersRegistry: TrustedIssuersRegistry
   topicSchemeRegistry: TopicSchemeRegistry
-  tokenFactories: [TokenFactory!]! @derivedFrom(field: "system")
+  tokenFactoryRegistry: TokenFactoryRegistry
+  complianceModuleRegistry: ComplianceModuleRegistry
+  systemAddonRegistry: SystemAddonRegistry
 }
 
 type SystemAddon @entity(immutable: false) {
@@ -207,6 +211,7 @@ type TopicScheme @entity(immutable: false) {
   id: Bytes!
   registry: TopicSchemeRegistry!
   name: String!
+  topicId: BigInt!
   signature: String!
   enabled: Boolean!
   deployedInTransaction: Bytes!
@@ -240,15 +245,49 @@ type IdentityClaimValue @entity(immutable: false) {
 }
 
 # ==================================================
+# Compliance
+# ==================================================
+
+type ComplianceModuleRegistry @entity(immutable: false) {
+  id: Bytes!
+  accessControl: AccessControl!
+  account: Account!
+  deployedInTransaction: Bytes!
+  complianceModules: [ComplianceModule!]!
+    @derivedFrom(field: "complianceModuleRegistry")
+}
+
+type ComplianceModule @entity(immutable: false) {
+  id: Bytes!
+  accessControl: AccessControl!
+  name: String!
+  typeId: Bytes!
+  account: Account!
+  deployedInTransaction: Bytes!
+  complianceModuleRegistry: ComplianceModuleRegistry
+  tokens: [TokenComplianceModule!]! @derivedFrom(field: "complianceModule")
+  addresses: [Bytes!]
+  countries: [Int!]
+}
+
+# ==================================================
 # TOKEN MANAGEMENT
 # ==================================================
+
+type TokenFactoryRegistry @entity(immutable: false) {
+  id: Bytes!
+  accessControl: AccessControl!
+  account: Account!
+  deployedInTransaction: Bytes!
+  tokenFactories: [TokenFactory!]! @derivedFrom(field: "tokenFactoryRegistry")
+}
 
 type TokenFactory @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
   name: String!
   typeId: Bytes!
-  system: System
+  tokenFactoryRegistry: TokenFactoryRegistry
   account: Account!
   tokens: [Token!]! @derivedFrom(field: "tokenFactory")
 }
@@ -280,6 +319,10 @@ type Token @entity(immutable: false) {
   # Price
   basePriceClaim: IdentityClaim
   deployedInTransaction: Bytes!
+  # The identity verification claim topics that are required for accounts to own tokens of this type
+  requiredClaimTopics: [TopicScheme!]!
+  # Compliance
+  tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -294,6 +337,15 @@ type TokenBalance @entity(immutable: false) {
   frozenExact: BigInt!
   available: BigDecimal!
   availableExact: BigInt!
+}
+
+type TokenComplianceModule @entity(immutable: false) {
+  id: Bytes!
+  token: Token!
+  complianceModule: ComplianceModule!
+  encodedParams: Bytes!
+  addresses: [Bytes!]
+  countries: [Int!]
 }
 
 # ==================================================
@@ -346,6 +398,17 @@ type TokenFund @entity(immutable: false) {
 }
 
 # ==================================================
+# System Addons
+# ==================================================
+
+type SystemAddonRegistry @entity(immutable: false) {
+  id: Bytes!
+  accessControl: AccessControl!
+  account: Account!
+  deployedInTransaction: Bytes!
+}
+
+# ==================================================
 # XVP SETTLEMENT
 # ==================================================
 
@@ -378,6 +441,87 @@ type XvPSettlementApproval @entity(immutable: false) {
   account: Account!
   approved: Boolean!
   timestamp: BigInt
+}
+
+# ==================================================
+# AIRDROP
+# ==================================================
+
+type AirdropFactory @entity(immutable: false) {
+  id: Bytes!
+  systemAddon: SystemAddon!
+  airdrops: [Airdrop!]! @derivedFrom(field: "factory")
+  deployedInTransaction: Bytes!
+}
+
+type Airdrop @entity(immutable: false) {
+  id: Bytes!
+  factory: AirdropFactory!
+  name: String!
+  token: Token!
+  merkleRoot: Bytes!
+  typeId: Bytes!
+  amountTransferred: BigDecimal!
+  amountTransferredExact: BigInt!
+  recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")
+  allocations: [AirdropAllocation!]! @derivedFrom(field: "airdrop")
+  # Type specific
+  vestingAirdrop: VestingAirdrop
+  pushAirdrop: PushAirdrop
+  timeBoundAirdrop: TimeBoundAirdrop
+  deployedInTransaction: Bytes!
+}
+
+type AirdropRecipient @entity(immutable: false) {
+  id: Bytes!
+  airdrop: Airdrop!
+  account: Account!
+  allocations: [AirdropAllocation!]! @derivedFrom(field: "recipient")
+  amountTransferred: BigDecimal!
+  amountTransferredExact: BigInt!
+}
+
+type AirdropAllocation @entity(immutable: false) {
+  id: Bytes!
+  airdrop: Airdrop!
+  recipient: AirdropRecipient!
+  index: BigInt!
+  amountTransferred: BigDecimal!
+  amountTransferredExact: BigInt!
+  initialized: Boolean!
+}
+
+# ==================================================
+# AIRDROP TYPES
+# ==================================================
+
+type PushAirdrop @entity(immutable: false) {
+  id: Bytes!
+  distributionCap: BigDecimal
+  distributionCapExact: BigInt
+}
+
+type VestingAirdrop @entity(immutable: false) {
+  id: Bytes!
+  initializationDeadline: BigInt!
+  strategyId: Bytes!
+  # Strategy specific
+  linearVestingStrategy: LinearVestingStrategy
+}
+
+type TimeBoundAirdrop @entity(immutable: false) {
+  id: Bytes!
+  startTime: BigInt!
+  endTime: BigInt!
+}
+
+# ==================================================
+# VESTING STRATEGIES
+# ==================================================
+type LinearVestingStrategy @entity(immutable: false) {
+  id: Bytes!
+  vestingDuration: BigInt!
+  cliffDuration: BigInt!
 }
 
 # ==================================================

@@ -10,7 +10,7 @@ import { IATKSystem } from "../../system/IATKSystem.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
-    "../../system/AbstractATKSystemAddonFactoryImplementation.sol";
+    "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKVault } from "./ATKVault.sol";
 
 // Constants

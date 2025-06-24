@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IWithTypeIdentifier } from "./IWithTypeIdentifier.sol";
 
 /// @title ISMARTComplianceModule Interface
 /// @author SettleMint
@@ -14,7 +15,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 ///      KYC/AML checks, another might restrict transfers to certain geographic locations, and yet another might
 ///      impose daily transfer limits. This modular design allows for flexible and extensible compliance frameworks.
 ///      This interface inherits from IERC165 for contract interface detection (supportsInterface).
-interface ISMARTComplianceModule is IERC165 {
+interface ISMARTComplianceModule is IERC165, IWithTypeIdentifier {
     // --- Custom Errors ---
 
     /// @notice Emitted when a compliance check performed by the `canTransfer` function fails.

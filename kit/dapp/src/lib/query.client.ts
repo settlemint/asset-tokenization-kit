@@ -15,6 +15,8 @@
  * - Offline support with request queuing
  * - Window focus refetching
  * - Network status monitoring
+ * - Cross-tab synchronization via Broadcast Channel API
+ * - Global UNAUTHORIZED error handling
  *
  * The configuration is optimized for blockchain applications where:
  * - Data freshness is important but not real-time critical
@@ -40,8 +42,9 @@
  * @see {@link ../orpc} - ORPC client integration
  */
 
+import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimental";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import superjson from "superjson";
 
@@ -95,7 +98,45 @@ interface QueryError extends Error {
   data?: unknown;
 }
 
+/**
+ * Global error handler for UNAUTHORIZED errors.
+ * Redirects to the sign-in page when authentication fails.
+ */
+const handleUnauthorizedError = (error: unknown) => {
+  const queryError = error as QueryError;
+  if (
+    (queryError.code === "UNAUTHORIZED" || queryError.status === 401) &&
+    typeof window !== "undefined" &&
+    !window.location.pathname.startsWith("/auth/") &&
+    !window.location.pathname.startsWith("/api/auth")
+  ) {
+    window.location.href = "/auth/sign-in";
+  }
+};
+
+/**
+ * Query cache with global error handling.
+ * Catches all query errors and handles UNAUTHORIZED globally.
+ */
+const queryCache = new QueryCache({
+  onError: (error) => {
+    handleUnauthorizedError(error);
+  },
+});
+
+/**
+ * Mutation cache with global error handling.
+ * Catches all mutation errors and handles UNAUTHORIZED globally.
+ */
+const mutationCache = new MutationCache({
+  onError: (error) => {
+    handleUnauthorizedError(error);
+  },
+});
+
 export const queryClient = new QueryClient({
+  queryCache,
+  mutationCache,
   defaultOptions: {
     queries: {
       // Only refetch on window focus in production to reduce development noise
@@ -117,6 +158,10 @@ export const queryClient = new QueryClient({
        */
       retry: (failureCount, error) => {
         const queryError = error as QueryError;
+        // Don't retry on UNAUTHORIZED errors
+        if (queryError.code === "UNAUTHORIZED" || queryError.status === 401) {
+          return false;
+        }
         // Don't retry on 4xx errors (except 408 Request Timeout)
         if (
           queryError.status &&
@@ -164,6 +209,13 @@ export const queryClient = new QueryClient({
        */
       retry: (failureCount, error) => {
         const mutationError = error as QueryError;
+        // Don't retry on UNAUTHORIZED errors
+        if (
+          mutationError.code === "UNAUTHORIZED" ||
+          mutationError.status === 401
+        ) {
+          return false;
+        }
         // Don't retry on 4xx errors
         if (
           mutationError.status &&
@@ -196,19 +248,48 @@ const persister = createSyncStoragePersister({
 });
 
 /**
- * Persist queries for offline support
+ * Persist queries for offline support and sync across tabs
  */
-if (typeof window !== "undefined") {
+if (typeof window !== "undefined" && process.env.NODE_ENV !== "development") {
+  // Check and clear stale cache based on build ID
+  // In development, use a stable build ID to avoid unnecessary cache busting
+  const buildId = process.env.BUILD_ID ?? new Date().toISOString();
+
+  // Enable query persistence for offline support
   void persistQueryClient({
     queryClient,
     persister,
     maxAge: QUERY_CACHE_TIME,
-    buster: process.env.BUILD_ID ?? "",
+    buster: buildId,
     dehydrateOptions: {
       shouldDehydrateQuery: (query) => {
         // Only persist successful queries
         return query.state.status === "success";
       },
     },
+  });
+}
+
+if (typeof window !== "undefined") {
+  /**
+   * Set up broadcast channel for cross-tab synchronization.
+   *
+   * This enables real-time synchronization of query cache across
+   * multiple browser tabs/windows, ensuring consistent data state
+   * and preventing duplicate API calls when switching between tabs.
+   *
+   * Features:
+   * - Automatic cache updates across all tabs
+   * - Optimistic updates propagation
+   * - Query invalidation synchronization
+   * - Mutation state sharing
+   *
+   * Note: Uses the experimental broadcast client plugin which
+   * leverages the Broadcast Channel API for cross-tab communication.
+   */
+
+  broadcastQueryClient({
+    queryClient,
+    broadcastChannel: "atk-query-sync",
   });
 }

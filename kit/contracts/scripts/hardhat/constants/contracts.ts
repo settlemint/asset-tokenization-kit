@@ -5,6 +5,7 @@ import {
   bondAbi,
   bondFactoryAbi,
   complianceAbi,
+  complianceModuleRegistryAbi,
   countryAllowListAbi,
   countryBlockListAbi,
   depositAbi,
@@ -32,12 +33,14 @@ import {
   stablecoinAbi,
   stablecoinFactoryAbi,
   systemAbi,
+  systemAddonRegistryAbi,
+  timeBoundAirdropFactoryAbi,
+  tokenFactoryRegistryAbi,
   tokenIdentityAbi,
   topicSchemeRegistryAbi,
   trustedIssuersRegistryAbi,
   vestingAirdropFactoryAbi,
-  xvpSettlementAbi,
-  xvpSettlementFactoryAbi,
+  xvpSettlementFactoryAbi
 } from "../abi";
 
 export const ATKContracts = {
@@ -64,8 +67,10 @@ export const ATKContracts = {
   fund: fundAbi,
   stablecoin: stablecoinAbi,
   bond: bondAbi,
-  // addons
-  xvpSettlement: xvpSettlementAbi,
+  // registries
+  tokenFactoryRegistry: tokenFactoryRegistryAbi,
+  complianceModuleRegistry: complianceModuleRegistryAbi,
+  systemAddonRegistry: systemAddonRegistryAbi,
   // Open Zeppelin
   accessControl: accessControlAbi,
   // smart
@@ -85,7 +90,8 @@ export const ATKContracts = {
   identityAllowListModule: identityAllowListAbi,
   // addons
   fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
+  xvpSettlementFactory: xvpSettlementFactoryAbi,
   vestingAirdropFactory: vestingAirdropFactoryAbi,
   pushAirdropFactory: pushAirdropFactoryAbi,
-  xvpSettlementFactory: xvpSettlementFactoryAbi,
+  timeBoundAirdropFactory: timeBoundAirdropFactoryAbi,
 } as const;

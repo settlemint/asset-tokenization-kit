@@ -1,0 +1,60 @@
+name: "Slack PR Notifier"
+description: "Send or update Slack notifications for PR events"
+inputs:
+  pr_number:
+    description: "Pull request number"
+    required: true
+  pr_title:
+    description: "Pull request title"
+    required: true
+  pr_url:
+    description: "Pull request URL"
+    required: true
+  pr_author:
+    description: "Pull request author"
+    required: true
+  pr_author_type:
+    description: "Pull request author type (User or Bot)"
+    required: false
+    default: "User"
+  pr_author_avatar:
+    description: "Pull request author avatar URL"
+    required: true
+  slack_bot_token:
+    description: "Slack bot token"
+    required: true
+  slack_channel_id:
+    description: "Slack channel ID"
+    required: true
+  update_message:
+    description: "Whether to update the message format"
+    required: false
+    default: "false"
+  is_abandoned:
+    description: "Whether the PR was abandoned (closed without merging)"
+    required: false
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Wait for labels to be applied
+      shell: bash
+      run: sleep 3
+
+    - name: Get PR labels and send Slack notification
+      uses: actions/github-script@v7
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
+        SLACK_CHANNEL_ID: ${{ inputs.slack_channel_id }}
+        PR_NUMBER: ${{ inputs.pr_number }}
+        PR_TITLE: ${{ inputs.pr_title }}
+        PR_URL: ${{ inputs.pr_url }}
+        PR_AUTHOR: ${{ inputs.pr_author }}
+        PR_AUTHOR_TYPE: ${{ inputs.pr_author_type }}
+        PR_AUTHOR_AVATAR: ${{ inputs.pr_author_avatar }}
+        IS_ABANDONED: ${{ inputs.is_abandoned }}
+      with:
+        script: |
+          const script = require('${{ github.action_path }}/slack-notifier.js');
+          await script({ github, context, core });

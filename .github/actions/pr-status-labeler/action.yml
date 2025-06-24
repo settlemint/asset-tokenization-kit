@@ -1,0 +1,51 @@
+name: 'PR Status Labeler'
+description: 'Update PR status labels based on approval and QA status'
+inputs:
+  pr_number:
+    description: 'Pull request number'
+    required: true
+  is_draft:
+    description: 'Whether the PR is a draft'
+    required: true
+  has_approval:
+    description: 'Whether the PR has been approved'
+    required: false
+    default: 'false'
+  qa_status:
+    description: 'The QA status (pending, running, success, failed)'
+    required: false
+    default: ''
+  is_merged:
+    description: 'Whether the PR has been merged'
+    required: false
+    default: 'false'
+  is_abandoned:
+    description: 'Whether the PR has been abandoned (closed without merging)'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check and create labels if needed
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { ensureStatusLabelsExist } = require('${{ github.action_path }}/pr-status-labeler.js');
+          await ensureStatusLabelsExist({ github, context });
+
+    - name: Update PR status label efficiently
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { updatePRStatusLabel } = require('${{ github.action_path }}/pr-status-labeler.js');
+          await updatePRStatusLabel({
+            github,
+            context,
+            prNumber: ${{ inputs.pr_number }},
+            isDraft: '${{ inputs.is_draft }}' === 'true',
+            hasApproval: '${{ inputs.has_approval }}' === 'true',
+            qaStatus: '${{ inputs.qa_status }}',
+            isMerged: '${{ inputs.is_merged }}' === 'true',
+            isAbandoned: '${{ inputs.is_abandoned }}' === 'true'
+          });

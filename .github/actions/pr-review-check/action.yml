@@ -1,0 +1,58 @@
+name: 'PR Review Check'
+description: 'Check PR approval status and QA status'
+inputs:
+  pr_number:
+    description: 'Pull request number'
+    required: true
+  pr_author:
+    description: 'Pull request author login'
+    required: true
+  event_name:
+    description: 'GitHub event name'
+    required: true
+  qa_result:
+    description: 'QA job result (for pull_request events)'
+    required: false
+  secret_scanning_result:
+    description: 'Secret scanning job result (for pull_request events)'
+    required: false
+outputs:
+  has_approval:
+    description: 'Whether PR has approval'
+    value: ${{ steps.check_approval.outputs.has_approval }}
+  qa_status:
+    description: 'QA status (success, failed, running, pending)'
+    value: ${{ steps.qa_status.outputs.qa_status }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Get PR reviews
+      id: check_approval
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { checkApproval } = require('${{ github.action_path }}/pr-review-checker.js');
+          const hasApproval = await checkApproval({
+            github,
+            context,
+            prNumber: ${{ inputs.pr_number }},
+            prAuthor: '${{ inputs.pr_author }}'
+          });
+          core.setOutput('has_approval', hasApproval);
+
+    - name: Determine QA status
+      id: qa_status
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { determineQAStatus } = require('${{ github.action_path }}/pr-review-checker.js');
+          const qaStatus = await determineQAStatus({
+            github,
+            context,
+            prNumber: ${{ inputs.pr_number }},
+            eventName: '${{ inputs.event_name }}',
+            qaResult: '${{ inputs.qa_result }}',
+            secretScanningResult: '${{ inputs.secret_scanning_result }}'
+          });
+          core.setOutput('qa_status', qaStatus);
