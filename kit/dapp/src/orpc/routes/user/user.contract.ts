@@ -12,6 +12,10 @@
  * @see {@link ./user.router} - Implementation router
  */
 
+import {
+  UserListOutputSchema,
+  UserListSchema,
+} from "@/orpc/routes/user/routes/user.list.schema";
 import { UserMeSchema } from "@/orpc/routes/user/routes/user.me.schema";
 import { baseContract } from "../../procedures/base.contract";
 
@@ -27,14 +31,6 @@ import { baseContract } from "../../procedures/base.contract";
  * @endpoint /user/me
  *
  * @returns UserMeSchema - Complete user profile information
- *
- * @example
- * ```typescript
- * // Fetch current user
- * const user = await client.user.me();
- * console.log(`Logged in as: ${user.email}`);
- * console.log(`Wallet: ${user.wallet}`);
- * ```
  */
 const me = baseContract
   .route({
@@ -46,19 +42,21 @@ const me = baseContract
   })
   .output(UserMeSchema);
 
+const list = baseContract
+  .route({
+    method: "GET",
+    path: "/user/list",
+    description: "Get the list of users",
+    successDescription: "List of users",
+    tags: ["user"],
+  })
+  .input(UserListSchema)
+  .output(UserListOutputSchema);
+
 /**
  * User API contract collection.
- *
- * Exports all user-related API contracts for use in the main contract registry.
- * Currently includes:
- * - me: Retrieve current authenticated user information
- *
- * Future endpoints may include:
- * - update: Update user profile information
- * - preferences: Manage user preferences
- * - sessions: View and manage active sessions
- * - notifications: Configure notification settings
  */
 export const userContract = {
   me,
+  list,
 };

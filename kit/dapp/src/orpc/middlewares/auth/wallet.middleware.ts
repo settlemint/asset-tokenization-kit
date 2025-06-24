@@ -5,17 +5,7 @@ export const walletMiddleware = baseRouter.middleware(
     // Check if valid authentication context exists
     if (context.auth?.user.wallet) {
       // Authentication is valid, proceed with the authenticated context
-      return next({
-        context: {
-          auth: {
-            ...context.auth,
-            user: {
-              ...context.auth.user,
-              wallet: context.auth.user.wallet,
-            },
-          },
-        },
-      });
+      return next();
     }
 
     // No valid authentication found, reject the request

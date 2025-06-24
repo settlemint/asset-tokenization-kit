@@ -47,7 +47,6 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
   const handleGenerateWallet = () => {
     if (user?.id && !isPending && !hasWallet) {
       generateWallet({
-        userId: user.id,
         messages: {
           walletCreated: t("onboarding:wallet.generated"),
           walletAlreadyExists: t("onboarding:wallet.already-exists"),

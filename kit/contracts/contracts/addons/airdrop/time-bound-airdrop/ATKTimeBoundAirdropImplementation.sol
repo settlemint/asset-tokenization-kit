@@ -56,11 +56,6 @@ contract ATKTimeBoundAirdropImplementation is IATKTimeBoundAirdrop, ATKAirdrop, 
 
     // --- Events ---
 
-    /// @notice Emitted when the time window for the airdrop is set or updated.
-    /// @param startTime The timestamp when claims can begin.
-    /// @param endTime The timestamp when claims end.
-    event TimeWindowSet(uint256 startTime, uint256 endTime);
-
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ATKAirdrop(forwarder_) {
@@ -101,8 +96,6 @@ contract ATKTimeBoundAirdropImplementation is IATKTimeBoundAirdrop, ATKAirdrop, 
         // Set time-bound specific state
         _startTime = startTime_;
         _endTime = endTime_;
-
-        emit TimeWindowSet(startTime_, endTime_);
     }
 
     // --- View Functions ---

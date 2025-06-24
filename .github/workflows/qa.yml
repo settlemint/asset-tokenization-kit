@@ -15,7 +15,7 @@ permissions:
   packages: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}-${{ github.event.action || 'default' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -289,7 +289,7 @@ jobs:
       github.event_name == 'pull_request' &&
       github.event.action == 'closed' &&
       github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-atk
     permissions:
       contents: read
       pull-requests: write
@@ -299,7 +299,9 @@ jobs:
       SLACK_CHANNEL_ID: ""
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          fetch-depth: ${{ github.event_name == 'push' && 2 || 0 }}
 
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
@@ -330,6 +332,7 @@ jobs:
           pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
           slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
           slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
+          wait_time: "15000"
 
   # Handle abandoned (closed but not merged) PR notifications
   abandoned:
@@ -348,7 +351,9 @@ jobs:
       SLACK_CHANNEL_ID: ""
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          fetch-depth: ${{ github.event_name == 'push' && 2 || 0 }}
 
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
@@ -380,3 +385,4 @@ jobs:
           slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
           slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
           is_abandoned: true
+          wait_time: "15000"

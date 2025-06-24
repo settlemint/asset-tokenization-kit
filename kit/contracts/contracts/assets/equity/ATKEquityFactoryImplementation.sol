@@ -72,6 +72,8 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
             revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
         }
 
+        emit EquityCreated(_msgSender(), deployedEquityAddress, name_, symbol_, decimals_, requiredClaimTopics_);
+
         return deployedEquityAddress;
     }
 

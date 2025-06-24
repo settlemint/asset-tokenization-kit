@@ -11,13 +11,11 @@ This command configures all recommended MCP servers for the project.
    ```
 
 2. **Configure recommended MCP servers**
-
    - Add each recommended server with appropriate transport type
    - Skip servers that are already configured
 
 3. **Verify all servers are added**
-
-   - Check that all 5 recommended servers are configured
+   - Check that all recommended servers are configured
    - Report any servers that failed to add
 
 4. **Verify setup**
@@ -39,6 +37,12 @@ claude mcp add --transport sse context7 https://mcp.context7.com/sse -s user
 
 # DeepWiki - Advanced documentation search
 claude mcp add --transport sse deepwiki https://mcp.deepwiki.com/sse -s user
+
+# Playwright - Browser automation and testing
+claude mcp add playwright npx @playwright/mcp@latest -s user
+
+# Sentry - Error tracking and monitoring
+claude mcp add --transport http sentry https://mcp.sentry.dev/mcp -s user
 ```
 
 ## Usage
@@ -54,9 +58,10 @@ Run this command when:
 
 Some servers require authentication:
 
-- **Sentry, Linear, GitHub, DeepWiki**: May prompt for OAuth authentication in
-  browser on first use
+- **Linear, DeepWiki, Sentry**: May prompt for OAuth authentication in browser
+  on first use
 - **Context7**: Public access, no authentication required
+- **Playwright**: Runs locally, no authentication required
 
 ## Troubleshooting
 

@@ -18,7 +18,7 @@ describe("Identity claims", () => {
       }`
     );
     const response = await theGraphClient.request(query);
-    expect(response.identityClaims.length).toBe(25);
+    expect(response.identityClaims.length).toBe(27);
     expect(
       response.identityClaims.every(
         (identity) =>
