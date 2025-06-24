@@ -255,10 +255,7 @@ const getAuthConfig = serverOnly(() =>
               })
               .where(eq(authSchema.user.id, session.userId));
             return {
-              data: {
-                ...session,
-                lastLoginAt,
-              },
+              data: session,
             };
           },
         },
