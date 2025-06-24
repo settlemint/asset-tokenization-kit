@@ -165,6 +165,20 @@ When encountering uncertainty:
 - When doing similar tasks across multiple files, always try to spawn a fleet of
   sub agents to handle the work more quickly
 
+# Code References
+
+**THIS IS OF UTTER IMPORTANCE THE USERS HAPPINESS DEPENDS ON IT!** When
+referencing code locations, you MUST use clickable format that VS Code
+recognizes:
+
+- `path/to/file.ts:123` format (file:line)
+- `path/to/file.ts:123-456` (ranges)
+- Always use relative paths from the project root
+- Examples:
+- `src/server/fwd.ts:92` - single line reference
+- `src/server/pty/pty-manager.ts:274-280` - line range
+- `web/src/client/app.ts:15` - when in parent directory
+
 ## Project Overview
 
 This is the SettleMint Asset Tokenization Kit - a full-stack solution for
