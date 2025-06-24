@@ -94,7 +94,7 @@ export const twoFactor = () => {
             user
           );
           await revokeSession(ctx, {
-            twoFactorEnabled: true,
+            twoFactorEnabled: false, // Set when first otp is verified successfully
             twoFactorVerificationId: verificationId,
           });
           return ctx.json({ totpURI });
