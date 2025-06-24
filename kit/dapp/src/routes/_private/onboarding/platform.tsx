@@ -65,12 +65,7 @@ function PlatformOnboarding() {
     }
   }, [user, systemAddress, systemDetails, hasInitialized]);
 
-  // Also update step if system gets deployed after initialization
-  useEffect(() => {
-    if (hasInitialized && systemAddress && currentStepId === "system") {
-      setCurrentStepId("assets");
-    }
-  }, [systemAddress, currentStepId, hasInitialized]);
+  // Note: Auto-navigation after system deployment is now handled in the SystemStep's onSuccess callback
 
   // Define steps with dynamic statuses
   const steps: Step[] = [
@@ -116,7 +111,8 @@ function PlatformOnboarding() {
   };
 
   const handleSystemSuccess = () => {
-    // Don't auto-advance
+    // Auto-advance to next step after successful system deployment
+    setCurrentStepId("assets");
   };
 
   const handleAssetsSuccess = () => {
@@ -291,30 +287,38 @@ function PlatformOnboarding() {
               nextLabel={getNextLabel()}
               backLabel={t("onboarding:back", "Back")}
             >
-              {currentStepId === "wallet" && (
-                <WalletStep
-                  onSuccess={handleWalletSuccess}
-                  onRegisterAction={(action) => {
-                    walletActionRef.current = action;
-                  }}
-                />
-              )}
-              {currentStepId === "system" && (
-                <SystemStep
-                  onSuccess={handleSystemSuccess}
-                  onRegisterAction={(action) => {
-                    systemActionRef.current = action;
-                  }}
-                />
-              )}
-              {currentStepId === "assets" && (
-                <AssetSelectionStep
-                  onSuccess={handleAssetsSuccess}
-                  onRegisterAction={(action) => {
-                    assetsActionRef.current = action;
-                  }}
-                />
-              )}
+              {(() => {
+                if (currentStepId === "wallet") {
+                  return (
+                    <WalletStep
+                      onSuccess={handleWalletSuccess}
+                      onRegisterAction={(action) => {
+                        walletActionRef.current = action;
+                      }}
+                    />
+                  );
+                } else if (currentStepId === "system") {
+                  return (
+                    <SystemStep
+                      onSuccess={handleSystemSuccess}
+                      onRegisterAction={(action) => {
+                        systemActionRef.current = action;
+                      }}
+                    />
+                  );
+                } else if (currentStepId === "assets") {
+                  return (
+                    <AssetSelectionStep
+                      onSuccess={handleAssetsSuccess}
+                      onRegisterAction={(action) => {
+                        assetsActionRef.current = action;
+                      }}
+                    />
+                  );
+                } else {
+                  return null;
+                }
+              })()}
             </StepWizard>
           </div>
         </div>

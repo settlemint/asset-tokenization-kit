@@ -3,7 +3,7 @@ import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 /**
  * Valid setting keys
  */
-export const SETTING_KEYS = ["SYSTEM_ADDRESS"] as const;
+export const SETTING_KEYS = ["BASE_CURRENCY", "SYSTEM_ADDRESS"] as const;
 
 /**
  * Setting key type derived from the valid keys
@@ -14,6 +14,7 @@ export type SettingKey = (typeof SETTING_KEYS)[number];
  * Default values for each setting
  */
 export const DEFAULT_SETTINGS: Record<SettingKey, string> = {
+  BASE_CURRENCY: "EUR", // Default currency
   SYSTEM_ADDRESS: "", // Empty by default, should be set during deployment
 } as const;
 

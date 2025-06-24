@@ -282,7 +282,7 @@ export const create = onboardedRouter.system.create
       }
     }
 
-    // Save the system address to settings using orpc
+    // Save the system address to settings using orpc BEFORE yielding final events
     await orpc.settings.upsert.call({
       key: "SYSTEM_ADDRESS",
       value: system.id,

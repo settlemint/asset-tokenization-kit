@@ -21,11 +21,8 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
   } = useStreamingMutation({
     mutationOptions: orpc.system.create.mutationOptions(),
     onSuccess: () => {
-      // Wait a bit for the settings to be saved, then invalidate
-      setTimeout(() => {
-        invalidateSetting();
-        onSuccess?.();
-      }, 1000);
+      invalidateSetting();
+      onSuccess?.();
     },
   });
 
@@ -72,8 +69,15 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
 
   // Register the action with parent
   useEffect(() => {
-    if (onRegisterAction && !hasSystem) {
-      onRegisterAction(handleDeploySystem);
+    if (onRegisterAction) {
+      if (!hasSystem) {
+        onRegisterAction(handleDeploySystem);
+      } else {
+        // Register a no-op function when system already exists
+        onRegisterAction(() => {
+          // No action needed when system already exists
+        });
+      }
     }
   }, [onRegisterAction, hasSystem]);
 
@@ -115,8 +119,8 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
         style={{ minHeight: "450px", maxHeight: "550px" }}
       >
         <div className="max-w-3xl space-y-6 pr-2">
-          {/* Animated deployment visualization - show during deployment and after completion */}
-          {(isDeploying || hasSystem) && <p>Deploying...</p>}
+          {/* Animated deployment visualization - show during deployment only */}
+          {isDeploying && <p>Deploying...</p>}
 
           {/* Status display */}
           {hasSystem && !isDeploying ? (
