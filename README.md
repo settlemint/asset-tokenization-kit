@@ -104,8 +104,6 @@ bun run dev:reset
 ```bash
 # Start the docker compose setup
 bun run dev:up
-# Connect to the local network
-bunx settlemint connect
 # Start the dApp in development mode
 bun run dev
 ```

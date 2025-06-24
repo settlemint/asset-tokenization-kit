@@ -12,12 +12,16 @@ const SYSTEM_ADDRESS_KEY = "SYSTEM_ADDRESS";
 
 const TOKEN_FACTORIES_QUERY = theGraphGraphql(
   `
-  query GetTokenFactories($systemAddress: String!) {
-    tokenFactories(where: { system: $systemAddress }) {
-      id
-      name
-      accessControl {
-        ...AccessControlFragment
+  query GetTokenFactories($systemAddress: ID!) {
+    system(id: $systemAddress) {
+      tokenFactoryRegistry {
+        tokenFactories {
+          id
+          name
+          accessControl {
+            ...AccessControlFragment
+          }
+        }
       }
     }
   }
@@ -28,8 +32,10 @@ const TOKEN_FACTORIES_QUERY = theGraphGraphql(
 /**
  * Interface for the access control of a token factory.
  */
-export type SystemAccessControl = ResultOf<
-  typeof TOKEN_FACTORIES_QUERY
+export type SystemAccessControl = NonNullable<
+  NonNullable<
+    ResultOf<typeof TOKEN_FACTORIES_QUERY>["system"]
+  >["tokenFactoryRegistry"]
 >["tokenFactories"][number]["accessControl"];
 
 /**
@@ -40,6 +46,7 @@ export type SystemAccessControl = ResultOf<
  */
 export interface TokenFactory {
   type: (typeof assetTypes)[number];
+  name: string;
   address: Address;
   accessControl: SystemAccessControl;
 }
@@ -88,15 +95,20 @@ const getSystemAddress = async (dbContext: typeof db) => {
 const getTokenFactories = async (
   systemAddress: Address
 ): Promise<TokenFactory[]> => {
-  const { tokenFactories } = await theGraphClient.request({
+  const { system } = await theGraphClient.request({
     document: TOKEN_FACTORIES_QUERY,
     variables: {
       systemAddress,
     },
   });
-  return tokenFactories.map(({ id, name, accessControl }) => ({
-    type: name as (typeof assetTypes)[number],
-    address: getAddress(id),
-    accessControl,
-  }));
+  return (
+    system?.tokenFactoryRegistry?.tokenFactories.map(
+      ({ id, name, accessControl }) => ({
+        type: name as (typeof assetTypes)[number],
+        name,
+        address: getAddress(id),
+        accessControl,
+      })
+    ) ?? []
+  );
 };

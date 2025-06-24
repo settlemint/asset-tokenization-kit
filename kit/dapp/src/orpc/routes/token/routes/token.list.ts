@@ -27,11 +27,14 @@ export const list = authRouter.token.list
       orderDirection: "asc",
     };
 
-    const { tokens } = await context.theGraphClient.request(LIST_TOKEN_QUERY, {
-      skip: offset,
-      orderDirection,
-      first: limit,
-    });
-
-    return TokenListSchema.parse(tokens);
+    return context.theGraphClient.query(
+      LIST_TOKEN_QUERY,
+      {
+        skip: offset,
+        orderDirection,
+        first: limit,
+      },
+      TokenListSchema,
+      "Failed to list tokens"
+    );
   });

@@ -5,6 +5,7 @@ import { adminAc, defaultStatements } from "better-auth/plugins/admin/access";
 const customPermissions = {
   ...defaultStatements,
   setting: ["read", "update"],
+  system: ["read", "create"],
 } as const;
 
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
@@ -18,6 +19,7 @@ export const accessControl = createAccessControl(customPermissions);
 export const adminRole = accessControl.newRole({
   ...adminAc.statements,
   setting: ["read", "update"],
+  system: ["read", "create"],
 });
 
 export const issuerRole = accessControl.newRole({
@@ -25,6 +27,6 @@ export const issuerRole = accessControl.newRole({
   setting: ["read"],
 });
 
-export const userRole = accessControl.newRole({
+export const investorRole = accessControl.newRole({
   setting: ["read"],
 });

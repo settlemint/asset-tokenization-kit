@@ -23,7 +23,12 @@ import {
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import type { auth } from ".";
-import { accessControl, adminRole, issuerRole, userRole } from "./permissions";
+import {
+  accessControl,
+  adminRole,
+  investorRole,
+  issuerRole,
+} from "./permissions";
 
 /**
  * The main authentication client instance for the application.
@@ -79,7 +84,7 @@ export const authClient = createAuthClient({
       ac: accessControl,
       roles: {
         admin: adminRole,
-        user: userRole,
+        investor: investorRole,
         issuer: issuerRole,
       },
     }),

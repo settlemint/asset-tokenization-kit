@@ -11,14 +11,8 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       name
       symbol
       decimals
-      identity {
-        claims {
-          name
-          values {
-            key
-            value
-          }
-        }
+      requiredClaimTopics {
+        name
       }
       accessControl {
         ...AccessControlFragment
@@ -37,7 +31,12 @@ export type Token = Omit<
   ResultOf<typeof READ_TOKEN_QUERY>["token"],
   "accessControl"
 > & {
-  userHasRole: Record<TokenRoles, boolean>;
+  userPermissions: {
+    // List of roles, when true the user has the role
+    roles: Record<TokenRoles, boolean>;
+    // User has the required claim topics to interact with the token
+    isCompliant: boolean;
+  };
 };
 
 /**
@@ -65,12 +64,18 @@ export const tokenMiddleware = baseRouter.middleware(
         },
         {} as Record<TokenRoles, boolean>
       );
+
+      const tokenContext: Token = {
+        ...token,
+        userPermissions: {
+          roles: userRoles,
+          isCompliant: token?.requiredClaimTopics.length === 0,
+        },
+      };
+
       return next({
         context: {
-          token: {
-            ...token,
-            userRoles,
-          },
+          token: tokenContext,
         },
       });
     }

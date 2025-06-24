@@ -21,8 +21,8 @@ import { metadata } from "@/config/metadata";
 import {
   accessControl,
   adminRole,
+  investorRole,
   issuerRole,
-  userRole,
 } from "@/lib/auth/permissions";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { UserRole } from "@/lib/zod/validators/user-roles";
@@ -181,7 +181,7 @@ const getAuthConfig = serverOnly(() =>
         ac: accessControl,
         roles: {
           admin: adminRole,
-          user: userRole,
+          user: investorRole,
           issuer: issuerRole,
         },
       }),

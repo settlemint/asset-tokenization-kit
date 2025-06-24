@@ -2,7 +2,6 @@ import { accountContract } from "@/orpc/routes/account/account.contract";
 import { settingsContract } from "@/orpc/routes/settings/settings.contract";
 import { systemContract } from "@/orpc/routes/system/system.contract";
 import { tokenContract } from "@/orpc/routes/token/token.contract";
-import { tokensContract } from "@/orpc/routes/tokens/tokens.contract";
 import { userContract } from "@/orpc/routes/user/user.contract";
 
 /**
@@ -78,17 +77,4 @@ export const contract = {
    * @see {@link ./user/user.router} - Corresponding router implementation
    */
   user: userContract,
-
-  /**
-   * Token-related API contract.
-   *
-   * Contains type definitions for token factory management procedures.
-   * Token factories are the foundation for creating tokenized assets including
-   * bonds, equity, funds, stablecoins, and deposits. This contract provides
-   * type-safe access to factory creation and management operations.
-   *
-   * @see {@link ./tokens/tokens.contract} - Tokens contract implementation
-   * @see {@link ./tokens/tokens.router} - Corresponding router implementation
-   */
-  tokens: tokensContract,
 };

@@ -2,17 +2,17 @@ import type { TokenRoles } from "@/orpc/middlewares/system/token.middleware";
 import { baseRouter } from "@/orpc/procedures/base.router";
 
 /**
- * Middleware to check if the user has the required permission to interact with the token factory.
- * @param type - The type of the token factory.
- * @param requiredPermission - The permission required to interact with the token factory.
+ * Middleware to check if
+ * - The user is compliant with the token's required claim topics.
+ * - The user has the required roles to interact with the token.
+ *
+ * @param requiredRoles - The roles required to interact with the token.
  * @returns The middleware function.
  */
 export const tokenPermissionMiddleware = ({
   requiredRoles,
-  requiredClaims,
 }: {
   requiredRoles?: TokenRoles[];
-  requiredClaims?: string[];
 }) =>
   baseRouter.middleware(async ({ context, next, errors }) => {
     const { token } = context;
@@ -23,8 +23,12 @@ export const tokenPermissionMiddleware = ({
       });
     }
 
+    if (!token.userPermissions.isCompliant) {
+      throw errors.FORBIDDEN();
+    }
+
     for (const requiredRole of requiredRoles ?? []) {
-      if (!token.userHasRole[requiredRole]) {
+      if (!token.userPermissions.roles[requiredRole]) {
         throw errors.FORBIDDEN();
       }
     }

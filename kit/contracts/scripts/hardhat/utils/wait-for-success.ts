@@ -1,10 +1,9 @@
 import type { Hex, TransactionReceipt } from "viem";
-import { parseRevertReason } from "./decode-revert-reason";
 import { getPublicClient } from "./public-client";
 
 export async function waitForSuccess(transactionHash: Hex) {
   const publicClient = getPublicClient();
-  const receipt: TransactionReceipt & { revertReason?: Hex } =
+  const receipt: TransactionReceipt =
     await publicClient.waitForTransactionReceipt({
       hash: transactionHash,
       pollingInterval: 50,
@@ -19,9 +18,8 @@ export async function waitForSuccess(transactionHash: Hex) {
     // using `publicClient.call` with the original transaction parameters and blockNumber,
     // and then decode the error if it's a custom error (requires ABI).
     // Tools like Tenderly or Hardhat's console.log in Solidity can also help.
-    const revertReason = await parseRevertReason(receipt.revertReason);
     throw new Error(
-      `Transaction with hash ${transactionHash} reverted. Status: ${receipt.status}. Block Number: ${receipt.blockNumber}, Tx Index: ${receipt.transactionIndex}, Revert Reason: ${revertReason}`
+      `Transaction with hash ${transactionHash} reverted. Status: ${receipt.status}. Block Number: ${receipt.blockNumber}, Tx Index: ${receipt.transactionIndex}`
     );
   }
 
