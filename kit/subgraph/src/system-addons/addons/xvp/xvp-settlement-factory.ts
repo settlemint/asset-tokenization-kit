@@ -7,7 +7,6 @@ export function handleATKXvPSettlementCreated(
 ): void {
   fetchEvent(event, "XvPSettlementCreated");
   const xvpSettlement = fetchXvPSettlement(event.params.settlement);
-
   xvpSettlement.deployedInTransaction = event.transaction.hash;
   xvpSettlement.save();
 }

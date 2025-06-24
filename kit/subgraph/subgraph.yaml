@@ -681,7 +681,9 @@ templates:
         - ATKXvPSettlementCreated
       abis:
         - name: XvPSettlementFactory
-          file: ../contracts/.generated/artifacts/contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol/ATKXvPSettlementFactoryImplementation.json
+          file: ../contracts/.generated/artifacts/contracts/addons/xvp/IATKXvPSettlementFactory.sol/IATKXvPSettlementFactory.json
+        - name: XvPSettlement
+          file: ../contracts/.generated/artifacts/contracts/addons/xvp/IATKXvPSettlement.sol/IATKXvPSettlement.json
       eventHandlers:
         - event: ATKXvPSettlementCreated(indexed address,indexed address)
           handler: handleATKXvPSettlementCreated
@@ -702,7 +704,7 @@ templates:
         - XvPSettlementCancelled
       abis:
         - name: XvPSettlement
-          file: ../contracts/.generated/artifacts/contracts/addons/xvp/ATKXvPSettlementImplementation.sol/ATKXvPSettlementImplementation.json
+          file: ../contracts/.generated/artifacts/contracts/addons/xvp/IATKXvPSettlement.sol/IATKXvPSettlement.json
       eventHandlers:
         - event: XvPSettlementApproved(indexed address)
           handler: handleXvPSettlementApproved
