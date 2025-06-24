@@ -335,22 +335,35 @@ module.exports = async ({ github, context, core }) => {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*<${PR_URL}|#${PR_NUMBER} ${escapedTitle}>*\n_Author: ${PR_AUTHOR} • Repo: ${context.repo.owner}/${context.repo.repo}_${statusString ? '\n' + statusString.trim() : ''}`
-            },
-            accessory: {
-              type: 'button',
-              text: {
-                type: 'plain_text',
-                text: 'View PR',
-                emoji: false
-              },
-              url: PR_URL,
-              style: 'primary'
+              text: `*<${PR_URL}|#${PR_NUMBER} ${escapedTitle}>*${statusString ? '\n' + statusString.trim() : ''}`
             }
+          },
+          {
+            type: 'section',
+            fields: [
+              {
+                type: 'mrkdwn',
+                text: `*Repository:*\n${context.repo.owner}/${context.repo.repo}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `*Author:*\n${PR_AUTHOR}`
+              }
+            ]
           },
           {
             type: 'actions',
             elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'View PR',
+                  emoji: false
+                },
+                url: PR_URL,
+                style: 'primary'
+              },
               {
                 type: 'button',
                 text: {
