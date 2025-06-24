@@ -1,18 +1,9 @@
+import type { SessionUser } from "@/lib/auth";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { VerificationCode } from "@/lib/zod/validators/verification-code";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
-import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { ORPCError } from "@orpc/server";
 import { handleWalletVerificationChallenge } from "@settlemint/sdk-portal";
-
-/**
- * Maps verification types to their corresponding verification ID field names
- */
-const VERIFICATION_ID_MAP = {
-  pincode: "pincodeVerificationId",
-  "secret-code": "secretCodeVerificationId",
-  "two-factor": "twoFactorVerificationId",
-} as const satisfies Record<string, string>;
 
 /**
  * Maps frontend verification types to portal verification types
@@ -21,7 +12,7 @@ const PORTAL_VERIFICATION_TYPE_MAP = {
   pincode: "pincode",
   "secret-code": "secret-code",
   "two-factor": "otp",
-} as const satisfies Record<string, string>;
+} as const satisfies Record<VerificationType, string>;
 
 /**
  * Handles a wallet verification challenge by generating an appropriate response
@@ -58,7 +49,7 @@ const PORTAL_VERIFICATION_TYPE_MAP = {
  * ```
  */
 export async function handleChallenge(
-  user: User,
+  user: SessionUser,
   verification: {
     code: VerificationCode;
     type: VerificationType;
@@ -80,15 +71,11 @@ export async function handleChallenge(
   }
 
   try {
-    // Extract the underlying string value from the branded type
-    const baseType =
-      verification.type as unknown as keyof typeof PORTAL_VERIFICATION_TYPE_MAP;
-
     return await handleWalletVerificationChallenge({
       verificationId,
       userWalletAddress: user.wallet,
       code: verification.code,
-      verificationType: PORTAL_VERIFICATION_TYPE_MAP[baseType],
+      verificationType: PORTAL_VERIFICATION_TYPE_MAP[verification.type],
       portalClient,
       portalGraphql,
     });
@@ -111,12 +98,14 @@ export async function handleChallenge(
  * @internal
  */
 function getVerificationId(
-  user: User,
+  user: SessionUser,
   verificationType: VerificationType
-): string | undefined {
-  // Extract the underlying string value from the branded type
-  const baseType =
-    verificationType as unknown as keyof typeof VERIFICATION_ID_MAP;
-  const fieldName = VERIFICATION_ID_MAP[baseType];
-  return user[fieldName as keyof User] as string | undefined;
+) {
+  if (verificationType === "pincode") {
+    return user.pincodeVerificationId;
+  }
+  if (verificationType === "secret-code") {
+    return user.secretCodeVerificationId;
+  }
+  return user.twoFactorVerificationId;
 }

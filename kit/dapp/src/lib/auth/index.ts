@@ -24,7 +24,10 @@ import {
   investorRole,
   issuerRole,
 } from "@/lib/auth/permissions";
-import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { pincode } from "@/lib/auth/plugins/pincode-plugin";
+import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
+import { twoFactor } from "@/lib/auth/plugins/two-factor";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { UserRole } from "@/lib/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
 import { betterAuth } from "better-auth";
@@ -33,6 +36,7 @@ import { APIError } from "better-auth/api";
 import { admin, apiKey, openAPI } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
+import { eq } from "drizzle-orm/sql";
 import { db } from "../db";
 import * as authSchema from "../db/schemas/auth";
 import { env } from "../env";
@@ -118,6 +122,78 @@ const getAuthConfig = serverOnly(() =>
           unique: true,
           input: false,
         },
+        /**
+         * The last time the user logged in.
+         */
+        lastLoginAt: {
+          type: "date",
+          required: false,
+          input: false,
+        },
+        /**
+         * The role of the user.
+         */
+        role: {
+          type: "string",
+          required: true,
+          defaultValue: "investor",
+          input: false,
+        },
+        /**
+         * Whether the user has enabled pincode.
+         */
+        pincodeEnabled: {
+          type: "boolean",
+          required: false,
+          defaultValue: false,
+          input: false,
+        },
+        /**
+         * The verification id for the pincode.
+         */
+        pincodeVerificationId: {
+          type: "string",
+          required: false,
+          unique: true,
+          input: false,
+        },
+        /**
+         * Whether the user has enabled two-factor authentication.
+         * Only set after the first otp code is verified.
+         */
+        twoFactorEnabled: {
+          type: "boolean",
+          required: false,
+          defaultValue: false,
+          input: false,
+        },
+        /**
+         * The verification id for the two-factor authentication.
+         */
+        twoFactorVerificationId: {
+          type: "string",
+          required: false,
+          unique: true,
+          input: false,
+        },
+        /**
+         * The verification id for the secret code.
+         */
+        secretCodeVerificationId: {
+          type: "string",
+          required: false,
+          unique: true,
+          input: false,
+        },
+        /**
+         * Whether the user has finished the initial onboarding.
+         */
+        initialOnboardingFinished: {
+          type: "boolean",
+          required: false,
+          defaultValue: false,
+          input: false,
+        },
       },
     },
     /**
@@ -165,6 +241,22 @@ const getAuthConfig = serverOnly(() =>
                 cause: error instanceof Error ? error : undefined,
               });
             }
+          },
+        },
+      },
+      session: {
+        create: {
+          before: async (session) => {
+            const lastLoginAt = new Date();
+            await db
+              .update(authSchema.user)
+              .set({
+                lastLoginAt,
+              })
+              .where(eq(authSchema.user.id, session.userId));
+            return {
+              data: session,
+            };
           },
         },
       },
@@ -223,6 +315,21 @@ const getAuthConfig = serverOnly(() =>
        * React Start cookie integration for SSR support.
        */
       reactStartCookies(),
+
+      /**
+       * Plugin for pincode authentication.
+       */
+      pincode(),
+
+      /**
+       * Plugin for two-factor authentication.
+       */
+      twoFactor(),
+
+      /**
+       * Plugin for secret codes authentication.
+       */
+      secretCodes(),
     ],
   })
 );
@@ -245,10 +352,7 @@ export const auth = getAuthConfig();
 export type Session = typeof auth.$Infer.Session;
 
 /**
- * Enhanced type for session users with proper wallet typing.
- *
- * The wallet field is overridden to use the branded EthereumAddress type
- * for additional type safety when working with blockchain addresses.
+ * Enhanced type for session users with proper typing.
  */
 export type SessionUser = Omit<Session["user"], "wallet" | "role"> & {
   wallet?: EthereumAddress | null;

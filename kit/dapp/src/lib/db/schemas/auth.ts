@@ -1,3 +1,4 @@
+import type { UserRole } from "@/lib/zod/validators/user-roles";
 import {
   boolean,
   integer,
@@ -15,30 +16,34 @@ export const user = pgTable("user", {
     .$defaultFn(() => !1)
     .notNull(),
   image: text("image"),
-  createdAt: timestamp("created_at")
+  createdAt: timestamp("created_at", { withTimezone: true })
     .$defaultFn(() => new Date())
     .notNull(),
-  updatedAt: timestamp("updated_at")
+  updatedAt: timestamp("updated_at", { withTimezone: true })
     .$defaultFn(() => new Date())
     .notNull(),
-  role: text("role"),
+  role: text("role").$type<UserRole>(),
   banned: boolean("banned"),
   banReason: text("ban_reason"),
-  banExpires: timestamp("ban_expires"),
+  banExpires: timestamp("ban_expires", { withTimezone: true }),
   wallet: text("wallet").unique().$type<Address>(),
-  pincodeEnabled: boolean("pincode_enabled"),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  pincodeEnabled: boolean("pincode_enabled").notNull().default(false),
   pincodeVerificationId: text("pincode_verification_id").unique(),
+  twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
   twoFactorVerificationId: text("two_factor_verification_id").unique(),
   secretCodeVerificationId: text("secret_code_verification_id").unique(),
-  initialOnboardingFinished: boolean("initial_onboarding_finished"),
+  initialOnboardingFinished: boolean("initial_onboarding_finished")
+    .notNull()
+    .default(false),
 });
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
-  expiresAt: timestamp("expires_at").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   token: text("token").notNull().unique(),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
   userId: text("user_id")
@@ -57,21 +62,29 @@ export const account = pgTable("account", {
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
-  accessTokenExpiresAt: timestamp("access_token_expires_at"),
-  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at", {
+    withTimezone: true,
+  }),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at", {
+    withTimezone: true,
+  }),
   scope: text("scope"),
   password: text("password"),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
 });
 
 export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").$defaultFn(() => new Date()),
-  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).$defaultFn(
+    () => new Date()
+  ),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$defaultFn(
+    () => new Date()
+  ),
 });
 
 export const apikey = pgTable("apikey", {
@@ -85,17 +98,17 @@ export const apikey = pgTable("apikey", {
     .references(() => user.id, { onDelete: "cascade" }),
   refillInterval: integer("refill_interval"),
   refillAmount: integer("refill_amount"),
-  lastRefillAt: timestamp("last_refill_at"),
+  lastRefillAt: timestamp("last_refill_at", { withTimezone: true }),
   enabled: boolean("enabled").default(true),
   rateLimitEnabled: boolean("rate_limit_enabled").default(true),
   rateLimitTimeWindow: integer("rate_limit_time_window").default(60000),
   rateLimitMax: integer("rate_limit_max").default(60),
   requestCount: integer("request_count"),
   remaining: integer("remaining"),
-  lastRequest: timestamp("last_request"),
-  expiresAt: timestamp("expires_at"),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
+  lastRequest: timestamp("last_request", { withTimezone: true }),
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
   permissions: text("permissions"),
   metadata: text("metadata"),
 });
@@ -112,6 +125,6 @@ export const passkey = pgTable("passkey", {
   deviceType: text("device_type").notNull(),
   backedUp: boolean("backed_up").notNull(),
   transports: text("transports"),
-  createdAt: timestamp("created_at"),
+  createdAt: timestamp("created_at", { withTimezone: true }),
   aaguid: text("aaguid"),
 });
