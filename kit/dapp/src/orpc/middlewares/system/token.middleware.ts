@@ -58,7 +58,7 @@ export const tokenMiddleware = baseRouter.middleware(
     const { auth, userClaimTopics } = context;
     if (!userClaimTopics) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: "User claim context not set",
+        message: "User claim topics context not set",
       });
     }
 
