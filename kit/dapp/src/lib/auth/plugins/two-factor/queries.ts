@@ -3,7 +3,6 @@ import type { UserWithTwoFactorContext } from "@/lib/auth/plugins/two-factor/ind
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { APIError } from "better-auth/api";
-import { revalidateTag } from "next/cache";
 
 const DELETE_WALLET_VERIFICATION_MUTATION = portalGraphql(`
   mutation DisableTwoFactor($address: String!, $verificationId: String!) {
@@ -147,7 +146,7 @@ export async function enableTwoFactor(
         "Failed to create wallet verification, no verification ID returned",
     });
   }
-  revalidateTag("user");
+
   return {
     totpURI: parameters.uri ?? "",
     verificationId: result.createWalletVerification.id,

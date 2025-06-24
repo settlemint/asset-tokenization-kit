@@ -75,10 +75,15 @@ export const twoFactor = () => {
         async (ctx) => {
           const user = ctx.context.session.user as UserWithTwoFactorContext;
           if (user.initialOnboardingFinished) {
-            await validatePassword(ctx, {
+            const isPasswordValid = await validatePassword(ctx, {
               password: ctx.body.password ?? "",
               userId: user.id,
             });
+            if (!isPasswordValid) {
+              throw new APIError("BAD_REQUEST", {
+                message: "Invalid password",
+              });
+            }
           }
           const { totpURI, verificationId } = await enableTwoFactor(
             {
@@ -130,10 +135,15 @@ export const twoFactor = () => {
         },
         async (ctx) => {
           const user = ctx.context.session.user as UserWithTwoFactorContext;
-          await validatePassword(ctx, {
+          const isPasswordValid = await validatePassword(ctx, {
             password: ctx.body.password,
             userId: user.id,
           });
+          if (!isPasswordValid) {
+            throw new APIError("BAD_REQUEST", {
+              message: "Invalid password",
+            });
+          }
           await disableTwoFactor(user);
           await revokeSession(ctx, {
             twoFactorEnabled: false,

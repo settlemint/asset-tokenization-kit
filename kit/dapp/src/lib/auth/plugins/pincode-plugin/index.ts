@@ -30,14 +30,12 @@ export const pincode = () => {
         {
           method: "POST",
           body: z.object({
-            pincode: z.string({
-              message: "The pincode for wallet verification",
-            }),
+            pincode: z.string().describe("The pincode for wallet verification"),
             password: z
-              .string({
-                message:
-                  "User password (only required if the user has done the initial onboarding)",
-              })
+              .string()
+              .describe(
+                "User password (only required if the user has done the initial onboarding)"
+              )
               .optional(),
           }),
           use: [sessionMiddleware],

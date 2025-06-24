@@ -1,3 +1,4 @@
+import { validatePassword } from "@/lib/auth/plugins/utils";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { BetterAuthPlugin } from "better-auth";
@@ -6,6 +7,7 @@ import {
   createAuthEndpoint,
   sessionMiddleware,
 } from "better-auth/api";
+import { z } from "zod/v4";
 import { revokeSession } from "../utils";
 
 const GENERATE_SECRET_CODES_MUTATION = portalGraphql(`
@@ -34,8 +36,10 @@ const REMOVE_SECRET_CODES_MUTATION = portalGraphql(`
 `);
 
 export interface UserWithSecretCodesContext {
+  id: string;
   wallet?: EthereumAddress;
   secretCodeVerificationId?: string;
+  initialOnboardingFinished?: boolean;
 }
 
 export const secretCodes = () => {
@@ -45,7 +49,10 @@ export const secretCodes = () => {
       generate: createAuthEndpoint(
         "/secret-codes/generate",
         {
-          method: "GET",
+          method: "POST",
+          body: z.object({
+            password: z.string().describe("User password").optional(),
+          }),
           use: [sessionMiddleware],
           metadata: {
             openapi: {
@@ -82,6 +89,17 @@ export const secretCodes = () => {
             throw new APIError("BAD_REQUEST", {
               message: "User wallet not found",
             });
+          }
+          if (user.initialOnboardingFinished) {
+            const isPasswordValid = await validatePassword(ctx, {
+              password: ctx.body.password ?? "",
+              userId: user.id,
+            });
+            if (!isPasswordValid) {
+              throw new APIError("BAD_REQUEST", {
+                message: "Invalid password",
+              });
+            }
           }
           if (user.secretCodeVerificationId) {
             await portalClient.request(REMOVE_SECRET_CODES_MUTATION, {
