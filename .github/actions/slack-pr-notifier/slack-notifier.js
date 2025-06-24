@@ -347,6 +347,29 @@ module.exports = async ({ github, context, core }) => {
               url: PR_URL,
               style: 'primary'
             }
+          },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Files',
+                  emoji: false
+                },
+                url: `${PR_URL}/files`
+              },
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Checks',
+                  emoji: false
+                },
+                url: `${PR_URL}/checks`
+              }
+            ]
           }
         ];
       } else {
