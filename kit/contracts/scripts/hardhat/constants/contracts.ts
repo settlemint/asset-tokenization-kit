@@ -40,6 +40,7 @@ import {
   topicSchemeRegistryAbi,
   trustedIssuersRegistryAbi,
   vestingAirdropFactoryAbi,
+  xvpSettlementFactoryAbi,
 } from "../abi";
 
 export const ATKContracts = {
@@ -92,4 +93,5 @@ export const ATKContracts = {
   vestingAirdropFactory: vestingAirdropFactoryAbi,
   pushAirdropFactory: pushAirdropFactoryAbi,
   timeBoundAirdropFactory: timeBoundAirdropFactoryAbi,
+  xvpSettlementFactory: xvpSettlementFactoryAbi
 } as const;
