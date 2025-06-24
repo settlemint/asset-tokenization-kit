@@ -10,7 +10,7 @@ import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { queryClient } from "@/lib/query.client";
 import { orpc } from "@/orpc";
-import { TokenTypeEnum } from "@/orpc/routes/tokens/routes/factory.create.schema";
+import { TokenTypeEnum } from "@/orpc/routes/token/routes/factory.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -69,7 +69,7 @@ export function AssetSelectionStep({
   });
 
   const { mutate: createFactories } = useStreamingMutation({
-    mutationOptions: orpc.tokens.factoryCreate.mutationOptions(),
+    mutationOptions: orpc.token.factoryCreate.mutationOptions(),
     onSuccess: async () => {
       toast.success(t("assets.deployed"));
       await queryClient.invalidateQueries({

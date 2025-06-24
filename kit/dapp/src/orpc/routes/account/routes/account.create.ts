@@ -13,6 +13,7 @@
 import { user } from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
@@ -128,7 +129,7 @@ export const create = authRouter.account.create
     await context.db
       .update(user)
       .set({
-        wallet: result.createWallet.address,
+        wallet: getEthereumAddress(result.createWallet.address),
       })
       .where(eq(user.id, sender.id));
 

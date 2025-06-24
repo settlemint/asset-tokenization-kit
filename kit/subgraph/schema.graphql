@@ -296,6 +296,7 @@ type Token @entity(immutable: false) {
   id: Bytes!
   createdAt: BigInt!
   createdBy: Account!
+  deployedInTransaction: Bytes!
   account: Account!
   accessControl: AccessControl
   identity: Identity
@@ -316,9 +317,8 @@ type Token @entity(immutable: false) {
   # Type specific
   bond: TokenBond
   fund: TokenFund
-  # Price
+  # Claims
   basePriceClaim: IdentityClaim
-  deployedInTransaction: Bytes!
   # The identity verification claim topics that are required for accounts to own tokens of this type
   requiredClaimTopics: [TopicScheme!]!
   # Compliance

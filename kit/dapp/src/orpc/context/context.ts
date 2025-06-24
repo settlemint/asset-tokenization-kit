@@ -4,7 +4,10 @@ import type { hasuraClient } from "@/lib/settlemint/hasura";
 import type { client as minioClient } from "@/lib/settlemint/minio";
 import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.middleware";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
+import type { TokenFactory } from "@/orpc/middlewares/system/system.middleware";
+import type { Token } from "@/orpc/middlewares/system/token.middleware";
 import type { getHeaders } from "@tanstack/react-start/server";
+import type { Address } from "viem";
 
 /**
  * ORPC procedure context type definition.
@@ -121,4 +124,39 @@ export interface Context {
    * @see {@link @/lib/settlemint/hasura} - Hasura client configuration
    */
   hasuraClient?: typeof hasuraClient;
+
+  /**
+   * System information.
+   * Injected by systemMiddleware for procedures that need to interact with the system.
+   * @optional
+   * @see {@link @/lib/settlemint/system} - System client configuration
+   */
+  system?: {
+    address: Address;
+    tokenFactories: TokenFactory[];
+  };
+
+  /**
+   * Token factory information.
+   * Injected by tokenFactoryMiddleware for procedures that need to interact with a specific token factory.
+   * @optional
+   * @see {@link @/orpc/middlewares/system/token-factory.middleware} - Token factory middleware configuration
+   */
+  tokenFactory?: TokenFactory;
+
+  /**
+   * Token information.
+   * Injected by tokenMiddleware for procedures that need to interact with a specific token.
+   * @optional
+   * @see {@link @/orpc/middlewares/system/token.middleware} - Token middleware configuration
+   */
+  token?: Token;
+
+  /**
+   * User claim topics.
+   * Injected by userClaimsMiddleware for procedures that need to interact with the user's claims.
+   * @optional
+   * @see {@link @/orpc/middlewares/system/user-claims.middleware} - User claims middleware configuration
+   */
+  userClaimTopics?: string[];
 }

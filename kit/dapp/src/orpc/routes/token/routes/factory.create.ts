@@ -20,13 +20,14 @@
 
 import { env } from "@/lib/env";
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { withEventMeta } from "@orpc/server";
-import { createRouterClient } from "@orpc/server";
-import { router } from "@/orpc/routes/router";
+import type { VariablesOf } from "@settlemint/sdk-portal";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   FactoryCreateMessagesSchema,
   type FactoryCreateOutput,
@@ -125,9 +126,15 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  * }
  * ```
  */
-export const factoryCreate = onboardedRouter.tokens.factoryCreate
+export const factoryCreate = onboardedRouter.token.factoryCreate
   .use(theGraphMiddleware)
   .use(portalMiddleware)
+  .use(systemMiddleware)
+  .use(
+    permissionsMiddleware({
+      system: ["create"],
+    })
+  )
   .handler(async function* ({ input, context, errors }) {
     const { contract, factories } = input;
     const sender = context.auth.user;
@@ -152,14 +159,9 @@ export const factoryCreate = onboardedRouter.tokens.factoryCreate
     // Query existing token factories using the ORPC client
     let existingFactoryNames = new Set<string>();
     try {
-      // Create a router client with the current context
-      const orpcClient = createRouterClient(router, {
-        context: () => context,
-      });
+      const systemData = context.system;
 
-      const systemData = await orpcClient.system.read({ id: contract });
-
-      if (systemData.tokenFactories.length > 0) {
+      if (systemData?.tokenFactories && systemData.tokenFactories.length > 0) {
         existingFactoryNames = new Set(
           systemData.tokenFactories.map((factory) => factory.name.toLowerCase())
         );
@@ -248,9 +250,9 @@ export const factoryCreate = onboardedRouter.tokens.factoryCreate
 
       try {
         // Execute the factory creation transaction
-        const variables = {
+        const variables: VariablesOf<typeof CREATE_TOKEN_FACTORY_MUTATION> = {
           address: contract,
-          from: sender.wallet,
+          from: sender.wallet ?? "",
           factoryImplementation: factoryImplementation,
           tokenImplementation: tokenImplementation,
           name: name,

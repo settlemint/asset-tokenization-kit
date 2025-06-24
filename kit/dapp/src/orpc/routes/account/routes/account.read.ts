@@ -1,4 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { z } from "zod/v4";
@@ -23,36 +24,20 @@ query ReadAccountQuery($walletAddress: ID!) {
 `);
 
 /**
- * System listing route handler.
+ * Account read route handler.
  *
- * Retrieves a paginated list of SMART system contracts from TheGraph indexer.
- * Systems are the core infrastructure contracts that manage tokenized assets,
- * compliance modules, identity registries, and access control within the SMART
- * protocol ecosystem.
+ * Retrieves the account information for the given wallet address.
  *
  * Authentication: Required (uses authenticated router)
  * Permissions: Requires "read" permission - available to admin, issuer, user, and auditor roles
  * Method: GET /systems
- *
- * @param input - List parameters including pagination and sorting options
- * @param context - Request context with TheGraph client and authenticated user
- * @returns Promise<System[]> - Array of system objects with their blockchain addresses
- *
- * @throws UNAUTHORIZED - If user is not authenticated
- * @throws FORBIDDEN - If user lacks required read permissions
- *
- * @example
- * ```typescript
- * // Client usage:
- * const systems = await orpc.system.list.query({
- *   offset: 0,
- *   limit: 20,
- *   orderBy: 'deployedAt',
- *   orderDirection: 'desc'
- * });
- * ```
  */
 export const read = onboardedRouter.account.read
+  .use(
+    permissionsMiddleware({
+      user: ["list"],
+    })
+  )
   .use(theGraphMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { wallet } = input;
