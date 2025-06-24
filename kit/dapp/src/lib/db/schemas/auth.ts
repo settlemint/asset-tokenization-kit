@@ -29,10 +29,10 @@ export const user = pgTable("user", {
   wallet: text("wallet").unique().$type<Address>(),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   pincodeEnabled: boolean("pincode_enabled").notNull().default(false),
-  pincodeVerificationId: text("pincode_verification_id"),
+  pincodeVerificationId: text("pincode_verification_id").unique(),
   twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
-  twoFactorVerificationId: text("two_factor_verification_id"),
-  secretCodeVerificationId: text("secret_code_verification_id"),
+  twoFactorVerificationId: text("two_factor_verification_id").unique(),
+  secretCodeVerificationId: text("secret_code_verification_id").unique(),
   initialOnboardingFinished: boolean("initial_onboarding_finished")
     .notNull()
     .default(false),

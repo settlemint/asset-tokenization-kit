@@ -1,4 +1,4 @@
-import { portalGraphql } from "@/lib/settlemint/portal";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { BetterAuthPlugin } from "better-auth";
 import {
@@ -6,7 +6,6 @@ import {
   createAuthEndpoint,
   sessionMiddleware,
 } from "better-auth/api";
-import { portalClient } from "../../../../../../dapp-v1/src/lib/settlemint/portal";
 import { revokeSession } from "../utils";
 
 const GENERATE_SECRET_CODES_MUTATION = portalGraphql(`
