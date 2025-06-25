@@ -13,7 +13,7 @@
       "outputs": ["src/erc165/utils/interfaceids.ts"],
       "inputs": ["**/*.sol", "tools/interfaceid.ts"]
     },
-    "codegen:gql-tada": {
+    "test:codegen:gql-tada": {
       "dependsOn": ["publish"],
       "inputs": ["the-graph-schema.graphql"],
       "outputs": ["the-graph-env.d.ts", "the-graph-cache.d.ts"]
