@@ -20,7 +20,7 @@
     },
     "compile": {
       "dependsOn": ["^compile", "codegen"],
-      "outputs": ["build/**", ".generated/**"],
+      "outputs": ["build/**"],
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },
     "publish": {

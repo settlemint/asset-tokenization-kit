@@ -39,6 +39,7 @@ A Helm chart for the hasura components
 | graphql-engine.global.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | graphql-engine.global.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | graphql-engine.global.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
+| graphql-engine.image.repository | string | `"docker.io/hasura/graphql-engine"` |  |
 | graphql-engine.ingress.enabled | bool | `true` |  |
 | graphql-engine.ingress.hostName | string | `"hasura.k8s.orb.local"` |  |
 | graphql-engine.ingress.ingressClassName | string | `"settlemint-nginx"` |  |

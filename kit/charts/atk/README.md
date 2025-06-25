@@ -322,9 +322,9 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | txsigner.config.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.enabled | bool | `true` |  |
-| txsigner.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| txsigner.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| txsigner.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| txsigner.image.pullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
+| txsigner.image.pullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
+| txsigner.image.pullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | txsigner.postgresql | string | `"postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable"` |  |
 | txsigner.replicaCount | int | `1` |  |
 | txsigner.resources | object | `{}` |  |
