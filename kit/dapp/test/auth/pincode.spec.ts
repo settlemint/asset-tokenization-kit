@@ -14,11 +14,26 @@ describe("Pincode verification", () => {
     await setupUser(TEST_USER);
   });
 
+  it("can disable a pincode verification", async () => {
+    const headers = await signInWithUser(TEST_USER);
+    const { data, error } = await authClient.pincode.disable(
+      {
+        password: TEST_USER.password,
+      },
+      {
+        headers,
+      }
+    );
+    expect(error).toBeNull();
+    expect(data?.success).toBe(true);
+  });
+
   it("can enable a pincode verification", async () => {
     const headers = await signInWithUser(TEST_USER);
     const { data, error } = await authClient.pincode.enable(
       {
         pincode: "111111",
+        password: TEST_USER.password,
       },
       {
         headers,
@@ -55,20 +70,6 @@ describe("Pincode verification", () => {
       }
     );
     expect(error?.code).toBe("INVALID_PASSWORD");
-    expect(data).toBeUndefined();
-  });
-
-  it("can disable a pincode verification", async () => {
-    const headers = await signInWithUser(TEST_USER);
-    const { data, error } = await authClient.pincode.disable(
-      {
-        password: TEST_USER.password,
-      },
-      {
-        headers,
-      }
-    );
-    expect(error).toBeNull();
-    expect(data?.success).toBe(true);
+    expect(data).toBeNull();
   });
 });
