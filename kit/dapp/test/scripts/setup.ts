@@ -1,19 +1,38 @@
 import { afterAll, beforeAll } from "bun:test";
+import { getOrpcClient } from "test/utils/orpc-client";
+import { bootstrapSystem } from "test/utils/system-bootstrap";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_ISSUER,
   setupUser,
+  signInWithUser,
 } from "../utils/auth-client";
 
 let runningDevServer: Bun.Subprocess;
 
 beforeAll(async () => {
-  console.log("Setting up test accounts");
-  await setupUser(DEFAULT_ADMIN);
-  await setupUser(DEFAULT_INVESTOR);
-  await setupUser(DEFAULT_ISSUER);
+  try {
+    console.log("Setting up test accounts");
+    await setupUser(DEFAULT_ADMIN);
+    await setupUser(DEFAULT_INVESTOR);
+    await setupUser(DEFAULT_ISSUER);
 
+    await startDevServer();
+
+    const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
+    await bootstrapSystem(orpClient);
+  } catch (error) {
+    console.error("Failed to setup test environment", error);
+    process.exit(1);
+  }
+});
+
+afterAll(() => {
+  runningDevServer?.kill();
+});
+
+async function startDevServer() {
   if (await isDevServerRunning()) {
     console.log("Dev server already running");
     return;
@@ -44,11 +63,7 @@ beforeAll(async () => {
       break;
     }
   }
-});
-
-afterAll(() => {
-  runningDevServer?.kill();
-});
+}
 
 async function isDevServerRunning() {
   try {
