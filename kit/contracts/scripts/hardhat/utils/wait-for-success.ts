@@ -20,7 +20,9 @@ export async function waitForSuccess(transactionHash: Hex) {
     console.log(`Block Number: ${receipt.blockNumber}`);
     console.log(`Transaction Index: ${receipt.transactionIndex}`);
     console.log(`Gas Used: ${receipt.gasUsed.toString()}`);
-    console.log(`Effective Gas Price: ${receipt.effectiveGasPrice?.toString() || 'N/A'}`);
+    console.log(
+      `Effective Gas Price: ${receipt.effectiveGasPrice?.toString() || "N/A"}`
+    );
 
     try {
       // Get the original transaction to analyze it
@@ -31,9 +33,9 @@ export async function waitForSuccess(transactionHash: Hex) {
       console.log(`\n--- ORIGINAL TRANSACTION DETAILS ---`);
       console.log(`From: ${transaction.from}`);
       console.log(`To: ${transaction.to}`);
-      console.log(`Value: ${transaction.value?.toString() || '0'} wei`);
-      console.log(`Gas Limit: ${transaction.gas?.toString() || 'N/A'}`);
-      console.log(`Gas Price: ${transaction.gasPrice?.toString() || 'N/A'}`);
+      console.log(`Value: ${transaction.value?.toString() || "0"} wei`);
+      console.log(`Gas Limit: ${transaction.gas?.toString() || "N/A"}`);
+      console.log(`Gas Price: ${transaction.gasPrice?.toString() || "N/A"}`);
       console.log(`Nonce: ${transaction.nonce}`);
       console.log(`Input Data: ${transaction.input}`);
       console.log(`Input Data Length: ${transaction.input.length} characters`);
@@ -46,7 +48,9 @@ export async function waitForSuccess(transactionHash: Hex) {
 
       console.log(`\n--- TRANSACTION RECEIPT DETAILS ---`);
       console.log(`Status: ${receipt.status}`);
-      console.log(`Cumulative Gas Used: ${receipt.cumulativeGasUsed.toString()}`);
+      console.log(
+        `Cumulative Gas Used: ${receipt.cumulativeGasUsed.toString()}`
+      );
       console.log(`Logs Count: ${receipt.logs.length}`);
       console.log(`Logs Bloom: ${receipt.logsBloom}`);
 
@@ -56,7 +60,7 @@ export async function waitForSuccess(transactionHash: Hex) {
         receipt.logs.forEach((log, index) => {
           console.log(`Log ${index}:`);
           console.log(`  Address: ${log.address}`);
-          console.log(`  Topics: ${log.topics.join(', ')}`);
+          console.log(`  Topics: ${log.topics.join(", ")}`);
           console.log(`  Data: ${log.data}`);
         });
       }
@@ -67,55 +71,65 @@ export async function waitForSuccess(transactionHash: Hex) {
       const simulationMethods = [
         {
           name: "Previous Block",
-          method: () => publicClient.call({
-            to: transaction.to,
-            data: transaction.input,
-            value: transaction.value,
-            blockNumber: receipt.blockNumber - 1n,
-          })
+          method: () =>
+            publicClient.call({
+              to: transaction.to,
+              data: transaction.input,
+              value: transaction.value,
+              blockNumber: receipt.blockNumber - 1n,
+            }),
         },
         {
           name: "Same Block",
-          method: () => publicClient.call({
-            to: transaction.to,
-            data: transaction.input,
-            value: transaction.value,
-            blockNumber: receipt.blockNumber,
-          })
+          method: () =>
+            publicClient.call({
+              to: transaction.to,
+              data: transaction.input,
+              value: transaction.value,
+              blockNumber: receipt.blockNumber,
+            }),
         },
         {
           name: "Latest State",
-          method: () => publicClient.call({
-            to: transaction.to,
-            data: transaction.input,
-            value: transaction.value,
-          })
+          method: () =>
+            publicClient.call({
+              to: transaction.to,
+              data: transaction.input,
+              value: transaction.value,
+            }),
         },
         {
           name: "With Original Gas",
-          method: () => publicClient.call({
-            to: transaction.to,
-            data: transaction.input,
-            value: transaction.value,
-            gas: transaction.gas,
-          })
-        }
+          method: () =>
+            publicClient.call({
+              to: transaction.to,
+              data: transaction.input,
+              value: transaction.value,
+              gas: transaction.gas,
+            }),
+        },
       ];
 
       for (const { name, method } of simulationMethods) {
         try {
           console.log(`Trying simulation: ${name}...`);
           const result = await method();
-          console.log(`  ✓ Simulation succeeded (unexpected): ${JSON.stringify(result)}`);
+          console.log(
+            `  ✓ Simulation succeeded (unexpected): ${JSON.stringify(result)}`
+          );
         } catch (simulationError: any) {
-          console.log(`  ✗ Simulation failed: ${simulationError?.message || simulationError}`);
+          console.log(
+            `  ✗ Simulation failed: ${simulationError?.message || simulationError}`
+          );
 
           // Extract and log detailed error information
           console.log(`  Error details:`);
-          console.log(`    Name: ${simulationError?.name || 'Unknown'}`);
-          console.log(`    Message: ${simulationError?.message || 'No message'}`);
-          console.log(`    Code: ${simulationError?.code || 'No code'}`);
-          console.log(`    Cause: ${simulationError?.cause || 'No cause'}`);
+          console.log(`    Name: ${simulationError?.name || "Unknown"}`);
+          console.log(
+            `    Message: ${simulationError?.message || "No message"}`
+          );
+          console.log(`    Code: ${simulationError?.code || "No code"}`);
+          console.log(`    Cause: ${simulationError?.cause || "No cause"}`);
 
           // Try to decode the revert reason from different possible locations
           const possibleRevertData = [
@@ -128,12 +142,21 @@ export async function waitForSuccess(transactionHash: Hex) {
           ];
 
           for (const [dataIndex, revertData] of possibleRevertData.entries()) {
-            if (revertData && typeof revertData === 'string' && revertData.startsWith('0x') && revertData.length > 2) {
-              console.log(`  Found potential revert data (source ${dataIndex}): ${revertData}`);
+            if (
+              revertData &&
+              typeof revertData === "string" &&
+              revertData.startsWith("0x") &&
+              revertData.length > 2
+            ) {
+              console.log(
+                `  Found potential revert data (source ${dataIndex}): ${revertData}`
+              );
               try {
                 const decodedError = await parseRevertReason(revertData as Hex);
                 if (decodedError) {
-                  console.log(`  🎯 Successfully decoded revert reason: ${decodedError.message}`);
+                  console.log(
+                    `  🎯 Successfully decoded revert reason: ${decodedError.message}`
+                  );
                   throw decodedError;
                 }
               } catch (decodeErr) {
@@ -143,13 +166,17 @@ export async function waitForSuccess(transactionHash: Hex) {
           }
 
           // Log the full error object structure for debugging
-          console.log(`  Full error object keys: ${Object.keys(simulationError || {}).join(', ')}`);
+          console.log(
+            `  Full error object keys: ${Object.keys(simulationError || {}).join(", ")}`
+          );
         }
       }
 
       console.log(`\n--- CHECKING BLOCK STATE ---`);
       try {
-        const block = await publicClient.getBlock({ blockNumber: receipt.blockNumber });
+        const block = await publicClient.getBlock({
+          blockNumber: receipt.blockNumber,
+        });
         console.log(`Block timestamp: ${block.timestamp}`);
         console.log(`Block gas limit: ${block.gasLimit.toString()}`);
         console.log(`Block gas used: ${block.gasUsed.toString()}`);
@@ -157,13 +184,14 @@ export async function waitForSuccess(transactionHash: Hex) {
       } catch (blockErr) {
         console.log(`Failed to get block info: ${blockErr}`);
       }
-
     } catch (error: any) {
       // If we got here from a decoded error, re-throw it
-      if (error.message?.includes('The contract reverted with reason:')) {
+      if (error.message?.includes("The contract reverted with reason:")) {
         throw error;
       }
-      console.log(`\nFailed to analyze transaction: ${error?.message || error}`);
+      console.log(
+        `\nFailed to analyze transaction: ${error?.message || error}`
+      );
     }
 
     // Fallback to generic error if we couldn't decode the revert reason
