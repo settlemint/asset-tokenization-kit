@@ -3,9 +3,10 @@
   "version": "2.0.0",
   "license": "FSL-1.1-MIT",
   "scripts": {
+    "codegen": "bun run codegen:graph && bun run codegen:interfaceid",
     "codegen:graph": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
-    "codegen:gql-tada": "gql-tada generate-schema http://localhost:8000/subgraphs/name/kit-integration-tests && gql-tada turbo && gql-tada generate-output",
+    "test:codegen:gql-tada": "gql-tada generate-schema http://localhost:8000/subgraphs/name/kit-integration-tests && gql-tada turbo && gql-tada generate-output",
     "format": "prettier --experimental-cli --write .",
     "compile": "mkdir -p .generated && (test -f .generated/subgraph-env || echo 'SUBGRAPH=kit:' > .generated/subgraph-env) && bunx graph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 | tee .generated/subgraph-hash.txt | xargs -I {} echo 'SUBGRAPH=kit:{}' > .generated/subgraph-env",
     "publish": "bun run tools/graph-deploy.ts --local",
