@@ -5,6 +5,7 @@ import {
 } from "@/lib/zod/validators/ethereum-hash";
 import { tokenFactoryPermissionMiddleware } from "@/orpc/middlewares/auth/token-factory-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { tokenFactoryMiddleware } from "@/orpc/middlewares/system/token-factory.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import z from "zod/v4";
@@ -23,6 +24,7 @@ const CREATE_BOND_MUTATION = portalGraphql(`
 
 export const bondCreate = onboardedRouter.token.bondCreate
   .use(portalMiddleware)
+  .use(systemMiddleware)
   .use(tokenFactoryMiddleware("bond"))
   .use(tokenFactoryPermissionMiddleware(["deployer"]))
   .handler(async ({ input, context }) => {

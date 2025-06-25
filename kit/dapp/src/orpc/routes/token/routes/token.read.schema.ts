@@ -29,14 +29,14 @@ export const TokenSchema = z.object({
     .object({
       roles: z
         .object(
-          ROLES.reduce(
+          ROLES.reduce<Record<TokenRoles, z.ZodType<boolean>>>(
             (acc, role) => {
               acc[role] = z
                 .boolean()
                 .describe(`Whether the user has the ${role} role`);
               return acc;
             },
-            {} as Record<TokenRoles, z.ZodType<boolean>>
+            {}
           )
         )
         .describe("The roles of the user for the token"),

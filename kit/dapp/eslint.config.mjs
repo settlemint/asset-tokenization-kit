@@ -88,6 +88,7 @@ export default defineConfig([
       // Disable some rules that might be too strict for TanStack Start
       "@typescript-eslint/only-throw-error": "off",
       "@typescript-eslint/no-unnecessary-condition": "warn",
+      "@typescript-eslint/no-unsafe-argument": "off",
       "@typescript-eslint/no-misused-promises": [
         "error",
         {

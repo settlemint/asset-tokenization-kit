@@ -1,5 +1,5 @@
 volumes:
-  atk-besu:
+  atk-anvil:
     driver: local
   atk-minio:
     driver: local
@@ -12,8 +12,8 @@ volumes:
 services:
   anvil:
     image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.5
-    container_name: test-anvil
-    restart: always
+    container_name: atk-anvil
+    restart: unless-stopped
     # No Gas network
     entrypoint:
       [
@@ -21,100 +21,55 @@ services:
         "--host",
         "0.0.0.0",
         "--chain-id",
-        "31337",
+        "1337",
         "--gas-limit",
         "5000000000000",
         "--gas-price",
         "0",
         "--block-base-fee-per-gas",
         "0",
+        "--init",
+        "/opt/anvil/genesis.json",
       ]
     ports:
       - "8545:8545" # Ethereum JSON-RPC
-  graph-node-anvil:
-    image: graphprotocol/graph-node:v0.39.1
-    container_name: test-graph-node-anvil
-    platform: linux/amd64
-    ports:
-      - "8100:8000" # GraphQL HTTP
-      - "8101:8001" # Admin
-      - "8120:8020" # Index Node
-      - "8130:8030" # Query Node
-      - "8140:8040" # Subgraph
-    depends_on:
-      - anvil
-      - postgres
-    environment:
-      postgres_host: postgres
-      postgres_user: thegraph
-      postgres_pass: thegraph
-      postgres_db: graphanvil
-      ipfs: "https://ipfs.console.settlemint.com"
-      ethereum: "settlemint:http://anvil:8545"
-      GRAPH_ETHEREUM_REQUEST_RETRIES: 10
-      ETHEREUM_POLLING_INTERVAL: 1000
-      GRAPH_IPFS_TIMEOUT: 60
-      GRAPH_MAX_IPFS_FILE_BYTES: 52428800
-      GRAPH_IPFS_REQUEST_RETRIES: 10
-      CARGO_TERM_COLOR: always
-  besu:
-    image: hyperledger/besu:25.6.0
-    container_name: atk-besu
-    restart: unless-stopped
-    command: ["--config-file=/opt/besu/config.toml", "--identity=atk"]
     volumes:
-      - ./tools/docker/besu/config.toml:/opt/besu/config.toml:ro
-      - ./kit/contracts/.generated/genesis.json:/opt/besu/genesis.json:ro
-      - ./tools/docker/besu/anvil-test-key:/opt/besu/key:ro
-      - atk-besu:/opt/besu/data
+      - ./kit/contracts/.generated/genesis.json:/opt/anvil/genesis.json:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "if timeout 1 bash -c '</dev/tcp/localhost/8545'; then echo 'Anvil
+          health check: SUCCESS'; else echo 'Anvil health check: FAILED'; exit
+          1; fi",
+        ]
+      interval: 2s
+      timeout: 2s
+      retries: 5
+      start_period: 1s
   txsigner:
     image: ghcr.io/settlemint/btp-signer:7.13.1
     container_name: atk-txsigner
     restart: unless-stopped
     depends_on:
-      besu:
+      anvil:
         condition: service_healthy
       postgres:
         condition: service_healthy
     environment:
       MODE: "standalone"
-      RPC_ENDPOINT: "http://besu:8545"
-      DB_CONNECTION_STRING: "postgresql://${TXSIGNER_DB_USER:-txsigner}:${TXSIGNER_DB_PASSWORD:-txsigner}@postgres:5432/${TXSIGNER_DB_NAME:-txsigner}?sslmode=disable"
+      RPC_ENDPOINT: "http://anvil:8545"
+      DB_CONNECTION_STRING: "postgresql://txsigner:txsigner@postgres:5432/txsigner?sslmode=disable"
       PRIVATE_KEY_MNEMONIC:
-        ${PRIVATE_KEY_MNEMONIC:-"gate yellow grunt wrestle disease obtain mixed
-        nature mansion tape purchase awful"}
+        "test test test test test test test test test test test junk"
       PRIVATE_KEY_DERIVATION_PATH: "m/44'/60'/0'/0/0"
-      TX_SIGNER_PORT: 3000
-      TX_SIGNER_METRICS_PORT: 3001
-      TX_SIGNER_RPC_URL: "http://besu:8545"
-      TX_SIGNER_CHAIN_ID: ${CHAIN_ID:-1337}
-      TX_SIGNER_LOG_LEVEL: ${LOG_LEVEL:-info}
-      TX_SIGNER_DEBUG: ${DEBUG:-false}
-      TX_SIGNER_SIGNING_STRATEGY: local
-      DATABASE_URL: "postgresql://${TXSIGNER_DB_USER:-txsigner}:${TXSIGNER_DB_PASSWORD:-txsigner}@postgres:5432/${TXSIGNER_DB_NAME:-txsigner}?sslmode=disable"
-      TX_SIGNER_RATE_LIMIT_ENABLED: true
-      TX_SIGNER_RATE_LIMIT_MAX_REQUESTS_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-60}
-      TX_SIGNER_RATE_LIMIT_MAX_REQUESTS_PER_HOUR: ${RATE_LIMIT_PER_HOUR:-1000}
-      TX_SIGNER_QUEUE_MAX_SIZE: ${QUEUE_MAX_SIZE:-1000}
-      TX_SIGNER_QUEUE_PROCESSING_INTERVAL: ${QUEUE_PROCESSING_INTERVAL:-1000}
-      TX_SIGNER_GAS_PRICE_STRATEGY: ${GAS_PRICE_STRATEGY:-estimator}
-      TX_SIGNER_GAS_FIXED_PRICE: ${GAS_FIXED_PRICE:-20}
-      TX_SIGNER_GAS_LIMIT: ${GAS_LIMIT:-9007199254740991}
-      TX_SIGNER_GAS_MULTIPLIER: ${GAS_MULTIPLIER:-1.1}
-      TX_SIGNER_NONCE_STRATEGY: sequential
-      TX_SIGNER_NONCE_MAX_PENDING: ${NONCE_MAX_PENDING:-10}
-      TX_SIGNER_AUDIT_ENABLED: true
-      TX_SIGNER_AUDIT_RETENTION_DAYS: ${AUDIT_RETENTION_DAYS:-30}
-      TX_SIGNER_CORS_ENABLED: ${CORS_ENABLED:-false}
-      TX_SIGNER_CORS_METHODS: ${CORS_METHODS:-GET,POST}
-      TX_SIGNER_CORS_HEADERS: ${CORS_HEADERS:-Content-Type,Authorization}
     ports:
       - "8547:3000"
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "if timeout 1 bash -c '</dev/tcp/localhost/8545'; then echo 'TxSigner
+          "if timeout 1 bash -c '</dev/tcp/localhost/3000'; then echo 'TxSigner
           health check: SUCCESS'; else echo 'TxSigner health check: FAILED';
           exit 1; fi",
         ]
@@ -253,7 +208,7 @@ services:
     restart: unless-stopped
     platform: linux/amd64
     depends_on:
-      besu:
+      anvil:
         condition: service_healthy
       postgres:
         condition: service_healthy
@@ -271,7 +226,7 @@ services:
       postgres_pass: thegraph
       postgres_db: thegraph
       ipfs: "https://ipfs.console.settlemint.com"
-      ethereum: "settlemint:http://besu:8545"
+      ethereum: "settlemint:http://anvil:8545"
       GRAPH_ETHEREUM_REQUEST_RETRIES: 10
       ETHEREUM_POLLING_INTERVAL: 1000
       GRAPH_IPFS_TIMEOUT: 60
@@ -335,12 +290,12 @@ services:
     command: |
       sh -c "bin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\" && bin/blockscout start"
     environment:
-      ETHEREUM_JSONRPC_VARIANT: besu
-      ETHEREUM_JSONRPC_HTTP_URL: http://besu:8545/
+      ETHEREUM_JSONRPC_VARIANT: anvil
+      ETHEREUM_JSONRPC_HTTP_URL: http://anvil:8545/
       DATABASE_URL: postgresql://blockscout:blockscout@postgres:5432/blockscout
       ETHEREUM_JSONRPC_TRANSPORT: http
       ETHEREUM_JSONRPC_DISABLE_ARCHIVE_BALANCES: false
-      ETHEREUM_JSONRPC_TRACE_URL: http://besu:8545/
+      ETHEREUM_JSONRPC_TRACE_URL: http://anvil:8545/
       SECRET_KEY_BASE: 56NtB48ear7+wMSf0IQuWDAAazhpb31qyc7GiyspBP2vh7t5zlCsF5QDv76chXeN
       PORT: 4000
       COIN_NAME: ATK

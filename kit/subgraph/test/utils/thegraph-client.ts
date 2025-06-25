@@ -14,6 +14,6 @@ export const { client: theGraphClient, graphql: theGraphGraphql } =
       Timestamp: string;
     };
   }>({
-    instances: ["http://localhost:8100/subgraphs/name/smart-protocol"],
-    subgraphName: "smart-protocol",
+    instances: ["http://localhost:8000/subgraphs/name/kit-integration-tests"],
+    subgraphName: "kit-integration-tests",
   });
