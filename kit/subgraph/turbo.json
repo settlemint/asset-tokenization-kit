@@ -32,7 +32,7 @@
     },
     "translate": {},
     "artifacts": {
-      "dependsOn": ["build", "compile", "translate"]
+      "dependsOn": ["compile", "translate"]
     }
   }
 }

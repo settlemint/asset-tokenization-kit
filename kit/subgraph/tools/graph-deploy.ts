@@ -81,7 +81,7 @@ const EXIT_CODES = {
 
 type ExitCode = (typeof EXIT_CODES)[keyof typeof EXIT_CODES];
 
-const GRAPH_NAME = "smart-protocol";
+const GRAPH_NAME = "kit";
 const GRAPH_VERSION_PREFIX = "v1.0.0";
 
 // Create logger instance
