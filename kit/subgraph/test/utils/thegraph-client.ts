@@ -14,6 +14,6 @@ export const { client: theGraphClient, graphql: theGraphGraphql } =
       Timestamp: string;
     };
   }>({
-    instances: ["http://localhost:8000/subgraphs/name/kit"],
-    subgraphName: "kit",
+    instances: ["http://localhost:8000/subgraphs/name/kit-integration-tests"],
+    subgraphName: "kit-integration-tests",
   });

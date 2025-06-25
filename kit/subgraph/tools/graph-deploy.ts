@@ -81,7 +81,7 @@ const EXIT_CODES = {
 
 type ExitCode = (typeof EXIT_CODES)[keyof typeof EXIT_CODES];
 
-const GRAPH_NAME = "kit";
+const LOCAL_DEPLOYMENT_SUBGRAPH_NAME = "kit-integration-tests";
 const GRAPH_VERSION_PREFIX = "v1.0.0";
 
 // Create logger instance
@@ -535,7 +535,7 @@ async function generateCode(): Promise<void> {
  */
 async function createLocalSubgraph(
   node: string,
-  graphName: string = GRAPH_NAME
+  graphName: string = LOCAL_DEPLOYMENT_SUBGRAPH_NAME
 ): Promise<void> {
   logger.info(`Creating local subgraph: ${graphName}`);
 
@@ -559,7 +559,7 @@ async function createLocalSubgraph(
  */
 async function removeLocalSubgraph(
   node: string,
-  graphName: string = GRAPH_NAME
+  graphName: string = LOCAL_DEPLOYMENT_SUBGRAPH_NAME
 ): Promise<void> {
   try {
     logger.info(`Removing local subgraph: ${graphName}`);
@@ -580,7 +580,7 @@ async function removeLocalSubgraph(
  */
 async function deployLocal(config: DeploymentConfig): Promise<void> {
   try {
-    const graphName = GRAPH_NAME;
+    const graphName = LOCAL_DEPLOYMENT_SUBGRAPH_NAME;
     const versionLabel = `${GRAPH_VERSION_PREFIX}.${Date.now()}`;
     const deploymentNode = `http://localhost:${config.deploymentPort}`;
     const queryNode = `http://localhost:${config.queryPort}`;
