@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from "bun:test";
 import { randomUUID } from "node:crypto";
-import { authClient, setupUser, signInWithUser } from "../utils/auth-client";
+import { authClient } from "../utils/auth-client";
+import { setupUser, signInWithUser } from "../utils/user";
 
 describe("Secret codes verification", () => {
   const TEST_USER = {

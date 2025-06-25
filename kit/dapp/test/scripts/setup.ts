@@ -7,7 +7,7 @@ import {
   DEFAULT_ISSUER,
   setupUser,
   signInWithUser,
-} from "../utils/auth-client";
+} from "../utils/user";
 
 let runningDevServer: Bun.Subprocess;
 
