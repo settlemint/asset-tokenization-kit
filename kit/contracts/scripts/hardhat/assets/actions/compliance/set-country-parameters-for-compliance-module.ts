@@ -10,6 +10,10 @@ export const setCountryParametersForComplianceModule = async (
   module: "countryBlockListModule" | "countryAllowListModule",
   countryCodes: number[]
 ) => {
+  console.log(
+    `[Set parameters for ${module} compliance module] → Starting parameter setting...`
+  );
+
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,
@@ -29,6 +33,6 @@ export const setCountryParametersForComplianceModule = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Set parameters for ${module} compliance module] ${countryCodes.join(", ")} for ${asset.name} (${asset.address})`
+    `[Set parameters for ${module} compliance module] ✓ ${countryCodes.join(", ")} set for ${asset.name} (${asset.address})`
   );
 };

@@ -27,7 +27,11 @@ export function handleVestingInitialized(event: VestingInitialized): void {
     event.params.account
   );
 
-  fetchAirdropAllocation(event.address, event.params.index, airdropRecipient.id);
+  fetchAirdropAllocation(
+    event.address,
+    event.params.index,
+    airdropRecipient.id
+  );
 }
 
 export function handleBatchVestingInitialized(

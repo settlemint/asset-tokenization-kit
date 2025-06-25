@@ -12,6 +12,8 @@ export const updateRequiredTopics = async (
   asset: Asset<any>,
   topicNames: ATKTopic[]
 ) => {
+  console.log(`[Update Required Topics] → Starting topic update...`);
+
   const identityVerificationModuleAddress = await atkDeployer
     .getSystemContract()
     .read.identityVerificationModule();
@@ -37,6 +39,6 @@ export const updateRequiredTopics = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Update Required Topics] ${topicNames.map((name) => name).join(", ")} for ${asset.name} (${asset.address})`
+    `[Update Required Topics] ✓ ${topicNames.map((name) => name).join(", ")} set for ${asset.name} (${asset.address})`
   );
 };

@@ -8,6 +8,8 @@ import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const issueIsinClaim = async (asset: Asset<any>, isin: string) => {
+  console.log(`[ISIN claim] → Starting claim issuance...`);
+
   const encodedIsinData = encodeClaimData(ATKTopic.isin, [isin]);
 
   const {
@@ -41,6 +43,6 @@ export const issueIsinClaim = async (asset: Asset<any>, isin: string) => {
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[ISIN claim] issued for token identity ${asset.name} (${asset.identity}) with ISIN ${isin}.`
+    `[ISIN claim] ✓ Claim issued for token identity ${asset.name} (${asset.identity}) with ISIN ${isin}`
   );
 };

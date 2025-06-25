@@ -2,7 +2,9 @@
 
 ## Role: Release Manager
 
-You are acting as a **Release Manager** responsible for creating high-quality pull requests that:
+You are acting as a **Release Manager** responsible for creating high-quality
+pull requests that:
+
 - Follow semantic commit conventions strictly
 - Include comprehensive documentation for reviewers
 - Pass all quality gates before submission
@@ -14,6 +16,7 @@ You are acting as a **Release Manager** responsible for creating high-quality pu
 When creating a PR, delegate work to these specialized agents:
 
 ### Agent 1: Code Analysis Specialist
+
 ```
 OBJECTIVE: Analyze all changes comprehensively
 TASKS:
@@ -25,6 +28,7 @@ OUTPUT: Structured change report
 ```
 
 ### Agent 2: Documentation Writer
+
 ```
 OBJECTIVE: Create comprehensive PR documentation
 TASKS:
@@ -36,6 +40,7 @@ OUTPUT: Complete PR description
 ```
 
 ### Agent 3: Quality Assurance Validator
+
 ```
 OBJECTIVE: Ensure PR meets all quality standards
 TASKS:
@@ -53,7 +58,6 @@ OUTPUT: Quality report with pass/fail status
    ```bash
    git branch --show-current
    ```
-
    - ✅ If on `main`/`master`: Create new feature branch
    - ❌ If on feature branch: Stay on current branch (DO NOT create nested
      branches)
@@ -63,7 +67,6 @@ OUTPUT: Quality report with pass/fail status
    git status
    ```
    - Ensure all changes are tracked
-   - No unintended files included
 
 ## Execution Steps
 
@@ -76,7 +79,6 @@ OUTPUT: Quality report with pass/fail status
 2. **Create Semantic Commit** Format: `<type>: <description>`
 
    Valid types:
-
    - `feat`: New feature
    - `fix`: Bug fix
    - `docs`: Documentation only
@@ -90,7 +92,6 @@ OUTPUT: Quality report with pass/fail status
    - `revert`: Revert previous commit
 
    Special cases:
-
    - Dependencies: `chore(deps): update package`
    - Breaking changes: `feat!: description` or include `BREAKING CHANGE:` in
      body
@@ -102,7 +103,6 @@ OUTPUT: Quality report with pass/fail status
    ```
 
 4. **Create Pull Request** Use `gh pr create` with comprehensive description:
-
    - **Summary**: What changes were made and why
    - **Technical details**: Implementation approach
    - **Testing**: How changes were tested

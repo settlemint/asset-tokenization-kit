@@ -12,6 +12,8 @@ export const freezePartialTokens = async (
   address: AbstractActor,
   amount: bigint
 ) => {
+  console.log(`[Freeze partial tokens] → Starting partial token freezing...`);
+
   const tokenContract = custodian.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartCustodian,
@@ -26,6 +28,6 @@ export const freezePartialTokens = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Freeze partial tokens] ${address.name} (${address.address}) frozen: ${formatBaseUnits(tokenAmount, asset.decimals)} for ${asset.name} (${asset.address})`
+    `[Freeze partial tokens] ✓ ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens frozen for ${address.name} (${address.address}) on ${asset.name} (${asset.address})`
   );
 };
