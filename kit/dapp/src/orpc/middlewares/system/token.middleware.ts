@@ -65,15 +65,16 @@ export const tokenMiddleware = baseRouter.middleware(
     const { token } = await theGraphClient.request(READ_TOKEN_QUERY, {
       id: id,
     });
-    const userRoles = Object.entries(token?.accessControl ?? {}).reduce<
-      Record<TokenRoles, boolean>
-    >((acc, [role, accounts]) => {
-      const userHasRole = accounts.some(
-        (account) => account.id === auth?.user.wallet
-      );
-      acc[role as TokenRoles] = userHasRole;
-      return acc;
-    }, {});
+    const userRoles = Object.entries(token?.accessControl ?? {}).reduce(
+      (acc, [role, accounts]) => {
+        const userHasRole = accounts.some(
+          (account) => account.id === auth?.user.wallet
+        );
+        acc[role as TokenRoles] = userHasRole;
+        return acc;
+      },
+      {} as Record<TokenRoles, boolean>
+    );
 
     const tokenContext: Token = {
       ...token,
