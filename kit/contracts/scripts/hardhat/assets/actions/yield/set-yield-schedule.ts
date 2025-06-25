@@ -3,7 +3,7 @@ import { ATKContracts } from "../../../constants/contracts";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { atkDeployer } from "../../../services/deployer";
-import { increaseAnvilTime, mineAnvilBlock } from "../../../utils/anvil";
+import { increaseAnvilTime } from "../../../utils/anvil";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForEvent } from "../../../utils/wait-for-event";
 import { waitForSuccess } from "../../../utils/wait-for-success";
@@ -18,7 +18,7 @@ export const setYieldSchedule = async (
   interval: number
 ) => {
   console.log(`[Set yield schedule] → Starting yield schedule setup...`);
-  
+
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartYield,
@@ -81,13 +81,11 @@ export const setYieldSchedule = async (
         await scheduleContract.read.timeUntilNextPeriod();
 
       await increaseAnvilTime(owner, Number(timeUntilNextPeriod));
-      await mineAnvilBlock(owner);
 
       if (currentPeriod.toString() === "0") {
         const timeToFirstPeriodCompleted =
           await scheduleContract.read.timeUntilNextPeriod();
         await increaseAnvilTime(owner, Number(timeToFirstPeriodCompleted));
-        await mineAnvilBlock(owner);
       }
       const lastCompletedPeriod =
         await scheduleContract.read.lastCompletedPeriod();
