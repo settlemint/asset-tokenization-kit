@@ -24,6 +24,8 @@ contract ERC734 is IERC734, ReentrancyGuard {
     error KeyDoesNotExist(bytes32 key);
     error KeyDoesNotHaveThisPurpose(bytes32 key, uint256 purpose);
     error CannotExecuteToZeroAddress();
+    error InvalidInitialManagementKey();
+    error InitialKeyAlreadySetup();
 
     struct Key {
         bytes32 key;
@@ -43,6 +45,39 @@ contract ERC734 is IERC734, ReentrancyGuard {
     mapping(uint256 => bytes32[]) internal _keysByPurpose;
     mapping(uint256 => Execution) internal _executions;
     uint256 internal _executionNonce;
+    bool internal _initialized = false;
+
+    constructor(address initialManagementKey, bool _isLibrary) {
+        if (!_isLibrary) {
+            __ERC734_init(initialManagementKey);
+        } else {
+            _initialized = true;
+        }
+    }
+
+    function initialize(address initialManagementKey) external virtual {
+        __ERC734_init(initialManagementKey);
+    }
+
+    function __ERC734_init(address initialManagementKey) internal {
+        if (_initialized && !_isConstructor()) revert InitialKeyAlreadySetup();
+        if (initialManagementKey == address(0)) revert InvalidInitialManagementKey();
+
+        _initialized = true;
+
+        bytes32 keyHash = keccak256(abi.encode(initialManagementKey));
+
+        // Directly set up the first management key using storage from ERC734
+        // This mimics the behavior of OnchainID's __Identity_init
+        _keys[keyHash].key = keyHash;
+        _keys[keyHash].purposes = [MANAGEMENT_KEY_PURPOSE]; // Initialize dynamic array with one element
+        _keys[keyHash].keyType = 1; // Assuming KeyType 1 for ECDSA / standard Ethereum address key
+
+        _keysByPurpose[MANAGEMENT_KEY_PURPOSE].push(keyHash);
+
+        // Emit event defined in ERC734/IERC734
+        emit KeyAdded(keyHash, MANAGEMENT_KEY_PURPOSE, 1);
+    }
 
     /// @dev See {IERC734-addKey}.
     /// Adds a _key to the identity. The _purpose specifies the purpose of the key.
@@ -247,5 +282,18 @@ contract ERC734 is IERC734, ReentrancyGuard {
             }
         }
         return false;
+    }
+
+    /// @dev Computes if the context in which the function is called is a constructor or not.
+    ///
+    /// @return true if the context is a constructor.
+    function _isConstructor() private view returns (bool) {
+        address self = address(this);
+        uint256 cs;
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            cs := extcodesize(self)
+        }
+        return cs == 0;
     }
 }

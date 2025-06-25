@@ -43,10 +43,6 @@ type AccessControl @entity(immutable: false) {
   admin: [Account!]!
   registrar: [Account!]!
   claimManager: [Account!]!
-  identityIssuer: [Account!]!
-  identityIssuerAdmin: [Account!]!
-  tokenIdentityIssuer: [Account!]!
-  tokenIdentityIssuerAdmin: [Account!]!
   deployer: [Account!]!
   storageModifier: [Account!]!
   manageRegistries: [Account!]!

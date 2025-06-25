@@ -89,10 +89,6 @@ contract ATKTokenFactoryRegistryImplementation is
 
         tokenFactoryProxiesByType[factoryTypeHash] = _tokenFactoryProxy;
 
-        IAccessControl(address(_system.identityFactory())).grantRole(
-            ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ROLE, _tokenFactoryProxy
-        );
-
         IAccessControl(address(_system.compliance())).grantRole(
             ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
         );

@@ -107,11 +107,6 @@ contract ATKTokenFactoryRegistryTest is Test {
 
         // check roles granted
         assertTrue(
-            IAccessControl(address(systemUtils.identityFactory())).hasRole(
-                ATKSystemRoles.TOKEN_IDENTITY_ISSUER_ROLE, proxyAddress
-            )
-        );
-        assertTrue(
             IAccessControl(address(systemUtils.compliance())).hasRole(
                 ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, proxyAddress
             )
