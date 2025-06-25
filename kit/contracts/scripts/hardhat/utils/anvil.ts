@@ -13,8 +13,7 @@ export async function mineAnvilBlock(
   options: {
     blocks?: number;
     shouldWait?: boolean;
-  } = {
-  }
+  } = {}
 ): Promise<bigint> {
   const blocks = options.blocks ?? 1;
   const shouldWait = options.shouldWait ?? true;
@@ -103,7 +102,9 @@ export const increaseAnvilTime = async (
   } as any);
 
   if (!options.shouldWait) {
-    console.log(`[Anvil] Increased time by ${seconds} seconds (no verification)`);
+    console.log(
+      `[Anvil] Increased time by ${seconds} seconds (no verification)`
+    );
     return expectedTimestamp;
   }
 

@@ -12,7 +12,7 @@ export const redeem = async (
   amount: bigint
 ) => {
   console.log(`[Redeemed] → Starting redemption...`);
-  
+
   const redeemableContract = actor.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartRedeemable,

@@ -22,7 +22,7 @@ export const issueAssetClassificationClaim = async (
   assetCategory: string
 ) => {
   console.log(`[Asset classification claim] → Starting claim issuance...`);
-  
+
   const encodedAssetClassificationData = encodeClaimData(
     ATKTopic.assetClassification,
     [assetClass, assetCategory]

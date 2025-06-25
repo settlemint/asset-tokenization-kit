@@ -10,8 +10,10 @@ import { encodeClaimData } from "../utils/claim-scheme-utils";
 import { waitForSuccess } from "../utils/wait-for-success";
 
 export const issueVerificationClaims = async (actor: AbstractActor) => {
-  console.log(`[Verification claims] → Starting verification claims issuance...`);
-  
+  console.log(
+    `[Verification claims] → Starting verification claims issuance...`
+  );
+
   const claimIssuerIdentity = await claimIssuer.getIdentity();
 
   // cannot do these in parallel, else we get issues with the nonce in addClaim

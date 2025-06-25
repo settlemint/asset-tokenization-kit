@@ -24,7 +24,7 @@ export const issueCollateralClaim = async (
   expiryTimestamp: Date
 ) => {
   console.log(`[Collateral claim] → Starting claim issuance...`);
-  
+
   // Convert Date object to Unix timestamp (seconds) and then to bigint
   const expiryTimestampBigInt = BigInt(
     Math.floor(expiryTimestamp.getTime() / 1000)

@@ -11,7 +11,7 @@ export const claimYield = async (
   actor: AbstractActor
 ) => {
   console.log(`[Claim yield] → Starting yield claim...`);
-  
+
   const tokenContract = actor.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartYield,

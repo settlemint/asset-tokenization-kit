@@ -11,8 +11,10 @@ export const addCountryComplianceModule = async (
   module: "countryBlockListModule" | "countryAllowListModule",
   countryCodes: number[]
 ) => {
-  console.log(`[Add country ${module} compliance module] → Starting module addition...`);
-  
+  console.log(
+    `[Add country ${module} compliance module] → Starting module addition...`
+  );
+
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,

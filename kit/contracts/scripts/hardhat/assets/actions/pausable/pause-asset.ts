@@ -18,5 +18,7 @@ export const pauseAsset = async (asset: Asset<any>) => {
 
   await waitForSuccess(transactionHash);
 
-  console.log(`[Paused] ✓ ${asset.name} (${asset.address}) paused successfully`);
+  console.log(
+    `[Paused] ✓ ${asset.name} (${asset.address}) paused successfully`
+  );
 };

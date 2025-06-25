@@ -14,7 +14,7 @@ export const mint = async (
   amount: bigint
 ) => {
   console.log(`[Mint] → Starting mint operation...`);
-  
+
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,

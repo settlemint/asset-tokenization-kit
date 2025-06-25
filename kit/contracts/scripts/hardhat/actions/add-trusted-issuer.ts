@@ -12,7 +12,7 @@ export const addTrustedIssuer = async (
   ]
 ) => {
   console.log(`[Add trusted issuer] → Starting trusted issuer setup...`);
-  
+
   // Set up the claim issuer as a trusted issuer
   const trustedIssuersRegistry =
     atkDeployer.getTrustedIssuersRegistryContract();

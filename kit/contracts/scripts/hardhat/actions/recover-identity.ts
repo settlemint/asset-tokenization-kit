@@ -7,7 +7,7 @@ export const recoverIdentity = async (
   newActor: AbstractActor
 ) => {
   console.log(`[Recover identity] → Starting identity recovery...`);
-  
+
   const newIdentity = await newActor.getIdentity();
 
   const transactionHash = await atkDeployer

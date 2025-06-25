@@ -11,7 +11,7 @@ export const recoverTokens = async (
   lostWallet: Address
 ) => {
   console.log(`[Recover tokens] → Starting token recovery...`);
-  
+
   const tokenContract = actor.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,

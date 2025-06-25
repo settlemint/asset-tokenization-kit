@@ -13,7 +13,7 @@ export const burn = async (
   amount: bigint
 ) => {
   console.log(`[Burn] → Starting burn operation...`);
-  
+
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartBurnable,

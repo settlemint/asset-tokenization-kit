@@ -1,6 +1,6 @@
 import {
-    ATK_BASE_CURRENCY_CODE,
-    ATK_BASE_CURRENCY_DECIMALS,
+  ATK_BASE_CURRENCY_CODE,
+  ATK_BASE_CURRENCY_DECIMALS,
 } from "../../../constants/base-currency";
 import { ATKContracts } from "../../../constants/contracts";
 import { ATKTopic } from "../../../constants/topics";
@@ -18,7 +18,7 @@ export const issueBasePriceClaim = async (
   amount: number | bigint
 ) => {
   console.log(`[Base price claim] → Starting claim issuance...`);
-  
+
   const amountBigInt = toBaseUnits(amount, ATK_BASE_CURRENCY_DECIMALS);
 
   const encodedBasePriceData = encodeClaimData(ATKTopic.basePrice, [

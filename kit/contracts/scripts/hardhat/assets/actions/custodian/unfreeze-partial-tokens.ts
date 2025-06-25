@@ -12,8 +12,10 @@ export const unfreezePartialTokens = async (
   address: AbstractActor,
   amount: bigint
 ) => {
-  console.log(`[Unfreeze partial tokens] → Starting partial token unfreezing...`);
-  
+  console.log(
+    `[Unfreeze partial tokens] → Starting partial token unfreezing...`
+  );
+
   const tokenContract = custodian.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartCustodian,

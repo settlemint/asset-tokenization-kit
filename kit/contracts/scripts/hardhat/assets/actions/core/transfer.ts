@@ -13,7 +13,7 @@ export const transfer = async (
   amount: bigint
 ) => {
   console.log(`[Transfer] → Starting transfer operation...`);
-  
+
   const tokenContract = from.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,

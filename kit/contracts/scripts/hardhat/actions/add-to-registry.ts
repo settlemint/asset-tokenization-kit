@@ -5,7 +5,7 @@ import { waitForSuccess } from "../utils/wait-for-success";
 
 export const addToRegistry = async (actor: AbstractActor) => {
   console.log(`[Add to registry] → Starting registration...`);
-  
+
   const identity = await actor.getIdentity();
 
   const transactionHash = await atkDeployer
@@ -19,7 +19,7 @@ export const addToRegistry = async (actor: AbstractActor) => {
 
 export async function batchAddToRegistry(actors: AbstractActor[]) {
   console.log(`[Batch add to registry] → Starting batch registration...`);
-  
+
   const resolvedIdentities = await Promise.all(
     actors.map((actor) => actor.getIdentity())
   );

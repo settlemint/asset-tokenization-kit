@@ -14,7 +14,9 @@ export const mature = async (asset: Asset<"bondFactory">) => {
 
   const isMatured = await bondContract.read.isMatured();
   if (isMatured) {
-    console.log(`[Bond matured] ✓ ${asset.name} (${asset.address}) already matured`);
+    console.log(
+      `[Bond matured] ✓ ${asset.name} (${asset.address}) already matured`
+    );
     return;
   }
 
@@ -33,5 +35,7 @@ export const mature = async (asset: Asset<"bondFactory">) => {
 
   await waitForSuccess(transactionHash);
 
-  console.log(`[Bond matured] ✓ ${asset.name} (${asset.address}) matured successfully`);
+  console.log(
+    `[Bond matured] ✓ ${asset.name} (${asset.address}) matured successfully`
+  );
 };

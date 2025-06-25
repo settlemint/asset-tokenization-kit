@@ -14,7 +14,7 @@ export const forcedTransfer = async (
   amount: bigint
 ) => {
   console.log(`[Forced transfer] → Starting forced transfer...`);
-  
+
   const custodianContract = custodian.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartCustodian,

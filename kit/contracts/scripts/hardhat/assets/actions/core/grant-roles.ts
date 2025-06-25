@@ -14,7 +14,7 @@ export const grantRoles = async (
   roles: (typeof ATKRoles)[keyof typeof ATKRoles][]
 ) => {
   console.log(`[Role] → Starting role grant operation...`);
-  
+
   const accessManagerContract = owner.getContractInstance({
     address: asset.accessManager,
     abi: ATKContracts.accessManager,

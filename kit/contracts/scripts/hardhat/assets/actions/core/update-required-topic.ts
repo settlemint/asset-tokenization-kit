@@ -13,7 +13,7 @@ export const updateRequiredTopics = async (
   topicNames: ATKTopic[]
 ) => {
   console.log(`[Update Required Topics] → Starting topic update...`);
-  
+
   const identityVerificationModuleAddress = await atkDeployer
     .getSystemContract()
     .read.identityVerificationModule();

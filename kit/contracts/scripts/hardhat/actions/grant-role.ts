@@ -11,7 +11,7 @@ export const grantRole = async (
   address: Address
 ) => {
   console.log(`[Role] → Starting role grant operation...`);
-  
+
   const contract = admin.getContractInstance({
     address: contractAddress,
     abi: ATKContracts.accessControl,

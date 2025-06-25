@@ -9,7 +9,7 @@ import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const issueIsinClaim = async (asset: Asset<any>, isin: string) => {
   console.log(`[ISIN claim] → Starting claim issuance...`);
-  
+
   const encodedIsinData = encodeClaimData(ATKTopic.isin, [isin]);
 
   const {
