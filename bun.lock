@@ -4,6 +4,8 @@
     "": {
       "name": "@settlemint/asset-tokenization-kit",
       "dependencies": {
+        "@settlemint/sdk-ipfs": "2.4.0",
+        "@settlemint/sdk-minio": "2.4.0",
         "js-yaml": "4.1.0",
       },
       "devDependencies": {

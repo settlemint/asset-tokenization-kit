@@ -5209,6 +5209,9 @@ type ATKLinearVestingStrategy {
   """
   supportsMultipleClaims: ATKLinearVestingStrategySupportsMultipleClaimsOutput
 
+  """Returns a unique identifier for the type of this contract."""
+  typeId: String
+
   """
   Returns the total vesting duration.
   The vesting duration in seconds.
@@ -9572,12 +9575,6 @@ type ATKVestingAirdropImplementation {
   MAX_BATCH_SIZE: String
 
   """
-  Returns the claim period end timestamp.
-  The timestamp after which no new vesting can be initialized.
-  """
-  claimPeriodEnd: String
-
-  """
   Returns the claim tracker contract.
   The claim tracker contract.
   """
@@ -9595,6 +9592,12 @@ type ATKVestingAirdropImplementation {
   """
   getInitializationTimestamp(index: String!): String
   id: ID
+
+  """
+  Returns the initialization deadline timestamp.
+  The timestamp after which no new vesting can be initialized.
+  """
+  initializationDeadline: String
 
   """
   Checks if a claim has been fully claimed for a specific index.
@@ -16700,6 +16703,115 @@ type IATKIdentityTransactionReceiptOutput {
   userOperationReceipts: [UserOperationReceipt!]
 }
 
+type IATKLinearVestingStrategy {
+  """
+  Calculates the amount claimable based on the strategy's vesting parameters.
+  The amount that can be claimed now.
+  """
+  calculateClaimableAmount(account: String!, claimedAmount: String!, totalAmount: String!, vestingStartTime: String!): IATKLinearVestingStrategyCalculateClaimableAmountOutput
+
+  """
+  Returns the cliff duration.
+  The cliff duration in seconds.
+  """
+  cliffDuration: String
+  id: ID
+
+  """
+  Returns whether this strategy supports multiple claims (vesting).
+  True if the strategy supports multiple claims over time.
+  """
+  supportsMultipleClaims: IATKLinearVestingStrategySupportsMultipleClaimsOutput
+
+  """Returns a unique identifier for the type of this contract."""
+  typeId: String
+
+  """
+  Returns the total vesting duration.
+  The vesting duration in seconds.
+  """
+  vestingDuration: String
+}
+
+type IATKLinearVestingStrategyCalculateClaimableAmountOutput {
+  claimableAmount: String
+}
+
+type IATKLinearVestingStrategySupportsMultipleClaimsOutput {
+  supportsMultiple: Boolean
+}
+
+"""Returns the transaction hash"""
+type IATKLinearVestingStrategyTransactionOutput {
+  transactionHash: String
+}
+
+"""Returns the transaction receipt"""
+type IATKLinearVestingStrategyTransactionReceiptOutput {
+  """Blob Gas Price"""
+  blobGasPrice: String
+
+  """Blob Gas Used"""
+  blobGasUsed: String
+
+  """Block Hash"""
+  blockHash: String!
+
+  """Block Number"""
+  blockNumber: String!
+
+  """Contract Address"""
+  contractAddress: String
+
+  """Cumulative Gas Used"""
+  cumulativeGasUsed: String!
+
+  """Effective Gas Price"""
+  effectiveGasPrice: String!
+
+  """Events (decoded from the logs)"""
+  events: JSON!
+
+  """From"""
+  from: String!
+
+  """Gas Used"""
+  gasUsed: String!
+
+  """Logs"""
+  logs: JSON!
+
+  """Logs Bloom"""
+  logsBloom: String!
+
+  """ABI-encoded string containing the revert reason"""
+  revertReason: String
+
+  """Decoded revert reason"""
+  revertReasonDecoded: String
+
+  """Root"""
+  root: String
+
+  """Status"""
+  status: TransactionReceiptStatus!
+
+  """To"""
+  to: String
+
+  """Transaction Hash"""
+  transactionHash: String!
+
+  """Transaction Index"""
+  transactionIndex: Int!
+
+  """Type"""
+  type: String!
+
+  """List of user operation receipts associated with this transaction"""
+  userOperationReceipts: [UserOperationReceipt!]
+}
+
 type IATKPushAirdrop {
   """
   Returns the claim tracker contract.
@@ -19246,12 +19358,6 @@ type IATKVaultFactoryTransactionReceiptOutput {
 
 type IATKVestingAirdrop {
   """
-  Returns the claim period end timestamp.
-  The timestamp after which no new vesting can be initialized.
-  """
-  claimPeriodEnd: String
-
-  """
   Returns the claim tracker contract.
   The claim tracker contract.
   """
@@ -19269,6 +19375,12 @@ type IATKVestingAirdrop {
   """
   getInitializationTimestamp(index: String!): String
   id: ID
+
+  """
+  Returns the initialization deadline timestamp.
+  The timestamp after which no new vesting can be initialized.
+  """
+  initializationDeadline: String
 
   """
   Checks if a claim has been fully claimed for a specific index.
@@ -19584,6 +19696,9 @@ type IATKVestingStrategy {
   True if the strategy supports multiple claims over time.
   """
   supportsMultipleClaims: IATKVestingStrategySupportsMultipleClaimsOutput
+
+  """Returns a unique identifier for the type of this contract."""
+  typeId: String
 }
 
 type IATKVestingStrategyCalculateClaimableAmountOutput {
@@ -42491,6 +42606,31 @@ type Mutation {
 
   """Deploy a IATKIdentityRegistryStorage contract"""
   DeployContractIATKIdentityRegistryStorage(
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ContractDeploymentTransactionOutput
+
+  """Deploy a IATKLinearVestingStrategy contract"""
+  DeployContractIATKLinearVestingStrategy(
     """
     Challenge response that is used to verify access to the private key of the from address
     """
@@ -78428,6 +78568,10 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): IATKIdentityTransactionReceiptOutput
+  IATKLinearVestingStrategy(
+    """The address of the contract"""
+    address: String!
+  ): IATKLinearVestingStrategy
   IATKPushAirdrop(
     """The address of the contract"""
     address: String!
@@ -84428,6 +84572,20 @@ type Query {
   ): ContractsDeployStatusPaginatedOutput
 
   """
+  Get all contracts with their deployment status for the IATKLinearVestingStrategy ABI
+  """
+  getContractsDeployStatusIatkLinearVestingStrategy(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
   Get all contracts with their deployment status for the IATKPushAirdrop ABI
   """
   getContractsDeployStatusIatkPushAirdrop(
@@ -85719,6 +85877,18 @@ type Query {
 
   """Get all contracts for the IATKIdentityRegistryStorage ABI"""
   getContractsIatkIdentityRegistryStorage(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsPaginatedOutput
+
+  """Get all contracts for the IATKLinearVestingStrategy ABI"""
+  getContractsIatkLinearVestingStrategy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -95466,6 +95636,20 @@ type Subscription {
   Get all contracts with their deployment status for the IATKIdentityRegistryStorage ABI
   """
   getContractsDeployStatusIatkIdentityRegistryStorage(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the IATKLinearVestingStrategy ABI
+  """
+  getContractsDeployStatusIatkLinearVestingStrategy(
     """Page number, starts from 0"""
     page: Int = 0
 

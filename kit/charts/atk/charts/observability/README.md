@@ -19,9 +19,9 @@ A Helm chart for the observability components
 | https://grafana.github.io/helm-charts | loki | 6.30.1 |
 | https://grafana.github.io/helm-charts | tempo | 1.23.1 |
 | https://kubernetes-sigs.github.io/metrics-server/ | metrics-server | 3.12.2 |
-| https://prometheus-community.github.io/helm-charts | kube-state-metrics | 5.37.0 |
+| https://prometheus-community.github.io/helm-charts | kube-state-metrics | 6.0.0 |
 | https://prometheus-community.github.io/helm-charts | prometheus-node-exporter | 4.47.0 |
-| https://victoriametrics.github.io/helm-charts/ | victoria-metrics-single | 0.21.0 |
+| https://victoriametrics.github.io/helm-charts/ | victoria-metrics-single | 0.22.0 |
 
 ## Values
 
@@ -213,6 +213,7 @@ A Helm chart for the observability components
 | loki.queryScheduler.replicas | int | `0` |  |
 | loki.read.replicas | int | `0` |  |
 | loki.resultsCache.enabled | bool | `false` |  |
+| loki.sidecar.image.repository | string | `"docker.io/kiwigrid/k8s-sidecar"` | The Docker registry and image for the k8s sidecar |
 | loki.singleBinary.persistence.size | string | `"10Gi"` |  |
 | loki.singleBinary.replicas | int | `1` |  |
 | loki.singleBinary.resources | object | `{}` |  |
