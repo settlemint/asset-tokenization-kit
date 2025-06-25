@@ -68,7 +68,7 @@ export const authClient = createAuthClient({
 
 export async function signInWithUser(user: User) {
   const newHeaders = new Headers();
-  await authClient.signIn.email(
+  const { error: signInError } = await authClient.signIn.email(
     {
       email: user.email,
       password: user.password,
@@ -86,9 +86,46 @@ export async function signInWithUser(user: User) {
       },
     }
   );
+  if (signInError) {
+    throw signInError;
+  }
   return newHeaders;
 }
 
-export async function createUserIfNotExists(user: User) {
-  await authClient.signUp.email(user);
+export async function setupUser(user: User) {
+  try {
+    const { error: signUpError } = await authClient.signUp.email(user);
+    if (signUpError && signUpError.code !== "USER_ALREADY_EXISTS") {
+      throw signUpError;
+    }
+    const { error: walletError } = await authClient.wallet(
+      { messages: {} },
+      {
+        headers: await signInWithUser(user),
+      }
+    );
+    if (walletError && walletError.code !== "USER_WALLET_ALREADY_EXISTS") {
+      throw walletError;
+    }
+    const { error: pincodeError } = await authClient.pincode.enable(
+      {
+        pincode: DEFAULT_PINCODE,
+      },
+      { headers: await signInWithUser(user) }
+    );
+    if (pincodeError && pincodeError.code !== "PINCODE_ALREADY_SET") {
+      throw pincodeError;
+    }
+    const session = await authClient.getSession({
+      fetchOptions: {
+        headers: await signInWithUser(user),
+      },
+    });
+    if (!session.data?.user.initialOnboardingFinished) {
+      throw new Error("User is not onboarded");
+    }
+  } catch (err) {
+    console.error(`Failed to create user ${user.email} `, err);
+    throw err;
+  }
 }

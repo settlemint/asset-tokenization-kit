@@ -3,16 +3,21 @@ import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_ISSUER,
-  authClient,
+  setupUser,
 } from "../utils/auth-client";
 
 let runningDevServer: Bun.Subprocess;
 
 beforeAll(async () => {
   console.log("Setting up test accounts");
-  await authClient.signUp.email(DEFAULT_ADMIN);
-  await authClient.signUp.email(DEFAULT_INVESTOR);
-  await authClient.signUp.email(DEFAULT_ISSUER);
+  await setupUser(DEFAULT_ADMIN);
+  await setupUser(DEFAULT_INVESTOR);
+  await setupUser(DEFAULT_ISSUER);
+
+  if (await isDevServerRunning()) {
+    console.log("Dev server already running");
+    return;
+  }
 
   console.log("Starting dev server");
   const devProcess = Bun.spawn(["bun", "run", "dev", "--", "--no-open"], {
@@ -41,6 +46,15 @@ beforeAll(async () => {
   }
 });
 
-afterAll(async () => {
-  runningDevServer.kill();
+afterAll(() => {
+  runningDevServer?.kill();
 });
+
+async function isDevServerRunning() {
+  try {
+    const response = await fetch("http://localhost:3000");
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
