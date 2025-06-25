@@ -100,7 +100,7 @@ export const env = createEnv({
       .enum(["debug", "info", "warn", "error"])
       .default("info"),
 
-    SETTLEMINT_INSTANCE: z.string(),
+    SETTLEMINT_INSTANCE: z.string().optional(),
   },
 
   /**

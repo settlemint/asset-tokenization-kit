@@ -69,7 +69,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "if timeout 1 bash -c '</dev/tcp/localhost/8547'; then echo 'TxSigner
+          "if timeout 1 bash -c '</dev/tcp/localhost/3000'; then echo 'TxSigner
           health check: SUCCESS'; else echo 'TxSigner health check: FAILED';
           exit 1; fi",
         ]
