@@ -27,6 +27,7 @@ import {
 import { pincode } from "@/lib/auth/plugins/pincode-plugin";
 import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
 import { twoFactor } from "@/lib/auth/plugins/two-factor";
+import { wallet } from "@/lib/auth/plugins/wallet-plugin";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { UserRole } from "@/lib/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
@@ -330,6 +331,11 @@ const getAuthConfig = serverOnly(() =>
        * Plugin for secret codes authentication.
        */
       secretCodes(),
+
+      /**
+       * Plugin for wallet integration.
+       */
+      wallet(),
     ],
   })
 );

@@ -1,5 +1,4 @@
 import { me } from "@/orpc/routes/account/routes/account.me";
-import { create } from "./routes/account.create";
 import { read } from "./routes/account.read";
 
 /**
@@ -22,7 +21,6 @@ import { read } from "./routes/account.read";
  * @see {@link ./account.read} - Account information retrieval
  */
 const routes = {
-  create,
   read,
   me,
 };
