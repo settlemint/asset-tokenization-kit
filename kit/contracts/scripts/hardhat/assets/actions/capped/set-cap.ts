@@ -7,6 +7,8 @@ import { toBaseUnits } from "../../../utils/to-base-units";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const setCap = async (asset: Asset<any>, amount: bigint) => {
+  console.log(`[Set Cap] → Starting cap setting...`);
+  
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartCapped,
@@ -21,6 +23,6 @@ export const setCap = async (asset: Asset<any>, amount: bigint) => {
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Set Cap] ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens`
+    `[Set Cap] ✓ Cap set to ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens`
   );
 };

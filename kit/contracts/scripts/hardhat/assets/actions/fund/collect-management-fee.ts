@@ -9,6 +9,8 @@ export const collectManagementFee = async (
   asset: Asset<"fundFactory">,
   waitTimeInDays: number
 ) => {
+  console.log(`[Fund management fee collected] → Starting management fee collection...`);
+  
   const fundContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.fund,
@@ -25,6 +27,6 @@ export const collectManagementFee = async (
   })) as { amount: bigint };
 
   console.log(
-    `[Fund management fee collected] ${formatBaseUnits(amount, 0)} collected for ${asset.name} (${asset.address})`
+    `[Fund management fee collected] ✓ ${formatBaseUnits(amount, 0)} collected for ${asset.name} (${asset.address})`
   );
 };

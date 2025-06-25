@@ -10,6 +10,8 @@ export const recoverTokens = async (
   actor: AbstractActor,
   lostWallet: Address
 ) => {
+  console.log(`[Recover tokens] → Starting token recovery...`);
+  
   const tokenContract = actor.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,
@@ -22,6 +24,6 @@ export const recoverTokens = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Recover tokens] ${actor.name} recovered ${asset.name} (${asset.address}) tokens from ${lostWallet}`
+    `[Recover tokens] ✓ ${actor.name} recovered ${asset.name} (${asset.address}) tokens from ${lostWallet}`
   );
 };

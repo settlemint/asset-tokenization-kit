@@ -21,6 +21,8 @@ export const issueAssetClassificationClaim = async (
   assetClass: string,
   assetCategory: string
 ) => {
+  console.log(`[Asset classification claim] → Starting claim issuance...`);
+  
   const encodedAssetClassificationData = encodeClaimData(
     ATKTopic.assetClassification,
     [assetClass, assetCategory]
@@ -57,6 +59,6 @@ export const issueAssetClassificationClaim = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Asset classification claim] issued for token identity ${asset.name} (${asset.identity}) with class "${assetClass}" and category "${assetCategory}".`
+    `[Asset classification claim] ✓ Claim issued for token identity ${asset.name} (${asset.identity}) with class "${assetClass}" and category "${assetCategory}"`
   );
 };

@@ -11,6 +11,8 @@ export const addTrustedIssuer = async (
     topicManager.getTopicId(ATKTopic.collateral),
   ]
 ) => {
+  console.log(`[Add trusted issuer] → Starting trusted issuer setup...`);
+  
   // Set up the claim issuer as a trusted issuer
   const trustedIssuersRegistry =
     atkDeployer.getTrustedIssuersRegistryContract();
@@ -23,6 +25,6 @@ export const addTrustedIssuer = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Add trusted issuer] ${trustedIssuerIdentity} added to registry`
+    `[Add trusted issuer] ✓ ${trustedIssuerIdentity} added to registry`
   );
 };

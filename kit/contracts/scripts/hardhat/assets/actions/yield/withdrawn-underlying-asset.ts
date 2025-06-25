@@ -12,6 +12,8 @@ export const withdrawnUnderlyingAsset = async (
   to: Address,
   amount: bigint
 ) => {
+  console.log(`[Withdrawn underlying asset] → Starting underlying asset withdrawal...`);
+  
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartYield,
@@ -34,6 +36,6 @@ export const withdrawnUnderlyingAsset = async (
   });
 
   console.log(
-    `[Withdrawn underlying asset] ${asset.symbol} underlying asset withdrawn to ${to} with amount ${amount}.`
+    `[Withdrawn underlying asset] ✓ ${asset.symbol} underlying asset withdrawn to ${to} with amount ${amount} ${underlyingAsset.symbol}`
   );
 };

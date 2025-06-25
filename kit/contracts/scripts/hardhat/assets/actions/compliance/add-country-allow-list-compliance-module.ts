@@ -11,6 +11,8 @@ export const addCountryComplianceModule = async (
   module: "countryBlockListModule" | "countryAllowListModule",
   countryCodes: number[]
 ) => {
+  console.log(`[Add country ${module} compliance module] → Starting module addition...`);
+  
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,
@@ -28,6 +30,6 @@ export const addCountryComplianceModule = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Add country ${module} compliance module] ${countryCodes.join(", ")} for ${asset.name} (${asset.address})`
+    `[Add country ${module} compliance module] ✓ ${countryCodes.join(", ")} added for ${asset.name} (${asset.address})`
   );
 };

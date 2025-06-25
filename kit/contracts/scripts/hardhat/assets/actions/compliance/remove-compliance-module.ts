@@ -9,6 +9,8 @@ export const removeComplianceModule = async (
   asset: Asset<any>,
   moduleAddress: Address
 ) => {
+  console.log(`[Remove Compliance Module] → Starting module removal...`);
+  
   const tokenContract = owner.getContractInstance({
     address: asset.address!,
     abi: ATKContracts.ismart,
@@ -21,6 +23,6 @@ export const removeComplianceModule = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Remove Compliance Module] ${moduleAddress} for ${asset.name} (${asset.address})`
+    `[Remove Compliance Module] ✓ ${moduleAddress} removed from ${asset.name} (${asset.address})`
   );
 };

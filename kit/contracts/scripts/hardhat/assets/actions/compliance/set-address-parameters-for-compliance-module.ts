@@ -11,6 +11,8 @@ export const setAddressParametersForComplianceModule = async (
   module: "identityAllowListModule" | "identityBlockListModule",
   addresses: Address[]
 ) => {
+  console.log(`[Set parameters for ${module} compliance module] → Starting parameter setting...`);
+  
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,
@@ -31,6 +33,6 @@ export const setAddressParametersForComplianceModule = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Set parameters for ${module} compliance module] ${addresses.join(", ")} for ${asset.name} (${asset.address})`
+    `[Set parameters for ${module} compliance module] ✓ ${addresses.join(", ")} set for ${asset.name} (${asset.address})`
   );
 };

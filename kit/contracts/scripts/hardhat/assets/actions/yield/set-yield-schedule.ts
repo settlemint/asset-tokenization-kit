@@ -17,6 +17,8 @@ export const setYieldSchedule = async (
   /** The interval between yield distributions in seconds (e.g., 86400 for daily). Must be greater than 0. */
   interval: number
 ) => {
+  console.log(`[Set yield schedule] → Starting yield schedule setup...`);
+  
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartYield,
@@ -55,7 +57,7 @@ export const setYieldSchedule = async (
   });
 
   console.log(
-    `[Set yield schedule] ${asset.symbol} yield schedule set with start time ${startTime.toISOString()} and end time ${endTime.toISOString()} (schedule address ${schedule})`
+    `[Set yield schedule] ✓ ${asset.symbol} yield schedule set with start time ${startTime.toISOString()} and end time ${endTime.toISOString()} (schedule address ${schedule})`
   );
 
   return {

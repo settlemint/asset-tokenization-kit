@@ -10,6 +10,8 @@ export const claimYield = async (
   underlyingAsset: Asset<any>,
   actor: AbstractActor
 ) => {
+  console.log(`[Claim yield] → Starting yield claim...`);
+  
   const tokenContract = actor.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartYield,
@@ -40,6 +42,6 @@ export const claimYield = async (
     };
 
   console.log(
-    `[Claim yield] ${formatBaseUnits(claimedAmount, underlyingAsset.decimals)} ${asset.symbol} yield claimed from period ${fromPeriod} to ${toPeriod}`
+    `[Claim yield] ✓ ${formatBaseUnits(claimedAmount, underlyingAsset.decimals)} ${underlyingAsset.symbol} yield claimed from period ${fromPeriod} to ${toPeriod}`
   );
 };

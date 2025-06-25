@@ -13,6 +13,8 @@ export const mint = async (
   to: AbstractActor | Asset<any> | Address,
   amount: bigint
 ) => {
+  console.log(`[Mint] → Starting mint operation...`);
+  
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,
@@ -27,7 +29,7 @@ export const mint = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Mint] ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens to ${isAddress(to) ? to : `${to.name} (${to.address})`}`
+    `[Mint] ✓ ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens minted to ${isAddress(to) ? to : `${to.name} (${to.address})`}`
   );
 };
 

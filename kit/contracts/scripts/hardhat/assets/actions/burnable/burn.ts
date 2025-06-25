@@ -12,6 +12,8 @@ export const burn = async (
   from: AbstractActor,
   amount: bigint
 ) => {
+  console.log(`[Burn] → Starting burn operation...`);
+  
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartBurnable,
@@ -26,6 +28,6 @@ export const burn = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Burn] ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens from ${from.name} (${from.address})`
+    `[Burn] ✓ ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens burned from ${from.name} (${from.address})`
   );
 };

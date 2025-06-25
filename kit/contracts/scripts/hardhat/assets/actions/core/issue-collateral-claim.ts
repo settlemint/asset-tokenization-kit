@@ -23,6 +23,8 @@ export const issueCollateralClaim = async (
   amount: number | bigint,
   expiryTimestamp: Date
 ) => {
+  console.log(`[Collateral claim] → Starting claim issuance...`);
+  
   // Convert Date object to Unix timestamp (seconds) and then to bigint
   const expiryTimestampBigInt = BigInt(
     Math.floor(expiryTimestamp.getTime() / 1000)
@@ -75,6 +77,6 @@ export const issueCollateralClaim = async (
 
   // Log with the original Date object for better readability if desired, or the timestamp
   console.log(
-    `[Collateral claim] issued for token identity ${asset.name} (${asset.identity}) with amount ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} and expiry ${expiryTimestamp.toISOString()} (Unix: ${expiryTimestampBigInt}).`
+    `[Collateral claim] ✓ Claim issued for token identity ${asset.name} (${asset.identity}) with amount ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} and expiry ${expiryTimestamp.toISOString()} (Unix: ${expiryTimestampBigInt})`
   );
 };

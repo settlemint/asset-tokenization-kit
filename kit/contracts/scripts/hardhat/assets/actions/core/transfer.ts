@@ -12,6 +12,8 @@ export const transfer = async (
   to: AbstractActor | Asset<any>,
   amount: bigint
 ) => {
+  console.log(`[Transfer] → Starting transfer operation...`);
+  
   const tokenContract = from.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,
@@ -26,6 +28,6 @@ export const transfer = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Transfer] ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens from ${from.name} (${from.address}) to ${to.name} (${to.address})`
+    `[Transfer] ✓ ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens transferred from ${from.name} (${from.address}) to ${to.name} (${to.address})`
   );
 };
