@@ -41,13 +41,6 @@ export const Roles = [
   new RoleConfig("DEFAULT_ADMIN_ROLE", "admin"),
   new RoleConfig("REGISTRAR_ROLE", "registrar"),
   new RoleConfig("CLAIM_MANAGER_ROLE", "claimManager"),
-  new RoleConfig("IDENTITY_ISSUER_ROLE", "identityIssuer"),
-  new RoleConfig("IDENTITY_ISSUER_ADMIN_ROLE", "identityIssuerAdmin"),
-  new RoleConfig("TOKEN_IDENTITY_ISSUER_ROLE", "tokenIdentityIssuer"),
-  new RoleConfig(
-    "TOKEN_IDENTITY_ISSUER_ADMIN_ROLE",
-    "tokenIdentityIssuerAdmin"
-  ),
   new RoleConfig("DEPLOYER_ROLE", "deployer"),
   new RoleConfig("STORAGE_MODIFIER_ROLE", "storageModifier"),
   new RoleConfig("MANAGE_REGISTRIES_ROLE", "manageRegistries"),
