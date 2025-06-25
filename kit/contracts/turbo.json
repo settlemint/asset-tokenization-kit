@@ -51,6 +51,9 @@
     "publish": {
       "cache": false,
       "dependsOn": ["package", "codegen"]
+    },
+    "test": {
+      "dependsOn": ["compile:forge"]
     }
   }
 }
