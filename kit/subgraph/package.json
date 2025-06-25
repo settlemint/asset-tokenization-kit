@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "license": "FSL-1.1-MIT",
   "scripts": {
-    "codegen": "settlemint scs subgraph codegen",
+    "codegen:graph": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
     "codegen:gql-tada": "gql-tada generate-schema http://localhost:8000/subgraphs/name/kit-integration-tests && gql-tada turbo && gql-tada generate-output",
     "format": "prettier --experimental-cli --write .",
