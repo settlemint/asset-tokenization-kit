@@ -13,6 +13,8 @@ export const topupUnderlyingAsset = async (
   underlyingAsset: Asset<any>,
   amount: bigint
 ) => {
+  console.log(`[Topup underlying asset] → Starting underlying asset topup...`);
+
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartYield,
@@ -39,6 +41,6 @@ export const topupUnderlyingAsset = async (
   });
 
   console.log(
-    `[Topup underlying asset] ${asset.symbol} underlying asset topped up with amount ${formatBaseUnits(topUpAmount, underlyingAsset.decimals)} ${underlyingAsset.symbol}.`
+    `[Topup underlying asset] ✓ ${asset.symbol} underlying asset topped up with ${formatBaseUnits(topUpAmount, underlyingAsset.decimals)} ${underlyingAsset.symbol}`
   );
 };

@@ -17,6 +17,8 @@ export const issueBasePriceClaim = async (
   asset: Asset<any>,
   amount: number | bigint
 ) => {
+  console.log(`[Base price claim] → Starting claim issuance...`);
+
   const amountBigInt = toBaseUnits(amount, ATK_BASE_CURRENCY_DECIMALS);
 
   const encodedBasePriceData = encodeClaimData(ATKTopic.basePrice, [
@@ -56,6 +58,6 @@ export const issueBasePriceClaim = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Base price claim] issued for token identity ${asset.name} (${asset.identity}) with base price ${formatBaseUnits(amountBigInt, ATK_BASE_CURRENCY_DECIMALS)} ${ATK_BASE_CURRENCY_CODE}.`
+    `[Base price claim] ✓ Claim issued for token identity ${asset.name} (${asset.identity}) with base price ${formatBaseUnits(amountBigInt, ATK_BASE_CURRENCY_DECIMALS)} ${ATK_BASE_CURRENCY_CODE}`
   );
 };

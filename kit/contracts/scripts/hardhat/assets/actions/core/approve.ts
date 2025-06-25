@@ -12,6 +12,8 @@ export const approve = async (
   to: Address,
   amount: bigint
 ) => {
+  console.log(`[Approve] → Starting approval operation...`);
+
   const tokenContract = owner.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,
@@ -26,6 +28,6 @@ export const approve = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Approve] ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens to ${to}`
+    `[Approve] ✓ ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens approved to ${to}`
   );
 };

@@ -93,5 +93,5 @@ export const ATKContracts = {
   vestingAirdropFactory: vestingAirdropFactoryAbi,
   pushAirdropFactory: pushAirdropFactoryAbi,
   timeBoundAirdropFactory: timeBoundAirdropFactoryAbi,
-  xvpSettlementFactory: xvpSettlementFactoryAbi
+  xvpSettlementFactory: xvpSettlementFactoryAbi,
 } as const;

@@ -24,16 +24,23 @@ const config: HardhatUserConfig = {
     cache: "./.generated/cache",
   },
   networks: {
-    hardhat: {},
+    hardhat: {
+      // Add gas buffer for hardhat network too
+      gasMultiplier: 1.2, // 20% buffer
+    },
     localhost: {
       url: process.env.LOCALHOST_RPC_URL || "http://127.0.0.1:8545",
       gasPrice: 0,
+      gasMultiplier: 1.2, // 20% buffer to prevent out-of-gas errors
+      // Optional: set a reasonable gas limit
+      gas: 10000000, // 10M gas limit
     },
     btp: {
       url: process.env.BTP_RPC_URL || "",
       gasPrice: process.env.BTP_GAS_PRICE
         ? Number.parseInt(process.env.BTP_GAS_PRICE)
         : "auto",
+      gasMultiplier: 1.15, // 15% buffer for production
     },
   },
 };

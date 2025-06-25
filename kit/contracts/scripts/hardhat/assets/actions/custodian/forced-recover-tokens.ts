@@ -11,6 +11,8 @@ export const forcedRecoverTokens = async (
   newWallet: AbstractActor,
   lostWallet: Address
 ) => {
+  console.log(`[Forced recover tokens] → Starting forced token recovery...`);
+
   const custodianContract = custodian.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartCustodian,
@@ -23,6 +25,6 @@ export const forcedRecoverTokens = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Forced recover tokens] ${custodian.name} (${custodian.address}) recovered ${asset.name} (${asset.address}) tokens from ${lostWallet}`
+    `[Forced recover tokens] ✓ ${custodian.name} (${custodian.address}) recovered ${asset.name} (${asset.address}) tokens from ${lostWallet}`
   );
 };

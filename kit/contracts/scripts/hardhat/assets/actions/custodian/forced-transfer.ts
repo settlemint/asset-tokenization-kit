@@ -13,6 +13,8 @@ export const forcedTransfer = async (
   to: AbstractActor | Asset<any>,
   amount: bigint
 ) => {
+  console.log(`[Forced transfer] → Starting forced transfer...`);
+
   const custodianContract = custodian.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartCustodian,
@@ -31,6 +33,6 @@ export const forcedTransfer = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Forced transfer] ${from.name} (${from.address}) transferred ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens to ${to.name} (${to.address})`
+    `[Forced transfer] ✓ ${custodian.name} transferred ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} tokens from ${from.name} (${from.address}) to ${to.name} (${to.address})`
   );
 };
