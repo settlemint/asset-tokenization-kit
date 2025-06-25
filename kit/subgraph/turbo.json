@@ -20,7 +20,11 @@
     },
     "compile": {
       "dependsOn": ["^compile", "codegen"],
-      "outputs": ["build/**"],
+      "outputs": [
+        "build/**",
+        ".generated/subgraph-env",
+        ".generated/subgraph-hash.txt"
+      ],
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },
     "publish": {
@@ -32,7 +36,7 @@
     },
     "translate": {},
     "artifacts": {
-      "dependsOn": ["build", "compile", "translate"]
+      "dependsOn": ["compile", "translate"]
     }
   }
 }

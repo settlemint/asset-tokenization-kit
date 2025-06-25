@@ -17,6 +17,7 @@
       "outputs": ["*-cache.d.ts"]
     },
     "build": {
+      "dependsOn": ["codegen:settlemint"],
       "outputs": [".output/**"]
     },
     "publish": {

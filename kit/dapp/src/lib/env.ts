@@ -99,6 +99,8 @@ export const env = createEnv({
     SETTLEMINT_LOG_LEVEL: z
       .enum(["debug", "info", "warn", "error"])
       .default("info"),
+
+    SETTLEMINT_INSTANCE: z.string().optional(),
   },
 
   /**
