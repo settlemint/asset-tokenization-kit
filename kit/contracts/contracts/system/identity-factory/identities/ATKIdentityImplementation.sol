@@ -70,7 +70,7 @@ contract ATKIdentityImplementation is
     /// @notice Constructor for the `ATKIdentityImplementation`.
     /// @dev Initializes ERC2771 context with the provided forwarder.
     ///      The main identity initialization (setting the first management key) is done via `initializeATKIdentity`.
-    constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
+    constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) ERC734(address(0), true) {
         _disableInitializers();
     }
 
@@ -81,12 +81,12 @@ contract ATKIdentityImplementation is
      *      This replaces the old `__Identity_init` call.
      * @param initialManagementKey The address to be set as the initial management key for this identity.
      */
-    function initialize(address initialManagementKey) external override initializer {
+    function initialize(address initialManagementKey) external override(ERC734, IATKIdentity) initializer {
         if (_smartIdentityInitialized) revert AlreadyInitialized();
         _smartIdentityInitialized = true;
 
         __ERC165_init_unchained(); // Initialize ERC165 storage
-        __ERC734_init_unchained(initialManagementKey);
+        __ERC734_init(initialManagementKey);
     }
 
     // --- OnchainIdentityWithRevocation Functions ---

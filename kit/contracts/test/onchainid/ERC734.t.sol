@@ -6,6 +6,8 @@ import { ERC734 } from "../../contracts/onchainid/extensions/ERC734.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 
 contract MockERC734 is ERC734 {
+    constructor(address initialManagementKey) ERC734(initialManagementKey, false) { }
+
     // Override to make functions public for testing
     function addKey(bytes32 _key, uint256 _purpose, uint256 _keyType) public override returns (bool success) {
         return super.addKey(_key, _purpose, _keyType);
@@ -53,6 +55,9 @@ contract ERC734Test is Test {
     MockERC734 public erc734;
     TargetContract public target;
 
+    uint256 internal initialManagementKeyPrivateKey = 0x12345;
+    address internal initialManagementKey;
+
     bytes32 public constant TEST_KEY_1 = keccak256("test_key_1");
     bytes32 public constant TEST_KEY_2 = keccak256("test_key_2");
     bytes32 public constant MANAGEMENT_KEY = keccak256("management_key");
@@ -67,7 +72,8 @@ contract ERC734Test is Test {
     uint256 public constant RSA_TYPE = 2;
 
     function setUp() public {
-        erc734 = new MockERC734();
+        initialManagementKey = vm.addr(initialManagementKeyPrivateKey);
+        erc734 = new MockERC734(initialManagementKey);
         target = new TargetContract();
 
         // Fund the test contract
@@ -77,11 +83,11 @@ contract ERC734Test is Test {
 
     function test_ConstructorInitialization() public {
         // Verify initial state after deployment
-        MockERC734 newContract = new MockERC734();
+        MockERC734 newContract = new MockERC734(initialManagementKey);
 
         // Check that no keys exist initially
         bytes32[] memory managementKeys = newContract.getKeysByPurpose(MANAGEMENT_PURPOSE);
-        assertEq(managementKeys.length, 0);
+        assertEq(managementKeys.length, 1);
 
         bytes32[] memory actionKeys = newContract.getKeysByPurpose(ACTION_PURPOSE);
         assertEq(actionKeys.length, 0);
@@ -93,6 +99,7 @@ contract ERC734Test is Test {
         assertEq(encryptionKeys.length, 0);
 
         // Check that test keys don't have any purposes
+        assertTrue(newContract.keyHasPurpose(keccak256(abi.encode(initialManagementKey)), MANAGEMENT_PURPOSE));
         assertFalse(newContract.keyHasPurpose(TEST_KEY_1, MANAGEMENT_PURPOSE));
         assertFalse(newContract.keyHasPurpose(TEST_KEY_1, ACTION_PURPOSE));
         assertFalse(newContract.keyHasPurpose(TEST_KEY_2, MANAGEMENT_PURPOSE));
@@ -201,12 +208,22 @@ contract ERC734Test is Test {
         erc734.addKey(ACTION_KEY, ACTION_PURPOSE, ECDSA_TYPE);
 
         bytes32[] memory managementKeys = erc734.getKeysByPurpose(MANAGEMENT_PURPOSE);
-        assertEq(managementKeys.length, 2);
+        assertEq(managementKeys.length, 3);
 
         // Order might vary, so check both keys are present
         assertTrue(
-            (managementKeys[0] == TEST_KEY_1 && managementKeys[1] == TEST_KEY_2)
-                || (managementKeys[0] == TEST_KEY_2 && managementKeys[1] == TEST_KEY_1)
+            (
+                managementKeys[0] == TEST_KEY_1 && managementKeys[1] == TEST_KEY_2
+                    && managementKeys[2] == keccak256(abi.encode(initialManagementKey))
+            )
+                || (
+                    managementKeys[0] == TEST_KEY_2 && managementKeys[1] == TEST_KEY_1
+                        && managementKeys[2] == keccak256(abi.encode(initialManagementKey))
+                )
+                || (
+                    managementKeys[0] == keccak256(abi.encode(initialManagementKey)) && managementKeys[1] == TEST_KEY_1
+                        && managementKeys[2] == TEST_KEY_2
+                )
         );
 
         bytes32[] memory actionKeys = erc734.getKeysByPurpose(ACTION_PURPOSE);

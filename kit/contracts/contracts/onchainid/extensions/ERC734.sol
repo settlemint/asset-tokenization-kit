@@ -25,6 +25,7 @@ contract ERC734 is IERC734, ReentrancyGuard {
     error KeyDoesNotHaveThisPurpose(bytes32 key, uint256 purpose);
     error CannotExecuteToZeroAddress();
     error InvalidInitialManagementKey();
+    error InitialKeyAlreadySetup();
 
     struct Key {
         bytes32 key;
@@ -44,9 +45,25 @@ contract ERC734 is IERC734, ReentrancyGuard {
     mapping(uint256 => bytes32[]) internal _keysByPurpose;
     mapping(uint256 => Execution) internal _executions;
     uint256 internal _executionNonce;
+    bool internal _initialized = false;
 
-    function __ERC734_init_unchained(address initialManagementKey) internal {
+    constructor(address initialManagementKey, bool _isLibrary) {
+        if (!_isLibrary) {
+            __ERC734_init(initialManagementKey);
+        } else {
+            _initialized = true;
+        }
+    }
+
+    function initialize(address initialManagementKey) external virtual {
+        __ERC734_init(initialManagementKey);
+    }
+
+    function __ERC734_init(address initialManagementKey) internal {
+        if (_initialized && !_isConstructor()) revert InitialKeyAlreadySetup();
         if (initialManagementKey == address(0)) revert InvalidInitialManagementKey();
+
+        _initialized = true;
 
         bytes32 keyHash = keccak256(abi.encode(initialManagementKey));
 
@@ -265,5 +282,18 @@ contract ERC734 is IERC734, ReentrancyGuard {
             }
         }
         return false;
+    }
+
+    /// @dev Computes if the context in which the function is called is a constructor or not.
+    ///
+    /// @return true if the context is a constructor.
+    function _isConstructor() private view returns (bool) {
+        address self = address(this);
+        uint256 cs;
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            cs := extcodesize(self)
+        }
+        return cs == 0;
     }
 }

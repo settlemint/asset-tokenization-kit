@@ -48,9 +48,7 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
     /// @notice Constructor for the `ATKIdentityImplementation`.
     /// @dev Initializes ERC2771 context with the provided forwarder.
     ///      The main identity initialization (setting the first management key) is done via `initializeATKIdentity`.
-    constructor(address initialManagementKey) {
-        __ERC734_init_unchained(initialManagementKey);
-    }
+    constructor(address initialManagementKey) ERC734(initialManagementKey, false) { }
 
     // --- OnchainIdentityWithRevocation Functions ---
     /// @dev Revokes a claim by its signature
