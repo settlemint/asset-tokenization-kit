@@ -222,7 +222,7 @@ function parseArguments(): DeploymentConfig {
         port: {
           type: "string",
           short: "p",
-          default: `${process.env.THE_GRAPH_PORT_LOCAL_DEPLOY || "8020"}:${process.env.THE_GRAPH_PORT_LOCAL_QUERY || "8000"}`,
+          default: "8020:8000",
         },
       },
       allowPositionals: false,
@@ -264,7 +264,7 @@ function parseArguments(): DeploymentConfig {
     // Requires format: "deploymentPort:queryPort"
     if (!values.port.includes(":")) {
       logger.error(
-        "Port must be specified in format 'deployment:query' (e.g., '8120:8100')"
+        "Port must be specified in format 'deployment:query' (e.g., '8020:8000')"
       );
       showUsage();
       process.exit(EXIT_CODES.INVALID_ARGS);
@@ -274,7 +274,7 @@ function parseArguments(): DeploymentConfig {
 
     if (!deploymentPort || !queryPort) {
       logger.error(
-        "Both deployment and query ports must be specified (e.g., '8120:8100')"
+        "Both deployment and query ports must be specified (e.g., '8020:8000')"
       );
       showUsage();
       process.exit(EXIT_CODES.INVALID_ARGS);
