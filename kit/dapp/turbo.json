@@ -29,6 +29,9 @@
     },
     "artifacts": {
       "dependsOn": ["db:export"]
+    },
+    "test:integration": {
+      "dependsOn": ["codegen:settlemint", "artifacts"]
     }
   }
 }
