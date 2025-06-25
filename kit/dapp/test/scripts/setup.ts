@@ -13,14 +13,17 @@ let runningDevServer: Bun.Subprocess;
 
 beforeAll(async () => {
   try {
-    console.log("Setting up test accounts");
-    await setupUser(DEFAULT_ADMIN);
-    await setupUser(DEFAULT_INVESTOR);
-    await setupUser(DEFAULT_ISSUER);
-
     await startDevServer();
 
+    console.log("Setting up admin account");
+    await setupUser(DEFAULT_ADMIN);
+    console.log("Setting up investor account");
+    await setupUser(DEFAULT_INVESTOR);
+    console.log("Setting up issuer account");
+    await setupUser(DEFAULT_ISSUER);
+
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
+    console.log("Bootstrapping system");
     await bootstrapSystem(orpClient);
   } catch (error) {
     console.error("Failed to setup test environment", error);
