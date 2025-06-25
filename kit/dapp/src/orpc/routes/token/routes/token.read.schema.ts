@@ -9,15 +9,12 @@ const ROLES: TokenRoles[] = [
   "custodian",
   "deployer",
   "emergency",
-  "identityIssuer",
   "implementationManager",
   "manageRegistries",
   "registrar",
   "storageModifier",
   "supplyManagement",
   "tokenGovernance",
-  "tokenIdentityIssuer",
-  "tokenIdentityIssuerAdmin",
 ];
 
 export const TokenSchema = z.object({
