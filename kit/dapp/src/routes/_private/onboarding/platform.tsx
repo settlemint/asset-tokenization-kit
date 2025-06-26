@@ -44,14 +44,6 @@ function PlatformOnboarding() {
 
   const user = session?.user;
 
-  // Determine initial step based on what's completed
-  const getInitialStep = () => {
-    if (!user?.initialOnboardingFinished) return "wallet";
-    if (!systemAddress) return "system";
-    if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
-    return "assets"; // Default to last step if all complete
-  };
-
   // Initialize with "wallet" as default, will update when session data loads
   const [currentStepId, setCurrentStepId] = useState("wallet");
   const [hasInitialized, setHasInitialized] = useState(false);
@@ -59,7 +51,15 @@ function PlatformOnboarding() {
   // Update the current step when session data becomes available
   useEffect(() => {
     // Only update if we haven't initialized yet and session data is loaded
-    if (!hasInitialized && session !== undefined) {
+    if (!hasInitialized && session) {
+      // Determine initial step based on what's completed
+      const getInitialStep = () => {
+        if (!user?.initialOnboardingFinished) return "wallet";
+        if (!systemAddress) return "system";
+        if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
+        return "assets"; // Default to last step if all complete
+      };
+      
       const initialStep = getInitialStep();
       setCurrentStepId(initialStep);
       setHasInitialized(true);
