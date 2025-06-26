@@ -8,7 +8,7 @@ const registrarRole = keccak256(toBytes("REGISTRAR_ROLE"));
 const claimManagerRole = keccak256(toBytes("CLAIM_MANAGER_ROLE"));
 const tokenDeployerRole = keccak256(toBytes("TOKEN_DEPLOYER_ROLE"));
 const storageModifierRole = keccak256(toBytes("STORAGE_MODIFIER_ROLE"));
-const manageRegistriesRole = keccak256(toBytes("MANAGE_REGISTRIES_ROLE"));
+const registryManagerRole = keccak256(toBytes("REGISTRY_MANAGER_ROLE"));
 const bypassListManagerRole = keccak256(toBytes("BYPASS_LIST_MANAGER_ROLE"));
 
 // Asset Roles (from ATKRoles.sol)
@@ -24,7 +24,7 @@ export const ATKRoles = {
   claimManagerRole,
   tokenDeployerRole,
   storageModifierRole,
-  manageRegistriesRole,
+  registryManagerRole,
   bypassListManagerRole,
   // Asset Roles
   tokenGovernanceRole,

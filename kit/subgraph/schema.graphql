@@ -45,7 +45,7 @@ type AccessControl @entity(immutable: false) {
   claimManager: [Account!]!
   deployer: [Account!]!
   storageModifier: [Account!]!
-  manageRegistries: [Account!]!
+  registryManager: [Account!]!
   tokenGovernance: [Account!]!
   supplyManagement: [Account!]!
   custodian: [Account!]!

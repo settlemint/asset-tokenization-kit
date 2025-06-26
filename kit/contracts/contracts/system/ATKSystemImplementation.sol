@@ -251,6 +251,8 @@ contract ATKSystemImplementation is
         // Grant the DEFAULT_ADMIN_ROLE to the initial administrator address.
         // This role typically has permissions to call sensitive functions like setting implementation addresses.
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin_);
+        _grantRole(ATKSystemRoles.DEPLOYER_ROLE, initialAdmin_);
+        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin_);
 
         // Validate and set the compliance implementation address.
         if (complianceImplementation_ == address(0)) revert ComplianceImplementationNotSet();
@@ -365,7 +367,7 @@ contract ATKSystemImplementation is
     /// Reverts if any required implementation address (for compliance, identity registry, storage, trusted issuers,
     /// factory)
     /// is not set (i.e., is the zero address) before calling this function.
-    function bootstrap() external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
+    function bootstrap() external nonReentrant onlyRole(ATKSystemRoles.DEPLOYER_ROLE) {
         // Check if system is already bootstrapped.
         if (_bootstrapped) {
             revert SystemAlreadyBootstrapped();
@@ -538,7 +540,10 @@ contract ATKSystemImplementation is
     /// interface.
     /// Emits a `ComplianceImplementationUpdated` event upon successful update.
     /// @param implementation_ The new address for the compliance module logic contract.
-    function setComplianceImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setComplianceImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert ComplianceImplementationNotSet();
         _checkInterface(implementation_, _COMPLIANCE_ID); // Ensure it supports the correct interface.
         _implementations[COMPLIANCE] = implementation_;
@@ -550,7 +555,10 @@ contract ATKSystemImplementation is
     /// Reverts if the `implementation` address is zero or does not support `ISMARTIdentityRegistry`.
     /// Emits an `IdentityRegistryImplementationUpdated` event.
     /// @param implementation_ The new address for the identity registry logic contract.
-    function setIdentityRegistryImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setIdentityRegistryImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert IdentityRegistryImplementationNotSet();
         _checkInterface(implementation_, _IDENTITY_REGISTRY_ID);
         _implementations[IDENTITY_REGISTRY] = implementation_;
@@ -562,7 +570,10 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `ISMARTIdentityRegistryStorage`.
     /// Emits an `IdentityRegistryStorageImplementationUpdated` event.
     /// @param implementation_ The new address for the identity registry storage logic contract.
-    function setIdentityRegistryStorageImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setIdentityRegistryStorageImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert IdentityRegistryStorageImplementationNotSet();
         _checkInterface(implementation_, _IDENTITY_REGISTRY_STORAGE_ID);
         _implementations[IDENTITY_REGISTRY_STORAGE] = implementation_;
@@ -574,7 +585,10 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `IERC3643TrustedIssuersRegistry`.
     /// Emits a `TrustedIssuersRegistryImplementationUpdated` event.
     /// @param implementation_ The new address for the trusted issuers registry logic contract.
-    function setTrustedIssuersRegistryImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setTrustedIssuersRegistryImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert TrustedIssuersRegistryImplementationNotSet();
         _checkInterface(implementation_, _TRUSTED_ISSUERS_REGISTRY_ID);
         _implementations[TRUSTED_ISSUERS_REGISTRY] = implementation_;
@@ -586,7 +600,10 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `ISMARTTopicSchemeRegistry`.
     /// Emits a `TopicSchemeRegistryImplementationUpdated` event.
     /// @param implementation_ The new address for the topic scheme registry logic contract.
-    function setTopicSchemeRegistryImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setTopicSchemeRegistryImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert TopicSchemeRegistryImplementationNotSet();
         _checkInterface(implementation_, _TOPIC_SCHEME_REGISTRY_ID);
         _implementations[TOPIC_SCHEME_REGISTRY] = implementation_;
@@ -598,7 +615,10 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `IATKIdentityFactory`.
     /// Emits an `IdentityFactoryImplementationUpdated` event.
     /// @param implementation_ The new address for the identity factory logic contract.
-    function setIdentityFactoryImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setIdentityFactoryImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
         _checkInterface(implementation_, _IDENTITY_FACTORY_ID);
         _implementations[IDENTITY_FACTORY] = implementation_;
@@ -610,7 +630,10 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `IIdentity` (from OnchainID standard).
     /// Emits an `IdentityImplementationUpdated` event.
     /// @param implementation_ The new address for the standard identity logic template.
-    function setIdentityImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setIdentityImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert IdentityImplementationNotSet();
         _checkInterface(implementation_, _IIDENTITY_ID);
         _implementations[IDENTITY] = implementation_;
@@ -622,7 +645,10 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `IIdentity` (from OnchainID standard).
     /// Emits a `TokenIdentityImplementationUpdated` event.
     /// @param implementation_ The new address for the token identity logic template.
-    function setTokenIdentityImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setTokenIdentityImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert TokenIdentityImplementationNotSet();
         _checkInterface(implementation_, _IIDENTITY_ID);
         _implementations[TOKEN_IDENTITY] = implementation_;
@@ -634,7 +660,10 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `ISMARTTokenAccessManager`.
     /// Emits a `TokenAccessManagerImplementationUpdated` event.
     /// @param implementation_ The new address for the token access manager logic contract.
-    function setTokenAccessManagerImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setTokenAccessManagerImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert TokenAccessManagerImplementationNotSet();
         _checkInterface(implementation_, _TOKEN_ACCESS_MANAGER_ID);
         _implementations[TOKEN_ACCESS_MANAGER] = implementation_;
@@ -647,7 +676,10 @@ contract ATKSystemImplementation is
     /// `IComplianceModuleRegistry` interface.
     /// Emits a `ComplianceModuleRegistryImplementationUpdated` event upon successful update.
     /// @param implementation_ The new address for the compliance module registry logic contract.
-    function setComplianceModuleRegistryImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setComplianceModuleRegistryImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert ComplianceModuleRegistryImplementationNotSet();
         _checkInterface(implementation_, _COMPLIANCE_MODULE_REGISTRY_ID);
         _implementations[COMPLIANCE_MODULE_REGISTRY] = implementation_;
@@ -660,7 +692,10 @@ contract ATKSystemImplementation is
     /// `ISystemAddonRegistry` interface.
     /// Emits a `SystemAddonRegistryImplementationUpdated` event upon successful update.
     /// @param implementation_ The new address for the addon registry logic contract.
-    function setAddonRegistryImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setAddonRegistryImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert AddonRegistryImplementationNotSet();
         _checkInterface(implementation_, _ADDON_REGISTRY_ID);
         _implementations[ADDON_REGISTRY] = implementation_;
@@ -673,7 +708,10 @@ contract ATKSystemImplementation is
     /// `ITokenFactoryRegistry` interface.
     /// Emits a `TokenFactoryRegistryImplementationUpdated` event upon successful update.
     /// @param implementation_ The new address for the token factory registry logic contract.
-    function setTokenFactoryRegistryImplementation(address implementation_) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setTokenFactoryRegistryImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (implementation_ == address(0)) revert TokenFactoryRegistryImplementationNotSet();
         _checkInterface(implementation_, _TOKEN_FACTORY_REGISTRY_ID);
         _implementations[TOKEN_FACTORY_REGISTRY] = implementation_;
