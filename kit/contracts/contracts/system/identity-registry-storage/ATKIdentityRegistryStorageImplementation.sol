@@ -35,8 +35,8 @@ import { IATKIdentityRegistryStorage } from "./IATKIdentityRegistryStorage.sol";
 /// (which hold identity claims like KYC/AML status) and their country codes (for compliance purposes).
 /// It uses `AccessControlUpgradeable` to manage permissions:
 ///    - `DEFAULT_ADMIN_ROLE`: This role has the highest level of control. It can grant or revoke any other role,
-///      including `MANAGE_REGISTRIES_ROLE`. Typically held by a secure multi-signature wallet or a DAO.
-///    - `MANAGE_REGISTRIES_ROLE`: This role is responsible for managing which `SMARTIdentityRegistry` contracts
+///      including `REGISTRY_MANAGER_ROLE`. Typically held by a secure multi-signature wallet or a DAO.
+///    - `REGISTRY_MANAGER_ROLE`: This role is responsible for managing which `SMARTIdentityRegistry` contracts
 ///      are allowed to interact with this storage. It can bind new registry contracts (granting them
 ///      `STORAGE_MODIFIER_ROLE`) and unbind existing ones. This role is usually assigned to a system controller
 ///      contract like `SMARTSystem` or an identity factory.
@@ -218,13 +218,13 @@ contract ATKIdentityRegistryStorageImplementation is
     ///     This is often a temporary measure for bootstrapping; the `initialAdmin` (or the `DEFAULT_ADMIN_ROLE`
     ///     holder) would typically later grant this role to operational contracts like bound identity registries and
     ///     revoke it from themselves if direct modification by the admin is not intended long-term.
-    /// 5.  `_grantRole(MANAGE_REGISTRIES_ROLE, system)`: Grants the `MANAGE_REGISTRIES_ROLE` to the `system` address.
+    /// 5.  `_grantRole(REGISTRY_MANAGER_ROLE, system)`: Grants the `REGISTRY_MANAGER_ROLE` to the `system` address.
     ///     The `system` address (e.g., a `SMARTSystem` contract or an identity factory contract) is then responsible
     ///     for binding and unbinding `SMARTIdentityRegistry` contracts, which in turn modify the storage.
     /// The `initializer` modifier from `Initializable` ensures this function can only be executed once, preventing
     /// re-initialization.
     /// @param system The address of the system-level contract (e.g., `SMARTSystem` or a factory) that will be granted
-    /// the `MANAGE_REGISTRIES_ROLE`. This role allows it to control which identity registry contracts can interact with
+    /// the `REGISTRY_MANAGER_ROLE`. This role allows it to control which identity registry contracts can interact with
     /// and modify the data in this storage.
     /// @param initialAdmin The address that will receive the initial `DEFAULT_ADMIN_ROLE`. This address will also
     /// receive the `STORAGE_MODIFIER_ROLE` initially, though this might be delegated later.
@@ -236,9 +236,9 @@ contract ATKIdentityRegistryStorageImplementation is
         _grantRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, initialAdmin); // Admin for managing roles.
         _grantRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, initialAdmin); // Initial modifier, usually transferred to
             // registries.
-        _grantRole(ATKSystemRoles.MANAGE_REGISTRIES_ROLE, system); // System contract can manage which registries are
+        _grantRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, system); // System contract can manage which registries are
             // bound.
-        _setRoleAdmin(ATKSystemRoles.STORAGE_MODIFIER_ROLE, ATKSystemRoles.MANAGE_REGISTRIES_ROLE);
+        _setRoleAdmin(ATKSystemRoles.STORAGE_MODIFIER_ROLE, ATKSystemRoles.REGISTRY_MANAGER_ROLE);
     }
 
     // --- Storage Modification Functions (STORAGE_MODIFIER_ROLE required) ---
@@ -403,11 +403,11 @@ contract ATKIdentityRegistryStorageImplementation is
         emit CountryModified(_userAddress, _country);
     }
 
-    // --- Registry Binding Functions (MANAGE_REGISTRIES_ROLE required) ---
+    // --- Registry Binding Functions (REGISTRY_MANAGER_ROLE required) ---
 
     /// @notice Authorizes a `SMARTIdentityRegistry` contract to modify data in this storage contract.
     /// This is achieved by granting the `STORAGE_MODIFIER_ROLE` to the specified registry address.
-    /// @dev This function can only be called by an address holding the `MANAGE_REGISTRIES_ROLE` (e.g., a `SMARTSystem`
+    /// @dev This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE` (e.g., a `SMARTSystem`
     /// contract or an identity factory).
     /// It performs several checks:
     /// -   The `_identityRegistry` address must not be the zero address.
@@ -423,7 +423,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @dev Reverts with:
     ///      - `InvalidIdentityRegistryAddress()` if `_identityRegistry` is `address(0)`.
     ///      - `IdentityRegistryAlreadyBound(_identityRegistry)` if the registry is already bound.
-    function bindIdentityRegistry(address _identityRegistry) external onlyRole(ATKSystemRoles.MANAGE_REGISTRIES_ROLE) {
+    function bindIdentityRegistry(address _identityRegistry) external onlyRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE) {
         if (_identityRegistry == address(0)) revert InvalidIdentityRegistryAddress();
         if (_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryAlreadyBound(_identityRegistry);
 
@@ -439,7 +439,7 @@ contract ATKIdentityRegistryStorageImplementation is
 
     /// @notice Revokes the authorization for a `SMARTIdentityRegistry` contract to modify data in this storage.
     /// This is achieved by revoking the `STORAGE_MODIFIER_ROLE` from the specified registry address.
-    /// @dev This function can only be called by an address holding the `MANAGE_REGISTRIES_ROLE`.
+    /// @dev This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE`.
     /// It first checks if the `_identityRegistry` is currently bound. If not, it reverts.
     /// If the registry is bound, the function:
     /// 1.  Revokes the `STORAGE_MODIFIER_ROLE` from `_identityRegistry`.
@@ -453,7 +453,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @dev Reverts with `IdentityRegistryNotBound(_identityRegistry)` if the registry is not currently bound.
     function unbindIdentityRegistry(address _identityRegistry)
         external
-        onlyRole(ATKSystemRoles.MANAGE_REGISTRIES_ROLE)
+        onlyRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE)
     {
         if (!_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryNotBound(_identityRegistry);
 

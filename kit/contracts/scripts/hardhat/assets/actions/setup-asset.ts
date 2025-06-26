@@ -33,7 +33,7 @@ export const setupAsset = async (
   } = {}
 ) => {
   // needs to be done so that he can update the topics and compliance modules
-  await grantRoles(asset, owner, [ATKRoles.tokenGovernanceRole]);
+  await grantRoles(asset, owner, [ATKRoles.governanceRole]);
 
   // set extra topic
   await updateRequiredTopics(asset, [ATKTopic.kyc, ATKTopic.aml]);

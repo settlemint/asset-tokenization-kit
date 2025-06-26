@@ -114,7 +114,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         assertEq(smartEquity.symbol(), SYMBOL);
         assertEq(smartEquity.decimals(), DECIMALS);
         assertTrue(smartEquity.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(smartEquity.hasRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, owner));
+        assertTrue(smartEquity.hasRole(ATKRoles.GOVERNANCE_ROLE, owner));
         assertTrue(smartEquity.hasRole(ATKRoles.CUSTODIAN_ROLE, owner));
         assertTrue(smartEquity.hasRole(ATKRoles.EMERGENCY_ROLE, owner));
         assertEq(smartEquity.totalSupply(), INITIAL_SUPPLY);

@@ -47,6 +47,8 @@ contract ATKTokenFactoryRegistryImplementation is
         __ReentrancyGuard_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin);
+        _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
         _system = IATKSystem(systemAddress);
     }
 
@@ -58,7 +60,7 @@ contract ATKTokenFactoryRegistryImplementation is
         external
         override
         nonReentrant
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
         returns (address)
     {
         if (address(_factoryImplementation) == address(0)) revert InvalidTokenFactoryAddress();
@@ -111,7 +113,7 @@ contract ATKTokenFactoryRegistryImplementation is
     )
         public
         override
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert InvalidTokenFactoryAddress();
         if (tokenFactoryImplementationsByType[factoryTypeHash] == address(0)) revert InvalidTokenFactoryAddress();

@@ -132,8 +132,9 @@ contract ATKIdentityRegistryImplementation is
     /// @dev This function sets up the core components of the identity registry:
     /// 1.  Initializes `ERC165Upgradeable` for interface detection.
     /// 2.  Initializes `AccessControlUpgradeable` for role-based access management.
-    /// 3.  Grants the `DEFAULT_ADMIN_ROLE` and `REGISTRAR_ROLE` to the `initialAdmin` address.
-    ///     The `DEFAULT_ADMIN_ROLE` allows managing other roles and system parameters.
+    /// 3.  Grants the `DEFAULT_ADMIN_ROLE`, `REGISTRY_MANAGER_ROLE` and `REGISTRAR_ROLE` to the `initialAdmin` address.
+    ///     The `DEFAULT_ADMIN_ROLE` allows managing other roles.
+    ///     The `REGISTRY_MANAGER_ROLE` allows managing the registry contracts.
     ///     The `REGISTRAR_ROLE` allows managing identities.
     /// 4.  Sets the addresses for the `_identityStorage`, `_trustedIssuersRegistry`, and `_topicSchemeRegistry`
     /// contracts.
@@ -164,6 +165,7 @@ contract ATKIdentityRegistryImplementation is
 
         // Grant the caller (initialAdmin) the default admin role, allowing them to manage other roles.
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+        _grantRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, initialAdmin);
 
         // Validate and set the identity storage contract address.
         if (identityStorage_ == address(0)) revert InvalidStorageAddress();
@@ -190,11 +192,15 @@ contract ATKIdentityRegistryImplementation is
 
     /// @inheritdoc ISMARTIdentityRegistry
     /// @notice Updates the address of the identity storage contract.
-    /// @dev This function can only be called by an address holding the `DEFAULT_ADMIN_ROLE`.
+    /// @dev This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE`.
     /// It performs a check to ensure the new `identityStorage_` address is not the zero address.
     /// Emits an `IdentityStorageSet` event upon successful update.
     /// @param identityStorage_ The new address for the `ISMARTIdentityRegistryStorage` contract.
-    function setIdentityRegistryStorage(address identityStorage_) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setIdentityRegistryStorage(address identityStorage_)
+        external
+        override
+        onlyRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE)
+    {
         if (identityStorage_ == address(0)) revert InvalidStorageAddress();
         _identityStorage = ISMARTIdentityRegistryStorage(identityStorage_);
         emit IdentityStorageSet(_msgSender(), address(_identityStorage));
@@ -202,14 +208,14 @@ contract ATKIdentityRegistryImplementation is
 
     /// @inheritdoc ISMARTIdentityRegistry
     /// @notice Updates the address of the trusted issuers registry contract.
-    /// @dev This function can only be called by an address holding the `DEFAULT_ADMIN_ROLE`.
+    /// @dev This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE`.
     /// It performs a check to ensure the new `trustedIssuersRegistry_` address is not the zero address.
     /// Emits a `TrustedIssuersRegistrySet` event upon successful update.
     /// @param trustedIssuersRegistry_ The new address for the `IERC3643TrustedIssuersRegistry` contract.
     function setTrustedIssuersRegistry(address trustedIssuersRegistry_)
         external
         override
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE)
     {
         if (trustedIssuersRegistry_ == address(0)) revert InvalidRegistryAddress();
         _trustedIssuersRegistry = IERC3643TrustedIssuersRegistry(trustedIssuersRegistry_);
@@ -218,11 +224,15 @@ contract ATKIdentityRegistryImplementation is
 
     /// @inheritdoc ISMARTIdentityRegistry
     /// @notice Updates the address of the topic scheme registry contract.
-    /// @dev This function can only be called by an address holding the `DEFAULT_ADMIN_ROLE`.
+    /// @dev This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE`.
     /// It performs a check to ensure the new `topicSchemeRegistry_` address is not the zero address.
     /// Emits a `TopicSchemeRegistrySet` event upon successful update.
     /// @param topicSchemeRegistry_ The new address for the `ISMARTTopicSchemeRegistry` contract.
-    function setTopicSchemeRegistry(address topicSchemeRegistry_) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setTopicSchemeRegistry(address topicSchemeRegistry_)
+        external
+        override
+        onlyRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE)
+    {
         if (topicSchemeRegistry_ == address(0)) revert InvalidTopicSchemeRegistryAddress();
         _topicSchemeRegistry = ISMARTTopicSchemeRegistry(topicSchemeRegistry_);
         emit TopicSchemeRegistrySet(_msgSender(), address(_topicSchemeRegistry));

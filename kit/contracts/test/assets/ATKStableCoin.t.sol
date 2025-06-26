@@ -124,7 +124,7 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
         assertEq(stableCoin.decimals(), DECIMALS);
         assertEq(stableCoin.totalSupply(), 0);
         assertTrue(stableCoin.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(stableCoin.hasRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, owner));
+        assertTrue(stableCoin.hasRole(ATKRoles.GOVERNANCE_ROLE, owner));
     }
 
     function test_DifferentDecimals() public {
