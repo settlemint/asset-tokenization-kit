@@ -11,7 +11,7 @@ interface WalletStepProps {
   onRegisterAction?: (action: () => void) => void;
 }
 
-export function WalletStep({ onRegisterAction }: WalletStepProps) {
+export function WalletStep({ onSuccess, onRegisterAction }: WalletStepProps) {
   const { data: session } = authClient.useSession();
   const { sessionKey } = useContext(AuthQueryContext);
   const { t } = useTranslation(["onboarding", "general"]);
@@ -34,6 +34,8 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
         queryKey: sessionKey,
       });
       setJustGenerated(true);
+      // Call the parent's onSuccess callback to advance to next step
+      onSuccess?.();
     },
   });
 
