@@ -46,7 +46,7 @@ export const secretCodes = () => {
   return {
     id: "secret-codes",
     endpoints: {
-      generate: createAuthEndpoint(
+      generateSecretCodes: createAuthEndpoint(
         "/secret-codes/generate",
         {
           method: "POST",

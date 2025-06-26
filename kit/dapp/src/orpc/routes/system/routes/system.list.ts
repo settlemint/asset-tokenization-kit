@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { getPagination } from "@/orpc/routes/utils/pagination";
 import { z } from "zod/v4";
 
 /**
@@ -59,13 +60,11 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
 export const list = authRouter.system.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    // TODO: Not happy about this - would prefer input validation at schema level
     // Extract and validate pagination parameters from the request
     // Using nullish coalescing for type-safe default values
-    const { offset, limit, orderDirection } = input ?? {
-      offset: 0,
-      limit: 20,
-      orderDirection: "asc",
+    const { offset, limit, orderDirection } = {
+      ...getPagination(input),
+      orderDirection: input?.orderDirection ?? "asc",
     };
 
     // Define response schema for type-safe GraphQL response validation

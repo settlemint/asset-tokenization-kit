@@ -4,8 +4,8 @@ export const walletMiddleware = baseRouter.middleware(
   async ({ context, next, errors }) => {
     // Check if valid authentication context exists
     if (
-      context.auth?.user.wallet
-      // && context.auth.user.initialOnboardingFinished
+      context.auth?.user.wallet &&
+      context.auth.user.initialOnboardingFinished
     ) {
       // Authentication is valid, proceed with the authenticated context
       return next();
