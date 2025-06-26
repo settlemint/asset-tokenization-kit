@@ -2,9 +2,6 @@
   "extends": ["//"],
   "tasks": {
     "codegen": {
-      "dependsOn": ["codegen:graph", "codegen:interfaceid"]
-    },
-    "codegen:graph": {
       "outputs": ["generated/**"],
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },
@@ -19,7 +16,7 @@
       "outputs": ["the-graph-env.d.ts", "the-graph-cache.d.ts"]
     },
     "compile": {
-      "dependsOn": ["^compile", "codegen"],
+      "dependsOn": ["^compile", "codegen", "codegen:interfaceid"],
       "outputs": [
         "build/**",
         ".generated/subgraph-env",
