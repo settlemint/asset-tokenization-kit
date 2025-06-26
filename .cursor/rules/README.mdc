@@ -1,0 +1,141 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Cursor Rules Overview
+
+This directory contains comprehensive development guidelines and rules for AI-assisted coding. These rules are designed to be portable across projects while maintaining high code quality standards.
+
+## Core Rules
+
+### 📋 Development Guidelines (`development-guidelines.mdc`)
+The master document containing comprehensive guidelines for:
+- Test-Driven Development (TDD) philosophy and practices
+- TypeScript strict mode configuration
+- Functional programming patterns
+- Code style and architecture principles
+- Schema-first development with Zod
+- Refactoring guidelines
+
+### 🧪 Test-Driven Development (`test-driven-development.mdc`)
+Detailed TDD practices including:
+- Red-Green-Refactor cycle
+- Behavior-driven testing approach
+- Test data patterns and factories
+- React component testing
+- Coverage through behavior testing
+
+### 🏗️ Code Architecture (`code-architecture.mdc`)
+Architecture and style guidelines:
+- Functional programming patterns
+- Immutability and pure functions
+- Self-documenting code principles
+- Error handling with Result types
+- Module organization
+
+## Language & Framework Specific
+
+### 📘 TypeScript (`typescript.mdc`)
+TypeScript best practices:
+- Strict mode configuration
+- Type definitions and branded types
+- Discriminated unions
+- Error handling patterns
+- Utility types usage
+
+### ⚡ Package Management (`package-management.mdc`)
+Bun as the primary tool:
+- Package management commands
+- Built-in features and APIs
+- Frontend development with Bun
+- Migration from npm/yarn/pnpm
+
+### 🎨 UI Development (`ui-development.mdc`)
+Frontend development guidelines:
+- Shadcn UI component library
+- React best practices
+- Tailwind CSS conventions
+- Accessibility standards
+- Performance optimization
+
+### 📜 Solidity (`solidity.mdc`)
+Smart contract development:
+- Security-first approach
+- Gas optimization
+- Testing requirements
+- SMART protocol patterns
+
+## Workflow & Process
+
+### 🔄 Development Workflow (`development-workflow.mdc`)
+Daily development practices:
+- Pre-commit checklist
+- CI/CD integration
+- Testing workflow
+- Code review practices
+- Deployment preparation
+
+### 🌿 Git Workflow (`git-workflow.mdc`)
+Version control best practices:
+- Branch management rules
+- PR creation and updates
+- Common mistakes to avoid
+
+### 📝 Commits (`commits.mdc`)
+Conventional commit standards:
+- Commit message format
+- Accepted types (feat, fix, chore, etc.)
+- Breaking changes notation
+- PR title conventions
+
+### 🛠️ External Tools (`external-tools.mdc`)
+Integration with external services:
+- MCP (Model Context Protocol) servers
+- API documentation tools
+- Development tooling
+- CI/CD services
+- Monitoring and analytics
+
+## Using These Rules
+
+1. **In Cursor**: These rules are automatically loaded when you open a project with this `.cursor/rules` directory.
+
+2. **Portability**: To use in another project:
+   - Copy the entire `.cursor/rules` directory
+   - Remove any project-specific references
+   - Adjust tool configurations as needed
+
+3. **Customization**: 
+   - Keep the core principles intact
+   - Add project-specific rules as separate files
+   - Document any deviations clearly
+
+## Key Principles
+
+1. **Test-Driven Development is Non-Negotiable**: Every line of production code must be written in response to a failing test.
+
+2. **Type Safety**: Use TypeScript in strict mode with no `any` types.
+
+3. **Functional Programming**: Prefer immutable data and pure functions.
+
+4. **Self-Documenting Code**: Code should be clear without comments.
+
+5. **Behavior Testing**: Test what the code does, not how it does it.
+
+## Quick Reference
+
+- **Package Manager**: `bun` (not npm/yarn/pnpm)
+- **Testing**: Jest/Vitest with Testing Library
+- **Types**: Prefer `type` over `interface`
+- **State**: Immutable updates only
+- **Components**: Shadcn UI with Tailwind CSS
+- **Commits**: Conventional format (type(scope): description)
+
+## Contributing
+
+When adding new rules:
+1. Create a descriptive filename ending in `.mdc`
+2. Follow the existing format and structure
+3. Keep rules portable and tool-agnostic where possible
+4. Update this README with a summary

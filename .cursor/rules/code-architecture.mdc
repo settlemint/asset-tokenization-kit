@@ -1,0 +1,434 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Code Architecture & Style
+
+## Core Principles
+
+- **Functional Programming**: Immutable data, pure functions, composition
+- **Small Functions**: Each function does one thing well
+- **Self-Documenting Code**: Clear names eliminate need for comments
+- **Flat Structure**: Avoid deep nesting and complex hierarchies
+
+## Functional Programming Patterns
+
+### Immutability First
+
+```ts
+// ❌ Bad - Mutation
+function addItem(items: Item[], newItem: Item): Item[] {
+  items.push(newItem); // Mutates original array
+  return items;
+}
+
+// ✅ Good - Immutable
+function addItem(items: readonly Item[], newItem: Item): Item[] {
+  return [...items, newItem];
+}
+
+// ✅ Good - Immutable object update
+function updateUser(user: User, updates: Partial<User>): User {
+  return { ...user, ...updates };
+}
+```
+
+### Pure Functions
+
+Functions should have no side effects and always return the same output for the same input:
+
+```ts
+// ❌ Impure - Depends on external state
+let taxRate = 0.1;
+function calculatePrice(amount: number): number {
+  return amount * (1 + taxRate);
+}
+
+// ✅ Pure - All dependencies are explicit
+function calculatePrice(amount: number, taxRate: number): number {
+  return amount * (1 + taxRate);
+}
+```
+
+### Function Composition
+
+Build complex operations from simple functions:
+
+```ts
+// Simple, composable functions
+const trim = (s: string): string => s.trim();
+const toLowerCase = (s: string): string => s.toLowerCase();
+const removeSpaces = (s: string): string => s.replace(/\s+/g, '-');
+
+// Compose them
+const slugify = (s: string): string => 
+  removeSpaces(toLowerCase(trim(s)));
+
+// Or with a pipe utility
+const slugify = pipe(
+  trim,
+  toLowerCase,
+  removeSpaces
+);
+```
+
+### Avoid Classes When Possible
+
+Prefer modules with pure functions over classes:
+
+```ts
+// ❌ Unnecessary class
+class Calculator {
+  add(a: number, b: number): number {
+    return a + b;
+  }
+  
+  multiply(a: number, b: number): number {
+    return a * b;
+  }
+}
+
+// ✅ Simple functions
+export const add = (a: number, b: number): number => a + b;
+export const multiply = (a: number, b: number): number => a * b;
+```
+
+## Code Structure
+
+### Early Returns
+
+Use guard clauses and early returns to avoid nesting:
+
+```ts
+// ❌ Bad - Nested conditionals
+function processUser(user: User | null): string {
+  if (user) {
+    if (user.isActive) {
+      if (user.hasPermission) {
+        return `Welcome ${user.name}`;
+      } else {
+        return "No permission";
+      }
+    } else {
+      return "Account inactive";
+    }
+  } else {
+    return "User not found";
+  }
+}
+
+// ✅ Good - Early returns
+function processUser(user: User | null): string {
+  if (!user) return "User not found";
+  if (!user.isActive) return "Account inactive";
+  if (!user.hasPermission) return "No permission";
+  
+  return `Welcome ${user.name}`;
+}
+```
+
+### Small, Focused Functions
+
+Each function should do one thing:
+
+```ts
+// ❌ Bad - Function doing too much
+function processOrder(order: Order): ProcessedOrder {
+  // Validate order
+  if (!order.items.length) throw new Error("Empty order");
+  if (order.total < 0) throw new Error("Invalid total");
+  
+  // Calculate pricing
+  const subtotal = order.items.reduce((sum, item) => 
+    sum + item.price * item.quantity, 0
+  );
+  const tax = subtotal * 0.1;
+  const shipping = subtotal > 100 ? 0 : 10;
+  const total = subtotal + tax + shipping;
+  
+  // Process payment
+  const payment = chargeCard(order.card, total);
+  
+  // Send confirmation
+  sendEmail(order.email, "Order confirmed");
+  
+  return { ...order, payment, status: "completed" };
+}
+
+// ✅ Good - Separated concerns
+function validateOrder(order: Order): void {
+  if (!order.items.length) throw new Error("Empty order");
+  if (order.total < 0) throw new Error("Invalid total");
+}
+
+function calculatePricing(order: Order): Pricing {
+  const subtotal = calculateSubtotal(order.items);
+  const tax = calculateTax(subtotal);
+  const shipping = calculateShipping(subtotal);
+  
+  return { subtotal, tax, shipping, total: subtotal + tax + shipping };
+}
+
+function processOrder(order: Order): ProcessedOrder {
+  validateOrder(order);
+  const pricing = calculatePricing(order);
+  const payment = processPayment(order.card, pricing.total);
+  notifyCustomer(order.email);
+  
+  return createProcessedOrder(order, payment);
+}
+```
+
+## Self-Documenting Code
+
+### No Comments Policy
+
+Code should be clear enough without comments:
+
+```ts
+// ❌ Bad - Needs comments
+function calc(p: number, r: number, t: number): number {
+  // Calculate compound interest
+  // p = principal, r = rate, t = time
+  return p * Math.pow(1 + r / 100, t);
+}
+
+// ✅ Good - Self-explanatory
+function calculateCompoundInterest(
+  principal: number,
+  annualRatePercent: number,
+  years: number
+): number {
+  const rate = annualRatePercent / 100;
+  return principal * Math.pow(1 + rate, years);
+}
+```
+
+### Descriptive Names
+
+Use clear, descriptive names:
+
+```ts
+// ❌ Bad naming
+const d = new Date();
+const u = users.filter(x => x.a);
+
+// ✅ Good naming
+const currentDate = new Date();
+const activeUsers = users.filter(user => user.isActive);
+```
+
+### Extract Constants
+
+Replace magic numbers with named constants:
+
+```ts
+// ❌ Bad - Magic numbers
+if (password.length < 8) { /* ... */ }
+if (age >= 18) { /* ... */ }
+if (items.length > 100) { /* ... */ }
+
+// ✅ Good - Named constants
+const MIN_PASSWORD_LENGTH = 8;
+const LEGAL_AGE = 18;
+const MAX_ITEMS_PER_PAGE = 100;
+
+if (password.length < MIN_PASSWORD_LENGTH) { /* ... */ }
+if (age >= LEGAL_AGE) { /* ... */ }
+if (items.length > MAX_ITEMS_PER_PAGE) { /* ... */ }
+```
+
+## Error Handling
+
+### Result Types Pattern
+
+Use Result types for expected errors:
+
+```ts
+type Result<T, E = Error> =
+  | { success: true; data: T }
+  | { success: false; error: E };
+
+function divide(a: number, b: number): Result<number> {
+  if (b === 0) {
+    return { success: false, error: new Error("Division by zero") };
+  }
+  return { success: true, data: a / b };
+}
+
+// Usage
+const result = divide(10, 2);
+if (result.success) {
+  console.log(result.data); // Type-safe access to data
+} else {
+  console.error(result.error.message);
+}
+```
+
+### Custom Error Types
+
+Create specific error types for different failure modes:
+
+```ts
+class ValidationError extends Error {
+  constructor(public field: string, message: string) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+
+class AuthenticationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AuthenticationError";
+  }
+}
+```
+
+## Data Transformation
+
+### Array Methods Over Loops
+
+Use functional array methods:
+
+```ts
+// ❌ Bad - Imperative loops
+const activeUserNames: string[] = [];
+for (const user of users) {
+  if (user.isActive) {
+    activeUserNames.push(user.name.toUpperCase());
+  }
+}
+
+// ✅ Good - Functional approach
+const activeUserNames = users
+  .filter(user => user.isActive)
+  .map(user => user.name.toUpperCase());
+```
+
+### Chaining vs Intermediate Variables
+
+Choose based on readability:
+
+```ts
+// Good for simple transformations
+const result = data
+  .filter(item => item.isValid)
+  .map(item => item.value)
+  .reduce((sum, val) => sum + val, 0);
+
+// Better for complex logic - use intermediate variables
+const validItems = data.filter(item => item.isValid);
+const values = validItems.map(item => item.value);
+const total = values.reduce((sum, val) => sum + val, 0);
+```
+
+## Module Organization
+
+### Feature-Based Structure
+
+Organize by feature, not by file type:
+
+```
+src/
+  features/
+    auth/
+      auth-service.ts
+      auth-types.ts
+      auth-service.test.ts
+    payment/
+      payment-processor.ts
+      payment-types.ts
+      payment-processor.test.ts
+```
+
+### Barrel Exports
+
+Use index files for clean imports:
+
+```ts
+// features/auth/index.ts
+export { authenticateUser, refreshToken } from './auth-service';
+export type { User, AuthToken } from './auth-types';
+
+// Usage
+import { authenticateUser, type User } from '@/features/auth';
+```
+
+## Async Patterns
+
+### Async/Await Over Callbacks
+
+```ts
+// ❌ Bad - Callback hell
+fetchUser(id, (err, user) => {
+  if (err) return handleError(err);
+  fetchOrders(user.id, (err, orders) => {
+    if (err) return handleError(err);
+    processOrders(orders, (err, result) => {
+      if (err) return handleError(err);
+      console.log(result);
+    });
+  });
+});
+
+// ✅ Good - Async/await
+try {
+  const user = await fetchUser(id);
+  const orders = await fetchOrders(user.id);
+  const result = await processOrders(orders);
+  console.log(result);
+} catch (error) {
+  handleError(error);
+}
+```
+
+### Parallel Operations
+
+Execute independent operations in parallel:
+
+```ts
+// ❌ Sequential - Slower
+const user = await fetchUser(id);
+const settings = await fetchSettings(id);
+const permissions = await fetchPermissions(id);
+
+// ✅ Parallel - Faster
+const [user, settings, permissions] = await Promise.all([
+  fetchUser(id),
+  fetchSettings(id),
+  fetchPermissions(id),
+]);
+```
+
+## Performance Considerations
+
+### Memoization
+
+Cache expensive computations:
+
+```ts
+import { memo } from './utils';
+
+const expensiveCalculation = memo((input: string) => {
+  // Complex computation
+  return result;
+});
+```
+
+### Lazy Evaluation
+
+Defer computation until needed:
+
+```ts
+// ✅ Good - Lazy evaluation
+function* generatePrimes(max: number) {
+  for (let n = 2; n <= max; n++) {
+    if (isPrime(n)) yield n;
+  }
+}
+
+// Use only what's needed
+const firstTenPrimes = Array.from(generatePrimes(100)).slice(0, 10);
+```

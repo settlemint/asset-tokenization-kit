@@ -1,0 +1,372 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Test-Driven Development (TDD)
+
+## Core Philosophy
+
+**TEST-DRIVEN DEVELOPMENT IS NON-NEGOTIABLE.** Every single line of production code must be written in response to a failing test. No exceptions. This is not a suggestion or a preference - it is the fundamental practice that enables all other principles.
+
+## The TDD Cycle: Red-Green-Refactor
+
+### 1. Red Phase
+Write a failing test for the desired behavior. **NO PRODUCTION CODE** until you have a failing test.
+
+```ts
+// Step 1: Write a failing test
+describe("calculateDiscount", () => {
+  it("should apply 10% discount for orders over $100", () => {
+    const order = { total: 150 };
+    const discounted = calculateDiscount(order);
+    expect(discounted).toBe(135); // This will fail - function doesn't exist
+  });
+});
+```
+
+### 2. Green Phase
+Write the **MINIMUM** code to make the test pass. Resist the urge to write more than needed.
+
+```ts
+// Step 2: Minimal implementation
+function calculateDiscount(order: { total: number }): number {
+  return order.total > 100 ? order.total * 0.9 : order.total;
+}
+```
+
+### 3. Refactor Phase
+Assess the code for improvement opportunities. If refactoring would add value, clean up the code while keeping tests green. If the code is already clean and expressive, move on.
+
+```ts
+// Step 3: Refactor if it adds value
+const DISCOUNT_THRESHOLD = 100;
+const DISCOUNT_RATE = 0.1;
+
+function calculateDiscount(order: { total: number }): number {
+  const qualifiesForDiscount = order.total > DISCOUNT_THRESHOLD;
+  return qualifiesForDiscount 
+    ? order.total * (1 - DISCOUNT_RATE)
+    : order.total;
+}
+```
+
+## TDD Rules
+
+### What NOT to Do
+
+❌ Writing production code without a failing test first  
+❌ Writing multiple tests before making the first one pass  
+❌ Writing more production code than needed to pass the current test  
+❌ Skipping the refactor assessment step when code could be improved  
+❌ Adding functionality "while you're there" without a test driving it  
+
+### What TO Do
+
+✅ Write one test at a time  
+✅ See it fail before writing code  
+✅ Write minimal code to pass  
+✅ Refactor when it improves the code  
+✅ Commit after each cycle  
+
+## Testing Principles
+
+### Behavior-Driven Testing
+
+- **No "unit tests"** - Test behavior, not units
+- Test through the public API exclusively
+- Internals should be invisible to tests
+- Tests document expected business behavior
+- 100% behavior coverage is the goal
+
+### Test Organization
+
+```
+src/
+  features/
+    payment/
+      payment-processor.ts
+      payment-validator.ts      // Implementation detail
+      payment-processor.test.ts // Tests the behavior, not the validator
+```
+
+### What to Test
+
+Test **behavior**, not implementation:
+
+```ts
+// ❌ Bad - Testing implementation
+describe("PaymentProcessor", () => {
+  it("should call validateCard method", () => {
+    const spy = jest.spyOn(processor, 'validateCard');
+    processor.processPayment(payment);
+    expect(spy).toHaveBeenCalled();
+  });
+});
+
+// ✅ Good - Testing behavior
+describe("PaymentProcessor", () => {
+  it("should reject payment with invalid card number", () => {
+    const payment = { cardNumber: "invalid", amount: 100 };
+    const result = processPayment(payment);
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Invalid card number");
+  });
+});
+```
+
+## Test Data Patterns
+
+### Factory Functions
+
+Create factory functions with sensible defaults:
+
+```ts
+const createUser = (overrides?: Partial<User>): User => {
+  return {
+    id: "user_123",
+    name: "John Doe",
+    email: "john@example.com",
+    role: "user",
+    createdAt: new Date(),
+    ...overrides,
+  };
+};
+
+// Usage
+it("should update user email", () => {
+  const user = createUser({ email: "old@example.com" });
+  const updated = updateEmail(user, "new@example.com");
+  expect(updated.email).toBe("new@example.com");
+});
+```
+
+### Use Real Schemas
+
+Tests must use real schemas and types from the main project:
+
+```ts
+// ❌ Wrong - Redefining types in tests
+const mockUser = {
+  id: "123",
+  name: "Test User"
+}; // What if real User type has more fields?
+
+// ✅ Correct - Using real types
+import { UserSchema, type User } from "@app/schemas";
+
+const createMockUser = (overrides?: Partial<User>): User => {
+  const user = {
+    id: "123",
+    name: "Test User",
+    email: "test@example.com",
+    ...overrides
+  };
+  
+  return UserSchema.parse(user); // Validates against real schema
+};
+```
+
+## Coverage Through Behavior
+
+Achieve 100% coverage by testing all behaviors, not by testing internals:
+
+```ts
+// Implementation (payment-validator.ts)
+export const validateAmount = (amount: number): boolean => {
+  return amount > 0 && amount <= 10000;
+};
+
+// Public API (payment-processor.ts)
+export const processPayment = (request: PaymentRequest): Result<Payment> => {
+  if (!validateAmount(request.amount)) {
+    return { success: false, error: "Invalid amount" };
+  }
+  // ... process payment
+};
+
+// Tests achieve 100% coverage without testing validator directly
+describe("Payment processing", () => {
+  it("should reject negative amounts", () => {
+    const result = processPayment({ amount: -10 });
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Invalid amount");
+  });
+
+  it("should reject amounts over 10000", () => {
+    const result = processPayment({ amount: 10001 });
+    expect(result.success).toBe(false);
+  });
+
+  it("should process valid amounts", () => {
+    const result = processPayment({ amount: 100 });
+    expect(result.success).toBe(true);
+  });
+});
+```
+
+## React Component Testing
+
+Test user-visible behavior:
+
+```tsx
+// ❌ Bad - Testing implementation
+it("should update state when button clicked", () => {
+  const { result } = renderHook(() => useState(0));
+  act(() => result.current[1](1));
+  expect(result.current[0]).toBe(1);
+});
+
+// ✅ Good - Testing user behavior
+it("should increment counter when button clicked", async () => {
+  render(<Counter />);
+  
+  const button = screen.getByRole("button", { name: "Increment" });
+  const counter = screen.getByText("Count: 0");
+  
+  await userEvent.click(button);
+  
+  expect(screen.getByText("Count: 1")).toBeInTheDocument();
+});
+```
+
+## Testing Async Code
+
+```ts
+// Testing promises
+it("should fetch user data", async () => {
+  const user = await fetchUser("123");
+  expect(user.name).toBe("John Doe");
+});
+
+// Testing with MSW for API mocking
+import { rest } from "msw";
+import { setupServer } from "msw/node";
+
+const server = setupServer(
+  rest.get("/api/users/:id", (req, res, ctx) => {
+    return res(ctx.json({ id: req.params.id, name: "John Doe" }));
+  })
+);
+
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+```
+
+## Testing Error Cases
+
+Always test error paths:
+
+```ts
+describe("Order processing", () => {
+  it("should handle payment failure gracefully", async () => {
+    const order = createOrder({ paymentMethod: "invalid_card" });
+    
+    const result = await processOrder(order);
+    
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Payment failed");
+    expect(result.order.status).toBe("payment_failed");
+  });
+});
+```
+
+## Testing Tools
+
+### Preferred Frameworks
+
+- **Jest** or **Vitest** for test runners
+- **React Testing Library** for React components
+- **MSW** for API mocking
+- **Playwright** or **Cypress** for E2E tests
+
+### Running Tests
+
+```bash
+bun test              # Run all tests
+bun test --watch      # Watch mode for TDD
+bun test --coverage   # Check coverage
+bun test auth         # Run specific test files
+```
+
+### Test Configuration
+
+```js
+// vitest.config.ts
+export default {
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ["./test/setup.ts"],
+    coverage: {
+      reporter: ["text", "json", "html"],
+      exclude: ["node_modules", "test"],
+      branches: 100,
+      functions: 100,
+      lines: 100,
+      statements: 100,
+    },
+  },
+};
+```
+
+## TDD Workflow Example
+
+Complete example of TDD in practice:
+
+```ts
+// 1. Red - Write failing test
+describe("Shopping cart", () => {
+  it("should calculate total with tax", () => {
+    const cart = createCart();
+    cart.addItem({ price: 100, quantity: 2 });
+    cart.addItem({ price: 50, quantity: 1 });
+    
+    expect(cart.getTotalWithTax(0.1)).toBe(275); // 250 + 25 tax
+  });
+});
+
+// 2. Green - Minimal implementation
+class Cart {
+  private items: CartItem[] = [];
+  
+  addItem(item: CartItem) {
+    this.items.push(item);
+  }
+  
+  getTotalWithTax(taxRate: number): number {
+    const subtotal = this.items.reduce(
+      (sum, item) => sum + item.price * item.quantity, 
+      0
+    );
+    return subtotal * (1 + taxRate);
+  }
+}
+
+// 3. Refactor - Improve structure
+class Cart {
+  private items: CartItem[] = [];
+  
+  addItem(item: CartItem): void {
+    this.items.push(item);
+  }
+  
+  private getSubtotal(): number {
+    return this.items.reduce(
+      (sum, item) => sum + item.price * item.quantity, 
+      0
+    );
+  }
+  
+  getTotalWithTax(taxRate: number): number {
+    return this.getSubtotal() * (1 + taxRate);
+  }
+}
+
+// 4. Continue with next test...
+```
+
+## Remember
+
+If you're typing production code and there isn't a failing test demanding that code, **you're not doing TDD**. Stop and write the test first!
