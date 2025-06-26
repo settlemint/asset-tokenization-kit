@@ -85,7 +85,8 @@ async function startDevServer() {
     // Output to main process stdout
     process.stdout.write(chunk);
 
-    if (/VITE\s+v(.*)\s+ready\s+in/i.test(output)) {
+    const text = Bun.inspect(output, { colors: false });
+    if (/VITE\s+v(.*)\s+ready\s+in/i.test(text)) {
       console.log("Dev server started");
       reader.releaseLock();
       break;
