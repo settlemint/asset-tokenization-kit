@@ -16,6 +16,10 @@ type AccessControl {
   admin(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
   registrar(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
   claimManager(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
+  identityIssuer(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
+  identityIssuerAdmin(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
+  tokenIdentityIssuer(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
+  tokenIdentityIssuerAdmin(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
   deployer(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
   storageModifier(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
   manageRegistries(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
@@ -60,6 +64,34 @@ input AccessControl_filter {
   claimManager_not_contains: [String!]
   claimManager_not_contains_nocase: [String!]
   claimManager_: Account_filter
+  identityIssuer: [String!]
+  identityIssuer_not: [String!]
+  identityIssuer_contains: [String!]
+  identityIssuer_contains_nocase: [String!]
+  identityIssuer_not_contains: [String!]
+  identityIssuer_not_contains_nocase: [String!]
+  identityIssuer_: Account_filter
+  identityIssuerAdmin: [String!]
+  identityIssuerAdmin_not: [String!]
+  identityIssuerAdmin_contains: [String!]
+  identityIssuerAdmin_contains_nocase: [String!]
+  identityIssuerAdmin_not_contains: [String!]
+  identityIssuerAdmin_not_contains_nocase: [String!]
+  identityIssuerAdmin_: Account_filter
+  tokenIdentityIssuer: [String!]
+  tokenIdentityIssuer_not: [String!]
+  tokenIdentityIssuer_contains: [String!]
+  tokenIdentityIssuer_contains_nocase: [String!]
+  tokenIdentityIssuer_not_contains: [String!]
+  tokenIdentityIssuer_not_contains_nocase: [String!]
+  tokenIdentityIssuer_: Account_filter
+  tokenIdentityIssuerAdmin: [String!]
+  tokenIdentityIssuerAdmin_not: [String!]
+  tokenIdentityIssuerAdmin_contains: [String!]
+  tokenIdentityIssuerAdmin_contains_nocase: [String!]
+  tokenIdentityIssuerAdmin_not_contains: [String!]
+  tokenIdentityIssuerAdmin_not_contains_nocase: [String!]
+  tokenIdentityIssuerAdmin_: Account_filter
   deployer: [String!]
   deployer_not: [String!]
   deployer_contains: [String!]
@@ -142,6 +174,10 @@ enum AccessControl_orderBy {
   admin
   registrar
   claimManager
+  identityIssuer
+  identityIssuerAdmin
+  tokenIdentityIssuer
+  tokenIdentityIssuerAdmin
   deployer
   storageModifier
   manageRegistries
