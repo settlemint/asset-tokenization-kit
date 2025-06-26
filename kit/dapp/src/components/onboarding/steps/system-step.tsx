@@ -2,7 +2,7 @@ import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
-import { forwardRef, useEffect } from "react";
+import { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 
 interface SystemStepProps {
@@ -72,13 +72,10 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
     }
   };
 
-  // Register the action with parent
-  useEffect(() => {
-    if (onRegisterAction && !hasSystem) {
-      onRegisterAction(handleDeploySystem);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onRegisterAction, hasSystem]);
+  // Register the action with parent immediately if needed
+  if (onRegisterAction && !hasSystem) {
+    onRegisterAction(handleDeploySystem);
+  }
 
   // Define Circle component
   const Circle = forwardRef<

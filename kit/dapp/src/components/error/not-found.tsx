@@ -58,7 +58,7 @@ export function NotFound({ children }: { children?: ReactNode }) {
         <ErrorCodeDisplay errorCode="404" />
         <ErrorDisplay
           title="Page not found"
-          description={description || defaultDescription}
+          description={description ?? defaultDescription}
           errorCode="404"
           showRetry={false}
         />
