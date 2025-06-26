@@ -184,11 +184,11 @@ contract ATKTokenSale is
         __AccessControl_init();
         __Pausable_init();
 
-        if (tokenAddress == address(0)) revert Unauthorized();
-        if (saleStart < block.timestamp) revert InvalidPriceCalculation();
-        if (saleDuration == 0) revert InvalidPriceCalculation();
-        if (hardCap_ == 0) revert InvalidPriceCalculation();
-        if (basePrice_ == 0) revert InvalidPriceCalculation();
+        if (tokenAddress == address(0)) revert InvalidAddress();
+        if (saleStart < block.timestamp) revert InvalidTiming();
+        if (saleDuration == 0) revert InvalidParameter();
+        if (hardCap_ == 0) revert InvalidParameter();
+        if (basePrice_ == 0) revert InvalidParameter();
 
         // Setup roles
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
@@ -220,9 +220,9 @@ contract ATKTokenSale is
         onlyRole(SALE_ADMIN_ROLE)
         onlyInStatus(SaleStatus.SETUP)
     {
-        if (vestingDuration == 0) revert InvalidPriceCalculation();
-        if (vestingCliff > vestingDuration) revert InvalidPriceCalculation();
-        if (vestingStart < block.timestamp) revert InvalidPriceCalculation();
+        if (vestingDuration == 0) revert InvalidParameter();
+        if (vestingCliff > vestingDuration) revert InvalidRange();
+        if (vestingStart < block.timestamp) revert InvalidTiming();
 
         vesting.enabled = true;
         vesting.startTime = vestingStart;
@@ -234,8 +234,8 @@ contract ATKTokenSale is
 
     /// @inheritdoc IATKTokenSale
     function addPaymentCurrency(address currency, uint256 priceRatio) external onlyRole(SALE_ADMIN_ROLE) {
-        if (currency == address(0)) revert Unauthorized();
-        if (priceRatio == 0) revert InvalidPriceCalculation();
+        if (currency == address(0)) revert InvalidAddress();
+        if (priceRatio == 0) revert InvalidParameter();
 
         paymentCurrencies[currency] = PaymentCurrencyConfig({ priceRatio: priceRatio, accepted: true });
 
@@ -253,7 +253,7 @@ contract ATKTokenSale is
 
     /// @inheritdoc IATKTokenSale
     function setPurchaseLimits(uint256 minPurchase_, uint256 maxPurchase_) external onlyRole(SALE_ADMIN_ROLE) {
-        if (minPurchase_ > maxPurchase_) revert InvalidPriceCalculation();
+        if (minPurchase_ > maxPurchase_) revert InvalidRange();
 
         minPurchase = minPurchase_;
         maxPurchase = maxPurchase_;
@@ -355,7 +355,7 @@ contract ATKTokenSale is
         onlyRole(FUNDS_MANAGER_ROLE)
         returns (uint256 amount)
     {
-        if (recipient == address(0)) revert Unauthorized();
+        if (recipient == address(0)) revert InvalidAddress();
 
         if (currency == address(0)) {
             // Withdraw native currency

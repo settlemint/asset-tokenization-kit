@@ -44,6 +44,18 @@ interface IATKTokenSale {
     /// @notice Thrown when a price calculation fails due to invalid parameters
     error InvalidPriceCalculation();
 
+    /// @notice Thrown when an invalid address is provided (e.g., zero address)
+    error InvalidAddress();
+
+    /// @notice Thrown when a parameter value is invalid (e.g., zero when non-zero expected)
+    error InvalidParameter();
+
+    /// @notice Thrown when timing parameters are invalid (e.g., start time in the past)
+    error InvalidTiming();
+
+    /// @notice Thrown when parameter ranges are invalid (e.g., min > max)
+    error InvalidRange();
+
     // --- Events ---
 
     /// @notice Emitted when a buyer successfully purchases tokens
