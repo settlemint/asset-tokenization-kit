@@ -1,5 +1,4 @@
 import { PincodeInput } from "@/components/onboarding/pincode-input";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -114,16 +113,23 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
   // Register the action with parent
   useEffect(() => {
     if (onRegisterAction) {
-      if (!hasSystem) {
-        onRegisterAction(handleDeploySystem);
+      if (!hasSystem && !isDeploying) {
+        // If PIN prompt is shown, submit the form; otherwise show the prompt
+        const action = showPincodePrompt
+          ? () => {
+              // Submit the form programmatically
+              void form.handleSubmit(handlePincodeSubmit)();
+            }
+          : handleDeploySystem;
+        onRegisterAction(action);
       } else {
-        // Register a no-op function when system already exists
+        // No action needed when system is deployed or currently deploying
         onRegisterAction(() => {
-          // No action needed when system already exists
+          // No-op function for completed state
         });
       }
     }
-  }, [onRegisterAction, hasSystem]);
+  }, [onRegisterAction, hasSystem, isDeploying, showPincodePrompt, form]);
 
   // Define Circle component
   const Circle = forwardRef<
@@ -255,28 +261,6 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
                       </FormItem>
                     )}
                   />
-
-                  <div className="flex gap-3 justify-center">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setShowPincodePrompt(false);
-                        form.reset();
-                      }}
-                      disabled={isDeploying}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={
-                        isDeploying || form.watch("pincode").length !== 6
-                      }
-                    >
-                      Deploy System
-                    </Button>
-                  </div>
                 </form>
               </Form>
             </div>
