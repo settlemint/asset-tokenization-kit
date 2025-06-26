@@ -126,9 +126,11 @@ export function I18nProvider({ children, initialLanguage }: I18nProviderProps) {
    * Handle initial language override.
    * Changes the language if initialLanguage is provided and different from current.
    */
-  if (initialLanguage && initialLanguage !== i18n.language) {
-    void i18n.changeLanguage(initialLanguage);
-  }
+  useEffect(() => {
+    if (initialLanguage && initialLanguage !== i18n.language) {
+      void i18n.changeLanguage(initialLanguage);
+    }
+  }, [initialLanguage]);
 
   return (
     <I18nextProvider i18n={i18n}>

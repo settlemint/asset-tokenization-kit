@@ -21,6 +21,7 @@ import {
   PiggyBank,
   Wallet,
 } from "lucide-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -157,10 +158,12 @@ export function AssetSelectionStep({
 
   const hasDeployedAssets = (systemDetails?.tokenFactories.length ?? 0) > 0;
 
-  // Register the action with parent immediately if needed
-  if (onRegisterAction && !hasDeployedAssets) {
-    onRegisterAction(handleDeployFactories);
-  }
+  // Register the action with parent when not deployed
+  useEffect(() => {
+    if (onRegisterAction && !hasDeployedAssets) {
+      onRegisterAction(handleDeployFactories);
+    }
+  }, [onRegisterAction, hasDeployedAssets]);
 
   return (
     <div className="h-full flex flex-col">
