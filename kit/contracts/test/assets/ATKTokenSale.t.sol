@@ -212,7 +212,7 @@ contract ATKTokenSaleTest is Test {
 
     // --- Initialization Tests ---
 
-    function test_Initialize_Success() public {
+    function test_Initialize_Success() public view {
         // Check initial state
         assertEq(address(tokenSale.token()), address(smartToken));
         assertEq(tokenSale.hardCap(), HARD_CAP);
@@ -364,7 +364,7 @@ contract ATKTokenSaleTest is Test {
 
     // --- Price Calculation Tests ---
 
-    function test_GetTokenPrice_ETH() public {
+    function test_GetTokenPrice_ETH() public view {
         uint256 tokenAmount = 1000 * 1e18; // 1000 tokens
         uint256 expectedPrice = (tokenAmount * BASE_PRICE) / 1e18;
 
@@ -393,7 +393,7 @@ contract ATKTokenSaleTest is Test {
 
     // --- View Function Tests ---
 
-    function test_GetSaleInfo() public {
+    function test_GetSaleInfo() public view {
         (uint256 soldAmount, uint256 remainingTokens, uint256 saleStart, uint256 saleEnd) = tokenSale.getSaleInfo();
 
         assertEq(soldAmount, 0);
@@ -402,12 +402,12 @@ contract ATKTokenSaleTest is Test {
         assertEq(saleEnd, tokenSale.saleEndTime());
     }
 
-    function test_PurchasedAmount_InitiallyZero() public {
+    function test_PurchasedAmount_InitiallyZero() public view {
         assertEq(tokenSale.purchasedAmount(buyer1), 0);
         assertEq(tokenSale.purchasedAmount(buyer2), 0);
     }
 
-    function test_WithdrawableAmount_NoVesting() public {
+    function test_WithdrawableAmount_NoVesting() public view {
         // Without vesting configured, withdrawable should equal purchased
         // Since no purchases yet, should be 0
         assertEq(tokenSale.withdrawableAmount(buyer1), 0);
@@ -455,7 +455,7 @@ contract ATKTokenSaleTest is Test {
 
     // --- Edge Cases & Security Tests ---
 
-    function test_GetTokenPrice_ZeroAmount() public {
+    function test_GetTokenPrice_ZeroAmount() public view {
         uint256 price = tokenSale.getTokenPrice(address(0), 0);
         assertEq(price, 0);
     }

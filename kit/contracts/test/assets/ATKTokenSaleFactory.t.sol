@@ -56,7 +56,7 @@ contract ATKTokenSaleFactoryTest is Test {
 
     // --- Initialization Tests ---
 
-    function test_Initialize_Success() public {
+    function test_Initialize_Success() public view {
         // Check initial state
         assertEq(factory.implementation(), address(tokenSaleImpl));
         assertTrue(factory.hasRole(factory.DEFAULT_ADMIN_ROLE(), admin));

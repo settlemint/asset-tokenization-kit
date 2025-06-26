@@ -123,6 +123,9 @@ contract ATKTokenSale is
     /// @notice Mapping of buyers to their purchase records
     mapping(address => PurchaseRecord) public purchases;
 
+    /// @notice The address of the trusted forwarder for ERC2771
+    address private immutable _forwarder;
+
     // --- Modifiers ---
 
     /// @notice Ensures the sale is in the specified status
@@ -163,6 +166,7 @@ contract ATKTokenSale is
     /// @param forwarder The address of the forwarder contract for ERC2771
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
         _disableInitializers();
+        _forwarder = forwarder;
     }
 
     /// @inheritdoc IATKTokenSale
@@ -181,6 +185,10 @@ contract ATKTokenSale is
         __Pausable_init();
 
         if (tokenAddress == address(0)) revert Unauthorized();
+        if (saleStart < block.timestamp) revert SaleNotStarted();
+        if (saleDuration == 0) revert InvalidPriceCalculation();
+        if (hardCap_ == 0) revert InvalidPriceCalculation();
+        if (basePrice_ == 0) revert InvalidPriceCalculation();
 
         // Setup roles
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
@@ -212,6 +220,10 @@ contract ATKTokenSale is
         onlyRole(SALE_ADMIN_ROLE)
         onlyInStatus(SaleStatus.SETUP)
     {
+        if (vestingDuration == 0) revert InvalidPriceCalculation();
+        if (vestingCliff > vestingDuration) revert InvalidPriceCalculation();
+        if (vestingStart < block.timestamp) revert SaleNotStarted();
+
         vesting.enabled = true;
         vesting.startTime = vestingStart;
         vesting.duration = vestingDuration;
@@ -442,7 +454,7 @@ contract ATKTokenSale is
     /// @notice Returns the address of the trusted forwarder
     /// @return The address of the trusted forwarder
     function _trustedForwarder() internal view virtual returns (address) {
-        return address(0); // Override in derived contract if needed
+        return _forwarder;
     }
 
     /// @notice Checks if a buyer is eligible to participate in the sale
