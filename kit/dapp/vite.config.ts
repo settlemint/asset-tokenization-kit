@@ -71,6 +71,11 @@ export default defineConfig({
     tsConfigPaths(),
     tanstackStart({
       target: "bun",
+      react: {
+        babel: {
+          plugins: [["babel-plugin-react-compiler"]],
+        },
+      },
     }),
     analyzer({
       enabled: process.env.ANALYZE === "true",

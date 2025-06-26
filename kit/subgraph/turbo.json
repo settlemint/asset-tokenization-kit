@@ -3,7 +3,8 @@
   "tasks": {
     "codegen": {
       "outputs": ["generated/**"],
-      "inputs": ["subgraph.yaml", "schema.graphql"]
+      "inputs": ["subgraph.yaml", "schema.graphql"],
+      "dependsOn": ["contracts#compile"]
     },
     "codegen:interfaceid": {
       "dependsOn": ["contracts#compile"],

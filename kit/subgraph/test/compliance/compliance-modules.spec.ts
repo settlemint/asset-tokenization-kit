@@ -74,6 +74,8 @@ describe("Compliance Modules", () => {
     ];
 
     expect(response.complianceModules).toHaveLength(expected.length);
-    expect(response.complianceModules).toEqual(expect.arrayContaining(expected));
+    expect(response.complianceModules).toEqual(
+      expect.arrayContaining(expected)
+    );
   });
 });
