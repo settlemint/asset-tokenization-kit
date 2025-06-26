@@ -189,7 +189,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         assertEq(address(bond.underlyingAsset()), address(underlyingAsset));
         assertFalse(bond.isMatured());
         assertTrue(bond.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(bond.hasRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, owner));
+        assertTrue(bond.hasRole(ATKRoles.GOVERNANCE_ROLE, owner));
         assertTrue(bond.hasRole(ATKRoles.CUSTODIAN_ROLE, owner));
         assertTrue(bond.hasRole(ATKRoles.EMERGENCY_ROLE, owner));
     }
@@ -375,7 +375,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.TOKEN_GOVERNANCE_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user1, ATKRoles.GOVERNANCE_ROLE
             )
         );
         bond.mature();

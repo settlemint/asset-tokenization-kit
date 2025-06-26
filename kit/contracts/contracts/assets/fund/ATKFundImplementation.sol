@@ -129,7 +129,7 @@ contract ATKFundImplementation is
     /// @dev Only callable by addresses with DEFAULT_ADMIN_ROLE. Fee is calculated as:
     /// (AUM * fee_rate * time_elapsed) / (100% * 1 year)
     /// @return The amount of tokens minted as management fee
-    function collectManagementFee() public onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE) returns (uint256) {
+    function collectManagementFee() public onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) returns (uint256) {
         uint256 timeElapsed = block.timestamp - _lastFeeCollection;
         uint256 aum = totalSupply();
 
@@ -147,23 +147,19 @@ contract ATKFundImplementation is
 
     // --- ISMART Implementation ---
 
-    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE) {
+    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setOnchainID(_onchainID);
     }
 
     function setIdentityRegistry(address _identityRegistry)
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_setIdentityRegistry(_identityRegistry);
     }
 
-    function setCompliance(address _compliance)
-        external
-        override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
-    {
+    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setCompliance(_compliance);
     }
 
@@ -173,7 +169,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
     }
@@ -229,7 +225,7 @@ contract ATKFundImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_addComplianceModule(_module, _params);
     }
@@ -237,7 +233,7 @@ contract ATKFundImplementation is
     function removeComplianceModule(address _module)
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_removeComplianceModule(_module);
     }

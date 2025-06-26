@@ -84,9 +84,9 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
     function test_Initialize() public view {
         assertTrue(storageContract.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
         assertTrue(storageContract.hasRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, admin));
-        assertTrue(storageContract.hasRole(ATKSystemRoles.MANAGE_REGISTRIES_ROLE, system));
+        assertTrue(storageContract.hasRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, system));
         assertEq(
-            storageContract.getRoleAdmin(ATKSystemRoles.STORAGE_MODIFIER_ROLE), ATKSystemRoles.MANAGE_REGISTRIES_ROLE
+            storageContract.getRoleAdmin(ATKSystemRoles.STORAGE_MODIFIER_ROLE), ATKSystemRoles.REGISTRY_MANAGER_ROLE
         );
     }
 

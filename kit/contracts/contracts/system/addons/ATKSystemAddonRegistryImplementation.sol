@@ -42,6 +42,8 @@ contract ATKSystemAddonRegistryImplementation is
         __ReentrancyGuard_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+        _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
+        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin);
         _system = IATKSystem(systemAddress);
     }
 
@@ -53,7 +55,7 @@ contract ATKSystemAddonRegistryImplementation is
         external
         override
         nonReentrant
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
         returns (address proxyAddress)
     {
         if (address(implementation_) == address(0)) revert InvalidAddonAddress();
@@ -93,7 +95,7 @@ contract ATKSystemAddonRegistryImplementation is
     )
         public
         override
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
     {
         if (implementation_ == address(0)) revert InvalidAddonAddress();
         if (addonImplementationsByType[addonTypeHash] == address(0)) {

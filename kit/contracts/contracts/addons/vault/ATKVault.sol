@@ -20,6 +20,8 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
 
     /// @notice Role identifier for signers who can submit and confirm transactions
     bytes32 public constant SIGNER_ROLE = keccak256("SIGNER_ROLE");
+    bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
+    bytes32 public constant GOVERNANCE_ROLE = keccak256("GOVERNANCE_ROLE");
 
     /// @notice Emitted when ETH is deposited to the vault
     /// @param sender Address that sent the ETH
@@ -178,6 +180,8 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
 
         // Grant admin role to the initial owner
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
+        _grantRole(EMERGENCY_ROLE, initialOwner);
+        _grantRole(GOVERNANCE_ROLE, initialOwner);
 
         // Grant signer role to all initial signers
         for (uint256 i = 0; i < len; ++i) {
@@ -195,13 +199,13 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
 
     /// @notice Pauses the contract, preventing most operations
     /// @dev Can only be called by admin
-    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function pause() external onlyRole(EMERGENCY_ROLE) {
         _pause();
     }
 
     /// @notice Unpauses the contract, allowing operations to resume
     /// @dev Can only be called by admin
-    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function unpause() external onlyRole(EMERGENCY_ROLE) {
         _unpause();
     }
 
@@ -214,7 +218,7 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @notice Changes the number of confirmations required
     /// @param _required New number of required confirmations
     /// @dev Can only be called by admin
-    function setRequirement(uint256 _required) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setRequirement(uint256 _required) external onlyRole(GOVERNANCE_ROLE) {
         uint256 ownerCount = getRoleMemberCount(SIGNER_ROLE);
         // Ensure the requirement is valid (between 1 and number of signers)
         if (_required == 0 || _required > ownerCount) revert InvalidRequirement(_required, ownerCount);

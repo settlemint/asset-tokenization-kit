@@ -40,8 +40,8 @@ library ATKSystemRoles {
     /// This role is crucial for controlling which external contracts can write to this storage.
     /// It is typically assigned to a high-level system management contract (e.g., `ATKSystem` or an identity factory
     /// contract).
-    /// The value is calculated as `keccak256("MANAGE_REGISTRIES_ROLE")`.
-    bytes32 public constant MANAGE_REGISTRIES_ROLE = keccak256("MANAGE_REGISTRIES_ROLE");
+    /// The value is calculated as `keccak256("REGISTRY_MANAGER_ROLE")`.
+    bytes32 public constant REGISTRY_MANAGER_ROLE = keccak256("REGISTRY_MANAGER_ROLE");
 
     // --- Access Control Roles ---
     /// @notice Role identifier for addresses that can manage the compliance bypass list

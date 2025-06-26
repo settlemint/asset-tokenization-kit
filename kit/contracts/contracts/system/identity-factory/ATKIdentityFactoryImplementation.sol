@@ -5,7 +5,6 @@ pragma solidity ^0.8.28;
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
@@ -35,15 +34,12 @@ import { ATKTokenIdentityProxy } from "./identities/ATKTokenIdentityProxy.sol";
 ///      `ATKTokenIdentityProxy` for tokens) at deterministic addresses. These proxies point to logic implementations
 ///      whose addresses are provided by the central `IATKSystem` contract, enabling upgradeability of the identity
 /// logic.
-///      The factory uses `AccessControlUpgradeable` for role-based access control, notably the
-/// `REGISTRAR_ROLE`
-///      for creating identities. It is also `ERC2771ContextUpgradeable` for meta-transaction support.
+///      The factory is `ERC2771ContextUpgradeable` for meta-transaction support.
 ///      The identities created are based on the ERC725 (OnchainID) standard, managed via ERC734 for key management.
 contract ATKIdentityFactoryImplementation is
     Initializable,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
     IATKIdentityFactory
 {
     // --- Constants ---
@@ -113,15 +109,6 @@ contract ATKIdentityFactoryImplementation is
 
     // --- Events ---
 
-    /// @notice Emitted when the TOKEN_REGISTRAR_ROLE is granted to an account.
-    /// @param account The account that was granted the role.
-    /// @param sender The account that granted the role.
-    event TokenRegistrarRoleGranted(address indexed account, address indexed sender);
-    /// @notice Emitted when the TOKEN_REGISTRAR_ROLE is revoked from an account.
-    /// @param account The account that had the role revoked.
-    /// @param sender The account that revoked the role.
-    event TokenRegistrarRoleRevoked(address indexed account, address indexed sender);
-
     // --- Constructor ---
     /// @notice Constructor for the identity factory implementation.
     /// @dev This is part of OpenZeppelin's upgradeable contracts pattern.
@@ -142,19 +129,14 @@ contract ATKIdentityFactoryImplementation is
     /// @dev Sets up essential state for the factory:
     /// 1. Validates that `systemAddress` is not the zero address.
     /// 2. Initializes ERC165 for interface detection.
-    /// 3. Initializes AccessControl, granting `DEFAULT_ADMIN_ROLE` and `REGISTRAR_ROLE` to `initialAdmin`.
-    ///    The `DEFAULT_ADMIN_ROLE` can manage other roles, while `REGISTRAR_ROLE` allows identity creation.
-    /// 4. Stores the `systemAddress` which provides identity logic implementations.
+    /// 3. Stores the `systemAddress` which provides identity logic implementations.
     /// @param systemAddress The address of the central `IATKSystem` contract. This contract is crucial as it dictates
     ///                      which identity logic implementation contracts the new identity proxies will point to.
-    /// @param initialAdmin The address that will be granted initial administrative and registrar privileges over this
-    /// factory.
     /// @dev The `initializer` modifier ensures this function can only be called once.
-    function initialize(address systemAddress, address initialAdmin) public virtual initializer {
+    function initialize(address systemAddress) public virtual initializer {
         if (systemAddress == address(0)) revert InvalidSystemAddress();
 
         __ERC165_init_unchained();
-        __AccessControl_init_unchained();
 
         if (
             !IERC165(IATKSystem(systemAddress).identityImplementation()).supportsInterface(
@@ -172,17 +154,14 @@ contract ATKIdentityFactoryImplementation is
             revert InvalidTokenIdentityImplementation();
         }
 
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-
         _system = systemAddress;
     }
 
-    // --- State-Changing Functions (Owner Controlled) ---
+    // --- State-Changing Functions ---
 
     /// @inheritdoc IATKIdentityFactory
     /// @notice Creates a deterministic on-chain identity (a `ATKIdentityProxy`) for a given investor wallet address.
-    /// @dev This function can only be called by an address with the `REGISTRAR_ROLE`.
-    /// It performs several steps:
+    /// @dev This function performs several steps:
     /// 1. Validates that `_wallet` is not the zero address and that an identity doesn't already exist for this wallet.
     /// 2. Calls `_createAndRegisterWalletIdentity` to handle the deterministic deployment of the `ATKIdentityProxy`.
     ///    The `_wallet` itself is passed as the `_initialManager` to the proxy constructor.
@@ -236,8 +215,7 @@ contract ATKIdentityFactoryImplementation is
 
     /// @inheritdoc IATKIdentityFactory
     /// @notice Creates a deterministic on-chain identity (a `ATKTokenIdentityProxy`) for a given token contract.
-    /// @dev This function can only be called by an address with the `REGISTRAR_ROLE`.
-    /// It performs several steps:
+    /// @dev This function performs several steps:
     /// 1. Validates that `_token` and `_tokenOwner` are not zero addresses and that an identity doesn't already exist
     /// for this token.
     /// 2. Calls `_createAndRegisterTokenIdentityWithMetadata` to handle the deterministic deployment of the
@@ -571,37 +549,19 @@ contract ATKIdentityFactoryImplementation is
     /// @dev Overrides `_msgSender()` to support meta-transactions via ERC2771. If the call is relayed
     ///      by a trusted forwarder, this will return the original sender, not the forwarder.
     ///      Otherwise, it returns `msg.sender` as usual.
-    function _msgSender()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (address)
-    {
+    function _msgSender() internal view virtual override(ERC2771ContextUpgradeable) returns (address) {
         return ERC2771ContextUpgradeable._msgSender();
     }
 
     /// @dev Overrides `_msgData()` to support meta-transactions via ERC2771. If the call is relayed,
     ///      this returns the original call data. Otherwise, it returns `msg.data`.
-    function _msgData()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
+    function _msgData() internal view virtual override(ERC2771ContextUpgradeable) returns (bytes calldata) {
         return ERC2771ContextUpgradeable._msgData();
     }
 
     /// @dev Internal function related to ERC2771 context, indicating the length of the suffix
     ///      appended to calldata by a trusted forwarder (usually the sender's address).
-    function _contextSuffixLength()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
+    function _contextSuffixLength() internal view virtual override(ERC2771ContextUpgradeable) returns (uint256) {
         return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 
@@ -611,14 +571,14 @@ contract ATKIdentityFactoryImplementation is
     /// contract implements.
     /// It declares support for the `IATKIdentityFactory` interface and any interfaces supported by its parent
     /// contracts
-    /// (like `AccessControlUpgradeable` and `ERC165Upgradeable`).
+    /// (like `ERC165Upgradeable`).
     /// @param interfaceId The interface identifier (bytes4) to check.
     /// @return `true` if the contract supports the `interfaceId`, `false` otherwise.
     function supportsInterface(bytes4 interfaceId)
         public
         view
         virtual
-        override(AccessControlUpgradeable, ERC165Upgradeable, IERC165)
+        override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
         return interfaceId == type(IATKIdentityFactory).interfaceId || super.supportsInterface(interfaceId);
