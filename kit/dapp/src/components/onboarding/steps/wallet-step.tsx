@@ -21,13 +21,18 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
   const hasWallet = !!user?.wallet;
 
   const { mutate: generateWallet, isPending } = useMutation({
-    mutationFn: () =>
-      authClient.wallet({
+    mutationFn: async () => {
+      await authClient.wallet({
         messages: {
           walletAlreadyExists: t("onboarding:wallet.already-exists"),
           walletCreationFailed: t("onboarding:wallet.creation-failed"),
         },
-      }),
+      });
+      // TODO: Remove this once we have a proper pincode setup flow
+      await authClient.pincode.enable({
+        pincode: "111111",
+      });
+    },
     onSuccess: () => {
       toast.success(t("onboarding:wallet.generated"));
       void queryClient.invalidateQueries({
@@ -56,7 +61,7 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
         });
       }
     }
-  }, [onRegisterAction, hasWallet]);
+  }, [onRegisterAction, hasWallet, handleGenerateWallet]);
 
   // Don't auto-advance - removed the auto success callback
 

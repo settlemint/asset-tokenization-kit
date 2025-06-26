@@ -1,3 +1,4 @@
+import { authClient } from "@/lib/auth/auth.client";
 import {
   type OnboardingType,
   type PlatformOnboardingRequirements,
@@ -26,10 +27,11 @@ export function OnboardingGuard({
   const navigate = useNavigate();
 
   // Fetch user data
-  const { data: user, isLoading } = useQuery(orpc.user.me.queryOptions());
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
 
   // Check if user queries are still loading
-  const userLoading = isLoading;
+  const userLoading = isPending;
 
   // Fetch system address from settings
   const { data: systemAddress } = useQuery({
@@ -55,7 +57,8 @@ export function OnboardingGuard({
   // Determine user's onboarding status
   const userHasWallet = !!user?.wallet;
   const userHasIdentity = false; // TODO: Implement identity check
-  const userRole = user?.role ?? "investor";
+  const userRole =
+    (user?.role as undefined | "issuer" | "investor" | "admin") ?? "investor";
 
   const onboardingType = user
     ? determineOnboardingType(userRole, platformRequirements)
