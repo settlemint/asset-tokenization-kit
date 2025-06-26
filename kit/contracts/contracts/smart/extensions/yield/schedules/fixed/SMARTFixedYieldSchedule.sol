@@ -19,6 +19,11 @@ contract SMARTFixedYieldSchedule is
     ERC2771Context,
     ReentrancyGuard
 {
+    /// @notice Role for managing token supply operations
+    bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
+    /// @notice Role for emergency operations including pausing the contract and ERC20 recovery
+    bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
+
     /// @notice Constructor to deploy a new `SMARTFixedYieldSchedule` contract.
     /// @dev If not a logic contract, initializes all parameters. Otherwise, defers to `initialize()`.
     /// @param tokenAddress_ Address of the `ISMARTYield` token.
@@ -46,6 +51,8 @@ contract SMARTFixedYieldSchedule is
 
         // Grant the `DEFAULT_ADMIN_ROLE` to the `initialOwner_`.
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
+        _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner_);
+        _grantRole(EMERGENCY_ROLE, initialOwner_);
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -66,7 +73,7 @@ contract SMARTFixedYieldSchedule is
         external
         override
         nonReentrant
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(SUPPLY_MANAGEMENT_ROLE)
         whenNotPaused
     {
         _withdrawUnderlyingAsset(to, amount);
@@ -77,19 +84,19 @@ contract SMARTFixedYieldSchedule is
         external
         override
         nonReentrant
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(SUPPLY_MANAGEMENT_ROLE)
         whenNotPaused
     {
         _withdrawAllUnderlyingAsset(to);
     }
 
     /// @dev Pause the contract.
-    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function pause() external onlyRole(EMERGENCY_ROLE) {
         _pause(); // Internal OpenZeppelin Pausable function.
     }
 
     /// @dev Unpause the contract.
-    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function unpause() external onlyRole(EMERGENCY_ROLE) {
         _unpause(); // Internal OpenZeppelin Pausable function.
     }
 
