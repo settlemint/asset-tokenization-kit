@@ -49,13 +49,13 @@ export function OnboardingGuard({
 
   // Determine platform onboarding requirements
   const platformRequirements: PlatformOnboardingRequirements = {
-    hasWallet: !!user?.wallet,
+    hasWallet: !!user?.initialOnboardingFinished,
     hasSystem: !!systemAddress,
     hasTokenFactories: (systemDetails?.tokenFactories.length ?? 0) > 0,
   };
 
   // Determine user's onboarding status
-  const userHasWallet = !!user?.wallet;
+  const userHasWallet = !!user?.initialOnboardingFinished;
   const userHasIdentity = false; // TODO: Implement identity check
   const userRole =
     (user?.role as undefined | "issuer" | "investor" | "admin") ?? "investor";

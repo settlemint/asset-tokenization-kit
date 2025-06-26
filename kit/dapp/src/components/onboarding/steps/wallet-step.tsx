@@ -18,7 +18,7 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
   const [justGenerated, setJustGenerated] = useState(false);
 
   const user = session?.user;
-  const hasWallet = !!user?.wallet;
+  const hasWallet = !!user?.initialOnboardingFinished;
 
   const { mutate: generateWallet, isPending } = useMutation({
     mutationFn: async () => {
@@ -44,16 +44,16 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
 
   // Handle generate wallet
   const handleGenerateWallet = useCallback(() => {
-    if (user?.id && !isPending && !hasWallet) {
+    if (!isPending && !hasWallet) {
       generateWallet();
     }
-  }, [user?.id, isPending, hasWallet, generateWallet]);
+  }, [isPending, hasWallet, generateWallet]);
 
   // Register the action with parent
   useEffect(() => {
     if (onRegisterAction) {
       if (!hasWallet) {
-        onRegisterAction(handleGenerateWallet);
+        onRegisterAction(generateWallet);
       } else {
         // Unregister by passing a no-op function when wallet exists
         onRegisterAction(() => {
