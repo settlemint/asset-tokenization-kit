@@ -21,6 +21,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { orpc } from "@/orpc";
+import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
@@ -41,8 +42,15 @@ import { SystemCreateMessagesSchema } from "./system.create.schema";
  * @returns transactionHash - The blockchain transaction hash for tracking
  */
 const CREATE_SYSTEM_MUTATION = portalGraphql(`
-  mutation CreateSystemMutation($address: String!, $from: String!) {
+  mutation CreateSystemMutation(
+    $verificationId: String
+    $challengeResponse: String!
+    $address: String!
+    $from: String!
+  ) {
     ATKSystemFactoryCreateSystem(
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
       address: $address
       from: $from
     ) {
@@ -60,8 +68,15 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
  * @returns transactionHash - The blockchain transaction hash for tracking
  */
 const BOOTSTRAP_SYSTEM_MUTATION = portalGraphql(`
-  mutation BootstrapSystemMutation($address: String!, $from: String!) {
+  mutation BootstrapSystemMutation(
+    $verificationId: String
+    $challengeResponse: String!
+    $address: String!
+    $from: String!
+  ) {
     IATKSystemBootstrap(
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
       address: $address
       from: $from
     ) {
@@ -100,6 +115,7 @@ const FIND_SYSTEM_FOR_TRANSACTION_QUERY = theGraphGraphql(`
  *
  * @param input.contract - The system factory contract address (defaults to standard address)
  * @param input.messages - Optional custom messages for localization
+ * @param input.verification - The verification code and type for the transaction
  *
  * @yields {TransactionEvent} Progress events during system creation and bootstrapping
  * @returns {AsyncGenerator} Generator that yields events and completes with the system contract address
@@ -133,7 +149,7 @@ export const create = onboardedRouter.system.create
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
-    const { contract } = input;
+    const { contract, verification } = input;
     const sender = context.auth.user;
 
     // Parse messages with defaults using Zod schema
@@ -158,7 +174,10 @@ export const create = onboardedRouter.system.create
     const createSystemVariables: VariablesOf<typeof CREATE_SYSTEM_MUTATION> = {
       address: contract,
       from: sender.wallet ?? "",
-      // ...(await handleChallenge(sender, verification)),
+      ...(await handleChallenge(sender, {
+        code: verification.verificationCode,
+        type: verification.verificationType,
+      })),
     };
 
     // Use the Portal client's mutate method that returns an async generator
@@ -247,6 +266,10 @@ export const create = onboardedRouter.system.create
     const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> = {
       address: system.id,
       from: sender.wallet ?? "",
+      ...(await handleChallenge(sender, {
+        code: verification.verificationCode,
+        type: verification.verificationType,
+      })),
     };
 
     // Track bootstrap transaction using the same async generator pattern

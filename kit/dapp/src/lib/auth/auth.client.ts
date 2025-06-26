@@ -18,6 +18,7 @@
 import { pincodeClient } from "@/lib/auth/plugins/pincode-plugin/client";
 import { secretCodesClient } from "@/lib/auth/plugins/secret-codes-plugin/client";
 import { twoFactorClient } from "@/lib/auth/plugins/two-factor/client";
+import { walletClient } from "@/lib/auth/plugins/wallet-plugin/client";
 import {
   adminClient,
   apiKeyClient,
@@ -130,5 +131,12 @@ export const authClient = createAuthClient({
      * - Verifying secret codes authentication
      */
     secretCodesClient(),
+
+    /**
+     * Wallet plugin for wallet authentication.
+     * Provides functionality for:
+     * - Generating a wallet
+     */
+    walletClient(),
   ],
 });

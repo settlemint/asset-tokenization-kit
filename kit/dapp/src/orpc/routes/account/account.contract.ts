@@ -12,48 +12,8 @@
  * @see {@link ./account.router} - Implementation router
  */
 
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { baseContract } from "../../procedures/base.contract";
-import { AccountCreateSchema } from "./routes/account.create.schema";
 import { AccountReadSchema, AccountSchema } from "./routes/account.read.schema";
-
-/**
- * Create a wallet account for the authenticated user.
- *
- * This endpoint creates a new wallet for the current authenticated user
- * using the SettleMint HD wallet infrastructure. Each user can only have
- * one wallet address, and attempting to create a second wallet will result
- * in a conflict error.
- *
- * @auth Required - User must be authenticated
- * @method POST
- * @endpoint /account/create
- *
- * @input AccountCreateSchema - User ID for wallet creation
- * @returns string - The created wallet address
- *
- * @throws CONFLICT - If user already has a wallet address
- * @throws PORTAL_ERROR - If wallet creation fails in the portal service
- *
- * @example
- * ```typescript
- * // Create wallet for current user
- * const walletAddress = await client.account.create({
- *   userId: currentUser.id
- * });
- * console.log(`Wallet created: ${walletAddress}`);
- * ```
- */
-const create = baseContract
-  .route({
-    method: "POST",
-    path: "/account/create",
-    description: "Create a wallet account for the user",
-    successDescription: "Wallet address created successfully",
-    tags: ["account"],
-  })
-  .input(AccountCreateSchema)
-  .output(ethereumAddress);
 
 /**
  * Read account information including identity claims.
@@ -128,7 +88,6 @@ const me = baseContract
  * - verify: Verify identity claims
  */
 export const accountContract = {
-  create,
   read,
   me,
 };

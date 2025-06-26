@@ -16,6 +16,7 @@ describe("userRoles", () => {
       expect(validator.parse("admin") as string).toBe("admin");
       expect(validator.parse("investor") as string).toBe("investor");
       expect(validator.parse("issuer") as string).toBe("issuer");
+      expect(validator.parse(undefined) as string).toBe("investor");
     });
   });
 
@@ -31,7 +32,6 @@ describe("userRoles", () => {
     it("should reject non-string types", () => {
       expect(() => validator.parse(123)).toThrow();
       expect(() => validator.parse(null)).toThrow();
-      expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
       expect(() => validator.parse([])).toThrow();
     });
@@ -97,7 +97,6 @@ describe("getUserRole function", () => {
       expect(() => getUserRole("")).toThrow();
       expect(() => getUserRole(123)).toThrow();
       expect(() => getUserRole(null)).toThrow();
-      expect(() => getUserRole(undefined)).toThrow();
       expect(() => getUserRole({})).toThrow();
       expect(() => getUserRole("Admin")).toThrow();
       expect(() => getUserRole("USER")).toThrow();

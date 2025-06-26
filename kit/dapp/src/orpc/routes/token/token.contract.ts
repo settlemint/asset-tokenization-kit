@@ -59,7 +59,7 @@ const read = baseContract
 const mint = baseContract
   .route({
     method: "POST",
-    path: "/token/{id}/mint",
+    path: "/token/{contract}/mint",
     description: "Mint tokens",
     successDescription: "Tokens minted",
     tags: ["token"],

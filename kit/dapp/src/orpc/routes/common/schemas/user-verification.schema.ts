@@ -14,5 +14,5 @@ export const UserVerificationSchema = z.object({
   /**
    * The verification type
    */
-  verificationType: verificationType,
+  verificationType: verificationType.default("pincode"),
 });

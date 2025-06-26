@@ -1,8 +1,7 @@
 import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
-import { orpc } from "@/orpc";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -13,46 +12,35 @@ interface WalletStepProps {
 }
 
 export function WalletStep({ onRegisterAction }: WalletStepProps) {
-  const { data: user, refetch: refetchUser } = useQuery(
-    orpc.user.me.queryOptions()
-  );
+  const { data: session } = authClient.useSession();
   const { sessionKey } = useContext(AuthQueryContext);
   const { t } = useTranslation(["onboarding", "general"]);
   const [justGenerated, setJustGenerated] = useState(false);
 
+  const user = session?.user;
   const hasWallet = !!user?.wallet;
 
-  const { mutate: generateWallet, isPending } = useMutation(
-    orpc.account.create.mutationOptions({
-      onSuccess: async () => {
-        toast.success(t("onboarding:wallet.generated"));
-        await authClient.getSession({
-          query: {
-            disableCookieCache: true,
-          },
-        });
-        void queryClient.invalidateQueries({
-          queryKey: sessionKey,
-        });
-        await refetchUser();
-        setJustGenerated(true);
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    })
-  );
+  const { mutate: generateWallet, isPending } = useMutation({
+    mutationFn: () =>
+      authClient.wallet({
+        messages: {
+          walletAlreadyExists: t("onboarding:wallet.already-exists"),
+          walletCreationFailed: t("onboarding:wallet.creation-failed"),
+        },
+      }),
+    onSuccess: () => {
+      toast.success(t("onboarding:wallet.generated"));
+      void queryClient.invalidateQueries({
+        queryKey: sessionKey,
+      });
+      setJustGenerated(true);
+    },
+  });
 
   // Handle generate wallet
   const handleGenerateWallet = () => {
     if (user?.id && !isPending && !hasWallet) {
-      generateWallet({
-        messages: {
-          walletCreated: t("onboarding:wallet.generated"),
-          walletAlreadyExists: t("onboarding:wallet.already-exists"),
-          walletCreationFailed: t("onboarding:wallet.creation-failed"),
-        },
-      });
+      generateWallet();
     }
   };
 

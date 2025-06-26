@@ -4,7 +4,7 @@ import {
   verifyTwoFactorOTP,
 } from "@/lib/auth/plugins/two-factor/queries";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import type { GenericEndpointContext } from "better-auth";
+import type { BetterAuthPlugin, GenericEndpointContext } from "better-auth";
 import {
   APIError,
   createAuthEndpoint,
@@ -210,5 +210,14 @@ export const twoFactor = () => {
         }
       ),
     },
-  };
+    rateLimit: [
+      {
+        pathMatcher(path) {
+          return path.startsWith("/two-factor/");
+        },
+        window: 10,
+        max: 3,
+      },
+    ],
+  } satisfies BetterAuthPlugin;
 };

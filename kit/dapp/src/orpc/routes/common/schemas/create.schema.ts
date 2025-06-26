@@ -28,6 +28,7 @@
  */
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { z } from "zod/v4";
 
 export const CreateSchema = z.object({
@@ -56,12 +57,5 @@ export const CreateSchema = z.object({
    * - secret-code: Uses a secret code for enhanced security
    * - two-factor: Uses time-based one-time passwords (TOTP)
    */
-  // verification: z
-  //   .object({
-  //     code: verificationCode,
-  //     type: verificationType.default("pincode"),
-  //   })
-  //   .describe(
-  //     "The two factor authentication to authorize signing of the transaction"
-  //   ),
+  verification: UserVerificationSchema,
 });
