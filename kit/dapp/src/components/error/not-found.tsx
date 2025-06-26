@@ -46,12 +46,11 @@ import type { ReactNode } from "react";
  * ```
  */
 export function NotFound({ children }: { children?: ReactNode }) {
-  const description =
-    typeof children === "string"
-      ? children
-      : children
-        ? "The page you are looking for does not exist."
-        : "The page you are looking for does not exist.";
+  // If children is provided as a string, use it as the description
+  // If children is a ReactNode (JSX), render it directly in the ErrorDisplay
+  // If no children, use the default message
+  const defaultDescription = "The page you are looking for does not exist.";
+  const description = typeof children === "string" ? children : children ? undefined : defaultDescription;
 
   return (
     <div className="relative flex flex-col w-full justify-center min-h-[50vh] p-6 md:p-10">
@@ -59,10 +58,16 @@ export function NotFound({ children }: { children?: ReactNode }) {
         <ErrorCodeDisplay errorCode="404" />
         <ErrorDisplay
           title="Page not found"
-          description={description}
+          description={description || defaultDescription}
           errorCode="404"
           showRetry={false}
         />
+        {/* Render non-string children as custom content below the error display */}
+        {children && typeof children !== "string" && (
+          <div className="mt-6 text-center">
+            {children}
+          </div>
+        )}
       </div>
     </div>
   );
