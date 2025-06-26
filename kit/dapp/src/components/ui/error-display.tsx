@@ -38,7 +38,7 @@ export function ErrorDisplay({
   showHome = true,
 }: ErrorDisplayProps) {
   const { t } = useTranslation("general");
-  
+
   return (
     <div className="relative text-center z-[1] pt-32 sm:pt-52">
       <h1 className="text-balance text-5xl font-semibold tracking-tight text-foreground sm:text-7xl">

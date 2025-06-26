@@ -36,7 +36,6 @@ export function ThemeToggle({
   const { setTheme, resolvedTheme, themes } = useTheme();
   const { t } = useTranslation("theme");
 
-
   // Show skeleton during SSR to prevent hydration mismatch
   if (!mounted) {
     return null;

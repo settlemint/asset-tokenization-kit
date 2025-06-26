@@ -45,7 +45,6 @@ export function LanguageSwitcher({
   const { i18n, t } = useTranslation("language");
   const [isPending, setIsPending] = useState(false);
 
-
   // Show skeleton during SSR to prevent hydration mismatch
   if (!mounted) {
     return null;

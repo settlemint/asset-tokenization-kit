@@ -2,7 +2,7 @@ import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
-import { forwardRef, useEffect } from "react";
+import { forwardRef, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 interface SystemStepProps {
@@ -30,7 +30,7 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
   const isDeploying = isCreatingSystem || isTracking;
 
   // Handle deploy system when button is clicked
-  const handleDeploySystem = () => {
+  const handleDeploySystem = useCallback(() => {
     if (!hasSystem && !isDeploying) {
       createSystem({
         // TODO: add user pincode
@@ -70,14 +70,14 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
         },
       });
     }
-  };
+  }, [hasSystem, isDeploying, createSystem, t]);
 
   // Register the action with parent when conditions change
   useEffect(() => {
     if (onRegisterAction && !hasSystem) {
       onRegisterAction(handleDeploySystem);
     }
-  }, [onRegisterAction, hasSystem]);
+  }, [onRegisterAction, hasSystem, handleDeploySystem]);
 
   // Define Circle component
   const Circle = forwardRef<

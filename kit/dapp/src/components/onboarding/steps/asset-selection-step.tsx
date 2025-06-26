@@ -21,7 +21,7 @@ import {
   PiggyBank,
   Wallet,
 } from "lucide-react";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -85,7 +85,7 @@ export function AssetSelectionStep({
     },
   });
 
-  const handleDeployFactories = () => {
+  const handleDeployFactories = useCallback(() => {
     if (!systemAddress || !systemDetails?.tokenFactoryRegistry) {
       toast.error(t("assets.no-system"));
       return;
@@ -151,7 +151,13 @@ export function AssetSelectionStep({
         indexingTimeout: t("assets.factory-messages.indexing-timeout"),
       },
     });
-  };
+  }, [
+    systemAddress,
+    systemDetails?.tokenFactoryRegistry,
+    t,
+    form,
+    createFactories,
+  ]);
 
   // Use all available token types from the enum
   const availableAssets = TokenTypeEnum.options;
@@ -163,7 +169,7 @@ export function AssetSelectionStep({
     if (onRegisterAction && !hasDeployedAssets) {
       onRegisterAction(handleDeployFactories);
     }
-  }, [onRegisterAction, hasDeployedAssets]);
+  }, [onRegisterAction, hasDeployedAssets, handleDeployFactories]);
 
   return (
     <div className="h-full flex flex-col">

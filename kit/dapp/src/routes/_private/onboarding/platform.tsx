@@ -43,7 +43,7 @@ function PlatformOnboarding() {
   const { systemAddress, systemDetails } = Route.useLoaderData();
 
   const user = session?.user;
-  
+
   // Determine initial step based on what's completed
   const getInitialStep = () => {
     if (!user?.initialOnboardingFinished) return "wallet";
