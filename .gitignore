@@ -57,3 +57,4 @@ kit/charts/atk/charts/besu-network/charts/besu-genesis/files/genesis-output.json
 
 kit/contracts/scripts/hardhat/abi/
 kit/dapp/src/lib/settlemint/
+kit/dapp-v1

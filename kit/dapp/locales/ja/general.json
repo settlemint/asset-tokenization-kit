@@ -3,5 +3,100 @@
   "appName": "アセットトークン化キット",
   "generating": "生成中...",
   "deploying": "デプロイ中...",
-  "continue": "続ける"
+  "continue": "続ける",
+  "errors": {
+    "unauthorized": {
+      "title": "認証が必要です",
+      "description": "続行するにはサインインしてください。"
+    },
+    "forbidden": {
+      "title": "アクセスが拒否されました",
+      "description": "このリソースにアクセスする権限がありません。"
+    },
+    "notFound": {
+      "title": "ページが見つかりません",
+      "description": "お探しのページは存在しないか、移動されました。"
+    },
+    "validation": {
+      "title": "検証エラー",
+      "description": "入力内容を確認してもう一度お試しください。"
+    },
+    "rateLimit": {
+      "title": "リクエストが多すぎます",
+      "description": "リクエストが多すぎます。しばらくお待ちいただいてから再度お試しください。"
+    },
+    "transaction": {
+      "title": "トランザクションが失敗しました",
+      "description": "トランザクションを完了できませんでした。もう一度お試しください。"
+    },
+    "timeout": {
+      "title": "リクエストタイムアウト",
+      "description": "リクエストの完了に時間がかかりすぎました。もう一度お試しください。"
+    },
+    "portal": {
+      "title": "ポータルエラー",
+      "description": "ポータルサービスへの接続中にエラーが発生しました。"
+    },
+    "internal": {
+      "title": "内部サーバーエラー",
+      "description": "サーバーでエラーが発生しました。後でもう一度お試しください。"
+    },
+    "blockchain": {
+      "title": "ブロックチェーンエラー",
+      "description": "ブロックチェーンとの対話中にエラーが発生しました。"
+    },
+    "contract": {
+      "title": "スマートコントラクトエラー",
+      "description": "スマートコントラクトの操作に失敗しました。"
+    },
+    "insufficientFunds": {
+      "title": "残高不足",
+      "description": "アカウントに十分な資金がありません。"
+    },
+    "network": {
+      "title": "ネットワークエラー",
+      "description": "ネットワークに接続できません。接続を確認してください。"
+    },
+    "badRequest": {
+      "title": "不正なリクエスト",
+      "description": "リクエストが無効であるか、処理できません。"
+    },
+    "conflict": {
+      "title": "競合エラー",
+      "description": "リクエストが現在の状態と競合しています。"
+    },
+    "badGateway": {
+      "title": "不正なゲートウェイ",
+      "description": "サーバーが無効な応答を受信しました。もう一度お試しください。"
+    },
+    "serviceUnavailable": {
+      "title": "サービス利用不可",
+      "description": "サービスが一時的に利用できません。後でもう一度お試しください。"
+    },
+    "gatewayTimeout": {
+      "title": "ゲートウェイタイムアウト",
+      "description": "サーバーが時間内に応答しませんでした。もう一度お試しください。"
+    },
+    "generic": {
+      "title": "予期しないエラー",
+      "description": "予期しないエラーが発生しました。もう一度お試しください。"
+    },
+    "notOnboarded": {
+      "title": "オンボーディングが必要です",
+      "description": "続行するにはオンボーディングプロセスを完了してください。"
+    },
+    "systemNotCreated": {
+      "title": "システムが初期化されていません",
+      "description": "システムが初期化されていません。管理者にお問い合わせください。"
+    },
+    "resourceAlreadyExists": {
+      "title": "リソースは既に存在します",
+      "description": "作成しようとしているリソースは既に存在します。"
+    },
+    "buttons": {
+      "tryAgain": "もう一度試す",
+      "goBack": "戻る",
+      "goHome": "ホームへ"
+    }
+  }
 }

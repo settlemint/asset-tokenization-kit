@@ -3,5 +3,100 @@
   "appName": "Asset-Tokenisierungs-Kit",
   "generating": "Generiere...",
   "deploying": "Bereitstellen...",
-  "continue": "Fortfahren"
+  "continue": "Fortfahren",
+  "errors": {
+    "unauthorized": {
+      "title": "Authentifizierung erforderlich",
+      "description": "Bitte melden Sie sich an, um fortzufahren."
+    },
+    "forbidden": {
+      "title": "Zugriff verweigert",
+      "description": "Sie haben keine Berechtigung, auf diese Ressource zuzugreifen."
+    },
+    "notFound": {
+      "title": "Seite nicht gefunden",
+      "description": "Die gesuchte Seite existiert nicht oder wurde verschoben."
+    },
+    "validation": {
+      "title": "Validierungsfehler",
+      "description": "Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut."
+    },
+    "rateLimit": {
+      "title": "Zu viele Anfragen",
+      "description": "Sie haben zu viele Anfragen gestellt. Bitte warten Sie einen Moment und versuchen Sie es erneut."
+    },
+    "transaction": {
+      "title": "Transaktion fehlgeschlagen",
+      "description": "Die Transaktion konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut."
+    },
+    "timeout": {
+      "title": "Anfrage-Zeitüberschreitung",
+      "description": "Die Anfrage dauerte zu lange. Bitte versuchen Sie es erneut."
+    },
+    "portal": {
+      "title": "Portal-Fehler",
+      "description": "Es gab einen Fehler bei der Verbindung zum Portal-Dienst."
+    },
+    "internal": {
+      "title": "Interner Serverfehler",
+      "description": "Der Server hat einen Fehler festgestellt. Bitte versuchen Sie es später erneut."
+    },
+    "blockchain": {
+      "title": "Blockchain-Fehler",
+      "description": "Es gab einen Fehler bei der Interaktion mit der Blockchain."
+    },
+    "contract": {
+      "title": "Smart Contract-Fehler",
+      "description": "Die Smart Contract-Operation ist fehlgeschlagen."
+    },
+    "insufficientFunds": {
+      "title": "Unzureichende Mittel",
+      "description": "Ihr Konto verfügt nicht über genügend Mittel, um diese Operation abzuschließen."
+    },
+    "network": {
+      "title": "Netzwerkfehler",
+      "description": "Verbindung zum Netzwerk nicht möglich. Bitte überprüfen Sie Ihre Verbindung."
+    },
+    "badRequest": {
+      "title": "Fehlerhafte Anfrage",
+      "description": "Die Anfrage war ungültig oder kann nicht verarbeitet werden."
+    },
+    "conflict": {
+      "title": "Konfliktfehler",
+      "description": "Die Anfrage steht im Konflikt mit dem aktuellen Zustand."
+    },
+    "badGateway": {
+      "title": "Fehlerhaftes Gateway",
+      "description": "Der Server erhielt eine ungültige Antwort. Bitte versuchen Sie es erneut."
+    },
+    "serviceUnavailable": {
+      "title": "Dienst nicht verfügbar",
+      "description": "Der Dienst ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut."
+    },
+    "gatewayTimeout": {
+      "title": "Gateway-Zeitüberschreitung",
+      "description": "Der Server antwortete nicht rechtzeitig. Bitte versuchen Sie es erneut."
+    },
+    "generic": {
+      "title": "Unerwarteter Fehler",
+      "description": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+    },
+    "notOnboarded": {
+      "title": "Onboarding erforderlich",
+      "description": "Bitte schließen Sie den Onboarding-Prozess ab, um fortzufahren."
+    },
+    "systemNotCreated": {
+      "title": "System nicht initialisiert",
+      "description": "Das System wurde nicht initialisiert. Bitte kontaktieren Sie einen Administrator."
+    },
+    "resourceAlreadyExists": {
+      "title": "Ressource existiert bereits",
+      "description": "Die Ressource, die Sie erstellen möchten, existiert bereits."
+    },
+    "buttons": {
+      "tryAgain": "Erneut versuchen",
+      "goBack": "Zurück",
+      "goHome": "Zur Startseite"
+    }
+  }
 }

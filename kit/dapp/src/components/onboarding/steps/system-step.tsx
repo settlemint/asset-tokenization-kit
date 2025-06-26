@@ -13,7 +13,7 @@ import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
@@ -91,11 +91,11 @@ export function SystemStep({
   }, [invalidateSetting]);
 
   // Handle deploy system when button is clicked
-  const handleDeploySystem = () => {
+  const handleDeploySystem = useCallback(() => {
     if (!hasSystem && !isDeploying) {
       setShowPincodePrompt(true);
     }
-  };
+  }, [hasSystem, isDeploying]);
 
   // Handle pincode submission
   const handlePincodeSubmit = (values: PincodeFormValues) => {

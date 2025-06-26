@@ -88,7 +88,7 @@ function PlatformOnboarding() {
       id: "wallet",
       title: "Generate Wallet",
       description: "Create your secure blockchain wallet",
-      status: user.wallet
+      status: user?.initialOnboardingFinished
         ? "completed"
         : currentStepId === "wallet"
           ? "active"
@@ -162,7 +162,11 @@ function PlatformOnboarding() {
 
   const handleNext = () => {
     // Check if current step needs special action
-    if (currentStepId === "wallet" && !user.wallet && walletActionRef.current) {
+    if (
+      currentStepId === "wallet" &&
+      !user?.initialOnboardingFinished &&
+      walletActionRef.current
+    ) {
       walletActionRef.current();
       return;
     }
@@ -276,7 +280,7 @@ function PlatformOnboarding() {
 
   // Determine button labels
   const getNextLabel = () => {
-    if (currentStepId === "wallet" && !user.wallet) {
+    if (currentStepId === "wallet" && !user?.initialOnboardingFinished) {
       return "Generate Wallet";
     }
     if (currentStepId === "wallet" && user.wallet) {

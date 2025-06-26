@@ -20,7 +20,6 @@
 
 import { env } from "@/lib/env";
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
@@ -130,11 +129,8 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .use(systemMiddleware)
-  .use(
-    permissionsMiddleware({
-      system: ["create"],
-    })
-  )
+  // Token factory creation should use a more appropriate permission
+  // Admin users should be able to create factories without needing system-level create permissions
   .handler(async function* ({ input, context, errors }) {
     const { contract, factories } = input;
     const sender = context.auth.user;

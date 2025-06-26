@@ -1,18 +1,5 @@
 # CLAUDE.md
 
-This file provides project-specific guidance to Claude Code when working with
-this repository. Claude Code reads this file automatically at startup to
-understand project conventions, architecture, and workflows.
-
-## Memory Management Notes
-
-- This file is for team-shared project instructions
-- Use clear, specific instructions (e.g., "Use 2-space indentation" not "format
-  nicely")
-- Organize with descriptive headings and bullet points
-- Review and update regularly as the project evolves
-- Can import other files with `@path/to/file` syntax
-
 ## Claude Code Persona and Role
 
 You are Claude Code, acting as a **Senior Full-Stack Developer** with expertise
@@ -108,6 +95,8 @@ When encountering uncertainty:
 
 ## Claude Code Best Practices
 
+- Start by reading the `.cursor/rules/*.mdc` files to understand the general
+  guidelines for working in this project
 - Always read entire files. Otherwise, you don’t know what you don’t know, and
   will end up making mistakes, duplicating code that already exists, or
   misunderstanding the architecture.

@@ -3,5 +3,100 @@
   "appName": "Asset Tokenization Kit",
   "generating": "Generating...",
   "deploying": "Deploying...",
-  "continue": "Continue"
+  "continue": "Continue",
+  "errors": {
+    "unauthorized": {
+      "title": "Authentication required",
+      "description": "Please sign in to continue."
+    },
+    "forbidden": {
+      "title": "Access denied",
+      "description": "You don't have permission to access this resource."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist or has been moved."
+    },
+    "validation": {
+      "title": "Validation error",
+      "description": "Please check your input and try again."
+    },
+    "rateLimit": {
+      "title": "Too many requests",
+      "description": "You've made too many requests. Please wait a moment and try again."
+    },
+    "transaction": {
+      "title": "Transaction failed",
+      "description": "The transaction could not be completed. Please try again."
+    },
+    "timeout": {
+      "title": "Request timeout",
+      "description": "The request took too long to complete. Please try again."
+    },
+    "portal": {
+      "title": "Portal error",
+      "description": "There was an error connecting to the portal service."
+    },
+    "internal": {
+      "title": "Internal server error",
+      "description": "The server encountered an error. Please try again later."
+    },
+    "blockchain": {
+      "title": "Blockchain error",
+      "description": "There was an error interacting with the blockchain."
+    },
+    "contract": {
+      "title": "Smart contract error",
+      "description": "The smart contract operation failed."
+    },
+    "insufficientFunds": {
+      "title": "Insufficient funds",
+      "description": "Your account does not have enough funds to complete this operation."
+    },
+    "network": {
+      "title": "Network error",
+      "description": "Unable to connect to the network. Please check your connection."
+    },
+    "badRequest": {
+      "title": "Bad request",
+      "description": "The request was invalid or cannot be processed."
+    },
+    "conflict": {
+      "title": "Conflict error",
+      "description": "The request conflicts with the current state."
+    },
+    "badGateway": {
+      "title": "Bad gateway",
+      "description": "The server received an invalid response. Please try again."
+    },
+    "serviceUnavailable": {
+      "title": "Service unavailable",
+      "description": "The service is temporarily unavailable. Please try again later."
+    },
+    "gatewayTimeout": {
+      "title": "Gateway timeout",
+      "description": "The server did not respond in time. Please try again."
+    },
+    "generic": {
+      "title": "Unexpected error",
+      "description": "An unexpected error occurred. Please try again."
+    },
+    "notOnboarded": {
+      "title": "Onboarding required",
+      "description": "Please complete the onboarding process to continue."
+    },
+    "systemNotCreated": {
+      "title": "System not initialized",
+      "description": "The system has not been initialized. Please contact an administrator."
+    },
+    "resourceAlreadyExists": {
+      "title": "Resource already exists",
+      "description": "The resource you're trying to create already exists."
+    },
+    "buttons": {
+      "tryAgain": "Try Again",
+      "goBack": "Go back",
+      "goHome": "Go home"
+    }
+  }
 }
