@@ -2,7 +2,7 @@ import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 import { useMutation } from "@tanstack/react-query";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -18,16 +18,21 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
   const [justGenerated, setJustGenerated] = useState(false);
 
   const user = session?.user;
-  const hasWallet = !!user?.wallet;
+  const hasWallet = !!user?.initialOnboardingFinished;
 
   const { mutate: generateWallet, isPending } = useMutation({
-    mutationFn: () =>
-      authClient.wallet({
+    mutationFn: async () => {
+      await authClient.wallet({
         messages: {
           walletAlreadyExists: t("onboarding:wallet.already-exists"),
           walletCreationFailed: t("onboarding:wallet.creation-failed"),
         },
-      }),
+      });
+      // TODO: Remove this once we have a proper pincode setup flow
+      await authClient.pincode.enable({
+        pincode: "111111",
+      });
+    },
     onSuccess: () => {
       toast.success(t("onboarding:wallet.generated"));
       void queryClient.invalidateQueries({
@@ -38,11 +43,11 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
   });
 
   // Handle generate wallet
-  const handleGenerateWallet = () => {
-    if (user?.id && !isPending && !hasWallet) {
+  const handleGenerateWallet = useCallback(() => {
+    if (!isPending && !hasWallet) {
       generateWallet();
     }
-  };
+  }, [isPending, hasWallet, generateWallet]);
 
   // Register the action with parent
   useEffect(() => {
@@ -56,7 +61,7 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
         });
       }
     }
-  }, [onRegisterAction, hasWallet]);
+  }, [onRegisterAction, hasWallet, handleGenerateWallet]);
 
   // Don't auto-advance - removed the auto success callback
 
