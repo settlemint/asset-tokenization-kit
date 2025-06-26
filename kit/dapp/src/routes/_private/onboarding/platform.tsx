@@ -9,7 +9,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/platform")({
@@ -52,8 +52,19 @@ function PlatformOnboarding() {
     return "assets"; // Default to last step if all complete
   };
 
-  // Initialize with the correct step based on loader data
-  const [currentStepId, setCurrentStepId] = useState(getInitialStep);
+  // Initialize with "wallet" as default, will update when session data loads
+  const [currentStepId, setCurrentStepId] = useState("wallet");
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  // Update the current step when session data becomes available
+  useEffect(() => {
+    // Only update if we haven't initialized yet and session data is loaded
+    if (!hasInitialized && session !== undefined) {
+      const initialStep = getInitialStep();
+      setCurrentStepId(initialStep);
+      setHasInitialized(true);
+    }
+  }, [session, user?.initialOnboardingFinished, systemAddress, systemDetails?.tokenFactories.length, hasInitialized]);
 
   // Define steps with dynamic statuses
   const steps: Step[] = [
