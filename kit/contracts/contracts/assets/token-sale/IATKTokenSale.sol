@@ -2,13 +2,13 @@
 pragma solidity ^0.8.28;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { ISMART } from "../../interface/ISMART.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
 
-/// @title ISMARTTokenSale Interface
-/// @notice This interface defines the functions, events, and errors for a SMART token sale.
+/// @title IATKTokenSale Interface
+/// @notice This interface defines the functions, events, and errors for an ATK token sale.
 /// @dev The token sale contract enables compliant sales of SMART tokens for various payment currencies,
 /// with flexible pricing mechanisms and regulatory controls.
-interface ISMARTTokenSale {
+interface IATKTokenSale {
     // --- Custom Errors ---
 
     /// @notice Thrown when an operation cannot proceed because the sale has not started yet
@@ -48,44 +48,44 @@ interface ISMARTTokenSale {
 
     /// @notice Emitted when a buyer successfully purchases tokens
     /// @param buyer The address of the buyer
-    /// @param paymentCurrency The address of the currency used for payment
+    /// @param paymentCurrency The address of the payment currency used (address(0) for native currency)
     /// @param paymentAmount The amount of payment currency spent
     /// @param tokenAmount The amount of tokens purchased
     event TokensPurchased(
         address indexed buyer, address indexed paymentCurrency, uint256 paymentAmount, uint256 tokenAmount
     );
 
-    /// @notice Emitted when tokens are withdrawn by a buyer after a vesting period
+    /// @notice Emitted when a buyer withdraws their vested tokens
     /// @param buyer The address of the buyer
     /// @param amount The amount of tokens withdrawn
     event TokensWithdrawn(address indexed buyer, uint256 amount);
 
     /// @notice Emitted when the sale status is updated
-    /// @param newStatus The new status of the sale (e.g., setup, active, paused, ended)
+    /// @param newStatus The new status of the sale
     event SaleStatusUpdated(uint8 newStatus);
 
     /// @notice Emitted when sale parameters are updated
-    /// @param operator The address that initiated the update
+    /// @param operator The address that updated the parameters
     event SaleParametersUpdated(address indexed operator);
 
-    /// @notice Emitted when funds from the sale are withdrawn by the issuer
-    /// @param recipient The address receiving the funds
-    /// @param currency The address of the currency withdrawn
+    /// @notice Emitted when funds are withdrawn from the sale
+    /// @param recipient The address that received the funds
+    /// @param currency The address of the currency withdrawn (address(0) for native currency)
     /// @param amount The amount withdrawn
     event FundsWithdrawn(address indexed recipient, address indexed currency, uint256 amount);
 
-    /// @notice Emitted when a payment currency is added to the list of accepted currencies
+    /// @notice Emitted when a payment currency is added
     /// @param currency The address of the currency added
-    /// @param priceRatio The price ratio for the currency (token price relative to base price)
+    /// @param priceRatio The price ratio for the currency
     event PaymentCurrencyAdded(address indexed currency, uint256 priceRatio);
 
-    /// @notice Emitted when a payment currency is removed from the list of accepted currencies
+    /// @notice Emitted when a payment currency is removed
     /// @param currency The address of the currency removed
     event PaymentCurrencyRemoved(address indexed currency);
 
-    // --- Sale Management Functions ---
+    // --- Configuration Functions (Admin) ---
 
-    /// @notice Initializes the token sale with basic parameters
+    /// @notice Initializes the token sale contract
     /// @param tokenAddress The address of the SMART token being sold
     /// @param saleStart Timestamp when the sale starts
     /// @param saleDuration Duration of the sale in seconds

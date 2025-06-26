@@ -5,26 +5,27 @@ import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/I
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import { ISMARTIdentityRegistry } from "../../contracts/interface/ISMARTIdentityRegistry.sol";
-import { ISMARTTokenSale } from "../../contracts/assets/token-sale/ISMARTTokenSale.sol";
-import { ISMART } from "../../contracts/interface/ISMART.sol";
-import { MockedSMARTToken } from "./MockedSMARTToken.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
+import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
+import { IATKTokenSale } from "./IATKTokenSale.sol";
 
-/// @title SMARTTokenSaleTestable
-/// @notice Test version of SMARTTokenSale that bypasses ERC2771Context for testing
+/// @title ATKTokenSale
+/// @notice Implementation of the token sale module for SMART tokens in the ATK ecosystem
 /// @dev This contract handles the compliant sale of SMART tokens with various payment methods and compliance checks
-contract SMARTTokenSaleTestable is
-    ISMARTTokenSale,
+contract ATKTokenSale is
+    IATKTokenSale,
     Initializable,
     ReentrancyGuardUpgradeable,
     AccessControlUpgradeable,
-    PausableUpgradeable
+    PausableUpgradeable,
+    ERC2771ContextUpgradeable
 {
     using SafeERC20 for IERC20;
     using Math for uint256;
@@ -86,8 +87,8 @@ contract SMARTTokenSaleTestable is
 
     // --- State Variables ---
 
-    /// @notice The token being sold (using MockedSMARTToken for testing)
-    MockedSMARTToken private _token;
+    /// @notice The SMART token being sold
+    ISMART public token;
 
     /// @notice Current status of the sale
     SaleStatus public status;
@@ -159,11 +160,12 @@ contract SMARTTokenSaleTestable is
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        // Don't disable initializers for testing to allow direct initialization
+    /// @param forwarder The address of the forwarder contract for ERC2771
+    constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
+        _disableInitializers();
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function initialize(
         address tokenAddress,
         uint256 saleStart,
@@ -186,7 +188,7 @@ contract SMARTTokenSaleTestable is
         _grantRole(FUNDS_MANAGER_ROLE, _msgSender());
 
         // Setup token sale parameters
-        _token = MockedSMARTToken(tokenAddress);
+        token = ISMART(tokenAddress);
         saleStartTime = saleStart;
         saleEndTime = saleStart + saleDuration;
         hardCap = hardCap_;
@@ -194,13 +196,13 @@ contract SMARTTokenSaleTestable is
         status = SaleStatus.SETUP;
 
         // Default purchase limits
-        minPurchase = 1 * 10 ** _token.decimals(); // 1 token
+        minPurchase = 1 * 10 ** token.decimals(); // 1 token
         maxPurchase = hardCap_; // No limit by default
 
         emit SaleParametersUpdated(_msgSender());
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function configureVesting(
         uint256 vestingStart,
         uint256 vestingDuration,
@@ -218,7 +220,7 @@ contract SMARTTokenSaleTestable is
         emit SaleParametersUpdated(_msgSender());
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function addPaymentCurrency(address currency, uint256 priceRatio) external onlyRole(SALE_ADMIN_ROLE) {
         if (currency == address(0)) revert Unauthorized();
         if (priceRatio == 0) revert InvalidPriceCalculation();
@@ -228,7 +230,7 @@ contract SMARTTokenSaleTestable is
         emit PaymentCurrencyAdded(currency, priceRatio);
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function removePaymentCurrency(address currency) external onlyRole(SALE_ADMIN_ROLE) {
         if (!paymentCurrencies[currency].accepted) revert UnsupportedPaymentCurrency();
 
@@ -237,7 +239,7 @@ contract SMARTTokenSaleTestable is
         emit PaymentCurrencyRemoved(currency);
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function setPurchaseLimits(uint256 minPurchase_, uint256 maxPurchase_) external onlyRole(SALE_ADMIN_ROLE) {
         if (minPurchase_ > maxPurchase_) revert InvalidPriceCalculation();
 
@@ -247,12 +249,12 @@ contract SMARTTokenSaleTestable is
         emit SaleParametersUpdated(_msgSender());
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function activateSale() external onlyRole(SALE_ADMIN_ROLE) {
         if (status == SaleStatus.ENDED) revert SaleEnded();
 
         // Check that the sale has sufficient token balance before activation
-        uint256 tokenBalance = _token.balanceOf(address(this));
+        uint256 tokenBalance = token.balanceOf(address(this));
         if (tokenBalance < hardCap) revert InsufficientTokenBalance();
 
         status = SaleStatus.ACTIVE;
@@ -260,14 +262,14 @@ contract SMARTTokenSaleTestable is
         emit SaleStatusUpdated(uint8(SaleStatus.ACTIVE));
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function pauseSale() external onlyRole(SALE_ADMIN_ROLE) onlyInStatus(SaleStatus.ACTIVE) {
         status = SaleStatus.PAUSED;
 
         emit SaleStatusUpdated(uint8(SaleStatus.PAUSED));
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function endSale() external onlyRole(SALE_ADMIN_ROLE) {
         if (status == SaleStatus.ENDED) revert SaleEnded();
 
@@ -276,7 +278,7 @@ contract SMARTTokenSaleTestable is
         emit SaleStatusUpdated(uint8(SaleStatus.ENDED));
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function buyTokens() external payable nonReentrant whenSaleOpen onlyEligibleBuyer returns (uint256 tokenAmount) {
         if (msg.value == 0) revert PurchaseAmountTooLow();
 
@@ -288,7 +290,7 @@ contract SMARTTokenSaleTestable is
         return tokenAmount;
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function buyTokensWithERC20(
         address currency,
         uint256 amount
@@ -313,7 +315,7 @@ contract SMARTTokenSaleTestable is
         return tokenAmount;
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function withdrawTokens() external nonReentrant returns (uint256 amount) {
         address buyer = _msgSender();
         PurchaseRecord storage purchase = purchases[buyer];
@@ -324,14 +326,14 @@ contract SMARTTokenSaleTestable is
         purchase.withdrawn += withdrawable;
 
         // Transfer tokens to buyer
-        _token.transfer(buyer, withdrawable);
+        token.transfer(buyer, withdrawable);
 
         emit TokensWithdrawn(buyer, withdrawable);
 
         return withdrawable;
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function withdrawFunds(
         address currency,
         address recipient
@@ -364,57 +366,18 @@ contract SMARTTokenSaleTestable is
         return amount;
     }
 
-    /// @inheritdoc ISMARTTokenSale
-    function withdrawableAmount(address buyer) public view returns (uint256) {
-        PurchaseRecord storage purchase = purchases[buyer];
-
-        if (!vesting.enabled) {
-            // No vesting - all purchased tokens are withdrawable immediately
-            return purchase.purchased - purchase.withdrawn;
-        }
-
-        // With vesting
-        if (block.timestamp < vesting.startTime + vesting.cliff) {
-            // Still in cliff period
-            return 0;
-        }
-
-        uint256 timeSinceStart = block.timestamp - vesting.startTime;
-        if (timeSinceStart >= vesting.duration) {
-            // Vesting period completed
-            return purchase.purchased - purchase.withdrawn;
-        }
-
-        // Partial vesting
-        uint256 vestedAmount = (purchase.purchased * timeSinceStart) / vesting.duration;
-        return vestedAmount - purchase.withdrawn;
-    }
-
-    /// @inheritdoc ISMARTTokenSale
-    function purchasedAmount(address buyer) external view returns (uint256) {
-        return purchases[buyer].purchased;
-    }
-
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function saleStatus() external view returns (uint8) {
         return uint8(status);
     }
 
-    /// @notice Calculate token amount based on payment currency and amount
-    /// @param currency Address of the payment currency (address(0) for native currency)
-    /// @param amount Amount of payment currency
-    /// @return Amount of tokens that can be purchased
-    function calculateTokenAmount(address currency, uint256 amount) external view returns (uint256) {
-        return _calculateTokenAmount(currency, amount);
-    }
-
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
     function getTokenPrice(address currency, uint256 amount) external view returns (uint256 price) {
         if (amount == 0) return 0;
 
         if (currency == address(0)) {
             // Price in native currency
-            price = (amount * basePrice) / 10 ** _token.decimals();
+            price = (amount * basePrice) / 10 ** token.decimals();
         } else {
             // Price in ERC20 tokens
             if (!paymentCurrencies[currency].accepted) revert UnsupportedPaymentCurrency();
@@ -425,13 +388,47 @@ contract SMARTTokenSaleTestable is
             // The priceRatio represents: (payment currency amount per token) * PRICE_SCALE
             // To calculate price: price = (amount * priceRatio * 10^currencyDecimals) / (PRICE_SCALE *
             // 10^tokenDecimals)
-            price = (amount * priceRatio * 10 ** currencyDecimals) / (PRICE_SCALE * 10 ** _token.decimals());
+            price = (amount * priceRatio * 10 ** currencyDecimals) / (PRICE_SCALE * 10 ** token.decimals());
         }
 
         return price;
     }
 
-    /// @inheritdoc ISMARTTokenSale
+    /// @inheritdoc IATKTokenSale
+    function purchasedAmount(address buyer) external view returns (uint256 purchased) {
+        return purchases[buyer].purchased;
+    }
+
+    /// @inheritdoc IATKTokenSale
+    function withdrawableAmount(address buyer) public view returns (uint256 withdrawable) {
+        PurchaseRecord memory purchase = purchases[buyer];
+        uint256 remaining = purchase.purchased - purchase.withdrawn;
+
+        if (remaining == 0) return 0;
+
+        if (!vesting.enabled) {
+            return remaining;
+        }
+
+        // If vesting is enabled, calculate withdrawable amount based on vesting schedule
+        if (block.timestamp < vesting.startTime + vesting.cliff) {
+            // Before cliff, nothing can be withdrawn
+            return 0;
+        }
+
+        if (block.timestamp >= vesting.startTime + vesting.duration) {
+            // After vesting period ends, all tokens can be withdrawn
+            return remaining;
+        }
+
+        // During vesting period, calculate the amount based on linear vesting
+        uint256 timeFromStart = block.timestamp - vesting.startTime;
+        uint256 vestedAmount = purchase.purchased * timeFromStart / vesting.duration;
+
+        return Math.min(vestedAmount - purchase.withdrawn, remaining);
+    }
+
+    /// @inheritdoc IATKTokenSale
     function getSaleInfo()
         external
         view
@@ -442,57 +439,63 @@ contract SMARTTokenSaleTestable is
         return (totalSold, remaining, saleStartTime, saleEndTime);
     }
 
-    /// @notice Internal function to check if a buyer is eligible
-    /// @param buyer The address to check eligibility for
-    /// @return true if the buyer is eligible, false otherwise
-    function _isEligibleBuyer(address buyer) internal view returns (bool) {
-        ISMARTIdentityRegistry identityRegistry = _token.identityRegistry();
-
-        // If identity registry is zero address (mock), always return true for testing
-        if (address(identityRegistry) == address(0)) {
-            return true;
-        }
-
-        uint256[] memory requiredTopics = _token.requiredClaimTopics();
-        return identityRegistry.isVerified(buyer, requiredTopics);
+    /// @notice Returns the address of the trusted forwarder
+    /// @return The address of the trusted forwarder
+    function _trustedForwarder() internal view virtual returns (address) {
+        return address(0); // Override in derived contract if needed
     }
 
-    /// @notice Internal function to calculate token amount based on payment
-    /// @param currency Address of the payment currency (address(0) for native currency)
-    /// @param amount Amount of payment currency
-    /// @return tokenAmount Amount of tokens that can be purchased
-    function _calculateTokenAmount(address currency, uint256 amount) internal view returns (uint256 tokenAmount) {
+    /// @notice Checks if a buyer is eligible to participate in the sale
+    /// @param buyer The address of the buyer to check
+    /// @return True if the buyer is eligible, false otherwise
+    function _isEligibleBuyer(address buyer) internal view returns (bool) {
+        // Get identity registry from the token
+        ISMARTIdentityRegistry registry = token.identityRegistry();
+
+        // Check if the buyer is verified in the identity registry
+        // For token sales, we typically require basic KYC verification
+        uint256[] memory requiredTopics = new uint256[](0); // Empty array means basic verification
+        return registry.isVerified(buyer, requiredTopics);
+    }
+
+    /// @notice Calculates the amount of tokens for a given payment amount
+    /// @param currency The address of the payment currency (address(0) for native currency)
+    /// @param paymentAmount The amount of payment currency
+    /// @return tokenAmount The amount of tokens that can be purchased
+    function _calculateTokenAmount(
+        address currency,
+        uint256 paymentAmount
+    )
+        internal
+        view
+        returns (uint256 tokenAmount)
+    {
+        if (paymentAmount == 0) return 0;
+
+        uint256 decimals = token.decimals();
+
         if (currency == address(0)) {
-            // Native currency - use base price directly
-            tokenAmount = (amount * PRICE_SCALE) / basePrice;
+            // Calculate for native currency
+            tokenAmount = (paymentAmount * 10 ** decimals) / basePrice;
         } else {
-            // ERC20 currency - use price ratio
-            PaymentCurrencyConfig storage config = paymentCurrencies[currency];
-            if (!config.accepted) revert UnsupportedPaymentCurrency();
+            // Calculate for ERC20 tokens
+            if (!paymentCurrencies[currency].accepted) revert UnsupportedPaymentCurrency();
 
-            // Adjust for token decimals
+            uint256 priceRatio = paymentCurrencies[currency].priceRatio;
             uint256 currencyDecimals = IERC20Metadata(currency).decimals();
-            uint256 tokenDecimals = _token.decimals();
 
-            // Calculate with proper decimal adjustment
-            uint256 adjustedAmount = amount;
-            if (currencyDecimals != tokenDecimals) {
-                if (currencyDecimals > tokenDecimals) {
-                    adjustedAmount = amount / (10 ** (currencyDecimals - tokenDecimals));
-                } else {
-                    adjustedAmount = amount * (10 ** (tokenDecimals - currencyDecimals));
-                }
-            }
-
-            tokenAmount = (adjustedAmount * PRICE_SCALE) / config.priceRatio;
+            // The priceRatio represents: (payment currency amount per token) * PRICE_SCALE
+            // To calculate tokens: tokenAmount = (paymentAmount * PRICE_SCALE * 10^tokenDecimals) / (priceRatio *
+            // 10^currencyDecimals)
+            tokenAmount = (paymentAmount * PRICE_SCALE * 10 ** decimals) / (priceRatio * 10 ** currencyDecimals);
         }
 
         return tokenAmount;
     }
 
-    /// @notice Internal function to process a purchase
+    /// @notice Processes a token purchase
     /// @param buyer The address of the buyer
-    /// @param currency The payment currency address
+    /// @param currency The address of the payment currency
     /// @param paymentAmount The amount of payment currency
     /// @param tokenAmount The amount of tokens to be purchased
     function _processPurchase(address buyer, address currency, uint256 paymentAmount, uint256 tokenAmount) internal {
@@ -519,26 +522,36 @@ contract SMARTTokenSaleTestable is
 
         // If no vesting, transfer tokens immediately; otherwise they'll be claimed later
         if (!vesting.enabled) {
-            _token.transfer(buyer, tokenAmount);
+            token.transfer(buyer, tokenAmount);
             purchase.withdrawn += tokenAmount;
         }
 
         emit TokensPurchased(buyer, currency, paymentAmount, tokenAmount);
     }
 
-    /// @dev Override to use standard Context instead of ERC2771Context for testing
-    function _msgSender() internal view override returns (address) {
-        return msg.sender;
+    /// @dev Required override for ERC2771ContextUpgradeable
+    function _contextSuffixLength()
+        internal
+        view
+        virtual
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
+        return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 
-    /// @dev Override to use standard Context instead of ERC2771Context for testing
-    function _msgData() internal view override returns (bytes calldata) {
-        return msg.data;
+    /// @dev Required override for ERC2771ContextUpgradeable
+    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
+        return ERC2771ContextUpgradeable._msgSender();
     }
 
-    /// @notice Returns the token being sold
-    /// @return The token contract as ISMART interface
-    function token() external view returns (ISMART) {
-        return ISMART(address(_token));
+    /// @dev Required override for ERC2771ContextUpgradeable
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
+        return ERC2771ContextUpgradeable._msgData();
     }
 }

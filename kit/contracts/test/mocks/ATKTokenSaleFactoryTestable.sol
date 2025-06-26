@@ -3,46 +3,24 @@ pragma solidity ^0.8.28;
 
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 
-import { ISMART } from "../../contracts/interface/ISMART.sol";
-import { SMARTTokenSaleTestable } from "./SMARTTokenSaleTestable.sol";
+import { ATKTokenSaleProxy } from "../../contracts/assets/token-sale/ATKTokenSaleProxy.sol";
 
-/// @title SMARTTokenSaleFactoryTestable
-/// @notice Test version of SMARTTokenSaleFactory that bypasses ERC2771Context for testing
-/// @dev This contract simplifies the process of creating compliant token sales in test environments
-contract SMARTTokenSaleFactoryTestable is Initializable, AccessControlUpgradeable {
+/// @title ATKTokenSaleFactoryTestable
+/// @notice Testable version of ATKTokenSaleFactory for unit tests
+/// @dev This contract provides a simplified factory for testing purposes
+contract ATKTokenSaleFactoryTestable is Initializable, AccessControlUpgradeable {
     // --- Constants ---
-
-    /// @notice Role for deploying new token sales
     bytes32 public constant DEPLOYER_ROLE = keccak256("DEPLOYER_ROLE");
 
     // --- Events ---
-
-    /// @notice Emitted when a new token sale is deployed
-    /// @param tokenSaleAddress The address of the newly deployed token sale
-    /// @param tokenAddress The address of the token being sold
-    /// @param saleAdmin The address of the token sale admin
     event TokenSaleDeployed(address indexed tokenSaleAddress, address indexed tokenAddress, address indexed saleAdmin);
-
-    /// @notice Emitted when the implementation address is updated
-    /// @param oldImplementation The previous implementation address
-    /// @param newImplementation The new implementation address
     event ImplementationUpdated(address indexed oldImplementation, address indexed newImplementation);
 
     // --- State Variables ---
-
-    /// @notice The address of the token sale implementation contract
     address public implementation;
-
-    /// @notice Mapping to track if an address is a token sale deployed by this factory
     mapping(address => bool) public isTokenSale;
-
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        // Don't disable initializers for testing to allow direct initialization
-    }
 
     /// @notice Initializes the factory contract
     /// @param implementation_ The address of the token sale implementation contract
@@ -98,20 +76,29 @@ contract SMARTTokenSaleFactoryTestable is Initializable, AccessControlUpgradeabl
         if (hardCap == 0) revert("Hard cap must be positive");
         if (basePrice == 0) revert("Base price must be positive");
 
-        // Deploy token sale directly (no proxy for testing)
+        // Create initialization data for the proxy
+        bytes memory initData = abi.encodeWithSignature(
+            "initialize(address,uint256,uint256,uint256,uint256)",
+            tokenAddress,
+            saleStart,
+            saleDuration,
+            hardCap,
+            basePrice
+        );
+
+        // Calculate salt for CREATE2 deployment
         bytes32 salt = keccak256(abi.encodePacked(tokenAddress, saleAdmin, saleStart, saltNonce));
 
-        // Deploy using CREATE2 for deterministic addresses
-        bytes memory bytecode = type(SMARTTokenSaleTestable).creationCode;
+        // Deploy proxy with CREATE2
+        bytes memory proxyBytecode = type(ATKTokenSaleProxy).creationCode;
+        bytes memory constructorArgs = abi.encode(
+            implementation,
+            address(this), // Admin of the proxy is the factory
+            initData
+        );
+        bytes memory bytecode = abi.encodePacked(proxyBytecode, constructorArgs);
 
-        assembly {
-            saleAddress := create2(0, add(bytecode, 0x20), mload(bytecode), salt)
-        }
-
-        require(saleAddress != address(0), "Failed to deploy token sale");
-
-        // Initialize the deployed contract
-        SMARTTokenSaleTestable(saleAddress).initialize(tokenAddress, saleStart, saleDuration, hardCap, basePrice);
+        saleAddress = Create2.deploy(0, salt, bytecode);
 
         // Update tracking
         isTokenSale[saleAddress] = true;
@@ -137,15 +124,5 @@ contract SMARTTokenSaleFactoryTestable is Initializable, AccessControlUpgradeabl
         emit TokenSaleDeployed(saleAddress, tokenAddress, saleAdmin);
 
         return saleAddress;
-    }
-
-    /// @dev Override to use standard Context instead of ERC2771Context for testing
-    function _msgSender() internal view override returns (address) {
-        return msg.sender;
-    }
-
-    /// @dev Override to use standard Context instead of ERC2771Context for testing
-    function _msgData() internal view override returns (bytes calldata) {
-        return msg.data;
     }
 }

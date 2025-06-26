@@ -2,31 +2,30 @@
 pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { SMARTTokenSaleTestable } from "../mocks/SMARTTokenSaleTestable.sol";
-import { SMARTTokenSaleProxy } from "../../contracts/assets/token-sale/SMARTTokenSaleProxy.sol";
-import { SMARTTokenSaleFactoryTestable } from "../mocks/SMARTTokenSaleFactoryTestable.sol";
-import { ISMARTTokenSale } from "../../contracts/assets/token-sale/ISMARTTokenSale.sol";
+import { ATKTokenSaleTestable } from "../mocks/ATKTokenSaleTestable.sol";
+import { ATKTokenSaleProxy } from "../../contracts/assets/token-sale/ATKTokenSaleProxy.sol";
+import { ATKTokenSaleFactoryTestable } from "../mocks/ATKTokenSaleFactoryTestable.sol";
+import { IATKTokenSale } from "../../contracts/assets/token-sale/IATKTokenSale.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
-// Real SMART token imports
-import { SMARTToken } from "../examples/SMARTToken.sol";
-import { ISMART } from "../../contracts/interface/ISMART.sol";
-import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { SMARTCollateral } from "../../contracts/extensions/collateral/SMARTCollateral.sol";
+// Real SMART token imports (using correct paths)
+import { SMARTToken } from "../smart/examples/SMARTToken.sol";
+import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 import { SystemUtils } from "../utils/SystemUtils.sol";
 import { IdentityUtils } from "../utils/IdentityUtils.sol";
 import { TokenUtils } from "../utils/TokenUtils.sol";
 import { ClaimUtils } from "../utils/ClaimUtils.sol";
-import { ISMARTTokenAccessManager } from "../../contracts/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { SMARTSystemRoles } from "../../contracts/system/SMARTSystemRoles.sol";
-import { SMARTTopics } from "../../contracts/system/SMARTTopics.sol";
+import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 
 // Standard ERC20 token for USDC
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract SMARTTokenSaleTest is Test {
+contract ATKTokenSaleTest is Test {
     // --- Test Constants ---
     uint256 constant SALE_DURATION = 30 days;
     uint256 constant HARD_CAP = 1_000_000 * 1e18; // 1M tokens
@@ -38,10 +37,10 @@ contract SMARTTokenSaleTest is Test {
     uint256 constant USDC_PRICE_RATIO = 1e15; // 0.001 USDC per token (with USDC having 6 decimals)
 
     // --- Test Contracts ---
-    SMARTTokenSaleTestable tokenSaleImpl;
-    SMARTTokenSaleProxy tokenSaleProxy;
-    SMARTTokenSaleFactoryTestable tokenSaleFactory;
-    ISMARTTokenSale tokenSale;
+    ATKTokenSaleTestable tokenSaleImpl;
+    ATKTokenSaleProxy tokenSaleProxy;
+    ATKTokenSaleFactoryTestable tokenSaleFactory;
+    IATKTokenSale tokenSale;
     SMARTToken smartToken;
     USDC usdc;
 
@@ -111,7 +110,7 @@ contract SMARTTokenSaleTest is Test {
 
         // Setup required claim topics for KYC/AML
         uint256[] memory requiredClaimTopics = new uint256[](1);
-        requiredClaimTopics[0] = systemUtils.getTopicId(SMARTTopics.TOPIC_KYC);
+        requiredClaimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
 
         // Setup compliance modules (empty for this test)
         SMARTComplianceModuleParamPair[] memory modulePairs = new SMARTComplianceModuleParamPair[](0);
@@ -122,12 +121,12 @@ contract SMARTTokenSaleTest is Test {
             "Test SMART Token",
             "TST",
             18,
+            HARD_CAP * 2, // Cap - set to 2x hard cap for flexibility
             address(0), // Let the factory create the identity
             address(systemUtils.identityRegistry()),
             address(systemUtils.compliance()),
-            requiredClaimTopics,
             modulePairs,
-            systemUtils.getTopicId(SMARTTopics.TOPIC_COLLATERAL),
+            systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL),
             address(accessManager)
         );
 
@@ -142,8 +141,8 @@ contract SMARTTokenSaleTest is Test {
         tokenUtils.createAndSetTokenOnchainID(address(smartToken), tokenIssuer, address(accessManager));
 
         // Deploy token sale implementation and factory
-        tokenSaleImpl = new SMARTTokenSaleTestable();
-        tokenSaleFactory = new SMARTTokenSaleFactoryTestable();
+        tokenSaleImpl = new ATKTokenSaleTestable();
+        tokenSaleFactory = new ATKTokenSaleFactoryTestable();
 
         // Initialize factory
         vm.prank(admin);
@@ -162,7 +161,7 @@ contract SMARTTokenSaleTest is Test {
             BASE_PRICE,
             0 // saltNonce
         );
-        tokenSale = ISMARTTokenSale(tokenSaleAddress);
+        tokenSale = IATKTokenSale(tokenSaleAddress);
 
         // Grant roles
         IAccessControl(address(tokenSale)).grantRole(keccak256("FUNDS_MANAGER_ROLE"), fundsManager);
@@ -194,8 +193,8 @@ contract SMARTTokenSaleTest is Test {
     function _setupBuyerIdentities() internal {
         // Setup claim issuer first
         uint256[] memory claimTopics = new uint256[](2);
-        claimTopics[0] = systemUtils.getTopicId(SMARTTopics.TOPIC_KYC);
-        claimTopics[1] = systemUtils.getTopicId(SMARTTopics.TOPIC_AML);
+        claimTopics[0] = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
+        claimTopics[1] = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
         identityUtils.createIssuerIdentity(claimIssuer, claimTopics);
 
         // Create identities for eligible buyers with country code (e.g., Belgium = 56)

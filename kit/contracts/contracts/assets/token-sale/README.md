@@ -1,24 +1,24 @@
-# SMART Token Sale Module
+# ATK Token Sale Module
 
 This module provides a comprehensive solution for conducting compliant token
-sales for SMART tokens with advanced features including vesting, multiple
+sales for ATK tokens with advanced features including vesting, multiple
 payment currencies, and regulatory compliance.
 
 ## Architecture Overview
 
 The token sale module consists of four main components:
 
-### 1. ISMARTTokenSale.sol
+### 1. IATKTokenSale.sol
 
 The interface that defines all functions, events, and errors for the token sale
 contract. This provides a standardized API for interacting with token sale
 instances.
 
-### 2. SMARTTokenSale.sol
+### 2. ATKTokenSale.sol
 
 The main implementation contract that handles:
 
-- **Compliance**: Integration with SMART identity registry for buyer eligibility
+- **Compliance**: Integration with ATK identity registry for buyer eligibility
 - **Vesting**: Configurable token vesting with cliff periods
 - **Multiple Payment Methods**: Support for native currency and multiple ERC20
   tokens
@@ -27,12 +27,12 @@ The main implementation contract that handles:
 - **Admin Controls**: Role-based access control for sale management
 - **Upgradeable**: Uses OpenZeppelin's upgradeable contract pattern
 
-### 3. SMARTTokenSaleProxy.sol
+### 3. ATKTokenSaleProxy.sol
 
 A transparent upgradeable proxy that allows for contract upgrades while
 preserving state and address.
 
-### 4. SMARTTokenSaleFactory.sol
+### 4. ATKTokenSaleFactory.sol
 
 A factory contract for deploying new token sale instances with deterministic
 addresses using CREATE2.
@@ -41,7 +41,7 @@ addresses using CREATE2.
 
 ### 🔒 Compliance & Security
 
-- **Identity Verification**: Automatic buyer eligibility checks through SMART
+- **Identity Verification**: Automatic buyer eligibility checks through ATK
   identity registry
 - **Role-Based Access**: Separate roles for sale administration and funds
   management
@@ -101,7 +101,7 @@ addresses using CREATE2.
 ```solidity
 // Using the factory
 address saleAddress = factory.deployTokenSale(
-    tokenAddress,     // SMART token address
+    tokenAddress,     // ATK token address
     adminAddress,     // Sale administrator
     startTime,        // Unix timestamp
     86400,           // 24 hours duration
@@ -160,7 +160,7 @@ uint256 tokenAmount = sale.buyTokensWithERC20(usdcToken, 1000e6);
 ### Compliance Integration
 
 - Automatic buyer eligibility verification
-- Integration with SMART identity registry
+- Integration with ATK identity registry
 - Respect for token compliance rules
 
 ## Gas Optimization
@@ -194,7 +194,7 @@ The module should be thoroughly tested for:
 - Various purchase scenarios and edge cases
 - Vesting calculations and withdrawal timing
 - Access control and permission management
-- Integration with SMART token compliance
+- Integration with ATK token compliance
 
 ## Deployment Checklist
 

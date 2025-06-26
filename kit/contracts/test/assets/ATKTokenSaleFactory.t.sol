@@ -2,22 +2,22 @@
 pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { SMARTTokenSaleTestable } from "../mocks/SMARTTokenSaleTestable.sol";
-import { SMARTTokenSaleFactoryTestable } from "../mocks/SMARTTokenSaleFactoryTestable.sol";
-import { ISMARTTokenSale } from "../../contracts/assets/token-sale/ISMARTTokenSale.sol";
+import { ATKTokenSaleTestable } from "../mocks/ATKTokenSaleTestable.sol";
+import { ATKTokenSaleFactoryTestable } from "../mocks/ATKTokenSaleFactoryTestable.sol";
+import { IATKTokenSale } from "../../contracts/assets/token-sale/IATKTokenSale.sol";
 import { MockedSMARTToken } from "../mocks/MockedSMARTToken.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
-contract SMARTTokenSaleFactoryTest is Test {
+contract ATKTokenSaleFactoryTest is Test {
     // --- Test Constants ---
     uint256 constant SALE_DURATION = 30 days;
     uint256 constant HARD_CAP = 1_000_000 * 1e18; // 1M tokens
     uint256 constant BASE_PRICE = 1e15; // 0.001 ETH per token
 
     // --- Test Contracts ---
-    SMARTTokenSaleTestable tokenSaleImpl;
-    SMARTTokenSaleFactoryTestable factory;
+    ATKTokenSaleTestable tokenSaleImpl;
+    ATKTokenSaleFactoryTestable factory;
     MockedSMARTToken token;
 
     // --- Test Accounts ---
@@ -39,10 +39,10 @@ contract SMARTTokenSaleFactoryTest is Test {
         token = new MockedSMARTToken();
 
         // Deploy token sale implementation using testable version
-        tokenSaleImpl = new SMARTTokenSaleTestable();
+        tokenSaleImpl = new ATKTokenSaleTestable();
 
         // Deploy factory directly as testable version (no proxy for tests)
-        factory = new SMARTTokenSaleFactoryTestable();
+        factory = new ATKTokenSaleFactoryTestable();
 
         // Initialize factory directly with admin
         vm.prank(admin);
@@ -71,7 +71,7 @@ contract SMARTTokenSaleFactoryTest is Test {
     }
 
     function test_Initialize_RevertWhenZeroImplementation() public {
-        SMARTTokenSaleFactoryTestable newFactoryImpl = new SMARTTokenSaleFactoryTestable();
+        ATKTokenSaleFactoryTestable newFactoryImpl = new ATKTokenSaleFactoryTestable();
 
         vm.expectRevert();
         vm.prank(admin);
@@ -99,7 +99,7 @@ contract SMARTTokenSaleFactoryTest is Test {
         assertNotEq(tokenSaleAddress, address(0));
 
         // Verify the token sale is properly initialized
-        ISMARTTokenSale tokenSale = ISMARTTokenSale(tokenSaleAddress);
+        IATKTokenSale tokenSale = IATKTokenSale(tokenSaleAddress);
         assertEq(address(tokenSale.token()), address(token));
         assertEq(tokenSale.hardCap(), HARD_CAP);
         assertEq(tokenSale.basePrice(), BASE_PRICE);
@@ -199,8 +199,8 @@ contract SMARTTokenSaleFactoryTest is Test {
         assertNotEq(tokenSale2, address(0));
 
         // Verify different parameters
-        ISMARTTokenSale sale1 = ISMARTTokenSale(tokenSale1);
-        ISMARTTokenSale sale2 = ISMARTTokenSale(tokenSale2);
+        IATKTokenSale sale1 = IATKTokenSale(tokenSale1);
+        IATKTokenSale sale2 = IATKTokenSale(tokenSale2);
 
         assertEq(sale1.hardCap(), HARD_CAP);
         assertEq(sale2.hardCap(), HARD_CAP / 2);
@@ -212,7 +212,7 @@ contract SMARTTokenSaleFactoryTest is Test {
 
     function test_UpdateImplementation_Success() public {
         // Deploy new implementation
-        SMARTTokenSaleTestable newImpl = new SMARTTokenSaleTestable();
+        ATKTokenSaleTestable newImpl = new ATKTokenSaleTestable();
 
         vm.expectEmit(true, true, false, false);
         emit ImplementationUpdated(address(tokenSaleImpl), address(newImpl));
@@ -224,7 +224,7 @@ contract SMARTTokenSaleFactoryTest is Test {
     }
 
     function test_UpdateImplementation_RevertWhenUnauthorized() public {
-        SMARTTokenSaleTestable newImpl = new SMARTTokenSaleTestable();
+        ATKTokenSaleTestable newImpl = new ATKTokenSaleTestable();
 
         vm.expectRevert();
         vm.prank(user);
@@ -364,7 +364,7 @@ contract SMARTTokenSaleFactoryTest is Test {
         address tokenSaleAddress =
             factory.deployTokenSale(address(token), admin, saleStart, SALE_DURATION, HARD_CAP, BASE_PRICE, 0);
 
-        ISMARTTokenSale tokenSale = ISMARTTokenSale(tokenSaleAddress);
+        IATKTokenSale tokenSale = IATKTokenSale(tokenSaleAddress);
 
         // Fund the token sale with tokens
         vm.prank(admin);
@@ -399,7 +399,7 @@ contract SMARTTokenSaleFactoryTest is Test {
             factory.deployTokenSale(address(token), admin, saleStart, SALE_DURATION, HARD_CAP, BASE_PRICE, 0);
 
         // Update implementation
-        SMARTTokenSaleTestable newImpl = new SMARTTokenSaleTestable();
+        ATKTokenSaleTestable newImpl = new ATKTokenSaleTestable();
         vm.prank(admin);
         factory.updateImplementation(address(newImpl));
 
@@ -412,8 +412,8 @@ contract SMARTTokenSaleFactoryTest is Test {
         assertNotEq(tokenSale1, tokenSale2);
 
         // Verify both are functional
-        ISMARTTokenSale sale1 = ISMARTTokenSale(tokenSale1);
-        ISMARTTokenSale sale2 = ISMARTTokenSale(tokenSale2);
+        IATKTokenSale sale1 = IATKTokenSale(tokenSale1);
+        IATKTokenSale sale2 = IATKTokenSale(tokenSale2);
 
         assertEq(address(sale1.token()), address(token));
         assertEq(address(sale2.token()), address(token));

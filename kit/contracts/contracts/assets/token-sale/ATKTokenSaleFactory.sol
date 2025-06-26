@@ -7,13 +7,13 @@ import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/m
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 
-import { ISMART } from "../../interface/ISMART.sol";
-import { SMARTTokenSaleProxy } from "./SMARTTokenSaleProxy.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
+import { ATKTokenSaleProxy } from "./ATKTokenSaleProxy.sol";
 
-/// @title SMARTTokenSaleFactory
-/// @notice Factory contract for deploying new token sale contracts
+/// @title ATKTokenSaleFactory
+/// @notice Factory contract for deploying new token sale contracts in the ATK ecosystem
 /// @dev This contract simplifies the process of creating compliant token sales
-contract SMARTTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC2771ContextUpgradeable {
+contract ATKTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC2771ContextUpgradeable {
     // --- Constants ---
 
     /// @notice Role for deploying new token sales
@@ -118,7 +118,7 @@ contract SMARTTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC27
         bytes32 salt = keccak256(abi.encodePacked(tokenAddress, saleAdmin, saleStart, saltNonce));
 
         // Deploy proxy with CREATE2
-        bytes memory proxyBytecode = type(SMARTTokenSaleProxy).creationCode;
+        bytes memory proxyBytecode = type(ATKTokenSaleProxy).creationCode;
         bytes memory constructorArgs = abi.encode(
             implementation,
             address(this), // Admin of the proxy is the factory

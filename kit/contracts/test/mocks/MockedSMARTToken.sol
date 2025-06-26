@@ -2,10 +2,19 @@
 pragma solidity ^0.8.28;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { ISMART } from "../../contracts/interface/ISMART.sol";
-import { ISMARTIdentityRegistry } from "../../contracts/interface/ISMARTIdentityRegistry.sol";
-import { ISMARTCompliance } from "../../contracts/interface/ISMARTCompliance.sol";
-import { SMARTComplianceModuleParamPair } from "../../contracts/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
+import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
+import { ISMARTCompliance } from "../../contracts/smart/interface/ISMARTCompliance.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+
+/// @title MockIdentityRegistry
+/// @notice A mock identity registry that always returns true for isVerified
+contract MockIdentityRegistry {
+    function isVerified(address, uint256[] memory) external pure returns (bool) {
+        return true; // Always return true for testing
+    }
+}
 
 /// @title MockedSMARTToken
 /// @notice A simple mock implementation of ISMART for testing purposes
@@ -13,14 +22,16 @@ import { SMARTComplianceModuleParamPair } from "../../contracts/interface/struct
 contract MockedSMARTToken is ERC20, ISMART {
     mapping(address => bool) private _verifiedAddresses;
     uint256[] private _requiredClaimTopics;
+    MockIdentityRegistry private _identityRegistry;
 
     constructor() ERC20("Mocked SMART Token", "MSMART") {
         // Set all addresses as verified by default for testing
+        _identityRegistry = new MockIdentityRegistry();
     }
 
     // Mock implementations of ISMART interface
-    function identityRegistry() external pure returns (ISMARTIdentityRegistry) {
-        return ISMARTIdentityRegistry(address(0)); // Return zero address for mock
+    function identityRegistry() external view returns (ISMARTIdentityRegistry) {
+        return ISMARTIdentityRegistry(address(_identityRegistry));
     }
 
     function compliance() external pure returns (ISMARTCompliance) {
@@ -110,5 +121,9 @@ contract MockedSMARTToken is ERC20, ISMART {
 
     function supportsInterface(bytes4) external pure returns (bool) {
         return true;
+    }
+
+    function registeredInterfaces() external pure returns (bytes4[] memory interfacesList) {
+        return new bytes4[](0);
     }
 }
