@@ -12,14 +12,16 @@
  * @see {@link https://tanstack.com/router/latest/docs/guide/error-boundaries} - TanStack Router error boundaries
  */
 
+import { Logo } from "@/components/logo/logo";
+import { ErrorCodeDisplay, ErrorDisplay } from "@/components/ui/error-display";
 import {
-  ErrorComponent,
-  Link,
-  rootRouteId,
-  useMatch,
-  useRouter,
-  type ErrorComponentProps,
-} from "@tanstack/react-router";
+  getErrorCode,
+  useErrorDescription,
+  useErrorTitle,
+} from "@/hooks/use-error-info";
+import { cn } from "@/lib/utils";
+import { useRouter, type ErrorComponentProps } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 /**
  * Default catch boundary component for handling runtime errors.
@@ -49,51 +51,47 @@ import {
  * ```
  */
 export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
+  const { t } = useTranslation("general");
   const router = useRouter();
-
-  /**
-   * Check if the error occurred at the root route.
-   * This determines which navigation options to show the user.
-   */
-  const isRoot = useMatch({
-    strict: false,
-    select: (state) => state.id === rootRouteId,
-  });
+  const errorTitle = useErrorTitle(error);
+  const errorDescription = useErrorDescription(error);
 
   // Log error to console for debugging
   console.error(error);
 
   return (
-    <div className="min-w-0 flex-1 p-4 flex flex-col items-center justify-center gap-6">
-      <ErrorComponent error={error} />
-      <div className="flex gap-2 items-center flex-wrap">
-        <button
-          onClick={() => {
-            void router.invalidate();
-          }}
-          className={`px-2 py-1 bg-gray-600 dark:bg-gray-700 rounded text-white uppercase font-extrabold`}
-        >
-          Try Again
-        </button>
-        {isRoot ? (
-          <Link
-            to="/"
-            className={`px-2 py-1 bg-gray-600 dark:bg-gray-700 rounded text-white uppercase font-extrabold`}
-          >
-            Home
-          </Link>
-        ) : (
-          <Link
-            to="/"
-            className={`px-2 py-1 bg-gray-600 dark:bg-gray-700 rounded text-white uppercase font-extrabold`}
-            onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-              e.preventDefault();
-              window.history.back();
+    // Full-screen container with theme-aware background images
+    <div className="min-h-screen w-full bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
+      {/* Application branding - top left corner */}
+      <div className="absolute top-8 left-8 flex flex-col items-end gap-0">
+        <div className={cn("flex w-full items-center gap-3")}>
+          <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
+            <Logo variant="icon" forcedColorMode="dark" />
+          </div>
+          <div className="flex flex-col text-foreground leading-none">
+            <span className="font-bold text-lg text-primary-foreground">
+              SettleMint
+            </span>
+            <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-sm leading-snug text-primary-foreground dark:text-foreground ">
+              {t("appDescription")}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Centered content area for error display */}
+      <div className="relative flex flex-col w-full justify-center min-h-screen p-6 md:p-10">
+        <div className="relative max-w-5xl mx-auto w-full">
+          <ErrorCodeDisplay errorCode={getErrorCode(error)} />
+          <ErrorDisplay
+            errorCode={getErrorCode(error)}
+            title={errorTitle}
+            description={errorDescription}
+            onRetry={() => {
+              void router.invalidate();
             }}
-          >
-            Go Back
-          </Link>
-        )}
+          />
+        </div>
       </div>
     </div>
   );

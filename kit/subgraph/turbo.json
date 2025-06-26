@@ -2,7 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "codegen": {
-      "dependsOn": ["^compile"],
+      "dependsOn": ["^compile", "contracts#compile"],
       "outputs": ["generated/**"],
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },

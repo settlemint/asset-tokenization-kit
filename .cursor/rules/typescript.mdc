@@ -3,6 +3,405 @@ description:
 globs: *.tsx,*.ts
 alwaysApply: false
 ---
+# TypeScript Guidelines
+
+## Core Principles
+
+- **Type Safety First**: Never use `any` without exceptional justification
+- **Explicit Over Implicit**: Prefer clarity in type definitions
+- **Immutability**: Use `readonly` and `as const` where appropriate
+- **Strict Mode Always**: Enable all strict compiler options
+
+## Strict Mode Configuration
+
+Always use TypeScript in strict mode:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true
+  }
+}
+```
+
+## Type Definitions
+
+### Prefer Type Aliases Over Interfaces
+
+Use `type` for all type definitions unless you specifically need interface features (declaration merging):
+
+```ts
+// ✅ Good
+type User = {
+  readonly id: string;
+  name: string;
+  email: string;
+};
+
+// ❌ Avoid (unless you need declaration merging)
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+```
+
+### Use Readonly by Default
+
+Make properties readonly unless they need to be mutable:
+
+```ts
+// ✅ Good
+type Config = {
+  readonly apiUrl: string;
+  readonly timeout: number;
+  readonly retryCount: number;
+};
+
+// ❌ Avoid
+type Config = {
+  apiUrl: string;
+  timeout: number;
+  retryCount: number;
+};
+```
+
+### Branded Types for Domain Modeling
+
+Use branded types for type-safe domain primitives:
+
+```ts
+type UserId = string & { readonly brand: unique symbol };
+type OrderId = string & { readonly brand: unique symbol };
+type Email = string & { readonly brand: unique symbol };
+
+// Helper functions for creating branded types
+const UserId = (id: string): UserId => id as UserId;
+const OrderId = (id: string): OrderId => id as OrderId;
+const Email = (email: string): Email => {
+  if (!isValidEmail(email)) throw new Error("Invalid email");
+  return email as Email;
+};
+```
+
+## Handling Any in Generic Functions
+
+Inside generic functions, `any` is sometimes necessary due to TypeScript limitations:
+
+```ts
+// ✅ Acceptable use of any in generic context
+const pick = <T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> => {
+  const result = {} as any; // Necessary due to generic constraints
+  keys.forEach(key => {
+    result[key] = obj[key];
+  });
+  return result;
+};
+
+// Outside generics, never use any
+// ❌ Bad
+const processData = (data: any) => { /* ... */ };
+
+// ✅ Good
+const processData = (data: unknown) => { /* ... */ };
+```
+
+## Discriminated Unions
+
+Use discriminated unions for modeling state and preventing impossible states:
+
+```ts
+// ✅ Good - Prevents impossible states
+type FetchState<T> =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "success"; data: T }
+  | { status: "error"; error: Error };
+
+// ❌ Bad - Allows impossible states
+type FetchState<T> = {
+  status: "idle" | "loading" | "success" | "error";
+  data?: T;
+  error?: Error;
+};
+```
+
+## Const Assertions and Enums
+
+Prefer const assertions over enums:
+
+```ts
+// ✅ Good
+const Status = {
+  PENDING: "PENDING",
+  APPROVED: "APPROVED", 
+  REJECTED: "REJECTED",
+} as const;
+
+type Status = typeof Status[keyof typeof Status];
+
+// ❌ Avoid enums
+enum Status {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+}
+```
+
+## Import Types
+
+Always use `import type` for type-only imports:
+
+```ts
+// ✅ Good
+import type { User, Order } from "./types";
+import { processUser } from "./user-service";
+
+// ❌ Bad
+import { User, Order } from "./types";
+```
+
+## Function Parameter Objects
+
+Prefer parameter objects over multiple parameters:
+
+```ts
+// ❌ Bad
+function createUser(
+  name: string,
+  email: string,
+  age: number,
+  isActive: boolean,
+  role?: string
+): User {
+  // ...
+}
+
+// ✅ Good
+type CreateUserOptions = {
+  name: string;
+  email: string;
+  age: number;
+  isActive: boolean;
+  role?: string;
+};
+
+function createUser(options: CreateUserOptions): User {
+  const { name, email, age, isActive, role } = options;
+  // ...
+}
+```
+
+## Error Handling with Result Types
+
+Use Result types for explicit error handling:
+
+```ts
+type Result<T, E = Error> =
+  | { ok: true; value: T }
+  | { ok: false; error: E };
+
+// Usage
+function parseJson(text: string): Result<unknown, SyntaxError> {
+  try {
+    return { ok: true, value: JSON.parse(text) };
+  } catch (error) {
+    return { ok: false, error: error as SyntaxError };
+  }
+}
+
+// Handle result
+const result = parseJson(jsonString);
+if (result.ok) {
+  console.log(result.value);
+} else {
+  console.error(result.error.message);
+}
+```
+
+## Utility Types
+
+Leverage TypeScript's built-in utility types:
+
+```ts
+// Partial - Make all properties optional
+type PartialUser = Partial<User>;
+
+// Required - Make all properties required
+type RequiredUser = Required<User>;
+
+// Pick - Select specific properties
+type UserCredentials = Pick<User, "email" | "password">;
+
+// Omit - Exclude specific properties
+type PublicUser = Omit<User, "password">;
+
+// Record - Create object type with specific keys
+type UserRoles = Record<UserId, Role[]>;
+
+// Extract/Exclude - Filter union types
+type AdminActions = Extract<Action, { type: "admin" }>;
+type NonAdminActions = Exclude<Action, { type: "admin" }>;
+```
+
+## Naming Conventions
+
+- **Variables/Functions**: `camelCase`
+- **Types/Interfaces**: `PascalCase`
+- **Constants**: `UPPER_SNAKE_CASE` for true constants
+- **Type Parameters**: Prefix with `T` (e.g., `TKey`, `TValue`)
+- **Private Properties**: Prefix with `_` (avoid when possible)
+- **Files**: `kebab-case.ts`
+
+```ts
+// Examples
+const userCount = 10;
+function calculateTotal(items: Item[]): number { /* ... */ }
+
+type UserProfile = { /* ... */ };
+interface ApiResponse { /* ... */ }
+
+const MAX_RETRIES = 3;
+const API_TIMEOUT = 5000;
+
+function map<TInput, TOutput>(
+  items: TInput[],
+  fn: (item: TInput) => TOutput
+): TOutput[] { /* ... */ }
+```
+
+## Schema-First Development
+
+Define runtime schemas first, then derive types:
+
+```ts
+import { z } from "zod";
+
+// Define schema
+const UserSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string().min(1),
+  age: z.number().int().positive(),
+  roles: z.array(z.enum(["admin", "user", "guest"])),
+});
+
+// Derive type from schema
+type User = z.infer<typeof UserSchema>;
+
+// Use for validation
+function validateUser(data: unknown): User {
+  return UserSchema.parse(data);
+}
+```
+
+## Type Guards
+
+Create type guards for runtime type checking:
+
+```ts
+// Type guard function
+function isUser(value: unknown): value is User {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "id" in value &&
+    "email" in value &&
+    typeof (value as User).id === "string" &&
+    typeof (value as User).email === "string"
+  );
+}
+
+// Usage
+function processValue(value: unknown) {
+  if (isUser(value)) {
+    // TypeScript knows value is User here
+    console.log(value.email);
+  }
+}
+```
+
+## Avoid Common Pitfalls
+
+### Don't use type assertions unless necessary
+
+```ts
+// ❌ Bad
+const user = {} as User;
+
+// ✅ Good
+const user: User = {
+  id: "123",
+  name: "John",
+  email: "john@example.com",
+};
+```
+
+### Don't ignore TypeScript errors
+
+```ts
+// ❌ Never do this
+// @ts-ignore
+// @ts-expect-error
+
+// ✅ Fix the underlying issue or use proper types
+```
+
+### Handle optional properties correctly
+
+```ts
+// ❌ Bad - makes property truly optional
+type Config = {
+  apiUrl?: string;
+};
+
+// ✅ Good - explicit about undefined
+type Config = {
+  apiUrl: string | undefined;
+};
+```
+
+## Advanced Patterns
+
+### Conditional Types
+
+```ts
+type IsArray<T> = T extends any[] ? true : false;
+type ArrayElement<T> = T extends (infer E)[] ? E : never;
+```
+
+### Template Literal Types
+
+```ts
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+type Endpoint = `/api/${string}`;
+type RouteHandler = `${HttpMethod} ${Endpoint}`;
+```
+
+### Mapped Types
+
+```ts
+type Readonly<T> = {
+  readonly [P in keyof T]: T[P];
+};
+
+type Nullable<T> = {
+  [P in keyof T]: T[P] | null;
+};
+```
 
 # Any inside generic functions
 

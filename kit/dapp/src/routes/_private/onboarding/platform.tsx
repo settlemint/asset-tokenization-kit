@@ -9,7 +9,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/platform")({
@@ -42,28 +42,29 @@ function PlatformOnboarding() {
   // Get data from loader
   const { systemAddress, systemDetails } = Route.useLoaderData();
 
-  // Start with first step, will update when data loads
+  const user = session?.user;
+
+  // Initialize with "wallet" as default, will update when session data loads
   const [currentStepId, setCurrentStepId] = useState("wallet");
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  const user = session?.user;
-  // Determine initial step based on what's completed
-  const getInitialStep = () => {
-    if (!user?.initialOnboardingFinished) return "wallet";
-    if (!systemAddress) return "system";
-    if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
-    return "assets"; // Default to last step if all complete
-  };
-
-  // Set initial step once when data is loaded
+  // Update the current step when session data becomes available
   useEffect(() => {
-    // Only set initial step once when we have user data
-    if (!hasInitialized) {
+    // Only update if we haven't initialized yet and session data is loaded
+    if (!hasInitialized && session) {
+      // Determine initial step based on what's completed
+      const getInitialStep = () => {
+        if (!user?.initialOnboardingFinished) return "wallet";
+        if (!systemAddress) return "system";
+        if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
+        return "assets"; // Default to last step if all complete
+      };
+      
       const initialStep = getInitialStep();
       setCurrentStepId(initialStep);
       setHasInitialized(true);
     }
-  }, [user, systemAddress, systemDetails, hasInitialized]);
+  }, [session, user?.initialOnboardingFinished, systemAddress, systemDetails?.tokenFactories.length, hasInitialized]);
 
   // Define steps with dynamic statuses
   const steps: Step[] = [

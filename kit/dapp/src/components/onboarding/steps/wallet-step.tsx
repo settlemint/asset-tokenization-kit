@@ -49,7 +49,7 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
     }
   }, [isPending, hasWallet, generateWallet]);
 
-  // Register the action with parent
+  // Register the action with parent when conditions change
   useEffect(() => {
     if (onRegisterAction) {
       if (!hasWallet) {

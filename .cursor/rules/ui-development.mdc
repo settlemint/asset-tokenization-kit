@@ -1,0 +1,443 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# UI Development
+
+## Component Libraries
+
+### Shadcn UI
+
+The preferred component library for React projects. Shadcn provides accessible, customizable components that you own.
+
+**Installation**:
+```bash
+# Always use @canary version
+bunx shadcn@canary add <component-id>
+
+# Install in specific directory
+bunx shadcn@canary add button --cwd src/components
+```
+
+**Before installing**: Check if components exist in `./components/ui/`
+
+**Component Reference**:
+- View docs at: `https://ui.shadcn.com/docs/components/<component-id>`
+- Always read the latest docs before using a component
+
+### Common Shadcn Components
+
+| Component | Use Case |
+|-----------|----------|
+| `button` | Interactive actions |
+| `dialog` | Modal overlays |
+| `form` | Form handling with react-hook-form |
+| `input` | Text inputs |
+| `select` | Dropdowns |
+| `toast` | Notifications |
+| `card` | Content containers |
+| `table` | Data display |
+| `tabs` | Content organization |
+| `alert-dialog` | Confirmation modals |
+
+## React Best Practices
+
+### Component Structure
+
+```tsx
+// ✅ Good - Clear, typed component
+type UserCardProps = {
+  user: User;
+  onEdit?: (user: User) => void;
+  className?: string;
+};
+
+export function UserCard({ user, onEdit, className }: UserCardProps) {
+  return (
+    <Card className={cn("p-4", className)}>
+      <CardHeader>
+        <CardTitle>{user.name}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p>{user.email}</p>
+      </CardContent>
+      {onEdit && (
+        <CardFooter>
+          <Button onClick={() => onEdit(user)}>Edit</Button>
+        </CardFooter>
+      )}
+    </Card>
+  );
+}
+```
+
+### State Management
+
+Prefer local state and prop drilling for simple cases:
+
+```tsx
+// ✅ Good - Local state for UI
+function TodoList() {
+  const [filter, setFilter] = useState<"all" | "active" | "done">("all");
+  const [todos, setTodos] = useState<Todo[]>([]);
+  
+  const filteredTodos = todos.filter(todo => {
+    if (filter === "all") return true;
+    if (filter === "active") return !todo.done;
+    return todo.done;
+  });
+  
+  return (
+    <div>
+      <TodoFilter value={filter} onChange={setFilter} />
+      <TodoItems items={filteredTodos} onToggle={handleToggle} />
+    </div>
+  );
+}
+```
+
+### Custom Hooks
+
+Extract reusable logic into custom hooks:
+
+```tsx
+// Custom hook for data fetching
+function useUser(userId: string) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  
+  useEffect(() => {
+    fetchUser(userId)
+      .then(setUser)
+      .catch(setError)
+      .finally(() => setLoading(false));
+  }, [userId]);
+  
+  return { user, loading, error };
+}
+
+// Usage
+function UserProfile({ userId }: { userId: string }) {
+  const { user, loading, error } = useUser(userId);
+  
+  if (loading) return <Skeleton />;
+  if (error) return <Alert>{error.message}</Alert>;
+  if (!user) return <Alert>User not found</Alert>;
+  
+  return <UserCard user={user} />;
+}
+```
+
+## Styling Approach
+
+### Tailwind CSS
+
+Use Tailwind for styling with these conventions:
+
+```tsx
+// ✅ Good - Organized classes
+<div className={cn(
+  // Layout
+  "flex flex-col gap-4",
+  // Spacing
+  "p-6",
+  // Colors & borders
+  "bg-white dark:bg-gray-900",
+  "border border-gray-200 dark:border-gray-800",
+  "rounded-lg",
+  // Responsive
+  "md:flex-row md:gap-6",
+  // Conditional
+  isActive && "ring-2 ring-blue-500"
+)} />
+```
+
+### CSS Variables
+
+Define design tokens as CSS variables:
+
+```css
+/* globals.css */
+:root {
+  --radius: 0.5rem;
+  --font-sans: "Inter", sans-serif;
+  
+  /* Light mode */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  
+  /* Components */
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+}
+```
+
+## Forms
+
+### React Hook Form + Zod
+
+Use React Hook Form with Zod for type-safe forms:
+
+```tsx
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+// Define schema
+const userFormSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  age: z.number().min(18, "Must be at least 18"),
+});
+
+type UserFormData = z.infer<typeof userFormSchema>;
+
+// Form component
+function UserForm({ onSubmit }: { onSubmit: (data: UserFormData) => void }) {
+  const form = useForm<UserFormData>({
+    resolver: zodResolver(userFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      age: 18,
+    },
+  });
+  
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
+  );
+}
+```
+
+## Accessibility
+
+### ARIA Labels
+
+Always provide proper ARIA labels:
+
+```tsx
+// ✅ Good - Accessible button
+<Button 
+  onClick={handleDelete}
+  aria-label={`Delete ${item.name}`}
+  variant="destructive"
+>
+  <TrashIcon className="h-4 w-4" />
+</Button>
+
+// ✅ Good - Accessible form
+<form aria-label="User registration form">
+  <label htmlFor="email">Email</label>
+  <Input 
+    id="email" 
+    type="email"
+    aria-describedby="email-error"
+    aria-invalid={!!errors.email}
+  />
+  {errors.email && (
+    <p id="email-error" className="text-sm text-red-500">
+      {errors.email}
+    </p>
+  )}
+</form>
+```
+
+### Keyboard Navigation
+
+Ensure all interactive elements are keyboard accessible:
+
+```tsx
+// ✅ Good - Keyboard navigable menu
+function Menu({ items }: { items: MenuItem[] }) {
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  
+  const handleKeyDown = (e: KeyboardEvent) => {
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setFocusedIndex((i) => (i + 1) % items.length);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setFocusedIndex((i) => (i - 1 + items.length) % items.length);
+        break;
+      case "Enter":
+        items[focusedIndex].onClick();
+        break;
+    }
+  };
+  
+  return (
+    <ul role="menu" onKeyDown={handleKeyDown}>
+      {items.map((item, index) => (
+        <li key={item.id} role="menuitem">
+          <button
+            ref={index === focusedIndex ? focusRef : null}
+            tabIndex={index === focusedIndex ? 0 : -1}
+            onClick={item.onClick}
+          >
+            {item.label}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Performance
+
+### Memoization
+
+Use React.memo and useMemo appropriately:
+
+```tsx
+// ✅ Good - Memoize expensive computations
+function DataTable({ data }: { data: Item[] }) {
+  const sortedData = useMemo(
+    () => data.sort((a, b) => a.name.localeCompare(b.name)),
+    [data]
+  );
+  
+  return <Table data={sortedData} />;
+}
+
+// ✅ Good - Memoize components with stable props
+const ExpensiveChart = React.memo(
+  ({ data }: { data: ChartData }) => {
+    // Complex rendering logic
+    return <canvas>{/* ... */}</canvas>;
+  },
+  (prevProps, nextProps) => {
+    // Custom comparison if needed
+    return prevProps.data.id === nextProps.data.id;
+  }
+);
+```
+
+### Code Splitting
+
+Use dynamic imports for large components:
+
+```tsx
+// Lazy load heavy components
+const Dashboard = lazy(() => import("./Dashboard"));
+const Analytics = lazy(() => import("./Analytics"));
+
+function App() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/analytics" element={<Analytics />} />
+      </Routes>
+    </Suspense>
+  );
+}
+```
+
+## Testing UI Components
+
+Test user interactions, not implementation:
+
+```tsx
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+describe("LoginForm", () => {
+  it("should show error for invalid credentials", async () => {
+    const user = userEvent.setup();
+    render(<LoginForm />);
+    
+    await user.type(screen.getByLabelText("Email"), "user@example.com");
+    await user.type(screen.getByLabelText("Password"), "wrong");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+    
+    expect(await screen.findByText("Invalid credentials")).toBeInTheDocument();
+  });
+});
+```
+
+## Responsive Design
+
+### Mobile-First Approach
+
+Start with mobile styles and add breakpoints:
+
+```tsx
+// ✅ Good - Mobile-first responsive design
+<div className={cn(
+  // Mobile (default)
+  "flex flex-col gap-4 p-4",
+  // Tablet
+  "sm:flex-row sm:gap-6 sm:p-6",
+  // Desktop
+  "lg:gap-8 lg:p-8",
+  // Wide screens
+  "xl:max-w-7xl xl:mx-auto"
+)}>
+  {/* Content */}
+</div>
+```
+
+### Responsive Components
+
+Create components that adapt to screen size:
+
+```tsx
+function Navigation() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  return (
+    <>
+      {/* Mobile menu button */}
+      <Button
+        variant="ghost"
+        className="lg:hidden"
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        aria-label="Toggle menu"
+      >
+        <MenuIcon />
+      </Button>
+      
+      {/* Desktop navigation */}
+      <nav className="hidden lg:flex gap-6">
+        <NavLinks />
+      </nav>
+      
+      {/* Mobile navigation */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent>
+          <NavLinks />
+        </SheetContent>
+      </Sheet>
+    </>
+  );
+}
+```
+

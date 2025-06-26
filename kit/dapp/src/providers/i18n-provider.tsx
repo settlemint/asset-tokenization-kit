@@ -123,7 +123,7 @@ function I18nProviderContent({ children }: { children: React.ReactNode }) {
  */
 export function I18nProvider({ children, initialLanguage }: I18nProviderProps) {
   /**
-   * Effect to handle initial language override.
+   * Handle initial language override.
    * Changes the language if initialLanguage is provided and different from current.
    */
   useEffect(() => {
