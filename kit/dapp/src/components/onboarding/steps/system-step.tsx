@@ -77,6 +77,7 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
     if (onRegisterAction && !hasSystem) {
       onRegisterAction(handleDeploySystem);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onRegisterAction, hasSystem]);
 
   // Define Circle component
