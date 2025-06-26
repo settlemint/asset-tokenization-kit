@@ -1,9 +1,12 @@
 import { afterAll, beforeAll } from "bun:test";
+import { getOrpcClient } from "../utils/orpc-client";
+import { bootstrapSystem } from "../utils/system-bootstrap";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
   DEFAULT_ISSUER,
   setupUser,
+  signInWithUser,
 } from "../utils/user";
 
 let runningDevServer: Bun.Subprocess | undefined;
@@ -19,9 +22,9 @@ beforeAll(async () => {
     console.log("Setting up issuer account");
     await setupUser(DEFAULT_ISSUER);
 
-    // const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
-    // console.log("Bootstrapping system");
-    // await bootstrapSystem(orpClient);
+    const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
+    console.log("Bootstrapping system");
+    await bootstrapSystem(orpClient);
   } catch (error) {
     console.error("Failed to setup test environment", error);
     process.exit(1);
