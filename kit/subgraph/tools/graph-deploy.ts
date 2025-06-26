@@ -521,7 +521,7 @@ async function generateCode(): Promise<void> {
   try {
     logger.info("Generating TypeScript code from GraphQL schema...");
 
-    await Bun.$`bunx turbo codegen`.cwd(graphPaths!.subgraphRoot);
+    await Bun.$`bun run codegen`.cwd(graphPaths!.subgraphRoot);
 
     logger.info("TypeScript code generation completed");
   } catch (error) {
