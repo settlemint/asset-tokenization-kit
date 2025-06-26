@@ -2,9 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "codegen": {
-      "dependsOn": ["codegen:graph", "codegen:interfaceid"]
-    },
-    "codegen:graph": {
+      "dependsOn": ["codegen:interfaceid"],
       "outputs": ["generated/**"],
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },
