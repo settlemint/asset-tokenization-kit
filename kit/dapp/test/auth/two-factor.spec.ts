@@ -26,8 +26,7 @@ describe("Two factor verification", () => {
     );
     expect(error).toBeNull();
     expect(data?.totpURI).toBeDefined();
-    // Enable again after https://github.com/settlemint/signer/pull/327
-    // expect(data?.totpURI).toMatch(/^otpauth:\/\/totp/);
+    expect(data?.totpURI).toMatch(/^otpauth:\/\/totp/);
   });
 
   it("can disable two factor verification", async () => {

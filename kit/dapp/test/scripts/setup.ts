@@ -6,7 +6,7 @@ import {
   setupUser,
 } from "../utils/user";
 
-let runningDevServer: Bun.Subprocess;
+let runningDevServer: Bun.Subprocess | undefined;
 
 beforeAll(async () => {
   try {
@@ -28,16 +28,10 @@ beforeAll(async () => {
   }
 });
 
-afterAll(() => {
-  runningDevServer?.kill();
-});
+afterAll(stopDevServer);
 
-process.on("SIGINT", () => {
-  runningDevServer?.kill();
-});
-process.on("exit", () => {
-  runningDevServer?.kill();
-});
+process.on("SIGINT", stopDevServer);
+process.on("exit", stopDevServer);
 
 async function startDevServerIfNotRunning() {
   if (await isDevServerRunning()) {
@@ -91,11 +85,20 @@ async function startDevServer() {
     // Output to main process stdout
     process.stdout.write(chunk);
 
-    if (/VITE v(.*) ready in/.test(output)) {
+    if (/VITE\s+v(.*)\s+ready\s+in/i.test(output)) {
       console.log("Dev server started");
       reader.releaseLock();
       break;
     }
   }
   return true;
+}
+
+async function stopDevServer() {
+  if (!runningDevServer) {
+    return;
+  }
+  console.log("Stopping dev server");
+  runningDevServer.kill();
+  runningDevServer = undefined;
 }
