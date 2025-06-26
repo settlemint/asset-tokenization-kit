@@ -33,6 +33,11 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
   const handleDeploySystem = () => {
     if (!hasSystem && !isDeploying) {
       createSystem({
+        // TODO: add user pincode
+        verification: {
+          verificationCode: "111111",
+          verificationType: "pincode",
+        },
         messages: {
           // Transaction tracking messages
           streamTimeout: t("system.transaction-tracking.stream-timeout"),

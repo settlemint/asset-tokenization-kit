@@ -36,13 +36,17 @@
       "stopOnEntry": false
     },
     {
-      "name": "Next.js: debug server-side",
-      "type": "node-terminal",
+      "type": "bun",
       "request": "launch",
-      "command": "bun dev"
+      "name": "Tanstack: debug server-side",
+      "program": "${workspaceFolder}/node_modules/vite/bin/vite.js",
+      "args": ["dev"],
+      "runtimeArgs": ["--inspect"],
+      "cwd": "${workspaceFolder}/kit/dapp",
+      "internalConsoleOptions": "openOnSessionStart"
     },
     {
-      "name": "Next.js: debug client-side",
+      "name": "Tanstack: debug client-side",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:3000"
