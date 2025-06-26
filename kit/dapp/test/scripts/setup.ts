@@ -85,7 +85,12 @@ async function startDevServer() {
     // Output to main process stdout
     process.stdout.write(chunk);
 
-    const text = Bun.inspect(output, { colors: false });
+    // Remove all ANSI colors/styles from strings
+    const text = output.replace(
+      // eslint-disable-next-line no-control-regex
+      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+      ""
+    );
     if (/VITE\s+v(.*)\s+ready\s+in/i.test(text)) {
       console.log("Dev server started");
       reader.releaseLock();
