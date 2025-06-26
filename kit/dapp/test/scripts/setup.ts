@@ -32,6 +32,13 @@ afterAll(() => {
   runningDevServer?.kill();
 });
 
+process.on("SIGINT", () => {
+  runningDevServer?.kill();
+});
+process.on("exit", () => {
+  runningDevServer?.kill();
+});
+
 async function startDevServerIfNotRunning() {
   if (await isDevServerRunning()) {
     console.log("Dev server already running");
@@ -39,10 +46,10 @@ async function startDevServerIfNotRunning() {
   }
   const result = await Promise.race([
     startDevServer(),
-    async () => {
+    (async () => {
       await new Promise((resolve) => setTimeout(resolve, 10_000));
       return false;
-    },
+    })(),
   ]);
   if (!result) {
     throw new Error("Dev server did not start in time");
@@ -54,7 +61,7 @@ async function isDevServerRunning() {
     const response = await fetch("http://localhost:3000");
     return response.ok;
   } catch {
-    return true;
+    return false;
   }
 }
 
@@ -73,7 +80,10 @@ async function startDevServer() {
 
   while (true) {
     const { done, value } = await reader.read();
-    if (done) break;
+    if (done) {
+      console.log("Dev server started");
+      break;
+    }
 
     const chunk = decoder.decode(value);
     output += chunk;
