@@ -2,7 +2,7 @@ import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 import { useMutation } from "@tanstack/react-query";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -44,19 +44,17 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
     }
   };
 
-  // Register the action with parent
-  useEffect(() => {
-    if (onRegisterAction) {
-      if (!hasWallet) {
-        onRegisterAction(handleGenerateWallet);
-      } else {
-        // Unregister by passing a no-op function when wallet exists
-        onRegisterAction(() => {
-          // No action needed when wallet already exists
-        });
-      }
+  // Register the action with parent immediately if needed
+  if (onRegisterAction) {
+    if (!hasWallet) {
+      onRegisterAction(handleGenerateWallet);
+    } else {
+      // Unregister by passing a no-op function when wallet exists
+      onRegisterAction(() => {
+        // No action needed when wallet already exists
+      });
     }
-  }, [onRegisterAction, hasWallet]);
+  }
 
   // Don't auto-advance - removed the auto success callback
 

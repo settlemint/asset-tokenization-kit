@@ -8,7 +8,7 @@ import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/platform")({
@@ -43,10 +43,6 @@ function PlatformOnboarding() {
   // Get data from loader
   const { user, systemAddress, systemDetails } = Route.useLoaderData();
 
-  // Start with first step, will update when data loads
-  const [currentStepId, setCurrentStepId] = useState("wallet");
-  const [hasInitialized, setHasInitialized] = useState(false);
-
   // Determine initial step based on what's completed
   const getInitialStep = () => {
     if (!user.wallet) return "wallet";
@@ -55,15 +51,8 @@ function PlatformOnboarding() {
     return "assets"; // Default to last step if all complete
   };
 
-  // Set initial step once when data is loaded
-  useEffect(() => {
-    // Only set initial step once when we have user data
-    if (!hasInitialized) {
-      const initialStep = getInitialStep();
-      setCurrentStepId(initialStep);
-      setHasInitialized(true);
-    }
-  }, [user, systemAddress, systemDetails, hasInitialized]);
+  // Initialize with the correct step based on loader data
+  const [currentStepId, setCurrentStepId] = useState(getInitialStep);
 
   // Define steps with dynamic statuses
   const steps: Step[] = [
