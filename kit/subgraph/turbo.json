@@ -2,6 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "codegen": {
+      "dependsOn": ["^compile"],
       "outputs": ["generated/**"],
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },
