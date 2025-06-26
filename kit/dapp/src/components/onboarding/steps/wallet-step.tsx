@@ -2,7 +2,7 @@ import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 import { useMutation } from "@tanstack/react-query";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -43,11 +43,11 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
   });
 
   // Handle generate wallet
-  const handleGenerateWallet = () => {
+  const handleGenerateWallet = useCallback(() => {
     if (user?.id && !isPending && !hasWallet) {
       generateWallet();
     }
-  };
+  }, [user?.id, isPending, hasWallet, generateWallet]);
 
   // Register the action with parent
   useEffect(() => {
