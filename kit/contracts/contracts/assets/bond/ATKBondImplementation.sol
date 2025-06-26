@@ -200,7 +200,7 @@ contract ATKBondImplementation is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE after maturity date
     /// @dev Requires sufficient underlying assets for all potential redemptions
     /// @dev TODO: check role
-    function mature() external override onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE) {
+    function mature() external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         if (block.timestamp < _maturityDate) revert BondNotYetMatured();
         if (isMatured) revert BondAlreadyMatured();
 
@@ -214,23 +214,19 @@ contract ATKBondImplementation is
 
     // --- ISMART Implementation ---
 
-    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE) {
+    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setOnchainID(_onchainID);
     }
 
     function setIdentityRegistry(address _identityRegistry)
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_setIdentityRegistry(_identityRegistry);
     }
 
-    function setCompliance(address _compliance)
-        external
-        override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
-    {
+    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setCompliance(_compliance);
     }
 
@@ -240,7 +236,7 @@ contract ATKBondImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
     }
@@ -296,7 +292,7 @@ contract ATKBondImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_addComplianceModule(_module, _params);
     }
@@ -304,7 +300,7 @@ contract ATKBondImplementation is
     function removeComplianceModule(address _module)
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_removeComplianceModule(_module);
     }
@@ -455,11 +451,7 @@ contract ATKBondImplementation is
 
     // --- ISMARTYield Implementation ---
 
-    function setYieldSchedule(address schedule)
-        external
-        override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
-    {
+    function setYieldSchedule(address schedule) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setYieldSchedule(schedule);
     }
 

@@ -141,7 +141,7 @@ contract ATKSystemAddonRegistryTest is Test {
         bytes memory initData = abi.encodeWithSelector(mockAddon.initialize.selector, address(systemUtils.system()));
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.DEFAULT_ADMIN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.REGISTRAR_ROLE
             )
         );
         registry.registerSystemAddon("TestAddon", address(mockAddon), initData);
@@ -198,7 +198,9 @@ contract ATKSystemAddonRegistryTest is Test {
         vm.prank(user);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.DEFAULT_ADMIN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector,
+                user,
+                ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE
             )
         );
         registry.setAddonImplementation(addonTypeHash, address(newMockAddon));

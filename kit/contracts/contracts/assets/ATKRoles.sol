@@ -11,7 +11,7 @@ library ATKRoles {
 
     /// @notice Role for managing token governance, verification, and compliance
     /// @dev Assigned to entities responsible for token policy and regulatory compliance
-    bytes32 public constant TOKEN_GOVERNANCE_ROLE = keccak256("TOKEN_GOVERNANCE_ROLE");
+    bytes32 public constant GOVERNANCE_ROLE = keccak256("GOVERNANCE_ROLE");
 
     /// @notice Role for managing token supply operations
     /// @dev Assigned to entities that can mint and burn tokens
