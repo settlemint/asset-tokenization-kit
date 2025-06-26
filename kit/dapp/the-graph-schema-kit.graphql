@@ -18,8 +18,8 @@ type AccessControl {
   claimManager(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
   deployer(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
   storageModifier(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
-  manageRegistries(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
-  tokenGovernance(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
+  registryManager(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
+  governance(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
   supplyManagement(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
   custodian(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
   emergency(skip: Int = 0, first: Int = 100, orderBy: Account_orderBy, orderDirection: OrderDirection, where: Account_filter): [Account!]!
@@ -74,20 +74,20 @@ input AccessControl_filter {
   storageModifier_not_contains: [String!]
   storageModifier_not_contains_nocase: [String!]
   storageModifier_: Account_filter
-  manageRegistries: [String!]
-  manageRegistries_not: [String!]
-  manageRegistries_contains: [String!]
-  manageRegistries_contains_nocase: [String!]
-  manageRegistries_not_contains: [String!]
-  manageRegistries_not_contains_nocase: [String!]
-  manageRegistries_: Account_filter
-  tokenGovernance: [String!]
-  tokenGovernance_not: [String!]
-  tokenGovernance_contains: [String!]
-  tokenGovernance_contains_nocase: [String!]
-  tokenGovernance_not_contains: [String!]
-  tokenGovernance_not_contains_nocase: [String!]
-  tokenGovernance_: Account_filter
+  registryManager: [String!]
+  registryManager_not: [String!]
+  registryManager_contains: [String!]
+  registryManager_contains_nocase: [String!]
+  registryManager_not_contains: [String!]
+  registryManager_not_contains_nocase: [String!]
+  registryManager_: Account_filter
+  governance: [String!]
+  governance_not: [String!]
+  governance_contains: [String!]
+  governance_contains_nocase: [String!]
+  governance_not_contains: [String!]
+  governance_not_contains_nocase: [String!]
+  governance_: Account_filter
   supplyManagement: [String!]
   supplyManagement_not: [String!]
   supplyManagement_contains: [String!]
@@ -144,8 +144,8 @@ enum AccessControl_orderBy {
   claimManager
   deployer
   storageModifier
-  manageRegistries
-  tokenGovernance
+  registryManager
+  governance
   supplyManagement
   custodian
   emergency

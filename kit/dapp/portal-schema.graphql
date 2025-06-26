@@ -4265,6 +4265,16 @@ input ATKIdentityFactoryImplementationInitializeInput {
   initialAdmin: String!
 
   """
+  The addresses that will be granted initial administrative and registrar privileges over this factory for identity issuers.
+  """
+  initialIdentityIssuerAdmins: [String!]!
+
+  """
+  The addresses that will be granted initial administrative and registrar privileges over this factory for token identity issuers.
+  """
+  initialTokenIdentityIssuerAdmins: [String!]!
+
+  """
   The address of the central `IATKSystem` contract. This contract is crucial as it dictates                      which identity logic implementation contracts the new identity proxies will point to.
   """
   systemAddress: String!
@@ -4496,7 +4506,6 @@ input ATKIdentityImplementationRevokeClaimBySignatureInput {
 input ATKIdentityImplementationRevokeClaimInput {
   """The ID of the claim to revoke"""
   _claimId: String!
-  _identity: String!
 }
 
 """Returns the transaction hash"""
@@ -5199,9 +5208,6 @@ type ATKLinearVestingStrategy {
   Always true for linear vesting strategy.
   """
   supportsMultipleClaims: ATKLinearVestingStrategySupportsMultipleClaimsOutput
-
-  """Returns a unique identifier for the type of this contract."""
-  typeId: String
 
   """
   Returns the total vesting duration.
@@ -7169,6 +7175,12 @@ type ATKSystemRoles {
   """Role for token deployers."""
   DEPLOYER_ROLE: String
 
+  """Role for managing identity issuers."""
+  IDENTITY_ISSUER_ADMIN_ROLE: String
+
+  """Role for managing identity issuers."""
+  IDENTITY_ISSUER_ROLE: String
+
   """Role for managing implementation addresses."""
   IMPLEMENTATION_MANAGER_ROLE: String
 
@@ -7184,6 +7196,12 @@ type ATKSystemRoles {
   A unique identifier (hash) for the role that grants permission to modify the data stored in this contract.
   """
   STORAGE_MODIFIER_ROLE: String
+
+  """Role for managing token identity issuers."""
+  TOKEN_IDENTITY_ISSUER_ADMIN_ROLE: String
+
+  """Role for token identity issuers."""
+  TOKEN_IDENTITY_ISSUER_ROLE: String
   id: ID
 }
 
@@ -9554,6 +9572,12 @@ type ATKVestingAirdropImplementation {
   MAX_BATCH_SIZE: String
 
   """
+  Returns the claim period end timestamp.
+  The timestamp after which no new vesting can be initialized.
+  """
+  claimPeriodEnd: String
+
+  """
   Returns the claim tracker contract.
   The claim tracker contract.
   """
@@ -9571,12 +9595,6 @@ type ATKVestingAirdropImplementation {
   """
   getInitializationTimestamp(index: String!): String
   id: ID
-
-  """
-  Returns the initialization deadline timestamp.
-  The timestamp after which no new vesting can be initialized.
-  """
-  initializationDeadline: String
 
   """
   Checks if a claim has been fully claimed for a specific index.
@@ -12650,11 +12668,6 @@ input DeployContractCountryBlockListComplianceModuleInput {
   _trustedForwarder: String!
 }
 
-input DeployContractERC734Input {
-  _isLibrary: Boolean!
-  initialManagementKey: String!
-}
-
 input DeployContractIdentityAllowListComplianceModuleInput {
   _trustedForwarder: String!
 }
@@ -12751,10 +12764,6 @@ type ERC734GetKeyPurposesOutput {
 
 type ERC734GetKeysByPurposeOutput {
   keys: [String!]
-}
-
-input ERC734InitializeInput {
-  initialManagementKey: String!
 }
 
 type ERC734KeyHasPurposeOutput {
@@ -16096,6 +16105,8 @@ type IATKIdentityFactoryGetTokenIdentityOutput {
 
 input IATKIdentityFactoryInitializeInput {
   initialAdmin: String!
+  initialIdentityIssuerAdmins: [String!]!
+  initialTokenIdentityIssuerAdmins: [String!]!
   systemAddress: String!
 }
 
@@ -16625,115 +16636,6 @@ type IATKIdentityTransactionOutput {
 
 """Returns the transaction receipt"""
 type IATKIdentityTransactionReceiptOutput {
-  """Blob Gas Price"""
-  blobGasPrice: String
-
-  """Blob Gas Used"""
-  blobGasUsed: String
-
-  """Block Hash"""
-  blockHash: String!
-
-  """Block Number"""
-  blockNumber: String!
-
-  """Contract Address"""
-  contractAddress: String
-
-  """Cumulative Gas Used"""
-  cumulativeGasUsed: String!
-
-  """Effective Gas Price"""
-  effectiveGasPrice: String!
-
-  """Events (decoded from the logs)"""
-  events: JSON!
-
-  """From"""
-  from: String!
-
-  """Gas Used"""
-  gasUsed: String!
-
-  """Logs"""
-  logs: JSON!
-
-  """Logs Bloom"""
-  logsBloom: String!
-
-  """ABI-encoded string containing the revert reason"""
-  revertReason: String
-
-  """Decoded revert reason"""
-  revertReasonDecoded: String
-
-  """Root"""
-  root: String
-
-  """Status"""
-  status: TransactionReceiptStatus!
-
-  """To"""
-  to: String
-
-  """Transaction Hash"""
-  transactionHash: String!
-
-  """Transaction Index"""
-  transactionIndex: Int!
-
-  """Type"""
-  type: String!
-
-  """List of user operation receipts associated with this transaction"""
-  userOperationReceipts: [UserOperationReceipt!]
-}
-
-type IATKLinearVestingStrategy {
-  """
-  Calculates the amount claimable based on the strategy's vesting parameters.
-  The amount that can be claimed now.
-  """
-  calculateClaimableAmount(account: String!, claimedAmount: String!, totalAmount: String!, vestingStartTime: String!): IATKLinearVestingStrategyCalculateClaimableAmountOutput
-
-  """
-  Returns the cliff duration.
-  The cliff duration in seconds.
-  """
-  cliffDuration: String
-  id: ID
-
-  """
-  Returns whether this strategy supports multiple claims (vesting).
-  True if the strategy supports multiple claims over time.
-  """
-  supportsMultipleClaims: IATKLinearVestingStrategySupportsMultipleClaimsOutput
-
-  """Returns a unique identifier for the type of this contract."""
-  typeId: String
-
-  """
-  Returns the total vesting duration.
-  The vesting duration in seconds.
-  """
-  vestingDuration: String
-}
-
-type IATKLinearVestingStrategyCalculateClaimableAmountOutput {
-  claimableAmount: String
-}
-
-type IATKLinearVestingStrategySupportsMultipleClaimsOutput {
-  supportsMultiple: Boolean
-}
-
-"""Returns the transaction hash"""
-type IATKLinearVestingStrategyTransactionOutput {
-  transactionHash: String
-}
-
-"""Returns the transaction receipt"""
-type IATKLinearVestingStrategyTransactionReceiptOutput {
   """Blob Gas Price"""
   blobGasPrice: String
 
@@ -19344,6 +19246,12 @@ type IATKVaultFactoryTransactionReceiptOutput {
 
 type IATKVestingAirdrop {
   """
+  Returns the claim period end timestamp.
+  The timestamp after which no new vesting can be initialized.
+  """
+  claimPeriodEnd: String
+
+  """
   Returns the claim tracker contract.
   The claim tracker contract.
   """
@@ -19361,12 +19269,6 @@ type IATKVestingAirdrop {
   """
   getInitializationTimestamp(index: String!): String
   id: ID
-
-  """
-  Returns the initialization deadline timestamp.
-  The timestamp after which no new vesting can be initialized.
-  """
-  initializationDeadline: String
 
   """
   Checks if a claim has been fully claimed for a specific index.
@@ -19682,9 +19584,6 @@ type IATKVestingStrategy {
   True if the strategy supports multiple claims over time.
   """
   supportsMultipleClaims: IATKVestingStrategySupportsMultipleClaimsOutput
-
-  """Returns a unique identifier for the type of this contract."""
-  typeId: String
 }
 
 type IATKVestingStrategyCalculateClaimableAmountOutput {
@@ -42146,7 +42045,6 @@ type Mutation {
     Challenge response that is used to verify access to the private key of the from address
     """
     challengeResponse: String
-    constructorArguments: DeployContractERC734Input!
 
     """The address of the sender"""
     from: String!
@@ -42593,31 +42491,6 @@ type Mutation {
 
   """Deploy a IATKIdentityRegistryStorage contract"""
   DeployContractIATKIdentityRegistryStorage(
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ContractDeploymentTransactionOutput
-
-  """Deploy a IATKLinearVestingStrategy contract"""
-  DeployContractIATKLinearVestingStrategy(
     """
     Challenge response that is used to verify access to the private key of the from address
     """
@@ -44691,39 +44564,6 @@ type Mutation {
     """Gas price"""
     gasPrice: String
     input: ERC734ExecuteInput!
-
-    """Metadata (store custom metadata from your application)"""
-    metadata: JSON
-
-    """Simulate the transaction before sending it"""
-    simulate: Boolean
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ERC734TransactionOutput
-  ERC734Initialize(
-    """The address of the contract"""
-    address: String!
-
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-    input: ERC734InitializeInput!
 
     """Metadata (store custom metadata from your application)"""
     metadata: JSON
@@ -59966,12 +59806,6 @@ type Mutation {
     """
     verificationId: String
   ): OnChainIdentityWithRevocationTransactionOutput
-
-  """
-  will fetch the claim from the identity contract (unsafe).
-  Revoke a claim previously issued, the claim is no longer considered as valid after revocation.
-  isRevoked true when the claim is revoked.
-  """
   OnChainIdentityWithRevocationRevokeClaim(
     """The address of the contract"""
     address: String!
@@ -60005,10 +59839,6 @@ type Mutation {
     """
     verificationId: String
   ): OnChainIdentityWithRevocationTransactionOutput
-
-  """
-  Revoke a claim previously issued, the claim is no longer considered as valid after revocation.
-  """
   OnChainIdentityWithRevocationRevokeClaimBySignature(
     """The address of the contract"""
     address: String!
@@ -74425,16 +74255,11 @@ input OnChainIdentityWithRevocationRemoveKeyInput {
 }
 
 input OnChainIdentityWithRevocationRevokeClaimBySignatureInput {
-  """the signature of the claim"""
   signature: String!
 }
 
 input OnChainIdentityWithRevocationRevokeClaimInput {
-  """the id of the claim"""
   _claimId: String!
-
-  """the address of the identity contract"""
-  _identity: String!
 }
 
 """Returns the transaction hash"""
@@ -77453,12 +77278,6 @@ type Query {
   ): ERC734TransactionReceiptOutput
 
   """Fetches the receipt for the given transaction hash"""
-  ERC734InitializeReceipt(
-    """The transaction hash"""
-    transactionHash: String!
-  ): ERC734TransactionReceiptOutput
-
-  """Fetches the receipt for the given transaction hash"""
   ERC734RemoveKeyReceipt(
     """The transaction hash"""
     transactionHash: String!
@@ -78609,10 +78428,6 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): IATKIdentityTransactionReceiptOutput
-  IATKLinearVestingStrategy(
-    """The address of the contract"""
-    address: String!
-  ): IATKLinearVestingStrategy
   IATKPushAirdrop(
     """The address of the contract"""
     address: String!
@@ -84613,20 +84428,6 @@ type Query {
   ): ContractsDeployStatusPaginatedOutput
 
   """
-  Get all contracts with their deployment status for the IATKLinearVestingStrategy ABI
-  """
-  getContractsDeployStatusIatkLinearVestingStrategy(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
   Get all contracts with their deployment status for the IATKPushAirdrop ABI
   """
   getContractsDeployStatusIatkPushAirdrop(
@@ -85918,18 +85719,6 @@ type Query {
 
   """Get all contracts for the IATKIdentityRegistryStorage ABI"""
   getContractsIatkIdentityRegistryStorage(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsPaginatedOutput
-
-  """Get all contracts for the IATKLinearVestingStrategy ABI"""
-  getContractsIatkLinearVestingStrategy(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -95677,20 +95466,6 @@ type Subscription {
   Get all contracts with their deployment status for the IATKIdentityRegistryStorage ABI
   """
   getContractsDeployStatusIatkIdentityRegistryStorage(
-    """Page number, starts from 0"""
-    page: Int = 0
-
-    """Number of items per page"""
-    pageSize: Int = 100
-
-    """Transaction hash filter"""
-    transactionHash: String
-  ): ContractsDeployStatusPaginatedOutput
-
-  """
-  Get all contracts with their deployment status for the IATKLinearVestingStrategy ABI
-  """
-  getContractsDeployStatusIatkLinearVestingStrategy(
     """Page number, starts from 0"""
     page: Int = 0
 

@@ -101,17 +101,17 @@ columns and relationships of "account"
 """
 type account {
   access_token: String
-  access_token_expires_at: timestamptz
+  access_token_expires_at: timestamp
   account_id: String!
-  created_at: timestamptz!
+  created_at: timestamp!
   id: String!
   id_token: String
   password: String
   provider_id: String!
   refresh_token: String
-  refresh_token_expires_at: timestamptz
+  refresh_token_expires_at: timestamp
   scope: String
-  updated_at: timestamptz!
+  updated_at: timestamp!
   user_id: String!
 }
 
@@ -140,17 +140,17 @@ input account_bool_exp {
   _not: account_bool_exp
   _or: [account_bool_exp!]
   access_token: String_comparison_exp
-  access_token_expires_at: timestamptz_comparison_exp
+  access_token_expires_at: timestamp_comparison_exp
   account_id: String_comparison_exp
-  created_at: timestamptz_comparison_exp
+  created_at: timestamp_comparison_exp
   id: String_comparison_exp
   id_token: String_comparison_exp
   password: String_comparison_exp
   provider_id: String_comparison_exp
   refresh_token: String_comparison_exp
-  refresh_token_expires_at: timestamptz_comparison_exp
+  refresh_token_expires_at: timestamp_comparison_exp
   scope: String_comparison_exp
-  updated_at: timestamptz_comparison_exp
+  updated_at: timestamp_comparison_exp
   user_id: String_comparison_exp
 }
 
@@ -169,51 +169,51 @@ input type for inserting data into table "account"
 """
 input account_insert_input {
   access_token: String
-  access_token_expires_at: timestamptz
+  access_token_expires_at: timestamp
   account_id: String
-  created_at: timestamptz
+  created_at: timestamp
   id: String
   id_token: String
   password: String
   provider_id: String
   refresh_token: String
-  refresh_token_expires_at: timestamptz
+  refresh_token_expires_at: timestamp
   scope: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_id: String
 }
 
 """aggregate max on columns"""
 type account_max_fields {
   access_token: String
-  access_token_expires_at: timestamptz
+  access_token_expires_at: timestamp
   account_id: String
-  created_at: timestamptz
+  created_at: timestamp
   id: String
   id_token: String
   password: String
   provider_id: String
   refresh_token: String
-  refresh_token_expires_at: timestamptz
+  refresh_token_expires_at: timestamp
   scope: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_id: String
 }
 
 """aggregate min on columns"""
 type account_min_fields {
   access_token: String
-  access_token_expires_at: timestamptz
+  access_token_expires_at: timestamp
   account_id: String
-  created_at: timestamptz
+  created_at: timestamp
   id: String
   id_token: String
   password: String
   provider_id: String
   refresh_token: String
-  refresh_token_expires_at: timestamptz
+  refresh_token_expires_at: timestamp
   scope: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_id: String
 }
 
@@ -308,17 +308,17 @@ input type for updating data in table "account"
 """
 input account_set_input {
   access_token: String
-  access_token_expires_at: timestamptz
+  access_token_expires_at: timestamp
   account_id: String
-  created_at: timestamptz
+  created_at: timestamp
   id: String
   id_token: String
   password: String
   provider_id: String
   refresh_token: String
-  refresh_token_expires_at: timestamptz
+  refresh_token_expires_at: timestamp
   scope: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_id: String
 }
 
@@ -336,17 +336,17 @@ input account_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input account_stream_cursor_value_input {
   access_token: String
-  access_token_expires_at: timestamptz
+  access_token_expires_at: timestamp
   account_id: String
-  created_at: timestamptz
+  created_at: timestamp
   id: String
   id_token: String
   password: String
   provider_id: String
   refresh_token: String
-  refresh_token_expires_at: timestamptz
+  refresh_token_expires_at: timestamp
   scope: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_id: String
 }
 
@@ -406,13 +406,13 @@ input account_updates {
 columns and relationships of "apikey"
 """
 type apikey {
-  created_at: timestamptz!
+  created_at: timestamp!
   enabled: Boolean
-  expires_at: timestamptz
+  expires_at: timestamp
   id: String!
   key: String!
-  last_refill_at: timestamptz
-  last_request: timestamptz
+  last_refill_at: timestamp
+  last_request: timestamp
   metadata: String
   name: String
   permissions: String
@@ -425,7 +425,7 @@ type apikey {
   remaining: Int
   request_count: Int
   start: String
-  updated_at: timestamptz!
+  updated_at: timestamp!
   user_id: String!
 }
 
@@ -471,13 +471,13 @@ input apikey_bool_exp {
   _and: [apikey_bool_exp!]
   _not: apikey_bool_exp
   _or: [apikey_bool_exp!]
-  created_at: timestamptz_comparison_exp
+  created_at: timestamp_comparison_exp
   enabled: Boolean_comparison_exp
-  expires_at: timestamptz_comparison_exp
+  expires_at: timestamp_comparison_exp
   id: String_comparison_exp
   key: String_comparison_exp
-  last_refill_at: timestamptz_comparison_exp
-  last_request: timestamptz_comparison_exp
+  last_refill_at: timestamp_comparison_exp
+  last_request: timestamp_comparison_exp
   metadata: String_comparison_exp
   name: String_comparison_exp
   permissions: String_comparison_exp
@@ -490,7 +490,7 @@ input apikey_bool_exp {
   remaining: Int_comparison_exp
   request_count: Int_comparison_exp
   start: String_comparison_exp
-  updated_at: timestamptz_comparison_exp
+  updated_at: timestamp_comparison_exp
   user_id: String_comparison_exp
 }
 
@@ -520,13 +520,13 @@ input apikey_inc_input {
 input type for inserting data into table "apikey"
 """
 input apikey_insert_input {
-  created_at: timestamptz
+  created_at: timestamp
   enabled: Boolean
-  expires_at: timestamptz
+  expires_at: timestamp
   id: String
   key: String
-  last_refill_at: timestamptz
-  last_request: timestamptz
+  last_refill_at: timestamp
+  last_request: timestamp
   metadata: String
   name: String
   permissions: String
@@ -539,18 +539,18 @@ input apikey_insert_input {
   remaining: Int
   request_count: Int
   start: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_id: String
 }
 
 """aggregate max on columns"""
 type apikey_max_fields {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   key: String
-  last_refill_at: timestamptz
-  last_request: timestamptz
+  last_refill_at: timestamp
+  last_request: timestamp
   metadata: String
   name: String
   permissions: String
@@ -562,18 +562,18 @@ type apikey_max_fields {
   remaining: Int
   request_count: Int
   start: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_id: String
 }
 
 """aggregate min on columns"""
 type apikey_min_fields {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   key: String
-  last_refill_at: timestamptz
-  last_request: timestamptz
+  last_refill_at: timestamp
+  last_request: timestamp
   metadata: String
   name: String
   permissions: String
@@ -585,7 +585,7 @@ type apikey_min_fields {
   remaining: Int
   request_count: Int
   start: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_id: String
 }
 
@@ -711,13 +711,13 @@ enum apikey_select_column {
 input type for updating data in table "apikey"
 """
 input apikey_set_input {
-  created_at: timestamptz
+  created_at: timestamp
   enabled: Boolean
-  expires_at: timestamptz
+  expires_at: timestamp
   id: String
   key: String
-  last_refill_at: timestamptz
-  last_request: timestamptz
+  last_refill_at: timestamp
+  last_request: timestamp
   metadata: String
   name: String
   permissions: String
@@ -730,7 +730,7 @@ input apikey_set_input {
   remaining: Int
   request_count: Int
   start: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_id: String
 }
 
@@ -777,13 +777,13 @@ input apikey_stream_cursor_input {
 
 """Initial value of the column from where the streaming should start"""
 input apikey_stream_cursor_value_input {
-  created_at: timestamptz
+  created_at: timestamp
   enabled: Boolean
-  expires_at: timestamptz
+  expires_at: timestamp
   id: String
   key: String
-  last_refill_at: timestamptz
-  last_request: timestamptz
+  last_refill_at: timestamp
+  last_request: timestamp
   metadata: String
   name: String
   permissions: String
@@ -796,7 +796,7 @@ input apikey_stream_cursor_value_input {
   remaining: Int
   request_count: Int
   start: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_id: String
 }
 
@@ -1412,7 +1412,7 @@ type passkey {
   aaguid: String
   backed_up: Boolean!
   counter: Int!
-  created_at: timestamptz
+  created_at: timestamp
   credential_i_d: String!
   device_type: String!
   id: String!
@@ -1462,7 +1462,7 @@ input passkey_bool_exp {
   aaguid: String_comparison_exp
   backed_up: Boolean_comparison_exp
   counter: Int_comparison_exp
-  created_at: timestamptz_comparison_exp
+  created_at: timestamp_comparison_exp
   credential_i_d: String_comparison_exp
   device_type: String_comparison_exp
   id: String_comparison_exp
@@ -1496,7 +1496,7 @@ input passkey_insert_input {
   aaguid: String
   backed_up: Boolean
   counter: Int
-  created_at: timestamptz
+  created_at: timestamp
   credential_i_d: String
   device_type: String
   id: String
@@ -1510,7 +1510,7 @@ input passkey_insert_input {
 type passkey_max_fields {
   aaguid: String
   counter: Int
-  created_at: timestamptz
+  created_at: timestamp
   credential_i_d: String
   device_type: String
   id: String
@@ -1524,7 +1524,7 @@ type passkey_max_fields {
 type passkey_min_fields {
   aaguid: String
   counter: Int
-  created_at: timestamptz
+  created_at: timestamp
   credential_i_d: String
   device_type: String
   id: String
@@ -1619,7 +1619,7 @@ input passkey_set_input {
   aaguid: String
   backed_up: Boolean
   counter: Int
-  created_at: timestamptz
+  created_at: timestamp
   credential_i_d: String
   device_type: String
   id: String
@@ -1660,7 +1660,7 @@ input passkey_stream_cursor_value_input {
   aaguid: String
   backed_up: Boolean
   counter: Int
-  created_at: timestamptz
+  created_at: timestamp
   credential_i_d: String
   device_type: String
   id: String
@@ -2046,13 +2046,13 @@ type query_root {
 columns and relationships of "session"
 """
 type session {
-  created_at: timestamptz!
-  expires_at: timestamptz!
+  created_at: timestamp!
+  expires_at: timestamp!
   id: String!
   impersonated_by: String
   ip_address: String
   token: String!
-  updated_at: timestamptz!
+  updated_at: timestamp!
   user_agent: String
   user_id: String!
 }
@@ -2081,13 +2081,13 @@ input session_bool_exp {
   _and: [session_bool_exp!]
   _not: session_bool_exp
   _or: [session_bool_exp!]
-  created_at: timestamptz_comparison_exp
-  expires_at: timestamptz_comparison_exp
+  created_at: timestamp_comparison_exp
+  expires_at: timestamp_comparison_exp
   id: String_comparison_exp
   impersonated_by: String_comparison_exp
   ip_address: String_comparison_exp
   token: String_comparison_exp
-  updated_at: timestamptz_comparison_exp
+  updated_at: timestamp_comparison_exp
   user_agent: String_comparison_exp
   user_id: String_comparison_exp
 }
@@ -2111,39 +2111,39 @@ enum session_constraint {
 input type for inserting data into table "session"
 """
 input session_insert_input {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   impersonated_by: String
   ip_address: String
   token: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_agent: String
   user_id: String
 }
 
 """aggregate max on columns"""
 type session_max_fields {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   impersonated_by: String
   ip_address: String
   token: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_agent: String
   user_id: String
 }
 
 """aggregate min on columns"""
 type session_min_fields {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   impersonated_by: String
   ip_address: String
   token: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_agent: String
   user_id: String
 }
@@ -2222,13 +2222,13 @@ enum session_select_column {
 input type for updating data in table "session"
 """
 input session_set_input {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   impersonated_by: String
   ip_address: String
   token: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_agent: String
   user_id: String
 }
@@ -2246,13 +2246,13 @@ input session_stream_cursor_input {
 
 """Initial value of the column from where the streaming should start"""
 input session_stream_cursor_value_input {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   impersonated_by: String
   ip_address: String
   token: String
-  updated_at: timestamptz
+  updated_at: timestamp
   user_agent: String
   user_id: String
 }
@@ -2881,45 +2881,26 @@ input timestamp_comparison_exp {
   _nin: [timestamp!]
 }
 
-scalar timestamptz
-
-"""
-Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'.
-"""
-input timestamptz_comparison_exp {
-  _eq: timestamptz
-  _gt: timestamptz
-  _gte: timestamptz
-  _in: [timestamptz!]
-  _is_null: Boolean
-  _lt: timestamptz
-  _lte: timestamptz
-  _neq: timestamptz
-  _nin: [timestamptz!]
-}
-
 """
 columns and relationships of "user"
 """
 type user {
-  ban_expires: timestamptz
+  ban_expires: timestamp
   ban_reason: String
   banned: Boolean
-  created_at: timestamptz!
+  created_at: timestamp!
   email: String!
   email_verified: Boolean!
   id: String!
   image: String
-  initial_onboarding_finished: Boolean!
-  last_login_at: timestamptz
+  initial_onboarding_finished: Boolean
   name: String!
-  pincode_enabled: Boolean!
+  pincode_enabled: Boolean
   pincode_verification_id: String
   role: String
   secret_code_verification_id: String
-  two_factor_enabled: Boolean!
   two_factor_verification_id: String
-  updated_at: timestamptz!
+  updated_at: timestamp!
   wallet: String
 }
 
@@ -2947,24 +2928,22 @@ input user_bool_exp {
   _and: [user_bool_exp!]
   _not: user_bool_exp
   _or: [user_bool_exp!]
-  ban_expires: timestamptz_comparison_exp
+  ban_expires: timestamp_comparison_exp
   ban_reason: String_comparison_exp
   banned: Boolean_comparison_exp
-  created_at: timestamptz_comparison_exp
+  created_at: timestamp_comparison_exp
   email: String_comparison_exp
   email_verified: Boolean_comparison_exp
   id: String_comparison_exp
   image: String_comparison_exp
   initial_onboarding_finished: Boolean_comparison_exp
-  last_login_at: timestamptz_comparison_exp
   name: String_comparison_exp
   pincode_enabled: Boolean_comparison_exp
   pincode_verification_id: String_comparison_exp
   role: String_comparison_exp
   secret_code_verification_id: String_comparison_exp
-  two_factor_enabled: Boolean_comparison_exp
   two_factor_verification_id: String_comparison_exp
-  updated_at: timestamptz_comparison_exp
+  updated_at: timestamp_comparison_exp
   wallet: String_comparison_exp
 }
 
@@ -3007,60 +2986,56 @@ enum user_constraint {
 input type for inserting data into table "user"
 """
 input user_insert_input {
-  ban_expires: timestamptz
+  ban_expires: timestamp
   ban_reason: String
   banned: Boolean
-  created_at: timestamptz
+  created_at: timestamp
   email: String
   email_verified: Boolean
   id: String
   image: String
   initial_onboarding_finished: Boolean
-  last_login_at: timestamptz
   name: String
   pincode_enabled: Boolean
   pincode_verification_id: String
   role: String
   secret_code_verification_id: String
-  two_factor_enabled: Boolean
   two_factor_verification_id: String
-  updated_at: timestamptz
+  updated_at: timestamp
   wallet: String
 }
 
 """aggregate max on columns"""
 type user_max_fields {
-  ban_expires: timestamptz
+  ban_expires: timestamp
   ban_reason: String
-  created_at: timestamptz
+  created_at: timestamp
   email: String
   id: String
   image: String
-  last_login_at: timestamptz
   name: String
   pincode_verification_id: String
   role: String
   secret_code_verification_id: String
   two_factor_verification_id: String
-  updated_at: timestamptz
+  updated_at: timestamp
   wallet: String
 }
 
 """aggregate min on columns"""
 type user_min_fields {
-  ban_expires: timestamptz
+  ban_expires: timestamp
   ban_reason: String
-  created_at: timestamptz
+  created_at: timestamp
   email: String
   id: String
   image: String
-  last_login_at: timestamptz
   name: String
   pincode_verification_id: String
   role: String
   secret_code_verification_id: String
   two_factor_verification_id: String
-  updated_at: timestamptz
+  updated_at: timestamp
   wallet: String
 }
 
@@ -3095,13 +3070,11 @@ input user_order_by {
   id: order_by
   image: order_by
   initial_onboarding_finished: order_by
-  last_login_at: order_by
   name: order_by
   pincode_enabled: order_by
   pincode_verification_id: order_by
   role: order_by
   secret_code_verification_id: order_by
-  two_factor_enabled: order_by
   two_factor_verification_id: order_by
   updated_at: order_by
   wallet: order_by
@@ -3144,9 +3117,6 @@ enum user_select_column {
   initial_onboarding_finished
 
   """column name"""
-  last_login_at
-
-  """column name"""
   name
 
   """column name"""
@@ -3162,9 +3132,6 @@ enum user_select_column {
   secret_code_verification_id
 
   """column name"""
-  two_factor_enabled
-
-  """column name"""
   two_factor_verification_id
 
   """column name"""
@@ -3178,24 +3145,22 @@ enum user_select_column {
 input type for updating data in table "user"
 """
 input user_set_input {
-  ban_expires: timestamptz
+  ban_expires: timestamp
   ban_reason: String
   banned: Boolean
-  created_at: timestamptz
+  created_at: timestamp
   email: String
   email_verified: Boolean
   id: String
   image: String
   initial_onboarding_finished: Boolean
-  last_login_at: timestamptz
   name: String
   pincode_enabled: Boolean
   pincode_verification_id: String
   role: String
   secret_code_verification_id: String
-  two_factor_enabled: Boolean
   two_factor_verification_id: String
-  updated_at: timestamptz
+  updated_at: timestamp
   wallet: String
 }
 
@@ -3212,24 +3177,22 @@ input user_stream_cursor_input {
 
 """Initial value of the column from where the streaming should start"""
 input user_stream_cursor_value_input {
-  ban_expires: timestamptz
+  ban_expires: timestamp
   ban_reason: String
   banned: Boolean
-  created_at: timestamptz
+  created_at: timestamp
   email: String
   email_verified: Boolean
   id: String
   image: String
   initial_onboarding_finished: Boolean
-  last_login_at: timestamptz
   name: String
   pincode_enabled: Boolean
   pincode_verification_id: String
   role: String
   secret_code_verification_id: String
-  two_factor_enabled: Boolean
   two_factor_verification_id: String
-  updated_at: timestamptz
+  updated_at: timestamp
   wallet: String
 }
 
@@ -3265,9 +3228,6 @@ enum user_update_column {
   initial_onboarding_finished
 
   """column name"""
-  last_login_at
-
-  """column name"""
   name
 
   """column name"""
@@ -3281,9 +3241,6 @@ enum user_update_column {
 
   """column name"""
   secret_code_verification_id
-
-  """column name"""
-  two_factor_enabled
 
   """column name"""
   two_factor_verification_id
@@ -3307,11 +3264,11 @@ input user_updates {
 columns and relationships of "verification"
 """
 type verification {
-  created_at: timestamptz
-  expires_at: timestamptz!
+  created_at: timestamp
+  expires_at: timestamp!
   id: String!
   identifier: String!
-  updated_at: timestamptz
+  updated_at: timestamp
   value: String!
 }
 
@@ -3339,11 +3296,11 @@ input verification_bool_exp {
   _and: [verification_bool_exp!]
   _not: verification_bool_exp
   _or: [verification_bool_exp!]
-  created_at: timestamptz_comparison_exp
-  expires_at: timestamptz_comparison_exp
+  created_at: timestamp_comparison_exp
+  expires_at: timestamp_comparison_exp
   id: String_comparison_exp
   identifier: String_comparison_exp
-  updated_at: timestamptz_comparison_exp
+  updated_at: timestamp_comparison_exp
   value: String_comparison_exp
 }
 
@@ -3361,31 +3318,31 @@ enum verification_constraint {
 input type for inserting data into table "verification"
 """
 input verification_insert_input {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   identifier: String
-  updated_at: timestamptz
+  updated_at: timestamp
   value: String
 }
 
 """aggregate max on columns"""
 type verification_max_fields {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   identifier: String
-  updated_at: timestamptz
+  updated_at: timestamp
   value: String
 }
 
 """aggregate min on columns"""
 type verification_min_fields {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   identifier: String
-  updated_at: timestamptz
+  updated_at: timestamp
   value: String
 }
 
@@ -3451,11 +3408,11 @@ enum verification_select_column {
 input type for updating data in table "verification"
 """
 input verification_set_input {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   identifier: String
-  updated_at: timestamptz
+  updated_at: timestamp
   value: String
 }
 
@@ -3472,11 +3429,11 @@ input verification_stream_cursor_input {
 
 """Initial value of the column from where the streaming should start"""
 input verification_stream_cursor_value_input {
-  created_at: timestamptz
-  expires_at: timestamptz
+  created_at: timestamp
+  expires_at: timestamp
   id: String
   identifier: String
-  updated_at: timestamptz
+  updated_at: timestamp
   value: String
 }
 
