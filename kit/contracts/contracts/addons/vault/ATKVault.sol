@@ -181,6 +181,7 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         // Grant admin role to the initial owner
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(EMERGENCY_ROLE, initialOwner);
+        _grantRole(GOVERNANCE_ROLE, initialOwner);
 
         // Grant signer role to all initial signers
         for (uint256 i = 0; i < len; ++i) {
