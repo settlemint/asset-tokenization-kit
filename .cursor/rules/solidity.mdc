@@ -1,3 +1,8 @@
+---
+description: 
+globs: *.sol
+alwaysApply: false
+---
 # Solidity Development Guidelines for Asset Tokenization Kit
 
 ## General Principles

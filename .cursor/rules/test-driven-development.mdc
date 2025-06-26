@@ -1,7 +1,7 @@
 ---
-description:
-globs:
-alwaysApply: false
+description: 
+globs: 
+alwaysApply: true
 ---
 # Test-Driven Development (TDD)
 
@@ -213,7 +213,7 @@ Test user-visible behavior:
 // ❌ Bad - Testing implementation
 it("should update state when button clicked", () => {
   const { result } = renderHook(() => useState(0));
-  act(() => result.current[1](1));
+  act(() => result.current[1](mdc:1));
   expect(result.current[0]).toBe(1);
 });
 

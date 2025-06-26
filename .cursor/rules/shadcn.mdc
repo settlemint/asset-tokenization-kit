@@ -1,6 +1,6 @@
 ---
 description: 
-globs: 
+globs: *.tsx
 alwaysApply: false
 ---
 The following official shadcn-ui components are available. Please check to see if they are installed under `./kit/dapp/components/ui` before installing them with `bunx shadcn@canary add <component-id>`.
