@@ -53,7 +53,7 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
   useEffect(() => {
     if (onRegisterAction) {
       if (!hasWallet) {
-        onRegisterAction(generateWallet);
+        onRegisterAction(handleGenerateWallet);
       } else {
         // Unregister by passing a no-op function when wallet exists
         onRegisterAction(() => {
