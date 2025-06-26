@@ -100,10 +100,8 @@ contract ATKTokenSaleFactoryTestable is Initializable, AccessControlUpgradeable 
 
         saleAddress = Create2.deploy(0, salt, bytecode);
 
-        // Update tracking
-        isTokenSale[saleAddress] = true;
-
-        // Set the sale admin role
+        // Set the sale admin roles before marking as managed
+        // If any of these fail, the transaction reverts and the proxy isn't tracked
         bytes4 grantRoleSig = bytes4(keccak256("grantRole(bytes32,address)"));
 
         // Grant DEFAULT_ADMIN_ROLE
@@ -120,6 +118,9 @@ contract ATKTokenSaleFactoryTestable is Initializable, AccessControlUpgradeable 
         bytes32 fundsManagerRole = keccak256("FUNDS_MANAGER_ROLE");
         (bool success2,) = saleAddress.call(abi.encodeWithSelector(grantRoleSig, fundsManagerRole, saleAdmin));
         require(success2, "Failed to grant FUNDS_MANAGER_ROLE");
+
+        // Only after all role grants succeed, mark as managed
+        isTokenSale[saleAddress] = true;
 
         emit TokenSaleDeployed(saleAddress, tokenAddress, saleAdmin);
 

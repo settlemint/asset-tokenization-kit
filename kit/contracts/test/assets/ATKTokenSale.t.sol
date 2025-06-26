@@ -274,7 +274,7 @@ contract ATKTokenSaleTest is Test {
         uint256 invalidMax = 50 * 1e18; // max < min
 
         vm.prank(admin);
-        vm.expectRevert(abi.encodeWithSignature("InvalidPriceCalculation()"));
+        vm.expectRevert(abi.encodeWithSignature("InvalidRange()"));
         tokenSale.setPurchaseLimits(invalidMin, invalidMax);
     }
 
@@ -302,13 +302,13 @@ contract ATKTokenSaleTest is Test {
 
     function test_AddPaymentCurrency_FailsWithZeroAddress() public {
         vm.prank(admin);
-        vm.expectRevert(abi.encodeWithSignature("Unauthorized()"));
+        vm.expectRevert(abi.encodeWithSignature("InvalidAddress()"));
         tokenSale.addPaymentCurrency(address(0), 1e18);
     }
 
     function test_AddPaymentCurrency_FailsWithZeroRatio() public {
         vm.prank(admin);
-        vm.expectRevert(abi.encodeWithSignature("InvalidPriceCalculation()"));
+        vm.expectRevert(abi.encodeWithSignature("InvalidParameter()"));
         tokenSale.addPaymentCurrency(address(usdc), 0);
     }
 
@@ -462,7 +462,7 @@ contract ATKTokenSaleTest is Test {
 
     function test_WithdrawFunds_RequiresValidRecipient() public {
         vm.prank(fundsManager);
-        vm.expectRevert(abi.encodeWithSignature("Unauthorized()"));
+        vm.expectRevert(abi.encodeWithSignature("InvalidAddress()"));
         tokenSale.withdrawFunds(address(0), address(0));
     }
 
