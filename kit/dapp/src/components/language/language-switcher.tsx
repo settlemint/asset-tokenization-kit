@@ -8,7 +8,7 @@ import {
 import { supportedLanguages } from "@/lib/i18n";
 import { useMounted } from "@/lib/utils/use-mounted";
 import { Check, Languages } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 // Language display names mapping
@@ -45,21 +45,6 @@ export function LanguageSwitcher({
   const { i18n, t } = useTranslation("language");
   const [isPending, setIsPending] = useState(false);
 
-  /**
-   * Handles setting a new language.
-   * @param locale - The new locale to set.
-   */
-  const handleSetLanguage = useCallback(
-    (locale: string) => {
-      if (locale === i18n.language) return;
-
-      setIsPending(true);
-      void i18n.changeLanguage(locale).then(() => {
-        setIsPending(false);
-      });
-    },
-    [i18n]
-  );
 
   // Show skeleton during SSR to prevent hydration mismatch
   if (!mounted) {
@@ -91,7 +76,11 @@ export function LanguageSwitcher({
           <DropdownMenuItem
             key={locale}
             onClick={() => {
-              handleSetLanguage(locale);
+              if (locale === i18n.language) return;
+              setIsPending(true);
+              void i18n.changeLanguage(locale).then(() => {
+                setIsPending(false);
+              });
             }}
             className="flex items-center justify-between"
             disabled={isPending || locale === i18n.language}

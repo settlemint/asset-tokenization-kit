@@ -123,14 +123,12 @@ function I18nProviderContent({ children }: { children: React.ReactNode }) {
  */
 export function I18nProvider({ children, initialLanguage }: I18nProviderProps) {
   /**
-   * Effect to handle initial language override.
+   * Handle initial language override.
    * Changes the language if initialLanguage is provided and different from current.
    */
-  useEffect(() => {
-    if (initialLanguage && initialLanguage !== i18n.language) {
-      void i18n.changeLanguage(initialLanguage);
-    }
-  }, [initialLanguage]);
+  if (initialLanguage && initialLanguage !== i18n.language) {
+    void i18n.changeLanguage(initialLanguage);
+  }
 
   return (
     <I18nextProvider i18n={i18n}>

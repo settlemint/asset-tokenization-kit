@@ -8,7 +8,6 @@ import {
 import { useMounted } from "@/lib/utils/use-mounted";
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -37,16 +36,6 @@ export function ThemeToggle({
   const { setTheme, resolvedTheme, themes } = useTheme();
   const { t } = useTranslation("theme");
 
-  /**
-   * Handles setting a new theme.
-   * @param newTheme - The new theme to set.
-   */
-  const handleSetTheme = useCallback(
-    (newTheme: string) => {
-      setTheme(newTheme);
-    },
-    [setTheme]
-  );
 
   // Show skeleton during SSR to prevent hydration mismatch
   if (!mounted) {
@@ -72,7 +61,7 @@ export function ThemeToggle({
           <DropdownMenuItem
             key={theme}
             onClick={() => {
-              handleSetTheme(theme);
+              setTheme(theme);
             }}
             className="capitalize"
           >
