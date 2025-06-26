@@ -117,7 +117,7 @@ contract ATKTokenFactoryRegistryTest is Test {
         vm.prank(user);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.DEFAULT_ADMIN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.REGISTRAR_ROLE
             )
         );
         registry.registerTokenFactory("TestFactory", address(mockTokenFactory), address(mockTokenImplementation));
@@ -197,7 +197,9 @@ contract ATKTokenFactoryRegistryTest is Test {
         vm.prank(user);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.DEFAULT_ADMIN_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector,
+                user,
+                ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE
             )
         );
         registry.setTokenFactoryImplementation(factoryTypeHash, address(newMockTokenFactory));

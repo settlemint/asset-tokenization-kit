@@ -99,6 +99,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
         }
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
         _grantRole(ATKSystemRoles.DEPLOYER_ROLE, initialAdmin);
+        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin);
 
         _tokenImplementation = tokenImplementation_;
         _systemAddress = systemAddress;
@@ -119,7 +120,11 @@ abstract contract AbstractATKTokenFactoryImplementation is
     ///      Emits a {TokenImplementationUpdated} event on success.
     /// @param newImplementation The new address for the token implementation contract. Cannot be the zero address.
     /// @custom:oz-upgrades-unsafe-allow state-variable-assignment
-    function updateTokenImplementation(address newImplementation) public virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+    function updateTokenImplementation(address newImplementation)
+        public
+        virtual
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
         if (newImplementation == address(0)) {
             revert InvalidImplementationAddress();
         }

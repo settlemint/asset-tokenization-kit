@@ -115,7 +115,7 @@ abstract contract AbstractATKAssetTest is Test {
 
     function _grantAllRoles(address accessManager, address wallet, address defaultAdmin) internal {
         vm.startPrank(defaultAdmin);
-        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, wallet);
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.GOVERNANCE_ROLE, wallet);
         ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, wallet);
         ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.CUSTODIAN_ROLE, wallet);
         ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.EMERGENCY_ROLE, wallet);
