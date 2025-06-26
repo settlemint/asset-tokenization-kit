@@ -185,7 +185,7 @@ contract ATKTokenSale is
         __Pausable_init();
 
         if (tokenAddress == address(0)) revert Unauthorized();
-        if (saleStart < block.timestamp) revert SaleNotStarted();
+        if (saleStart < block.timestamp) revert InvalidPriceCalculation();
         if (saleDuration == 0) revert InvalidPriceCalculation();
         if (hardCap_ == 0) revert InvalidPriceCalculation();
         if (basePrice_ == 0) revert InvalidPriceCalculation();
@@ -222,7 +222,7 @@ contract ATKTokenSale is
     {
         if (vestingDuration == 0) revert InvalidPriceCalculation();
         if (vestingCliff > vestingDuration) revert InvalidPriceCalculation();
-        if (vestingStart < block.timestamp) revert SaleNotStarted();
+        if (vestingStart < block.timestamp) revert InvalidPriceCalculation();
 
         vesting.enabled = true;
         vesting.startTime = vestingStart;
