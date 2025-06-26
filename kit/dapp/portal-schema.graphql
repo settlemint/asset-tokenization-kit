@@ -4265,16 +4265,6 @@ input ATKIdentityFactoryImplementationInitializeInput {
   initialAdmin: String!
 
   """
-  The addresses that will be granted initial administrative and registrar privileges over this factory for identity issuers.
-  """
-  initialIdentityIssuerAdmins: [String!]!
-
-  """
-  The addresses that will be granted initial administrative and registrar privileges over this factory for token identity issuers.
-  """
-  initialTokenIdentityIssuerAdmins: [String!]!
-
-  """
   The address of the central `IATKSystem` contract. This contract is crucial as it dictates                      which identity logic implementation contracts the new identity proxies will point to.
   """
   systemAddress: String!
@@ -4506,6 +4496,7 @@ input ATKIdentityImplementationRevokeClaimBySignatureInput {
 input ATKIdentityImplementationRevokeClaimInput {
   """The ID of the claim to revoke"""
   _claimId: String!
+  _identity: String!
 }
 
 """Returns the transaction hash"""
@@ -7178,12 +7169,6 @@ type ATKSystemRoles {
   """Role for token deployers."""
   DEPLOYER_ROLE: String
 
-  """Role for managing identity issuers."""
-  IDENTITY_ISSUER_ADMIN_ROLE: String
-
-  """Role for managing identity issuers."""
-  IDENTITY_ISSUER_ROLE: String
-
   """Role for managing implementation addresses."""
   IMPLEMENTATION_MANAGER_ROLE: String
 
@@ -7199,12 +7184,6 @@ type ATKSystemRoles {
   A unique identifier (hash) for the role that grants permission to modify the data stored in this contract.
   """
   STORAGE_MODIFIER_ROLE: String
-
-  """Role for managing token identity issuers."""
-  TOKEN_IDENTITY_ISSUER_ADMIN_ROLE: String
-
-  """Role for token identity issuers."""
-  TOKEN_IDENTITY_ISSUER_ROLE: String
   id: ID
 }
 
@@ -12671,6 +12650,11 @@ input DeployContractCountryBlockListComplianceModuleInput {
   _trustedForwarder: String!
 }
 
+input DeployContractERC734Input {
+  _isLibrary: Boolean!
+  initialManagementKey: String!
+}
+
 input DeployContractIdentityAllowListComplianceModuleInput {
   _trustedForwarder: String!
 }
@@ -12767,6 +12751,10 @@ type ERC734GetKeyPurposesOutput {
 
 type ERC734GetKeysByPurposeOutput {
   keys: [String!]
+}
+
+input ERC734InitializeInput {
+  initialManagementKey: String!
 }
 
 type ERC734KeyHasPurposeOutput {
@@ -16108,8 +16096,6 @@ type IATKIdentityFactoryGetTokenIdentityOutput {
 
 input IATKIdentityFactoryInitializeInput {
   initialAdmin: String!
-  initialIdentityIssuerAdmins: [String!]!
-  initialTokenIdentityIssuerAdmins: [String!]!
   systemAddress: String!
 }
 
@@ -42160,6 +42146,7 @@ type Mutation {
     Challenge response that is used to verify access to the private key of the from address
     """
     challengeResponse: String
+    constructorArguments: DeployContractERC734Input!
 
     """The address of the sender"""
     from: String!
@@ -44704,6 +44691,39 @@ type Mutation {
     """Gas price"""
     gasPrice: String
     input: ERC734ExecuteInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ERC734TransactionOutput
+  ERC734Initialize(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ERC734InitializeInput!
 
     """Metadata (store custom metadata from your application)"""
     metadata: JSON
@@ -59946,6 +59966,12 @@ type Mutation {
     """
     verificationId: String
   ): OnChainIdentityWithRevocationTransactionOutput
+
+  """
+  will fetch the claim from the identity contract (unsafe).
+  Revoke a claim previously issued, the claim is no longer considered as valid after revocation.
+  isRevoked true when the claim is revoked.
+  """
   OnChainIdentityWithRevocationRevokeClaim(
     """The address of the contract"""
     address: String!
@@ -59979,6 +60005,10 @@ type Mutation {
     """
     verificationId: String
   ): OnChainIdentityWithRevocationTransactionOutput
+
+  """
+  Revoke a claim previously issued, the claim is no longer considered as valid after revocation.
+  """
   OnChainIdentityWithRevocationRevokeClaimBySignature(
     """The address of the contract"""
     address: String!
@@ -74395,11 +74425,16 @@ input OnChainIdentityWithRevocationRemoveKeyInput {
 }
 
 input OnChainIdentityWithRevocationRevokeClaimBySignatureInput {
+  """the signature of the claim"""
   signature: String!
 }
 
 input OnChainIdentityWithRevocationRevokeClaimInput {
+  """the id of the claim"""
   _claimId: String!
+
+  """the address of the identity contract"""
+  _identity: String!
 }
 
 """Returns the transaction hash"""
@@ -77413,6 +77448,12 @@ type Query {
 
   """Fetches the receipt for the given transaction hash"""
   ERC734ExecuteReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ERC734TransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ERC734InitializeReceipt(
     """The transaction hash"""
     transactionHash: String!
   ): ERC734TransactionReceiptOutput

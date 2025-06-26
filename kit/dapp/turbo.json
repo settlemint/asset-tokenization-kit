@@ -2,7 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "codegen": {
-      "dependsOn": ["codegen:settlemint", "codegen:gql-tada"]
+      "dependsOn": ["codegen:gql-tada"]
     },
     "codegen:settlemint": {
       "inputs": [".env.local", ".env"],
@@ -14,6 +14,7 @@
       ]
     },
     "codegen:gql-tada": {
+      "dependsOn": ["codegen:settlemint"],
       "outputs": ["*-cache.d.ts"]
     },
     "build": {

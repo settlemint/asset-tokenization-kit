@@ -11,9 +11,6 @@ export const AccessControlFragment = theGraphGraphql(`
     admin { id }
     registrar { id }
     claimManager { id }
-    identityIssuer { id }
-    tokenIdentityIssuer { id }
-    tokenIdentityIssuerAdmin { id }
     deployer { id }
     storageModifier { id }
     manageRegistries { id }

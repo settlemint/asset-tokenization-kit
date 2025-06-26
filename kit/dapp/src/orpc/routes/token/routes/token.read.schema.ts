@@ -9,15 +9,12 @@ const ROLES: TokenRoles[] = [
   "custodian",
   "deployer",
   "emergency",
-  "identityIssuer",
   "implementationManager",
   "manageRegistries",
   "registrar",
   "storageModifier",
   "supplyManagement",
   "tokenGovernance",
-  "tokenIdentityIssuer",
-  "tokenIdentityIssuerAdmin",
 ];
 
 export const TokenSchema = z.object({
@@ -29,7 +26,7 @@ export const TokenSchema = z.object({
     .object({
       roles: z
         .object(
-          ROLES.reduce(
+          ROLES.reduce<Record<TokenRoles, z.ZodType<boolean>>>(
             (acc, role) => {
               acc[role] = z
                 .boolean()

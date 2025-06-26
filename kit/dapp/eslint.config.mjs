@@ -85,6 +85,7 @@ export default defineConfig([
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
       "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/prefer-reduce-type-parameter": "off",
       // Disable some rules that might be too strict for TanStack Start
       "@typescript-eslint/only-throw-error": "off",
       "@typescript-eslint/no-unnecessary-condition": "warn",
