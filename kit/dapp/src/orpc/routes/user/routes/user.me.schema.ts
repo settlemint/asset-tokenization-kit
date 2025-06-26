@@ -64,6 +64,11 @@ export const UserMeSchema = z.object({
    * Used for blockchain transactions and ownership verification.
    */
   wallet: ethereumAddress.nullable().optional(),
+
+  /**
+   * Whether the user has completed the onboarding process.
+   */
+  initialOnboardingFinished: z.boolean(),
 });
 
 /**

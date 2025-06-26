@@ -15,6 +15,9 @@
  * @see https://better-auth.com - Better Auth documentation
  */
 
+import { pincodeClient } from "@/lib/auth/plugins/pincode-plugin/client";
+import { secretCodesClient } from "@/lib/auth/plugins/secret-codes-plugin/client";
+import { twoFactorClient } from "@/lib/auth/plugins/two-factor/client";
 import {
   adminClient,
   apiKeyClient,
@@ -64,12 +67,6 @@ export const authClient = createAuthClient({
   plugins: [
     /**
      * Infers additional user fields from the server configuration.
-     * This ensures the client knows about custom fields like:
-     * - wallet: Ethereum wallet address
-     * - pincodeEnabled: Whether pincode authentication is enabled
-     * - secretCodeEnabled: Whether secret code authentication is enabled
-     * - twoFactorEnabled: Whether 2FA is enabled
-     * - verification IDs for different authentication methods
      */
     inferAdditionalFields<typeof auth>(),
 
@@ -106,5 +103,32 @@ export const authClient = createAuthClient({
      * - Platform authenticators
      */
     passkeyClient(),
+
+    /**
+     * Pincode plugin for pincode authentication.
+     * Provides functionality for:
+     * - Setting pincode
+     * - Removing pincode
+     * - Updating pincode
+     */
+    pincodeClient(),
+
+    /**
+     * Two factor plugin for two factor authentication.
+     * Provides functionality for:
+     * - Enabling two factor authentication
+     * - Disabling two factor authentication
+     * - Verifying two factor authentication
+     */
+    twoFactorClient(),
+
+    /**
+     * Secret codes plugin for secret codes authentication.
+     * Provides functionality for:
+     * - Enabling secret codes authentication
+     * - Disabling secret codes authentication
+     * - Verifying secret codes authentication
+     */
+    secretCodesClient(),
   ],
 });

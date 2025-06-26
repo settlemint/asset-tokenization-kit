@@ -17,22 +17,6 @@ library ATKSystemRoles {
     /// @dev Assigned to entities responsible for handling token claims
     bytes32 public constant CLAIM_MANAGER_ROLE = keccak256("CLAIM_MANAGER_ROLE");
 
-    /// @notice Role for managing identity issuers
-    /// @dev Assigned to entities responsible for handling identity issuers
-    bytes32 public constant IDENTITY_ISSUER_ROLE = keccak256("IDENTITY_ISSUER_ROLE");
-
-    /// @notice Role for managing identity issuers
-    /// @dev Assigned to entities responsible for handling identity issuers
-    bytes32 public constant IDENTITY_ISSUER_ADMIN_ROLE = keccak256("IDENTITY_ISSUER_ADMIN_ROLE");
-
-    /// @notice Role for token identity issuers
-    /// @dev Assigned to entities responsible for issuing new token identities
-    bytes32 public constant TOKEN_IDENTITY_ISSUER_ROLE = keccak256("TOKEN_IDENTITY_ISSUER_ROLE");
-
-    /// @notice Role for managing token identity issuers
-    /// @dev Assigned to entities responsible for managing token identity issuers
-    bytes32 public constant TOKEN_IDENTITY_ISSUER_ADMIN_ROLE = keccak256("TOKEN_IDENTITY_ISSUER_ADMIN_ROLE");
-
     /// @notice Role for token deployers
     /// @dev Assigned to entities responsible for deploying new tokens
     bytes32 public constant DEPLOYER_ROLE = keccak256("DEPLOYER_ROLE");

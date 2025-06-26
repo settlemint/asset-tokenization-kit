@@ -18,6 +18,8 @@ import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm";
+import { createPublicClient, http, toHex } from "viem";
+import { anvil } from "viem/chains";
 import { z } from "zod/v4";
 import { AccountCreateMessagesSchema } from "./account.create.schema";
 
@@ -125,14 +127,34 @@ export const create = authRouter.account.create
       });
     }
 
+    const walletAddress = getEthereumAddress(result.createWallet.address);
     // Update the user record with the new wallet address
     await context.db
       .update(user)
       .set({
-        wallet: getEthereumAddress(result.createWallet.address),
+        wallet: walletAddress,
       })
       .where(eq(user.id, sender.id));
 
+    // When developping locally we need to fund the wallet
+    const isLocal = env.SETTLEMINT_INSTANCE === "local";
+    if (isLocal) {
+      try {
+        const balanceInHex = toHex(1000000000000000000n);
+        const client = createPublicClient({
+          chain: anvil,
+          transport: http("http://localhost:8545"),
+        });
+
+        await client.request({
+          method: "anvil_setBalance",
+          params: [walletAddress, balanceInHex],
+        } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      } catch (error) {
+        console.error("Failed to fund wallet", error);
+      }
+    }
+
     // Return the newly created wallet address
-    return result.createWallet.address;
+    return walletAddress;
   });

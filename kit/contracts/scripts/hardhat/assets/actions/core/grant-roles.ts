@@ -13,6 +13,8 @@ export const grantRoles = async (
   targetActor: AbstractActor,
   roles: (typeof ATKRoles)[keyof typeof ATKRoles][]
 ) => {
+  console.log(`[Role] → Starting role grant operation...`);
+
   const accessManagerContract = owner.getContractInstance({
     address: asset.accessManager,
     abi: ATKContracts.accessManager,
@@ -32,6 +34,6 @@ export const grantRoles = async (
   );
 
   console.log(
-    `[Role] ${roleNames.join(", ")} granted to ${targetActor.name} (${targetActor.address}) on ${asset.name} (${asset.address}) by ${asset.accessManager}.`
+    `[Role] ✓ ${roleNames.join(", ")} granted to ${targetActor.name} (${targetActor.address}) on ${asset.name} (${asset.address}) by ${asset.accessManager}`
   );
 };

@@ -13,6 +13,8 @@ export const recoverErc20Tokens = async (
   to: AbstractActor,
   amount: bigint
 ) => {
+  console.log(`[Recover ERC20 tokens] → Starting token recovery...`);
+
   const tokenContract = actor.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismart,
@@ -29,6 +31,6 @@ export const recoverErc20Tokens = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Recover ERC20 tokens] ${actor.name} recovered ${formatBaseUnits(amount, assetToRecover.decimals)} ${assetToRecover.symbol} tokens from ${assetToRecover.name} (${assetToRecover.address}) to ${to.name} (${to.address})`
+    `[Recover ERC20 tokens] ✓ ${actor.name} recovered ${formatBaseUnits(amount, assetToRecover.decimals)} ${assetToRecover.symbol} tokens from ${assetToRecover.name} (${assetToRecover.address}) to ${to.name} (${to.address})`
   );
 };

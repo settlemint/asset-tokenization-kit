@@ -7,6 +7,7 @@ import { ATKIdentityImplementation } from
 import { IATKIdentity } from "../../../../contracts/system/identity-factory/identities/IATKIdentity.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
+import { ERC734 } from "../../../../contracts/onchainid/extensions/ERC734.sol";
 import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -80,7 +81,7 @@ contract IATKIdentityTest is Test {
 
     function test_InitializeWithZeroAddress() public {
         // Use the implementation directly for this test
-        vm.expectRevert(ATKIdentityImplementation.InvalidInitialManagementKey.selector);
+        vm.expectRevert(ERC734.InvalidInitialManagementKey.selector);
         new ERC1967Proxy(
             address(implementation), abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, address(0))
         );
@@ -364,14 +365,14 @@ contract IATKIdentityTest is Test {
 
         // Revoke claim (requires management key)
         vm.prank(user1);
-        bool success = ATKIdentityImplementation(address(identity)).revokeClaim(claimId);
+        bool success = ATKIdentityImplementation(address(identity)).revokeClaim(claimId, address(identity));
         assertTrue(success);
     }
 
     function test_RevokeClaimByIdRequiresManagementKey() public {
         vm.prank(user2); // user2 doesn't have management key
         vm.expectRevert(ATKIdentityImplementation.SenderLacksManagementKey.selector);
-        ATKIdentityImplementation(address(identity)).revokeClaim(bytes32(0));
+        ATKIdentityImplementation(address(identity)).revokeClaim(bytes32(0), address(identity));
     }
 
     function test_SupportsInterface() public view {

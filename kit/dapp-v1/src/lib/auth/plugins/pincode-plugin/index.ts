@@ -3,8 +3,8 @@ import { removePincodeFunction } from "@/lib/mutations/user/pincode/remove-pinco
 import { setPincodeFunction } from "@/lib/mutations/user/pincode/set-pincode-function";
 import { updatePincodeFunction } from "@/lib/mutations/user/pincode/update-pincode-function";
 import type { BetterAuthPlugin } from "better-auth";
+import { APIError } from "better-auth";
 import { createAuthEndpoint, sessionMiddleware } from "better-auth/api";
-import { APIError } from "better-call";
 import { z } from "zod";
 import { revokeSession, validatePassword } from "../utils";
 

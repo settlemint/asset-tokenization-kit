@@ -11,6 +11,8 @@ export const redeem = async (
   actor: AbstractActor,
   amount: bigint
 ) => {
+  console.log(`[Redeemed] → Starting redemption...`);
+
   const redeemableContract = actor.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartRedeemable,
@@ -24,6 +26,6 @@ export const redeem = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Redeemed] ${formatBaseUnits(tokenAmount, asset.decimals)} redeemed from ${asset.name} (${asset.address})`
+    `[Redeemed] ✓ ${formatBaseUnits(tokenAmount, asset.decimals)} ${asset.symbol} redeemed from ${asset.name} (${asset.address})`
   );
 };

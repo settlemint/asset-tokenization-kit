@@ -10,6 +10,10 @@ export const setAddressFrozen = async (
   address: AbstractActor,
   frozen: boolean
 ) => {
+  console.log(
+    `[Set address frozen] → Starting address freeze status update...`
+  );
+
   const tokenContract = custodian.getContractInstance({
     address: asset.address,
     abi: ATKContracts.ismartCustodian,
@@ -22,6 +26,6 @@ export const setAddressFrozen = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Set address frozen] ${address.name} (${address.address}) frozen: ${frozen} for ${asset.name} (${asset.address})`
+    `[Set address frozen] ✓ ${address.name} (${address.address}) frozen status set to ${frozen} for ${asset.name} (${asset.address})`
   );
 };

@@ -467,18 +467,8 @@ contract ATKSystemImplementation is
             address(new ATKTypedImplementationProxy(address(this), IDENTITY_REGISTRY, identityRegistryData));
 
         // Deploy the ATKIdentityFactoryProxy, linking it to this ATKSystem and setting an initial admin.
-        address[] memory initialIdentityIssuerAdmins = new address[](1);
-        initialIdentityIssuerAdmins[0] = initialAdmin;
-        address[] memory initialTokenIdentityIssuerAdmins = new address[](2);
-        initialTokenIdentityIssuerAdmins[0] = initialAdmin;
-        initialTokenIdentityIssuerAdmins[1] = localTokenFactoryRegistryProxy;
-        bytes memory identityFactoryData = abi.encodeWithSelector(
-            IATKIdentityFactory.initialize.selector,
-            address(this),
-            initialAdmin,
-            initialIdentityIssuerAdmins,
-            initialTokenIdentityIssuerAdmins
-        );
+        bytes memory identityFactoryData =
+            abi.encodeWithSelector(IATKIdentityFactory.initialize.selector, address(this), initialAdmin);
         address localIdentityFactoryProxy =
             address(new ATKTypedImplementationProxy(address(this), IDENTITY_FACTORY, identityFactoryData));
 

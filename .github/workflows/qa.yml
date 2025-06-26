@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "v*"
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, closed]
   pull_request_review:
@@ -156,9 +158,6 @@ jobs:
             echo "Running full Turbo for main branch"
             bun run ci:gha:main --concurrency=100%
           fi
-        env:
-          THE_GRAPH_PORT_LOCAL_DEPLOY: 8120 # For subgraph tests
-          THE_GRAPH_PORT_LOCAL_QUERY: 8100 # For subgraph tests
 
       - name: Store predeployed output
         if: |
@@ -332,6 +331,7 @@ jobs:
           pr_author_avatar: ${{ github.event.pull_request.user.avatar_url }}
           slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
           slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
+          wait_time: "15000"
 
   # Handle abandoned (closed but not merged) PR notifications
   abandoned:
@@ -384,3 +384,4 @@ jobs:
           slack_bot_token: ${{ env.SLACK_BOT_TOKEN }}
           slack_channel_id: ${{ env.SLACK_CHANNEL_ID }}
           is_abandoned: true
+          wait_time: "15000"

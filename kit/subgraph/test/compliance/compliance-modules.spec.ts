@@ -62,7 +62,7 @@ describe("Compliance Modules", () => {
     `
     );
     const response = await theGraphClient.request(query, {});
-    expect(response.complianceModules).toEqual([
+    const expected = [
       {
         name: "Identity BlockList Compliance Module",
         addresses: [expect.any(String)],
@@ -71,6 +71,9 @@ describe("Compliance Modules", () => {
         name: "Address BlockList Compliance Module",
         addresses: [expect.any(String)],
       },
-    ]);
+    ];
+
+    expect(response.complianceModules).toHaveLength(expected.length);
+    expect(response.complianceModules).toEqual(expect.arrayContaining(expected));
   });
 });

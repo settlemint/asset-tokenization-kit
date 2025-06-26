@@ -2,9 +2,6 @@
   "extends": ["//"],
   "tasks": {
     "codegen": {
-      "dependsOn": ["codegen:graph", "codegen:interfaceid"]
-    },
-    "codegen:graph": {
       "outputs": ["generated/**"],
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },
@@ -13,14 +10,18 @@
       "outputs": ["src/erc165/utils/interfaceids.ts"],
       "inputs": ["**/*.sol", "tools/interfaceid.ts"]
     },
-    "codegen:gql-tada": {
+    "test:codegen:gql-tada": {
       "dependsOn": ["publish"],
       "inputs": ["the-graph-schema.graphql"],
       "outputs": ["the-graph-env.d.ts", "the-graph-cache.d.ts"]
     },
     "compile": {
-      "dependsOn": ["^compile", "codegen"],
-      "outputs": ["build/**", ".generated/**"],
+      "dependsOn": ["^compile", "codegen", "codegen:interfaceid"],
+      "outputs": [
+        "build/**",
+        ".generated/subgraph-env",
+        ".generated/subgraph-hash.txt"
+      ],
       "inputs": ["subgraph.yaml", "schema.graphql"]
     },
     "publish": {
@@ -28,11 +29,11 @@
       "dependsOn": ["package", "^publish"]
     },
     "test:integration": {
-      "dependsOn": ["codegen:gql-tada"]
+      "dependsOn": ["test:codegen:gql-tada"]
     },
     "translate": {},
     "artifacts": {
-      "dependsOn": ["build", "compile", "translate"]
+      "dependsOn": ["compile", "translate"]
     }
   }
 }

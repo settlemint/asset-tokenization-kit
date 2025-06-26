@@ -75,14 +75,6 @@ contract ATKIdentityFactoryImplementationTest is Test {
         assertEq(factory.getTokenIdentity(address(token)), identity);
     }
 
-    function testCreateIdentityRevertsWithUnauthorizedCaller() public {
-        bytes32[] memory managementKeys = new bytes32[](0);
-
-        vm.prank(unauthorizedUser);
-        vm.expectRevert();
-        factory.createIdentity(user, managementKeys);
-    }
-
     function testCreateTokenIdentityRevertsWithUnauthorizedCaller() public {
         address tokenAddress = makeAddr("token");
 

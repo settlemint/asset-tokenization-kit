@@ -47,6 +47,10 @@ contract ERC735 is IERC735 {
         override
         returns (bytes32 claimRequestId)
     {
+        if (_issuer == address(0)) {
+            revert IssuerCannotBeZeroAddress();
+        }
+
         if (_issuer != address(this)) {
             require(
                 IClaimIssuer(_issuer).isClaimValid(IIdentity(address(this)), _topic, _signature, _data), "invalid claim"
@@ -80,11 +84,11 @@ contract ERC735 is IERC735 {
     /// contract,
     ///   or only allow issuer or self to remove).
     function removeClaim(bytes32 _claimId) public virtual override returns (bool success) {
-        uint256 _topic = _claims[_claimId].topic;
-        if (_topic == 0) {
-            revert("NonExisting: There is no claim with this ID");
+        if (_claims[_claimId].issuer == address(0)) {
+            revert ClaimDoesNotExist(_claimId);
         }
 
+        uint256 _topic = _claims[_claimId].topic;
         uint256 claimIndex = 0;
         uint256 arrayLength = _claimsByTopic[_topic].length;
         while (_claimsByTopic[_topic][claimIndex] != _claimId) {
@@ -130,6 +134,10 @@ contract ERC735 is IERC735 {
             string memory uri
         )
     {
+        if (_claims[_claimId].issuer == address(0)) {
+            revert ClaimDoesNotExist(_claimId);
+        }
+
         return (
             _claims[_claimId].topic,
             _claims[_claimId].scheme,

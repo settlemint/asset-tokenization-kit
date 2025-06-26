@@ -4,151 +4,171 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { OnChainIdentityWithRevocation } from
     "../../../../../contracts/onchainid/extensions/OnChainIdentityWithRevocation.sol";
+import { OnChainIdentity } from "../../../../../contracts/onchainid/extensions/OnChainIdentity.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
+import { ERC734 } from "../../../../../contracts/onchainid/extensions/ERC734.sol";
+import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
+import { ERC735 } from "../../../../../contracts/onchainid/extensions/ERC735.sol";
+import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Concrete implementation for testing the abstract contract
-contract TestableOnChainIdentityWithRevocation is OnChainIdentityWithRevocation {
-    // Mock storage for testing
-    mapping(bytes32 => bool) public keys;
-    mapping(bytes32 => Claim) public claims;
-    mapping(bytes32 => uint256[]) public keyPurposes;
-    mapping(uint256 => bytes32[]) public keysByPurpose;
-    mapping(uint256 => bytes32[]) public claimIdsByTopic;
+contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentityWithRevocation {
+    // --- State Variables ---
+    bool private _smartIdentityInitialized;
 
-    struct Claim {
-        uint256 topic;
-        uint256 scheme;
-        address issuer;
-        bytes signature;
-        bytes data;
-        string uri;
-        bool exists;
-    }
+    // --- Custom Errors for ATKIdentityImplementation ---
+    error AlreadyInitialized();
+    error SenderLacksManagementKey();
+    error SenderLacksActionKey();
+    error SenderLacksClaimSignerKey();
+    // Errors for checks that might be redundant if ERC734.sol handles them robustly
+    error ReplicatedExecutionIdDoesNotExist(uint256 executionId);
+    error ReplicatedExecutionAlreadyPerformed(uint256 executionId);
 
-    // Admin for testing
-    address public admin;
-
-    constructor(address _admin) {
-        admin = _admin;
-    }
-
-    modifier onlyAdmin() {
-        require(msg.sender == admin, "Only admin");
+    // --- Modifiers for Access Control ---
+    modifier onlyManager() {
+        if (!(msg.sender == address(this) || keyHasPurpose(keccak256(abi.encode(msg.sender)), MANAGEMENT_KEY_PURPOSE)))
+        {
+            revert SenderLacksManagementKey();
+        }
         _;
     }
 
-    // Mock implementation of keyHasPurpose - returns true if key exists with the purpose
-    function keyHasPurpose(bytes32 _key, uint256 _purpose) public view override returns (bool) {
-        // For testing purposes, return true if the key exists in our mock storage
-        // In a real implementation, this would check if the key has the specific purpose
-        return keys[keccak256(abi.encode(_key, _purpose))];
+    modifier onlyClaimKey() {
+        if (
+            !(msg.sender == address(this) || keyHasPurpose(keccak256(abi.encode(msg.sender)), CLAIM_SIGNER_KEY_PURPOSE))
+        ) {
+            revert SenderLacksClaimSignerKey();
+        }
+        _;
     }
 
-    // ERC734 interface implementations (mock for testing)
-    function addKey(bytes32 _key, uint256 _purpose, uint256 /*_keyType*/ ) external override onlyAdmin returns (bool) {
-        keys[keccak256(abi.encode(_key, _purpose))] = true;
-        return true;
+    /// @notice Constructor for the `ATKIdentityImplementation`.
+    /// @dev Initializes ERC2771 context with the provided forwarder.
+    ///      The main identity initialization (setting the first management key) is done via `initializeATKIdentity`.
+    constructor(address initialManagementKey) ERC734(initialManagementKey, false) { }
+
+    // --- OnchainIdentityWithRevocation Functions ---
+    /// @dev Revokes a claim by its signature
+    /// @param signature The signature of the claim to revoke
+    function revokeClaimBySignature(bytes calldata signature) external virtual override onlyManager {
+        _revokeClaimBySignature(signature);
     }
 
-    function removeKey(bytes32 _key, uint256 _purpose) external override onlyAdmin returns (bool) {
-        keys[keccak256(abi.encode(_key, _purpose))] = false;
-        return true;
+    /// @dev Revokes a claim by its ID
+    /// @param _claimId The ID of the claim to revoke
+    function revokeClaim(bytes32 _claimId, address _identity) external virtual override onlyManager returns (bool) {
+        return _revokeClaim(_claimId, _identity);
     }
 
-    function getKey(bytes32 _key)
-        external
-        view
-        override
-        returns (uint256[] memory purposes, uint256 keyType, bytes32 key)
+    // --- ERC734 (Key Holder) Functions - Overridden for Access Control & Specific Logic ---
+
+    /// @inheritdoc IERC734
+    /// @dev Adds a key with a specific purpose and type. Requires MANAGEMENT_KEY purpose.
+    function addKey(
+        bytes32 _key,
+        uint256 _purpose,
+        uint256 _keyType
+    )
+        public
+        virtual
+        override(ERC734, IERC734) // Overrides ERC734's implementation and fulfills IERC734
+        onlyManager
+        returns (bool success)
     {
-        return (keyPurposes[_key], 1, _key);
+        return ERC734.addKey(_key, _purpose, _keyType);
     }
 
-    function getKeyPurposes(bytes32 _key) external view override returns (uint256[] memory _purposes) {
-        return keyPurposes[_key];
+    /// @inheritdoc IERC734
+    /// @dev Removes a purpose from a key. If it's the last purpose, the key is removed. Requires MANAGEMENT_KEY
+    /// purpose.
+    function removeKey(
+        bytes32 _key,
+        uint256 _purpose
+    )
+        public
+        virtual
+        override(ERC734, IERC734)
+        onlyManager
+        returns (bool success)
+    {
+        return ERC734.removeKey(_key, _purpose);
     }
 
-    function getKeysByPurpose(uint256 _purpose) external view override returns (bytes32[] memory _keys) {
-        return keysByPurpose[_purpose];
+    /// @inheritdoc IERC734
+    /// @dev Approves or disapproves an execution.
+    ///      Requires MANAGEMENT_KEY if the execution targets the identity itself.
+    ///      Requires ACTION_KEY if the execution targets an external contract.
+    function approve(uint256 _id, bool _toApprove) public virtual override(ERC734, IERC734) returns (bool success) {
+        Execution storage executionToApprove = _executions[_id];
+        if (_id >= _executionNonce) revert ReplicatedExecutionIdDoesNotExist({ executionId: _id });
+        if (executionToApprove.executed) revert ReplicatedExecutionAlreadyPerformed({ executionId: _id });
+
+        bytes32 senderKeyHash = keccak256(abi.encode(msg.sender));
+        if (executionToApprove.to == address(this)) {
+            if (!keyHasPurpose(senderKeyHash, MANAGEMENT_KEY_PURPOSE)) {
+                revert SenderLacksManagementKey();
+            }
+        } else {
+            if (!keyHasPurpose(senderKeyHash, ACTION_KEY_PURPOSE)) {
+                revert SenderLacksActionKey();
+            }
+        }
+        return ERC734.approve(_id, _toApprove);
     }
 
+    /// @inheritdoc IERC734
+    /// @dev Initiates an execution. If the sender has MANAGEMENT_KEY, or ACTION_KEY (for external calls),
+    ///      the execution is auto-approved.
     function execute(
-        address, /* _to */
-        uint256, /* _value */
-        bytes calldata /* _data */
+        address _to,
+        uint256 _value,
+        bytes calldata _data
     )
-        external
+        public
         payable
-        override
-        returns (uint256)
+        virtual
+        override(ERC734, IERC734)
+        returns (uint256 executionId)
     {
-        return 0; // Mock implementation
+        executionId = ERC734.execute(_to, _value, _data);
+
+        bytes32 senderKeyHash = keccak256(abi.encode(msg.sender));
+        bool autoApproved = false;
+
+        if (keyHasPurpose(senderKeyHash, MANAGEMENT_KEY_PURPOSE)) {
+            autoApproved = true;
+        } else if (_to != address(this) && keyHasPurpose(senderKeyHash, ACTION_KEY_PURPOSE)) {
+            autoApproved = true;
+        }
+
+        if (autoApproved) {
+            this.approve(executionId, true);
+        }
+
+        return executionId;
     }
 
-    function approve(uint256, /* _id */ bool /* _approve */ ) external pure override returns (bool) {
-        return true; // Mock implementation
-    }
-
-    // ERC735 interface implementations (mock for testing)
-    function addClaim(
-        uint256 _topic,
-        uint256 _scheme,
-        address _issuer,
-        bytes calldata _signature,
-        bytes calldata _data,
-        string calldata _uri
+    function keyHasPurpose(
+        bytes32 _key,
+        uint256 _purpose
     )
-        external
-        override
-        returns (bytes32 claimRequestId)
-    {
-        bytes32 claimId = keccak256(abi.encode(_topic, _scheme, _issuer, _signature, _data));
-        claims[claimId] = Claim({
-            topic: _topic,
-            scheme: _scheme,
-            issuer: _issuer,
-            signature: _signature,
-            data: _data,
-            uri: _uri,
-            exists: true
-        });
-        return claimId;
-    }
-
-    function removeClaim(bytes32 _claimId) external override returns (bool) {
-        delete claims[_claimId];
-        return true;
-    }
-
-    function getClaimIdsByTopic(uint256 _topic) external view override returns (bytes32[] memory) {
-        return claimIdsByTopic[_topic];
-    }
-
-    // Helper functions for testing
-    function addKeyForTesting(bytes32 _key, uint256 _purpose) external onlyAdmin {
-        keys[keccak256(abi.encode(_key, _purpose))] = true;
-    }
-
-    function removeKeyForTesting(bytes32 _key, uint256 _purpose) external onlyAdmin {
-        keys[keccak256(abi.encode(_key, _purpose))] = false;
-    }
-
-    // Implementation of getClaim for testing
-    function getClaim(bytes32 _claimId)
         public
         view
-        override
-        returns (uint256, uint256, address, bytes memory, bytes memory, string memory)
+        virtual
+        override(ERC734, OnChainIdentity, IERC734)
+        returns (bool exists)
     {
-        Claim memory claim = claims[_claimId];
-        require(claim.exists, "Claim does not exist");
-        return (claim.topic, claim.scheme, claim.issuer, claim.signature, claim.data, claim.uri);
+        return ERC734.keyHasPurpose(_key, _purpose);
     }
 
-    // Add a claim for testing
+    // --- ERC735 (Claim Holder) Functions - Overridden for Access Control ---
+
+    /// @inheritdoc IERC735
+    /// @dev Adds or updates a claim. Requires CLAIM_SIGNER_KEY purpose from the sender.
     function addClaim(
-        bytes32 _claimId,
         uint256 _topic,
         uint256 _scheme,
         address _issuer,
@@ -156,28 +176,29 @@ contract TestableOnChainIdentityWithRevocation is OnChainIdentityWithRevocation 
         bytes memory _data,
         string memory _uri
     )
-        external
-        onlyAdmin
+        public
+        virtual
+        override(ERC735, IERC735) // Overrides ERC735's implementation and fulfills IERC735
+        onlyClaimKey
+        returns (bytes32 claimId)
     {
-        claims[_claimId] = Claim({
-            topic: _topic,
-            scheme: _scheme,
-            issuer: _issuer,
-            signature: _signature,
-            data: _data,
-            uri: _uri,
-            exists: true
-        });
+        return ERC735.addClaim(_topic, _scheme, _issuer, _signature, _data, _uri);
     }
 
-    // Public wrapper for testing the internal _revokeClaim function
-    function revokeClaimBySignature(bytes calldata signature) external override onlyAdmin {
-        _revokeClaimBySignature(signature);
+    /// @inheritdoc IERC735
+    /// @dev Removes a claim. Requires CLAIM_SIGNER_KEY purpose from the sender.
+    function removeClaim(bytes32 _claimId) public virtual override(ERC735, IERC735) returns (bool success) {
+        return ERC735.removeClaim(_claimId);
     }
 
-    // Public wrapper for testing the internal _revokeClaim function
-    function revokeClaim(bytes32 _claimId) external override onlyAdmin returns (bool) {
-        return _revokeClaim(_claimId);
+    function getClaim(bytes32 _claimId)
+        public
+        view
+        virtual
+        override(ERC735, OnChainIdentityWithRevocation)
+        returns (uint256, uint256, address, bytes memory, bytes memory, string memory)
+    {
+        return ERC735.getClaim(_claimId);
     }
 }
 
@@ -187,26 +208,43 @@ contract OnChainIdentityWithRevocationTest is Test {
     // Test addresses
     address public admin = makeAddr("admin");
     address public user = makeAddr("user");
-    address public signer = makeAddr("signer");
+    address public signer;
+
+    uint256 internal signerPrivateKey = 0x12345;
 
     // Test data
-    bytes32 public constant TEST_CLAIM_ID = keccak256("test_claim");
+    bytes32 public TEST_CLAIM_ID;
     uint256 public constant CLAIM_TOPIC = 1;
     uint256 public constant CLAIM_SCHEME = 1;
-    bytes public testSignature =
-        hex"1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef12";
-    bytes public testData = "test claim data";
+    bytes public testSignature;
+    string public testDataString = "test claim data";
+    bytes public testData;
     string public testUri = "https://example.com/claim";
-
-    // Events
-    event ClaimRevoked(bytes signature);
 
     function setUp() public {
         identity = new TestableOnChainIdentityWithRevocation(admin);
+        signer = vm.addr(signerPrivateKey);
 
-        // Add a test claim
+        // The identity needs to have the signer's key registered for this.
         vm.prank(admin);
-        identity.addClaim(TEST_CLAIM_ID, CLAIM_TOPIC, CLAIM_SCHEME, signer, testSignature, testData, testUri);
+        identity.addKey(keccak256(abi.encode(signer)), 3, 1); // 3 = CLAIM_SIGNER_KEY_PURPOSE
+
+        // Add the initial test claim
+        (TEST_CLAIM_ID, testSignature) = _addTestClaim(testDataString);
+        testData = abi.encode(testDataString);
+    }
+
+    /// @notice Utility function to create, sign, and add a test claim.
+    function _addTestClaim(string memory _testDataString) internal returns (bytes32 claimId, bytes memory signature) {
+        bytes memory _testData = abi.encode(_testDataString);
+        bytes32 dataHash = keccak256(abi.encode(address(identity), CLAIM_TOPIC, _testData));
+        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", dataHash));
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(signerPrivateKey, prefixedHash);
+        signature = abi.encodePacked(r, s, v);
+
+        vm.prank(admin);
+        claimId = identity.addClaim(CLAIM_TOPIC, CLAIM_SCHEME, address(identity), signature, _testData, testUri);
     }
 
     function test_InitialState() public view {
@@ -218,7 +256,7 @@ contract OnChainIdentityWithRevocationTest is Test {
     function test_RevokeClaimBySignatureSuccess() public {
         vm.prank(admin);
         vm.expectEmit(true, false, false, false);
-        emit ClaimRevoked(testSignature);
+        emit IClaimIssuer.ClaimRevoked(testSignature);
 
         identity.revokeClaimBySignature(testSignature);
 
@@ -242,16 +280,16 @@ contract OnChainIdentityWithRevocationTest is Test {
 
     function test_RevokeClaimBySignatureOnlyAdmin() public {
         vm.prank(user);
-        vm.expectRevert("Only admin");
+        vm.expectRevert(abi.encodeWithSelector(TestableOnChainIdentityWithRevocation.SenderLacksManagementKey.selector));
         identity.revokeClaimBySignature(testSignature);
     }
 
     function test_RevokeClaimByIdSuccess() public {
         vm.prank(admin);
         vm.expectEmit(true, false, false, false);
-        emit ClaimRevoked(testSignature);
+        emit IClaimIssuer.ClaimRevoked(testSignature);
 
-        bool result = identity.revokeClaim(TEST_CLAIM_ID);
+        bool result = identity.revokeClaim(TEST_CLAIM_ID, address(identity));
 
         assertTrue(result);
         assertTrue(identity.isClaimRevoked(testSignature));
@@ -262,37 +300,26 @@ contract OnChainIdentityWithRevocationTest is Test {
         bytes32 nonExistentClaimId = keccak256("non_existent_claim");
 
         vm.prank(admin);
-        vm.expectRevert("Claim does not exist");
-        identity.revokeClaim(nonExistentClaimId);
+        vm.expectRevert(abi.encodeWithSelector(ERC735.ClaimDoesNotExist.selector, nonExistentClaimId));
+        identity.revokeClaim(nonExistentClaimId, address(identity));
     }
 
     function test_RevokeClaimByIdOnlyAdmin() public {
         vm.prank(user);
-        vm.expectRevert("Only admin");
-        identity.revokeClaim(TEST_CLAIM_ID);
+        vm.expectRevert(abi.encodeWithSelector(TestableOnChainIdentityWithRevocation.SenderLacksManagementKey.selector));
+        identity.revokeClaim(TEST_CLAIM_ID, address(identity));
     }
 
-    function test_IsClaimValidWithValidKeyAndNonRevokedClaim() public {
-        // Add a key with purpose 3 for the signer
-        bytes32 signerKey = keccak256(abi.encode(signer));
-        vm.prank(admin);
-        identity.addKeyForTesting(signerKey, 3);
-
+    function test_IsClaimValidWithValidKeyAndNonRevokedClaim() public view {
         // Create test identity
         IIdentity testIdentity = IIdentity(address(identity));
 
         // The mock signature is invalid, so isClaimValid will revert
         // This is expected behavior with invalid signatures
-        vm.expectRevert(ECDSA.ECDSAInvalidSignature.selector);
-        identity.isClaimValid(testIdentity, CLAIM_TOPIC, testSignature, testData);
+        assertTrue(identity.isClaimValid(testIdentity, CLAIM_TOPIC, testSignature, testData));
     }
 
     function test_IsClaimValidWithRevokedClaim() public {
-        // Add a key with purpose 3 for the signer
-        bytes32 signerKey = keccak256(abi.encode(signer));
-        vm.prank(admin);
-        identity.addKeyForTesting(signerKey, 3);
-
         // Revoke the claim
         vm.prank(admin);
         identity.revokeClaimBySignature(testSignature);
@@ -302,8 +329,7 @@ contract OnChainIdentityWithRevocationTest is Test {
 
         // The mock signature is invalid, so isClaimValid will revert
         // even before checking if the claim is revoked
-        vm.expectRevert(ECDSA.ECDSAInvalidSignature.selector);
-        identity.isClaimValid(testIdentity, CLAIM_TOPIC, testSignature, testData);
+        assertFalse(identity.isClaimValid(testIdentity, CLAIM_TOPIC, testSignature, testData));
     }
 
     function test_IsClaimRevokedFalseForNonRevokedClaim() public view {
@@ -318,12 +344,11 @@ contract OnChainIdentityWithRevocationTest is Test {
     }
 
     function test_GetRecoveredAddressValidSignature() public view {
-        // Create a valid signature for testing
-        bytes32 dataHash = keccak256("test data");
+        bytes32 dataHash = keccak256(bytes("test data"));
         bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", dataHash));
 
         // Sign with a known private key
-        uint256 privateKey = 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef;
+        uint256 privateKey = signerPrivateKey;
         address expectedSigner = vm.addr(privateKey);
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, prefixedHash);
@@ -345,17 +370,17 @@ contract OnChainIdentityWithRevocationTest is Test {
     function test_GetRecoveredAddressWithDifferentVValues() public {
         bytes32 dataHash = keccak256("test data");
 
-        // Test with invalid signature (v = 27)
+        // Test with invalid signature (v = 27) but correct length
         bytes memory signature27 =
-            hex"1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1b";
+            hex"111111111111111111111111111111111111111111111111111111111111111122222222222222222222222222222222222222222222222222222222222222221b";
 
         // ECDSA.recover reverts on invalid signature
         vm.expectRevert(ECDSA.ECDSAInvalidSignature.selector);
         identity.getRecoveredAddress(signature27, dataHash);
 
-        // Test with invalid signature (v = 28)
+        // Test with invalid signature (v = 28) but correct length
         bytes memory signature28 =
-            hex"1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1c";
+            hex"111111111111111111111111111111111111111111111111111111111111111122222222222222222222222222222222222222222222222222222222222222221c";
 
         // ECDSA.recover reverts on invalid signature
         vm.expectRevert(ECDSA.ECDSAInvalidSignature.selector);
@@ -363,24 +388,25 @@ contract OnChainIdentityWithRevocationTest is Test {
     }
 
     function test_MultipleClaimRevocations() public {
-        bytes memory signature2 =
-            hex"abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab";
-        bytes memory signature3 =
-            hex"567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456";
+        // Add and sign claim 2
+        (, bytes memory signature2) = _addTestClaim("test claim data 2");
+
+        // Add and sign claim 3
+        (, bytes memory signature3) = _addTestClaim("test claim data 3");
 
         // Revoke multiple claims
         vm.startPrank(admin);
 
         vm.expectEmit(true, false, false, false);
-        emit ClaimRevoked(testSignature);
+        emit IClaimIssuer.ClaimRevoked(testSignature);
         identity.revokeClaimBySignature(testSignature);
 
         vm.expectEmit(true, false, false, false);
-        emit ClaimRevoked(signature2);
+        emit IClaimIssuer.ClaimRevoked(signature2);
         identity.revokeClaimBySignature(signature2);
 
         vm.expectEmit(true, false, false, false);
-        emit ClaimRevoked(signature3);
+        emit IClaimIssuer.ClaimRevoked(signature3);
         identity.revokeClaimBySignature(signature3);
 
         vm.stopPrank();
@@ -391,9 +417,15 @@ contract OnChainIdentityWithRevocationTest is Test {
         assertTrue(identity.isClaimRevoked(signature3));
     }
 
-    function test_FuzzRevokeClaimBySignature(bytes calldata randomSignature) public {
-        vm.assume(randomSignature.length > 0);
+    function test_FuzzRevokeClaimBySignature(string calldata randomDataString) public {
+        vm.assume(bytes(randomDataString).length > 0);
+        // to avoid collision with the claim from setUp
+        vm.assume(keccak256(bytes(randomDataString)) != keccak256(bytes(testDataString)));
 
+        // Create and add a new claim with random data
+        (, bytes memory randomSignature) = _addTestClaim(randomDataString);
+
+        // --- Test revocation ---
         // Should not be revoked initially
         assertFalse(identity.isClaimRevoked(randomSignature));
 
@@ -434,7 +466,7 @@ contract OnChainIdentityWithRevocationTest is Test {
 
         assertEq(topic, CLAIM_TOPIC);
         assertEq(scheme, CLAIM_SCHEME);
-        assertEq(issuer, signer);
+        assertEq(issuer, address(identity));
         assertEq(signature, testSignature);
         assertEq(data, testData);
         assertEq(uri, testUri);
@@ -443,7 +475,7 @@ contract OnChainIdentityWithRevocationTest is Test {
     function test_RevokeClaimByIdInternalLogic() public {
         // Test the complete flow: getClaim -> extract signature -> revoke by signature
         vm.prank(admin);
-        bool result = identity.revokeClaim(TEST_CLAIM_ID);
+        bool result = identity.revokeClaim(TEST_CLAIM_ID, address(identity));
 
         assertTrue(result);
         assertTrue(identity.isClaimRevoked(testSignature));
@@ -458,12 +490,12 @@ contract OnChainIdentityWithRevocationTest is Test {
 
         // Add key using helper function
         vm.prank(admin);
-        identity.addKeyForTesting(testKey, purpose);
+        identity.addKey(testKey, purpose, 1);
         assertTrue(identity.keyHasPurpose(testKey, purpose));
 
         // Remove key using helper function
         vm.prank(admin);
-        identity.removeKeyForTesting(testKey, purpose);
+        identity.removeKey(testKey, purpose);
         assertFalse(identity.keyHasPurpose(testKey, purpose));
     }
 }

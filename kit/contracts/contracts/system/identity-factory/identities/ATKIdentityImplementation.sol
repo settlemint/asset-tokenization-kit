@@ -35,7 +35,6 @@ contract ATKIdentityImplementation is
 
     // --- Custom Errors for ATKIdentityImplementation ---
     error AlreadyInitialized();
-    error InvalidInitialManagementKey();
     error SenderLacksManagementKey();
     error SenderLacksActionKey();
     error SenderLacksClaimSignerKey();
@@ -71,7 +70,7 @@ contract ATKIdentityImplementation is
     /// @notice Constructor for the `ATKIdentityImplementation`.
     /// @dev Initializes ERC2771 context with the provided forwarder.
     ///      The main identity initialization (setting the first management key) is done via `initializeATKIdentity`.
-    constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
+    constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) ERC734(address(0), true) {
         _disableInitializers();
     }
 
@@ -82,26 +81,12 @@ contract ATKIdentityImplementation is
      *      This replaces the old `__Identity_init` call.
      * @param initialManagementKey The address to be set as the initial management key for this identity.
      */
-    function initialize(address initialManagementKey) external override initializer {
+    function initialize(address initialManagementKey) external override(ERC734, IATKIdentity) initializer {
         if (_smartIdentityInitialized) revert AlreadyInitialized();
         _smartIdentityInitialized = true;
 
-        if (initialManagementKey == address(0)) revert InvalidInitialManagementKey();
-
         __ERC165_init_unchained(); // Initialize ERC165 storage
-
-        bytes32 keyHash = keccak256(abi.encode(initialManagementKey));
-
-        // Directly set up the first management key using storage from ERC734
-        // This mimics the behavior of OnchainID's __Identity_init
-        _keys[keyHash].key = keyHash;
-        _keys[keyHash].purposes = [MANAGEMENT_KEY_PURPOSE]; // Initialize dynamic array with one element
-        _keys[keyHash].keyType = 1; // Assuming KeyType 1 for ECDSA / standard Ethereum address key
-
-        _keysByPurpose[MANAGEMENT_KEY_PURPOSE].push(keyHash);
-
-        // Emit event defined in ERC734/IERC734
-        emit KeyAdded(keyHash, MANAGEMENT_KEY_PURPOSE, 1);
+        __ERC734_init(initialManagementKey);
     }
 
     // --- OnchainIdentityWithRevocation Functions ---
@@ -113,8 +98,8 @@ contract ATKIdentityImplementation is
 
     /// @dev Revokes a claim by its ID
     /// @param _claimId The ID of the claim to revoke
-    function revokeClaim(bytes32 _claimId) external virtual override onlyManager returns (bool) {
-        return _revokeClaim(_claimId);
+    function revokeClaim(bytes32 _claimId, address _identity) external virtual override onlyManager returns (bool) {
+        return _revokeClaim(_claimId, _identity);
     }
 
     // --- ERC734 (Key Holder) Functions - Overridden for Access Control & Specific Logic ---

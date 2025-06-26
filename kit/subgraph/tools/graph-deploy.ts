@@ -81,7 +81,7 @@ const EXIT_CODES = {
 
 type ExitCode = (typeof EXIT_CODES)[keyof typeof EXIT_CODES];
 
-const GRAPH_NAME = "smart-protocol";
+const LOCAL_DEPLOYMENT_SUBGRAPH_NAME = "kit-integration-tests";
 const GRAPH_VERSION_PREFIX = "v1.0.0";
 
 // Create logger instance
@@ -222,7 +222,7 @@ function parseArguments(): DeploymentConfig {
         port: {
           type: "string",
           short: "p",
-          default: `${process.env.THE_GRAPH_PORT_LOCAL_DEPLOY || "8020"}:${process.env.THE_GRAPH_PORT_LOCAL_QUERY || "8000"}`,
+          default: "8020:8000",
         },
       },
       allowPositionals: false,
@@ -264,7 +264,7 @@ function parseArguments(): DeploymentConfig {
     // Requires format: "deploymentPort:queryPort"
     if (!values.port.includes(":")) {
       logger.error(
-        "Port must be specified in format 'deployment:query' (e.g., '8120:8100')"
+        "Port must be specified in format 'deployment:query' (e.g., '8020:8000')"
       );
       showUsage();
       process.exit(EXIT_CODES.INVALID_ARGS);
@@ -274,7 +274,7 @@ function parseArguments(): DeploymentConfig {
 
     if (!deploymentPort || !queryPort) {
       logger.error(
-        "Both deployment and query ports must be specified (e.g., '8120:8100')"
+        "Both deployment and query ports must be specified (e.g., '8020:8000')"
       );
       showUsage();
       process.exit(EXIT_CODES.INVALID_ARGS);
@@ -535,7 +535,7 @@ async function generateCode(): Promise<void> {
  */
 async function createLocalSubgraph(
   node: string,
-  graphName: string = GRAPH_NAME
+  graphName: string = LOCAL_DEPLOYMENT_SUBGRAPH_NAME
 ): Promise<void> {
   logger.info(`Creating local subgraph: ${graphName}`);
 
@@ -559,7 +559,7 @@ async function createLocalSubgraph(
  */
 async function removeLocalSubgraph(
   node: string,
-  graphName: string = GRAPH_NAME
+  graphName: string = LOCAL_DEPLOYMENT_SUBGRAPH_NAME
 ): Promise<void> {
   try {
     logger.info(`Removing local subgraph: ${graphName}`);
@@ -580,7 +580,7 @@ async function removeLocalSubgraph(
  */
 async function deployLocal(config: DeploymentConfig): Promise<void> {
   try {
-    const graphName = GRAPH_NAME;
+    const graphName = LOCAL_DEPLOYMENT_SUBGRAPH_NAME;
     const versionLabel = `${GRAPH_VERSION_PREFIX}.${Date.now()}`;
     const deploymentNode = `http://localhost:${config.deploymentPort}`;
     const queryNode = `http://localhost:${config.queryPort}`;

@@ -10,6 +10,8 @@ export const grantRole = async (
   role: Hex,
   address: Address
 ) => {
+  console.log(`[Role] → Starting role grant operation...`);
+
   const contract = admin.getContractInstance({
     address: contractAddress,
     abi: ATKContracts.accessControl,
@@ -22,6 +24,6 @@ export const grantRole = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Role] ${role} granted to ${address} on ${contractAddress} by ${admin.name} (${admin.address})`
+    `[Role] ✓ ${role} granted to ${address} on ${contractAddress} by ${admin.name} (${admin.address})`
   );
 };

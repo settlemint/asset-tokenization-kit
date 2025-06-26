@@ -4,7 +4,6 @@ CREATE DATABASE portal;
 CREATE DATABASE hasura;
 CREATE DATABASE thegraph;
 CREATE DATABASE blockscout;
-CREATE DATABASE graphanvil;
 
 -- Create users with SUPERUSER privileges to allow extension creation
 CREATE USER txsigner WITH PASSWORD 'txsigner' SUPERUSER;
@@ -64,12 +63,3 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO blockscout;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO blockscout;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO blockscout;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO blockscout;
-
--- Connect to graphanvil database and grant schema privileges
-\c graphanvil;
-CREATE EXTENSION IF NOT EXISTS postgres_fdw;
-GRANT ALL ON SCHEMA public TO thegraph;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO thegraph;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO thegraph;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO thegraph;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO thegraph;
