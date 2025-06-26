@@ -78,6 +78,9 @@ async function startDevServer() {
     const chunk = decoder.decode(value);
     output += chunk;
 
+    // Output to main process stdout
+    process.stdout.write(chunk);
+
     if (/VITE v(.*) ready in/.test(output)) {
       console.log("Dev server started");
       reader.releaseLock();
