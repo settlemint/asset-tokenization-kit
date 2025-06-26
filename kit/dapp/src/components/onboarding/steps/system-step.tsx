@@ -26,13 +26,24 @@ const pincodeSchema = z.object({
 type PincodeFormValues = z.infer<typeof pincodeSchema>;
 
 interface SystemStepProps {
+  systemAddress?: string | null;
+  isSystemDeployed?: boolean;
   onSuccess?: () => void;
   onRegisterAction?: (action: () => void) => void;
 }
 
-export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
+export function SystemStep({
+  systemAddress: propSystemAddress,
+  isSystemDeployed = false,
+  onSuccess,
+  onRegisterAction,
+}: SystemStepProps) {
   const { t } = useTranslation(["onboarding", "general"]);
-  const [systemAddress, , invalidateSetting] = useSettings("SYSTEM_ADDRESS");
+  const [systemAddressFromSettings, , invalidateSetting] =
+    useSettings("SYSTEM_ADDRESS");
+
+  // Use prop system address if provided, otherwise fall back to settings
+  const systemAddress = propSystemAddress ?? systemAddressFromSettings;
   const [showPincodePrompt, setShowPincodePrompt] = useState(false);
 
   const form = useForm<PincodeFormValues>({
@@ -62,8 +73,22 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
     },
   });
 
-  const hasSystem = !!systemAddress;
+  const hasSystem =
+    isSystemDeployed || (!!systemAddress && systemAddress.trim() !== "");
   const isDeploying = isCreatingSystem || isTracking;
+
+  // Reset pincode prompt when system is already deployed
+  useEffect(() => {
+    if (hasSystem && showPincodePrompt) {
+      setShowPincodePrompt(false);
+    }
+  }, [hasSystem, showPincodePrompt]);
+
+  // Force refresh settings on component mount to ensure we have latest data
+  useEffect(() => {
+    // Invalidate and refresh the system address setting
+    invalidateSetting();
+  }, [invalidateSetting]);
 
   // Handle deploy system when button is clicked
   const handleDeploySystem = () => {
@@ -199,7 +224,7 @@ export function SystemStep({ onSuccess, onRegisterAction }: SystemStepProps) {
                     {t("system.contract-address")}
                   </p>
                   <p className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all">
-                    {systemAddress}
+                    {systemAddress ?? systemAddressFromSettings ?? "Loading..."}
                   </p>
                 </div>
               </div>

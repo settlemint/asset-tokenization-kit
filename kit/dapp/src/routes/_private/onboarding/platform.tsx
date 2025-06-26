@@ -7,6 +7,7 @@ import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-securit
 import { WalletStep } from "@/components/onboarding/steps/wallet-step";
 import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { useSettings } from "@/hooks/use-settings";
 import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -44,7 +45,17 @@ function PlatformOnboarding() {
   const { data: session } = authClient.useSession();
 
   // Get data from loader
-  const { user, systemAddress, systemDetails } = Route.useLoaderData();
+  const {
+    user,
+    systemAddress: loaderSystemAddress,
+    systemDetails,
+  } = Route.useLoaderData();
+
+  // Get real-time system address from settings hook
+  const [liveSystemAddress] = useSettings("SYSTEM_ADDRESS");
+
+  // Use live system address if available, otherwise fall back to loader data
+  const systemAddress = liveSystemAddress ?? loaderSystemAddress;
 
   // Start with first step, will update when data loads
   const [currentStepId, setCurrentStepId] = useState("wallet");
@@ -359,6 +370,8 @@ function PlatformOnboarding() {
                 } else if (currentStepId === "system") {
                   return (
                     <SystemStep
+                      systemAddress={systemAddress}
+                      isSystemDeployed={!!systemAddress}
                       onSuccess={handleSystemSuccess}
                       onRegisterAction={(action) => {
                         systemActionRef.current = action;
