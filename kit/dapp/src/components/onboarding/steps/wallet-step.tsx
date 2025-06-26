@@ -2,7 +2,7 @@ import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 import { useMutation } from "@tanstack/react-query";
-import { useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -18,16 +18,21 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
   const [justGenerated, setJustGenerated] = useState(false);
 
   const user = session?.user;
-  const hasWallet = !!user?.wallet;
+  const hasWallet = !!user?.initialOnboardingFinished;
 
   const { mutate: generateWallet, isPending } = useMutation({
-    mutationFn: () =>
-      authClient.wallet({
+    mutationFn: async () => {
+      await authClient.wallet({
         messages: {
           walletAlreadyExists: t("onboarding:wallet.already-exists"),
           walletCreationFailed: t("onboarding:wallet.creation-failed"),
         },
-      }),
+      });
+      // TODO: Remove this once we have a proper pincode setup flow
+      await authClient.pincode.enable({
+        pincode: "111111",
+      });
+    },
     onSuccess: () => {
       toast.success(t("onboarding:wallet.generated"));
       void queryClient.invalidateQueries({
@@ -38,23 +43,25 @@ export function WalletStep({ onRegisterAction }: WalletStepProps) {
   });
 
   // Handle generate wallet
-  const handleGenerateWallet = () => {
-    if (user?.id && !isPending && !hasWallet) {
+  const handleGenerateWallet = useCallback(() => {
+    if (!isPending && !hasWallet) {
       generateWallet();
     }
-  };
+  }, [isPending, hasWallet, generateWallet]);
 
-  // Register the action with parent immediately if needed
-  if (onRegisterAction) {
-    if (!hasWallet) {
-      onRegisterAction(handleGenerateWallet);
-    } else {
-      // Unregister by passing a no-op function when wallet exists
-      onRegisterAction(() => {
-        // No action needed when wallet already exists
-      });
+  // Register the action with parent when conditions change
+  useEffect(() => {
+    if (onRegisterAction) {
+      if (!hasWallet) {
+        onRegisterAction(handleGenerateWallet);
+      } else {
+        // Unregister by passing a no-op function when wallet exists
+        onRegisterAction(() => {
+          // No action needed when wallet already exists
+        });
+      }
     }
-  }
+  }, [onRegisterAction, hasWallet, handleGenerateWallet]);
 
   // Don't auto-advance - removed the auto success callback
 

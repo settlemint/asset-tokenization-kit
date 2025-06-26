@@ -6,6 +6,7 @@ import { SystemStep } from "@/components/onboarding/steps/system-step";
 import { WalletStep } from "@/components/onboarding/steps/wallet-step";
 import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useRef } from "react";
@@ -14,12 +15,9 @@ import { useTranslation } from "react-i18next";
 export const Route = createFileRoute("/_private/onboarding/platform")({
   loader: async ({ context }) => {
     // Load user and system address in parallel
-    const [user, systemAddress] = await Promise.all([
-      context.queryClient.ensureQueryData(orpc.user.me.queryOptions()),
-      context.queryClient.ensureQueryData(
-        orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
-      ),
-    ]);
+    const systemAddress = await context.queryClient.ensureQueryData(
+      orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
+    );
 
     // If we have a system address, ensure system details are loaded
     let systemDetails = null;
@@ -31,21 +29,24 @@ export const Route = createFileRoute("/_private/onboarding/platform")({
       );
     }
 
-    return { user, systemAddress, systemDetails };
+    return { systemAddress, systemDetails };
   },
   component: PlatformOnboarding,
 });
 
 function PlatformOnboarding() {
+  const { data: session } = authClient.useSession();
   const { t } = useTranslation(["general", "onboarding"]);
   const navigate = useNavigate();
 
   // Get data from loader
-  const { user, systemAddress, systemDetails } = Route.useLoaderData();
+  const { systemAddress, systemDetails } = Route.useLoaderData();
 
+  const user = session?.user;
+  
   // Determine initial step based on what's completed
   const getInitialStep = () => {
-    if (!user.wallet) return "wallet";
+    if (!user?.initialOnboardingFinished) return "wallet";
     if (!systemAddress) return "system";
     if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
     return "assets"; // Default to last step if all complete
@@ -60,7 +61,7 @@ function PlatformOnboarding() {
       id: "wallet",
       title: "Generate Wallet",
       description: "Create your secure blockchain wallet",
-      status: user.wallet
+      status: user?.initialOnboardingFinished
         ? "completed"
         : currentStepId === "wallet"
           ? "active"
@@ -116,7 +117,11 @@ function PlatformOnboarding() {
 
   const handleNext = () => {
     // Check if current step needs special action
-    if (currentStepId === "wallet" && !user.wallet && walletActionRef.current) {
+    if (
+      currentStepId === "wallet" &&
+      !user?.initialOnboardingFinished &&
+      walletActionRef.current
+    ) {
       walletActionRef.current();
       return;
     }
@@ -166,7 +171,7 @@ function PlatformOnboarding() {
   // Determine if next button should be disabled
   const isNextDisabled = () => {
     // For wallet step, enable button if no wallet
-    if (currentStepId === "wallet" && !user.wallet) {
+    if (currentStepId === "wallet" && !user?.initialOnboardingFinished) {
       return false; // Enable the "Generate Wallet" button
     }
 
@@ -189,7 +194,7 @@ function PlatformOnboarding() {
 
   // Determine button labels
   const getNextLabel = () => {
-    if (currentStepId === "wallet" && !user.wallet) {
+    if (currentStepId === "wallet" && !user?.initialOnboardingFinished) {
       return "Generate Wallet";
     }
     if (currentStepId === "system" && !systemAddress) {
