@@ -44,7 +44,7 @@ export const Roles = [
   new RoleConfig("DEPLOYER_ROLE", "deployer"),
   new RoleConfig("STORAGE_MODIFIER_ROLE", "storageModifier"),
   new RoleConfig("REGISTRY_MANAGER_ROLE", "registryManager"),
-  new RoleConfig("TOKEN_GOVERNANCE_ROLE", "tokenGovernance"),
+  new RoleConfig("GOVERNANCE_ROLE", "governance"),
   new RoleConfig("SUPPLY_MANAGEMENT_ROLE", "supplyManagement"),
   new RoleConfig("CUSTODIAN_ROLE", "custodian"),
   new RoleConfig("EMERGENCY_ROLE", "emergency"),

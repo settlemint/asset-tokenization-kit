@@ -111,7 +111,7 @@ contract ATKFundTest is AbstractATKAssetTest {
         assertEq(fund.symbol(), SYMBOL);
         assertEq(fund.decimals(), DECIMALS);
         assertTrue(fund.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(fund.hasRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, owner));
+        assertTrue(fund.hasRole(ATKRoles.GOVERNANCE_ROLE, owner));
     }
 
     function test_Mint() public {

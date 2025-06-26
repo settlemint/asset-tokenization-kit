@@ -89,23 +89,19 @@ contract ATKStableCoinImplementation is
 
     // --- ISMART Implementation ---
 
-    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE) {
+    function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setOnchainID(_onchainID);
     }
 
     function setIdentityRegistry(address _identityRegistry)
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_setIdentityRegistry(_identityRegistry);
     }
 
-    function setCompliance(address _compliance)
-        external
-        override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
-    {
+    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setCompliance(_compliance);
     }
 
@@ -115,7 +111,7 @@ contract ATKStableCoinImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_setParametersForComplianceModule(_module, _params);
     }
@@ -171,7 +167,7 @@ contract ATKStableCoinImplementation is
     )
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_addComplianceModule(_module, _params);
     }
@@ -179,7 +175,7 @@ contract ATKStableCoinImplementation is
     function removeComplianceModule(address _module)
         external
         override
-        onlyAccessManagerRole(ATKRoles.TOKEN_GOVERNANCE_ROLE)
+        onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE)
     {
         _smart_removeComplianceModule(_module);
     }

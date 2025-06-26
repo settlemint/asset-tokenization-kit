@@ -117,7 +117,7 @@ contract ATKDepositTest is AbstractATKAssetTest {
         assertEq(deposit.decimals(), DECIMALS);
         assertEq(deposit.totalSupply(), 0);
         assertTrue(deposit.hasRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, owner));
-        assertTrue(deposit.hasRole(ATKRoles.TOKEN_GOVERNANCE_ROLE, owner));
+        assertTrue(deposit.hasRole(ATKRoles.GOVERNANCE_ROLE, owner));
         assertTrue(deposit.hasRole(ATKRoles.CUSTODIAN_ROLE, owner));
         assertTrue(deposit.hasRole(ATKRoles.EMERGENCY_ROLE, owner));
     }
