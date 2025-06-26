@@ -34,20 +34,20 @@ export const mint = tokenRouter.token.mint
   .use(tokenPermissionMiddleware({ requiredRoles: ["supplyManagement"] }))
   .use(portalMiddleware)
   .handler(async ({ input, context }) => {
-    const { id, to, amount, verificationCode, verificationType } = input;
+    const { contract, to, amount, verification } = input;
     const { auth } = context;
 
     const sender = auth.user;
     const result = await context.portalClient.query(
       MINT_BOND_MUTATION,
       {
-        address: id,
+        address: contract,
         from: sender.wallet ?? "",
         to,
         amount: amount.toString(),
         ...(await handleChallenge(sender, {
-          code: verificationCode,
-          type: verificationType,
+          code: verification.verificationCode,
+          type: verification.verificationType,
         })),
       },
       z.object({

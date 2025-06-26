@@ -30,6 +30,12 @@
     },
     "artifacts": {
       "dependsOn": ["db:export"]
+    },
+    "test": {
+      "dependsOn": ["codegen"]
+    },
+    "test:integration": {
+      "dependsOn": ["codegen"]
     }
   }
 }

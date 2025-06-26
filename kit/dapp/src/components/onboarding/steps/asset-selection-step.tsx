@@ -103,6 +103,11 @@ export function AssetSelectionStep({
     }));
 
     createFactories({
+      // TODO: add user pincode
+      verification: {
+        verificationCode: "111111",
+        verificationType: "pincode",
+      },
       contract: systemDetails.tokenFactoryRegistry,
       factories,
       messages: {

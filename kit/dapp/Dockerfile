@@ -7,4 +7,4 @@ RUN cd /usr/src/app/server && bun install --frozen-lockfile
 EXPOSE 3000/tcp
 ENV NODE_ENV=production
 USER bun
-ENTRYPOINT [ "bun", "run", "server/index.ts" ]
+ENTRYPOINT [ "bun", "run", "server/index.mjs" ]
