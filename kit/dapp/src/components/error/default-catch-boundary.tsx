@@ -12,8 +12,11 @@
  * @see {@link https://tanstack.com/router/latest/docs/guide/error-boundaries} - TanStack Router error boundaries
  */
 
+import {
+  ErrorCodeDisplay,
+  ErrorDisplay,
+} from "@/components/error/error-display";
 import { Logo } from "@/components/logo/logo";
-import { ErrorCodeDisplay, ErrorDisplay } from "@/components/ui/error-display";
 import {
   getErrorCode,
   useErrorDescription,

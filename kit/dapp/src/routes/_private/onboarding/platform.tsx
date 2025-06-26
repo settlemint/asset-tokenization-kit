@@ -59,12 +59,18 @@ function PlatformOnboarding() {
         if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
         return "assets"; // Default to last step if all complete
       };
-      
+
       const initialStep = getInitialStep();
       setCurrentStepId(initialStep);
       setHasInitialized(true);
     }
-  }, [session, user?.initialOnboardingFinished, systemAddress, systemDetails?.tokenFactories.length, hasInitialized]);
+  }, [
+    session,
+    user?.initialOnboardingFinished,
+    systemAddress,
+    systemDetails?.tokenFactories.length,
+    hasInitialized,
+  ]);
 
   // Define steps with dynamic statuses
   const steps: Step[] = [

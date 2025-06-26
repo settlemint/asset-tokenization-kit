@@ -11,7 +11,10 @@
  * @see {@link https://tanstack.com/router/latest/docs/guide/not-found-errors} - TanStack Router not found handling
  */
 
-import { ErrorDisplay, ErrorCodeDisplay } from "@/components/ui/error-display";
+import {
+  ErrorCodeDisplay,
+  ErrorDisplay,
+} from "@/components/error/error-display";
 import type { ReactNode } from "react";
 
 /**
