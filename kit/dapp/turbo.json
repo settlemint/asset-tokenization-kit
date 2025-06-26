@@ -5,7 +5,13 @@
       "dependsOn": ["codegen:gql-tada"]
     },
     "codegen:settlemint": {
-      "inputs": [".env.local", ".env", "../subgraph/schema.graphql"],
+      "inputs": [
+        ".env.local",
+        ".env",
+        "../subgraph/schema.graphql",
+        ".generated/database-export.sql",
+        "../contracts/.generated/portal/*.json"
+      ],
       "outputs": [
         "*-env-*.d.ts",
         "*-schema.graphql",
