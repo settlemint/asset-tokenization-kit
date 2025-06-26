@@ -4,20 +4,42 @@ import { AppSidebar } from "./app-sidebar";
 
 // Mock dependencies
 void mock.module("@kit/ui/sidebar", () => ({
-  Sidebar: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+  Sidebar: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode;
+    [key: string]: unknown;
+  }) => (
     <aside data-testid="sidebar" {...props}>
       {children}
     </aside>
   ),
-  SidebarContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  SidebarFooter: ({ children }: { children: React.ReactNode }) => <footer>{children}</footer>,
-  SidebarGroup: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  SidebarHeader: ({ children }: { children: React.ReactNode }) => <header>{children}</header>,
-  SidebarMenu: ({ children }: { children: React.ReactNode }) => <nav>{children}</nav>,
-  SidebarMenuButton: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
-    <button {...props}>{children}</button>
+  SidebarContent: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
   ),
-  SidebarMenuItem: ({ children }: { children: React.ReactNode }) => <li>{children}</li>,
+  SidebarFooter: ({ children }: { children: React.ReactNode }) => (
+    <footer>{children}</footer>
+  ),
+  SidebarGroup: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  SidebarHeader: ({ children }: { children: React.ReactNode }) => (
+    <header>{children}</header>
+  ),
+  SidebarMenu: ({ children }: { children: React.ReactNode }) => (
+    <nav>{children}</nav>
+  ),
+  SidebarMenuButton: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode;
+    [key: string]: unknown;
+  }) => <button {...props}>{children}</button>,
+  SidebarMenuItem: ({ children }: { children: React.ReactNode }) => (
+    <li>{children}</li>
+  ),
 }));
 
 void mock.module("react-i18next", () => ({
@@ -27,7 +49,16 @@ void mock.module("react-i18next", () => ({
 }));
 
 void mock.module("./nav-main", () => ({
-  NavMain: ({ items }: { items: { title: string; url?: string; icon?: React.ComponentType; items?: { title: string; url: string }[] }[] }) => (
+  NavMain: ({
+    items,
+  }: {
+    items: {
+      title: string;
+      url?: string;
+      icon?: React.ComponentType;
+      items?: { title: string; url: string }[];
+    }[];
+  }) => (
     <div data-testid="nav-main">
       {items.map((item) => (
         <div key={item.title}>{item.title}</div>
@@ -37,7 +68,11 @@ void mock.module("./nav-main", () => ({
 }));
 
 void mock.module("./nav-projects", () => ({
-  NavProjects: ({ projects }: { projects: { name: string; url: string; icon: React.ComponentType }[] }) => (
+  NavProjects: ({
+    projects,
+  }: {
+    projects: { name: string; url: string; icon: React.ComponentType }[];
+  }) => (
     <div data-testid="nav-projects">
       {projects.map((project) => (
         <div key={project.name}>{project.name}</div>
@@ -103,31 +138,42 @@ describe("AppSidebar", () => {
   });
 
   it("passes correct props to NavMain", () => {
-    const NavMain = mock(({ items }: { items: { title: string; url?: string; icon?: React.ComponentType; items?: { title: string; url: string }[] }[] }) => {
-      // Verify items structure
-      expect(items).toHaveLength(3);
-      expect(items[0]).toMatchObject({
-        title: "sidebar.dashboard",
-        url: "/dashboard",
-        icon: expect.any(Function),
-      });
-      expect(items[1]).toMatchObject({
-        title: "sidebar.digitalAssets",
-        url: "#",
-        icon: expect.any(Function),
-        items: expect.arrayContaining([
-          { title: "sidebar.myAssets", url: "/assets" },
-          { title: "sidebar.tokenization", url: "/tokenization" },
-          { title: "sidebar.transactions", url: "/transactions" },
-        ]),
-      });
-      expect(items[2]).toMatchObject({
-        title: "sidebar.settings",
-        url: "/settings",
-        icon: expect.any(Function),
-      });
-      return null;
-    });
+    const NavMain = mock(
+      ({
+        items,
+      }: {
+        items: {
+          title: string;
+          url?: string;
+          icon?: React.ComponentType;
+          items?: { title: string; url: string }[];
+        }[];
+      }) => {
+        // Verify items structure
+        expect(items).toHaveLength(3);
+        expect(items[0]).toMatchObject({
+          title: "sidebar.dashboard",
+          url: "/dashboard",
+          icon: expect.any(Function),
+        });
+        expect(items[1]).toMatchObject({
+          title: "sidebar.digitalAssets",
+          url: "#",
+          icon: expect.any(Function),
+          items: expect.arrayContaining([
+            { title: "sidebar.myAssets", url: "/assets" },
+            { title: "sidebar.tokenization", url: "/tokenization" },
+            { title: "sidebar.transactions", url: "/transactions" },
+          ]),
+        });
+        expect(items[2]).toMatchObject({
+          title: "sidebar.settings",
+          url: "/settings",
+          icon: expect.any(Function),
+        });
+        return null;
+      }
+    );
 
     void mock.module("./nav-main", () => ({ NavMain }));
 
@@ -135,36 +181,42 @@ describe("AppSidebar", () => {
   });
 
   it("passes correct props to NavProjects", () => {
-    const NavProjects = mock(({ projects }: { projects: { name: string; url: string; icon: React.ComponentType }[] }) => {
-      // Verify projects structure
-      expect(projects).toHaveLength(5);
-      expect(projects[0]).toMatchObject({
-        name: "sidebar.bonds",
-        url: "/bonds",
-        icon: expect.any(Function),
-      });
-      expect(projects[1]).toMatchObject({
-        name: "sidebar.equity",
-        url: "/equity",
-        icon: expect.any(Function),
-      });
-      expect(projects[2]).toMatchObject({
-        name: "sidebar.fund",
-        url: "/fund",
-        icon: expect.any(Function),
-      });
-      expect(projects[3]).toMatchObject({
-        name: "sidebar.stablecoin",
-        url: "/stablecoin",
-        icon: expect.any(Function),
-      });
-      expect(projects[4]).toMatchObject({
-        name: "sidebar.deposit",
-        url: "/deposit",
-        icon: expect.any(Function),
-      });
-      return null;
-    });
+    const NavProjects = mock(
+      ({
+        projects,
+      }: {
+        projects: { name: string; url: string; icon: React.ComponentType }[];
+      }) => {
+        // Verify projects structure
+        expect(projects).toHaveLength(5);
+        expect(projects[0]).toMatchObject({
+          name: "sidebar.bonds",
+          url: "/bonds",
+          icon: expect.any(Function),
+        });
+        expect(projects[1]).toMatchObject({
+          name: "sidebar.equity",
+          url: "/equity",
+          icon: expect.any(Function),
+        });
+        expect(projects[2]).toMatchObject({
+          name: "sidebar.fund",
+          url: "/fund",
+          icon: expect.any(Function),
+        });
+        expect(projects[3]).toMatchObject({
+          name: "sidebar.stablecoin",
+          url: "/stablecoin",
+          icon: expect.any(Function),
+        });
+        expect(projects[4]).toMatchObject({
+          name: "sidebar.deposit",
+          url: "/deposit",
+          icon: expect.any(Function),
+        });
+        return null;
+      }
+    );
 
     void mock.module("./nav-projects", () => ({ NavProjects }));
 

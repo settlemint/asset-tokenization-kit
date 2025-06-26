@@ -22,7 +22,13 @@ void mock.module("react-hook-form", () => ({
     watch: mock(() => ({})),
     formState: { errors: {} },
   })),
-  Controller: ({ render: renderProp }: { render: (props: { field: { value: string[]; onChange: (value: string[]) => void } }) => React.ReactNode }) =>
+  Controller: ({
+    render: renderProp,
+  }: {
+    render: (props: {
+      field: { value: string[]; onChange: (value: string[]) => void };
+    }) => React.ReactNode;
+  }) =>
     renderProp({
       field: {
         value: ["Bond"],
@@ -55,28 +61,62 @@ void mock.module("react-i18next", () => ({
 
 // Mock UI components
 void mock.module("@kit/ui/form", () => ({
-  Form: ({ children }: { children: React.ReactNode }) => <form>{children}</form>,
-  FormControl: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  FormDescription: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
-  FormField: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  FormItem: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  FormLabel: ({ children }: { children: React.ReactNode }) => <label>{children}</label>,
-  FormMessage: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
+  Form: ({ children }: { children: React.ReactNode }) => (
+    <form>{children}</form>
+  ),
+  FormControl: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  FormDescription: ({ children }: { children: React.ReactNode }) => (
+    <p>{children}</p>
+  ),
+  FormField: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  FormItem: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  FormLabel: ({ children }: { children: React.ReactNode }) => (
+    <label>{children}</label>
+  ),
+  FormMessage: ({ children }: { children: React.ReactNode }) => (
+    <span>{children}</span>
+  ),
 }));
 
 void mock.module("@kit/ui/card", () => ({
-  Card: ({ children, onClick, className }: { children: React.ReactNode; onClick?: () => void; className?: string }) => (
+  Card: ({
+    children,
+    onClick,
+    className,
+  }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+    className?: string;
+  }) => (
     <div onClick={onClick} className={className} role="button">
       {children}
     </div>
   ),
-  CardHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  CardTitle: ({ children }: { children: React.ReactNode }) => <h3>{children}</h3>,
-  CardDescription: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
+  CardHeader: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  CardTitle: ({ children }: { children: React.ReactNode }) => (
+    <h3>{children}</h3>
+  ),
+  CardDescription: ({ children }: { children: React.ReactNode }) => (
+    <p>{children}</p>
+  ),
 }));
 
 void mock.module("@kit/ui/checkbox", () => ({
-  Checkbox: ({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (checked: boolean) => void }) => (
+  Checkbox: ({
+    checked,
+    onCheckedChange,
+  }: {
+    checked: boolean;
+    onCheckedChange: (checked: boolean) => void;
+  }) => (
     <input
       type="checkbox"
       checked={checked}
@@ -157,7 +197,17 @@ describe("AssetSelectionStep", () => {
     });
 
     const { Controller } = await import("react-hook-form");
-    (Controller as unknown as { mockImplementation: (fn: (props: { render: (field: { field: { value: string[]; onChange: (v: string[]) => void } }) => React.ReactNode }) => React.ReactNode) => void }).mockImplementation(({ render: renderProp }) =>
+    (
+      Controller as unknown as {
+        mockImplementation: (
+          fn: (props: {
+            render: (field: {
+              field: { value: string[]; onChange: (v: string[]) => void };
+            }) => React.ReactNode;
+          }) => React.ReactNode
+        ) => void;
+      }
+    ).mockImplementation(({ render: renderProp }) =>
       renderProp({
         field: {
           value: [],
@@ -181,7 +231,17 @@ describe("AssetSelectionStep", () => {
 
   it("shows selected state for chosen assets", async () => {
     const { Controller } = await import("react-hook-form");
-    (Controller as unknown as { mockImplementation: (fn: (props: { render: (field: { field: { value: string[]; onChange: (v: string[]) => void } }) => React.ReactNode }) => React.ReactNode) => void }).mockImplementation(({ render: renderProp }) =>
+    (
+      Controller as unknown as {
+        mockImplementation: (
+          fn: (props: {
+            render: (field: {
+              field: { value: string[]; onChange: (v: string[]) => void };
+            }) => React.ReactNode;
+          }) => React.ReactNode
+        ) => void;
+      }
+    ).mockImplementation(({ render: renderProp }) =>
       renderProp({
         field: {
           value: ["Bond", "Equity"],
@@ -277,9 +337,14 @@ describe("AssetSelectionStep", () => {
     const { api } = await import("@kit/api/react");
     api.onboarding.createTokenFactories.useStreamingMutation.mockReturnValue({
       mutate: mockMutate,
-      iterator: { next: mock(() => new Promise(() => {
-        // Never resolves
-      })) },
+      iterator: {
+        next: mock(
+          () =>
+            new Promise(() => {
+              // Never resolves
+            })
+        ),
+      },
       error: null,
     });
 

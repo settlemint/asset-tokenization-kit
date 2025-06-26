@@ -24,7 +24,9 @@ void mock.module("../ui/button", () => ({
 }));
 
 void mock.module("../ui/dropdown-menu", () => ({
-  DropdownMenu: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DropdownMenu: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
   DropdownMenuTrigger: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="dropdown-trigger">{children}</div>
   ),
@@ -35,7 +37,13 @@ void mock.module("../ui/dropdown-menu", () => ({
     <div data-testid="dropdown-label">{children}</div>
   ),
   DropdownMenuSeparator: () => <hr data-testid="dropdown-separator" />,
-  DropdownMenuItem: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
+  DropdownMenuItem: ({
+    children,
+    onClick,
+  }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+  }) => (
     <button onClick={onClick} data-testid="dropdown-item">
       {children}
     </button>

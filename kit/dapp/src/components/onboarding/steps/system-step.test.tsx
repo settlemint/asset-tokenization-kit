@@ -9,9 +9,13 @@ const mockInvalidateSetting = mock(() => {
 });
 
 void mock.module("@/hooks/use-settings", () => ({
-  useSettings: mock(() => [null, mock(() => {
-    // Mock set settings function
-  }), mockInvalidateSetting]),
+  useSettings: mock(() => [
+    null,
+    mock(() => {
+      // Mock set settings function
+    }),
+    mockInvalidateSetting,
+  ]),
 }));
 
 void mock.module("@/hooks/use-streaming-mutation", () => ({
@@ -82,7 +86,9 @@ describe("SystemStep", () => {
   });
 
   it("shows deployment progress", async () => {
-    const { useStreamingMutation } = await import("@/hooks/use-streaming-mutation");
+    const { useStreamingMutation } = await import(
+      "@/hooks/use-streaming-mutation"
+    );
     (useStreamingMutation as ReturnType<typeof mock>).mockReturnValue({
       mutate: mockMutate,
       isPending: true,
@@ -103,7 +109,9 @@ describe("SystemStep", () => {
     render(<SystemStep onSuccess={mockOnSuccess} />);
 
     // Simulate successful deployment by calling the onSuccess callback
-    const { useStreamingMutation } = await import("@/hooks/use-streaming-mutation");
+    const { useStreamingMutation } = await import(
+      "@/hooks/use-streaming-mutation"
+    );
     const mockCall = (useStreamingMutation as ReturnType<typeof mock>).mock
       .calls[0];
     const options = mockCall[0];
@@ -116,7 +124,9 @@ describe("SystemStep", () => {
   });
 
   it("shows loading spinner during deployment", async () => {
-    const { useStreamingMutation } = await import("@/hooks/use-streaming-mutation");
+    const { useStreamingMutation } = await import(
+      "@/hooks/use-streaming-mutation"
+    );
     (useStreamingMutation as ReturnType<typeof mock>).mockReturnValue({
       mutate: mockMutate,
       isPending: true,

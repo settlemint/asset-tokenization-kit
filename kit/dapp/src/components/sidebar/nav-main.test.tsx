@@ -11,29 +11,61 @@ void mock.module("@kit/ui/sidebar", () => ({
   SidebarGroup: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="sidebar-group">{children}</div>
   ),
-  SidebarGroupLabel: ({ children }: { children: React.ReactNode }) => <h3>{children}</h3>,
-  SidebarMenu: ({ children }: { children: React.ReactNode }) => <nav>{children}</nav>,
-  SidebarMenuButton: ({ children, tooltip, ...props }: { children: React.ReactNode; tooltip?: string; [key: string]: unknown }) => (
+  SidebarGroupLabel: ({ children }: { children: React.ReactNode }) => (
+    <h3>{children}</h3>
+  ),
+  SidebarMenu: ({ children }: { children: React.ReactNode }) => (
+    <nav>{children}</nav>
+  ),
+  SidebarMenuButton: ({
+    children,
+    tooltip,
+    ...props
+  }: {
+    children: React.ReactNode;
+    tooltip?: string;
+    [key: string]: unknown;
+  }) => (
     <button title={tooltip} {...props}>
       {children}
     </button>
   ),
-  SidebarMenuItem: ({ children }: { children: React.ReactNode }) => <li>{children}</li>,
-  SidebarMenuSub: ({ children }: { children: React.ReactNode }) => <ul>{children}</ul>,
-  SidebarMenuSubButton: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
-    <button {...props}>{children}</button>
+  SidebarMenuItem: ({ children }: { children: React.ReactNode }) => (
+    <li>{children}</li>
   ),
-  SidebarMenuSubItem: ({ children }: { children: React.ReactNode }) => <li>{children}</li>,
+  SidebarMenuSub: ({ children }: { children: React.ReactNode }) => (
+    <ul>{children}</ul>
+  ),
+  SidebarMenuSubButton: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode;
+    [key: string]: unknown;
+  }) => <button {...props}>{children}</button>,
+  SidebarMenuSubItem: ({ children }: { children: React.ReactNode }) => (
+    <li>{children}</li>
+  ),
 }));
 
 void mock.module("@kit/ui/collapsible", () => ({
-  Collapsible: ({ children, open }: { children: React.ReactNode; open?: boolean }) => (
-    <div data-open={open}>{children}</div>
-  ),
+  Collapsible: ({
+    children,
+    open,
+  }: {
+    children: React.ReactNode;
+    open?: boolean;
+  }) => <div data-open={open}>{children}</div>,
   CollapsibleContent: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="collapsible-content">{children}</div>
   ),
-  CollapsibleTrigger: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+  CollapsibleTrigger: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode;
+    [key: string]: unknown;
+  }) => (
     <button data-testid="collapsible-trigger" {...props}>
       {children}
     </button>

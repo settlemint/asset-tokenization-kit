@@ -11,9 +11,17 @@ void mock.module("next-themes", () => ({
 
 // Mock next/image
 void mock.module("next/image", () => ({
-  default: ({ src, alt, className, ...props }: { src: string; alt: string; className?: string; [key: string]: unknown }) => (
-    <img src={src} alt={alt} className={className} {...props} />
-  ),
+  default: ({
+    src,
+    alt,
+    className,
+    ...props
+  }: {
+    src: string;
+    alt: string;
+    className?: string;
+    [key: string]: unknown;
+  }) => <img src={src} alt={alt} className={className} {...props} />,
 }));
 
 describe("Logo", () => {

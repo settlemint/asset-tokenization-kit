@@ -4,35 +4,63 @@ import { NavProjects } from "./nav-projects";
 import type { LucideIcon } from "lucide-react";
 
 // Mock icons
-const MockIcon: LucideIcon = (() => <span>ProjectIcon</span>) as unknown as LucideIcon;
+const MockIcon: LucideIcon = (() => (
+  <span>ProjectIcon</span>
+)) as unknown as LucideIcon;
 
 // Mock dependencies
 void mock.module("@kit/ui/sidebar", () => ({
   SidebarGroup: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="sidebar-group">{children}</div>
   ),
-  SidebarGroupLabel: ({ children }: { children: React.ReactNode }) => <h3>{children}</h3>,
-  SidebarMenu: ({ children }: { children: React.ReactNode }) => <nav>{children}</nav>,
-  SidebarMenuAction: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
-    <div {...props}>{children}</div>
+  SidebarGroupLabel: ({ children }: { children: React.ReactNode }) => (
+    <h3>{children}</h3>
   ),
-  SidebarMenuButton: ({ children, tooltip, ...props }: { children: React.ReactNode; tooltip?: string; [key: string]: unknown }) => (
+  SidebarMenu: ({ children }: { children: React.ReactNode }) => (
+    <nav>{children}</nav>
+  ),
+  SidebarMenuAction: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode;
+    [key: string]: unknown;
+  }) => <div {...props}>{children}</div>,
+  SidebarMenuButton: ({
+    children,
+    tooltip,
+    ...props
+  }: {
+    children: React.ReactNode;
+    tooltip?: string;
+    [key: string]: unknown;
+  }) => (
     <button title={tooltip} {...props}>
       {children}
     </button>
   ),
-  SidebarMenuItem: ({ children }: { children: React.ReactNode }) => <li>{children}</li>,
+  SidebarMenuItem: ({ children }: { children: React.ReactNode }) => (
+    <li>{children}</li>
+  ),
   useSidebar: mock(() => ({
     isMobile: false,
   })),
 }));
 
 void mock.module("@kit/ui/dropdown-menu", () => ({
-  DropdownMenu: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DropdownMenu: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
   DropdownMenuContent: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="dropdown-content">{children}</div>
   ),
-  DropdownMenuItem: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
+  DropdownMenuItem: ({
+    children,
+    onClick,
+  }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+  }) => (
     <button onClick={onClick} data-testid="dropdown-item">
       {children}
     </button>

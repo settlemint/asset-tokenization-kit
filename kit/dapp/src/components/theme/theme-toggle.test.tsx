@@ -23,7 +23,15 @@ void mock.module("react-i18next", () => ({
 
 // Mock UI components
 void mock.module("@kit/ui/button", () => ({
-  Button: ({ children, onClick, ...props }: { children: React.ReactNode; onClick?: () => void; [key: string]: unknown }) => (
+  Button: ({
+    children,
+    onClick,
+    ...props
+  }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+    [key: string]: unknown;
+  }) => (
     <button onClick={onClick} {...props}>
       {children}
     </button>
@@ -31,11 +39,19 @@ void mock.module("@kit/ui/button", () => ({
 }));
 
 void mock.module("@kit/ui/dropdown-menu", () => ({
-  DropdownMenu: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DropdownMenu: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
   DropdownMenuContent: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="dropdown-content">{children}</div>
   ),
-  DropdownMenuItem: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
+  DropdownMenuItem: ({
+    children,
+    onClick,
+  }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+  }) => (
     <button onClick={onClick} data-testid="dropdown-item">
       {children}
     </button>
@@ -46,8 +62,12 @@ void mock.module("@kit/ui/dropdown-menu", () => ({
 }));
 
 void mock.module("@kit/ui/icon", () => ({
-  IconMoon: ({ className }: { className?: string }) => <span className={className}>🌙</span>,
-  IconSun: ({ className }: { className?: string }) => <span className={className}>☀️</span>,
+  IconMoon: ({ className }: { className?: string }) => (
+    <span className={className}>🌙</span>
+  ),
+  IconSun: ({ className }: { className?: string }) => (
+    <span className={className}>☀️</span>
+  ),
 }));
 
 describe("ThemeToggle", () => {
@@ -218,7 +238,7 @@ describe("ThemeToggle", () => {
     expect(dropdownContent).toBeInTheDocument();
   });
 
-  it("handles undefined theme gracefully", () => {
+  it("handles undefined theme gracefully", async () => {
     const { useTheme } = await import("next-themes");
     (useTheme as ReturnType<typeof mock>).mockReturnValue({
       theme: undefined,

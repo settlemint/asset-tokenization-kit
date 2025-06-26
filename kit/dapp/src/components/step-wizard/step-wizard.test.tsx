@@ -11,7 +11,19 @@ void mock.module("react-i18next", () => ({
 }));
 
 void mock.module("@kit/ui/button", () => ({
-  Button: ({ children, onClick, disabled, variant, ...props }: { children: React.ReactNode; onClick?: () => void; disabled?: boolean; variant?: string; [key: string]: unknown }) => (
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    variant,
+    ...props
+  }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+    disabled?: boolean;
+    variant?: string;
+    [key: string]: unknown;
+  }) => (
     <button
       onClick={onClick}
       disabled={disabled}

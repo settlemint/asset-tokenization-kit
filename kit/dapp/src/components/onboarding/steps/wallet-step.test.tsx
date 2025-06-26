@@ -85,8 +85,11 @@ void mock.module("@/lib/query.client", () => ({
 void mock.module("@daveyplate/better-auth-tanstack", () => ({
   AuthQueryContext: {
     Provider: ({ children }: { children: React.ReactNode }) => children,
-    Consumer: ({ children }: { children: (value: { sessionKey: string[] }) => React.ReactNode }) => 
-      children({ sessionKey: ["auth", "session"] }),
+    Consumer: ({
+      children,
+    }: {
+      children: (value: { sessionKey: string[] }) => React.ReactNode;
+    }) => children({ sessionKey: ["auth", "session"] }),
   },
 }));
 
@@ -115,14 +118,32 @@ void mock.module("react-i18next", () => ({
 // Mock UI components
 void mock.module("@kit/ui/card", () => ({
   Card: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  CardContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  CardDescription: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
-  CardHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  CardTitle: ({ children }: { children: React.ReactNode }) => <h3>{children}</h3>,
+  CardContent: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  CardDescription: ({ children }: { children: React.ReactNode }) => (
+    <p>{children}</p>
+  ),
+  CardHeader: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  CardTitle: ({ children }: { children: React.ReactNode }) => (
+    <h3>{children}</h3>
+  ),
 }));
 
 void mock.module("@kit/ui/button", () => ({
-  Button: ({ children, onClick, disabled, ...props }: { children: React.ReactNode; onClick?: () => void; disabled?: boolean; [key: string]: unknown }) => (
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    ...props
+  }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+    disabled?: boolean;
+    [key: string]: unknown;
+  }) => (
     <button onClick={onClick} disabled={disabled} {...props}>
       {children}
     </button>
@@ -174,14 +195,14 @@ describe("WalletStep", () => {
     // Reset session data
     mockSession.user.initialOnboardingFinished = false;
     mockSession.user.wallet = null;
-    
+
     // Clear all mocks
     mockMutate.mockClear();
     mockWriteText.mockClear();
     mockWallet.mockClear();
     mockPincodeEnable.mockClear();
     mockUseSession.mockClear();
-    
+
     // Reset context mock
     mockUseContext.mockReturnValue({ sessionKey: ["auth", "session"] });
   });
@@ -190,9 +211,7 @@ describe("WalletStep", () => {
     render(<WalletStep />);
 
     expect(screen.getByText("wallet.generate-your-wallet")).toBeInTheDocument();
-    expect(
-      screen.getByText("wallet.create-secure-wallet")
-    ).toBeInTheDocument();
+    expect(screen.getByText("wallet.create-secure-wallet")).toBeInTheDocument();
   });
 
   it("shows info about wallet when not generated", () => {
@@ -250,9 +269,7 @@ describe("WalletStep", () => {
 
     render(<WalletStep />);
 
-    expect(
-      screen.getByText("wallet.your-wallet")
-    ).toBeInTheDocument();
+    expect(screen.getByText("wallet.your-wallet")).toBeInTheDocument();
     expect(screen.getByText("0x1234567890abcdef")).toBeInTheDocument();
   });
 
@@ -313,7 +330,7 @@ describe("WalletStep", () => {
   it("invalidates session queries after wallet creation", async () => {
     const { queryClient } = await import("@/lib/query.client");
     const { useMutation } = await import("@tanstack/react-query");
-    
+
     let onSuccessCallback: (() => void) | null = null;
     (useMutation as ReturnType<typeof mock>).mockImplementation((options) => {
       onSuccessCallback = options.onSuccess;
@@ -338,7 +355,7 @@ describe("WalletStep", () => {
   it("shows toast message on successful wallet creation", async () => {
     const { toast } = await import("sonner");
     const { useMutation } = await import("@tanstack/react-query");
-    
+
     let onSuccessCallback: (() => void) | null = null;
     (useMutation as ReturnType<typeof mock>).mockImplementation((options) => {
       onSuccessCallback = options.onSuccess;
@@ -374,7 +391,7 @@ describe("WalletStep", () => {
 
   it("updates justGenerated state after successful creation", async () => {
     const { useMutation } = await import("@tanstack/react-query");
-    
+
     let onSuccessCallback: (() => void) | null = null;
     (useMutation as ReturnType<typeof mock>).mockImplementation((options) => {
       onSuccessCallback = options.onSuccess;
@@ -396,7 +413,7 @@ describe("WalletStep", () => {
     // Update session to have wallet
     mockSession.user.initialOnboardingFinished = true;
     mockSession.user.wallet = "0x1234567890abcdef";
-    
+
     rerender(<WalletStep />);
 
     // Should show the wallet address
