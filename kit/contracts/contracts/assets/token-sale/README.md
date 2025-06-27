@@ -1,8 +1,8 @@
 # ATK Token Sale Module
 
 This module provides a comprehensive solution for conducting compliant token
-sales for ATK tokens with advanced features including vesting, multiple
-payment currencies, and regulatory compliance.
+sales for ATK tokens with advanced features including vesting, multiple payment
+currencies, and regulatory compliance.
 
 ## Architecture Overview
 

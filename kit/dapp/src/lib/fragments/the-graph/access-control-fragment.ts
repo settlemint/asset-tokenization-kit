@@ -13,8 +13,8 @@ export const AccessControlFragment = theGraphGraphql(`
     claimManager { id }
     deployer { id }
     storageModifier { id }
-    manageRegistries { id }
-    tokenGovernance { id }
+    registryManager { id }
+    governance { id }
     supplyManagement { id }
     custodian { id }
     emergency { id }
